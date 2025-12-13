@@ -1,0 +1,360 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+
+const API_PATH = "/api/v1/dashboard/status";
+
+type DashboardData = {
+  timestamp: string;
+  db_health: { status: "healthy" | "unhealthy" };
+  db_stats: {
+    connections_total: number;
+    connections_active: number;
+    connections_idle: number;
+    db_size_bytes: number;
+    locks: number;
+  };
+  db_activity: Array<{
+    pid: number;
+    user: string;
+    state: string;
+    wait_event: string;
+    duration_seconds: number;
+    query: string;
+  }>;
+  system: {
+    cpu_percent: number;
+    mem_percent: number;
+    mem_used: number;
+    mem_total: number;
+  };
+  repo_activity: {
+    recent_commits: Array<{ hash: string; author: string; when: string; message: string }>;
+    working_tree: string[];
+    git_warning?: string;
+  };
+  admin_suggestions: string[];
+  thresholds: {
+    cpu_percent: number;
+    mem_percent: number;
+    connections: number;
+    log_file: string;
+  };
+};
+
+type FetchState = {
+  loading: boolean;
+  error?: string;
+  data?: DashboardData;
+};
+
+type NotesState = {
+  text: string;
+};
+
+const formatBytes = (bytes: number) => {
+  if (!Number.isFinite(bytes)) return "-";
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+  const value = bytes / 1024 ** i;
+  return `${value.toFixed(value >= 10 ? 0 : 1)} ${units[i]}`;
+};
+
+const formatDuration = (seconds: number) => {
+  if (!Number.isFinite(seconds)) return "-";
+  if (seconds < 60) return `${seconds.toFixed(seconds >= 10 ? 0 : 1)}s`;
+  const minutes = seconds / 60;
+  if (minutes < 60) return `${minutes.toFixed(minutes >= 10 ? 0 : 1)}m`;
+  const hours = minutes / 60;
+  return `${hours.toFixed(hours >= 10 ? 0 : 1)}h`;
+};
+
+const CircularStat = ({ value, label, hint, color }: { value: number; label: string; hint?: string; color: string }) => {
+  const safe = Number.isFinite(value) ? Math.max(0, Math.min(value, 100)) : 0;
+  return (
+    <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-4 shadow-[0_20px_60px_-30px_rgba(56,189,248,0.4)] flex items-center gap-4">
+      <div
+        className="relative h-20 w-20 rounded-full grid place-items-center"
+        style={{ background: `conic-gradient(${color} ${safe}%, rgba(255,255,255,0.08) ${safe}% 100%)` }}
+      >
+        <div className="h-14 w-14 rounded-full bg-slate-950/80 grid place-items-center text-white font-semibold text-lg">
+          {safe.toFixed(0)}%
+        </div>
+      </div>
+      <div className="flex-1">
+        <p className="text-sm text-gray-300">{label}</p>
+        <p className="text-xs text-gray-400">{hint}</p>
+      </div>
+    </div>
+  );
+};
+
+const StatCard = ({
+  label,
+  value,
+  hint,
+  accent,
+}: {
+  label: string;
+  value: string;
+  hint?: string;
+  accent: string;
+}) => (
+  <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-4 shadow-[0_20px_60px_-30px_rgba(56,189,248,0.4)]">
+    <p className="text-sm text-gray-300 mb-1">{label}</p>
+    <p className="text-3xl font-semibold text-white tracking-tight">{value}</p>
+    {hint ? <p className="text-xs text-gray-400 mt-1">{hint}</p> : null}
+    <div className={`mt-3 h-1 rounded-full ${accent}`} />
+  </div>
+);
+
+const Pill = ({ status }: { status: "healthy" | "unhealthy" }) => {
+  const isHealthy = status === "healthy";
+  return (
+    <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${isHealthy ? "bg-emerald-500/10 text-emerald-200" : "bg-rose-500/10 text-rose-200"}`}>
+      <span className={`h-2 w-2 rounded-full ${isHealthy ? "bg-emerald-400" : "bg-rose-400"}`} />
+      {isHealthy ? "Healthy" : "Unhealthy"}
+    </span>
+  );
+};
+
+const computeIssues = (data?: DashboardData) => {
+  if (!data) return [] as string[];
+  const issues: string[] = [];
+  if (data.db_health.status !== "healthy") issues.push("DB reporta unhealthy (ver logs y conexión).");
+  if (data.system.cpu_percent > data.thresholds.cpu_percent) issues.push(`CPU > umbral (${data.system.cpu_percent.toFixed(1)}%).`);
+  if (data.system.mem_percent > data.thresholds.mem_percent) issues.push(`Memoria > umbral (${data.system.mem_percent.toFixed(1)}%).`);
+  if (data.db_stats.connections_total > data.thresholds.connections) issues.push(`Conexiones totales altas (${data.db_stats.connections_total}).`);
+  if (data.db_stats.locks > 5) issues.push(`Locks detectados (${data.db_stats.locks}); revisar bloqueos.`);
+  if ((data.db_activity?.length ?? 0) > 0) {
+    const longRunning = data.db_activity.find((q) => q.duration_seconds > 60);
+    if (longRunning) issues.push("Hay queries activas (>60s); revisar qué bloquean.");
+  }
+  return issues;
+};
+
+const API_REFRESH_MS = 15000;
+
+export default function DashboardPage() {
+  const [state, setState] = useState<FetchState>({ loading: true });
+  const [notes, setNotes] = useState<NotesState>({ text: "" });
+
+  const load = async () => {
+    try {
+      setState((s) => ({ ...s, loading: true, error: undefined }));
+      const res = await fetch(API_PATH, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = (await res.json()) as DashboardData;
+      setState({ loading: false, data: json });
+    } catch (err) {
+      setState({ loading: false, error: err instanceof Error ? err.message : "Error" });
+    }
+  };
+
+  useEffect(() => {
+    load();
+    const id = setInterval(load, API_REFRESH_MS);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem("sentinel-dashboard-notes");
+    if (saved) setNotes({ text: saved });
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem("sentinel-dashboard-notes", notes.text);
+  }, [notes]);
+
+  const { data, loading, error } = state;
+  const activeQueries = data?.db_activity ?? [];
+  const repo = data?.repo_activity;
+  const issues = computeIssues(data);
+
+  const ratio = useMemo(() => {
+    if (!data) return 0;
+    return Math.min(
+      (data.db_stats.connections_active / (data.thresholds.connections || 1)) * 100,
+      999
+    );
+  }, [data]);
+
+  return (
+    <main className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-gray-100">
+      <div className="absolute inset-0 opacity-50 blur-3xl bg-[radial-gradient(circle_at_20%_20%,rgba(34,211,238,0.12),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(16,185,129,0.12),transparent_30%),radial-gradient(circle_at_70%_80%,rgba(59,130,246,0.12),transparent_25%)]" aria-hidden />
+      <div className="relative mx-auto max-w-6xl px-6 py-10">
+        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
+          <div>
+            <p className="text-sm uppercase tracking-[0.25em] text-cyan-200/70">Sentinel</p>
+            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-white">Operational Dashboard (Dev)</h1>
+            <p className="text-gray-300 mt-2 max-w-2xl">Salud de base de datos, sistema y sugerencias rápidas para mantenimiento.</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Pill status={data?.db_health.status ?? "healthy"} />
+            <button
+              onClick={load}
+              className="rounded-xl border border-white/10 bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:border-cyan-400/50 hover:bg-white/15 active:scale-[0.99] transition"
+            >
+              Refrescar
+            </button>
+          </div>
+        </header>
+
+        <section className="grid gap-4 md:grid-cols-3">
+          <CircularStat value={data?.system.cpu_percent ?? 0} label="CPU" hint={`Umbral ${data?.thresholds.cpu_percent ?? 0}%`} color="#22d3ee" />
+          <CircularStat value={data?.system.mem_percent ?? 0} label="Memoria" hint={`${formatBytes(data?.system.mem_used ?? 0)} / ${formatBytes(data?.system.mem_total ?? 0)}`} color="#34d399" />
+          <StatCard label="Conexiones" value={`${data?.db_stats.connections_active ?? 0} / ${data?.thresholds.connections ?? 0}`} hint={`Totales: ${data?.db_stats.connections_total ?? 0} • Locks: ${data?.db_stats.locks ?? 0}`} accent="bg-gradient-to-r from-fuchsia-400 to-cyan-400" />
+        </section>
+
+        <section className="mt-6 grid gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2 rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-6 shadow-[0_30px_80px_-50px_rgba(14,165,233,0.45)]">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <p className="text-sm text-gray-400">Tamaño de base</p>
+                <p className="text-2xl font-semibold text-white">{formatBytes(data?.db_stats.db_size_bytes ?? 0)}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-gray-400">Última muestra</p>
+                <p className="text-sm font-semibold text-cyan-200">{data ? new Date(data.timestamp).toLocaleString() : "-"}</p>
+              </div>
+            </div>
+            <div className="mt-6 rounded-xl bg-black/40 border border-white/5 p-5">
+              <div className="flex items-center justify-between text-sm mb-2 text-gray-300">
+                <span>Uso de conexiones</span>
+                <span>{ratio.toFixed(0)}%</span>
+              </div>
+              <div className="h-2 w-full rounded-full bg-white/5 overflow-hidden">
+                <div className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-emerald-400" style={{ width: `${Math.min(ratio, 100)}%` }} />
+              </div>
+              <p className="text-xs text-gray-400 mt-3">Umbral configurado: {data?.thresholds.connections ?? 0} conexiones.</p>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-6 space-y-4">
+            <h3 className="text-lg font-semibold text-white mb-3">Sugerencias rápidas</h3>
+            <ul className="space-y-3 text-sm text-gray-200">
+              {(data?.admin_suggestions ?? ["Ejecuta VACUUM en ventana de mantenimiento", "Revisa bloqueos prolongados", "Termina conexiones idle > 15m"]).map((s, idx) => (
+                <li key={idx} className="flex gap-3">
+                  <span className="mt-1 h-2 w-2 rounded-full bg-cyan-400" aria-hidden />
+                  <span>{s}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="pt-2 border-t border-white/5">
+              <h4 className="text-sm font-semibold text-white mb-2">Posibles bugs / fallas a investigar</h4>
+              <ul className="space-y-2 text-sm text-amber-100">
+                {issues.length === 0 ? <li className="text-gray-300">Sin alertas automáticas por ahora.</li> : null}
+                {issues.map((item, idx) => (
+                  <li key={idx} className="flex gap-2">
+                    <span className="mt-1 h-2 w-2 rounded-full bg-amber-400" aria-hidden />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-6 grid gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2 rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-6">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold text-white">Actividad de base de datos</h3>
+              <span className="text-xs rounded-full bg-white/10 px-3 py-1 text-gray-200 border border-white/10">
+                {activeQueries.length} activas
+              </span>
+            </div>
+            <div className="space-y-3">
+              {activeQueries.length === 0 ? (
+                <div className="rounded-lg border border-white/5 bg-black/30 text-sm text-gray-300 px-4 py-3">
+                  Sin queries activas ahora mismo.
+                </div>
+              ) : (
+                activeQueries.map((q, idx) => (
+                  <div key={`${q.pid}-${idx}`} className="rounded-lg border border-white/5 bg-black/40 p-4">
+                    <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between text-sm">
+                      <div className="flex flex-wrap items-center gap-2 text-cyan-100">
+                        <span className="font-semibold">{q.user}</span>
+                        <span className="text-xs text-gray-400">PID {q.pid}</span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2 text-xs">
+                        <span className="rounded-full bg-white/10 px-2 py-1 text-gray-200 border border-white/10">{q.state}</span>
+                        <span className="text-gray-300">{formatDuration(q.duration_seconds)}</span>
+                        <span className="text-gray-400">{q.wait_event || "sin espera"}</span>
+                      </div>
+                    </div>
+                    <pre className="mt-3 text-xs text-gray-100 bg-white/5 border border-white/5 rounded-md p-3 overflow-x-auto whitespace-pre-wrap break-words">
+                      {q.query}
+                    </pre>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-6">
+            <h3 className="text-lg font-semibold text-white mb-3">Actividad de código</h3>
+            <div className="mb-4">
+              <p className="text-sm text-gray-300 mb-2">Commits recientes</p>
+              <ul className="space-y-2 text-sm text-gray-100">
+                {(repo?.recent_commits ?? []).map((c) => (
+                  <li key={c.hash} className="rounded-lg border border-white/5 bg-black/30 px-3 py-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono text-cyan-200 text-xs">{c.hash}</span>
+                      <span className="text-xs text-gray-400">{c.when}</span>
+                    </div>
+                    <div className="text-gray-200 text-sm">{c.message}</div>
+                    <div className="text-xs text-gray-400">por {c.author}</div>
+                  </li>
+                ))}
+                {(repo?.recent_commits?.length ?? 0) === 0 ? (
+                  <li className="text-sm text-gray-300">No hay commits recientes disponibles.</li>
+                ) : null}
+              </ul>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-300 mb-2">Working tree</p>
+              <div className="space-y-1 text-sm text-gray-100">
+                {(repo?.working_tree ?? []).map((line, idx) => (
+                  <div key={idx} className="rounded border border-white/5 bg-black/30 px-2 py-1 font-mono text-xs">{line}</div>
+                ))}
+                {(repo?.working_tree?.length ?? 0) === 0 ? (
+                  <div className="text-sm text-gray-300">Sin cambios locales.</div>
+                ) : null}
+              </div>
+            </div>
+
+            {repo?.git_warning ? (
+              <div className="mt-3 text-xs text-amber-200 bg-amber-500/10 border border-amber-500/30 rounded px-3 py-2">
+                Aviso Git: {repo.git_warning}
+              </div>
+            ) : null}
+
+            <div>
+              <p className="text-sm text-gray-300 mb-2">Notas / tareas pendientes</p>
+              <textarea
+                value={notes.text}
+                onChange={(e) => setNotes({ text: e.target.value })}
+                className="w-full rounded-xl border border-white/10 bg-black/30 text-sm text-gray-100 p-3 min-h-[140px] focus:outline-none focus:ring-2 focus:ring-cyan-400/60"
+                placeholder="Escribe tareas rápidas o recordatorios..."
+              />
+              <p className="text-xs text-gray-400 mt-1">Se guarda localmente en este navegador para tu sesión.</p>
+            </div>
+          </div>
+        </section>
+
+        {error ? (
+          <div className="mt-6 rounded-xl border border-rose-500/40 bg-rose-500/10 text-rose-100 px-4 py-3 text-sm">
+            Error al cargar el dashboard: {error}
+          </div>
+        ) : null}
+
+        {loading ? (
+          <div className="mt-6 text-sm text-gray-300">Cargando métricas…</div>
+        ) : null}
+      </div>
+    </main>
+  );
+}

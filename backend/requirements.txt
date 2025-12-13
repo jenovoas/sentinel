@@ -1,0 +1,71 @@
+# ============================================================================
+# Sentinel Backend Dependencies
+# Async-first stack for high-performance SaaS platform
+# ============================================================================
+
+# Web Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# ============================================================================
+# DATABASE (SQLAlchemy 2.0 with Async Support)
+# ============================================================================
+# SQLAlchemy 2.0 - Modern ORM with async/await
+sqlalchemy==2.0.23
+# Async extensions for SQLAlchemy
+sqlalchemy[asyncio]==2.0.23
+# PostgreSQL async driver (asyncpg - 3-5x faster than psycopg2)
+asyncpg==0.29.0
+# Database migrations
+alembic==1.13.0
+
+# ============================================================================
+# DATA VALIDATION
+# ============================================================================
+# Pydantic 2.0 - Data validation with Python type hints
+pydantic==2.5.0
+# Settings management from environment variables
+pydantic-settings==2.1.0
+
+# ============================================================================
+# ASYNC TASK QUEUE
+# ============================================================================
+# Celery - Distributed task queue
+celery==5.3.4
+# Redis client for Celery broker and caching
+redis==4.6.0
+
+# ============================================================================
+# AUTHENTICATION & SECURITY
+# ============================================================================
+# JWT token generation and validation
+PyJWT==2.10.1
+# Password hashing with bcrypt
+bcrypt==4.1.1
+# Python-Jose library for JWT handling (alternative to PyJWT)
+python-jose[cryptography]==3.3.0
+# Password utilities
+passlib[bcrypt]==1.7.4
+
+# ============================================================================
+# ENVIRONMENT & UTILITIES
+# ============================================================================
+# Load environment variables from .env files
+python-dotenv==1.0.0
+# HTTP client for API requests
+requests==2.31.0
+# Form data parsing for FastAPI
+python-multipart==0.0.6
+# Email validation
+email-validator==2.1.0
+# System metrics
+psutil==5.9.8
+
+# ============================================================================
+# NOTES FOR TEAM
+# ============================================================================
+# 1. asyncpg is mandatory for async database support
+# 2. SQLAlchemy[asyncio] provides async extensions
+# 3. All async operations use asyncio internally
+# 4. Compatible with Python 3.8+
+# ============================================================================
