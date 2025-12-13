@@ -28,6 +28,20 @@ type DashboardData = {
     mem_used: number;
     mem_total: number;
   };
+  gpu: {
+    gpu_percent: number;
+    gpu_memory_percent: number;
+    gpu_memory_used: number;
+    gpu_memory_total: number;
+    gpu_name: string;
+    gpu_temp: number;
+  };
+  network: {
+    net_bytes_sent: number;
+    net_bytes_recv: number;
+    net_packets_sent: number;
+    net_packets_recv: number;
+  };
   repo_activity: {
     recent_commits: Array<{ hash: string; author: string; when: string; message: string }>;
     working_tree: string[];
@@ -72,18 +86,18 @@ const formatDuration = (seconds: number) => {
 const CircularStat = ({ value, label, hint, color }: { value: number; label: string; hint?: string; color: string }) => {
   const safe = Number.isFinite(value) ? Math.max(0, Math.min(value, 100)) : 0;
   return (
-    <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-4 shadow-[0_20px_60px_-30px_rgba(56,189,248,0.4)] flex items-center gap-4">
+    <div className="group rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-4 shadow-[0_20px_60px_-30px_rgba(56,189,248,0.4)] flex items-center gap-4 transition-all duration-300 hover:border-white/20 hover:shadow-[0_30px_90px_-40px_rgba(56,189,248,0.6)] hover:scale-[1.02] cursor-pointer">
       <div
-        className="relative h-20 w-20 rounded-full grid place-items-center"
+        className="relative h-20 w-20 rounded-full grid place-items-center transition-transform duration-300 group-hover:scale-110"
         style={{ background: `conic-gradient(${color} ${safe}%, rgba(255,255,255,0.08) ${safe}% 100%)` }}
       >
-        <div className="h-14 w-14 rounded-full bg-slate-950/80 grid place-items-center text-white font-semibold text-lg">
+        <div className="h-14 w-14 rounded-full bg-slate-950/80 grid place-items-center text-white font-semibold text-lg transition-all duration-300 group-hover:bg-slate-900/90">
           {safe.toFixed(0)}%
         </div>
       </div>
       <div className="flex-1">
-        <p className="text-sm text-gray-300">{label}</p>
-        <p className="text-xs text-gray-400">{hint}</p>
+        <p className="text-sm text-gray-300 transition-colors duration-300 group-hover:text-white">{label}</p>
+        <p className="text-xs text-gray-400 transition-colors duration-300 group-hover:text-gray-300">{hint}</p>
       </div>
     </div>
   );
@@ -201,9 +215,27 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        <section className="grid gap-4 md:grid-cols-3">
+        <section className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
           <CircularStat value={data?.system.cpu_percent ?? 0} label="CPU" hint={`Umbral ${data?.thresholds.cpu_percent ?? 0}%`} color="#22d3ee" />
           <CircularStat value={data?.system.mem_percent ?? 0} label="Memoria" hint={`${formatBytes(data?.system.mem_used ?? 0)} / ${formatBytes(data?.system.mem_total ?? 0)}`} color="#34d399" />
+          <CircularStat 
+            value={data?.gpu.gpu_percent ?? 0} 
+            label="GPU" 
+            hint={data?.gpu.gpu_name !== "N/A" ? `${data?.gpu.gpu_name} • ${data?.gpu.gpu_temp ?? 0}°C` : "No detectada"} 
+            color="#a78bfa" 
+          />
+          <CircularStat 
+            value={(() => {
+              if (!data?.network) return 0;
+              const total = data.network.net_bytes_sent + data.network.net_bytes_recv;
+              const gb = total / (1024 * 1024 * 1024);
+              // Scale: 0GB=0%, 10GB=100%
+              return Math.min(gb * 10, 100);
+            })()} 
+            label="Red (total)" 
+            hint={`↑ ${formatBytes(data?.network.net_bytes_sent ?? 0)} ↓ ${formatBytes(data?.network.net_bytes_recv ?? 0)}`} 
+            color="#fb923c" 
+          />
           <StatCard label="Conexiones" value={`${data?.db_stats.connections_active ?? 0} / ${data?.thresholds.connections ?? 0}`} hint={`Totales: ${data?.db_stats.connections_total ?? 0} • Locks: ${data?.db_stats.locks ?? 0}`} accent="bg-gradient-to-r from-fuchsia-400 to-cyan-400" />
         </section>
 
