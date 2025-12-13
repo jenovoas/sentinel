@@ -92,6 +92,44 @@ async def _run_in_executor(func, *args):
     return await loop.run_in_executor(None, func, *args)
 
 
+async def get_gpu_metrics() -> Dict[str, Any]:
+    """Get GPU usage metrics (if available). Returns empty if no GPU detected."""
+    try:
+        import GPUtil
+        gpus = await _run_in_executor(GPUtil.getGPUs)
+        if gpus:
+            gpu = gpus[0]  # Primary GPU
+            return {
+                "gpu_percent": gpu.load * 100,
+                "gpu_memory_percent": gpu.memoryUtil * 100,
+                "gpu_memory_used": gpu.memoryUsed,
+                "gpu_memory_total": gpu.memoryTotal,
+                "gpu_name": gpu.name,
+                "gpu_temp": gpu.temperature,
+            }
+    except (ImportError, Exception):
+        pass
+    return {
+        "gpu_percent": 0,
+        "gpu_memory_percent": 0,
+        "gpu_memory_used": 0,
+        "gpu_memory_total": 0,
+        "gpu_name": "N/A",
+        "gpu_temp": 0,
+    }
+
+
+async def get_network_metrics() -> Dict[str, Any]:
+    """Get network interface statistics."""
+    net_io = await _run_in_executor(psutil.net_io_counters)
+    return {
+        "net_bytes_sent": net_io.bytes_sent,
+        "net_bytes_recv": net_io.bytes_recv,
+        "net_packets_sent": net_io.packets_sent,
+        "net_packets_recv": net_io.packets_recv,
+    }
+
+
 async def get_system_metrics() -> Dict[str, Any]:
     """Collect CPU and memory metrics using psutil off the main loop."""
     cpu = await _run_in_executor(psutil.cpu_percent, 0.5)
@@ -216,12 +254,16 @@ async def get_dashboard_snapshot() -> Dict[str, Any]:
     db_health_task = asyncio.create_task(get_db_health())
     db_stats_task = asyncio.create_task(get_db_stats())
     sys_task = asyncio.create_task(get_system_metrics())
+    gpu_task = asyncio.create_task(get_gpu_metrics())
+    net_task = asyncio.create_task(get_network_metrics())
     db_activity_task = asyncio.create_task(get_active_queries())
     repo_activity_task = asyncio.create_task(get_repo_activity())
 
     db_health = await db_health_task
     db_stats = await db_stats_task
     sys_metrics = await sys_task
+    gpu_metrics = await gpu_task
+    net_metrics = await net_task
     db_activity = await db_activity_task
     repo_activity = await repo_activity_task
 
@@ -239,6 +281,8 @@ async def get_dashboard_snapshot() -> Dict[str, Any]:
         "db_stats": db_stats,
         "db_activity": db_activity,
         "system": sys_metrics,
+        "gpu": gpu_metrics,
+        "network": net_metrics,
         "repo_activity": repo_activity,
         "admin_suggestions": admin_suggestions,
         "thresholds": {
