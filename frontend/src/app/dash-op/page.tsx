@@ -83,10 +83,13 @@ const formatDuration = (seconds: number) => {
   return `${hours.toFixed(hours >= 10 ? 0 : 1)}h`;
 };
 
-const CircularStat = ({ value, label, hint, color }: { value: number; label: string; hint?: string; color: string }) => {
+const CircularStat = ({ value, label, hint, color, onClick }: { value: number; label: string; hint?: string; color: string; onClick?: () => void }) => {
   const safe = Number.isFinite(value) ? Math.max(0, Math.min(value, 100)) : 0;
   return (
-    <div className="group rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-4 shadow-[0_20px_60px_-30px_rgba(56,189,248,0.4)] flex items-center gap-4 transition-all duration-300 hover:border-white/20 hover:shadow-[0_30px_90px_-40px_rgba(56,189,248,0.6)] hover:scale-[1.02] cursor-pointer">
+    <div 
+      onClick={onClick}
+      className="group rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-4 shadow-[0_20px_60px_-30px_rgba(56,189,248,0.4)] flex items-center gap-4 transition-all duration-300 hover:border-white/20 hover:shadow-[0_30px_90px_-40px_rgba(56,189,248,0.6)] hover:scale-[1.02] cursor-pointer"
+    >
       <div
         className="relative h-20 w-20 rounded-full grid place-items-center transition-transform duration-300 group-hover:scale-110"
         style={{ background: `conic-gradient(${color} ${safe}%, rgba(255,255,255,0.08) ${safe}% 100%)` }}
@@ -148,10 +151,153 @@ const computeIssues = (data?: DashboardData) => {
 };
 
 const API_REFRESH_MS = 15000;
+const HISTORY_SIZE = 60; // Keep last 60 samples (15min at 15s intervals)
+
+type MetricHistory = {
+  timestamp: number;
+  value: number;
+}[];
+
+type HistoryState = {
+  cpu: MetricHistory;
+  memory: MetricHistory;
+  gpu: MetricHistory;
+  network: MetricHistory;
+};
+
+const LineChart = ({ data, color, label, unit = "%" }: { data: MetricHistory; color: string; label: string; unit?: string }) => {
+  if (data.length === 0) return <p className="text-gray-400 text-sm">Sin datos históricos</p>;
+  
+  const max = Math.max(...data.map((d) => d.value), 100);
+  const min = 0;
+  const width = 600;
+  const height = 200;
+  const padding = 40;
+  
+  const xScale = (index: number) => padding + (index / (data.length - 1 || 1)) * (width - padding * 2);
+  const yScale = (value: number) => height - padding - ((value - min) / (max - min || 1)) * (height - padding * 2);
+  
+  const pathData = data.map((d, i) => `${i === 0 ? "M" : "L"} ${xScale(i)} ${yScale(d.value)}`).join(" ");
+  
+  const current = data[data.length - 1]?.value ?? 0;
+  const avg = data.reduce((sum, d) => sum + d.value, 0) / data.length;
+  const maxVal = Math.max(...data.map((d) => d.value));
+  
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-3 gap-4 text-sm">
+        <div>
+          <p className="text-gray-400">Actual</p>
+          <p className="text-xl font-bold" style={{ color }}>{current.toFixed(1)}{unit}</p>
+        </div>
+        <div>
+          <p className="text-gray-400">Promedio</p>
+          <p className="text-xl font-bold text-gray-200">{avg.toFixed(1)}{unit}</p>
+        </div>
+        <div>
+          <p className="text-gray-400">Máximo</p>
+          <p className="text-xl font-bold text-gray-200">{maxVal.toFixed(1)}{unit}</p>
+        </div>
+      </div>
+      
+      <svg viewBox={`0 0 ${width} ${height}`} className="w-full border border-white/10 rounded-lg bg-black/40">
+        {/* Grid lines */}
+        {[0, 25, 50, 75, 100].map((tick) => (
+          <g key={tick}>
+            <line
+              x1={padding}
+              y1={yScale(tick)}
+              x2={width - padding}
+              y2={yScale(tick)}
+              stroke="rgba(255,255,255,0.05)"
+              strokeWidth="1"
+            />
+            <text x={10} y={yScale(tick) + 4} fill="rgba(255,255,255,0.4)" fontSize="10">
+              {tick}{unit}
+            </text>
+          </g>
+        ))}
+        
+        {/* Area fill */}
+        <path
+          d={`${pathData} L ${xScale(data.length - 1)} ${height - padding} L ${padding} ${height - padding} Z`}
+          fill={`${color}20`}
+          stroke="none"
+        />
+        
+        {/* Line */}
+        <path d={pathData} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+        
+        {/* Points */}
+        {data.map((d, i) => (
+          <circle key={i} cx={xScale(i)} cy={yScale(d.value)} r="2" fill={color} />
+        ))}
+      </svg>
+      
+      <p className="text-xs text-gray-400 text-center">
+        Últimas {data.length} muestras (~{Math.round((data.length * API_REFRESH_MS) / 60000)}min)
+      </p>
+    </div>
+  );
+};
+
+const MetricModal = ({ 
+  isOpen, 
+  onClose, 
+  title, 
+  data, 
+  color, 
+  unit 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  title: string; 
+  data: MetricHistory; 
+  color: string; 
+  unit?: string;
+}) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+      onClick={onClose}
+    >
+      <div 
+        className="relative bg-slate-900 border border-white/10 rounded-2xl shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] max-w-3xl w-full p-6 animate-[fadeIn_0.2s_ease-out]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-white">{title}</h2>
+            <p className="text-sm text-gray-400">Histórico de métricas en tiempo real</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <LineChart data={data} color={color} label={title} unit={unit} />
+      </div>
+    </div>
+  );
+};
 
 export default function DashboardPage() {
   const [state, setState] = useState<FetchState>({ loading: true });
   const [notes, setNotes] = useState<NotesState>({ text: "" });
+  const [history, setHistory] = useState<HistoryState>({
+    cpu: [],
+    memory: [],
+    gpu: [],
+    network: [],
+  });
+  const [modal, setModal] = useState<{ type: keyof HistoryState; isOpen: boolean }>({ type: "cpu", isOpen: false });
 
   const load = async () => {
     try {
@@ -160,6 +306,26 @@ export default function DashboardPage() {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = (await res.json()) as DashboardData;
       setState({ loading: false, data: json });
+      
+      // Update history
+      const timestamp = Date.now();
+      setHistory((prev) => {
+        const addSample = (arr: MetricHistory, value: number) => {
+          const updated = [...arr, { timestamp, value }];
+          return updated.slice(-HISTORY_SIZE);
+        };
+        
+        return {
+          cpu: addSample(prev.cpu, json.system.cpu_percent),
+          memory: addSample(prev.memory, json.system.mem_percent),
+          gpu: addSample(prev.gpu, json.gpu.gpu_percent),
+          network: addSample(prev.network, (() => {
+            const total = json.network.net_bytes_sent + json.network.net_bytes_recv;
+            const gb = total / (1024 * 1024 * 1024);
+            return Math.min(gb * 10, 100);
+          })()),
+        };
+      });
     } catch (err) {
       setState({ loading: false, error: err instanceof Error ? err.message : "Error" });
     }
@@ -216,28 +382,74 @@ export default function DashboardPage() {
         </header>
 
         <section className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
-          <CircularStat value={data?.system.cpu_percent ?? 0} label="CPU" hint={`Umbral ${data?.thresholds.cpu_percent ?? 0}%`} color="#22d3ee" />
-          <CircularStat value={data?.system.mem_percent ?? 0} label="Memoria" hint={`${formatBytes(data?.system.mem_used ?? 0)} / ${formatBytes(data?.system.mem_total ?? 0)}`} color="#34d399" />
+          <CircularStat 
+            value={data?.system.cpu_percent ?? 0} 
+            label="CPU" 
+            hint={`Umbral ${data?.thresholds.cpu_percent ?? 0}%`} 
+            color="#22d3ee" 
+            onClick={() => setModal({ type: "cpu", isOpen: true })}
+          />
+          <CircularStat 
+            value={data?.system.mem_percent ?? 0} 
+            label="Memoria" 
+            hint={`${formatBytes(data?.system.mem_used ?? 0)} / ${formatBytes(data?.system.mem_total ?? 0)}`} 
+            color="#34d399" 
+            onClick={() => setModal({ type: "memory", isOpen: true })}
+          />
           <CircularStat 
             value={data?.gpu.gpu_percent ?? 0} 
             label="GPU" 
             hint={data?.gpu.gpu_name !== "N/A" ? `${data?.gpu.gpu_name} • ${data?.gpu.gpu_temp ?? 0}°C` : "No detectada"} 
             color="#a78bfa" 
+            onClick={() => setModal({ type: "gpu", isOpen: true })}
           />
           <CircularStat 
             value={(() => {
               if (!data?.network) return 0;
               const total = data.network.net_bytes_sent + data.network.net_bytes_recv;
               const gb = total / (1024 * 1024 * 1024);
-              // Scale: 0GB=0%, 10GB=100%
               return Math.min(gb * 10, 100);
             })()} 
             label="Red (total)" 
             hint={`↑ ${formatBytes(data?.network.net_bytes_sent ?? 0)} ↓ ${formatBytes(data?.network.net_bytes_recv ?? 0)}`} 
             color="#fb923c" 
+            onClick={() => setModal({ type: "network", isOpen: true })}
           />
           <StatCard label="Conexiones" value={`${data?.db_stats.connections_active ?? 0} / ${data?.thresholds.connections ?? 0}`} hint={`Totales: ${data?.db_stats.connections_total ?? 0} • Locks: ${data?.db_stats.locks ?? 0}`} accent="bg-gradient-to-r from-fuchsia-400 to-cyan-400" />
         </section>
+
+        <MetricModal 
+          isOpen={modal.isOpen && modal.type === "cpu"}
+          onClose={() => setModal({ ...modal, isOpen: false })}
+          title="CPU Usage"
+          data={history.cpu}
+          color="#22d3ee"
+          unit="%"
+        />
+        <MetricModal 
+          isOpen={modal.isOpen && modal.type === "memory"}
+          onClose={() => setModal({ ...modal, isOpen: false })}
+          title="Memory Usage"
+          data={history.memory}
+          color="#34d399"
+          unit="%"
+        />
+        <MetricModal 
+          isOpen={modal.isOpen && modal.type === "gpu"}
+          onClose={() => setModal({ ...modal, isOpen: false })}
+          title="GPU Usage"
+          data={history.gpu}
+          color="#a78bfa"
+          unit="%"
+        />
+        <MetricModal 
+          isOpen={modal.isOpen && modal.type === "network"}
+          onClose={() => setModal({ ...modal, isOpen: false })}
+          title="Network Traffic"
+          data={history.network}
+          color="#fb923c"
+          unit="%"
+        />
 
         <section className="mt-6 grid gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2 rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-6 shadow-[0_30px_80px_-50px_rgba(14,165,233,0.45)]">
