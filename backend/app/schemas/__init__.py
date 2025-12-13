@@ -2,8 +2,18 @@ from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import datetime
 
+from .auth import Token, TokenData
+from .users import (
+    Organization,
+    OrganizationCreate,
+    OrganizationUpdate,
+    User,
+    UserCreate as UserCreateNew,
+    UserUpdate as UserUpdateNew,
+    UserWithOrganization
+)
 
-# Tenant Schemas
+# Legacy Tenant Schemas (for backward compatibility)
 class TenantCreate(BaseModel):
     name: str = Field(..., min_length=3, max_length=255)
     slug: str = Field(..., min_length=3, max_length=100)
@@ -26,8 +36,7 @@ class TenantResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
-# User Schemas
+# Legacy User Schemas (for backward compatibility)
 class UserCreate(BaseModel):
     email: EmailStr
     username: str = Field(..., min_length=3, max_length=100)
@@ -53,10 +62,6 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True
-
-
-from .auth import Token, TokenData
-
 
 # Health Check Schema
 class HealthResponse(BaseModel):

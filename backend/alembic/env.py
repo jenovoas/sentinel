@@ -13,7 +13,9 @@ from app import models  # noqa: F401 ensures models are imported for metadata
 config = context.config
 
 settings = get_settings()
-config.set_main_option("sqlalchemy.url", settings.database_url)
+# Convert async URL to sync for migrations
+sync_url = settings.database_url.replace("postgresql+asyncpg://", "postgresql://")
+config.set_main_option("sqlalchemy.url", sync_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

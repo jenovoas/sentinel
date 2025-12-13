@@ -26,7 +26,10 @@ def login_for_access_token(
         )
     access_token_expires = timedelta(minutes=30)
     access_token = create_access_token(
-        data={"user_id": str(user.id), "tenant_id": str(user.tenant_id)},
+        data={
+            "user_id": str(user.id), 
+            "tenant_id": str(user.organization_id),  # Use organization_id (backward compatible key)
+        },
         expires_delta=access_token_expires,
     )
     return {"access_token": access_token, "token_type": "bearer"}
