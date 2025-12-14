@@ -16,6 +16,7 @@ import { StorageCard } from "@/components/StorageCard";
 import { DetailModal } from "@/components/DetailModal";
 import { NetworkCard } from "@/components/NetworkCard";
 import { useNetworkInfo } from "@/hooks/useNetworkInfo";
+import { MiniChart } from "@/components/MiniChart";
 
 const API_PATH = "/api/v1/dashboard/status";
 
@@ -113,31 +114,40 @@ const CircularStat = ({
   hint,
   color,
   onClick,
+  history,
 }: {
   value: number;
   label: string;
   hint?: string;
   color: string;
   onClick?: () => void;
+  history?: Array<{ timestamp: number; value: number }>;
 }) => {
   const safe = Number.isFinite(value) ? Math.max(0, Math.min(value, 100)) : 0;
   return (
     <div
       onClick={onClick}
-      className="group rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-4 shadow-[0_20px_60px_-30px_rgba(56,189,248,0.4)] flex items-center gap-4 transition-all duration-300 hover:border-white/20 hover:shadow-[0_30px_90px_-40px_rgba(56,189,248,0.6)] hover:scale-[1.02] cursor-pointer"
+      className="group rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-4 shadow-[0_20px_60px_-30px_rgba(56,189,248,0.4)] flex flex-col gap-3 transition-all duration-300 hover:border-white/20 hover:shadow-[0_30px_90px_-40px_rgba(56,189,248,0.6)] hover:scale-[1.02] cursor-pointer"
     >
-      <div
-        className="relative h-20 w-20 rounded-full grid place-items-center transition-transform duration-300 group-hover:scale-110"
-        style={{ background: `conic-gradient(${color} ${safe}%, rgba(255,255,255,0.08) ${safe}% 100%)` }}
-      >
-        <div className="h-14 w-14 rounded-full bg-slate-950/80 grid place-items-center text-white font-semibold text-lg transition-all duration-300 group-hover:bg-slate-900/90">
-          {safe.toFixed(0)}%
+      <div className="flex items-center gap-4">
+        <div
+          className="relative h-20 w-20 rounded-full grid place-items-center transition-transform duration-300 group-hover:scale-110"
+          style={{ background: `conic-gradient(${color} ${safe}%, rgba(255,255,255,0.08) ${safe}% 100%)` }}
+        >
+          <div className="h-14 w-14 rounded-full bg-slate-950/80 grid place-items-center text-white font-semibold text-lg transition-all duration-300 group-hover:bg-slate-900/90">
+            {safe.toFixed(0)}%
+          </div>
+        </div>
+        <div className="flex-1">
+          <p className="text-sm text-gray-300 transition-colors duration-300 group-hover:text-white">{label}</p>
+          <p className="text-xs text-gray-400 transition-colors duration-300 group-hover:text-gray-300">{hint}</p>
         </div>
       </div>
-      <div className="flex-1">
-        <p className="text-sm text-gray-300 transition-colors duration-300 group-hover:text-white">{label}</p>
-        <p className="text-xs text-gray-400 transition-colors duration-300 group-hover:text-gray-300">{hint}</p>
-      </div>
+      {history && history.length > 0 && (
+        <div className="h-10">
+          <MiniChart data={history} color={color} height={40} />
+        </div>
+      )}
     </div>
   );
 };
@@ -147,17 +157,26 @@ const StatCard = ({
   value,
   hint,
   accent,
+  history,
 }: {
   label: string;
   value: string;
   hint?: string;
   accent: string;
+  history?: Array<{ timestamp: number; value: number }>;
 }) => (
-  <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-4 shadow-[0_20px_60px_-30px_rgba(56,189,248,0.4)]">
-    <p className="text-sm text-gray-300 mb-1">{label}</p>
-    <p className="text-3xl font-semibold text-white tracking-tight">{value}</p>
-    {hint ? <p className="text-xs text-gray-400 mt-1">{hint}</p> : null}
-    <div className={`mt-3 h-1 rounded-full ${accent}`} />
+  <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-4 shadow-[0_20px_60px_-30px_rgba(56,189,248,0.4)] flex flex-col gap-3">
+    <div>
+      <p className="text-sm text-gray-300 mb-1">{label}</p>
+      <p className="text-3xl font-semibold text-white tracking-tight">{value}</p>
+      {hint ? <p className="text-xs text-gray-400 mt-1">{hint}</p> : null}
+    </div>
+    {history && history.length > 0 && (
+      <div className="h-10">
+        <MiniChart data={history} color="#c084fc" height={40} />
+      </div>
+    )}
+    <div className={`h-1 rounded-full ${accent}`} />
   </div>
 );
 
@@ -208,15 +227,15 @@ export default function DashboardPage() {
 
   // Load last host-metrics sample from CSV via API
   useEffect(() => {
-    const fetchHostSample = async () => {
+    const fetchHostHistory = async () => {
       try {
-        const res = await fetch("/api/host-metrics", { cache: "no-store" });
+        const res = await fetch("/api/host-metrics?limit=60", { cache: "no-store" });
         const json = await res.json();
-        if (json?.ok) setHostSample(json.data);
+        if (json?.ok && json.history) setHostSample(json.history);
       } catch {}
     };
-    fetchHostSample();
-    const id = setInterval(fetchHostSample, 60000);
+    fetchHostHistory();
+    const id = setInterval(fetchHostHistory, 60000);
     return () => clearInterval(id);
   }, []);
 
@@ -291,19 +310,31 @@ export default function DashboardPage() {
         {/* System Metrics Grid */}
         <section className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
           <CircularStat
-            value={data?.system.cpu_percent ?? 0}
+            value={hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.cpu_percent ?? 0 : data?.system.cpu_percent ?? 0}
             label="CPU"
             hint={`Umbral ${data?.thresholds.cpu_percent ?? 0}%`}
             color="#22d3ee"
+            history={
+              hostSample?.map((s: any) => ({
+                timestamp: new Date(s.timestamp).getTime(),
+                value: s.cpu_percent,
+              }))
+            }
           />
           <CircularStat
-            value={data?.system.mem_percent ?? 0}
+            value={hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.mem_percent ?? 0 : data?.system.mem_percent ?? 0}
             label="Memoria"
             hint={`${formatBytes(data?.system.mem_used ?? 0)} / ${formatBytes(data?.system.mem_total ?? 0)}`}
             color="#34d399"
+            history={
+              hostSample?.map((s: any) => ({
+                timestamp: new Date(s.timestamp).getTime(),
+                value: s.mem_percent,
+              }))
+            }
           />
           <CircularStat
-            value={data?.gpu.gpu_percent ?? 0}
+            value={hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.gpu_percent ?? 0 : data?.gpu.gpu_percent ?? 0}
             label="GPU"
             hint={
               data?.gpu.gpu_name !== "N/A"
@@ -311,31 +342,59 @@ export default function DashboardPage() {
                 : "No detectada"
             }
             color="#a78bfa"
+            history={
+              hostSample?.map((s: any) => ({
+                timestamp: new Date(s.timestamp).getTime(),
+                value: s.gpu_percent,
+              }))
+            }
           />
           <CircularStat
             value={
               (() => {
-                if (!data?.network) return 0;
-                const total = data.network.net_bytes_sent + data.network.net_bytes_recv;
+                const networkData = hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.network : data?.network;
+                if (!networkData) return 0;
+                const total = networkData.net_bytes_sent + networkData.net_bytes_recv;
                 const gb = total / (1024 * 1024 * 1024);
                 return Math.min(gb * 10, 100);
               })()
             }
             label="Red (total)"
-            hint={`↑ ${formatBytes(data?.network.net_bytes_sent ?? 0)} ↓ ${formatBytes(data?.network.net_bytes_recv ?? 0)}`}
+            hint={`↑ ${formatBytes(hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.network?.net_bytes_sent ?? 0 : data?.network.net_bytes_sent ?? 0)} ↓ ${formatBytes(hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.network?.net_bytes_recv ?? 0 : data?.network.net_bytes_recv ?? 0)}`}
             color="#fb923c"
+            history={
+              hostSample?.map((s: any) => ({
+                timestamp: new Date(s.timestamp).getTime(),
+                value: Math.min(((s.network?.net_bytes_sent + s.network?.net_bytes_recv) / (1024 * 1024 * 1024)) * 10, 100),
+              }))
+            }
           />
           <StatCard
             label="Conexiones"
             value={`${data?.db_stats.connections_active ?? 0} / ${data?.thresholds.connections ?? 0}`}
             hint={`Totales: ${data?.db_stats.connections_total ?? 0} • Locks: ${data?.db_stats.locks ?? 0}`}
             accent="bg-gradient-to-r from-fuchsia-400 to-cyan-400"
+            history={
+              hostSample?.map((s: any) => ({
+                timestamp: new Date(s.timestamp).getTime(),
+                value: s.cpu_percent, // Placeholder - podríamos añadir conexiones a host-metrics
+              }))
+            }
           />
         </section>
 
         {/* Network & Storage Cards */}
         <section className="mt-6 grid gap-4 md:grid-cols-4">
-          <NetworkCard network={hostSample?.network ?? data?.network} clientNetwork={clientNetwork} />
+          <NetworkCard 
+            network={hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.network : data?.network} 
+            clientNetwork={clientNetwork}
+            history={
+              hostSample?.map((s: any) => ({
+                timestamp: new Date(s.timestamp).getTime(),
+                value: s.network?.wifi?.signal ?? 0,
+              }))
+            }
+          />
           <StorageCard
             label="Métricas guardadas"
             value={storage?.metrics_count ?? 0}

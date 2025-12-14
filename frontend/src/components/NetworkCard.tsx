@@ -9,6 +9,7 @@
 
 import React from "react";
 import type { ClientNetworkInfo } from "@/hooks/useNetworkInfo";
+import { MiniChart } from "./MiniChart";
 
 export interface NetworkInfo {
   net_bytes_sent: number;
@@ -25,6 +26,7 @@ export interface NetworkInfo {
 interface NetworkCardProps {
   network?: NetworkInfo;
   clientNetwork?: ClientNetworkInfo;
+  history?: Array<{ timestamp: number; value: number }>;
 }
 
 const formatBytes = (bytes: number): string => {
@@ -35,7 +37,7 @@ const formatBytes = (bytes: number): string => {
   return `${value.toFixed(value >= 10 ? 0 : 1)} ${units[i]}`;
 };
 
-export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork }) => {
+export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork, history }) => {
   // Prefer client WiFi info (browser API) over server info (Docker container)
   const effectiveWifi = clientNetwork?.wifi?.connected ? clientNetwork.wifi : network?.wifi;
 
@@ -160,11 +162,18 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
           </div>
 
           {effectiveWifi.connected && (
-            <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center justify-between text-xs mb-2">
               <span className={`${wifiState.color} font-semibold`}>{wifiState.label}</span>
               <span className="text-gray-400">
                 {(effectiveWifi.signal ?? effectiveWifi.signalStrength ?? 0)}%
               </span>
+            </div>
+          )}
+
+          {/* History Chart */}
+          {history && history.length > 0 && (
+            <div className="mt-2 h-10">
+              <MiniChart data={history} color={wifiState.color.replace('text-', '#')} height={40} />
             </div>
           )}
 
