@@ -113,6 +113,27 @@ const MAIN_NAV_ITEMS: NavItem[] = [
     description: "Anomalías y eventos críticos",
   },
   {
+    label: "Bases de Datos",
+    href: "/db",
+    icon: (
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M12 3c4.97 0 9 1.79 9 4s-4.03 4-9 4-9-1.79-9-4 4.03-4 9-4zm0 8c4.97 0 9 1.79 9 4s-4.03 4-9 4-9-1.79-9-4 4.03-4 9-4z"
+        />
+      </svg>
+    ),
+    color: "amber",
+    description: "Instancias y consultas activas",
+  },
+  {
     label: "Reportes",
     href: "/reports",
     icon: (
