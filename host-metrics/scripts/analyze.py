@@ -9,6 +9,9 @@ def parse_args():
     p = argparse.ArgumentParser(description="Analyze host metrics CSV")
     p.add_argument("--input", required=True, help="Path to metrics.csv")
     p.add_argument("--output", required=True, help="Path to analysis.md")
+    p.add_argument("--cpu-threshold", type=float, default=85.0)
+    p.add_argument("--mem-threshold", type=float, default=85.0)
+    p.add_argument("--wifi-threshold", type=float, default=30.0)
     return p.parse_args()
 
 
@@ -49,6 +52,14 @@ def main():
     ts_first = rows[0]["timestamp"]
     ts_last = rows[-1]["timestamp"]
 
+    alerts = []
+    if summary["cpu_avg"] >= args.cpu_threshold:
+        alerts.append(f"CPU promedio alto (>= {args.cpu_threshold}%)")
+    if summary["mem_avg"] >= args.mem_threshold:
+        alerts.append(f"Memoria promedio alta (>= {args.mem_threshold}%)")
+    if summary["wifi_avg"] <= args.wifi_threshold:
+        alerts.append(f"WiFi promedio bajo (<= {args.wifi_threshold}%)")
+
     md = f"""
 # Análisis de Métricas (Host)
 
@@ -61,8 +72,10 @@ def main():
 - GPU: {summary['gpu_avg']}%
 - WiFi (señal): {summary['wifi_avg']}%
 
+## Alertas
+{('- ' + '\n- '.join(alerts)) if alerts else 'Sin alertas en los umbrales configurados.'}
+
 ## Observaciones
-- Si WiFi promedio < 30%, revisar interferencias o distancia.
 - Si GPU promedio = 0%, puede que el contenedor no tenga acceso a GPU.
 - Para WiFi real desde Docker, usar sidecar con `network_mode: host` y leer `/proc/net/wireless`.
 """
