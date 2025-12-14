@@ -184,6 +184,7 @@ export default function DashboardPage() {
 
   const API_REFRESH_MS = 15000;
     const clientNetwork = useNetworkInfo();
+  const [hostSample, setHostSample] = useState<any>(null);
 
   const load = async () => {
     try {
@@ -200,6 +201,20 @@ export default function DashboardPage() {
   useEffect(() => {
     load();
     const id = setInterval(load, API_REFRESH_MS);
+    return () => clearInterval(id);
+  }, []);
+
+  // Load last host-metrics sample from CSV via API
+  useEffect(() => {
+    const fetchHostSample = async () => {
+      try {
+        const res = await fetch("/api/host-metrics", { cache: "no-store" });
+        const json = await res.json();
+        if (json?.ok) setHostSample(json.data);
+      } catch {}
+    };
+    fetchHostSample();
+    const id = setInterval(fetchHostSample, 60000);
     return () => clearInterval(id);
   }, []);
 
@@ -318,7 +333,7 @@ export default function DashboardPage() {
 
         {/* Network & Storage Cards */}
         <section className="mt-6 grid gap-4 md:grid-cols-4">
-          <NetworkCard network={data?.network} />
+          <NetworkCard network={hostSample?.network ?? data?.network} clientNetwork={clientNetwork} />
           <StorageCard
             label="Métricas guardadas"
             value={storage?.metrics_count ?? 0}
