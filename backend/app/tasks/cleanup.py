@@ -1,8 +1,9 @@
 from app.celery_app import celery_app
 import logging
+import asyncio
 from datetime import datetime, timedelta
 from sqlalchemy import text
-from app.database import get_db_context
+from app.database import AsyncSessionLocal
 
 logger = logging.getLogger(__name__)
 
@@ -11,16 +12,26 @@ logger = logging.getLogger(__name__)
 def cleanup_old_audit_logs(days: int = 90):
     """Remove audit logs older than specified days"""
     try:
-        with get_db_context() as db:
-            cutoff_date = datetime.utcnow() - timedelta(days=days)
-            db.execute(
-                text("DELETE FROM audit_logs WHERE created_at < :cutoff_date"),
-                {"cutoff_date": cutoff_date}
-            )
-            db.commit()
-            logger.info(f"Cleaned up audit logs older than {days} days")
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+        async def run_cleanup():
+            async with AsyncSessionLocal() as session:
+                cutoff_date = datetime.utcnow() - timedelta(days=days)
+                await session.execute(
+                    text("DELETE FROM audit_logs WHERE created_at < :cutoff_date"),
+                    {"cutoff_date": cutoff_date}
+                )
+                await session.commit()
+                return {"success": True}
+
+        result = loop.run_until_complete(run_cleanup())
+        loop.close()
+
+        logger.info(f"✅ Cleaned up audit logs older than {days} days")
+        return result
     except Exception as e:
-        logger.error(f"Error cleaning up audit logs: {e}")
+        logger.error(f"❌ Error cleaning up audit logs: {e}", exc_info=True)
         raise
 
 
