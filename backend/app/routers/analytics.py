@@ -247,4 +247,49 @@ async def export_anomalies_json(
     }
 
 
+@router.get("/storage/summary")
+async def get_storage_summary(
+    db: AsyncSession = Depends(get_db),
+):
+    """Get summary of stored data and logs"""
+    from sqlalchemy import select, func
+    
+    # Count metric samples
+    stmt_metrics = select(func.count(MetricSample.id))
+    result_metrics = await db.execute(stmt_metrics)
+    metrics_count = result_metrics.scalar() or 0
+    
+    # Count anomalies
+    stmt_anomalies = select(func.count(Anomaly.id))
+    result_anomalies = await db.execute(stmt_anomalies)
+    anomalies_count = result_anomalies.scalar() or 0
+    
+    # Latest metric timestamp
+    stmt_latest = select(MetricSample.sampled_at).order_by(MetricSample.sampled_at.desc()).limit(1)
+    result_latest = await db.execute(stmt_latest)
+    latest_metric = result_latest.scalar()
+    
+    # Latest anomaly timestamp
+    stmt_latest_anom = select(Anomaly.detected_at).order_by(Anomaly.detected_at.desc()).limit(1)
+    result_latest_anom = await db.execute(stmt_latest_anom)
+    latest_anomaly = result_latest_anom.scalar()
+    
+    # Get DB size (if PostgreSQL)
+    try:
+        stmt_size = select(func.pg_database_size(func.current_database()))
+        result_size = await db.execute(stmt_size)
+        db_size_bytes = result_size.scalar() or 0
+    except Exception:
+        db_size_bytes = 0
+    
+    return {
+        "metrics_count": metrics_count,
+        "anomalies_count": anomalies_count,
+        "latest_metric_at": latest_metric,
+        "latest_anomaly_at": latest_anomaly,
+        "db_size_bytes": db_size_bytes,
+        "status": "healthy" if metrics_count > 0 else "no_data",
+    }
+
+
 logger.info("✅ Analytics router initialized")

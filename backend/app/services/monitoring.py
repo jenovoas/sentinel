@@ -119,14 +119,90 @@ async def get_gpu_metrics() -> Dict[str, Any]:
     }
 
 
+async def get_wifi_info() -> Dict[str, Any]:
+    """Get connected WiFi network info (SSID, signal strength)."""
+    try:
+        # Try Linux nmcli
+        result = await _run_in_executor(
+            lambda: subprocess.run(
+                ["nmcli", "device", "wifi", "show"],
+                capture_output=True,
+                text=True,
+                timeout=2,
+            )
+        )
+        if result.returncode == 0:
+            lines = result.stdout.split('\n')
+            ssid = None
+            signal = None
+            for line in lines:
+                if "SSID:" in line:
+                    ssid = line.split("SSID:", 1)[1].strip()
+                if "Signal:" in line:
+                    signal_str = line.split("Signal:", 1)[1].strip()
+                    try:
+                        signal = int(signal_str.rstrip('%'))
+                    except:
+                        pass
+            if ssid:
+                return {
+                    "ssid": ssid,
+                    "signal": signal or 0,
+                    "connected": True,
+                }
+    except Exception:
+        pass
+
+    try:
+        # Try macOS
+        result = await _run_in_executor(
+            lambda: subprocess.run(
+                ["/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport", "-I"],
+                capture_output=True,
+                text=True,
+                timeout=2,
+            )
+        )
+        if result.returncode == 0:
+            lines = result.stdout.split('\n')
+            ssid = None
+            signal = None
+            for line in lines:
+                if "SSID:" in line:
+                    ssid = line.split("SSID:", 1)[1].strip()
+                if "agrCtlRSSI:" in line:
+                    try:
+                        rssi = int(line.split(":", 1)[1].strip())
+                        # Convert RSSI to percentage: -30 dBm (100%) to -90 dBm (0%)
+                        signal = max(0, min(100, 2 * (rssi + 100)))
+                    except:
+                        pass
+            if ssid and ssid != "N/A":
+                return {
+                    "ssid": ssid,
+                    "signal": signal or 0,
+                    "connected": True,
+                }
+    except Exception:
+        pass
+
+    return {
+        "ssid": "No WiFi",
+        "signal": 0,
+        "connected": False,
+    }
+
+
 async def get_network_metrics() -> Dict[str, Any]:
     """Get network interface statistics."""
     net_io = await _run_in_executor(psutil.net_io_counters)
+    wifi = await get_wifi_info()
     return {
         "net_bytes_sent": net_io.bytes_sent,
         "net_bytes_recv": net_io.bytes_recv,
         "net_packets_sent": net_io.packets_sent,
         "net_packets_recv": net_io.packets_recv,
+        "wifi": wifi,
     }
 
 
