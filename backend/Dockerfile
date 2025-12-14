@@ -5,8 +5,11 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     postgresql-client \
+    netcat-traditional \
     curl \
     git \
+    network-manager \
+    wireless-tools \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements
@@ -22,6 +25,10 @@ COPY backend/app/ ./app/
 COPY backend/alembic.ini ./alembic.ini
 COPY backend/alembic ./alembic/
 
+# Copy entrypoint script
+COPY backend/entrypoint.sh /entrypoint.sh
+RUN chmod 755 /entrypoint.sh
+
 # Create logs directory
 RUN mkdir -p logs
 
@@ -32,5 +39,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 # Expose port
 EXPOSE 8000
 
-# Run application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run entrypoint script
+ENTRYPOINT ["/entrypoint.sh"]

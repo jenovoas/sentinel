@@ -13,7 +13,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAnalytics, useDetailModal } from "@/hooks/useAnalytics";
 import { StorageCard } from "@/components/StorageCard";
 import { DetailModal } from "@/components/DetailModal";
-import { WiFiCard } from "@/components/WiFiCard";
+import { NetworkCard } from "@/components/NetworkCard";
 
 const API_PATH = "/api/v1/dashboard/status";
 
@@ -314,9 +314,9 @@ export default function DashboardPage() {
           />
         </section>
 
-        {/* WiFi & Storage Cards */}
+        {/* Network & Storage Cards */}
         <section className="mt-6 grid gap-4 md:grid-cols-4">
-          <WiFiCard wifi={data?.network.wifi} />
+          <NetworkCard network={data?.network} />
           <StorageCard
             label="Métricas guardadas"
             value={storage?.metrics_count ?? 0}

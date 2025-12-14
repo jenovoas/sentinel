@@ -134,6 +134,10 @@ async def init_db() -> None:
             except Exception:
                 await session.rollback()
         
+        # Create all tables from models
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        
         print("✅ Database initialized successfully")
         print(f"   Driver: asyncpg")
         print(f"   Pool: NullPool (Docker-ready)")
