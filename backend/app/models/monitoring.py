@@ -71,6 +71,11 @@ class MetricSample(Base):
     network_packets_sent: Mapped[int] = mapped_column(Integer, nullable=False)
     network_packets_recv: Mapped[int] = mapped_column(Integer, nullable=False)
 
+    # WiFi
+    wifi_ssid: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    wifi_signal: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    wifi_connected: Mapped[bool] = mapped_column(default=False, nullable=False)
+
     # Database
     db_connections_total: Mapped[int] = mapped_column(Integer, nullable=False)
     db_connections_active: Mapped[int] = mapped_column(Integer, nullable=False)

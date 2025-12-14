@@ -53,6 +53,8 @@ class MonitoringOrchestrator:
             # Step 3: Store metrics sample
             net_stats = snapshot["network"]
             db_stats_info = snapshot["db_stats"]
+            wifi_info = net_stats.get("wifi", {})
+            
             sample = await MetricsHistoryService.store_metric_sample(
                 session,
                 cpu=snapshot["system"]["cpu_percent"],
@@ -70,6 +72,9 @@ class MonitoringOrchestrator:
                 gpu_percent=snapshot.get("gpu", {}).get("percent"),
                 gpu_memory_percent=snapshot.get("gpu", {}).get("memory_percent"),
                 gpu_temperature=snapshot.get("gpu", {}).get("temperature"),
+                wifi_ssid=wifi_info.get("ssid"),
+                wifi_signal=wifi_info.get("signal"),
+                wifi_connected=wifi_info.get("connected", False),
                 metadata={
                     "version": "1.0",
                     "phase": "2-analytics",

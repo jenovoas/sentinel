@@ -38,6 +38,9 @@ class MetricsHistoryService:
         gpu_percent: Optional[float] = None,
         gpu_memory_percent: Optional[float] = None,
         gpu_temperature: Optional[float] = None,
+        wifi_ssid: Optional[str] = None,
+        wifi_signal: Optional[int] = None,
+        wifi_connected: bool = False,
         metadata: Optional[dict] = None,
     ) -> MetricSample:
         """
@@ -60,6 +63,9 @@ class MetricsHistoryService:
             gpu_percent: GPU usage (optional)
             gpu_memory_percent: GPU memory usage (optional)
             gpu_temperature: GPU temperature (optional)
+            wifi_ssid: WiFi network name (optional)
+            wifi_signal: WiFi signal strength 0-100 (optional)
+            wifi_connected: WiFi connection status (optional)
             metadata: Additional metadata (e.g., app version, environment)
 
         Returns:
@@ -81,7 +87,10 @@ class MetricsHistoryService:
             db_connections_active=db_connections_active,
             db_locks=db_locks,
             db_size_bytes=db_size_bytes,
-            metadata=metadata or {},
+            wifi_ssid=wifi_ssid,
+            wifi_signal=wifi_signal,
+            wifi_connected=wifi_connected,
+            context_metadata=metadata or {},
         )
 
         session.add(sample)
