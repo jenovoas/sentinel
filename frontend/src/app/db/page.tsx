@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type DbStats = {
   connections_total: number;
@@ -42,6 +42,8 @@ export default function DatabasesPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
+  const [filterUser, setFilterUser] = useState<string>("");
+  const [sortByDuration, setSortByDuration] = useState<boolean>(true);
 
   useEffect(() => {
     const load = async () => {
@@ -64,6 +66,44 @@ export default function DatabasesPage() {
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-xl font-semibold text-gray-200">Bases de Datos</h1>
+      {/* Controles */}
+      <div className="flex flex-wrap items-center gap-3">
+        <input
+          value={filterUser}
+          onChange={(e) => setFilterUser(e.target.value)}
+          placeholder="Filtrar por usuario"
+          className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-200 placeholder:text-gray-500"
+        />
+        <label className="flex items-center gap-2 text-sm text-gray-300">
+          <input type="checkbox" checked={sortByDuration} onChange={(e) => setSortByDuration(e.target.checked)} />
+          Ordenar por duración
+        </label>
+        <button
+          onClick={() => {
+            if (!data) return;
+            const rows = data.db_activity.map((q) => ({
+              pid: q.pid,
+              user: q.user,
+              state: q.state,
+              wait_event: q.wait_event,
+              duration_seconds: q.duration_seconds,
+              query: q.query.replace(/\n/g, " "),
+            }));
+            const header = Object.keys(rows[0] || { pid: "", user: "", state: "", wait_event: "", duration_seconds: 0, query: "" });
+            const csv = [header.join(","), ...rows.map((r) => header.map((h) => String((r as any)[h]).replace(/","/g, "\"\,\"" )).join(","))].join("\n");
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `db_activity_${Date.now()}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+          }}
+          className="px-3 py-2 rounded-lg bg-cyan-500/20 text-cyan-200 border border-cyan-400/30 text-sm hover:bg-cyan-500/30"
+        >
+          Exportar CSV
+        </button>
+      </div>
       {loading && (
         <div className="rounded-xl border border-white/5 bg-white/5 p-4">Cargando…</div>
       )}
@@ -119,7 +159,11 @@ export default function DatabasesPage() {
               {data.db_activity.length === 0 && (
                 <p className="text-sm text-gray-500">Sin consultas activas</p>
               )}
-              {data.db_activity.map((q) => (
+              {data && (
+                (data.db_activity
+                  .filter((q) => (filterUser ? q.user.toLowerCase().includes(filterUser.toLowerCase()) : true))
+                  .sort((a, b) => (sortByDuration ? b.duration_seconds - a.duration_seconds : 0))
+                ).map((q) => (
                 <div key={q.pid} className="rounded-lg bg-white/5 p-3">
                   <div className="flex items-center justify-between">
                     <div className="text-xs text-gray-300">
@@ -132,7 +176,8 @@ export default function DatabasesPage() {
                   )}
                   <pre className="mt-2 whitespace-pre-wrap break-words text-xs text-gray-400">{q.query}</pre>
                 </div>
-              ))}
+              )))
+              }
             </div>
           </div>
         </div>
