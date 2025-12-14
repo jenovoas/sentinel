@@ -38,15 +38,18 @@ export const useAnalytics = () => {
 
   const hydrateHistory = useCallback(async () => {
     const samples = await AnalyticsAPI.getRecentMetrics(200);
-    // Optional: host latest sample
-    let hostLatest: any = null;
+    
+    // Cargar historial completo del host
+    let hostData: any[] = [];
     try {
-      const res = await fetch("/api/host-metrics", { cache: "no-store" });
+      const res = await fetch("/api/host-metrics?limit=100", { cache: "no-store" });
       const json = await res.json();
-      if (json?.ok) hostLatest = json.data;
+      if (json?.ok && json.history) {
+        hostData = json.history;
+      }
     } catch {}
 
-    if (samples.length === 0 && !hostLatest) return;
+    if (samples.length === 0 && hostData.length === 0) return;
 
     const sorted = [...samples].sort(
       (a, b) => new Date(a.sampled_at).getTime() - new Date(b.sampled_at).getTime()
@@ -60,16 +63,24 @@ export const useAnalytics = () => {
         }))
         .slice(-HISTORY_SIZE);
 
-    setHistory((prev: any) => ({
+    const hostToHistory = (selector: (s: any) => number): MetricHistory =>
+      hostData
+        .map((s) => ({
+          timestamp: new Date(s.timestamp).getTime(),
+          value: selector(s),
+        }))
+        .slice(-HISTORY_SIZE);
+
+    setHistory({
       cpu: toHistory((s) => s.cpu_percent),
       memory: toHistory((s) => s.memory_percent),
       gpu: toHistory((s) => s.gpu_percent ?? 0),
       network: toHistory((s) => normalizeNetworkPercent(s.network_bytes_sent, s.network_bytes_recv)),
-      hostCpu: hostLatest ? [{ timestamp: Date.now(), value: hostLatest.cpu_percent ?? 0 }] : prev.hostCpu,
-      hostMemory: hostLatest ? [{ timestamp: Date.now(), value: hostLatest.mem_percent ?? 0 }] : prev.hostMemory,
-      hostGpu: hostLatest ? [{ timestamp: Date.now(), value: hostLatest.gpu_percent ?? 0 }] : prev.hostGpu,
-      hostNetwork: hostLatest ? [{ timestamp: Date.now(), value: normalizeNetworkPercent(hostLatest.network?.net_bytes_sent ?? 0, hostLatest.network?.net_bytes_recv ?? 0) }] : prev.hostNetwork,
-    }));
+      hostCpu: hostToHistory((s) => s.cpu_percent),
+      hostMemory: hostToHistory((s) => s.mem_percent),
+      hostGpu: hostToHistory((s) => s.gpu_percent ?? 0),
+      hostNetwork: hostToHistory((s) => normalizeNetworkPercent(s.network?.net_bytes_sent ?? 0, s.network?.net_bytes_recv ?? 0)),
+    });
   }, [normalizeNetworkPercent]);
 
   const loadAnomalies = useCallback(async () => {
