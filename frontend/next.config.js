@@ -6,10 +6,10 @@ const nextConfig = {
   compress: true,
   async rewrites() {
     return {
-      beforeFiles: [
+      afterFiles: [
         {
-          source: '/api/:path*',
-          destination: 'http://backend:8000/api/:path*',
+          source: '/api/v1/:path*',
+          destination: 'http://backend:8000/api/v1/:path*',
         },
       ],
     };
