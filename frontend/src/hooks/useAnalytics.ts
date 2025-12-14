@@ -21,7 +21,11 @@ export const useAnalytics = () => {
     memory: [],
     gpu: [],
     network: [],
-  });
+    hostCpu: [],
+    hostMemory: [],
+    hostGpu: [],
+    hostNetwork: [],
+  } as any);
   const [anomalies, setAnomalies] = useState<AnomalyPoint[]>([]);
   const [storage, setStorage] = useState<StorageSummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -34,7 +38,15 @@ export const useAnalytics = () => {
 
   const hydrateHistory = useCallback(async () => {
     const samples = await AnalyticsAPI.getRecentMetrics(200);
-    if (samples.length === 0) return;
+    // Optional: host latest sample
+    let hostLatest: any = null;
+    try {
+      const res = await fetch("/api/host-metrics", { cache: "no-store" });
+      const json = await res.json();
+      if (json?.ok) hostLatest = json.data;
+    } catch {}
+
+    if (samples.length === 0 && !hostLatest) return;
 
     const sorted = [...samples].sort(
       (a, b) => new Date(a.sampled_at).getTime() - new Date(b.sampled_at).getTime()
@@ -48,12 +60,16 @@ export const useAnalytics = () => {
         }))
         .slice(-HISTORY_SIZE);
 
-    setHistory({
+    setHistory((prev: any) => ({
       cpu: toHistory((s) => s.cpu_percent),
       memory: toHistory((s) => s.memory_percent),
       gpu: toHistory((s) => s.gpu_percent ?? 0),
       network: toHistory((s) => normalizeNetworkPercent(s.network_bytes_sent, s.network_bytes_recv)),
-    });
+      hostCpu: hostLatest ? [{ timestamp: Date.now(), value: hostLatest.cpu_percent ?? 0 }] : prev.hostCpu,
+      hostMemory: hostLatest ? [{ timestamp: Date.now(), value: hostLatest.mem_percent ?? 0 }] : prev.hostMemory,
+      hostGpu: hostLatest ? [{ timestamp: Date.now(), value: hostLatest.gpu_percent ?? 0 }] : prev.hostGpu,
+      hostNetwork: hostLatest ? [{ timestamp: Date.now(), value: normalizeNetworkPercent(hostLatest.network?.net_bytes_sent ?? 0, hostLatest.network?.net_bytes_recv ?? 0) }] : prev.hostNetwork,
+    }));
   }, [normalizeNetworkPercent]);
 
   const loadAnomalies = useCallback(async () => {

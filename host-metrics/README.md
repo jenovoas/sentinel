@@ -1,28 +1,50 @@
 # Host Metrics Storage
 
-Estructura para guardar métricas en el host y generar análisis y reportes automáticos.
+Sistema de captura y análisis de métricas de la **máquina host** (CPU, memoria, GPU, red, WiFi). Los contenedores Docker son solo para desarrollo.
 
 ## Estructura
-- data/: archivos CSV/JSON con métricas crudas
+- data/: archivos CSV con métricas capturadas del host
 - scripts/: utilidades de ingesta, análisis y reporte
-- reports/: reportes generados (HTML/Markdown/CSV)
+- reports/: reportes generados (HTML/Markdown)
 - config.yaml: configuración de fuentes y etiquetas
 
+## Características
+- **Captura directa del host**: No depende de contenedores Docker
+- **Métricas del sistema**: CPU (top), memoria (free), GPU (nvidia-smi), red (/sys/class/net)
+- **WiFi**: SSID y señal via nmcli/iwconfig
+- **Formato CSV**: Compatible con análisis y visualización
+- **Automatización**: Scripts ejecutables via cron
+
 ## Uso rápido
-1. Ingesta (guardar una muestra):
+1. Ingesta (guardar una muestra del host):
 ```bash
 ./scripts/ingest.sh
 ```
 
-2. Análisis:
+2. Análisis con umbrales:
 ```bash
-python scripts/analyze.py --input data/metrics.csv --output reports/analysis.md
+python scripts/analyze.py --input data/metrics.csv --output reports/analysis.md \
+  --cpu-threshold 80 --mem-threshold 85 --wifi-threshold 30
 ```
 
 3. Reporte HTML:
 ```bash
 python scripts/report.py --input data/metrics.csv --output reports/report.html
 ```
+
+## Captura de métricas
+El script `ingest.sh` captura directamente del host:
+- **CPU**: Calcula uso desde `top -bn1`
+- **Memoria**: Porcentaje desde `free`
+- **GPU**: `nvidia-smi` (si disponible)
+- **Red**: Bytes enviados/recibidos desde `/sys/class/net/*`
+- **WiFi**: SSID y señal desde `nmcli` o `iwconfig`
+
+### Dependencias
+- Bash, awk, top, free
+- nmcli o iwconfig (para WiFi)
+- nvidia-smi (opcional, para GPU)
+- Python 3.8+ (para análisis)
 
 ## Formato de datos
 - metrics.csv: cabeceras
