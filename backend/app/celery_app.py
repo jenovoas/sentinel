@@ -29,6 +29,14 @@ celery_app.conf.update(
 from celery.schedules import crontab
 
 celery_app.conf.beat_schedule = {
+    "collect-metrics": {
+        "task": "app.tasks.monitoring.collect_metrics",
+        "schedule": 15,  # Every 15 seconds (align with dashboard refresh)
+    },
+    "cleanup-old-metrics": {
+        "task": "app.tasks.monitoring.cleanup_old_data",
+        "schedule": crontab(hour=0, minute=0),  # Daily at midnight
+    },
     "cleanup-old-audit-logs": {
         "task": "app.tasks.cleanup.cleanup_old_audit_logs",
         "schedule": crontab(hour=2, minute=0),  # Daily at 2 AM
@@ -45,3 +53,8 @@ def debug_task(self):
     """Debug task for testing Celery"""
     logger.info(f"Request: {self.request!r}")
     return "Debug task executed"
+
+
+# Auto-discover tasks from all app.tasks modules
+celery_app.autodiscover_tasks(["app.tasks"])
+logger.info("✅ Celery tasks auto-discovered")

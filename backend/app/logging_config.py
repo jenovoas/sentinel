@@ -48,7 +48,20 @@ LOGGING_CONFIG = {
 
 def setup_logging(level: str = "INFO"):
     """Setup logging configuration"""
-    os.makedirs("logs", exist_ok=True)
-    LOGGING_CONFIG["loggers"][""]["level"] = level
-    logging.config.dictConfig(LOGGING_CONFIG)
+    try:
+        # Ensure logs directory exists
+        os.makedirs("logs", exist_ok=True)
+    except (PermissionError, OSError):
+        # If we can't create logs dir, disable file handler
+        print("⚠️ Warning: Cannot write to logs directory, disabling file logging")
+        LOGGING_CONFIG["loggers"][""]["handlers"] = ["default"]
+
+    try:
+        LOGGING_CONFIG["loggers"][""]["level"] = level
+        logging.config.dictConfig(LOGGING_CONFIG)
+    except ValueError as e:
+        # If logging config fails, fall back to basic setup
+        print(f"⚠️ Warning: Logging config failed: {e}, using basic logging")
+        logging.basicConfig(level=getattr(logging, level, logging.INFO))
+
     return logging.getLogger(__name__)

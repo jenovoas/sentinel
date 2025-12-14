@@ -32,7 +32,7 @@ from fastapi.responses import JSONResponse
 from app.config import get_settings, get_allowed_origins
 from app.logging_config import setup_logging
 from app.database import init_db, close_db, check_db_connection
-from app.routers import health, users, tenants, dashboard
+from app.routers import health, users, tenants, dashboard, analytics
 
 settings = get_settings()
 logger = setup_logging(settings.log_level)
@@ -162,6 +162,7 @@ Each router handles a specific domain of functionality.
 """
 
 app.include_router(health.router, tags=["health"])
+app.include_router(analytics.router, tags=["analytics"])
 app.include_router(users.router, tags=["users"])
 app.include_router(tenants.router, tags=["tenants"])
 app.include_router(dashboard.router, tags=["dashboard"])
