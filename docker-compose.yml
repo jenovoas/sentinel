@@ -137,6 +137,8 @@ services:
     volumes:
       - ./frontend/src:/app/src
       - ./frontend/public:/app/public
+      - ./frontend/next.config.js:/app/next.config.js
+      - ./host-metrics:/app/host-metrics:ro
     networks:
       - sentinel_network
     command: npm run dev
