@@ -10,6 +10,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAnalytics, useDetailModal } from "@/hooks/useAnalytics";
 import { StorageCard } from "@/components/StorageCard";
 import { DetailModal } from "@/components/DetailModal";
@@ -177,6 +178,7 @@ const Pill = ({ status }: { status: "healthy" | "unhealthy" }) => {
 // ============ Main Dashboard Component ============
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [state, setState] = useState<FetchState>({ loading: true });
   const [notes, setNotes] = useState<NotesState>({ text: "" });
   const { history, anomalies, storage, normalizeNetworkPercent, anomaliesByMetric } = useAnalytics();
@@ -370,7 +372,7 @@ export default function DashboardPage() {
             label="Base de datos (tamaño)"
             value={formatBytes(storage?.db_size_bytes ?? 0)}
             hint={`Estado: ${storage?.status === "healthy" ? "✓ Datos fluyen" : "⚠ Sin datos"}`}
-            onClick={() => open("database")}
+            onClick={() => router.push("/db")}
             color={{
               bg: "emerald",
               border: "hover:border-emerald-400/50",
