@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { CognitiveNavBar } from '@/components/CognitiveNavBar';
 
 export const metadata: Metadata = {
   title: 'Sentinel - Multi-tenant SaaS Platform',
@@ -14,6 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-gradient-to-br from-slate-900 to-slate-800 text-gray-100">
+        <CognitiveNavBar userEmail="dev@sentinel.local" />
         <div className="min-h-screen">
           {children}
         </div>
