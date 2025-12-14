@@ -14,6 +14,7 @@ import { useAnalytics, useDetailModal } from "@/hooks/useAnalytics";
 import { StorageCard } from "@/components/StorageCard";
 import { DetailModal } from "@/components/DetailModal";
 import { NetworkCard } from "@/components/NetworkCard";
+import { useNetworkInfo } from "@/hooks/useNetworkInfo";
 
 const API_PATH = "/api/v1/dashboard/status";
 
@@ -182,6 +183,7 @@ export default function DashboardPage() {
   const { modal, open, close } = useDetailModal();
 
   const API_REFRESH_MS = 15000;
+    const clientNetwork = useNetworkInfo();
 
   const load = async () => {
     try {

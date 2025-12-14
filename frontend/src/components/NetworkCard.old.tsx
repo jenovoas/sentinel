@@ -1,14 +1,12 @@
 "use client";
 
 /**
- * NetworkCard Component (Enhanced)
- * Displays network statistics with WiFi info
- * Supports both server-side (Docker) and client-side (Browser API) WiFi detection
- * Uses client WiFi when available (more accurate)
+ * NetworkCard Component
+ * Displays network statistics with integrated WiFi info
+ * Cognitive design: Visual hierarchy with WiFi as primary detail
  */
 
 import React from "react";
-import type { ClientNetworkInfo } from "@/hooks/useNetworkInfo";
 
 export interface NetworkInfo {
   net_bytes_sent: number;
@@ -24,7 +22,6 @@ export interface NetworkInfo {
 
 interface NetworkCardProps {
   network?: NetworkInfo;
-  clientNetwork?: ClientNetworkInfo;
 }
 
 const formatBytes = (bytes: number): string => {
@@ -35,11 +32,8 @@ const formatBytes = (bytes: number): string => {
   return `${value.toFixed(value >= 10 ? 0 : 1)} ${units[i]}`;
 };
 
-export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork }) => {
-  // Prefer client WiFi info (browser API) over server info (Docker container)
-  const effectiveWifi = clientNetwork?.wifi?.connected ? clientNetwork.wifi : network?.wifi;
-
-  if (!network && !clientNetwork) {
+export const NetworkCard: React.FC<NetworkCardProps> = ({ network }) => {
+  if (!network) {
     return (
       <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-4 shadow-[0_20px_60px_-30px_rgba(249,115,22,0.2)] hover:shadow-[0_20px_60px_-20px_rgba(249,115,22,0.3)] transition-all duration-300">
         <p className="text-sm text-gray-400">Sin datos de red</p>
@@ -47,17 +41,16 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
     );
   }
 
-  const totalBytes = (network?.net_bytes_sent ?? 0) + (network?.net_bytes_recv ?? 0);
+  const wifi = network.wifi;
+  const totalBytes = network.net_bytes_sent + network.net_bytes_recv;
   const totalGB = totalBytes / (1024 * 1024 * 1024);
 
   // WiFi signal color psychology
   const getWiFiSignalColor = () => {
-    if (!effectiveWifi?.connected)
-      return { color: "text-gray-500", bg: "bg-gray-500/10", label: "Desconectado" };
-    const signal = effectiveWifi.signal ?? effectiveWifi.signalStrength ?? 0;
-    if (signal >= 75) return { color: "text-emerald-400", bg: "bg-emerald-400/10", label: "Excelente" };
-    if (signal >= 50) return { color: "text-cyan-400", bg: "bg-cyan-400/10", label: "Bueno" };
-    if (signal >= 25) return { color: "text-amber-400", bg: "bg-amber-400/10", label: "Moderado" };
+    if (!wifi?.connected) return { color: "text-gray-500", bg: "bg-gray-500/10", label: "Desconectado" };
+    if (wifi.signal >= 75) return { color: "text-emerald-400", bg: "bg-emerald-400/10", label: "Excelente" };
+    if (wifi.signal >= 50) return { color: "text-cyan-400", bg: "bg-cyan-400/10", label: "Bueno" };
+    if (wifi.signal >= 25) return { color: "text-amber-400", bg: "bg-amber-400/10", label: "Moderado" };
     return { color: "text-rose-400", bg: "bg-rose-400/10", label: "Débil" };
   };
 
@@ -65,7 +58,7 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
 
   // Render WiFi signal bars
   const renderSignalBars = () => {
-    if (!effectiveWifi?.connected) {
+    if (!wifi?.connected) {
       return (
         <div className="flex items-center gap-1">
           {[1, 2, 3, 4].map((i) => (
@@ -78,8 +71,7 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
       );
     }
 
-    const signal = (effectiveWifi.signal ?? effectiveWifi.signalStrength ?? 0) as number;
-    const bars = Math.ceil((signal / 100) * 4);
+    const bars = Math.ceil((wifi.signal / 100) * 4);
     return (
       <div className="flex items-end gap-1">
         {[1, 2, 3, 4].map((i) => (
@@ -113,37 +105,27 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
       </div>
 
       {/* Network Stats Grid */}
-      {network && (
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="bg-white/5 rounded-lg p-2.5 hover:bg-white/10 transition-colors">
-            <p className="text-xs text-gray-400 mb-1">↑ Enviados</p>
-            <p className="text-sm font-mono text-orange-300">
-              {formatBytes(network.net_bytes_sent)}
-            </p>
-          </div>
-          <div className="bg-white/5 rounded-lg p-2.5 hover:bg-white/10 transition-colors">
-            <p className="text-xs text-gray-400 mb-1">↓ Recibidos</p>
-            <p className="text-sm font-mono text-orange-300">
-              {formatBytes(network.net_bytes_recv)}
-            </p>
-          </div>
-          <div className="bg-white/5 rounded-lg p-2.5 hover:bg-white/10 transition-colors">
-            <p className="text-xs text-gray-400 mb-1">📤 Paquetes</p>
-            <p className="text-sm font-mono text-orange-300">
-              {(network.net_packets_sent / 1000).toFixed(1)}k
-            </p>
-          </div>
-          <div className="bg-white/5 rounded-lg p-2.5 hover:bg-white/10 transition-colors">
-            <p className="text-xs text-gray-400 mb-1">📥 Paquetes</p>
-            <p className="text-sm font-mono text-orange-300">
-              {(network.net_packets_recv / 1000).toFixed(1)}k
-            </p>
-          </div>
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="bg-white/5 rounded-lg p-2.5 hover:bg-white/10 transition-colors">
+          <p className="text-xs text-gray-400 mb-1">↑ Enviados</p>
+          <p className="text-sm font-mono text-orange-300">{formatBytes(network.net_bytes_sent)}</p>
         </div>
-      )}
+        <div className="bg-white/5 rounded-lg p-2.5 hover:bg-white/10 transition-colors">
+          <p className="text-xs text-gray-400 mb-1">↓ Recibidos</p>
+          <p className="text-sm font-mono text-orange-300">{formatBytes(network.net_bytes_recv)}</p>
+        </div>
+        <div className="bg-white/5 rounded-lg p-2.5 hover:bg-white/10 transition-colors">
+          <p className="text-xs text-gray-400 mb-1">📤 Paquetes</p>
+          <p className="text-sm font-mono text-orange-300">{(network.net_packets_sent / 1000).toFixed(1)}k</p>
+        </div>
+        <div className="bg-white/5 rounded-lg p-2.5 hover:bg-white/10 transition-colors">
+          <p className="text-xs text-gray-400 mb-1">📥 Paquetes</p>
+          <p className="text-sm font-mono text-orange-300">{(network.net_packets_recv / 1000).toFixed(1)}k</p>
+        </div>
+      </div>
 
       {/* WiFi Section */}
-      {effectiveWifi && (
+      {wifi && (
         <div className={`rounded-lg p-3 border border-white/5 ${wifiState.bg}`}>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
@@ -151,27 +133,18 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
                 <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z" />
               </svg>
               <span className="text-xs font-medium text-gray-300">
-                {effectiveWifi.connected
-                  ? effectiveWifi.ssid || effectiveWifi.frequency ? "Conectado" : "Conectado"
-                  : "Desconectado"}
+                {wifi.connected ? wifi.ssid || "Conectado" : "Desconectado"}
               </span>
             </div>
             {renderSignalBars()}
           </div>
 
-          {effectiveWifi.connected && (
+          {wifi.connected && (
             <div className="flex items-center justify-between text-xs">
               <span className={`${wifiState.color} font-semibold`}>{wifiState.label}</span>
-              <span className="text-gray-400">
-                {(effectiveWifi.signal ?? effectiveWifi.signalStrength ?? 0)}%
-              </span>
+              <span className="text-gray-400">{wifi.signal}%</span>
             </div>
           )}
-
-          {/* Show source of WiFi info */}
-          <p className="text-xs text-gray-500 mt-2">
-            {clientNetwork?.wifi?.connected ? "WiFi del navegador" : "WiFi del servidor"}
-          </p>
         </div>
       )}
     </div>
