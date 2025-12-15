@@ -21,12 +21,12 @@ export default function AIPlaygroundPage() {
     }>>([]);
 
     const examplePrompts = [
-        "Why is CPU usage high right now?",
-        "Analyze the memory spike at 2 PM",
-        "What caused the latency increase?",
-        "Recommend optimizations for database performance",
-        "Explain the recent anomaly detection",
-        "What are common causes of memory leaks in Node.js?",
+        "¿Qué es una anomalía de CPU?",
+        "Explica qué es Prometheus en 10 palabras",
+        "¿Cómo optimizar una base de datos?",
+        "¿Qué causa un memory leak?",
+        "Explica qué es latencia",
+        "¿Cómo funciona Redis?",
     ];
 
     const handleQuery = async () => {
@@ -61,12 +61,18 @@ export default function AIPlaygroundPage() {
                     },
                     ...history,
                 ]);
+            } else if (data.error) {
+                // Show backend error
+                setResponse(`Error: ${data.error}`);
+            } else if (data.detail) {
+                // Show FastAPI error detail
+                setResponse(`Error: ${data.detail}`);
             } else {
                 setResponse("Error: No response from AI");
             }
         } catch (error) {
             console.error("AI query error:", error);
-            setResponse("Error: Failed to connect to AI service");
+            setResponse("Error: Failed to connect to AI service. Please try again.");
         } finally {
             setLoading(false);
         }

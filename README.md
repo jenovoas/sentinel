@@ -1,6 +1,29 @@
-# 🛡️ Sentinel - Multi-Tenant SaaS Platform with AI & Observability
+# 🛡️ Sentinel - Enterprise Observability & Security Platform
 
-A production-ready, fully-containerized multi-tenant SaaS platform with integrated AI capabilities, comprehensive observability, and automated workflows.
+**Modern observability platform with AI-powered insights and kernel-level security monitoring**
+
+Sentinel combines traditional observability (metrics, logs, traces) with **defense-in-depth security** that operates at the Linux kernel level. Unlike tools that only monitor application-layer events, Sentinel provides real-time exploit detection through auditd syscall monitoring.
+
+---
+
+## 🔒 **What Makes Sentinel Different**
+
+### Kernel-Level Security Monitoring (Auditd Watchdog)
+
+> **"Defense-in-depth security that operates below the application layer"**
+
+Sentinel monitors critical Linux syscalls (`execve`, `open`, `ptrace`, `chmod`) at the **kernel level** using auditd. This provides:
+
+- ✅ **Real-time exploit detection** - Catches privilege escalation attempts before they reach your application
+- ✅ **Suspicious execution monitoring** - Detects unauthorized process execution and code injection
+- ✅ **File access auditing** - Tracks sensitive file access patterns
+- ✅ **AI-powered analysis** - Automatic threat assessment and recommendations
+
+**Why this matters**: Most observability tools (Grafana, Datadog, New Relic) focus on application metrics and logs. Sentinel goes deeper, monitoring at the kernel level where exploits actually happen.
+
+**Enterprise value**: This is the same level of security monitoring typically requiring specialized security products or significant manual configuration. Sentinel provides it out-of-the-box.
+
+---
 
 [![Architecture](https://img.shields.io/badge/Architecture-Microservices-blue)](docs/)
 [![AI](https://img.shields.io/badge/AI-Ollama%20%2B%20GPU-green)](docs/AI_INTEGRATION_COMPLETE.md)
