@@ -1,10 +1,23 @@
-import type { Metadata } from 'next';
-import './globals.css';
-import { CognitiveNavBar } from '@/components/CognitiveNavBar';
+/**
+ * Root Layout - Applies to all pages
+ * 
+ * This layout wraps all pages and provides:
+ * - Global navigation sidebar
+ * - Consistent styling
+ * - Font configuration
+ * - Metadata
+ */
+
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { Navigation } from "@/components/Navigation";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Sentinel - Multi-tenant SaaS Platform',
-  description: 'Secure, scalable, and modern SaaS platform',
+  title: "Sentinel - Control Tower",
+  description: "Enterprise observability and security platform with AI-powered insights",
 };
 
 export default function RootLayout({
@@ -14,11 +27,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-gradient-to-br from-slate-900 to-slate-800 text-gray-100">
-        <CognitiveNavBar userEmail="dev@sentinel.local" />
-        <div className="min-h-screen">
-          {children}
-        </div>
+      <body className={inter.className}>
+        {/* Global Navigation Sidebar */}
+        <Navigation />
+
+        {/* Page Content */}
+        <main>{children}</main>
       </body>
     </html>
   );

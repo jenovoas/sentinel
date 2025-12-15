@@ -1,0 +1,138 @@
+# PostgreSQL High Availability Configuration
+# Patroni-based setup for automatic failover
+
+version: '3.8'
+
+services:
+  # ============================================================================
+  # ETCD - Distributed Configuration Store for Patroni
+  # ============================================================================
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.9
+    container_name: sentinel-etcd
+    environment:
+      - ETCD_NAME=etcd1
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://etcd:2380
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+      - ETCD_INITIAL_CLUSTER=etcd1=http://etcd:2380
+      - ETCD_INITIAL_CLUSTER_STATE=new
+      - ETCD_INITIAL_CLUSTER_TOKEN=etcd-cluster
+    volumes:
+      - etcd_data:/etcd-data
+    networks:
+      - sentinel-network
+    healthcheck:
+      test: [ "CMD", "etcdctl", "endpoint", "health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ============================================================================
+  # PostgreSQL Primary with Patroni
+  # ============================================================================
+  postgres-primary:
+    image: postgres:14-alpine
+    container_name: sentinel-postgres-primary
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-sentinel}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-darkfenix}
+      - POSTGRES_DB=${POSTGRES_DB:-sentinel}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      # Replication settings
+      - POSTGRES_REPLICATION_USER=replicator
+      - POSTGRES_REPLICATION_PASSWORD=${REPLICATION_PASSWORD:-repl_darkfenix}
+    volumes:
+      - postgres_primary_data:/var/lib/postgresql/data
+      - ./postgres/patroni-primary.yml:/etc/patroni/patroni.yml:ro
+      - ./postgres/init-replication.sh:/docker-entrypoint-initdb.d/init-replication.sh:ro
+    command: |
+      bash -c "
+        # Install Patroni
+        apt-get update && apt-get install -y python3-pip python3-psycopg2
+        pip3 install patroni[etcd]
+        
+        # Start Patroni (manages PostgreSQL)
+        patroni /etc/patroni/patroni.yml
+      "
+    networks:
+      - sentinel-network
+    depends_on:
+      - etcd
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U sentinel" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================================
+  # PostgreSQL Replica (Standby)
+  # ============================================================================
+  postgres-replica:
+    image: postgres:14-alpine
+    container_name: sentinel-postgres-replica
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-sentinel}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-darkfenix}
+      - POSTGRES_DB=${POSTGRES_DB:-sentinel}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_REPLICATION_USER=replicator
+      - POSTGRES_REPLICATION_PASSWORD=${REPLICATION_PASSWORD:-repl_darkfenix}
+    volumes:
+      - postgres_replica_data:/var/lib/postgresql/data
+      - ./postgres/patroni-replica.yml:/etc/patroni/patroni.yml:ro
+    command: |
+      bash -c "
+        # Install Patroni
+        apt-get update && apt-get install -y python3-pip python3-psycopg2
+        pip3 install patroni[etcd]
+        
+        # Start Patroni (manages PostgreSQL)
+        patroni /etc/patroni/patroni.yml
+      "
+    networks:
+      - sentinel-network
+    depends_on:
+      - etcd
+      - postgres-primary
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U sentinel" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================================
+  # HAProxy - Load Balancer for PostgreSQL
+  # ============================================================================
+  postgres-haproxy:
+    image: haproxy:2.8-alpine
+    container_name: sentinel-postgres-haproxy
+    volumes:
+      - ./postgres/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    ports:
+      - "5432:5432" # Primary (read-write)
+      - "5433:5433" # Replica (read-only)
+      - "7000:7000" # HAProxy stats
+    networks:
+      - sentinel-network
+    depends_on:
+      - postgres-primary
+      - postgres-replica
+    healthcheck:
+      test: [ "CMD", "haproxy", "-c", "-f", "/usr/local/etc/haproxy/haproxy.cfg" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  etcd_data:
+    driver: local
+  postgres_primary_data:
+    driver: local
+  postgres_replica_data:
+    driver: local
+
+networks:
+  sentinel-network:
+    external: true
