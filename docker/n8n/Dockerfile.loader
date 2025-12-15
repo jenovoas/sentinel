@@ -1,0 +1,16 @@
+# Dockerfile para n8n-loader (Estrategia 3: Auto-loader)
+# Base: busybox con curl incluido
+
+FROM alpine:3.20
+
+# Instalar curl y ca-certificates para HTTPS
+RUN apk add --no-cache curl ca-certificates
+
+# Copiar el script de auto-load dentro del contenedor
+COPY auto-load-workflows.sh /auto-load.sh
+
+# Hacer el script ejecutable (dentro del contenedor)
+RUN chmod +x /auto-load.sh
+
+# Entrypoint que ejecuta el script
+ENTRYPOINT ["/bin/sh", "/auto-load.sh"]

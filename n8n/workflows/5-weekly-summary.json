@@ -1,0 +1,139 @@
+{
+    "name": "Weekly Summary Report",
+    "nodes": [
+        {
+            "parameters": {
+                "rule": {
+                    "interval": [
+                        {
+                            "field": "cronExpression",
+                            "expression": "0 10 * * 1"
+                        }
+                    ]
+                }
+            },
+            "name": "Every Monday 10 AM",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1,
+            "position": [
+                250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "url": "http://backend:8000/api/v1/analytics/statistics?hours=168",
+                "options": {}
+            },
+            "name": "Get 7 Day Statistics",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "url": "http://backend:8000/api/v1/analytics/anomalies?hours=168",
+                "options": {}
+            },
+            "name": "Get Week Anomalies",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                450,
+                450
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "const stats = $input.all()[0].json;\nconst anomalies = $input.all()[1].json;\n\nconst cpuAvg = stats.cpu?.mean?.toFixed(1) || 'N/A';\nconst cpuMax = stats.cpu?.max?.toFixed(1) || 'N/A';\nconst cpuMin = stats.cpu?.min?.toFixed(1) || 'N/A';\nconst memAvg = stats.memory?.mean?.toFixed(1) || 'N/A';\nconst memMax = stats.memory?.max?.toFixed(1) || 'N/A';\nconst anomalyCount = anomalies.count || 0;\nconst criticalCount = anomalies.anomalies?.filter(a => a.severity === 'critical').length || 0;\n\nconst report = {\n  text: `📅 *Sentinel Weekly Summary*\\n\\n` +\n        `*Period:* Last 7 days\\n` +\n        `*Week ending:* ${new Date().toISOString().split('T')[0]}\\n\\n` +\n        `*CPU Performance:*\\n` +\n        `  • Average: ${cpuAvg}%\\n` +\n        `  • Peak: ${cpuMax}%\\n` +\n        `  • Minimum: ${cpuMin}%\\n\\n` +\n        `*Memory Performance:*\\n` +\n        `  • Average: ${memAvg}%\\n` +\n        `  • Peak: ${memMax}%\\n\\n` +\n        `*Anomalies Summary:*\\n` +\n        `  • Total: ${anomalyCount}\\n` +\n        `  • Critical: ${criticalCount}\\n\\n` +\n        `*System Health:* ${criticalCount === 0 ? '✅ Excellent' : criticalCount < 5 ? '🟡 Good' : '🔴 Needs Attention'}\\n\\n` +\n        `_View detailed analytics: http://localhost:3001_`\n};\n\nreturn { json: report };"
+            },
+            "name": "Build Weekly Report",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                650,
+                375
+            ]
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $env.SLACK_WEBHOOK_URL }}",
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "text",
+                            "value": "={{ $json.text }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "name": "Send to Slack",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                850,
+                375
+            ]
+        }
+    ],
+    "connections": {
+        "Every Monday 10 AM": {
+            "main": [
+                [
+                    {
+                        "node": "Get 7 Day Statistics",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Get Week Anomalies",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get 7 Day Statistics": {
+            "main": [
+                [
+                    {
+                        "node": "Build Weekly Report",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Week Anomalies": {
+            "main": [
+                [
+                    {
+                        "node": "Build Weekly Report",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Build Weekly Report": {
+            "main": [
+                [
+                    {
+                        "node": "Send to Slack",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1"
+    }
+}
