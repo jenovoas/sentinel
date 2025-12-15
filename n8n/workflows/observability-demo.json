@@ -1,0 +1,153 @@
+{
+  "name": "Observability Mini Demo",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "demo/observability",
+        "options": {
+          "responseCode": 200,
+          "responseData": "lastNode"
+        }
+      },
+      "id": "webhook_demo",
+      "name": "Webhook Demo",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://prometheus:9090/api/v1/query",
+        "responseFormat": "json",
+        "options": {
+          "useQueryString": true
+        },
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "100 - (avg(irate(node_cpu_seconds_total{mode=\\\"idle\\\"}[5m])) * 100)"
+            }
+          ]
+        }
+      },
+      "id": "prom_demo",
+      "name": "Prometheus CPU",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [560, 180]
+    },
+    {
+      "parameters": {
+        "url": "http://loki:3100/loki/api/v1/query_range",
+        "responseFormat": "json",
+        "options": {
+          "useQueryString": true
+        },
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "{job=\\\"systemd-journal\\\", level=~\\\"error|critical\\\"}"
+            },
+            {
+              "name": "limit",
+              "value": "3"
+            },
+            {
+              "name": "start",
+              "value": "{{(Date.now() - 10*60*1000)}}"
+            },
+            {
+              "name": "end",
+              "value": "{{Date.now()}}"
+            }
+          ]
+        }
+      },
+      "id": "loki_demo",
+      "name": "Loki Recent Errors",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [560, 420]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Build a friendly summary for the demo\nconst cpuData = items[0].json.data?.result?.[0]?.value || [null, null];\nconst cpuUsage = Number(cpuData[1] || 0).toFixed(2);\nconst lokiItems = $items('Loki Recent Errors', 0, 0).json.data?.result || [];\nconst logLines = lokiItems.flatMap(r => (r.values || []).map(v => v[1]));\nreturn [{ json: {\n  title: 'Sentinel observability demo',\n  cpu_usage_pct: cpuUsage,\n  sample_errors: logLines.slice(0, 3),\n  tips: [\n    'Edit this flow en n8n y dispara el webhook',\n    'Ajusta el query PromQL o LogQL para tus servicios',\n    'Conecta Slack/Email si quieres alertas en vivo'\n  ],\n  timestamp: new Date().toISOString()\n}}];"
+      },
+      "id": "format_demo",
+      "name": "Format Demo Response",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [860, 300]
+    },
+    {
+      "parameters": {
+        "statusCode": 200,
+        "responseMode": "lastNode"
+      },
+      "id": "respond_demo",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1160, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Demo": {
+      "main": [
+        [
+          {
+            "node": "Prometheus CPU",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Loki Recent Errors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prometheus CPU": {
+      "main": [
+        [
+          {
+            "node": "Format Demo Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loki Recent Errors": {
+      "main": [
+        [
+          {
+            "node": "Format Demo Response",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Format Demo Response": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "id": "observability-demo"
+}

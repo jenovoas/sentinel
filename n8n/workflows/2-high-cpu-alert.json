@@ -1,0 +1,141 @@
+{
+    "name": "High CPU Alert",
+    "nodes": [
+        {
+            "parameters": {
+                "rule": {
+                    "interval": [
+                        {
+                            "field": "seconds",
+                            "secondsInterval": 300
+                        }
+                    ]
+                }
+            },
+            "name": "Check Every 5 Minutes",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1,
+            "position": [
+                250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "url": "http://backend:8000/api/v1/analytics/metrics/recent?limit=1",
+                "options": {}
+            },
+            "name": "Get Current Metrics",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "number": [
+                        {
+                            "value1": "={{ $json.samples[0].cpu_percent }}",
+                            "operation": "larger",
+                            "value2": 80
+                        }
+                    ]
+                }
+            },
+            "name": "CPU > 80%?",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 1,
+            "position": [
+                650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "const sample = $input.first().json.samples[0];\nconst cpu = sample.cpu_percent.toFixed(1);\nconst memory = sample.memory_percent.toFixed(1);\nconst timestamp = new Date(sample.sampled_at).toLocaleString();\n\nconst alert = {\n  text: `🚨 *HIGH CPU ALERT*\\n\\n` +\n        `*CPU Usage:* ${cpu}% (Threshold: 80%)\\n` +\n        `*Memory Usage:* ${memory}%\\n` +\n        `*Time:* ${timestamp}\\n\\n` +\n        `⚠️ *Action Required*\\n` +\n        `Check Grafana dashboard for details\\n` +\n        `http://localhost:3001`\n};\n\nreturn { json: alert };"
+            },
+            "name": "Build Alert",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                850,
+                200
+            ]
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $env.SLACK_WEBHOOK_URL }}",
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "text",
+                            "value": "={{ $json.text }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "name": "Send Alert to Slack",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                1050,
+                200
+            ]
+        }
+    ],
+    "connections": {
+        "Check Every 5 Minutes": {
+            "main": [
+                [
+                    {
+                        "node": "Get Current Metrics",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Current Metrics": {
+            "main": [
+                [
+                    {
+                        "node": "CPU > 80%?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "CPU > 80%?": {
+            "main": [
+                [
+                    {
+                        "node": "Build Alert",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Build Alert": {
+            "main": [
+                [
+                    {
+                        "node": "Send Alert to Slack",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1"
+    }
+}

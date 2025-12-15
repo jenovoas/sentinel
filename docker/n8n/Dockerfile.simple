@@ -1,0 +1,17 @@
+# Dockerfile personalizado para n8n con workflows preloaded
+# ESTRATEGIA EDUCATIVA: Usar docker-compose command para ejecutar script
+FROM n8nio/n8n:latest
+
+# Copiar el script de inicialización
+COPY --chmod=755 init-workflows.sh /init-workflows.sh
+
+# Copiar workflows JSON que serán inyectados
+COPY workflows/ /tmp/workflows/
+
+# NOTA EDUCATIVA:
+# En lugar de modificar el ENTRYPOINT (complejo),
+# usamos docker-compose para ejecutar el script DESPUÉS
+# de que n8n ya esté corriendo.
+# 
+# Comando en docker-compose:
+# command: sh -c "n8n start & /init-workflows.sh && wait"

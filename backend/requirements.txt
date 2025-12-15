@@ -6,6 +6,9 @@
 # Web Framework
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
+prometheus-fastapi-instrumentator==5.11.2
+watchdog==4.0.0
+requests==2.32.3
 
 # ============================================================================
 # DATABASE (SQLAlchemy 2.0 with Async Support)
@@ -53,7 +56,9 @@ passlib[bcrypt]==1.7.4
 # Load environment variables from .env files
 python-dotenv==1.0.0
 # HTTP client for API requests
-requests==2.31.0
+requests==2.32.3
+# Async HTTP client for AI integration
+httpx==0.27.0
 # Form data parsing for FastAPI
 python-multipart==0.0.6
 # Email validation
@@ -74,3 +79,4 @@ nvidia-ml-py3==7.352.0
 # 3. All async operations use asyncio internally
 # 4. Compatible with Python 3.8+
 # ============================================================================
+httpx==0.27.0

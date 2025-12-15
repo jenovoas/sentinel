@@ -29,6 +29,7 @@ ChartJS.register(
 export default function AnalyticsPage() {
   const { history, anomalies, storage, loading, anomaliesByMetric } = useAnalytics();
   const [hostHistory, setHostHistory] = useState<any[]>([]);
+  const [systemLogs, setSystemLogs] = useState<any>({ logs: [], summary: null });
 
   // Cargar historial completo del host
   useEffect(() => {
@@ -43,6 +44,22 @@ export default function AnalyticsPage() {
     };
     fetchHostHistory();
     const id = setInterval(fetchHostHistory, 60000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Cargar logs del sistema
+  useEffect(() => {
+    const fetchSystemLogs = async () => {
+      try {
+        const res = await fetch("/api/system-logs?limit=50", { cache: "no-store" });
+        const json = await res.json();
+        if (json?.ok) {
+          setSystemLogs({ logs: json.logs, summary: json.summary });
+        }
+      } catch {}
+    };
+    fetchSystemLogs();
+    const id = setInterval(fetchSystemLogs, 60000);
     return () => clearInterval(id);
   }, []);
 
@@ -288,7 +305,7 @@ export default function AnalyticsPage() {
             {anomalies.length === 0 ? (
               <p className="text-gray-400 text-sm">No se detectaron anomalías en las últimas 24h</p>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-2 max-h-64 overflow-y-auto">
                 {anomalies.slice(0, 5).map((a, i) => (
                   <div key={i} className="bg-white/5 rounded-lg p-3 border border-rose-500/20">
                     <div className="flex items-center justify-between mb-1">
@@ -297,13 +314,69 @@ export default function AnalyticsPage() {
                         {new Date(a.timestamp).toLocaleString('es')}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-400">Valor: {a.value.toFixed(2)}%</p>
+                    <p className="text-xs text-gray-400">
+                      Valor: {a.value != null ? a.value.toFixed(2) : 'N/A'}%
+                    </p>
                   </div>
                 ))}
               </div>
             )}
           </div>
 
+          <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-6">
+            <h3 className="text-xl font-semibold text-white mb-4">System Logs</h3>
+            {systemLogs.summary && (
+              <div className="grid grid-cols-3 gap-2 mb-4">
+                <div className="bg-rose-500/10 border border-rose-500/20 rounded-lg p-2 text-center">
+                  <p className="text-2xl font-bold text-rose-400">{systemLogs.summary.critical_count}</p>
+                  <p className="text-xs text-gray-400">Critical</p>
+                </div>
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-2 text-center">
+                  <p className="text-2xl font-bold text-amber-400">{systemLogs.summary.error_count}</p>
+                  <p className="text-xs text-gray-400">Errors</p>
+                </div>
+                <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-2 text-center">
+                  <p className="text-2xl font-bold text-orange-400">{systemLogs.summary.warning_count}</p>
+                  <p className="text-xs text-gray-400">Warnings</p>
+                </div>
+              </div>
+            )}
+            {systemLogs.logs.length === 0 ? (
+              <p className="text-gray-400 text-sm">Sin logs recientes</p>
+            ) : (
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {systemLogs.logs.slice(0, 10).map((log: any, i: number) => (
+                  <div 
+                    key={i} 
+                    className={`bg-white/5 rounded-lg p-2 border text-xs ${
+                      log.level === 'CRITICAL' ? 'border-rose-500/30' :
+                      log.level === 'ERROR' ? 'border-amber-500/30' :
+                      'border-orange-500/20'
+                    }`}
+                  >
+                    <div className="flex items-start gap-2 mb-1">
+                      <span className={`font-semibold whitespace-nowrap ${
+                        log.level === 'CRITICAL' ? 'text-rose-400' :
+                        log.level === 'ERROR' ? 'text-amber-400' :
+                        'text-orange-400'
+                      }`}>
+                        {log.level}
+                      </span>
+                      <span className="text-gray-500 text-xs whitespace-nowrap">
+                        {new Date(log.timestamp).toLocaleTimeString('es')}
+                      </span>
+                      <span className="text-cyan-400 text-xs">{log.unit}</span>
+                    </div>
+                    <p className="text-gray-300 text-xs truncate">{log.message}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Storage Summary */}
+        <section className="mt-6">
           <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-6">
             <h3 className="text-xl font-semibold text-white mb-4">Storage Summary</h3>
             {storage ? (
