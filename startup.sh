@@ -1,102 +1,194 @@
 #!/bin/bash
+set -e
 
-echo "🚀 Sentinel Startup Verification"
-echo "=================================="
+# Sentinel - One-Command Startup Script
+# Starts all services in the correct order with health checks
+
+echo "🚀 Starting Sentinel Platform..."
 echo ""
 
 # Colors for output
 GREEN='\033[0;32m'
-RED='\033[0;31m'
 YELLOW='\033[1;33m'
+RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-# Check if docker-compose is installed
-if ! command -v docker-compose &> /dev/null; then
-    echo -e "${RED}✗ docker-compose is not installed${NC}"
+# Function to print status
+print_status() {
+    echo -e "${GREEN}✓${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}⚠${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}✗${NC} $1"
+}
+
+# Check if Docker is running
+if ! docker info > /dev/null 2>&1; then
+    print_error "Docker is not running. Please start Docker first."
     exit 1
 fi
 
-echo -e "${GREEN}✓ docker-compose found${NC}"
-echo ""
+print_status "Docker is running"
 
-# Check .env file
+# Check if .env exists
 if [ ! -f .env ]; then
-    echo -e "${YELLOW}⚠ .env file not found. Using default environment variables.${NC}"
+    if [ -f .env.example ]; then
+        print_warning ".env not found, copying from .env.example"
+        cp .env.example .env
+        print_status "Created .env file"
+    else
+        print_error ".env file not found. Please create one."
+        exit 1
+    fi
+fi
+
+# Start core infrastructure first
+echo ""
+echo "📦 Starting Core Infrastructure..."
+docker-compose up -d postgres redis
+sleep 3
+
+# Wait for PostgreSQL to be ready
+echo "⏳ Waiting for PostgreSQL..."
+until docker-compose exec -T postgres pg_isready -U sentinel_user > /dev/null 2>&1; do
+    echo -n "."
+    sleep 1
+done
+print_status "PostgreSQL is ready"
+
+# Wait for Redis to be ready
+echo "⏳ Waiting for Redis..."
+until docker-compose exec -T redis redis-cli ping > /dev/null 2>&1; do
+    echo -n "."
+    sleep 1
+done
+print_status "Redis is ready"
+
+# Start backend services
+echo ""
+echo "🔧 Starting Backend Services..."
+docker-compose up -d backend celery_worker celery_beat
+sleep 5
+
+# Wait for backend to be healthy
+echo "⏳ Waiting for Backend API..."
+until curl -f http://localhost:8000/api/v1/health > /dev/null 2>&1; do
+    echo -n "."
+    sleep 2
+done
+print_status "Backend API is ready"
+
+# Start frontend
+echo ""
+echo "🎨 Starting Frontend..."
+docker-compose up -d frontend nginx
+sleep 3
+print_status "Frontend started"
+
+# Start observability stack
+echo ""
+echo "📊 Starting Observability Stack..."
+docker-compose up -d prometheus loki promtail node-exporter postgres-exporter redis-exporter
+sleep 3
+print_status "Metrics collection started"
+
+docker-compose up -d grafana
+sleep 5
+print_status "Grafana started"
+
+# Start automation
+echo ""
+echo "🤖 Starting Automation..."
+docker-compose up -d n8n
+sleep 3
+print_status "n8n started"
+
+# Start AI services
+echo ""
+echo "🧠 Starting AI Services..."
+docker-compose up -d ollama
+sleep 5
+
+# Check if Ollama is healthy
+if docker-compose ps ollama | grep -q "healthy\|Up"; then
+    print_status "Ollama started"
+    
+    # Download models if not present
+    if ! curl -s http://localhost:11434/api/tags | grep -q "phi3:mini"; then
+        print_warning "Downloading AI model (phi3:mini, ~2GB)..."
+        print_warning "This may take 5-10 minutes on first run..."
+        docker-compose up ollama-init
+        print_status "AI model downloaded"
+    else
+        print_status "AI model already present"
+    fi
 else
-    echo -e "${GREEN}✓ .env file found${NC}"
+    print_warning "Ollama started but may not be healthy yet"
+fi
+
+# Final status check
+echo ""
+echo "🔍 Checking Service Status..."
+echo ""
+
+# Check all services
+SERVICES=$(docker-compose ps --services)
+HEALTHY=0
+TOTAL=0
+
+for service in $SERVICES; do
+    if [ "$service" = "ollama-init" ] || [ "$service" = "n8n-loader" ]; then
+        continue  # Skip one-time services
+    fi
+    
+    TOTAL=$((TOTAL + 1))
+    STATUS=$(docker-compose ps $service --format "{{.Status}}" 2>/dev/null || echo "not running")
+    
+    if echo "$STATUS" | grep -q "Up\|healthy"; then
+        print_status "$service"
+        HEALTHY=$((HEALTHY + 1))
+    else
+        print_error "$service - $STATUS"
+    fi
+done
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+if [ $HEALTHY -eq $TOTAL ]; then
+    echo -e "${GREEN}✓ All services are running! ($HEALTHY/$TOTAL)${NC}"
+else
+    echo -e "${YELLOW}⚠ Some services may need attention ($HEALTHY/$TOTAL running)${NC}"
 fi
 
 echo ""
-echo "📦 Starting Sentinel services..."
+echo "🌐 Access Points:"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-
-docker-compose up -d
-
+echo "  Frontend:        http://localhost:3000"
+echo "  API:             http://localhost:8000"
+echo "  API Docs:        http://localhost:8000/docs"
+echo "  Grafana:         http://localhost:3001  (admin / darkfenix)"
+echo "  Prometheus:      http://localhost:9090"
+echo "  n8n:             http://localhost:5678  (admin / darkfenix)"
+echo "  Ollama AI:       http://localhost:11434"
 echo ""
-echo "⏳ Waiting for services to start (30 seconds)..."
-sleep 30
-
+echo "📚 Documentation:"
+echo "  README.md        - Architecture overview"
+echo "  docs/            - Detailed guides"
 echo ""
-echo "🔍 Checking service health..."
+echo "🛠️  Useful Commands:"
+echo "  docker-compose ps              - View service status"
+echo "  docker-compose logs -f SERVICE - View service logs"
+echo "  docker-compose down            - Stop all services"
+echo "  docker-compose restart SERVICE - Restart a service"
 echo ""
-
-# Check PostgreSQL
-echo -n "PostgreSQL: "
-if docker-compose exec postgres pg_isready -U sentinel_user &> /dev/null; then
-    echo -e "${GREEN}✓ Healthy${NC}"
-else
-    echo -e "${RED}✗ Unhealthy${NC}"
-fi
-
-# Check Redis
-echo -n "Redis: "
-if docker-compose exec redis redis-cli ping &> /dev/null; then
-    echo -e "${GREEN}✓ Healthy${NC}"
-else
-    echo -e "${RED}✗ Unhealthy${NC}"
-fi
-
-# Check Backend
-echo -n "Backend API: "
-if curl -s http://localhost:8000/api/v1/health > /dev/null 2>&1; then
-    echo -e "${GREEN}✓ Healthy${NC}"
-else
-    echo -e "${RED}✗ Unhealthy (starting up...)${NC}"
-fi
-
-# Check Frontend
-echo -n "Frontend: "
-if curl -s http://localhost:3000 > /dev/null 2>&1; then
-    echo -e "${GREEN}✓ Healthy${NC}"
-else
-    echo -e "${YELLOW}⚠ Starting up...${NC}"
-fi
-
-# Check Nginx
-echo -n "Nginx Proxy: "
-if curl -s http://localhost:80 > /dev/null 2>&1; then
-    echo -e "${GREEN}✓ Healthy${NC}"
-else
-    echo -e "${YELLOW}⚠ Starting up...${NC}"
-fi
-
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-echo "=================================="
-echo -e "${GREEN}✓ Sentinel Installation Complete!${NC}"
-echo ""
-echo "📍 Access Points:"
-echo "   • Frontend:     http://localhost:3000"
-echo "   • Backend API:  http://localhost:8000"
-echo "   • API Docs:     http://localhost:8000/docs"
-echo "   • Nginx Proxy:  http://localhost:80"
-echo ""
-echo "📊 Services Running:"
-docker-compose ps --format "table {{.Names}}\t{{.Status}}"
-echo ""
-echo "💡 Useful Commands:"
-echo "   • View logs:    docker-compose logs -f [service]"
-echo "   • Stop services: docker-compose down"
-echo "   • Access DB:    docker-compose exec postgres psql -U sentinel_user -d sentinel_db"
-echo ""
-echo "📖 Full documentation in README.md"
+echo -e "${GREEN}🎉 Sentinel is ready!${NC}"
 echo ""

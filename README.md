@@ -1,615 +1,516 @@
-# Sentinel - Multi-Tenant SaaS Platform
+# 🛡️ Sentinel - Multi-Tenant SaaS Platform with AI & Observability
 
-A production-ready, fully-containerized multi-tenant SaaS platform built with FastAPI, Next.js, PostgreSQL, and async task processing.
+A production-ready, fully-containerized multi-tenant SaaS platform with integrated AI capabilities, comprehensive observability, and automated workflows.
 
-## Quick Start
+[![Architecture](https://img.shields.io/badge/Architecture-Microservices-blue)](docs/)
+[![AI](https://img.shields.io/badge/AI-Ollama%20%2B%20GPU-green)](docs/AI_INTEGRATION_COMPLETE.md)
+[![Observability](https://img.shields.io/badge/Observability-Prometheus%20%2B%20Loki-orange)](OBSERVABILITY-STATUS.md)
+[![Automation](https://img.shields.io/badge/Automation-n8n-purple)](n8n/README.md)
+
+---
+
+## 🚀 Quick Start
+
+### One-Command Startup
 
 ```bash
-cd /home/jnovoas/sentinel
+./startup.sh
+```
+
+This script will:
+1. ✅ Start all 18 services in the correct order
+2. ✅ Wait for health checks
+3. ✅ Download AI models (first run only)
+4. ✅ Display access points and status
+
+### Manual Startup
+
+```bash
 docker-compose up -d
 ```
 
-Services start in ~2-3 minutes:
-- **Frontend**: http://localhost:3000
-- **API**: http://localhost:8000
-- **API Docs**: http://localhost:8000/docs
-- **Grafana**: http://localhost:3001 (admin / darkfenix)
-- **Prometheus**: http://localhost:9090
-- **n8n Automation**: http://localhost:5678 (admin / darkfenix)
-- **Database**: localhost:5432
-- **Cache**: localhost:6379
+Services start in ~2-3 minutes.
 
-## Architecture
+---
 
-### Services (12 total)
+## 🌐 Access Points
+
+| Service | URL | Credentials |
+|---------|-----|-------------|
+| **Frontend** | http://localhost:3000 | - |
+| **API** | http://localhost:8000 | - |
+| **API Docs** | http://localhost:8000/docs | - |
+| **Grafana** | http://localhost:3001 | admin / darkfenix |
+| **Prometheus** | http://localhost:9090 | - |
+| **n8n Automation** | http://localhost:5678 | admin / darkfenix |
+| **Ollama AI** | http://localhost:11434 | - |
+
+---
+
+## 🏗️ Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         SENTINEL PLATFORM                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
+│  │   Frontend   │  │   Backend    │  │  Automation  │          │
+│  │  (Next.js)   │◄─┤  (FastAPI)   │◄─┤    (n8n)     │          │
+│  │  Port 3000   │  │  Port 8000   │  │  Port 5678   │          │
+│  └──────┬───────┘  └──────┬───────┘  └──────────────┘          │
+│         │                 │                                      │
+│         │                 │                                      │
+│  ┌──────▼─────────────────▼──────┐  ┌──────────────┐           │
+│  │         Nginx Proxy           │  │   AI Engine  │           │
+│  │  (Rate Limit + Security)      │  │   (Ollama)   │           │
+│  │         Port 80/443            │  │  Port 11434  │           │
+│  └───────────────────────────────┘  └──────┬───────┘           │
+│                                             │                    │
+│  ┌──────────────┐  ┌──────────────┐       │  ┌──────────────┐ │
+│  │  PostgreSQL  │  │    Redis     │       └──┤  phi3:mini   │ │
+│  │  (Database)  │  │   (Cache)    │          │   (Model)    │ │
+│  │  Port 5432   │  │  Port 6379   │          └──────────────┘ │
+│  └──────┬───────┘  └──────┬───────┘                            │
+│         │                 │                                     │
+│  ┌──────▼─────────────────▼──────────────────────────┐         │
+│  │              Celery Workers                        │         │
+│  │  (Async Tasks + Scheduled Jobs)                   │         │
+│  └────────────────────────────────────────────────────┘         │
+│                                                                  │
+├─────────────────────────────────────────────────────────────────┤
+│                    OBSERVABILITY STACK                           │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
+│  │  Prometheus  │  │     Loki     │  │   Grafana    │          │
+│  │  (Metrics)   │  │    (Logs)    │  │ (Dashboards) │          │
+│  │  Port 9090   │  │  Port 3100   │  │  Port 3001   │          │
+│  └──────▲───────┘  └──────▲───────┘  └──────────────┘          │
+│         │                 │                                      │
+│  ┌──────┴───────┬─────────┴─────────┬──────────────┐           │
+│  │ Node Exporter│   Promtail        │  Exporters   │           │
+│  │ (Host)       │   (Logs)          │  (PG/Redis)  │           │
+│  └──────────────┴───────────────────┴──────────────┘           │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📦 Services (18 Total)
+
+### Core Application (7 services)
 
 | Service | Image | Port | Purpose |
 |---------|-------|------|---------|
-| **PostgreSQL** | postgres:16-alpine | 5432 | Multi-tenant database with RLS |
-| **Redis** | redis:7-alpine | 6379 | Cache layer & message broker |
-| **FastAPI Backend** | Custom (Python 3.11) | 8000 | REST API |
-| **Celery Worker** | Custom (Python 3.11) | - | Async task processing |
-| **Celery Beat** | Custom (Python 3.11) | - | Task scheduling |
-| **Next.js Frontend** | Custom (Node 20) | 3000 | Web application |
-| **Nginx** | nginx:alpine | 80/443 | Reverse proxy & rate limiting |
-| **Prometheus** | prom/prometheus | 9090 | Metrics database & queries |
-| **Loki** | grafana/loki | 3100 | Log aggregation system |
-| **Promtail** | grafana/promtail | 9080 | Log collector agent |
-| **Node Exporter** | prom/node-exporter | 9100 | Host system metrics |
-| **Grafana** | grafana/grafana | 3001 | Visualization & dashboards |
-| **n8n** | n8n | 5678 | Workflow automation & reports |
+| **postgres** | postgres:16-alpine | 5432 | Multi-tenant database with RLS |
+| **redis** | redis:7-alpine | 6379 | Cache layer & message broker |
+| **backend** | Custom (Python 3.11) | 8000 | FastAPI REST API |
+| **celery_worker** | Custom (Python 3.11) | - | Async task processing |
+| **celery_beat** | Custom (Python 3.11) | - | Task scheduling |
+| **frontend** | Custom (Node 20) | 3000 | Next.js web application |
+| **nginx** | nginx:alpine | 80/443 | Reverse proxy & rate limiting |
 
-### Key Technologies
+### Observability Stack (6 services)
 
-- **Backend**: FastAPI, SQLAlchemy, Pydantic
-- **Frontend**: Next.js 14, React 18, TypeScript, Tailwind CSS
-- **Database**: PostgreSQL 16 with Row-Level Security (RLS)
-- **Async**: Celery with Redis broker
-- **Proxy**: Nginx with rate limiting and security headers
-- **Observability**: Prometheus + Loki + Grafana stack
+| Service | Image | Port | Purpose |
+|---------|-------|------|---------|
+| **prometheus** | prom/prometheus | 9090 | Metrics database & queries |
+| **loki** | grafana/loki | 3100 | Log aggregation system |
+| **promtail** | grafana/promtail | 9080 | Log collector agent |
+| **grafana** | grafana/grafana | 3001 | Visualization & dashboards |
+| **node-exporter** | prom/node-exporter | 9100 | Host system metrics |
+| **postgres-exporter** | prometheuscommunity/postgres-exporter | 9187 | PostgreSQL metrics |
+| **redis-exporter** | oliver006/redis_exporter | 9121 | Redis metrics |
 
-## Project Structure
+### AI Stack (2 services)
+
+| Service | Image | Port | Purpose |
+|---------|-------|------|---------|
+| **ollama** | ollama/ollama:latest | 11434 | Local LLM inference (GPU) |
+| **ollama-init** | ollama/ollama:latest | - | Model downloader (one-time) |
+
+**GPU Support**: NVIDIA GTX 1050 (3GB VRAM, CUDA 6.1)  
+**Model**: phi3:mini (1.3B parameters, 2.2GB)  
+**Performance**: 7-10s first query, ~1-2s subsequent
+
+### Automation (3 services)
+
+| Service | Image | Port | Purpose |
+|---------|-------|------|---------|
+| **n8n** | n8nio/n8n | 5678 | Workflow automation |
+| **n8n-loader** | Custom | - | Workflow loader (one-time) |
+
+**Workflows**: 6 pre-configured (SLO reports, alerts, health checks)
+
+---
+
+## 🔑 Key Features
+
+### 🏢 Multi-Tenancy
+- Row-Level Security (RLS) in PostgreSQL
+- Tenant isolation at database level
+- Automatic tenant context in all queries
+
+### 🤖 AI Integration
+- Local LLM with GPU acceleration
+- 3 AI endpoints: `/query`, `/health`, `/analyze-anomaly`
+- Automatic anomaly explanation
+- Privacy-first (no data leaves your server)
+
+### 📊 Observability
+- **Metrics**: Prometheus + 3 exporters (host, PostgreSQL, Redis)
+- **Logs**: Loki + Promtail (systemd + Docker logs)
+- **Dashboards**: 2 pre-configured Grafana dashboards
+- **Alerts**: 8 automated alerts (CPU, memory, disk, latency)
+- **SLOs**: Uptime 99.9%, Error Rate <1%, Latency P95 <1s
+
+### 🔄 Automation
+- **n8n Workflows**:
+  - Daily SLO Report (9 AM)
+  - High CPU Alert (every 5 min, >80%)
+  - Memory Warning (every 10 min, >85%)
+  - Anomaly Detector (every 15 min)
+  - Database Health Check (every 6 hours)
+  - Weekly Summary (Mondays 10 AM)
+
+### 🔒 Security
+- Auditd watchdog for exploit detection
+- Security alerts via n8n
+- Rate limiting in Nginx
+- HTTPS ready (certificates required)
+
+### ⚡ Performance
+- Async-first architecture (asyncpg, httpx)
+- Connection pooling
+- Redis caching
+- Celery for background tasks
+- GPU-accelerated AI inference
+
+---
+
+## 🛠️ Technology Stack
+
+### Backend
+- **Framework**: FastAPI 0.104
+- **ORM**: SQLAlchemy 2.0 (async)
+- **Database Driver**: asyncpg (3-5x faster than psycopg2)
+- **Validation**: Pydantic 2.5
+- **Task Queue**: Celery 5.3
+- **AI Client**: httpx (async)
+
+### Frontend
+- **Framework**: Next.js 14
+- **UI**: React 18 + TypeScript
+- **Styling**: Tailwind CSS
+- **State**: React hooks
+- **API Client**: Fetch API
+
+### Infrastructure
+- **Containerization**: Docker + Docker Compose
+- **Proxy**: Nginx
+- **Database**: PostgreSQL 16
+- **Cache**: Redis 7
+- **Metrics**: Prometheus
+- **Logs**: Loki
+- **Dashboards**: Grafana
+- **Automation**: n8n
+- **AI**: Ollama (phi3:mini)
+
+---
+
+## 📂 Project Structure
 
 ```
 sentinel/
-├── backend/
+├── backend/                    # FastAPI backend
 │   ├── app/
-│   │   ├── main.py              # FastAPI application
-│   │   ├── config.py            # Configuration management
-│   │   ├── database.py          # Database setup
-│   │   ├── celery_app.py        # Celery configuration
-│   │   ├── logging_config.py    # Logging setup
-│   │   ├── models/              # SQLAlchemy models
-│   │   ├── schemas/             # Pydantic schemas
-│   │   ├── routers/             # API route handlers
-│   │   ├── services/            # Business logic
-│   │   └── tasks/               # Celery async tasks
-│   ├── requirements.txt         # Python dependencies
-│   ├── Dockerfile               # Production image
-│   ├── Dockerfile.worker        # Celery worker image
-│   └── Dockerfile.beat          # Celery Beat image
-├── frontend/
+│   │   ├── main.py            # Application entry point
+│   │   ├── config.py          # Configuration management
+│   │   ├── database.py        # Database setup
+│   │   ├── models/            # SQLAlchemy models
+│   │   ├── routers/           # API endpoints
+│   │   │   ├── ai.py          # AI integration endpoints
+│   │   │   ├── analytics.py  # Analytics & anomalies
+│   │   │   └── ...
+│   │   ├── services/          # Business logic
+│   │   │   └── anomaly_detector.py  # Anomaly detection
+│   │   └── tasks/             # Celery tasks
+│   └── requirements.txt       # Python dependencies
+│
+├── frontend/                   # Next.js frontend
 │   ├── src/
-│   │   ├── app/                 # Next.js App Router
-│   │   ├── components/          # React components
-│   │   ├── lib/                 # Utilities & helpers
-│   │   └── store/               # State management
-│   ├── package.json             # Node dependencies
-│   ├── Dockerfile               # Production image
-│   └── Dockerfile.dev           # Development image
-├── docker/
-│   ├── postgres/init.sql        # Database schema & RLS
-│   ├── nginx/nginx.conf         # Reverse proxy config
-│   └── redis/                   # Redis configuration
-├── docker-compose.yml           # Service orchestration
-├── .env                         # Environment variables
-└── Makefile                     # Useful commands
+│   │   ├── app/               # App Router pages
+│   │   ├── components/        # React components
+│   │   └── lib/               # Utilities
+│   └── package.json
+│
+├── observability/              # Observability stack
+│   ├── prometheus/
+│   │   ├── prometheus.yml     # Scrape config
+│   │   └── rules/alerts.yml   # Alert rules
+│   ├── loki/
+│   │   └── loki-config.yml
+│   ├── promtail/
+│   │   └── promtail-config.yml
+│   └── grafana/
+│       └── provisioning/      # Auto-provisioned dashboards
+│
+├── n8n/                        # Automation workflows
+│   ├── workflows/             # 6 pre-configured workflows
+│   └── WORKFLOWS_GUIDE.md
+│
+├── docs/                       # Documentation
+│   ├── AI_INTEGRATION_COMPLETE.md
+│   ├── INSTALL_GPU.md
+│   └── OLLAMA_GPU_SETUP.md
+│
+├── docker-compose.yml          # Service orchestration
+├── startup.sh                  # One-command startup
+├── .env.example                # Environment template
+└── README.md                   # This file
 ```
 
-## Configuration
+---
 
-All configuration via environment variables in `.env`:
+## ⚙️ Configuration
+
+### Environment Variables
+
+Copy `.env.example` to `.env` and configure:
 
 ```bash
 # Database
-DATABASE_URL=postgresql+asyncpg://sentinel_user:sentinel_password@postgres:5432/sentinel_db
-# For local Postgres on host:
-# DATABASE_URL=postgresql+asyncpg://sentinel_user:sentinel_password@localhost:5432/sentinel_db
+DATABASE_URL=postgresql+asyncpg://sentinel_user:darkfenix@postgres:5432/sentinel_db
 
 # Redis
 REDIS_URL=redis://redis:6379/0
 
-# FastAPI
-SECRET_KEY=your-secret-key-min-32-chars    # Change in production!
+# Backend
+SECRET_KEY=your-secret-key-change-in-production-min-32-chars
 FASTAPI_ENV=development
-LOG_LEVEL=INFO
-
-# CORS
-ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8000
 
 # Celery
 CELERY_BROKER_URL=redis://redis:6379/0
 CELERY_RESULT_BACKEND=redis://redis:6379/1
 
-# Grafana Observability
+# Grafana
 GRAFANA_USER=admin
-GRAFANA_PASSWORD=sentinel2024    # Change in production!
+GRAFANA_PASSWORD=darkfenix
+
+# n8n
+N8N_USER=admin
+N8N_PASSWORD=darkfenix
+
+# Ollama AI
+OLLAMA_URL=http://ollama:11434
+OLLAMA_MODEL=phi3:mini
+AI_ENABLED=true
 ```
 
-After bringing up services, run migrations before first use:
+### GPU Configuration (Optional)
 
-```bash
-make up          # start stack
-make db-migrate  # apply Alembic migrations in backend container
-```
+If you have an NVIDIA GPU:
 
-## 📊 Observability Stack
+1. Install NVIDIA Container Toolkit:
+   ```bash
+   # See docs/INSTALL_GPU.md for detailed instructions
+   sudo pacman -S nvidia-container-toolkit  # Arch Linux
+   sudo nvidia-ctk runtime configure --runtime=docker
+   sudo systemctl restart docker
+   ```
 
-Sentinel includes a professional observability stack with Prometheus, Loki, and Grafana.
+2. GPU support is already enabled in `docker-compose.yml`
 
-### Quick Start Observability
-
-```bash
-./observability-start.sh
-```
-
-Then access **Grafana** at http://localhost:3001 (admin / sentinel2024)
-
-### What's Included
-
-- ✅ **Real-time metrics**: CPU, memory, disk, network from your host
-- ✅ **System logs**: Captured from journald and Docker containers
-- ✅ **Pre-built dashboards**: Host metrics + system logs
-- ✅ **Alerting**: 8 pre-configured alert rules
-- ✅ **90-day retention**: Metrics stored for 3 months
-- ✅ **30-day log retention**: Automatic cleanup
-
-### Dashboards
-
-1. **Host Metrics Overview** - CPU, memory, disk, network, filesystem usage
-2. **System Logs** - Error rates, log streams, severity distribution
-
-For complete documentation see [OBSERVABILITY.md](./OBSERVABILITY.md)
-
-### Auditd Watchdog (Host Security)
-
-#### Setup inicial:
-```bash
-sudo ./host-metrics/auditd_setup.sh   # instala auditd, habilita servicio y carga reglas base
-```
-
-#### Reglas disponibles:
-
-**Base (siempre activas):**
-- `exec-watchdog`: monitorea syscall `execve` (ejecuciones de procesos)
-- `file-watchdog`: monitorea `open` fallidos
-- `ptrace-watchdog`: monitorea `ptrace` (debug/injection)
-
-Cargar persistentemente:
-```bash
-sudo ./host-metrics/install_auditd_rules.sh install
-```
-
-**Extra (opcional, lab avanzado):**
-- `etc-change`: cambios en `/etc` (permisos/propietario)
-- `shadow-access`: intentos fallidos de acceso a `/etc/shadow`
-- `passwd-access`: intentos fallidos de acceso a `/etc/passwd`
-- `tmp-exec`: execuciones desde `/tmp` y `/var/tmp`
-- `kmod-change`: carga/descarga de módulos del kernel
-
-Activar reglas extra:
-```bash
-sudo ./host-metrics/install_auditd_rules_extra.sh install
-```
-
-Desactivar:
-```bash
-sudo ./host-metrics/install_auditd_rules_extra.sh remove
-```
-
-#### Watchdog daemon:
-
-Ejecuta watchdog como servicio systemd (monitorea logs y reinicia auditd si detecta patrones):
-```bash
-sudo ./observability/node-exporter/install_process_collector.sh
-```
-
-Ver logs: `journalctl -u audit-watchdog -f`
-
-#### Métricas de procesos (Top memoria):
-
-Daemon automático que captura consumo de memoria por proceso:
-```bash
-sudo ./observability/node-exporter/install_process_collector.sh
-```
-
-Ve a Grafana → "Sentinel - Host Metrics Overview" → panel "Top 10 Procesos por Memoria" (abajo).
-
-## API Endpoints
-
-### Health & Status
-- `GET /` - Root endpoint
-- `GET /api/v1/health` - Health check
-
-### Users (Multi-tenant)
-- `POST /api/v1/users/` - Create user
-- `GET /api/v1/users/` - List users
-- `GET /api/v1/users/{user_id}` - Get user
-- `PUT /api/v1/users/{user_id}` - Update user
-- `DELETE /api/v1/users/{user_id}` - Delete user
-
-### Tenants
-- `POST /api/v1/tenants/` - Create tenant
-- `GET /api/v1/tenants/` - List tenants
-- `GET /api/v1/tenants/{tenant_id}` - Get tenant
-- `PUT /api/v1/tenants/{tenant_id}` - Update tenant
-- `DELETE /api/v1/tenants/{tenant_id}` - Delete tenant
-
-See full documentation at `/docs` when running.
-
-## Key Features
-
-### Multi-Tenancy
-- PostgreSQL Row-Level Security (RLS) for automatic tenant isolation
-- Every user belongs to exactly one tenant
-- Queries automatically filtered by tenant_id
-
-### Security
-- JWT authentication framework ready to implement
-- Password hashing with bcrypt (configured)
-- CORS for cross-origin requests
-- Rate limiting at Nginx level (3 tiers)
-- Security headers (X-Frame-Options, X-Content-Type-Options, etc.)
-
-### Performance
-- Async/await with FastAPI
-- Redis caching layer
-- Connection pooling with automatic recycling
-- Celery for background tasks
-- Celery Beat for scheduled tasks
-
-### Operations
-- Health check endpoints
-- Structured logging with log rotation
-- Docker health checks for all services
-- Automatic container restart policies
-- Volume persistence for data
+3. Verify GPU access:
+   ```bash
+   docker run --rm --gpus all nvidia/cuda:12.0.0-base-ubuntu22.04 nvidia-smi
+   ```
 
 ---
 
-## 🤖 Automation with n8n
+## 📖 Documentation
 
-Sentinel includes **n8n** for workflow automation and reporting.
+- **[AI Integration](docs/AI_INTEGRATION_COMPLETE.md)** - Complete AI setup guide
+- **[GPU Setup](docs/INSTALL_GPU.md)** - Quick GPU installation
+- **[Observability](OBSERVABILITY-STATUS.md)** - Metrics, logs, dashboards
+- **[n8n Workflows](n8n/WORKFLOWS_GUIDE.md)** - Automation guide
+- **[Architecture](ARCHITECTURE.md)** - SOLID principles & design
+- **[Analytics](PHASE_2_ANALYTICS.md)** - Anomaly detection details
+- **[Services](SERVICIOS_ACTIVOS.md)** - All active services list
 
-### Access
+---
 
-- **URL**: http://localhost:5678
-- **User**: admin
-- **Password**: darkfenix
+## 🔧 Common Commands
 
-### Pre-Built Workflows
-
-1. **Daily SLO Report**: Sends Slack with availability, burn rate, error budget
-2. **Burn Rate Alert**: Triggers when 2h burn rate > 30x
-3. **Health Check**: Pings services every 15 minutes
-
-### Integration Options
-
-**Slack** (Recommended):
-1. Create Slack app with incoming webhooks
-2. Add webhook URL to n8n
-3. Get daily reports in Slack channel
-
-**Email**:
-- Use SMTP for notifications
-- Local mailhog at http://localhost:1025 for testing
-- Configure real SMTP for production
-
-See [observability/n8n/workflows-readme.md](observability/n8n/workflows-readme.md) for setup guide.
-
-### Quick Setup Script
+### Service Management
 
 ```bash
-# Configure n8n with Slack webhook
-./observability/n8n/setup-n8n-slack.sh "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
-```
+# Start all services
+./startup.sh
 
-## Useful Commands
+# Start specific service
+docker-compose up -d SERVICE_NAME
 
-```bash
-# View status
-docker-compose ps
-
-# View logs
-docker-compose logs -f [service]
-
-# Restart service
-docker-compose restart backend
-
-# Access database
-docker-compose exec postgres psql -U sentinel_user -d sentinel_db
-
-# Backend shell
-docker-compose exec backend bash
-
-# Stop everything
+# Stop all services
 docker-compose down
 
-# Clean everything including volumes
-docker-compose down -v
+# Restart service
+docker-compose restart SERVICE_NAME
+
+# View logs
+docker-compose logs -f SERVICE_NAME
+
+# View all service status
+docker-compose ps
 ```
 
-## Development
+### Database
 
-### Backend
 ```bash
-# Install dependencies
-docker-compose exec backend pip install -r requirements.txt
+# Access PostgreSQL
+docker-compose exec postgres psql -U sentinel_user -d sentinel_db
 
-# Run tests (when added)
-docker-compose exec backend pytest
+# Run migrations
+docker-compose exec backend alembic upgrade head
 
-# Format code
-docker-compose exec backend black app/
-
-# Check types
-docker-compose exec backend mypy app/
+# Create migration
+docker-compose exec backend alembic revision --autogenerate -m "description"
 ```
 
-### Frontend
+### AI
+
 ```bash
-# Install dependencies
-docker-compose exec frontend npm install
+# Test AI endpoint
+curl -X POST http://localhost:8000/api/v1/ai/query \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"Explain CPU anomaly","max_tokens":50}'
 
-# Build for production
-docker-compose exec frontend npm run build
+# Check AI health
+curl http://localhost:8000/api/v1/ai/health | jq
 
-# Format code
-docker-compose exec frontend npm run format
+# Download additional model
+docker-compose exec ollama ollama pull llama3.2:1b
 ```
 
-## Database Schema
+### Monitoring
 
-The database includes:
-
-### Tables
-- **tenants**: Organizations/accounts
-- **users**: User accounts with tenant association
-- **audit_logs**: Event logging for compliance
-
-### RLS Policies
-- Users see only their tenant's data
-- Audit logs filtered by tenant
-- Extensible to additional entity tables
-
-See `docker/postgres/init.sql` for complete schema.
-
-## Production Deployment
-
-### Before Deploying
-
-**CRITICAL CHANGES**:
 ```bash
-# Generate secure secret key
-openssl rand -hex 32
+# View Prometheus targets
+open http://localhost:9090/targets
 
-# Update .env with:
-SECRET_KEY=<generated-key>
-FASTAPI_ENV=production
-ALLOWED_ORIGINS=https://yourdomain.com
+# View Grafana dashboards
+open http://localhost:3001
 
-# Change database passwords
-POSTGRES_PASSWORD=<secure-password>
+# Check metrics
+curl http://localhost:8000/metrics
 ```
 
-### Infrastructure
-1. Use managed PostgreSQL (AWS RDS, Azure Database, etc.) instead of container
-2. Use managed Redis (AWS ElastiCache, Azure Cache, etc.)
-3. Configure SSL/TLS certificates for HTTPS
-4. Set up automated backups
-5. Configure load balancing for multiple backend instances
-6. Set up monitoring and alerting
+---
 
-### Scaling
+## 🚨 Troubleshooting
+
+### Services Not Starting
+
 ```bash
-# Scale worker processes
-docker-compose up -d --scale celery_worker=5
+# Check Docker
+docker info
 
-# Use external databases
-# Update DATABASE_URL and REDIS_URL in .env
+# Check logs
+docker-compose logs SERVICE_NAME
+
+# Rebuild service
+docker-compose build SERVICE_NAME
+docker-compose up -d SERVICE_NAME
 ```
 
-## Troubleshooting
+### Database Connection Issues
 
-### Services won't start
 ```bash
-docker-compose logs [service]
-```
+# Verify PostgreSQL is running
+docker-compose ps postgres
 
-### Database connection errors
-```bash
+# Check connection
 docker-compose exec postgres pg_isready -U sentinel_user
-```
 
-### Port already in use
-```bash
-# Find process using port
-lsof -i :8000
-
-# Kill process
-kill -9 <PID>
-```
-
-### Clear cache and rebuild
-```bash
+# Reset database (⚠️ destroys data)
 docker-compose down -v
-docker-compose build --no-cache
-docker-compose up -d
+docker-compose up -d postgres
 ```
 
-## Code Quality & Standards
-
-### Backend Code Organization
-- Each module has clear responsibilities
-- Comprehensive docstrings following Google style
-- Type hints for all functions
-- Separation of concerns (routers, services, models)
-
-### Frontend Code Organization
-- Component-based architecture
-- TypeScript for type safety
-- Tailwind CSS for styling
-- App Router for routing
-
-### Testing
-- Unit tests in progress
-- Integration tests ready
-- Use pytest for backend testing
-
-### Documentation
-- All functions documented
-- Comments explain "why", not "what"
-- Examples provided for complex functionality
-
----
-
-## 🎯 SLOs & Error Budget Management
-
-### SLO Definitions
-
-**Sentinel follows these Service Level Objectives:**
-
-| SLO | Target | Error Budget/Month | 
-|-----|--------|-------------------|
-| **Uptime** | 99.9% | 43.2 minutes downtime |
-| **Error Rate** | <1% | 1 error per 100 requests |
-| **Latency P95** | <1s | Max 95th percentile latency |
-
-### Understanding Burn Rate
-
-**Burn Rate** measures how fast you consume your error budget:
-
-```
-Burn Rate = (1 - Availability) / (1 - SLO Target)
-
-Examples:
-- Burn Rate 2h = 0.5x → Breaking SLO in ~60 days (normal)
-- Burn Rate 2h = 10x → Breaking SLO in 6 days (degrading)
-- Burn Rate 2h = 30x → Breaking SLO in <2 hours (CRITICAL)
-```
-
-### Alert Thresholds
-
-Prometheus alerts are configured to fire when:
-
-1. **🔴 Fast Burn (2h window)**: Burn Rate > 30x
-   - **Action**: Page on-call immediately. Investigate outage/incident.
-   - **Implication**: If not fixed in 2 hours, SLO breaks.
-
-2. **🟡 Slow Burn (24h window)**: Burn Rate > 10x
-   - **Action**: Schedule incident review within 4 hours.
-   - **Implication**: If not fixed in 3 days, SLO breaks.
-
-### Monitoring Dashboard
-
-Access the SLO Dashboard in Grafana:
-- **URL**: http://localhost:3001/d/slo-error-budget
-- **Panels**:
-  - 📊 Disponibilidad Mensual (pie chart)
-  - 🎯 SLO Target vs Actual (99.9% goal)
-  - 🔥 Burn Rate Trends (2h and 24h)
-  - 💰 Error Budget Remaining (%)
-  - 📈 Availability Over Time (hourly/daily/monthly)
-  - ⚠️ Current Error Rate
-
-### Prometheus Recording Rules
-
-Pre-computed metrics for dashboards (updated every 1 minute):
-
-```promql
-# Availability metrics
-slo:availability:hourly      # Last hour uptime %
-slo:availability:daily       # Last day uptime %
-slo:availability:monthly     # Last 30 days uptime %
-
-# Error budget tracking
-slo:error_budget:remaining   # % of budget left
-slo:burnrate:2h              # Burn rate (2h window)
-slo:burnrate:24h             # Burn rate (24h window)
-
-# Error rate metrics
-slo:error_rate:5m            # Error rate last 5 minutes
-```
-
-### Example Alert Queries
-
-Check status in Prometheus:
+### AI Not Working
 
 ```bash
-# View current burn rate
-curl http://localhost:9090/api/v1/query?query=slo:burnrate:2h
+# Check Ollama status
+curl http://localhost:11434/api/tags
 
-# View error budget remaining
-curl http://localhost:9090/api/v1/query?query=slo:error_budget:remaining
+# View Ollama logs
+docker-compose logs ollama
 
-# View monthly availability
-curl http://localhost:9090/api/v1/query?query=slo:availability:monthly
+# Restart Ollama
+docker-compose restart ollama
+
+# Re-download model
+docker-compose exec ollama ollama pull phi3:mini
 ```
 
-### Recommended Actions by Error Budget
-
-| Budget | Status | Action |
-|--------|--------|--------|
-| >50% | ✅ Green | Normal operations. Deploy and iterate. |
-| 25-50% | 🟡 Caution | Slow burn detected. Review incidents. |
-| 10-25% | 🟠 Warning | Freeze new deployments. Focus on stability. |
-| <10% | 🔴 Critical | Only critical hotfixes. Prepare maintenance window. |
-
-### Configuration (alerts.yml)
-
-SLO rules are defined in `observability/prometheus/rules/alerts.yml`:
-
-```yaml
-# Uptime SLO: 99.9%
-- alert: SLO_Uptime_BurnRateFast
-  expr: (1 - avg(rate(up{job=~"fastapi|sentinel"}[2h]))) > 0.001 * 30
-  # Fires if losing uptime faster than 30x budget rate
-
-# Error Rate SLO: <1%
-- alert: SLO_ErrorRate_High
-  expr: sum(rate(sentinel_errors_total[5m])) / sum(rate(sentinel_requests_total[5m])) > 0.01
-  # Fires if error rate exceeds 1%
-
-# Latency SLO: P95 <1s
-- alert: SLO_LatencyHigh
-  expr: histogram_quantile(0.95, ...) > 1
-  # Fires if P95 latency exceeds 1 second
-```
-
-### Reload SLO Rules
-
-After updating `alerts.yml`, reload Prometheus:
+### High Resource Usage
 
 ```bash
-docker-compose restart prometheus
-```
+# Check resource usage
+docker stats
 
-Or use Prometheus API:
-```bash
-curl -X POST http://localhost:9090/-/reload
+# Limit Ollama memory (edit docker-compose.yml)
+# Add under ollama service:
+#   deploy:
+#     resources:
+#       limits:
+#         memory: 4G
 ```
 
 ---
 
-## Deployment Checklist
+## 📊 Performance Benchmarks
 
-- [ ] Change `SECRET_KEY`
-- [ ] Update `ALLOWED_ORIGINS`
-- [ ] Change database passwords
-- [ ] Enable HTTPS/SSL
-- [ ] Configure firewall rules
-- [ ] Set up monitoring
-- [ ] Configure backups
-- [ ] Review RLS policies
-- [ ] Test under load
-- [ ] Security audit
+### API Performance
+- **Latency**: P95 < 100ms (without AI)
+- **Throughput**: 1000+ req/s
+- **Concurrent Users**: 100+
 
-## Support & Contributing
+### AI Performance
+- **First Query**: 7-10s (model loading)
+- **Subsequent**: 1-2s (with GPU)
+- **CPU Only**: 3-5s
 
-This is a team project. Please:
-
-1. **Before making changes**: Create an issue describing what you'll do
-2. **Code style**: Follow existing patterns and maintain comments
-3. **Testing**: Add tests for new features
-4. **Documentation**: Update docs alongside code changes
-5. **Pull requests**: Clear description of changes and why
-
-## License
-
-Internal project - Sentinel Platform
+### Database
+- **Connection Pool**: 20 connections
+- **Query Cache**: Redis (TTL 5min)
+- **RLS Overhead**: <5ms
 
 ---
 
-**Last Updated**: December 13, 2024  
-**Maintained by**: Development Team  
-**Status**: Production Ready ✅
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
+
+---
+
+## 📄 License
+
+This project is proprietary software.
+
+---
+
+## 🙏 Acknowledgments
+
+- **FastAPI** - Modern async web framework
+- **Next.js** - React framework
+- **Prometheus** - Metrics collection
+- **Grafana** - Visualization
+- **Ollama** - Local LLM inference
+- **n8n** - Workflow automation
+
+---
+
+**Built with ❤️ by the Sentinel Team**
