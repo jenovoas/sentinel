@@ -1,0 +1,15 @@
+[Unit]
+Description=Sentinel Process Memory Metrics Collector
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /home/jnovoas/sentinel/observability/node-exporter/process-memory-daemon.sh
+Restart=always
+RestartSec=5
+User=root
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,66 @@
+# Prometheus Configuration
+# Main configuration file for metrics collection and alerting
+
+global:
+  scrape_interval: 15s # Frecuencia de scraping por defecto
+  evaluation_interval: 15s # Frecuencia de evaluación de reglas
+  external_labels:
+    cluster: 'sentinel'
+    environment: 'production'
+
+# Alertmanager configuration (optional, para futuro)
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+          # - 'alertmanager:9093'
+
+# Archivos de reglas de alerting
+rule_files:
+  - '/etc/prometheus/rules/*.yml'
+
+# Configuración de scraping
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+
+  # Node Exporter - Métricas del host
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'host-metrics'
+          instance: 'sentinel-host'
+    metric_relabel_configs:
+      # Mantener solo métricas relevantes para reducir uso de storage
+      - source_labels: [__name__]
+        regex: 'node_(cpu|memory|disk|network|filesystem|load).*'
+        action: keep
+
+  # Backend FastAPI
+  - job_name: 'backend'
+    static_configs:
+      - targets: ['backend:8000']
+        labels:
+          service: 'backend-api'
+    metrics_path: '/metrics' # Asumiendo que agregaremos endpoint /metrics
+
+  # PostgreSQL Exporter
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+        labels:
+          service: 'postgres-db'
+
+  # Redis Exporter
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+        labels:
+          service: 'redis-cache'
+
+# Storage configuration is in command line flags, not here

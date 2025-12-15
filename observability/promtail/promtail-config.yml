@@ -1,0 +1,178 @@
+# Promtail Configuration
+# Agent para capturar y enviar logs a Loki
+
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+  log_level: info
+
+# Cliente de Loki
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+    tenant_id: sentinel
+    batchwait: 1s
+    batchsize: 1048576
+    backoff_config:
+      min_period: 500ms
+      max_period: 5m
+      max_retries: 10
+
+positions:
+  filename: /tmp/positions.yaml
+
+# Configuración de scraping
+scrape_configs:
+  # System logs via journald
+  - job_name: system
+    journal:
+      max_age: 12h
+      labels:
+        job: systemd-journal
+        host: sentinel
+    relabel_configs:
+      # Agregar hostname
+      - source_labels: ['__journal__hostname']
+        target_label: hostname
+      
+      # Agregar systemd unit
+      - source_labels: ['__journal__systemd_unit']
+        target_label: unit
+      
+      # Agregar prioridad
+      - source_labels: ['__journal_priority']
+        target_label: priority
+      
+      # Agregar boot_id
+      - source_labels: ['__journal__boot_id']
+        target_label: boot_id
+      
+      # Mapear prioridad a nivel
+      - source_labels: [priority]
+        target_label: level
+        replacement: 'unknown'
+      - source_labels: [priority]
+        regex: '[0-2]'
+        target_label: level
+        replacement: 'critical'
+      - source_labels: [priority]
+        regex: '3'
+        target_label: level
+        replacement: 'error'
+      - source_labels: [priority]
+        regex: '4'
+        target_label: level
+        replacement: 'warning'
+      - source_labels: [priority]
+        regex: '5'
+        target_label: level
+        replacement: 'notice'
+      - source_labels: [priority]
+        regex: '6'
+        target_label: level
+        replacement: 'info'
+      - source_labels: [priority]
+        regex: '7'
+        target_label: level
+        replacement: 'debug'
+
+  # Backend container logs (si usamos docker)
+  - job_name: docker-backend
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+        filters:
+          - name: label
+            values: ["com.docker.compose.service=backend"]
+    relabel_configs:
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: container
+      - source_labels: ['__meta_docker_container_log_stream']
+        target_label: stream
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
+        target_label: service
+    pipeline_stages:
+      # Parsear logs JSON de FastAPI (si los formateas así)
+      - json:
+          expressions:
+            level: level
+            timestamp: timestamp
+            message: message
+            request_id: request_id
+      - labels:
+          level:
+          service:
+      - timestamp:
+          source: timestamp
+          format: RFC3339
+      - output:
+          source: message
+
+  # Nginx logs (si usas nginx)
+  - job_name: nginx
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+        filters:
+          - name: label
+            values: ["com.docker.compose.service=nginx"]
+    relabel_configs:
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: container
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
+        target_label: service
+    pipeline_stages:
+      # Parsear access logs de nginx
+      - regex:
+          expression: '^(?P<remote_addr>[\w\.]+) - (?P<remote_user>[^ ]*) \[(?P<time_local>.*)\] "(?P<method>[^ ]*) (?P<path>[^ ]*) (?P<protocol>[^ ]*)" (?P<status>[\d]+) (?P<body_bytes_sent>[\d]+) "(?P<http_referer>[^"]*)" "(?P<http_user_agent>[^"]*)"'
+      - labels:
+          method:
+          status:
+          path:
+      - timestamp:
+          source: time_local
+          format: '02/Jan/2006:15:04:05 -0700'
+
+  # Custom app logs desde archivo (para host-metrics si quieres)
+  - job_name: host-metrics-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: host-metrics
+          host: sentinel
+          __path__: /host-metrics/data/*.log
+    pipeline_stages:
+      - match:
+          selector: '{job="host-metrics"}'
+          stages:
+            - regex:
+                expression: '^(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})'
+            - timestamp:
+                source: timestamp
+                format: RFC3339
+            - labels:
+                job:
+
+  # Auditd log (watchdog) desde archivo
+  - job_name: auditd
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: auditd
+          host: sentinel
+          __path__: /var/log/audit/audit.log
+    pipeline_stages:
+      - regex:
+          expression: '.*key=(?P<key>[^\s]+).*'
+      - labels:
+          key:
+      - match:
+          selector: '{job="auditd"}'
+          stages:
+            - regex:
+                expression: 'type=(?P<type>\w+)'
+            - labels:
+                type:

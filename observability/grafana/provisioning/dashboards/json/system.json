@@ -1,0 +1,44 @@
+{
+  "dashboard": {
+    "title": "Sistema - CPU & Memoria",
+    "uid": "system-metrics",
+    "tags": ["system", "node"],
+    "timezone": "browser",
+    "refresh": "10s",
+    "time": {"from": "now-1h", "to": "now"},
+    "panels": [
+      {
+        "id": 1,
+        "gridPos": {"h": 9, "w": 12, "x": 0, "y": 0},
+        "type": "timeseries",
+        "title": "CPU Usage (%)",
+        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "targets": [{
+          "expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+          "refId": "A",
+          "legendFormat": "CPU %"
+        }]
+      },
+      {
+        "id": 2,
+        "gridPos": {"h": 9, "w": 12, "x": 12, "y": 0},
+        "type": "timeseries",
+        "title": "Memory Usage (GB)",
+        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "targets": [
+          {
+            "expr": "(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / 1024 / 1024 / 1024",
+            "refId": "A",
+            "legendFormat": "Used"
+          },
+          {
+            "expr": "node_memory_MemAvailable_bytes / 1024 / 1024 / 1024",
+            "refId": "B",
+            "legendFormat": "Available"
+          }
+        ]
+      }
+    ]
+  },
+  "overwrite": true
+}

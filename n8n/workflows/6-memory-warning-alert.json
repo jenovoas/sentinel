@@ -1,0 +1,141 @@
+{
+    "name": "Memory Warning Alert",
+    "nodes": [
+        {
+            "parameters": {
+                "rule": {
+                    "interval": [
+                        {
+                            "field": "minutes",
+                            "minutesInterval": 10
+                        }
+                    ]
+                }
+            },
+            "name": "Check Every 10 Minutes",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1,
+            "position": [
+                250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "url": "http://backend:8000/api/v1/analytics/metrics/recent?limit=1",
+                "options": {}
+            },
+            "name": "Get Current Metrics",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "number": [
+                        {
+                            "value1": "={{ $json.samples[0].memory_percent }}",
+                            "operation": "larger",
+                            "value2": 85
+                        }
+                    ]
+                }
+            },
+            "name": "Memory > 85%?",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 1,
+            "position": [
+                650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "const sample = $input.first().json.samples[0];\nconst memory = sample.memory_percent.toFixed(1);\nconst memUsedGB = (sample.memory_used_mb / 1024).toFixed(2);\nconst memTotalGB = (sample.memory_total_mb / 1024).toFixed(2);\nconst cpu = sample.cpu_percent.toFixed(1);\nconst timestamp = new Date(sample.sampled_at).toLocaleString();\n\nconst severity = memory > 95 ? '🔴 CRITICAL' : '🟡 WARNING';\n\nconst alert = {\n  text: `${severity} *HIGH MEMORY USAGE*\\n\\n` +\n        `*Memory Usage:* ${memory}% (Threshold: 85%)\\n` +\n        `*Used:* ${memUsedGB} GB / ${memTotalGB} GB\\n` +\n        `*CPU Usage:* ${cpu}%\\n` +\n        `*Time:* ${timestamp}\\n\\n` +\n        `${memory > 95 ? '🚨 *IMMEDIATE ACTION REQUIRED*' : '⚠️ *Monitor Closely*'}\\n\\n` +\n        `Check processes in Grafana:\\nhttp://localhost:3001`\n};\n\nreturn { json: alert };"
+            },
+            "name": "Build Memory Alert",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                850,
+                200
+            ]
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $env.SLACK_WEBHOOK_URL }}",
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "text",
+                            "value": "={{ $json.text }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "name": "Send Alert to Slack",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                1050,
+                200
+            ]
+        }
+    ],
+    "connections": {
+        "Check Every 10 Minutes": {
+            "main": [
+                [
+                    {
+                        "node": "Get Current Metrics",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Current Metrics": {
+            "main": [
+                [
+                    {
+                        "node": "Memory > 85%?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Memory > 85%?": {
+            "main": [
+                [
+                    {
+                        "node": "Build Memory Alert",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Build Memory Alert": {
+            "main": [
+                [
+                    {
+                        "node": "Send Alert to Slack",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1"
+    }
+}
