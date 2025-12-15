@@ -34,3 +34,4 @@ logs/
 *.log
 celerybeat-schedule
 celerybeat-schedule.db
+docs/SESSION_STATE.md
