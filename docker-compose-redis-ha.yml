@@ -1,0 +1,146 @@
+# Redis High Availability with Sentinel
+
+version: '3.8'
+
+services:
+  # ============================================================================
+  # REDIS MASTER - Primary instance for writes
+  # ============================================================================
+  redis-master:
+    image: redis:7-alpine
+    container_name: sentinel-redis-master
+    command: >
+      redis-server --appendonly yes --appendfilename "appendonly.aof" --dir /data --maxmemory 512mb --maxmemory-policy allkeys-lru --save 900 1 --save 300 10 --save 60 10000
+    volumes:
+      - redis_master_data:/data
+    networks:
+      - sentinel-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # ============================================================================
+  # REDIS REPLICA 1 - Read-only replica
+  # ============================================================================
+  redis-replica-1:
+    image: redis:7-alpine
+    container_name: sentinel-redis-replica-1
+    command: >
+      redis-server --replicaof redis-master 6379 --appendonly yes --dir /data --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_replica_1_data:/data
+    networks:
+      - sentinel-network
+    depends_on:
+      - redis-master
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # ============================================================================
+  # REDIS REPLICA 2 - Read-only replica
+  # ============================================================================
+  redis-replica-2:
+    image: redis:7-alpine
+    container_name: sentinel-redis-replica-2
+    command: >
+      redis-server --replicaof redis-master 6379 --appendonly yes --dir /data --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_replica_2_data:/data
+    networks:
+      - sentinel-network
+    depends_on:
+      - redis-master
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # ============================================================================
+  # REDIS SENTINEL 1 - Monitors master and triggers failover
+  # ============================================================================
+  redis-sentinel-1:
+    image: redis:7-alpine
+    container_name: sentinel-redis-sentinel-1
+    command: redis-sentinel /etc/redis/sentinel.conf
+    volumes:
+      - ./redis/sentinel-1.conf:/etc/redis/sentinel.conf
+      - redis_sentinel_1_data:/data
+    networks:
+      - sentinel-network
+    depends_on:
+      - redis-master
+      - redis-replica-1
+      - redis-replica-2
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-p", "26379", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # ============================================================================
+  # REDIS SENTINEL 2 - Monitors master and triggers failover
+  # ============================================================================
+  redis-sentinel-2:
+    image: redis:7-alpine
+    container_name: sentinel-redis-sentinel-2
+    command: redis-sentinel /etc/redis/sentinel.conf
+    volumes:
+      - ./redis/sentinel-2.conf:/etc/redis/sentinel.conf
+      - redis_sentinel_2_data:/data
+    networks:
+      - sentinel-network
+    depends_on:
+      - redis-master
+      - redis-replica-1
+      - redis-replica-2
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-p", "26379", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # ============================================================================
+  # REDIS SENTINEL 3 - Monitors master and triggers failover
+  # ============================================================================
+  redis-sentinel-3:
+    image: redis:7-alpine
+    container_name: sentinel-redis-sentinel-3
+    command: redis-sentinel /etc/redis/sentinel.conf
+    volumes:
+      - ./redis/sentinel-3.conf:/etc/redis/sentinel.conf
+      - redis_sentinel_3_data:/data
+    networks:
+      - sentinel-network
+    depends_on:
+      - redis-master
+      - redis-replica-1
+      - redis-replica-2
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-p", "26379", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  redis_master_data:
+    driver: local
+  redis_replica_1_data:
+    driver: local
+  redis_replica_2_data:
+    driver: local
+  redis_sentinel_1_data:
+    driver: local
+  redis_sentinel_2_data:
+    driver: local
+  redis_sentinel_3_data:
+    driver: local
+
+networks:
+  sentinel-network:
+    external: true
