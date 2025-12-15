@@ -1,0 +1,39 @@
+# Patroni Configuration for Replica Node
+scope: sentinel-cluster
+namespace: /db/
+name: postgres-replica
+
+restapi:
+  listen: 0.0.0.0:8008
+  connect_address: postgres-replica:8008
+
+etcd:
+  hosts: etcd:2379
+
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+
+postgresql:
+  listen: 0.0.0.0:5432
+  connect_address: postgres-replica:5432
+  data_dir: /var/lib/postgresql/data/pgdata
+  bin_dir: /usr/lib/postgresql/14/bin
+  authentication:
+    replication:
+      username: replicator
+      password: ${REPLICATION_PASSWORD}
+    superuser:
+      username: postgres
+      password: ${POSTGRES_PASSWORD}
+  parameters:
+    unix_socket_directories: /var/run/postgresql
+
+tags:
+    nofailover: false
+    noloadbalance: false
+    clonefrom: true
+    nosync: false
