@@ -137,27 +137,70 @@ export default function MetricsPage() {
                         </div>
                     </CardHeader>
                     <CardContent>
-                        {/* Grafana Iframe */}
-                        <div className="relative w-full bg-slate-900/50 rounded-lg overflow-hidden border border-white/10">
-                            <iframe
-                                src={grafanaUrls[activeTab]}
-                                className="w-full h-[800px]"
-                                frameBorder="0"
-                                title={`Grafana ${activeTab} dashboard`}
-                            />
+                        {/* Temporary: Direct links until dashboards are created */}
+                        <div className="relative w-full bg-slate-900/50 rounded-lg overflow-hidden border border-white/10 p-12">
+                            <div className="text-center space-y-6">
+                                <div className="text-6xl">📊</div>
+                                <div>
+                                    <h3 className="text-2xl font-semibold text-white mb-2">
+                                        Grafana Dashboard: {tabs.find((t) => t.id === activeTab)?.label}
+                                    </h3>
+                                    <p className="text-gray-400 mb-6">
+                                        {getTabDescription(activeTab)}
+                                    </p>
+                                </div>
+
+                                <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 max-w-2xl mx-auto">
+                                    <p className="text-yellow-400 font-semibold mb-2">⚠️ Dashboard Not Yet Created</p>
+                                    <p className="text-sm text-gray-300">
+                                        This dashboard needs to be created in Grafana first.
+                                        Click below to open Grafana and create the <strong>{activeTab}</strong> dashboard.
+                                    </p>
+                                </div>
+
+                                <div className="flex gap-4 justify-center">
+                                    <a
+                                        href="http://localhost:3001"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="px-6 py-3 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-lg hover:bg-cyan-500/30 transition-all font-medium"
+                                    >
+                                        Open Grafana →
+                                    </a>
+                                    <a
+                                        href="http://localhost:9090"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="px-6 py-3 bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-lg hover:bg-orange-500/30 transition-all font-medium"
+                                    >
+                                        Open Prometheus →
+                                    </a>
+                                </div>
+
+                                <div className="text-left bg-slate-800/50 rounded-lg p-4 max-w-2xl mx-auto">
+                                    <p className="text-sm text-gray-400 mb-2 font-semibold">Quick Setup:</p>
+                                    <ol className="text-sm text-gray-300 space-y-1 list-decimal list-inside">
+                                        <li>Open Grafana (admin / admin)</li>
+                                        <li>Add Prometheus data source (http://prometheus:9090)</li>
+                                        <li>Create new dashboard</li>
+                                        <li>Add panels with Prometheus queries</li>
+                                        <li>Save with ID: <code className="bg-slate-700 px-2 py-0.5 rounded">sentinel-{activeTab}</code></li>
+                                    </ol>
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Fallback message if iframe doesn't load */}
+                        {/* Fallback message */}
                         <div className="mt-4 text-center">
                             <p className="text-sm text-gray-400">
-                                Dashboard not loading?{" "}
+                                Need help creating dashboards?{" "}
                                 <a
-                                    href={grafanaUrls[activeTab].replace("&kiosk", "")}
+                                    href="https://grafana.com/docs/grafana/latest/dashboards/"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-cyan-400 hover:text-cyan-300 underline"
                                 >
-                                    Open in new tab
+                                    View Grafana Documentation
                                 </a>
                             </p>
                         </div>
