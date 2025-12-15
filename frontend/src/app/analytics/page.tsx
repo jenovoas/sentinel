@@ -27,7 +27,7 @@ ChartJS.register(
 );
 
 export default function AnalyticsPage() {
-  const { history, anomalies, storage, loading, anomaliesByMetric } = useAnalytics();
+  const { history, anomalies, storage, loading } = useAnalytics();
   const [hostHistory, setHostHistory] = useState<any[]>([]);
   const [systemLogs, setSystemLogs] = useState<any>({ logs: [], summary: null });
 
@@ -40,7 +40,7 @@ export default function AnalyticsPage() {
         if (json?.ok && json.history) {
           setHostHistory(json.history);
         }
-      } catch {}
+      } catch { }
     };
     fetchHostHistory();
     const id = setInterval(fetchHostHistory, 60000);
@@ -56,7 +56,7 @@ export default function AnalyticsPage() {
         if (json?.ok) {
           setSystemLogs({ logs: json.logs, summary: json.summary });
         }
-      } catch {}
+      } catch { }
     };
     fetchSystemLogs();
     const id = setInterval(fetchSystemLogs, 60000);
@@ -346,20 +346,18 @@ export default function AnalyticsPage() {
             ) : (
               <div className="space-y-2 max-h-48 overflow-y-auto">
                 {systemLogs.logs.slice(0, 10).map((log: any, i: number) => (
-                  <div 
-                    key={i} 
-                    className={`bg-white/5 rounded-lg p-2 border text-xs ${
-                      log.level === 'CRITICAL' ? 'border-rose-500/30' :
-                      log.level === 'ERROR' ? 'border-amber-500/30' :
-                      'border-orange-500/20'
-                    }`}
+                  <div
+                    key={i}
+                    className={`bg-white/5 rounded-lg p-2 border text-xs ${log.level === 'CRITICAL' ? 'border-rose-500/30' :
+                        log.level === 'ERROR' ? 'border-amber-500/30' :
+                          'border-orange-500/20'
+                      }`}
                   >
                     <div className="flex items-start gap-2 mb-1">
-                      <span className={`font-semibold whitespace-nowrap ${
-                        log.level === 'CRITICAL' ? 'text-rose-400' :
-                        log.level === 'ERROR' ? 'text-amber-400' :
-                        'text-orange-400'
-                      }`}>
+                      <span className={`font-semibold whitespace-nowrap ${log.level === 'CRITICAL' ? 'text-rose-400' :
+                          log.level === 'ERROR' ? 'text-amber-400' :
+                            'text-orange-400'
+                        }`}>
                         {log.level}
                       </span>
                       <span className="text-gray-500 text-xs whitespace-nowrap">

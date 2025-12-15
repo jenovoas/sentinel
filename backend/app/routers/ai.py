@@ -16,7 +16,7 @@ router = APIRouter(prefix="/api/v1/ai", tags=["AI"])
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://ollama:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "phi3:mini")
 AI_ENABLED = os.getenv("AI_ENABLED", "true").lower() == "true"
-OLLAMA_TIMEOUT = int(os.getenv("OLLAMA_TIMEOUT", "8"))
+OLLAMA_TIMEOUT = int(os.getenv("OLLAMA_TIMEOUT", "60"))
 
 
 class AIQuery(BaseModel):

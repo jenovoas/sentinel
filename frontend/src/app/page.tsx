@@ -1,4 +1,27 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect to dashboard
+    router.push("/dashboard");
+  }, [router]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      <div className="text-center">
+        <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-gray-400">Redirecting to dashboard...</p>
+      </div>
+    </div>
+  );
+}
+
+function OldHome() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6">
       <div className="max-w-2xl text-center">
@@ -8,7 +31,7 @@ export default function Home() {
         <p className="text-xl text-gray-300 mb-8">
           Multi-tenant SaaS Platform with Enterprise-Grade Security
         </p>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
           <div className="p-4 rounded-lg bg-slate-700 border border-slate-600">
             <h3 className="text-lg font-semibold mb-2">🚀 FastAPI Backend</h3>
