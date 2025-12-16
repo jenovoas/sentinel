@@ -17,8 +17,8 @@ fi
 
 BACKUP_FILE="$1"
 POSTGRES_CONTAINER="sentinel-postgres"
-POSTGRES_USER="sentinel"
-POSTGRES_DB="sentinel"
+POSTGRES_USER="sentinel_user"
+POSTGRES_DB="sentinel_db"
 
 if [ ! -f "$BACKUP_FILE" ]; then
     echo "ERROR: Backup file not found: $BACKUP_FILE"

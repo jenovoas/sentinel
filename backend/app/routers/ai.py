@@ -9,6 +9,8 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 import httpx
 
+from app.security import TelemetrySanitizer
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/ai", tags=["AI"])
@@ -17,6 +19,10 @@ OLLAMA_URL = os.getenv("OLLAMA_URL", "http://ollama:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "phi3:mini")
 AI_ENABLED = os.getenv("AI_ENABLED", "true").lower() == "true"
 OLLAMA_TIMEOUT = int(os.getenv("OLLAMA_TIMEOUT", "60"))
+TELEMETRY_SANITIZATION_ENABLED = os.getenv("TELEMETRY_SANITIZATION_ENABLED", "true").lower() == "true"
+
+# Initialize telemetry sanitizer
+sanitizer = TelemetrySanitizer(enabled=TELEMETRY_SANITIZATION_ENABLED)
 
 
 class AIQuery(BaseModel):
@@ -61,6 +67,28 @@ async def query_ai(query: AIQuery):
             model=OLLAMA_MODEL,
             enabled=False
         )
+    
+    # 🛡️ SECURITY: Sanitize prompt to prevent adversarial injection
+    sanitization_result = await sanitizer.sanitize_prompt(query.prompt)
+    
+    if not sanitization_result.is_safe:
+        logger.warning(
+            f"🚨 Blocked malicious prompt: {query.prompt[:100]}...",
+            extra={
+                "blocked_patterns": sanitization_result.blocked_patterns,
+                "confidence": sanitization_result.confidence
+            }
+        )
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "error": "Potentially malicious prompt detected",
+                "blocked_patterns": sanitization_result.blocked_patterns,
+                "message": "Your prompt contains patterns that could be harmful. Please rephrase."
+            }
+        )
+    
+    logger.info(f"✅ Prompt sanitization passed: {query.prompt[:50]}...")
     
     try:
         async with httpx.AsyncClient(timeout=OLLAMA_TIMEOUT) as client:

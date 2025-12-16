@@ -5,6 +5,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { BackupStatusCard } from "@/components/backup/BackupStatusCard";
+import { FailSafeSecurityCard } from "@/components/failsafe/FailSafeSecurityCard";
 
 interface SLOData {
     availability: { value: number; target: number };
@@ -202,7 +204,7 @@ export default function DashboardPage() {
                                     {systemStatus === "critical" && "Critical Issues Detected"}
                                 </h2>
                             </div>
-                            <p className="text-sm opacity-80">
+                            <p className="text-sm opacity-80" suppressHydrationWarning>
                                 Last updated: {new Date().toLocaleTimeString()}
                             </p>
                         </div>
@@ -248,8 +250,8 @@ export default function DashboardPage() {
                     </div>
                 </section>
 
-                {/* AI Insights & Security */}
-                <section className="grid gap-6 md:grid-cols-2 mb-8">
+                {/* AI Insights, Security, Backup & Fail-Safe */}
+                <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
                     {/* AI Insights */}
                     <Card className="bg-white/5 backdrop-blur-xl border-white/10">
                         <CardHeader>
@@ -335,12 +337,18 @@ export default function DashboardPage() {
                             <div className="mt-4">
                                 <Link href="/security/watchdog">
                                     <Button variant="outline" className="w-full">
-                                        View Security Dashboard
+                                        View All Alerts
                                     </Button>
                                 </Link>
                             </div>
                         </CardContent>
                     </Card>
+
+                    {/* Backup System */}
+                    <BackupStatusCard />
+
+                    {/* Fail-Safe Security */}
+                    <FailSafeSecurityCard />
                 </section>
 
                 {/* Quick Actions */}

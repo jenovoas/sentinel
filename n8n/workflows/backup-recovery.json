@@ -1,0 +1,187 @@
+{
+    "name": "Sentinel - Backup Recovery",
+    "nodes": [
+        {
+            "parameters": {
+                "path": "failsafe/backup-recovery",
+                "options": {}
+            },
+            "id": "webhook-backup",
+            "name": "Webhook - Backup Failed",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1,
+            "position": [
+                250,
+                300
+            ],
+            "webhookId": "backup-recovery-webhook"
+        },
+        {
+            "parameters": {
+                "functionCode": "// Parse incoming event\nconst event = $input.item.json;\n\nreturn {\n  backup_file: event.backup_file || 'unknown',\n  error: event.error || 'Unknown error',\n  retry_count: event.retry_count || 0,\n  timestamp: new Date().toISOString(),\n  severity: 'high'\n};"
+            },
+            "id": "parse-event",
+            "name": "Parse Event",
+            "type": "n8n-nodes-base.function",
+            "typeVersion": 1,
+            "position": [
+                450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "number": [
+                        {
+                            "value1": "={{$json.retry_count}}",
+                            "operation": "smaller",
+                            "value2": 3
+                        }
+                    ]
+                }
+            },
+            "id": "check-retry",
+            "name": "Should Retry?",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 1,
+            "position": [
+                650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "url": "http://backend:8000/api/v1/backup/trigger",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "httpHeaderAuth",
+                "options": {}
+            },
+            "id": "retry-backup",
+            "name": "Retry Backup",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                850,
+                200
+            ]
+        },
+        {
+            "parameters": {
+                "channel": "#security",
+                "text": "🚨 Backup Recovery Alert\n\nBackup failed after {{$json.retry_count}} retries.\nFile: {{$json.backup_file}}\nError: {{$json.error}}\n\nAction: Manual intervention required",
+                "otherOptions": {}
+            },
+            "id": "alert-slack",
+            "name": "Alert Team",
+            "type": "n8n-nodes-base.slack",
+            "typeVersion": 1,
+            "position": [
+                850,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "url": "http://backend:8000/api/v1/backup/verify",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "httpHeaderAuth",
+                "options": {}
+            },
+            "id": "verify-backup",
+            "name": "Verify Backup",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                1050,
+                200
+            ]
+        },
+        {
+            "parameters": {
+                "channel": "#security",
+                "text": "✅ Backup Recovery Successful\n\nBackup completed after retry.\nFile: {{$json.backup_file}}\nVerified: {{$json.verified}}",
+                "otherOptions": {}
+            },
+            "id": "success-notification",
+            "name": "Success Notification",
+            "type": "n8n-nodes-base.slack",
+            "typeVersion": 1,
+            "position": [
+                1250,
+                200
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook - Backup Failed": {
+            "main": [
+                [
+                    {
+                        "node": "Parse Event",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Parse Event": {
+            "main": [
+                [
+                    {
+                        "node": "Should Retry?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Should Retry?": {
+            "main": [
+                [
+                    {
+                        "node": "Retry Backup",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Alert Team",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Retry Backup": {
+            "main": [
+                [
+                    {
+                        "node": "Verify Backup",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Verify Backup": {
+            "main": [
+                [
+                    {
+                        "node": "Success Notification",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": true,
+    "settings": {},
+    "tags": [
+        "sentinel",
+        "backup",
+        "failsafe"
+    ]
+}

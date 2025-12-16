@@ -70,6 +70,16 @@ Sentinel is a **complete observability and security platform** that provides:
    - Application HA (health checks + graceful shutdown)
    - Multi-site disaster recovery
 
+6. **💾 Enterprise Backup System**
+   - Modular architecture (zero hardcoding)
+   - Automated backups with integrity validation
+   - Multi-destination support (Local + S3 + MinIO)
+   - Optional AES-256 encryption
+   - SHA256 checksums for verification
+   - Webhook notifications (Slack/Discord)
+   - Automated cleanup and retention policies
+   - [Learn more →](scripts/backup/README.md)
+
 ---
 
 ## 💡 Why Sentinel?
