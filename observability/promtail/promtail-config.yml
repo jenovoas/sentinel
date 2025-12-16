@@ -12,10 +12,17 @@ clients:
     tenant_id: sentinel
     batchwait: 1s
     batchsize: 1048576
+    
+    # 🛡️ IMPROVED: Better retry logic for reliability
     backoff_config:
-      min_period: 500ms
-      max_period: 5m
-      max_retries: 10
+      min_period: 1s
+      max_period: 30s
+      max_retries: 5
+    
+    # External labels for debugging
+    external_labels:
+      environment: production
+      cluster: sentinel-main
 
 positions:
   filename: /tmp/positions.yaml
