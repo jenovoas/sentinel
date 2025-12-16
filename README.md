@@ -689,3 +689,51 @@ Sentinel is a **complete observability and security platform** that provides:
 **Built with ❤️ for DevOps teams who deserve better tools**
 
 *Last Updated: December 2025*
+
+---
+
+## 🏢 Enterprise Edition
+
+Sentinel Cortex™ is available in two editions:
+
+### Community Edition (This Repo - MIT License)
+- ✅ Multi-tenant SaaS platform
+- ✅ Prometheus + Loki + Tempo integration
+- ✅ Grafana dashboards
+- ✅ Basic telemetry sanitization
+- ✅ Organization management
+- ✅ User authentication
+
+### Enterprise Edition (Private Repo - Commercial License)
+- 🛡️ **AIOpsDoom Defense** (Patent Pending)
+  - Advanced telemetry sanitization (100+ patterns)
+  - Multi-modal correlation engine
+  - Bayesian confidence scoring
+  
+- 🧠 **Dual-Guardian Architecture** (Patent Pending)
+  - Guardian-Alpha™: Intrusion detection (eBPF)
+  - Guardian-Beta™: Integrity assurance
+  - Mutual surveillance & auto-regeneration
+  
+- 🔐 **QSC™ Integration** (Patent Pending)
+  - Quantum-safe cryptography
+  - AES-256-GCM + X25519 + Kyber-1024
+  
+- 📞 **Contact**: sales@sentinel-cortex.com
+
+---
+
+## 🎯 Roadmap
+
+See [ROADMAP.md](docs/ROADMAP.md) for detailed development timeline.
+
+**Current Phase**: Weeks 3-4 - Cortex Decision Engine
+
+---
+
+## 📜 License
+
+**Community Edition**: MIT License (this repository)
+
+**Enterprise Edition**: Commercial License (contact for pricing)
+
