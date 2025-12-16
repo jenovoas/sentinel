@@ -1,43 +1,58 @@
 # 📚 Sentinel Documentation Index
 
-## 🎯 Current Focus: Neural Guard Patent & Implementation
+## 🎯 Current Focus: Sentinel Cortex Patent & Implementation
 
 ### Active Documents (Use These)
 
-1. **[NEURAL_ARCHITECTURE.md](./NEURAL_ARCHITECTURE.md)** ⭐
+1. **[CORTEX_NARRATIVA_COMPLETA.md](./CORTEX_NARRATIVA_COMPLETA.md)** ⭐⭐⭐
+   - **THE MASTER PITCH** - Complete investor narrative
+   - Cortex + Dos Nervios architecture
+   - 90-second pitch script
+   - Valuation framework ($100M+)
+   - **Status**: READY FOR INVESTORS
+
+2. **[CORTEX_DOS_NERVIOS.md](./CORTEX_DOS_NERVIOS.md)** ⭐⭐⭐
+   - **CLAIM 3 ARCHITECTURE** - Technical deep dive
+   - Nervio A: Intrusion Detection Police
+   - Nervio B: Integrity Assurance Police
+   - Auto-regeneration system
+   - **Status**: Patent-ready documentation
+
+3. **[SUPERPODERES_CAJA_SEGURA.md](./SUPERPODERES_CAJA_SEGURA.md)** ⭐⭐
+   - Core differentiation narrative
+   - Competitive analysis
+   - Business model (3 revenue streams)
+   - **Status**: Reference for pitch
+
+4. **[NEURAL_ARCHITECTURE.md](./NEURAL_ARCHITECTURE.md)** ⭐
    - Complete patent documentation (5 claims)
    - Technical architecture
    - Use cases and examples
    - **Status**: Ready for patent filing
 
-2. **[NEURAL_GUARD_INTEGRATED_ROADMAP.md](./NEURAL_GUARD_INTEGRATED_ROADMAP.md)** ⭐
-   - Strategic options (Fast Track, Hybrid, Full)
-   - Timeline and costs
-   - ROI analysis
-   - **Status**: Active planning
-
-3. **[CLAIM_2_DECISION_ENGINE_GUIDE.md](./CLAIM_2_DECISION_ENGINE_GUIDE.md)** ⭐
+5. **[CLAIM_2_DECISION_ENGINE_GUIDE.md](./CLAIM_2_DECISION_ENGINE_GUIDE.md)** ⭐
    - Step-by-step implementation guide (Weeks 3-4)
    - Daily tasks with code examples
    - **Status**: In progress (Week 3)
 
-4. **[COGNITIVE_SECURITY_IMPLEMENTATION.md](./COGNITIVE_SECURITY_IMPLEMENTATION.md)** ⭐
+6. **[COGNITIVE_SECURITY_IMPLEMENTATION.md](./COGNITIVE_SECURITY_IMPLEMENTATION.md)** ⭐
    - Telemetry sanitization implementation
    - Deployment instructions
    - Verification tests
    - **Status**: Completed
 
-5. **[COGNITIVE_SECURITY_WALKTHROUGH.md](./COGNITIVE_SECURITY_WALKTHROUGH.md)** ⭐
-   - Summary of security hardening
-   - Quick reference guide
-   - **Status**: Completed
+7. **[BRAND_GUIDE.md](./BRAND_GUIDE.md)** ⭐
+   - Sentinel Cortex brand identity
+   - Messaging framework
+   - Visual identity guidelines
+   - **Status**: Active
 
 ---
 
 ## 📋 Reference Documents (Context Only)
 
 ### Strategic Planning
-- **[COMPLETE_MASTER_PLAN.md](./COMPLETE_MASTER_PLAN.md)** - Original 9-week plan (superseded by Neural Guard roadmap)
+- **[COMPLETE_MASTER_PLAN.md](./COMPLETE_MASTER_PLAN.md)** - Original 9-week plan (superseded by Sentinel Cortex roadmap)
 - **[COGNITIVE_SECURITY_ROADMAP_V2.md](./COGNITIVE_SECURITY_ROADMAP_V2.md)** - Phase 2 planning (context)
 - **[COGNITIVE_SECURITY_HARDENING_PLAN.md](./COGNITIVE_SECURITY_HARDENING_PLAN.md)** - Detailed hardening plan (implemented)
 
@@ -74,7 +89,7 @@
 - Telemetry Sanitization (Claim 1)
 - Loki/Promtail hardening
 - Nginx authentication layer
-- Neural Guard project setup
+- Sentinel Cortex project setup
 
 ### In Progress 🚧
 - Decision Engine (Claim 2) - Week 3
