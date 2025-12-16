@@ -35,4 +35,5 @@ logs/
 *.log
 celerybeat-schedule
 celerybeat-schedule.db
-docs/SESSION_STATE.md
+# Context file (synced manually between repos)
+PROJECT_CONTEXT.md
