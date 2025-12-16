@@ -35,7 +35,7 @@ SENTINEL CORTEX = Organismo Vivo de Seguridad
 
 ---
 
-## 🔬 QSC GUARDIAN-ALPHA™: INTRUSION DETECTION (Shadow Mode)
+## 🚨 NERVIO A: INTRUSION DETECTION POLICE (Shadow Mode)
 
 ### Función
 Monitorea en tiempo real búsquedas de intrusión, malware, exploits.  
@@ -128,7 +128,7 @@ impl NervioA {
 
 ---
 
-## 🔬 QSC GUARDIAN-BETA™: INTEGRITY ASSURANCE (Shadow Mode)
+## 🔒 NERVIO B: INTEGRITY ASSURANCE POLICE (Shadow Mode)
 
 ### Función
 Monitorea en tiempo real integridad de datos, backups, certificados, permisos.  

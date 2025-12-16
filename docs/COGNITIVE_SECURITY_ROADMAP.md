@@ -38,7 +38,7 @@
 - **Cost**: $0
 - **Status**: Production-ready
 
-### Phase 2: Neural Guard (Rust)
+### Phase 2: Sentinel Cortex (Rust)
 - **Timeline**: 3-4 weeks
 - **Cost**: $24/month
 - **Status**: Ready to start
@@ -50,7 +50,7 @@
 
 ---
 
-## Phase 2: Neural Guard - Detailed Plan
+## Phase 2: Sentinel Cortex - Detailed Plan
 
 ### Week 1: Foundation
 **Days 1-2**: Setup
@@ -117,7 +117,7 @@
 ## Investment Timeline
 
 ### Seed Round ($2M)
-- Phase 2 (Neural Guard): $50K
+- Phase 2 (Sentinel Cortex): $50K
 - Team: $400K (3 engineers)
 - Marketing: $400K
 - Runway: $950K (18 months)
@@ -164,7 +164,7 @@
 **Action**: ⏳ Complete pitch deck
 
 ### Decision 2: After Phase 2 (Week 4)
-**Question**: Neural Guard production-ready?
+**Question**: Sentinel Cortex production-ready?
 
 **Criteria**:
 - 99.9% uptime
