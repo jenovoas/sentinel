@@ -2,7 +2,7 @@
 
 ## Overview
 
-**Concept**: Neural Guard orchestrates existing firewalls (CloudFlare, iptables, Fail2ban) instead of building from scratch.
+**Concept**: Sentinel Cortex orchestrates existing firewalls (CloudFlare, iptables, Fail2ban) instead of building from scratch.
 
 **Key Principle**: "Decide policies, don't filter packets"
 
@@ -12,7 +12,7 @@
 
 ```
 ┌─────────────────────────────────────────────────┐
-│  Neural Guard (Rust)                            │
+│  Sentinel Cortex (Rust)                            │
 │  - Analyzes threats                             │
 │  - Decides severity                             │
 │  - Orchestrates firewalls                       │
@@ -388,7 +388,7 @@ impl Fail2banProvider {
 
 ---
 
-## Integration with Neural Guard
+## Integration with Sentinel Cortex
 
 ```rust
 // src/intelligence/threat_responder.rs
@@ -500,7 +500,7 @@ whitelist = [
 **Day 16**: Fail2ban + Integration
 - [ ] Fail2ban client
 - [ ] FirewallManager
-- [ ] Neural Guard integration
+- [ ] Sentinel Cortex integration
 - [ ] End-to-end testing
 
 ---
@@ -509,7 +509,7 @@ whitelist = [
 
 **Firewall Manager = Neural orchestration layer**
 
-- ✅ Decides policies (Neural Guard)
+- ✅ Decides policies (Sentinel Cortex)
 - ✅ Doesn't filter packets (existing firewalls)
 - ✅ Low cost ($0-20/month)
 - ✅ High value (complete protection)

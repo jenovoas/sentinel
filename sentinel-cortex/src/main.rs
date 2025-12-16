@@ -12,7 +12,7 @@ use std::time::Duration;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Setup logging
     tracing_subscriber::fmt()
-        .with_env_filter("neural_guard=debug,info")
+        .with_env_filter("sentinel_cortex=debug,info")
         .init();
     
     // Load config from .env

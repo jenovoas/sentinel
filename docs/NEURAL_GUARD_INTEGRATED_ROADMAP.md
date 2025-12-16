@@ -1,4 +1,4 @@
-# 🧠 Sentinel Neural Guard - Integrated Roadmap & IP Strategy
+# 🧠 Sentinel Sentinel Cortex - Integrated Roadmap & IP Strategy
 
 ## Executive Summary
 
@@ -6,7 +6,7 @@
 
 **Dual Strategy**:
 1. **Sentinel Core** (SaaS): Backup/monitoring platform → $936K ARR
-2. **Neural Guard** (Patentable IP): Autonomous security → $300K+ licensing revenue
+2. **Sentinel Cortex** (Patentable IP): Autonomous security → $300K+ licensing revenue
 
 **Timeline**: 12 weeks to MVP + Patent filing  
 **Investment**: $2-5K (provisional patent) + development time  
@@ -18,7 +18,7 @@
 
 ### Option 1: Fast Track to Patent (Recommended)
 
-**Focus**: Implement core Neural Guard components + file provisional patent ASAP
+**Focus**: Implement core Sentinel Cortex components + file provisional patent ASAP
 
 **Timeline**: 8 weeks to provisional patent filing
 
@@ -40,7 +40,7 @@
 
 ### Option 2: Full Implementation First
 
-**Focus**: Build complete Neural Guard system, then file full patent
+**Focus**: Build complete Sentinel Cortex system, then file full patent
 
 **Timeline**: 20 weeks to full patent filing
 
@@ -268,7 +268,7 @@ pub async fn assess_threat(&self, events: &[Event]) -> ThreatAssessment {
 | Stream | Year 1 | Year 2 | Year 3 |
 |--------|--------|--------|--------|
 | **Sentinel Core SaaS** | $100K | $500K | $936K |
-| **Neural Guard Licensing** | $0 | $100K | $300K |
+| **Sentinel Cortex Licensing** | $0 | $100K | $300K |
 | **Workflow Marketplace** | $0 | $50K | $108K |
 | **Total ARR** | **$100K** | **$650K** | **$1.34M** |
 
@@ -327,7 +327,7 @@ pub async fn assess_threat(&self, events: &[Event]) -> ThreatAssessment {
 
 **Q1 2026**:
 - ✅ Patent pending status
-- Launch Neural Guard beta
+- Launch Sentinel Cortex beta
 - Approach SOAR vendors for licensing
 
 **Q2-Q3 2026**:
@@ -387,7 +387,7 @@ Product Strategy:
 │  ├─ $78/month per tenant
 │  └─ $936K ARR potential
 │
-└─ Neural Guard (Patentable IP)
+└─ Sentinel Cortex (Patentable IP)
    ├─ Autonomous incident response
    ├─ Adversarial AI protection
    ├─ Patent pending Q1 2026

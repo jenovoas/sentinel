@@ -35,12 +35,12 @@ Opción B: Sistemas inteligentes sin control
 └─ Resultado: 1% de acciones catastróficas
 ```
 
-### Acto 3: La Solución (QSC - Quantic Security Cortex - Organismo Vivo)
+### Acto 3: La Solución (Sentinel Cortex - Organismo Vivo)
 ```
 "No elegir entre seguridad y velocidad.
 Tenemos ambas."
 
-SEQSC - QUANTIC SECURITY CORTEX™ (Technology - Licensable)
+SENTINEL CORTEX = Cerebro + Dos Nervios + Regeneración
 
                     🧠 CORTEX
                     (Piensa)
@@ -95,7 +95,7 @@ RESULTADO: 99% de incidentes resueltos automáticamente
 porque IA es vulnerable, pero tampoco pueden ir manual 
 porque es lento.
 
-Solución: QSC - Quantic Security Cortex. Un organismo de seguridad vivo:
+Solución: Sentinel Cortex. Un organismo de seguridad vivo:
 - Un cerebro inteligente (Cortex) que piensa
 - Dos policías independientes (Nervios A & B) que se vigilan mutuamente
 - Capacidad de auto-regenerarse cuando es atacado
@@ -129,7 +129,7 @@ Que se repara a sí misma.
 ### Vs Splunk
 ```
 Splunk: Logs → Dashboard → Human decision
-Powered by QSC™ (Quantic Security Cortex): Logs → Sanitization → Multi-factor → Auto-action → Auto-regenerate
+Cortex: Logs → Sanitization → Multi-factor → Auto-action → Auto-regenerate
 Winner: Cortex (100x faster, 0 manual work)
 ```
 
