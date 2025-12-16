@@ -533,7 +533,7 @@ T+6min: Unusual API pattern: bulk user export (OpenTelemetry)
 
 ## Differentiation from Prior Art
 
-| Feature | Sentinel Neural Guard | Splunk SOAR | Palo Alto XSOAR | Tines | Darktrace |
+| Feature | Sentinel Sentinel Cortex | Splunk SOAR | Palo Alto XSOAR | Tines | Darktrace |
 |---------|----------------------|-------------|-----------------|-------|-----------|
 | **Telemetry Sanitization** | ✅ Yes (40+ patterns) | ❌ No | ❌ No | ❌ No | ❌ No |
 | **Adversarial Protection** | ✅ AIOpsDoom blocking | ❌ Vulnerable | ❌ Vulnerable | ❌ Vulnerable | ❌ N/A |
@@ -611,7 +611,7 @@ spec:
    - Backup/monitoring platform: $78/month per tenant
    - Target: 1,000 customers = $78K MRR = $936K ARR
 
-2. **Neural Guard Licensing**:
+2. **Sentinel Cortex Licensing**:
    - License to SOAR vendors: 5-15% royalty on their sales
    - Target: 3 partners × $1M sales/year × 10% = $300K/year
 
@@ -658,7 +658,7 @@ Core Platform (SaaS)
 ├─ $78/month per tenant
 └─ $936K ARR potential
 
-Neural Guard (Patentable IP)
+Sentinel Cortex (Patentable IP)
 ├─ Autonomous incident response
 ├─ Adversarial AI protection
 ├─ Licensing to SOAR vendors

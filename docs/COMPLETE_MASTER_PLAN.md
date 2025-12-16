@@ -25,7 +25,7 @@
                              │
                              ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  Layer 2: Neural Guard (Rust)                               │
+│  Layer 2: Sentinel Cortex (Rust)                               │
 ├─────────────────────────────────────────────────────────────┤
 │  • Event normalization & correlation                        │
 │  • Pattern detection & anomaly scoring                      │
@@ -46,7 +46,7 @@
 
 ## Phase 2: Complete Implementation (9 Weeks)
 
-### Week 1-2: Neural Guard Foundation + Data Ingestion
+### Week 1-2: Sentinel Cortex Foundation + Data Ingestion
 
 #### Week 1: Core Setup + Collectors
 
@@ -111,7 +111,7 @@
 - [ ] Anomaly scoring (baseline learning)
 - [ ] Integration tests
 
-**Deliverable**: Neural Guard ingesting from 9 sources
+**Deliverable**: Sentinel Cortex ingesting from 9 sources
 
 ---
 
@@ -132,7 +132,7 @@
   6. **Auto-Remediation**: Fix anomalies (CPU, memory, disk)
 
 **Days 18-21: Integration & Testing**
-- [ ] Neural Guard → N8N webhook calls
+- [ ] Sentinel Cortex → N8N webhook calls
 - [ ] Event routing logic
 - [ ] Monitoring dashboards (Grafana)
 - [ ] Error handling & retries
@@ -199,7 +199,7 @@
 
 #### Week 6: Integration & Security
 
-**Days 36-38: Neural Guard Integration**
+**Days 36-38: Sentinel Cortex Integration**
 - [ ] Route user events to user workspace
 - [ ] Fallback to security layer
 - [ ] Execution logging
@@ -819,7 +819,7 @@ AttackPattern {
 | Component | Specs | Provider | Cost |
 |-----------|-------|----------|------|
 | **Sentinel Core** | 4 vCPU, 8GB RAM | DigitalOcean | $48 |
-| **Neural Guard** | 2 vCPU, 4GB RAM | DigitalOcean | $24 |
+| **Sentinel Cortex** | 2 vCPU, 4GB RAM | DigitalOcean | $24 |
 | **N8N Security** | 4 vCPU, 8GB RAM | DigitalOcean | $48 |
 | **N8N User** | 4 vCPU, 8GB RAM | DigitalOcean | $48 |
 | **OpenTelemetry** | 2 vCPU, 4GB RAM | DigitalOcean | $24 |
@@ -853,7 +853,7 @@ AttackPattern {
 ```bash
 # Firewall rules
 □ Production network isolated from honeypots
-□ Honeypots can only send logs to Neural Guard
+□ Honeypots can only send logs to Sentinel Cortex
 □ No outbound internet from honeypots
 □ Rate limiting on all public endpoints
 □ DDoS protection (CloudFlare/AWS Shield)
@@ -965,7 +965,7 @@ Monthly checklist:
 
 ### Technical KPIs
 
-**Neural Guard**:
+**Sentinel Cortex**:
 - [ ] 99.9% uptime
 - [ ] <10ms p99 latency
 - [ ] 10K events/sec throughput
@@ -1062,7 +1062,7 @@ Monthly checklist:
 
 **Milestones**:
 - ✅ Phase 1 complete (Fail-Safe)
-- ⏳ Phase 2 in 9 weeks (Neural Guard + Honeypots)
+- ⏳ Phase 2 in 9 weeks (Sentinel Cortex + Honeypots)
 - ⏳ 40 customers by month 12
 - ⏳ $384K ARR
 - ⏳ Seed → Series A ready
@@ -1101,7 +1101,7 @@ Monthly checklist:
 4. ⏳ Test data ingestion
 
 ### Month 1
-1. ⏳ Complete Neural Guard core
+1. ⏳ Complete Sentinel Cortex core
 2. ⏳ Deploy N8N Security
 3. ⏳ Test 6 playbooks
 4. ⏳ Customer pilot (3 companies)

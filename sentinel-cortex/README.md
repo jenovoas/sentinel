@@ -1,10 +1,10 @@
-# 🧠 Neural Guard - Decision Engine
+# 🧠 Sentinel Cortex - Decision Engine
 
 **Patent Claim 2**: Multi-factor cognitive threat assessment system
 
 ## Overview
 
-Neural Guard is the cognitive decision engine for Sentinel's autonomous security system. It collects events from multiple sources, correlates them to detect attack patterns, and triggers automated response playbooks.
+Sentinel Cortex is the cognitive decision engine for Sentinel's autonomous security system. It collects events from multiple sources, correlates them to detect attack patterns, and triggers automated response playbooks.
 
 ## Architecture
 
@@ -20,7 +20,7 @@ Neural Guard is the cognitive decision engine for Sentinel's autonomous security
                  │
                  ▼
 ┌─────────────────────────────────────────────────┐
-│  Neural Guard (Rust)                             │
+│  Sentinel Cortex (Rust)                             │
 ├─────────────────────────────────────────────────┤
 │  1. Collect events (every 30s)                   │
 │  2. Detect patterns (multi-factor)               │
@@ -73,7 +73,7 @@ Correlates events across:
 ### Build
 
 ```bash
-cd neural-guard
+cd sentinel-cortex
 cargo build --release
 ```
 
@@ -93,8 +93,8 @@ cargo run
 ### Docker
 
 ```bash
-docker build -t neural-guard .
-docker run --env-file .env neural-guard
+docker build -t sentinel-cortex .
+docker run --env-file .env sentinel-cortex
 ```
 
 ## Configuration
@@ -117,7 +117,7 @@ RUST_LOG=neural_guard=debug,info
 ### Project Structure
 
 ```
-neural-guard/
+sentinel-cortex/
 ├── src/
 │   ├── main.rs              # Main loop
 │   ├── models/              # Data structures
@@ -191,7 +191,7 @@ cargo test
 
 ## License
 
-Part of Sentinel Neural Guard (Patent Pending)
+Part of Sentinel Sentinel Cortex (Patent Pending)
 
 ## Status
 

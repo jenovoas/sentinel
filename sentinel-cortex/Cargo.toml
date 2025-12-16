@@ -1,5 +1,5 @@
 [package]
-name = "neural-guard"
+name = "sentinel-cortex"
 version = "0.1.0"
 edition = "2021"
 

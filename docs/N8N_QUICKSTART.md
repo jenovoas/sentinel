@@ -189,7 +189,7 @@ curl -X POST http://localhost:5678/webhook/failsafe/intrusion-lockdown \
 
 **5. Pitch Points** (30 seconds)
 > "This is just Phase 1. Phase 2 adds:
-> - Neural Guard (Rust) for pattern detection
+> - Sentinel Cortex (Rust) for pattern detection
 > - 9 data sources auto-ingestion
 > - Cognitive learning
 > - Neural honeypots

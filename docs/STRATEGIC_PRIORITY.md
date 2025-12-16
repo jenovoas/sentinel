@@ -52,7 +52,7 @@
 - **Tasks**: 3 attack patterns, correlation, confidence scoring
 
 **Total Time**: 9-12 days  
-**Result**: Neural Guard MVP
+**Result**: Sentinel Cortex MVP
 
 ---
 
@@ -105,7 +105,7 @@
 
 **Option B: Technical-Focused** (8-11 days)
 - Prometheus + Pattern Detection
-- Result: Neural Guard MVP
+- Result: Sentinel Cortex MVP
 
 **Option C: Balanced** (6-8 days)
 - N8N + Prometheus + CloudFlare

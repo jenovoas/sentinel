@@ -1,4 +1,4 @@
-# 🧠 Sentinel Neural Guard - Architecture & Implementation Plan
+# 🧠 Sentinel Sentinel Cortex - Architecture & Implementation Plan
 
 ## Executive Summary
 
@@ -26,7 +26,7 @@
          (Humans + Simple Webhooks)
 ```
 
-### Target State (Neural Guard)
+### Target State (Sentinel Cortex)
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -39,7 +39,7 @@
                   │ Events (HTTP/gRPC)
                   ▼
 ┌─────────────────────────────────────────────┐
-│  Neural Guard (Rust)                        │
+│  Sentinel Cortex (Rust)                        │
 │  - Event Processing                         │
 │  - Policy Engine                            │
 │  - Decision Making                          │
@@ -65,7 +65,7 @@
 | Component | Specs | Provider | Cost |
 |-----------|-------|----------|------|
 | **Sentinel Core** | 4 vCPU, 8GB RAM | DigitalOcean | $48 |
-| **Neural Guard** | 2 vCPU, 4GB RAM | DigitalOcean | $24 |
+| **Sentinel Cortex** | 2 vCPU, 4GB RAM | DigitalOcean | $24 |
 | **N8N** | 4 vCPU, 8GB RAM | DigitalOcean | $48 |
 | **PostgreSQL** | 2 vCPU, 4GB RAM | DigitalOcean | $24 |
 | **Redis** | 1 vCPU, 2GB RAM | DigitalOcean | $12 |
@@ -85,7 +85,7 @@
 
 | Phase | Time | Your Cost (Opportunity) |
 |-------|------|------------------------|
-| Neural Guard MVP | 1-2 weeks | $0 (you build it) |
+| Sentinel Cortex MVP | 1-2 weeks | $0 (you build it) |
 | Integration | 3-5 days | $0 |
 | Testing & Polish | 1 week | $0 |
 | **Total** | **3-4 weeks** | **$0** |
@@ -97,7 +97,7 @@
 
 ---
 
-## 3. Neural Guard - Technical Spec
+## 3. Sentinel Cortex - Technical Spec
 
 ### Tech Stack
 
@@ -354,7 +354,7 @@ impl N8NClient {
 
 ### Changes to Sentinel Core (Minimal)
 
-#### 1. Add Neural Guard Client
+#### 1. Add Sentinel Cortex Client
 
 ```python
 # backend/app/neural_guard.py
@@ -363,7 +363,7 @@ import httpx
 from typing import Dict, Any, Optional
 
 class NeuralGuardClient:
-    """Client for Sentinel Neural Guard service"""
+    """Client for Sentinel Sentinel Cortex service"""
     
     def __init__(self, base_url: str, api_key: str):
         self.base_url = base_url
@@ -377,7 +377,7 @@ class NeuralGuardClient:
         context: Dict[str, Any],
         source: str = "sentinel"
     ) -> Optional[Dict[str, Any]]:
-        """Send event to Neural Guard for processing"""
+        """Send event to Sentinel Cortex for processing"""
         try:
             response = await self.client.post(
                 f"{self.base_url}/events",
@@ -394,11 +394,11 @@ class NeuralGuardClient:
             if response.status_code == 200:
                 return response.json()
             else:
-                logger.error(f"Neural Guard error: {response.status_code}")
+                logger.error(f"Sentinel Cortex error: {response.status_code}")
                 return None
                 
         except Exception as e:
-            logger.error(f"Failed to send event to Neural Guard: {e}")
+            logger.error(f"Failed to send event to Sentinel Cortex: {e}")
             return None
 ```
 
@@ -422,7 +422,7 @@ async def trigger_backup(background_tasks: BackgroundTasks):
         result = run_backup()
         
         if result["status"] == "failed":
-            # Send event to Neural Guard
+            # Send event to Sentinel Cortex
             await neural_guard.send_event(
                 event_type="backup_failed",
                 severity="high",
@@ -440,14 +440,14 @@ async def trigger_backup(background_tasks: BackgroundTasks):
 
 **Impact on Sentinel Core**: 
 - ✅ Minimal (just add client + event calls)
-- ✅ Non-breaking (Neural Guard is optional)
+- ✅ Non-breaking (Sentinel Cortex is optional)
 - ✅ ~200 lines of code total
 
 ---
 
 ## 5. Implementation Timeline
 
-### Week 1: Neural Guard MVP
+### Week 1: Sentinel Cortex MVP
 
 **Days 1-2**: Project Setup
 - [x] Create Rust project structure
@@ -617,7 +617,7 @@ sqlx::query!(
 
 ## 10. Risks & Mitigation
 
-### Risk 1: Neural Guard Becomes Single Point of Failure
+### Risk 1: Sentinel Cortex Becomes Single Point of Failure
 
 **Mitigation**:
 - Run 2-3 instances (HA)
@@ -642,7 +642,7 @@ sqlx::query!(
 
 ---
 
-## 11. Comparison: Rust vs Python for Neural Guard
+## 11. Comparison: Rust vs Python for Sentinel Cortex
 
 | Aspect | Rust | Python |
 |--------|------|--------|

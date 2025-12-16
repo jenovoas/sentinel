@@ -3,7 +3,7 @@
 ## Vision: Self-Learning, Self-Healing Security System
 
 **Architecture**: 3-Layer Cognitive System
-- **Layer 1**: Neural Guard (Rust) - The Brain
+- **Layer 1**: Sentinel Cortex (Rust) - The Brain
 - **Layer 2**: N8N Security - Managed Playbooks
 - **Layer 3**: N8N User - Customer Automation
 
@@ -31,7 +31,7 @@
                   │
                   ▼
 ┌─────────────────────────────────────────────────┐
-│  Neural Guard (Rust)                            │
+│  Sentinel Cortex (Rust)                            │
 │  - Event aggregation                            │
 │  - Pattern detection                            │
 │  - Anomaly scoring                              │
@@ -85,7 +85,7 @@ impl DataIngestionPipeline {
 
 ---
 
-## Phase 2A: Neural Guard + Auto-Ingestion (Weeks 1-4)
+## Phase 2A: Sentinel Cortex + Auto-Ingestion (Weeks 1-4)
 
 ### Week 1: Foundation + Data Collectors
 
@@ -145,7 +145,7 @@ impl PrometheusCollector {
 - [ ] N8N client
 - [ ] Test with 1 playbook
 
-**Deliverable**: Neural Guard ingesting data from 6 sources
+**Deliverable**: Sentinel Cortex ingesting data from 6 sources
 
 ### Week 2: Intelligence Layer
 
@@ -227,13 +227,13 @@ impl PatternDetector {
 6. Auto-Remediation (from pattern detection)
 
 #### Days 18-21: Integration
-- [ ] Neural Guard → N8N webhooks
+- [ ] Sentinel Cortex → N8N webhooks
 - [ ] Event routing logic
 - [ ] Monitoring dashboards
 - [ ] Error handling
 - [ ] Rollback procedures
 
-**Deliverable**: N8N Security layer working with Neural Guard
+**Deliverable**: N8N Security layer working with Sentinel Cortex
 
 ### Week 4: Polish + Production
 
@@ -304,7 +304,7 @@ security:
 
 ### Week 6: Integration + Testing
 
-#### Days 36-38: Neural Guard Integration
+#### Days 36-38: Sentinel Cortex Integration
 - [ ] Route user events to user workspace
 - [ ] Fallback to security layer
 - [ ] Execution logging
@@ -481,7 +481,7 @@ Hardening checklist:
 
 ### Technical KPIs
 
-**Neural Guard**:
+**Sentinel Cortex**:
 - [ ] 99.9% uptime
 - [ ] <10ms p99 latency
 - [ ] 10K events/sec throughput
@@ -517,7 +517,7 @@ Hardening checklist:
 | Component | Cost |
 |-----------|------|
 | Sentinel Core | $48 |
-| Neural Guard | $24 |
+| Sentinel Cortex | $24 |
 | N8N Security | $48 |
 | N8N User | $48 |
 | PostgreSQL | $24 |
@@ -573,7 +573,7 @@ Hardening checklist:
 4. ⏳ Test data ingestion
 
 ### Month 1
-1. ⏳ Complete Neural Guard
+1. ⏳ Complete Sentinel Cortex
 2. ⏳ Deploy N8N Security
 3. ⏳ Test 3 playbooks
 4. ⏳ Customer pilot

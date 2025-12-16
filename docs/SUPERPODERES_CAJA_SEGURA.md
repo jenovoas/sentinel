@@ -2,7 +2,7 @@
 
 ## El Pitch en Una Frase
 
-> "Neural Guard es IA superinteligente dentro de una caja de seguridad impenetrable. Actúa con velocidad de máquina, pero con prudencia de guardia de seguridad."
+> "Sentinel Cortex es IA superinteligente dentro de una caja de seguridad impenetrable. Actúa con velocidad de máquina, pero con prudencia de guardia de seguridad."
 
 ---
 
@@ -37,7 +37,7 @@ Alerta → Humano revisa → Acción
 
 ## ✨ La Solución: Superpoderes en Caja Segura
 
-### Neural Guard = Opción C (Rápido + Seguro)
+### Sentinel Cortex = Opción C (Rápido + Seguro)
 
 ```
 Logs → Sanitización → Multi-Factor Decision → Caja Segura → Acción
@@ -134,7 +134,7 @@ audit:
 
 ## 📊 Comparativa vs. Competencia
 
-| Característica | Neural Guard | Splunk SOAR | Datadog | Palo Alto XSOAR | Tines |
+| Característica | Sentinel Cortex | Splunk SOAR | Datadog | Palo Alto XSOAR | Tines |
 |----------------|--------------|-------------|---------|-----------------|-------|
 | **Sanitización Adversarial** | ✅ Sí (40+ patrones) | ❌ No | ❌ No | ❌ No | ❌ No |
 | **Multi-Factor Decision** | ✅ Sí (5 factores) | ⚠️ Reglas estáticas | ⚠️ Alertas simples | ⚠️ Reglas complejas | ❌ No |
@@ -166,7 +166,7 @@ audit:
 
 **Modelo**: 10-15% royalty sobre sus ventas
 
-**Value Prop**: "Integra Neural Guard y diferénciate con IA segura"
+**Value Prop**: "Integra Sentinel Cortex y diferénciate con IA segura"
 
 **Ejemplo**:
 - Splunk vende $1M en SOAR
@@ -264,19 +264,19 @@ audit:
 
 ### Para CORFO (30 segundos)
 
-> "Neural Guard resuelve el dilema de automatización en seguridad: velocidad vs seguridad. Somos la primera plataforma que combina IA superinteligente con validación multi-factor, permitiendo automatización 100% segura. Esto es crítico para PYMES chilenas que no pueden pagar $100K/año en SOAR enterprise. Con patent pending y $76M TAM Latam, buscamos $500K para escalar."
+> "Sentinel Cortex resuelve el dilema de automatización en seguridad: velocidad vs seguridad. Somos la primera plataforma que combina IA superinteligente con validación multi-factor, permitiendo automatización 100% segura. Esto es crítico para PYMES chilenas que no pueden pagar $100K/año en SOAR enterprise. Con patent pending y $76M TAM Latam, buscamos $500K para escalar."
 
 ### Para VCs (1 minuto)
 
-> "El mercado SOAR es $10B, pero 90% de PYMES no pueden pagarlo. Datadog cobra $2K/mes - imposible para startups. Nosotros atacamos ese 90% con Neural Guard: automatización de seguridad a $78/mes, pero con una innovación clave: 'superpoderes en caja segura'. 
+> "El mercado SOAR es $10B, pero 90% de PYMES no pueden pagarlo. Datadog cobra $2K/mes - imposible para startups. Nosotros atacamos ese 90% con Sentinel Cortex: automatización de seguridad a $78/mes, pero con una innovación clave: 'superpoderes en caja segura'. 
 >
-> Otros sistemas son tontos (reglas fijas) o peligrosos (IA sin control). Neural Guard usa multi-factor decision + sanitización adversarial - matemáticamente imposible de engañar. Esto es patentable (Claims 1-5) y defensible.
+> Otros sistemas son tontos (reglas fijas) o peligrosos (IA sin control). Sentinel Cortex usa multi-factor decision + sanitización adversarial - matemáticamente imposible de engañar. Esto es patentable (Claims 1-5) y defensible.
 >
 > 3 revenue streams: SaaS ($9M TAM), Licensing ($300K/año), Marketplace ($108K/año). Patent pending Q1 2026. Buscamos $2M Seed para 100 clientes en 12 meses."
 
 ### Para Técnicos (2 minutos)
 
-> "Neural Guard es un sistema de decisión cognitiva para automatización de seguridad. El problema: sistemas actuales son vulnerables a prompt injection - un atacante puede manipular logs para que la IA ejecute acciones destructivas.
+> "Sentinel Cortex es un sistema de decisión cognitiva para automatización de seguridad. El problema: sistemas actuales son vulnerables a prompt injection - un atacante puede manipular logs para que la IA ejecute acciones destructivas.
 >
 > Nuestra solución tiene 3 capas:
 >
@@ -345,7 +345,7 @@ audit:
 ### 5. Timing Perfecto
 - AI boom → Más automatización
 - Más automatización → Más vulnerabilidades
-- Más vulnerabilidades → Más necesidad de Neural Guard
+- Más vulnerabilidades → Más necesidad de Sentinel Cortex
 
 ---
 

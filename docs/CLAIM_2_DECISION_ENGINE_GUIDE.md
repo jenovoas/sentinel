@@ -1,8 +1,8 @@
-# 🧠 Neural Guard - Claim 2: Decision Engine (Semanas 3-4)
+# 🧠 Sentinel Cortex - Claim 2: Decision Engine (Semanas 3-4)
 
 ## ¿Qué es el Decision Engine?
 
-Es el **cerebro** de Neural Guard que:
+Es el **cerebro** de Sentinel Cortex que:
 1. Recibe eventos de múltiples fuentes (Prometheus, Loki, PostgreSQL, etc.)
 2. Los correlaciona para detectar patrones de ataque
 3. Calcula un **confidence score** (0.0-1.0)
@@ -531,7 +531,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let detector = PatternDetector::new();
     let n8n = N8NClient::new(n8n_url);
     
-    tracing::info!("🧠 Neural Guard Decision Engine started");
+    tracing::info!("🧠 Sentinel Cortex Decision Engine started");
     
     // Main loop: collect → detect → act
     loop {
