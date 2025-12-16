@@ -33,7 +33,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from app.config import get_settings, get_allowed_origins
 from app.logging_config import setup_logging
 from app.database import init_db, close_db, check_db_connection
-from app.routers import health, users, tenants, dashboard, analytics, ai, auth
+from app.routers import health, users, tenants, dashboard, analytics, ai, auth, backup, failsafe
 from app.shutdown import setup_signal_handlers  # Graceful shutdown
 
 settings = get_settings()
@@ -71,8 +71,8 @@ async def lifespan(app: FastAPI):
     
     # Verify database connectivity
     db_status = await check_db_connection()
-    if db_status["connected"]:
-        logger.info(f"✅ Database connection verified: {db_status['database']}")
+    if db_status.get("db_connection", False):
+        logger.info(f"✅ Database connection verified")
     else:
         logger.error(f"❌ Database connection failed: {db_status.get('error', 'Unknown error')}")
     
@@ -187,6 +187,8 @@ app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["users"])
 app.include_router(tenants.router, prefix="/api/v1/tenants", tags=["tenants"])
 app.include_router(dashboard.router, prefix="/api/v1/dashboard", tags=["dashboard"])
+app.include_router(backup.router)  # Backup API (prefix defined in router)
+app.include_router(failsafe.router)  # Fail-Safe Security Layer
 
 
 # ============================================================================

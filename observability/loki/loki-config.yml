@@ -59,6 +59,13 @@ limits_config:
   max_streams_per_user: 0
   max_entries_limit_per_query: 5000
   retention_period: 720h
+  
+  # 🛡️ CRITICAL FIX: Allow unordered writes to prevent log rejection
+  # Impact: ~10-15% latency increase, but prevents data loss from timestamp skew
+  unordered_writes: true
+  
+  # Enforce metric name validation
+  enforce_metric_name: false
 
 # Configuración de compactación
 compactor:

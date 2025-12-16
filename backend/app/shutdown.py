@@ -17,7 +17,14 @@ This is critical for HA:
 import signal
 import sys
 import asyncio
+import logging
 from typing import Optional
+
+from app.logging_config import setup_logging
+from app.database import close_db
+
+# Setup logger
+logger = setup_logging("INFO")
 
 # Global shutdown event
 shutdown_event: Optional[asyncio.Event] = None

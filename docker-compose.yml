@@ -153,11 +153,16 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "9091:9091"  # 🔐 Prometheus proxy (auth required)
+      - "3101:3101"  # 🔐 Loki proxy (auth required)
     depends_on:
       - backend
       - frontend
     volumes:
       - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./docker/nginx/nginx-observability.conf:/etc/nginx/conf.d/observability.conf:ro  # 🔐 Observability proxy
+      - ./docker/nginx/.htpasswd_metrics:/etc/nginx/.htpasswd_metrics:ro  # 🔐 Metrics auth
+      - ./docker/nginx/.htpasswd_logs:/etc/nginx/.htpasswd_logs:ro  # 🔐 Logs auth
     networks:
       - sentinel_network
     healthcheck:

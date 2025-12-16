@@ -179,13 +179,16 @@ async def health_check() -> dict:
         }
 
 
-async def check_db_connection() -> bool:
+async def check_db_connection() -> dict:
     """Simple database connection check."""
     try:
         result = await health_check()
-        return result["db_connection"]
-    except Exception:
-        return False
+        return result
+    except Exception as e:
+        return {
+            "connected": False,
+            "error": str(e)
+        }
 
 
 async def test_connection() -> bool:
