@@ -37,3 +37,16 @@ celerybeat-schedule
 celerybeat-schedule.db
 # Context file (synced manually between repos)
 PROJECT_CONTEXT.md
+
+# Workflow repositories (too large, contain secrets)
+n8n-workflows-safe/
+n8n-zie619-workflows/
+n8n-danitilahun-workflows/
+ultimate-n8n-ai-workflows/
+n8n-automation-2025-AI-Agent-Suite/
+securityonion-n8n-workflows/
+n8n-cybersecurity-workflows/
+
+# Workflow index (too large - 11MB)
+workflow_index.json
+
