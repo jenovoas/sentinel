@@ -1,0 +1,60 @@
+|@startuml
+skinparam backgroundColor white
+skinparam handwritten false
+skinparam sequence {
+    ArrowColor DeepSkyBlue
+    ActorBorderColor DeepSkyBlue
+    LifeLineBorderColor blue
+    LifeLineBackgroundColor #A9DCDF
+    ParticipantBorderColor DeepSkyBlue
+    ParticipantBackgroundColor DodgerBlue
+    ParticipantFontName Impact
+    ParticipantFontSize 14
+    ParticipantFontColor #FFFFFF
+}
+
+title "CLAIM 3: Cognitive Syscall Interception (The Vagus Nerve)"
+
+actor "Compromised AI / User" as User
+box "User Space (Cortex)" #White
+    participant "Guardian-Alpha\n(Rust Driver)" as Driver
+    participant "Decision Engine\n(Cortex)" as Brain
+end box
+
+box "Kernel Space (Linux Ring 0)" #F5F5F5
+    participant "LSM Hook\n(security_task_prctl)" as Hook
+    participant "eBPF Map\n(Block Rules)" as Map
+    participant "OS Resources\n(File System)" as OS
+end box
+
+== Phase 1: Policy Injection (Prevention) ==
+Brain -> Driver: Update Threat Level (High)
+Driver -> Map: bpf_map_update_elem(PID, BLOCK)
+note right: "Vaccinating" the Kernel\nagainst the process
+
+== Phase 2: The Attack (Interception) ==
+User -> Hook: Syscall: execve("rm -rf /")
+activate Hook
+
+Hook -> Map: Lookup(Current PID)
+activate Map
+Map --> Hook: Result: BLOCKED (Action: KILL)
+deactivate Map
+
+note over Hook: ⚡ DECISION IN < 100μs ⚡\nNo context switch required
+
+alt Action: BLOCKED
+    Hook -> Hook: bpf_send_signal(SIGKILL)
+    Hook --> User: Return -EPERM (Operation not permitted)
+    destroy User
+else Action: ALLOWED
+    Hook -> OS: Execute Command
+end
+
+deactivate Hook
+
+== Phase 3: Telemetry ==
+Driver -> Brain: Alert: Attack Blocked
+Brain -> Brain: Log Audit Trail (Immutable)
+
+@enduml
