@@ -5,7 +5,7 @@ Supports both legacy (tenant_id) and new (organization_id) schemas
 from sqlalchemy.orm import Session
 from app.models.user import User
 from app.schemas import UserCreate
-from app.security import get_password_hash, verify_password
+from app.auth_utils import get_password_hash, verify_password
 from app.services.tenant_service import get_tenant_by_slug
 
 
