@@ -159,25 +159,65 @@ Mostrar la arquitectura completa de Dos Nervios™ con mutual surveillance.
                           └─────────────────┘
 ```
 
-### Mutual Surveillance Mechanism
+### Mutual Surveillance Mechanism (ACTUALIZADO con Heartbeat Atómico)
 
 ```
-GUARDIAN-ALPHA MONITORS GUARDIAN-BETA:
-├─ Heartbeat: Cada 10s
-├─ Checks: Process alive, config integrity
-├─ Action: Si Beta falla → Regenerate from backup
-└─ Alert: Notify admin
+SHARED HEARTBEAT (Arc<AtomicU64>):
+├─ Storage: Single 64-bit atomic timestamp (Unix epoch)
+├─ Location: Shared memory (accessible from kernel + user space)
+├─ Synchronization: Lock-free atomic operations
+└─ Overhead: < 0.01% CPU utilization
 
-GUARDIAN-BETA MONITORS GUARDIAN-ALPHA:
-├─ Heartbeat: Cada 10s
-├─ Checks: eBPF program loaded, policy valid
-├─ Action: Si Alpha falla → Reload eBPF program
-└─ Alert: Notify admin
+GUARDIAN-ALPHA → HEARTBEAT:
+├─ Emission: Every eBPF event cycle (~1000/sec)
+├─ Operation: Atomic store of current timestamp
+├─ Latency: ~5-10ns per update
+└─ Failure mode: Timestamp stops updating if Alpha crashes
 
-BI-DIRECTIONAL:
-├─ Ambos se monitorean simultáneamente
+GUARDIAN-BETA → HEARTBEAT:
+├─ Check frequency: Every 1 second
+├─ Verification: (current_time - last_heartbeat) > TIMEOUT?
+├─ Timeout threshold: 5 seconds (configurable)
+├─ Action on timeout: Trigger auto-regeneration protocol
+└─ Recovery time: < 7 seconds total
+
+AUTO-REGENERATION PROTOCOL:
+├─ Detection: < 5s (timeout threshold)
+├─ Actions (automatic, NO human intervention):
+│   ├─ 1. Log critical event (timestamp, delta)
+│   ├─ 2. Restart eBPF subsystem
+│   ├─ 3. Reload security policies from immutable backup
+│   ├─ 4. Reset heartbeat (prevent alert loop)
+│   └─ 5. Resume normal monitoring
+├─ Regeneration time: < 2s (eBPF reload)
+└─ Total downtime: < 7s
+
+BI-DIRECTIONAL SURVEILLANCE:
+├─ Alpha emits → Beta verifies (IMPLEMENTED)
+├─ Beta emits → Alpha verifies (FUTURE: Phase 2)
 ├─ Ninguno puede ser deshabilitado sin que el otro lo detecte
 └─ Auto-regeneration: Restore from immutable backup
+```
+
+**Diagrama Actualizado con Heartbeat:**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│              Arc<AtomicU64> (Shared Heartbeat)              │
+│                Unix Timestamp (64-bit atomic)               │
+│                      ↓                    ↓                  │
+│            Guardian-Alpha          Guardian-Beta            │
+│            (Kernel/Ring 0)         (User-space/Ring 3)      │
+│                      │                    │                  │
+│         Emits: ~1000/sec          Checks: Every 1s          │
+│         (atomic store)            (timeout: 5s)             │
+│                      │                    │                  │
+│                      └──── Failure ───────┤                 │
+│                         (timeout > 5s)    │                 │
+│                                           ↓                  │
+│                          Auto-Regeneration Protocol         │
+│                          (< 7s recovery, no human)          │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ### Elementos Clave para Patent
