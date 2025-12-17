@@ -15,7 +15,7 @@ from app.database import get_db
 from app.models.user import User
 from app.schemas import UserCreate, UserUpdate, UserResponse
 from app.services.user_service import create_user as create_user_service, get_users, get_user as get_user_service
-from app.security import get_current_user
+from app.auth_utils import get_current_user
 from typing import List
 
 router = APIRouter(prefix="/api/v1/users", tags=["users"])

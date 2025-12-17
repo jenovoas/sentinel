@@ -19,7 +19,7 @@ from app.services.tenant_service import (
     get_tenants,
     get_tenant as get_tenant_service,
 )
-from app.security import get_current_user
+from app.auth_utils import get_current_user
 from typing import List
 
 router = APIRouter(prefix="/api/v1/tenants", tags=["tenants"])
