@@ -1,0 +1,43 @@
+@startuml
+skinparam componentStyle uml2
+skinparam backgroundColor white
+
+title "CLAIM 3: Dual-Guardian Mutual Surveillance Architecture"
+
+package "Sentinel Cortex Organism" {
+    
+    component "Shared Memory\n(Atomic Heartbeat)" as Heart <<Memory>> #Yellow
+
+    package "Nerve A: Guardian-Alpha" #LightBlue {
+        [eBPF Sensor] as AlphaSensor
+        [Rust Controller] as AlphaCtrl
+    }
+
+    package "Nerve B: Guardian-Beta" #LightGreen {
+        [Integrity Watchdog] as Watchdog
+        [Recovery Manager] as Medic
+    }
+}
+
+' Relaciones
+AlphaCtrl --> Heart : 1. Atomic Store (Pulse)\n"I am alive"
+Heart --> Watchdog : 2. Atomic Load (Check)\n"Is Alpha alive?"
+
+note right of Heart
+    Latency: < 1ms
+    No Network Overhead
+    Lock-Free Sync
+end note
+
+Watchdog ..> Medic : 3. If Pulse stops > 5s\nTrigger Recovery
+
+Medic ==> AlphaCtrl : 4. REGENERATE\n(Restart Service/Reload BPF)
+
+note bottom of Medic
+    <b>Self-Healing Protocol:</b>
+    1. Detect Silence
+    2. Verify Binary Integrity
+    3. Force Restart
+end note
+
+@enduml
