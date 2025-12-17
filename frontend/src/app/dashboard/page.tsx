@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { BackupStatusCard } from "@/components/backup/BackupStatusCard";
 import { FailSafeSecurityCard } from "@/components/failsafe/FailSafeSecurityCard";
+import { IncidentManagementCard } from "@/components/IncidentManagementCard";
 
 interface SLOData {
     availability: { value: number; target: number };
@@ -250,7 +251,7 @@ export default function DashboardPage() {
                     </div>
                 </section>
 
-                {/* AI Insights, Security, Backup & Fail-Safe */}
+                {/* AI Insights, Security, Backup, Fail-Safe & Incidents */}
                 <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
                     {/* AI Insights */}
                     <Card className="bg-white/5 backdrop-blur-xl border-white/10">
@@ -349,6 +350,9 @@ export default function DashboardPage() {
 
                     {/* Fail-Safe Security */}
                     <FailSafeSecurityCard />
+
+                    {/* Incident Management */}
+                    <IncidentManagementCard />
                 </section>
 
                 {/* Quick Actions */}
