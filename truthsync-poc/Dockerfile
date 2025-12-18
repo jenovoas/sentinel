@@ -1,5 +1,6 @@
 # Dockerfile for TruthSync Production
-FROM rust:1.75 as rust-builder
+# Using Debian stable minimal as per Sentinel architecture
+FROM rust:1.75-bookworm as rust-builder
 
 WORKDIR /app
 
@@ -11,8 +12,8 @@ COPY benches/ ./benches/
 # Build release binary
 RUN cargo build --release
 
-# Python runtime stage
-FROM python:3.11-slim
+# Python runtime stage - Debian stable minimal
+FROM python:3.11-slim-bookworm
 
 WORKDIR /app
 
