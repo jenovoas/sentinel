@@ -27,16 +27,18 @@ Before we proceed, please reply with the following (copy-paste from your termina
 
 1. Your primary development OS:
 2. `uname -a` (or `systeminfo` if Windows):
-3. `docker --version`:
-4. `docker-compose --version`:
-5. `git --version`:
-6. `python3 --version`:
-7. `node --version`:
+3. Clone our repo and show last 5 commits:
+   `git clone https://github.com/jenovoas/sentinel.git && cd sentinel && git log --oneline -5`
+4. `docker --version`:
+5. `docker-compose --version`:
+6. `git --version`:
+7. `python3 --version`:
+8. `node --version`:
 
 Also answer:
-8. Do you use WSL2? (if on Windows)
-9. How many programming languages can you code in TODAY?
-10. Link to your GitHub profile:
+9. Do you use WSL2? (if on Windows)
+10. How many programming languages can you code in TODAY?
+11. Link to your GitHub profile:
 
 Reply within 24 hours.
 
@@ -55,14 +57,19 @@ Sentinel Team
 - ✅ "macOS Monterey/Ventura/Sonoma"
 - ✅ "Windows 11 with WSL2 (Ubuntu 22.04)"
 
-**Questions 2-7 (Tool Versions)**:
+**Question 3 (Git Basic Skills)**:
+- ✅ Successfully cloned repo
+- ✅ Showed last 5 commits with hashes
+- ✅ Output is properly formatted
+
+**Questions 4-8 (Tool Versions)**:
 - ✅ All commands return valid versions
 - ✅ Docker 20.0+
 - ✅ Git 2.30+
 - ✅ Python 3.9+
 - ✅ Node 16+
 
-**Question 8 (WSL2)**:
+**Question 9 (WSL2)**:
 - ✅ "Yes, I use WSL2 with Ubuntu" (if Windows)
 - ✅ N/A (if Linux/macOS)
 
@@ -70,7 +77,7 @@ Sentinel Team
 - ✅ 4+ languages listed
 - ✅ Includes Python AND TypeScript/JavaScript
 
-**Question 10 (GitHub)**:
+**Question 11 (GitHub)**:
 - ✅ Active profile with real projects
 - ✅ Contributions in last 3 months
 - ✅ Code quality looks good
@@ -87,25 +94,32 @@ Sentinel Team
 - ❌ "Windows with Git Bash"
 - ❌ "I have a Mac but don't use terminal much"
 
-**Questions 2-7 (Tools)**:
+**Question 3 (Git Skills)**:
+- ❌ "How do I clone a repo?"
+- ❌ "What is git log?"
+- ❌ "I don't know how to use terminal"
+- ❌ Can't provide the output
+- ❌ Provides screenshot instead of text (can't copy-paste)
+
+**Questions 4-8 (Tools)**:
 - ❌ "I don't have Docker installed"
 - ❌ "What is docker-compose?"
 - ❌ "I use Docker Desktop GUI"
 - ❌ Any command returns error or "command not found"
 - ❌ Old versions (Docker < 20, Python < 3.8, etc.)
 
-**Question 8 (WSL2)**:
+**Question 9 (WSL2)**:
 - ❌ "What is WSL2?"
 - ❌ "No, I use Windows natively"
 - ❌ "I tried WSL2 but it's complicated"
 
-**Question 9 (Languages)**:
+**Question 10 (Languages)**:
 - ❌ Less than 3 languages
 - ❌ Doesn't include Python or TypeScript
 - ❌ "I'm learning Python"
 - ❌ Lists only JavaScript/TypeScript (frontend-only)
 
-**Question 10 (GitHub)**:
+**Question 11 (GitHub)**:
 - ❌ No GitHub profile
 - ❌ Empty profile or only forks
 - ❌ Last commit > 6 months ago
@@ -132,11 +146,13 @@ Sentinel Team
 
 | Question | Points | Pass Threshold |
 |----------|--------|----------------|
-| 1. OS | 20 | Linux/macOS or Windows+WSL2 |
-| 2-7. Tools | 40 | All installed, recent versions |
-| 8. WSL2 | 10 | Yes (if Windows) |
-| 9. Languages | 20 | 4+ including Python+TS |
-| 10. GitHub | 10 | Active, quality code |
+| 1. OS | 15 | Linux/macOS or Windows+WSL2 |
+| 2. System Info | 5 | Valid output |
+| 3. Git Skills | 20 | Clone + log works |
+| 4-8. Tools | 30 | All installed, recent versions |
+| 9. WSL2 | 10 | Yes (if Windows) |
+| 10. Languages | 15 | 4+ including Python+TS |
+| 11. GitHub | 5 | Active, quality code |
 
 **Total**: 100 points  
 **Pass**: 80+ points  
