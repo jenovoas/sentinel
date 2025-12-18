@@ -63,4 +63,14 @@ scrape_configs:
         labels:
           service: 'redis-cache'
 
+  # TruthSync - Truth Verification Engine
+  - job_name: 'truthsync'
+    static_configs:
+      - targets: ['truthsync:9090']
+        labels:
+          service: 'truthsync'
+          component: 'truth-verification'
+    metrics_path: '/metrics'
+
+
 # Storage configuration is in command line flags, not here
