@@ -1,0 +1,18 @@
+[package]
+name = "truthsync_core"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+regex = "1.10"
+rayon = "1.8"  # Parallel processing
+criterion = "0.5"  # Benchmarking
+shared_memory = "0.12"  # Cross-platform shared memory
+aho-corasick = "1.1"  # Fast multi-pattern matching
+crossbeam = "0.8"  # Lock-free data structures
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[[bench]]
+name = "claim_extraction"
+harness = false
