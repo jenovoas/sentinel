@@ -4,7 +4,9 @@
 
 ---
 
-## Opción 1: Instalación Automática (Recomendado)
+## 🐧 Linux
+
+### Opción 1: Instalación Automática (Recomendado)
 
 ```bash
 # Clonar repositorio
@@ -25,7 +27,7 @@ El script automáticamente:
 
 ---
 
-## Opción 2: Instalación Manual
+### Opción 2: Instalación Manual
 
 ```bash
 # 1. Clonar repositorio
@@ -44,6 +46,51 @@ docker-compose up -d
 # 5. Verificar instalación
 make health
 ```
+
+---
+
+## 🪟 Windows
+
+### Opción 1: Instalación Automática con WSL2 (Recomendado)
+
+```powershell
+# 1. Abrir PowerShell como Administrador
+# Clic derecho en Inicio > Windows PowerShell (Administrador)
+
+# 2. Descargar e ejecutar instalador
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jenovoas/sentinel/main/install-windows.ps1" -OutFile "install-windows.ps1"
+.\install-windows.ps1
+```
+
+El script automáticamente:
+- ✅ Verifica requisitos de Windows
+- ✅ Instala WSL2 y Ubuntu
+- ✅ Guía instalación de Docker Desktop
+- ✅ Clona y configura Sentinel
+- ✅ Inicia todos los servicios
+
+### Opción 2: Instalación Manual
+
+```powershell
+# 1. Instalar WSL2
+wsl --install -d Ubuntu-22.04
+
+# 2. Instalar Docker Desktop
+# Descargar desde: https://www.docker.com/products/docker-desktop/
+# Marcar: "Use WSL 2 instead of Hyper-V"
+
+# 3. Abrir Ubuntu (WSL2)
+wsl
+
+# 4. Dentro de WSL2
+cd ~
+git clone https://github.com/jenovoas/sentinel.git
+cd sentinel
+chmod +x install.sh
+./install.sh
+```
+
+**📚 Guía Completa**: [INSTALLATION_GUIDE_WINDOWS.md](INSTALLATION_GUIDE_WINDOWS.md)
 
 ---
 
