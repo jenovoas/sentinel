@@ -1,0 +1,50 @@
+{
+  "baseline": {
+    "e2e_ms": 10426,
+    "llm_ttfb_ms": 10400,
+    "network_gbps": 6.8,
+    "postgresql_qps": 100,
+    "cpu_idle_pct": 15,
+    "downtime_min_month": 120
+  },
+  "results": {
+    "e2e": {
+      "p50_ms": 7243.770599365234,
+      "p95_ms": 12376.193523406982,
+      "p99_ms": 12376.193523406982,
+      "speedup": 1.4393056567685374,
+      "meets_target": false,
+      "target_p95_ms": 500
+    },
+    "llm": {
+      "p50_ms": 1213.2868766784668,
+      "p95_ms": 1615.037202835083,
+      "speedup": 8.57175677072464,
+      "meets_target": false,
+      "target_p95_ms": 300
+    },
+    "network": {
+      "throughput_gbps": 0,
+      "speedup": 0,
+      "meets_target": false,
+      "skipped": true
+    },
+    "postgresql": {
+      "qps": 0,
+      "speedup": 0,
+      "meets_target": false,
+      "skipped": true
+    },
+    "cpu": {
+      "cpu_idle_pct": 18.72,
+      "efficiency": 0.8012820512820513,
+      "meets_target": false,
+      "target_cpu_pct": 10
+    }
+  },
+  "summary": {
+    "total_benchmarks": 5,
+    "passed": 0,
+    "pass_rate": 0.0
+  }
+}
