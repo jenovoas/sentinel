@@ -592,25 +592,6 @@ Sentinel está instalado y corriendo en tu Windows. Ahora puedes:
 3. ✅ Explorar la API: http://localhost:8000/docs
 4. ✅ Crear workflows en n8n: http://localhost:5678
 
-### Próximos Pasos
-
-1. **Configurar tu primera organización** en el dashboard
-2. **Importar dashboards de Grafana**
-3. **Configurar alertas** en Prometheus
-4. **Crear workflows** en n8n
-5. **Explorar la IA** con Ollama
-
-### Checklist de Producción
-
-Antes de usar en producción:
-
-- [ ] Cambiar todas las contraseñas en `.env`
-- [ ] Configurar SSL/TLS
-- [ ] Habilitar backups automatizados
-- [ ] Configurar firewall de Windows
-- [ ] Revisar límites de recursos
-- [ ] Documentar configuración específica
-
 ---
 
 ## 🆘 Soporte
