@@ -12,9 +12,11 @@
 
 ## Perfil Profesional
 
-Ingeniero de software especializado en **arquitecturas de alto rendimiento** y **sistemas de observabilidad empresarial**. Experiencia demostrable en optimización de performance (90x+ speedup), desarrollo de sistemas de seguridad innovadores, y arquitecturas híbridas Rust+Python para aplicaciones críticas.
+Ingeniero de software con **20+ años de experiencia en infraestructura crítica** (banca, aerolíneas, servicios financieros). Especialista en **defensa contra vectores de ataque emergentes** identificados por RSA Conference 2025 (AIOpsDoom - ataques adversariales a sistemas de IA).
 
-Creador de **Sentinel Cortex™**, plataforma empresarial de observabilidad con capacidades únicas en el mercado: verificación de verdad en tiempo real y defensa contra ataques adversariales a sistemas de IA.
+Creador de **Sentinel Cortex™**, primera solución del mercado que protege infraestructura crítica frente a manipulación adversarial de telemetría en sistemas de IA. Experiencia demostrable en optimización de performance (90x+ speedup), arquitecturas híbridas Rust+Python, y sistemas de observabilidad con soberanía de datos.
+
+**Aplicación directa**: Defensa de infraestructura crítica nacional (energía, minería, agua, telecomunicaciones, banca) contra ataques de nueva generación a sistemas autónomos.
 
 ---
 
@@ -77,6 +79,19 @@ Plataforma empresarial de observabilidad que combina monitoring tradicional con 
 - Código: 30+ archivos, 15,000+ líneas
 
 **Tecnologías**: Rust, Python, FastAPI, PostgreSQL, Redis, Kubernetes, Docker, Prometheus, Grafana
+
+**Contexto Estratégico**:
+Desarrollado en respuesta a vulnerabilidad crítica identificada por RSA Conference 2025 (AIOpsDoom). Atacantes inyectan telemetría maliciosa para engañar agentes de IA en sistemas críticos, provocando decisiones destructivas autónomas.
+
+**Aplicabilidad a Infraestructura Nacional**:
+- **Energía**: Protección de automatización en plantas de generación
+- **Minería**: Validación de telemetría en cadena de valor litio/cobre
+- **Agua Potable**: Defensa de sistemas SCADA contra manipulación
+- **Telecomunicaciones**: Seguridad en automatización de redes
+- **Banca**: Protección de operaciones autónomas
+
+**Ventaja Técnica**:
+Soluciones comerciales (Datadog, Dynatrace) operan en espacio de usuario (Ring 3). Sentinel opera a nivel kernel (Ring 0) con soberanía de datos, proporcionando protección imposible de evadir desde capa de aplicación.
 
 ---
 
@@ -318,6 +333,29 @@ INACAP - Universidad Tecnológica de Chile
 - Observabilidad y monitoring (Prometheus, Grafana)
 - Seguridad en sistemas de IA
 - Kubernetes y orquestación de contenedores
+
+---
+
+## Portafolio de Innovaciones Patentables
+
+### Innovaciones Identificadas en Sentinel Cortex™
+
+| Innovación | Aplicación Técnica | Sectores Aplicables |
+|-----------|-------------------|---------------------|
+| **Dual-Guardian Architecture** | Validación determinista kernel-level de decisiones de IA | Defensa, Energía, Salud Crítica |
+| **Telemetry Sanitization for AI** | Prevención de prompt injection y reward hacking en AIOps | Fintech, Legal, SIEM, Gobierno |
+| **Local LLM Orchestration** | Procesamiento de IA con soberanía de datos nacional | Gobierno, Salud, Defensa, Banca |
+| **High-Performance Truth Verification** | Verificación de claims en tiempo real (90.5x speedup) | Medios, Fact-checking, Educación |
+| **Kernel-Level AI Safety** | Protección imposible de evadir desde espacio de usuario | Infraestructura Crítica Nacional |
+
+**Estado Actual**: 
+- MVP validado técnicamente
+- Código abierto para investigación colaborativa
+- Documentación técnica completa (15+ documentos)
+- Resultados reproducibles y verificables
+
+**Aplicación a Investigación**:
+Estas innovaciones representan oportunidades para investigación aplicada en defensa de infraestructura crítica, con potencial para colaboración académica y desarrollo de estándares nacionales de seguridad en IA.
 
 ---
 
