@@ -136,9 +136,4 @@ case "newType":
 
 2. **Eso es todo** - No necesitas tocar `page.tsx`
 
-## Próximos Pasos
 
-- Agregar tests unitarios para hooks
-- Crear stories en Storybook para componentes
-- Agregar validación de tipos más estricta
-- Crear servicio de caché para Analytics
