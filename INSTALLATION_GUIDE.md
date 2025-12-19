@@ -850,29 +850,6 @@ Sentinel está instalado y corriendo. Ahora puedes:
 3. ✅ Explorar la API: http://localhost:8000/docs
 4. ✅ Crear workflows en n8n: http://localhost:5678
 
-### Próximos Pasos
-
-1. **Configurar tu primera organización** en el dashboard
-2. **Importar dashboards de Grafana** desde `observability/grafana/dashboards/`
-3. **Configurar alertas** en Prometheus
-4. **Crear workflows de automatización** en n8n
-5. **Explorar la IA** haciendo preguntas a Ollama
-
-### Checklist de Producción
-
-Antes de usar en producción, asegúrate de:
-
-- [ ] Cambiar todas las contraseñas por defecto
-- [ ] Configurar SSL/TLS
-- [ ] Habilitar backups automatizados
-- [ ] Configurar monitoreo externo
-- [ ] Implementar firewall (solo puertos necesarios)
-- [ ] Configurar autenticación de observabilidad
-- [ ] Revisar límites de recursos
-- [ ] Configurar logs externos
-- [ ] Implementar disaster recovery
-- [ ] Documentar tu configuración específica
-
 ---
 
 **¿Problemas?** Consulta la sección [Solución de Problemas](#-solución-de-problemas) o abre un issue en GitHub.

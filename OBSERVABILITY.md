@@ -158,31 +158,6 @@ rate({job="systemd-journal", level="error"}[5m])
 - ✨ Retención inteligente
 - ✨ Queries mucho más rápidas
 
-## 🛠️ Próximos Pasos
-
-### Fase 1: Migración Gradual ✅ (YA HECHO)
-- ✅ Stack de observabilidad funcionando
-- ✅ Captura de métricas y logs
-- ✅ Dashboards básicos
-
-### Fase 2: Instrumentación Backend (Siguiente)
-1. Agregar prometheus_client a FastAPI
-2. Exponer endpoint /metrics
-3. Instrumentar endpoints con latency/requests
-4. Agregar custom metrics de negocio
-
-### Fase 3: Alertmanager (Futuro)
-1. Configurar Alertmanager
-2. Integrar Slack/Discord/Email
-3. Routing de alertas por severidad
-4. Silencing rules
-
-### Fase 4: Expansión (Futuro)
-1. Redis Exporter para métricas de Redis
-2. PostgreSQL Exporter para métricas de DB
-3. Tempo para distributed tracing
-4. Custom exporters si es necesario
-
 ## 📝 Notas Importantes
 
 ### Recursos del Sistema

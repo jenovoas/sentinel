@@ -292,26 +292,6 @@ response = await safe_ollama.analyze_logs(logs, question)
 
 ---
 
-## Next Steps
-
-### Phase 1: Integration (Day 1) ✅
-- [x] Implement AIOpsShield
-- [x] Implement SafeOllamaClient
-- [ ] Update backend to use SafeOllamaClient
-- [ ] Add Prometheus metrics
-
-### Phase 2: Testing (Day 2)
-- [ ] Test with benign logs
-- [ ] Test with adversarial logs
-- [ ] Validate block rate
-- [ ] Measure performance impact
-
-### Phase 3: Production (Day 3)
-- [ ] Deploy to staging
-- [ ] Monitor for false positives
-- [ ] Tune detection patterns
-- [ ] Full production rollout
-
 ---
 
 ## References

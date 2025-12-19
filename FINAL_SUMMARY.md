@@ -85,20 +85,6 @@
 
 ---
 
-## 🚀 Próximos Pasos Recomendados
-
-### Inmediato (Hoy/Mañana)
-1. ✅ Revisar CV_ANID.md (completar info personal si falta)
-2. ✅ Leer CONTEXT_NOTE.md (entender el enfoque)
-3. ✅ Verificar que repo esté público en GitHub
-4. ✅ Preparar postulación ANID
-
-### Opcional (Esta Semana)
-1. Crear posts en LinkedIn (técnico puro)
-2. Compartir en ResearchGate/Academia.edu
-3. Blog post en Dev.to
-4. Tweet técnico
-
 ---
 
 ## 💡 Mensajes Clave para ANID

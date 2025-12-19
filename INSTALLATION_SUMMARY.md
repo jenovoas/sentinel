@@ -197,31 +197,6 @@ Sentinel despliega **18 servicios** en contenedores Docker:
 
 ---
 
-## 🎓 Próximos Pasos
-
-Después de la instalación:
-
-1. ✅ **Acceder al Dashboard**: http://localhost:3000
-2. ✅ **Crear tu primera organización**
-3. ✅ **Explorar Grafana**: http://localhost:3001
-4. ✅ **Revisar API Docs**: http://localhost:8000/docs
-5. ✅ **Configurar workflows en n8n**: http://localhost:5678
-6. ✅ **Probar la IA** con Ollama
-
-### Configuración de Producción
-
-Antes de usar en producción:
-
-- [ ] Cambiar todas las contraseñas en `.env`
-- [ ] Configurar SSL/TLS
-- [ ] Habilitar backups automatizados
-- [ ] Configurar firewall
-- [ ] Implementar monitoreo externo
-- [ ] Configurar disaster recovery
-- [ ] Revisar límites de recursos
-
-Ver: [INSTALLATION_GUIDE.md - Configuración Avanzada](INSTALLATION_GUIDE.md#-configuración-avanzada)
-
 ---
 
 ## 📞 Soporte
