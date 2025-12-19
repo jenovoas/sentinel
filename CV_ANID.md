@@ -374,6 +374,22 @@ Estas innovaciones representan oportunidades para investigación aplicada en def
 
 ---
 
+## Líneas de Investigación Actuales
+
+1. **Seguridad determinista para sistemas autónomos (AIOps) y operaciones críticas**  
+   Desarrollo de mecanismos de validación kernel-level para prevenir decisiones destructivas en sistemas autónomos basados en IA.
+
+2. **Sanitización de telemetría para protección de modelos de lenguaje frente a inyección indirecta**  
+   Investigación en detección y neutralización de ataques adversariales (AIOpsDoom) que manipulan telemetría para envenenar decisiones de IA.
+
+3. **Arquitecturas híbridas kernel–IA para defensa de infraestructura crítica**  
+   Diseño de sistemas que combinan monitoreo Ring 0 (kernel-level) con análisis de IA en espacio de usuario para protección imposible de evadir.
+
+4. **Observabilidad avanzada (stack LGTM) aplicada a seguridad de sistemas con IA integrada**  
+   Implementación de stack Loki-Grafana-Tempo-Mimir para monitoreo y análisis de seguridad en sistemas que integran IA local.
+
+---
+
 ## Referencias
 
 Disponibles a solicitud.
