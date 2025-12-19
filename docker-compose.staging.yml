@@ -1,0 +1,276 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # STAGING ENVIRONMENT - Sentinel Cortex
+  # ============================================
+
+  # Nginx - Reverse Proxy with mTLS
+  nginx:
+    image: nginx:alpine
+    container_name: sentinel-nginx-staging
+    ports:
+      - "80:80"
+      - "443:443"
+      - "3100:3100" # Loki
+      - "9090:9090" # Prometheus
+    volumes:
+      - ./nginx/nginx.staging.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    networks:
+      - staging_external
+      - staging_internal
+    restart: unless-stopped
+    environment:
+      - ENVIRONMENT=staging
+    labels:
+      - "com.sentinel.env=staging"
+
+  # Backend - FastAPI
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sentinel-backend-staging
+    environment:
+      - ENVIRONMENT=staging
+      - DATABASE_URL=postgresql://sentinel:sentinel_staging@postgres:5432/sentinel_staging
+      - REDIS_URL=redis://redis:6379/1
+      - LOKI_URL=http://loki:3100
+      - MIMIR_URL=http://mimir:9009
+      - LOG_LEVEL=DEBUG
+      - ENABLE_METRICS=true
+      - ENABLE_TRACING=true
+    volumes:
+      - ./backend:/app
+      - wal_data_staging:/var/lib/sentinel/wal
+      - ./backend/logs:/var/log/sentinel
+    networks:
+      - staging_internal
+    depends_on:
+      - postgres
+      - redis
+      - loki
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+    labels:
+      - "com.sentinel.env=staging"
+      - "com.sentinel.component=backend"
+
+  # Loki - Log Aggregation
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: sentinel-loki-staging
+    ports:
+      - "3101:3100"
+    command: -config.file=/etc/loki/loki-config.yml
+    volumes:
+      - ./observability/loki/loki.staging.yml:/etc/loki/loki-config.yml:ro
+      - loki_data_staging:/loki
+    networks:
+      - staging_internal
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+    labels:
+      - "com.sentinel.env=staging"
+      - "com.sentinel.component=loki"
+
+  # Promtail - Log Shipper
+  promtail:
+    image: grafana/promtail:2.9.0
+    container_name: sentinel-promtail-staging
+    command: -config.file=/etc/promtail/promtail-config.yml
+    volumes:
+      - ./observability/promtail/promtail.staging.yml:/etc/promtail/promtail-config.yml:ro
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    networks:
+      - staging_internal
+    depends_on:
+      - loki
+    restart: unless-stopped
+    labels:
+      - "com.sentinel.env=staging"
+
+  # Mimir - Metrics Storage
+  mimir:
+    image: grafana/mimir:latest
+    container_name: sentinel-mimir-staging
+    command: -config.file=/etc/mimir/mimir-config.yml
+    volumes:
+      - ./observability/mimir/mimir.staging.yml:/etc/mimir/mimir-config.yml:ro
+      - mimir_data_staging:/data
+    networks:
+      - staging_internal
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+    labels:
+      - "com.sentinel.env=staging"
+
+  # Prometheus - Metrics Collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: sentinel-prometheus-staging
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=7d'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./observability/prometheus/prometheus.staging.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/alerts.staging.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus_data_staging:/prometheus
+    networks:
+      - staging_internal
+    restart: unless-stopped
+    labels:
+      - "com.sentinel.env=staging"
+
+  # Grafana - Visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: sentinel-grafana-staging
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=staging_admin_change_me
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+      - GF_SERVER_DOMAIN=staging.sentinel.example.com
+      - GF_SERVER_ROOT_URL=https://staging.sentinel.example.com:3000
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data_staging:/var/lib/grafana
+    networks:
+      - staging_internal
+    depends_on:
+      - loki
+      - prometheus
+    restart: unless-stopped
+    labels:
+      - "com.sentinel.env=staging"
+
+  # PostgreSQL - Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: sentinel-postgres-staging
+    environment:
+      - POSTGRES_DB=sentinel_staging
+      - POSTGRES_USER=sentinel
+      - POSTGRES_PASSWORD=sentinel_staging_password
+    volumes:
+      - postgres_data_staging:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - staging_internal
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+    labels:
+      - "com.sentinel.env=staging"
+
+  # Redis - Cache
+  redis:
+    image: redis:7-alpine
+    container_name: sentinel-redis-staging
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data_staging:/data
+    networks:
+      - staging_internal
+    restart: unless-stopped
+    labels:
+      - "com.sentinel.env=staging"
+
+  # n8n - Workflow Automation
+  n8n:
+    image: n8nio/n8n:1.119.2
+    container_name: sentinel-n8n-staging
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=staging_n8n_password
+      - N8N_HOST=staging.sentinel.example.com
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://staging.sentinel.example.com:5678
+      - N8N_FUNCTION_ALLOW_BUILTIN=false
+      - N8N_FUNCTION_ALLOW_EXTERNAL=false
+      - N8N_DISABLE_PRODUCTION_MAIN_PROCESS=true
+    volumes:
+      - n8n_data_staging:/home/node/.n8n
+    networks:
+      - staging_internal
+    restart: unless-stopped
+    labels:
+      - "com.sentinel.env=staging"
+
+  # Alertmanager - Alert Routing
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: sentinel-alertmanager-staging
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    volumes:
+      - ./monitoring/alertmanager.staging.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager_data_staging:/alertmanager
+    networks:
+      - staging_internal
+    restart: unless-stopped
+    labels:
+      - "com.sentinel.env=staging"
+
+networks:
+  staging_external:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+  staging_internal:
+    internal: true
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
+
+volumes:
+  wal_data_staging:
+    driver: local
+  loki_data_staging:
+    driver: local
+  mimir_data_staging:
+    driver: local
+  prometheus_data_staging:
+    driver: local
+  grafana_data_staging:
+    driver: local
+  postgres_data_staging:
+    driver: local
+  redis_data_staging:
+    driver: local
+  n8n_data_staging:
+    driver: local
+  alertmanager_data_staging:
+    driver: local
