@@ -1,17 +1,18 @@
 
 # Análisis de Métricas (Host)
 
-- Muestras: 3718
-- Rango: 2025-12-14T01:30:27.903492Z → 2025-12-17T20:59:00.632Z
+- Muestras: 5186
+- Rango: 2025-12-14T01:30:27.903492Z → 2025-12-19T02:59:00.935Z
 
 ## Promedios
-- CPU: 28.72%
-- Memoria: 54.87%
-- GPU: 3.49%
-- WiFi (señal): 62.77%
+- CPU: 285487.82%
+- Memoria: 3496344.42%
+- GPU: 3.79%
+- WiFi (señal): 62.74%
 
 ## Alertas
-Sin alertas en los umbrales configurados.
+- CPU promedio alto (>= 85.0%)
+- Memoria promedio alta (>= 85.0%)
 
 ## Observaciones
 - Si GPU promedio = 0%, puede que el contenedor no tenga acceso a GPU.

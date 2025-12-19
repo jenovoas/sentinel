@@ -1,0 +1,8 @@
+spacy>=3.7.0
+transformers>=4.35.0
+torch>=2.1.0
+aiohttp>=3.9.0
+redis>=5.0.0
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+python-dotenv>=1.0.0

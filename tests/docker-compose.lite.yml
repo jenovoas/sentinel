@@ -1,0 +1,64 @@
+version: '3.8'
+
+# Lightweight version for laptop prototyping
+# Reduced resources, no heavy testing tools
+
+services:
+  # Sentinel Cortex API (lite)
+  sentinel-cortex:
+    image: sentinel-cortex:latest
+    container_name: sentinel-cortex-lite
+    ports:
+      - "8080:8080"
+    environment:
+      - LOG_LEVEL=info
+      - GUARDIAN_ALPHA_ENABLED=true
+      - GUARDIAN_BETA_ENABLED=false # Disabled for lite mode
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - sentinel-net-lite
+    mem_limit: 512m
+    cpus: 1.0
+    restart: unless-stopped
+
+  # PostgreSQL (lite)
+  postgres:
+    image: postgres:15-alpine
+    container_name: sentinel-postgres-lite
+    environment:
+      - POSTGRES_DB=sentinel
+      - POSTGRES_USER=sentinel
+      - POSTGRES_PASSWORD=changeme
+      - POSTGRES_MAX_CONNECTIONS=50
+    ports:
+      - "5432:5432"
+    networks:
+      - sentinel-net-lite
+    volumes:
+      - postgres-data-lite:/var/lib/postgresql/data
+    mem_limit: 256m
+    cpus: 0.5
+    restart: unless-stopped
+
+  # Redis (lite)
+  redis:
+    image: redis:7-alpine
+    container_name: sentinel-redis-lite
+    ports:
+      - "6379:6379"
+    networks:
+      - sentinel-net-lite
+    mem_limit: 128m
+    cpus: 0.25
+    restart: unless-stopped
+
+networks:
+  sentinel-net-lite:
+    driver: bridge
+
+volumes:
+  postgres-data-lite:
