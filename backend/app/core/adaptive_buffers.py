@@ -1,5 +1,5 @@
 """
-Sentinel Global HA - Buffers Dinámicos Adaptativos
+Sentinel Global HA - Buffers Dinámicos Adaptativos con Dual-Lane
 Aplica buffers dinámicos a TODA la arquitectura HA:
 - PostgreSQL (queries)
 - Redis (cache)
@@ -10,6 +10,11 @@ INNOVACIÓN: Buffers se ajustan automáticamente según:
 - Tipo de flujo de datos
 - Carga del sistema
 - Latencia observada
+- Lane (Security vs Observability)
+
+DUAL-LANE INTEGRATION:
+- Security Lane: Sin buffering, bypass automático
+- Observability Lane: Buffering optimizado
 """
 
 import asyncio
@@ -19,16 +24,40 @@ from dataclasses import dataclass, field
 from enum import Enum
 import logging
 
+try:
+    from .data_lanes import DataLane
+except ImportError:
+    # Fallback si data_lanes no está disponible
+    class DataLane(Enum):
+        SECURITY = "security"
+        OBSERVABILITY = "observability"
+
 logger = logging.getLogger(__name__)
 
 
 class DataFlowType(Enum):
-    """Tipos de flujo de datos en la arquitectura"""
-    LLM_INFERENCE = "llm"           # Inferencia LLM
-    DATABASE_QUERY = "db"           # Queries PostgreSQL
-    CACHE_OPERATION = "cache"      # Operaciones Redis
-    NETWORK_PACKET = "network"     # Paquetes de red
-    TELEMETRY = "telemetry"        # Telemetría/logs
+    """
+    Tipos de flujo de datos en la arquitectura
+    
+    Cada tipo tiene asociado un DataLane:
+    - Security Lane: Sin buffering (auditd, shield)
+    - Observability Lane: Con buffering (llm, db, cache)
+    """
+    # Security Lane (sin buffering)
+    AUDIT_SYSCALL = ("audit", DataLane.SECURITY)
+    SHIELD_DETECTION = ("shield", DataLane.SECURITY)
+    KERNEL_EVENT = ("kernel", DataLane.SECURITY)
+    
+    # Observability Lane (con buffering)
+    LLM_INFERENCE = ("llm", DataLane.OBSERVABILITY)
+    DATABASE_QUERY = ("db", DataLane.OBSERVABILITY)
+    CACHE_OPERATION = ("cache", DataLane.OBSERVABILITY)
+    NETWORK_PACKET = ("network", DataLane.OBSERVABILITY)
+    TELEMETRY = ("telemetry", DataLane.OBSERVABILITY)
+    
+    def __init__(self, flow_name: str, lane: DataLane):
+        self.flow_name = flow_name
+        self.lane = lane
 
 
 @dataclass
@@ -155,6 +184,29 @@ class AdaptiveBufferManager:
     def get_config(self, flow_type: DataFlowType) -> DynamicBufferConfig:
         """Obtiene configuración optimizada para tipo de flujo"""
         return self.configs[flow_type]
+    
+    def should_bypass_buffer(self, flow_type: DataFlowType) -> bool:
+        """
+        Determina si flujo debe bypass buffer (Security Lane)
+        
+        Security Lane: SIEMPRE bypass (latencia <10ms)
+        Observability Lane: Buffering permitido
+        
+        Args:
+            flow_type: Tipo de flujo de datos
+        
+        Returns:
+            True si debe bypass buffer, False si permite buffering
+        """
+        try:
+            return flow_type.lane == DataLane.SECURITY
+        except AttributeError:
+            # Fallback para tipos sin lane definido
+            return flow_type in [
+                DataFlowType.AUDIT_SYSCALL,
+                DataFlowType.SHIELD_DETECTION,
+                DataFlowType.KERNEL_EVENT
+            ]
     
     def adjust_for_load(
         self,
