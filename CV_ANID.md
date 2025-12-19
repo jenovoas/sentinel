@@ -58,7 +58,142 @@ Creador de **Sentinel Cortex™**, plataforma empresarial de observabilidad con 
 
 ---
 
-## Proyectos Destacados
+## Experiencia Laboral
+
+### Sentinel Cortex™ - Fundador y Arquitecto Principal
+**Período**: 2024 - Presente  
+**Ubicación**: Santiago, Chile  
+**GitHub**: github.com/jenovoas/sentinel
+
+**Descripción**:
+Plataforma empresarial de observabilidad que combina monitoring tradicional con capacidades únicas: verificación de verdad en tiempo real (TruthSync) y defensa contra ataques adversariales a IA (AIOpsShield).
+
+**Logros Técnicos**:
+- Desarrollé **TruthSync** con 90.5x speedup (arquitectura híbrida Rust+Python)
+- Creé **AIOpsShield**, primera defensa contra AIOpsDoom en el mercado
+- Implementé stack completo de observabilidad (Prometheus, Loki, Grafana)
+- Diseñé arquitectura de alta disponibilidad (PostgreSQL HA, Redis HA)
+- Throughput: 1.54M claims/segundo, latencia: 0.36μs
+- Código: 30+ archivos, 15,000+ líneas
+
+**Tecnologías**: Rust, Python, FastAPI, PostgreSQL, Redis, Kubernetes, Docker, Prometheus, Grafana
+
+---
+
+### Sonda - Analista de Sistemas y Soporte Técnico
+**Período**: 2016 - 2018  
+**Ubicación**: Santiago, Chile
+
+**Responsabilidades**:
+- Soporte técnico remoto a clientes corporativos
+- Análisis y resolución de incidentes de sistemas
+- Administración de infraestructura IT
+
+**Tecnologías**: Windows Server, Linux, VMWare, Active Directory
+
+---
+
+### IBM Chile - IT Specialist Midrange System Administrator
+**Período**: 2014 - 2016  
+**Cliente**: Banco Santander  
+**Ubicación**: Santiago, Chile
+
+**Responsabilidades**:
+- Administración de sistemas midrange para Banco Santander
+- Gestión de Active Directory, Exchange Server, Windows Server
+- Administración de plataformas de virtualización ESX VMWare
+- Administración de sistemas Linux RedHat
+
+**Logros**:
+- Mantuve alta disponibilidad de sistemas críticos bancarios
+- Implementé mejoras en infraestructura de virtualización
+- Soporte 24/7 para sistemas de producción
+
+**Tecnologías**: Active Directory, Exchange Server, Windows Server, VMWare ESX, Linux RedHat
+
+---
+
+### Desarrollador Web Freelance
+**Período**: 2009 - 2016  
+**Ubicación**: Santiago, Chile
+
+**Responsabilidades**:
+- Diseño y desarrollo de sitios web para diversos clientes
+- Desarrollo frontend y backend
+- Gestión completa de proyectos web
+
+**Tecnologías**: HTML5, CSS3, JavaScript, PHP, Bootstrap, Adobe Creative Suite
+
+---
+
+### Equipos Electrónicos y Computación - Jefe Depto. Alta Disponibilidad
+**Período**: 2010 - 2014  
+**Ubicación**: Santiago, Chile
+
+**Evolución**:
+- **2010**: Técnico avanzado en TSM (Tivoli Storage Manager) y Lotus Notes
+- **2011**: Ascendido a Jefe del Departamento de Alta Disponibilidad (HA)
+
+**Responsabilidades**:
+- Liderazgo de equipo técnico de HA
+- Administración de sistemas iSeries de la compañía y clientes
+- Gestión de aplicaciones específicas (Itera, Mimix) sobre AS-400 y AIX
+- Garantizar alta disponibilidad de sistemas críticos
+
+**Logros**:
+- Ascenso a jefe de departamento en 1 año
+- Implementé mejoras en procesos de HA
+- Gestión exitosa de sistemas críticos 24/7
+
+**Tecnologías**: TSM, Lotus Notes, AS-400, AIX, iSeries, Itera, Mimix
+
+---
+
+### Banco de Chile - Administrador de Sistemas WINTEL
+**Período**: 2004 - 2009  
+**Ubicación**: Santiago, Chile
+
+**Responsabilidades**:
+- Administración de plataforma de mensajería Exchange
+- Gestión de Active Directory corporativo
+- Administración de Citrix, TSM y VMWare
+- Proyectos de migración y estabilización
+
+**Proyectos Destacados**:
+- **TravelClub (2008)**: Migración de Active Directory y Exchange 2000 → 2003
+- **Estabilización de infraestructura**: Mejoras en disponibilidad y performance
+
+**Tecnologías**: Exchange Server, Active Directory, Citrix, TSM, VMWare
+
+---
+
+### Proyectos de Consultoría
+**Período**: 2006  
+**Clientes**: Estudio Velasco, Allianz, Surcontinente
+
+**Proyectos**:
+- Estabilización de plataforma Active Directory y Exchange
+- Implementación de servicios de seguridad (Firewall, Proxy, AntiSpam)
+- Migración a soluciones Linux para servicios de red
+
+**Tecnologías**: Active Directory, Exchange, Linux, Firewall, Proxy, AntiSpam
+
+---
+
+### LAN Chile - Administrador de Sistemas
+**Período**: 2002 - 2003  
+**Ubicación**: Santiago, Chile
+
+**Responsabilidades**:
+- Administración de sistemas plataforma WINTEL
+- Gestión de mensajería Exchange
+- Soporte a infraestructura crítica de aerolínea
+
+**Tecnologías**: Windows Server, Exchange Server
+
+---
+
+## Proyectos Técnicos Destacados
 
 ### Sentinel Cortex™ - Plataforma Empresarial de Observabilidad
 **Rol**: Arquitecto Principal y Desarrollador  
@@ -151,9 +286,31 @@ Sistema para generar datasets sintéticos realistas sin exponer datos sensibles,
 
 ## Educación
 
-**[Tu Formación Académica]**  
-[Universidad/Instituto]  
-[Años]
+**Ingeniería Informática** (estudios superiores)  
+DUOC UC - Instituto Profesional  
+INACAP - Universidad Tecnológica de Chile
+
+### Certificaciones y Cursos
+
+**Microsoft**:
+- Managing and Maintaining Microsoft Windows Server (MS-2273, MS-2274, MS-2275) - EDS University
+- Managing and Implementing Microsoft Exchange (MS-2400) - EDS University
+
+**Linux**:
+- Linux System Administrator (RH133) - Linux Center
+
+**Apple**:
+- Instalación y administración de sistemas OS X y Server OS X
+
+**VMWare**:
+- Administración de plataformas VMWare (Banco Chile, Banco Santander)
+
+**Desarrollo**:
+- Desarrollo de aplicaciones iOS y OS X (Swift)
+- Desarrollo Web (HTML5, CSS3, JavaScript, PHP, Bootstrap)
+
+**Idiomas**:
+- Inglés intermedio avanzado - Boston Academy of English (Boston, MA, USA)
 
 ### Formación Continua
 - Arquitecturas de alto rendimiento con Rust
