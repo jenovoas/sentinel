@@ -2,11 +2,12 @@
 
 ## Información Personal
 
-**Nombre**: [Jaime Novoa]  
-**Email**: [jaime.novoase@gmail.com]  
-**LinkedIn**: [linkedin.com/in/jaime-novoa-710391204]  
+**Nombre**: Jaime Eugenio Novoa Sepúlveda  
+**Email**: jaime.novoase@gmail.com  
+**Teléfono**: +56 9 9608 6014  
+**LinkedIn**: linkedin.com/in/jaime-novoa-710391204  
 **GitHub**: github.com/jenovoas/sentinel  
-**Ubicación**: Chile
+**Ubicación**: Santiago, Chile
 
 ---
 
