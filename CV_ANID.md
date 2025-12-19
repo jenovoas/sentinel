@@ -11,6 +11,18 @@
 
 ---
 
+## Afiliación Institucional
+
+**Modalidad**: Investigador Independiente  
+**Institución Ejecutora**: Persona Natural (RUT: 13.806.523-5
+**Infraestructura**: Laboratorio propio de I+D en Curanilahue, Región del Bío-Bío  
+**Dedicación al Proyecto**: 40 horas semanales  
+**Período Propuesto**: 24 meses (2025-2027)
+
+**Nota**: Postulación como investigador independiente con infraestructura computacional propia y capacidad demostrada de ejecución de proyectos tecnológicos complejos (Sentinel Cortex™ con 15,000+ líneas de código, stack completo desplegado).
+
+---
+
 ## Perfil Profesional
 
 Ingeniero de software con **20+ años de experiencia en infraestructura crítica** (banca, aerolíneas, servicios financieros). Especialista en **defensa contra vectores de ataque emergentes** identificados por RSA Conference 2025 (AIOpsDoom - ataques adversariales a sistemas de IA).
@@ -390,6 +402,136 @@ Estas innovaciones representan oportunidades para investigación aplicada en def
 
 ---
 
+## Declaraciones para ANID
+
+### Compatibilidad de Horas
+Disponibilidad de **40 horas semanales** para dedicación exclusiva al proyecto de investigación durante el período de ejecución (24 meses). Como investigador independiente, no existen incompatibilidades con otras actividades de investigación financiadas por ANID u otras agencias.
+
+### Conflictos de Interés
+No existen conflictos de interés que declarar con respecto a esta postulación. El proyecto se desarrolla de manera independiente sin vínculos comerciales que puedan afectar la objetividad de la investigación.
+
+### Inhabilidades Administrativas
+No registro inhabilidades administrativas para postular a fondos concursables ANID. No he sido sancionado ni inhabilitado por ANID u otras agencias de financiamiento público.
+
+### Propiedad Intelectual
+Compromiso de protección de resultados mediante:
+- Solicitud de patentes provisionales y definitivas según normativa ANID
+- Publicación de resultados en revistas científicas y conferencias especializadas
+- Liberación de componentes no críticos como software open source
+- Cumplimiento de normativa de propiedad intelectual ANID
+
+### Disponibilidad de Infraestructura
+Cuento con infraestructura computacional propia suficiente para la ejecución del proyecto:
+- Servidor local con GPU NVIDIA GTX 1050 (3GB VRAM)
+- Acceso a servicios cloud (AWS/GCP) para escalamiento
+- Stack completo de desarrollo y observabilidad desplegado
+- Repositorio GitHub con código base de 15,000+ líneas
+
+---
+
+## Equipo de Investigación Propuesto
+
+### Investigador Responsable
+**Jaime Eugenio Novoa Sepúlveda**
+- 20+ años de experiencia en infraestructura crítica (banca, aerolíneas, telecomunicaciones)
+- Creador de Sentinel Cortex™ con innovaciones patentables validadas
+- Especialización en seguridad de sistemas autónomos y arquitecturas de alto rendimiento
+
+### Modalidad de Trabajo
+**Investigador Individual** con capacidad de:
+- Ejecución técnica completa (desarrollo Rust, Python, arquitectura de sistemas)
+- Gestión de proyecto y documentación
+- Validación y testing de resultados
+- Publicación de hallazgos científicos
+
+### Colaboraciones Potenciales
+Durante la ejecución del proyecto se buscará establecer colaboraciones con:
+- Universidades de la Región del Bío-Bío (UdeC, UBB, UCSC) para validación académica
+- Empresas de infraestructura crítica para testing en entornos reales
+- Comunidad open source para revisión de código y arquitectura
+
+**Nota**: La modalidad de investigador independiente permite flexibilidad para establecer colaboraciones según necesidades del proyecto, sin compromisos institucionales previos que puedan limitar la investigación.
+
+---
+
+## Infraestructura y Capacidades Disponibles
+
+### Laboratorio de I+D Propio
+
+**Ubicación**: Curanilahue, Región del Bío-Bío, Chile  
+**Tipo**: Laboratorio privado de investigación y desarrollo tecnológico
+
+### Infraestructura Computacional
+
+**Hardware Local**:
+- Servidor de desarrollo con GPU NVIDIA GTX 1050 (3GB VRAM)
+- Capacidad de procesamiento para entrenamiento de modelos ML
+- Almacenamiento local para datasets (500GB+ disponible)
+
+**Infraestructura Cloud**:
+- Acceso a AWS/GCP para escalamiento bajo demanda
+- Capacidad de despliegue de clusters Kubernetes
+- CI/CD pipeline automatizado (GitHub Actions)
+
+**Stack Tecnológico Desplegado**:
+- **Observabilidad**: Prometheus, Grafana, Loki, Promtail (stack LGTM)
+- **Bases de Datos**: PostgreSQL HA, Redis HA
+- **Contenedores**: Docker, Docker Compose, Kubernetes
+- **Automatización**: n8n workflows
+- **IA Local**: Ollama con modelos phi3:mini
+
+### Software y Herramientas
+
+**Lenguajes y Frameworks**:
+- Rust (performance crítico, sistemas kernel-level)
+- Python (ML, backend FastAPI)
+- TypeScript (frontend Next.js)
+
+**Criptografía**:
+- ring (AES-256-GCM, HKDF)
+- sodiumoxide (X25519, ChaCha20)
+- pqcrypto (post-quantum, roadmap)
+
+**Control de Versiones**:
+- GitHub: github.com/jenovoas/sentinel
+- 15,000+ líneas de código
+- Documentación completa (15+ docs técnicos, 7 diagramas UML)
+
+### Datos y Recursos para Investigación
+
+**Datasets Propios**:
+- 100,000+ eventos de seguridad reales capturados
+- Telemetría de sistemas en producción
+- Logs de ataques simulados y reales
+
+**Datasets Públicos Disponibles**:
+- DARPA Intrusion Detection Dataset
+- NSL-KDD
+- CICIDS2017
+- UNSW-NB15
+
+### Capacidades de Validación
+
+**Testing y Benchmarking**:
+- Entorno de testing automatizado
+- Benchmarking de performance (validado: 90.5x speedup en TruthSync)
+- Profiling de memoria y CPU
+
+**Validación en Entornos Reales**:
+- Acceso a infraestructura de testing
+- Capacidad de deployment en producción
+- Monitoreo y observabilidad completa
+
+### Ventajas de la Infraestructura Independiente
+
+1. **Flexibilidad Total**: Sin restricciones institucionales para experimentación
+2. **Disponibilidad 24/7**: Acceso completo a recursos en cualquier momento
+3. **Soberanía de Datos**: Control total sobre datos sensibles de investigación
+4. **Rapidez de Iteración**: Sin burocracia para cambios de arquitectura
+5. **Escalabilidad**: Capacidad de escalar a cloud según necesidades
+
+---
+
 ## Referencias
 
 Disponibles a solicitud.
@@ -412,6 +554,45 @@ Inmediata para proyectos de investigación y desarrollo
 
 ### Motivación para ANID
 Busco contribuir al desarrollo tecnológico en Chile mediante investigación aplicada en sistemas de alto rendimiento y seguridad en IA. Mi trabajo en Sentinel demuestra capacidad para crear soluciones innovadoras con impacto medible y verificable.
+
+### Idoneidad para Liderar el Proyecto de Investigación
+
+**Experiencia en Infraestructura Crítica Nacional**:
+- 20+ años en sectores estratégicos: banca (Banco de Chile, Banco Santander), aerolíneas (LAN Chile), telecomunicaciones
+- Implementación de sistemas de alta disponibilidad en producción
+- Conocimiento profundo de requisitos de seguridad en infraestructura crítica chilena
+
+**Capacidad Técnica Demostrada**:
+- **TruthSync**: 90.5x speedup validado empíricamente (1.54M claims/segundo)
+- **AIOpsShield**: Primera defensa AIOpsDoom del mercado (identificado por RSA Conference 2025)
+- **Arquitectura completa**: Implementada, documentada y desplegada
+
+**Nivel de Madurez Tecnológica (TRL)**:
+
+**TRL Actual: TRL 4** (Validado en laboratorio)
+- TruthSync: POC funcional con benchmarks reproducibles
+- AIOpsShield: Implementado y testeado con 40+ patrones de ataque
+- Stack completo: Desplegado y operacional en laboratorio propio
+- Documentación: 15+ documentos técnicos, 7 diagramas UML profesionales
+
+**TRL Objetivo del Proyecto: TRL 6** (Prototipo validado en entorno relevante)
+- Validación en infraestructura crítica real (banca, energía, telecomunicaciones)
+- Testing con partners industriales en Chile
+- Certificación de seguridad y cumplimiento normativo
+- Publicación de resultados en conferencias internacionales
+
+**Contribución al Desarrollo Tecnológico Nacional**:
+1. **Soberanía Tecnológica**: IA local sin dependencia de cloud extranjero
+2. **Protección de Infraestructura Crítica**: Defensa contra amenazas emergentes (AIOpsDoom)
+3. **Generación de Conocimiento Patentable**: 5 innovaciones identificadas con potencial de patente
+4. **Desarrollo Regional**: Investigación desde Región del Bío-Bío, descentralización tecnológica
+5. **Formación de Capacidades**: Publicaciones y código open source para comunidad científica chilena
+
+**Capacidad de Ejecución Independiente**:
+- Infraestructura computacional propia completa
+- Experiencia demostrada en gestión de proyectos tecnológicos complejos
+- Capacidad de publicación científica y documentación técnica
+- Red de contactos en industria para validación de resultados
 
 ### Documentación del Proyecto
 Para revisar el alcance completo y roadmap proyectado, ver:
