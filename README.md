@@ -283,6 +283,7 @@ open http://localhost:5678
 - [Security Audit Report](SECURITY_AUDIT_REPORT.md)
 - [AI Integration](docs/AI_INTEGRATION_COMPLETE.md)
 - [High Availability Setup](docs/HA_REFERENCE_DESIGN.md)
+- **[📋 Project Roadmap](ROADMAP.md)** - Alcance proyectado y visión técnica
 
 ---
 

@@ -41,6 +41,7 @@
 2. **SESSION_CONTEXT_COMPLETE.md** - Resumen técnico completo
 3. **AIOPS_SHIELD.md** - Innovación principal
 4. **README.md** - Overview del proyecto
+5. **ROADMAP.md** - Alcance proyectado y visión técnica
 
 ### Para Evaluación Técnica
 1. **VERIFICATION_REPORT.md** - Integridad del sistema

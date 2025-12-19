@@ -7,7 +7,7 @@
 **Teléfono**: +56 9 73711829  
 **LinkedIn**: linkedin.com/in/jaime-novoa-710391204  
 **GitHub**: github.com/jenovoas/sentinel  
-**Ubicación**: Santiago, Chile
+**Ubicación**: Curanilahue, Región del Bío-Bío, Chile
 
 ---
 
@@ -396,6 +396,12 @@ Inmediata para proyectos de investigación y desarrollo
 
 ### Motivación para ANID
 Busco contribuir al desarrollo tecnológico en Chile mediante investigación aplicada en sistemas de alto rendimiento y seguridad en IA. Mi trabajo en Sentinel demuestra capacidad para crear soluciones innovadoras con impacto medible y verificable.
+
+### Documentación del Proyecto
+Para revisar el alcance completo y roadmap proyectado, ver:
+- **[ROADMAP.md](ROADMAP.md)** - Visión técnica y fases de desarrollo
+- **[README.md](README.md)** - Overview del proyecto
+- **[AIOPS_SHIELD.md](AIOPS_SHIELD.md)** - Innovación principal
 
 ---
 
