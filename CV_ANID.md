@@ -101,9 +101,9 @@ Plataforma de observabilidad empresarial que combina monitoring tradicional con 
    - **Tecnologías**: Kubernetes, Docker, Prometheus, Grafana
 
 **Impacto Medible**:
-- ROI: 95% reducción de costos vs Datadog ($218K/año de ahorro para 100 hosts)
 - Performance: 90.5x speedup validado empíricamente
 - Innovación: Primera defensa AIOpsDoom en el mercado
+- Escalabilidad: 1.54M claims/segundo de throughput
 - Código: 30+ archivos, 15,000+ líneas de código
 - Documentación: 15+ documentos técnicos completos
 
