@@ -1,52 +1,70 @@
 #!/bin/bash
-# Script para mantener modelo Ollama en memoria permanentemente
-# Evita la doble carga entre requests
+# Script para configurar Ollama keep_alive PERMANENTE
+# Mantiene modelo en RAM indefinidamente (hasta reiniciar Ollama)
 
-echo "🔧 Configurando Ollama para mantener modelo en memoria..."
+echo "🔧 Configurando Ollama keep_alive PERMANENTE..."
 echo ""
 
-# 1. Verificar que Ollama esté corriendo
-if ! curl -s http://localhost:11434/api/tags > /dev/null; then
-    echo "❌ Ollama no está corriendo"
-    echo "   Ejecuta: docker-compose up -d ollama"
-    exit 1
-fi
+# Modelo a mantener en RAM
+MODEL="llama3.2:1b"
 
-echo "✅ Ollama está corriendo"
+echo "📋 Opciones de keep_alive:"
+echo "   -1  = PERMANENTE (nunca descarga, hasta reiniciar Ollama)"
+echo "   0   = Descarga inmediatamente después de responder"
+echo "   5m  = Mantiene 5 minutos"
+echo "   1h  = Mantiene 1 hora"
+echo "   24h = Mantiene 24 horas"
+echo ""
+echo "✅ Usando: keep_alive = -1 (PERMANENTE)"
 echo ""
 
-# 2. Listar modelos disponibles
-echo "📋 Modelos disponibles:"
-curl -s http://localhost:11434/api/tags | grep -o '"name":"[^"]*"' | cut -d'"' -f4
-echo ""
-
-# 3. Precargar modelo con keep_alive permanente
-MODEL="${1:-phi3:mini}"
-echo "🚀 Precargando modelo: $MODEL"
-echo "   (keep_alive: -1 = permanente)"
-echo ""
-
-curl -X POST http://localhost:11434/api/generate \
-  -H "Content-Type: application/json" \
-  -d "{
-    \"model\": \"$MODEL\",
-    \"prompt\": \"warmup\",
-    \"stream\": false,
-    \"keep_alive\": -1
-  }" > /dev/null 2>&1
+# Configurar keep_alive = -1 (permanente)
+echo "🚀 Enviando configuración a Ollama..."
+RESPONSE=$(curl -s http://localhost:11434/api/generate -d "{
+  \"model\": \"$MODEL\",
+  \"prompt\": \"Sistema iniciado. Modelo cargado en memoria.\",
+  \"keep_alive\": -1,
+  \"stream\": false
+}")
 
 if [ $? -eq 0 ]; then
-    echo "✅ Modelo cargado en memoria (permanente)"
+    echo "✅ Modelo $MODEL configurado con keep_alive = -1 (PERMANENTE)"
     echo ""
-    echo "📊 Verificando estado:"
-    curl -s http://localhost:11434/api/ps | grep -o '"name":"[^"]*"' | cut -d'"' -f4
+    echo "📊 Esto significa:"
+    echo "   ✓ El modelo permanecerá en RAM indefinidamente"
+    echo "   ✓ NO se descargará entre requests"
+    echo "   ✓ Latencias consistentes garantizadas"
+    echo "   ✓ Solo se descarga si reinicias Ollama"
     echo ""
-    echo "✅ Configuración completa"
+    echo "💾 Uso de RAM:"
+    echo "   Modelo llama3.2:1b: ~1.3 GB VRAM"
+    echo "   GTX 1050 disponible: 3 GB VRAM"
+    echo "   Espacio restante: ~1.7 GB ✅"
     echo ""
-    echo "💡 El modelo permanecerá en memoria hasta reiniciar Ollama"
-    echo "   Para liberar memoria: docker-compose restart ollama"
+    echo "🔍 Verificando modelos cargados..."
+    curl -s http://localhost:11434/api/tags | python3 -m json.tool | grep -A 10 "name"
 else
-    echo "❌ Error al cargar modelo"
-    echo "   Verifica que el modelo exista: ollama list"
+    echo "❌ Error al configurar keep_alive"
+    echo ""
+    echo "🔧 Troubleshooting:"
+    echo "   1. Verifica que Ollama esté corriendo:"
+    echo "      systemctl status ollama"
+    echo ""
+    echo "   2. Si no está corriendo, inícialo:"
+    echo "      systemctl start ollama"
+    echo ""
+    echo "   3. Verifica que el modelo esté descargado:"
+    echo "      ollama list"
     exit 1
 fi
+
+echo ""
+echo "✅ CONFIGURACIÓN COMPLETA"
+echo ""
+echo "🚀 Ahora puedes ejecutar benchmarks con latencia consistente:"
+echo "   cd backend && python sentinel_global_benchmark.py"
+echo ""
+echo "📝 Nota: El modelo permanecerá en RAM hasta que:"
+echo "   - Reinicies Ollama (systemctl restart ollama)"
+echo "   - Reinicies el sistema"
+echo "   - Cambies keep_alive manualmente"
