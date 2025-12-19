@@ -14,7 +14,7 @@
 ## Afiliación Institucional
 
 **Modalidad**: Investigador Independiente  
-**Institución Ejecutora**: Persona Natural (RUT: 13.806.523-5
+**Institución Ejecutora**: Persona Natural 
 **Infraestructura**: Laboratorio propio de I+D en Curanilahue, Región del Bío-Bío  
 **Dedicación al Proyecto**: 40 horas semanales  
 **Período Propuesto**: 24 meses (2025-2027)
