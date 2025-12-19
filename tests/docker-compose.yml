@@ -1,0 +1,140 @@
+version: '3.8'
+
+services:
+  # Sentinel Cortex API
+  sentinel-cortex:
+    image: sentinel-cortex:latest
+    container_name: sentinel-cortex
+    ports:
+      - "8080:8080"
+      - "9090:9090"  # Metrics
+    environment:
+      - LOG_LEVEL=debug
+      - GUARDIAN_ALPHA_ENABLED=true
+      - GUARDIAN_BETA_ENABLED=true
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+    depends_on:
+      - postgres
+      - redis
+      - guardian-alpha
+      - guardian-beta
+    networks:
+      - sentinel-net
+    volumes:
+      - ./logs:/var/log/sentinel
+      - ./audit:/var/audit/sentinel
+    restart: unless-stopped
+
+  # Guardian-Alpha (eBPF)
+  guardian-alpha:
+    image: guardian-alpha:latest
+    container_name: guardian-alpha
+    privileged: true  # Required for eBPF
+    pid: "host"
+    environment:
+      - GUARDIAN_MODE=alpha
+      - LOG_LEVEL=debug
+    networks:
+      - sentinel-net
+    volumes:
+      - /sys/kernel/debug:/sys/kernel/debug:ro
+      - ./guardian-alpha/bpf:/bpf
+    restart: unless-stopped
+
+  # Guardian-Beta (Kernel Module Simulator)
+  guardian-beta:
+    image: guardian-beta:latest
+    container_name: guardian-beta
+    privileged: true
+    environment:
+      - GUARDIAN_MODE=beta
+      - LOG_LEVEL=debug
+    networks:
+      - sentinel-net
+    restart: unless-stopped
+
+  # PostgreSQL (HA configuration)
+  postgres:
+    image: postgres:15-alpine
+    container_name: sentinel-postgres
+    environment:
+      - POSTGRES_DB=sentinel
+      - POSTGRES_USER=sentinel
+      - POSTGRES_PASSWORD=changeme
+      - POSTGRES_MAX_CONNECTIONS=200
+    ports:
+      - "5432:5432"
+    networks:
+      - sentinel-net
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sentinel"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Redis (Cache)
+  redis:
+    image: redis:7-alpine
+    container_name: sentinel-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - sentinel-net
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Prometheus (Metrics)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: sentinel-prometheus
+    ports:
+      - "9091:9090"
+    networks:
+      - sentinel-net
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    restart: unless-stopped
+
+  # Grafana (Dashboards)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: sentinel-grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - sentinel-net
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+networks:
+  sentinel-net:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
+  prometheus-data:
+  grafana-data:
