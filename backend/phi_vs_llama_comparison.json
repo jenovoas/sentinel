@@ -1,0 +1,19 @@
+{
+  "phi3:mini": {
+    "modelo": "phi3:mini",
+    "ttfb_promedio_ms": 28105.2,
+    "ttfb_mediana_ms": 28041.5,
+    "ttfb_min_ms": 6286.86,
+    "ttfb_max_ms": 49446.58,
+    "requests_exitosos": 5
+  },
+  "llama3.2:1b": {
+    "modelo": "llama3.2:1b",
+    "ttfb_promedio_ms": 10430.44,
+    "ttfb_mediana_ms": 9307.89,
+    "ttfb_min_ms": 5300.25,
+    "ttfb_max_ms": 16716.84,
+    "requests_exitosos": 5
+  },
+  "timestamp": "2025-12-19T13:03:22.676773"
+}
