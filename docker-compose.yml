@@ -66,6 +66,7 @@ services:
         condition: service_healthy
     volumes:
       - ./backend:/app
+      - wal_data:/app/wal # 🛡️ WAL: Append-only, fsync cada 100ms (forensic durability)
     networks:
       - sentinel_network
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
@@ -484,6 +485,9 @@ volumes:
   n8n_data:
     driver: local
   ollama_data:
+    driver: local
+  wal_data:
+    # 🛡️ WAL: Forensic audit trail (append-only, persistent)
     driver: local
 
 networks:
