@@ -6,23 +6,51 @@ server:
   grpc_listen_port: 0
   log_level: info
 
-# Cliente de Loki
+# Clientes de Loki con DUAL-LANE BATCHING
+# CRÍTICO: Security lane sin buffer, Observability lane con buffer optimizado
 clients:
+  # Security Lane: Envío INMEDIATO (0ms latencia)
   - url: http://loki:3100/loki/api/v1/push
-    tenant_id: sentinel
-    batchwait: 1s
-    batchsize: 1048576
+    tenant_id: sentinel-security
     
-    # 🛡️ IMPROVED: Better retry logic for reliability
+    # 🛡️ SECURITY: Sin buffering, envío inmediato
+    batchwait: 0ms          # Sin espera
+    batchsize: 1            # Un evento a la vez
+    
+    # Retry agresivo para security
+    backoff_config:
+      min_period: 100ms
+      max_period: 5s
+      max_retries: 10
+    
+    # Labels externos
+    external_labels:
+      environment: production
+      cluster: sentinel-main
+      lane: security
+    
+    # Solo procesar eventos con lane=security
+    # (configurado en pipeline_stages de cada job)
+  
+  # Observability Lane: Buffering optimizado (200ms latencia)
+  - url: http://loki:3100/loki/api/v1/push
+    tenant_id: sentinel-ops
+    
+    # 📊 OBSERVABILITY: Buffering permitido
+    batchwait: 200ms        # Buffer de 200ms
+    batchsize: 1048576      # 1MB máximo
+    
+    # Retry normal para ops
     backoff_config:
       min_period: 1s
       max_period: 30s
       max_retries: 5
     
-    # External labels for debugging
+    # Labels externos
     external_labels:
       environment: production
       cluster: sentinel-main
+      lane: ops
 
 positions:
   filename: /tmp/positions.yaml
