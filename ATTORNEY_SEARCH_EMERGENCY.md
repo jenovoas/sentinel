@@ -237,42 +237,22 @@ recomendar colega con experiencia en emergency filings?
 
 ---
 
-## ✅ PRÓXIMOS PASOS (HOY)
+## 📋 ATTORNEY EVALUATION SUMMARY
 
-### Viernes 20 Diciembre (Antes de fin de día)
+### Key Criteria
+- Security patents experience (kernel-level, eBPF, Linux)
+- Reasonable fees ($35-45K provisional, 4-5 claims)
+- Startup-friendly approach
+- Strong track record with USPTO
 
-1. **Preparar materials** (2-3 horas):
-   - [ ] Executive summary (usar IP_CONSOLIDATION_6_CLAIMS.md)
-   - [ ] Claims abstracts (usar PATENT_CLAIMS.md)
-   - [ ] Compilar benchmarks y evidencia técnica
-
-2. **Buscar attorneys** (1-2 horas):
-   - [ ] UpCounsel: 2-3 candidates
-   - [ ] LegalZoom: Check express service
-   - [ ] USPTO database: 2-3 candidates
-   - [ ] LinkedIn: 2-3 candidates
-
-3. **Enviar emails** (1 hora):
-   - [ ] 5-7 attorneys contactados
-   - [ ] Subject: "URGENT - Emergency Provisional Patent"
-   - [ ] Adjuntar materials preparados
-
-### Sábado-Domingo 21-22 Diciembre
-
-- [ ] Revisar respuestas
-- [ ] Programar calls de emergencia
-- [ ] Preparar preguntas técnicas
-
-### Lunes 23 Diciembre
-
-- [ ] 3 calls de emergencia (30 min cada uno)
-- [ ] Seleccionar attorney
-- [ ] Pagar retainer ($5K)
-- [ ] Kick-off meeting programado
+### Search Resources
+- USPTO Database (oedci.uspto.gov)
+- Legal platforms (UpCounsel, LegalZoom, Rocket Lawyer)
+- Professional networks (LinkedIn, Y Combinator, AngelList)
+- Specialized firms (Fish & Richardson, Cooley LLP, Fenwick & West)
 
 ---
 
-**DEADLINE**: Attorney contratado en 3 días (23 Diciembre)  
-**BUDGET**: $17-23K provisional  
-**RISK**: -$67-129M si competidor patenta primero  
-**ACTION**: ENVIAR EMAILS HOY 🚨
+**Priority**: High (competitive tech landscape)  
+**Timeline**: 45-60 days recommended  
+**Budget**: $35-45K provisional (4-5 claims)
