@@ -1,7 +1,7 @@
 # 📧 Executive Summary - High-Priority Patent Filing
 
 **Para**: Patent Attorney  
-**De**: [Your Name], Founder - Sentinel Cortex™  
+**De**: Jaime Novoa, Founder - Sentinel Cortex™  
 **Fecha**: 20 Diciembre 2024  
 **Asunto**: Provisional Patent - Kernel Security & AI Defense (6 Claims)
 
@@ -280,13 +280,11 @@ ROI:
 
 ## 📞 CONTACTO
 
-**[Your Name]**  
+**Jaime Novoa**  
 Founder & Lead Architect - Sentinel Cortex™
 
-**Email**: [your-email]  
-**Phone**: [your-phone]  
-**GitHub**: github.com/jenovoas/sentinel  
-**Location**: [Your Location]
+**Email**: jaime.novoase@gmail.com  
+**GitHub**: github.com/jenovoas/sentinel
 
 **Disponibilidad**: Inmediata para call
 
