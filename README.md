@@ -33,13 +33,21 @@ Sentinel is not just an app; it is a **Sovereign Overlay OS** designed to reclai
 
 Sentinel Vault integrates 7 critical privacy tools into one unified interface, eliminating the need for fragmented SaaS subscriptions.
 
-| Feature | Competitor | Sentinel Vault Advantage |
-|---------|------------|--------------------------|
-| **Identity** | 1Password | + Integrated Crypto Wallet & Local AI Analysis |
-| **Finance** | Mint/YNAB | + Zero-Knowledge (Local DB) & Manual Asset Tracking |
-| **Browsing** | Tor Browser | + **Triad Routing** (Ghost/Deep/Velocity Modes) |
-| **Storage** | Google Drive | + AES-256 Drag & Drop Encryption (Local) |
-| **Notes** | Obsidian | + Encrypted-at-Rest & Terminal Integration |
+### 🛡️ **3. Market Alignment**
+
+Sentinel Vault occupies a unique "Blue Ocean" by integrating capabilities that are traditionally fragmented.
+
+| Feature Domain | 1Password | Ledger | MetaMask | **Sentinel Vault (V1.0)** |
+| :--- | :---: | :---: | :---: | :---: |
+| **Core Focus** | Passwords | Hardware Wallet | ETH Wallet | **Sovereign OS** |
+| **Market Cap** | ~$500M | ~$1.5B | ~$7B | **Blue Ocean ($1B+)** |
+| **Identity** | ✅ Best UX | ❌ None | ❌ None | **✅ Argon2id + AI Analysis** |
+| **Crypto** | ❌ None | ✅ Multi-chain | ⚠️ ETH-centric | **✅ Unified (BTC/ETH/SOL)** |
+| **Privacy** | ❌ Cloud-based | ✅ Hardware | ❌ RPC leaks | **✅ Triad (Tor/I2P/Nym)** |
+| **Smart Defense** | ❌ None | ❌ None | ❌ None | **✅ TruthSync (AI Verification)** |
+| **Audit Trail** | ❌ Opaque | ✅ On-chain | ✅ On-chain | **✅ Local + Blockchain** |
+
+> *"Sentinel Vault eliminates the friction of managing three separate apps (Identity, Wallet, Browser) by unifying them into a single, sovereign interface."*
 
 ### 🚀 Key Capabilities (V1.0)
 
@@ -62,6 +70,10 @@ Sentinel Vault integrates 7 critical privacy tools into one unified interface, e
 #### 4. 📄 Docs & Notes
 - **Encrypted Vault**: Store sensitive PDFs/Images with AES-256.
 - **Secure Notes**: Markdown editor with link detection and tagging.
+
+#### 5. 🧠 TruthSync Cognitive Engine (bonus)
+- **Real-time Verification**: Analyzes browser content for misinformation using local AI (Phi-3).
+- **Cognitive Defense**: Visual "Trust Badges" (Verified/Misinformation) directly in the reader view.
 
 ---
 
