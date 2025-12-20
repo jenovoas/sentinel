@@ -1,0 +1,14 @@
+/home/jnovoas/sentinel/sentinel-wasm/target/wasm32-unknown-unknown/release/deps/serde-31244d2c430b54f4.d: /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /home/jnovoas/sentinel/sentinel-wasm/target/wasm32-unknown-unknown/release/build/serde-3ae14dfc69b806dd/out/private.rs
+
+/home/jnovoas/sentinel/sentinel-wasm/target/wasm32-unknown-unknown/release/deps/libserde-31244d2c430b54f4.rlib: /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /home/jnovoas/sentinel/sentinel-wasm/target/wasm32-unknown-unknown/release/build/serde-3ae14dfc69b806dd/out/private.rs
+
+/home/jnovoas/sentinel/sentinel-wasm/target/wasm32-unknown-unknown/release/deps/libserde-31244d2c430b54f4.rmeta: /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /home/jnovoas/sentinel/sentinel-wasm/target/wasm32-unknown-unknown/release/build/serde-3ae14dfc69b806dd/out/private.rs
+
+/home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs:
+/home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs:
+/home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs:
+/home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs:
+/home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs:
+/home/jnovoas/sentinel/sentinel-wasm/target/wasm32-unknown-unknown/release/build/serde-3ae14dfc69b806dd/out/private.rs:
+
+# env-dep:OUT_DIR=/home/jnovoas/sentinel/sentinel-wasm/target/wasm32-unknown-unknown/release/build/serde-3ae14dfc69b806dd/out
