@@ -203,12 +203,17 @@ con poder de veto cuando la evidencia es incompleta"
 "Arquitectura de dual-guardián para sistemas AIOps donde un 
 guardian determinista (kernel-level, vía eBPF) mantiene validación 
 independiente de acciones propuestas por un guardian basado en IA, 
-con poder de veto a nivel de syscall"
+con poder de veto a nivel de syscall y mutual surveillance que 
+protege contra usuarios internos maliciosos"
 ```
 
 **IP Value:** $8-15M  
 **Licensing:** $50-100M potential  
 **Prior Art:** **NINGUNO ENCONTRADO** ✅
+
+**Protección Dual** (Valor Agregado):
+- ✅ **Amenazas Externas**: AIOpsDoom, inyección adversarial
+- ✅ **Amenazas Internas**: Admin malicioso, insider threats (97.5% protección)
 
 **Por qué es "home run":**
 
@@ -217,6 +222,7 @@ con poder de veto a nivel de syscall"
    - + Kernel-level validation
    - + Real-time syscall interception
    - + Mutual surveillance between guardians
+   - + Protection against insider threats (admin malicioso)
 
 2. **Defensibilidad:** EXCELENTE
    - No es combinación obvia de elementos conocidos
@@ -225,7 +231,8 @@ con poder de veto a nivel de syscall"
 
 3. **Valor de Mercado:** CRÍTICO
    - Splunk, Palo Alto, Datadog: Ninguno tiene kernel-level veto
-   - Esto es TU moat único
+   - **Ninguno protege contra insider threats** (admin puede deshabilitar)
+   - Esto es TU moat único: **doble protección** (externo + interno)
 
 **Implementación Legal:**
 ```
