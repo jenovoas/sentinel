@@ -41,3 +41,8 @@
 - [x] **Crypto Wallet**: BTC/ETH/SOL/MATIC support.
 - [x] **Financial Dashboard**: Net Worth Calculator.
 - [x] **Asset Management**: Manual tracking for Gold/Cash/Real Estate.
+
+### Phase 8: TruthSync Integration (Bonus)
+- [x] **Cognitive Engine**: `TruthSyncService` using local Ollama (Phi-3).
+- [x] **Real-time Verification**: Semantic analysis of browser content.
+- [x] **UI Integration**: Trust Scores & Misinformation Badges in Triad Browser.
