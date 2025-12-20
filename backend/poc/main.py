@@ -632,6 +632,36 @@ async def delete_note(note_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# ============================================================================
+# Endpoints - Secure Browser (Triad)
+# ============================================================================
+
+class BrowserRequest(BaseModel):
+    url: str
+    mode: str = "clear"  # clear, velocity, ghost, deep
+
+@app.post("/browser/browse")
+async def browse_url(request: BrowserRequest):
+    """
+    Secure Browser Request
+    Modes:
+    - clear: Direct connection
+    - velocity: Custom Proxy / Tor
+    - ghost: Nym Mixnet
+    - deep: I2P
+    """
+    try:
+        from browser_service import BrowserService
+        
+        service = BrowserService()
+        service.set_mode(request.mode)
+        
+        result = service.fetch_page(request.url)
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 # ============================================================================
 # Endpoints - Terminal
