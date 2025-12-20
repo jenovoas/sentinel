@@ -315,8 +315,85 @@ async def benchmark_ollama():
 
 
 # ============================================================================
-# Health Check
+# Endpoints - Documents
 # ============================================================================
+
+@app.post("/documents/upload")
+async def upload_document(
+    file: UploadFile,
+    category: str = "general",
+    tags: str = ""  # Comma-separated
+):
+    """Upload encrypted document"""
+    try:
+        from document_service import DocumentService
+        import secrets
+        
+        # Read file
+        file_data = await file.read()
+        
+        # Generate encryption key (in production, use user's key)
+        # For POC, we'll use a test key
+        encryption_key = secrets.token_bytes(32)
+        
+        # Save document
+        doc_service = DocumentService()
+        metadata = doc_service.save_document(
+            file_data=file_data,
+            filename=file.filename,
+            encryption_key=encryption_key,
+            category=category,
+            tags=tags.split(",") if tags else []
+        )
+        
+        return {
+            "success": True,
+            "document": metadata,
+            "message": "Document uploaded and encrypted successfully"
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/documents/{doc_id}")
+async def download_document(doc_id: str):
+    """Download and decrypt document"""
+    try:
+        from document_service import DocumentService
+        import secrets
+        
+        # In production, get user's encryption key
+        # For POC, use test key
+        encryption_key = secrets.token_bytes(32)
+        
+        # Load document
+        doc_service = DocumentService()
+        # Note: In production, get nonce from database
+        # For POC, this will fail - need to implement database storage
+        
+        return {
+            "success": False,
+            "message": "Download endpoint needs database integration"
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/documents")
+async def list_documents():
+    """List all documents (metadata only)"""
+    try:
+        # In production, query database for user's documents
+        # For POC, return empty list
+        return {
+            "documents": [],
+            "message": "List endpoint needs database integration"
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/health")
 async def health_check():
