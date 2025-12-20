@@ -20,3 +20,7 @@
 - Architecture: `TRUTHSYNC_ARCHITECTURE.md`
 - IP: `MASTER_SECURITY_IP_CONSOLIDATION_v1.1_CORRECTED.md`
 - Benchmarks: `BENCHMARKS_VALIDADOS.md`
+
+## PENDING (Ideas for future)
+- 🔐 Improved authentication system (passwordless) - `docs/PLANNING_AUTH_SYSTEM.md`
+
