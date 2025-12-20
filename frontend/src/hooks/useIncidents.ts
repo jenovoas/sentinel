@@ -21,15 +21,21 @@ export interface Incident {
     detection_time: string;
 }
 
+import { usePageVisibility } from "./usePageVisibility";
+
 export function useIncidents(pollInterval = 30000) {
     const [stats, setStats] = useState<IncidentStats | null>(null);
     const [recentIncidents, setRecentIncidents] = useState<Incident[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const isVisible = usePageVisibility();
 
     const fetchData = useCallback(async () => {
+        if (!isVisible) return; // Don't fetch if tab is hidden
+
         try {
             setError(null);
+            // ... (rest of fetchData logic remains same, just preventing execution)
 
             // Parallel fetch for potential performance boost
             const [statsRes, incidentsRes] = await Promise.all([
@@ -52,13 +58,16 @@ export function useIncidents(pollInterval = 30000) {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [isVisible]);
 
     useEffect(() => {
         fetchData();
-        const interval = setInterval(fetchData, pollInterval); // Refresh every 30s by default
+        // Only set interval if page is visible
+        if (!isVisible) return;
+
+        const interval = setInterval(fetchData, pollInterval);
         return () => clearInterval(interval);
-    }, [fetchData, pollInterval]);
+    }, [fetchData, pollInterval, isVisible]);
 
     return { stats, recentIncidents, loading, error, refresh: fetchData };
 }
