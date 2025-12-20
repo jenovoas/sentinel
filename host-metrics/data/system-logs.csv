@@ -9806,3 +9806,106 @@ timestamp,level,unit,message
 2025-12-20T15:19:43.000Z,WARNING,user@1002.service,Unknown key gtk-monospace-font-name in /home/jnovoas/.config/gtk-3.0/settings.ini
 2025-12-20T15:19:44.000Z,WARNING,user@1002.service,Unknown key gtk-monospace-font-name in /home/jnovoas/.config/gtk-3.0/settings.ini
 2025-12-20T15:19:44.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:7f:ff:fa:4c:57:39:14:32:ef:08:00 SRC=192.168.1.29 DST=239.255.255.250 LEN=63 TOS=0x00 PREC=0x00 TTL=64 ID=16873 DF PROTO=UDP SPT=48461 DPT=15600 LEN=43 
+2025-12-20T15:20:57.000Z,WARNING,user@1002.service,Localsearch search engine has no connection
+2025-12-20T15:20:57.000Z,WARNING,user@1002.service,Using GtkSettings:gtk-application-prefer-dark-theme with libadwaita is unsupported. Please use AdwStyleManager:color-scheme instead.
+2025-12-20T15:20:57.000Z,WARNING,user@1002.service,Unknown key gtk-monospace-font-name in /home/jnovoas/.config/gtk-3.0/settings.ini
+2025-12-20T15:20:57.000Z,WARNING,user@1002.service,JS ERROR: TypeError: can't access property "get_name"; app is nullWindowAttentionSource@resource:///org/gnome/shell/ui/windowAttentionHandler.js:63:13_onWindowDemandsAttention@resource:///org/gnome/sh
+2025-12-20T15:20:58.000Z,WARNING,user@1002.service,Unknown key gtk-monospace-font-name in /home/jnovoas/.config/gtk-3.0/settings.ini
+2025-12-20T15:21:02.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:7f:ff:fa:4c:57:39:14:32:ef:08:00 SRC=192.168.1.29 DST=239.255.255.250 LEN=63 TOS=0x00 PREC=0x00 TTL=64 ID=28957 DF PROTO=UDP SPT=59245 DPT=15600 LEN=43 
+2025-12-20T15:21:20.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:7f:ff:fa:4c:57:39:14:32:ef:08:00 SRC=192.168.1.29 DST=239.255.255.250 LEN=63 TOS=0x00 PREC=0x00 TTL=64 ID=30771 DF PROTO=UDP SPT=44047 DPT=15600 LEN=43 
+2025-12-20T15:21:44.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:7f:ff:fa:4c:57:39:14:32:ef:08:00 SRC=192.168.1.29 DST=239.255.255.250 LEN=63 TOS=0x00 PREC=0x00 TTL=64 ID=34319 DF PROTO=UDP SPT=35800 DPT=15600 LEN=43 
+2025-12-20T15:21:59.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libaspell.so.15: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T15:21:59.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libhspell.so.0: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T15:23:16.000Z,WARNING,user@1002.service,app-gnome-whatsdesk-3592403.scope: Still around after SIGKILL. Ignoring.
+2025-12-20T15:23:16.000Z,WARNING,user@1002.service,app-gnome-whatsdesk-3592403.scope: Failed with result 'timeout'.
+2025-12-20T15:23:16.000Z,WARNING,user@1002.service,Connection to xwayland lost
+2025-12-20T15:23:16.000Z,WARNING,user@1002.service,Object St.BoxLayout (0x5d7723885de0); has been already disposed — impossible to access it. This might be caused by the object having been destroyed from C code using something such as destroy(); dis
+2025-12-20T15:23:16.000Z,WARNING,user@1002.service,Object Gjs_ui_popupMenu_PopupSeparatorMenuItem (0x5d77225aa500); has been already disposed — impossible to access it. This might be caused by the object having been destroyed from C code using somet
+2025-12-20T15:24:57.000Z,WARNING,user@1002.service,Using GtkSettings:gtk-application-prefer-dark-theme with libadwaita is unsupported. Please use AdwStyleManager:color-scheme instead.
+2025-12-20T15:24:57.000Z,WARNING,user@1002.service,Unknown key gtk-monospace-font-name in /home/jnovoas/.config/gtk-3.0/settings.ini
+2025-12-20T15:24:59.000Z,WARNING,user@1002.service,Unknown key gtk-monospace-font-name in /home/jnovoas/.config/gtk-3.0/settings.ini
+2025-12-20T15:24:59.000Z,WARNING,kernel,warning: `ThreadPoolForeg' uses wireless extensions which will stop working for Wi-Fi 7 hardware; use nl80211
+2025-12-20T15:25:00.000Z,WARNING,user@1002.service,updates-shell: failed to get upgrades: no plugin could handle listing distro upgrades
+2025-12-20T15:25:49.000Z,WARNING,user@1002.service,failed to get upgrades: no plugin could handle listing distro upgrades
+2025-12-20T15:25:57.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libaspell.so.15: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T15:25:57.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libhspell.so.0: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T15:25:57.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libnuspell.so.5: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T15:25:57.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libvoikko.so.1: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T15:27:35.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=27818 DF PROTO=2 
+2025-12-20T15:29:31.000Z,WARNING,user@1002.service,Unknown key gtk-monospace-font-name in /home/jnovoas/.config/gtk-3.0/settings.ini
+2025-12-20T15:29:40.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=33143 DF PROTO=2 
+2025-12-20T15:31:45.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=40301 DF PROTO=2 
+2025-12-20T15:33:50.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=41781 DF PROTO=2 
+2025-12-20T15:35:55.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=42469 DF PROTO=2 
+2025-12-20T15:40:05.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=58522 DF PROTO=2 
+2025-12-20T15:42:10.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=64227 DF PROTO=2 
+2025-12-20T15:43:11.000Z,WARNING,user@1002.service,Localsearch search engine has no connection
+2025-12-20T15:43:11.000Z,WARNING,user@1002.service,Localsearch search engine has no connection
+2025-12-20T15:43:11.000Z,WARNING,user@1002.service,Using GtkSettings:gtk-application-prefer-dark-theme with libadwaita is unsupported. Please use AdwStyleManager:color-scheme instead.
+2025-12-20T15:43:12.000Z,WARNING,user@1002.service,Unknown key gtk-monospace-font-name in /home/jnovoas/.config/gtk-3.0/settings.ini
+2025-12-20T15:43:12.000Z,WARNING,user@1002.service,Unknown key gtk-monospace-font-name in /home/jnovoas/.config/gtk-3.0/settings.ini
+2025-12-20T15:44:11.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libaspell.so.15: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T15:44:11.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libhspell.so.0: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T15:44:11.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libnuspell.so.5: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T15:44:11.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libvoikko.so.1: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T15:44:15.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=8696 DF PROTO=2 
+2025-12-20T15:46:20.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=18478 DF PROTO=2 
+2025-12-20T15:48:25.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=30804 DF PROTO=2 
+2025-12-20T15:50:30.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=32709 DF PROTO=2 
+2025-12-20T15:52:35.000Z,WARNING,user@1002.service,Localsearch search engine has no connection
+2025-12-20T15:52:35.000Z,WARNING,user@1002.service,Localsearch search engine has no connection
+2025-12-20T15:52:35.000Z,WARNING,user@1002.service,Using GtkSettings:gtk-application-prefer-dark-theme with libadwaita is unsupported. Please use AdwStyleManager:color-scheme instead.
+2025-12-20T15:52:36.000Z,WARNING,user@1002.service,Unknown key gtk-monospace-font-name in /home/jnovoas/.config/gtk-3.0/settings.ini
+2025-12-20T15:52:36.000Z,WARNING,user@1002.service,Unknown key gtk-monospace-font-name in /home/jnovoas/.config/gtk-3.0/settings.ini
+2025-12-20T15:53:36.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libaspell.so.15: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T15:53:36.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libhspell.so.0: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T15:53:36.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libnuspell.so.5: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T15:53:36.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libvoikko.so.1: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T15:54:40.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=48396 DF PROTO=2 
+2025-12-20T15:56:22.000Z,WARNING,user@1002.service,Using GtkSettings:gtk-application-prefer-dark-theme with libadwaita is unsupported. Please use AdwStyleManager:color-scheme instead.
+2025-12-20T15:56:22.000Z,WARNING,user@1002.service,Localsearch search engine has no connection
+2025-12-20T15:56:22.000Z,WARNING,user@1002.service,Using GtkSettings:gtk-application-prefer-dark-theme with libadwaita is unsupported. Please use AdwStyleManager:color-scheme instead.
+2025-12-20T15:56:22.000Z,WARNING,user@1002.service,Unknown key gtk-monospace-font-name in /home/jnovoas/.config/gtk-3.0/settings.ini
+2025-12-20T15:56:45.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=52864 DF PROTO=2 
+2025-12-20T15:57:25.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libaspell.so.15: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T15:57:25.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libhspell.so.0: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T15:57:25.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libnuspell.so.5: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T15:57:25.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libvoikko.so.1: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T15:58:50.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=54493 DF PROTO=2 
+2025-12-20T16:00:55.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=56858 DF PROTO=2 
+2025-12-20T16:05:05.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=4596 DF PROTO=2 
+2025-12-20T16:06:34.000Z,WARNING,user@1002.service,Type GITypeInfo of property AccountsService.User::password-mode does not match return type GITypeInfo of getter get_password_mode. Falling back to slow path
+2025-12-20T16:07:10.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=11036 DF PROTO=2 
+2025-12-20T16:09:15.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=16988 DF PROTO=2 
+2025-12-20T16:11:20.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=23269 DF PROTO=2 
+2025-12-20T16:13:25.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=31450 DF PROTO=2 
+2025-12-20T16:15:30.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=43607 DF PROTO=2 
+2025-12-20T16:17:35.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=47223 DF PROTO=2 
+2025-12-20T16:19:40.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=59373 DF PROTO=2 
+2025-12-20T16:21:45.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=1483 DF PROTO=2 
+2025-12-20T16:23:50.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=13031 DF PROTO=2 
+2025-12-20T16:25:55.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=13951 DF PROTO=2 
+2025-12-20T16:30:05.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=30167 DF PROTO=2 
+2025-12-20T16:32:10.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=39313 DF PROTO=2 
+2025-12-20T16:34:15.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=48386 DF PROTO=2 
+2025-12-20T16:36:20.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=59004 DF PROTO=2 
+2025-12-20T16:38:25.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=414 DF PROTO=2 
+2025-12-20T16:40:30.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=2653 DF PROTO=2 
+2025-12-20T16:42:35.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=9140 DF PROTO=2 
+2025-12-20T16:44:40.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=20457 DF PROTO=2 
+2025-12-20T16:46:45.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=28035 DF PROTO=2 
+2025-12-20T16:48:50.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=40411 DF PROTO=2 
+2025-12-20T16:50:55.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=46764 DF PROTO=2 
+2025-12-20T16:52:16.000Z,WARNING,user@1002.service,Using GtkSettings:gtk-application-prefer-dark-theme with libadwaita is unsupported. Please use AdwStyleManager:color-scheme instead.
+2025-12-20T16:52:16.000Z,WARNING,user@1002.service,Using GtkSettings:gtk-application-prefer-dark-theme with libadwaita is unsupported. Please use AdwStyleManager:color-scheme instead.
+2025-12-20T16:52:16.000Z,WARNING,user@1002.service,Unknown key gtk-monospace-font-name in /home/jnovoas/.config/gtk-3.0/settings.ini
+2025-12-20T16:52:18.000Z,WARNING,user@1002.service,Unknown key gtk-monospace-font-name in /home/jnovoas/.config/gtk-3.0/settings.ini
+2025-12-20T16:52:18.000Z,WARNING,user@1002.service,JS ERROR: TypeError: can't access property "get_name"; app is nullWindowAttentionSource@resource:///org/gnome/shell/ui/windowAttentionHandler.js:63:13_onWindowDemandsAttention@resource:///org/gnome/sh
+2025-12-20T16:53:16.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libaspell.so.15: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T16:53:16.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libhspell.so.0: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T16:53:16.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libnuspell.so.5: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T16:53:16.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libvoikko.so.1: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T16:55:05.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=51453 DF PROTO=2 
+2025-12-20T16:57:10.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=53431 DF PROTO=2 
+2025-12-20T16:59:15.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=56711 DF PROTO=2 
+2025-12-20T17:01:20.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=62016 DF PROTO=2 
