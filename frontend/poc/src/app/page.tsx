@@ -724,6 +724,99 @@ Try:
                         </div>
                     )}
                 </div>
+
+                {/* Command Terminal */}
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                    <h2 className="text-2xl font-semibold text-white mb-4">💻 Command Terminal</h2>
+
+                    {/* Terminal Output */}
+                    <div className="bg-black/50 rounded-lg p-4 mb-4 h-96 overflow-y-auto font-mono text-sm">
+                        <div id="terminal-output" className="text-green-400 whitespace-pre-wrap">
+                            {`🔐 Sentinel Vault Terminal
+Type 'vault help' for available commands
+
+$ `}
+                        </div>
+                    </div>
+
+                    {/* Command Input */}
+                    <div className="flex gap-2">
+                        <div className="flex-1 relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-green-400 font-mono">$</span>
+                            <input
+                                type="text"
+                                placeholder="vault help"
+                                className="w-full bg-black/50 border border-green-500/30 rounded-lg pl-8 pr-4 py-3 text-green-400 placeholder-green-400/40 font-mono text-sm focus:border-green-500 focus:outline-none"
+                                id="terminal-input"
+                                onKeyDown={async (e) => {
+                                    if (e.key === 'Enter') {
+                                        const input = e.currentTarget;
+                                        const command = input.value.trim();
+
+                                        if (!command) return;
+
+                                        const output = document.getElementById('terminal-output');
+                                        if (output) {
+                                            output.textContent += command + '\n';
+                                        }
+
+                                        input.value = '';
+
+                                        try {
+                                            const response = await fetch('http://localhost:8000/terminal/execute', {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                                body: new URLSearchParams({ command })
+                                            });
+                                            const data = await response.json();
+
+                                            if (output) {
+                                                output.textContent += data.output + '\n\n$ ';
+                                                output.parentElement?.scrollTo(0, output.parentElement.scrollHeight);
+                                            }
+                                        } catch (error) {
+                                            if (output) {
+                                                output.textContent += '❌ Error executing command\n\n$ ';
+                                            }
+                                        }
+                                    }
+                                }}
+                            />
+                        </div>
+                        <button
+                            onClick={() => {
+                                const output = document.getElementById('terminal-output');
+                                if (output) {
+                                    output.textContent = `🔐 Sentinel Vault Terminal\nType 'vault help' for available commands\n\n$ `;
+                                }
+                            }}
+                            className="px-4 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all"
+                        >
+                            Clear
+                        </button>
+                    </div>
+
+                    {/* Quick Commands */}
+                    <div className="mt-4 flex gap-2 flex-wrap">
+                        <span className="text-white/60 text-sm">Quick:</span>
+                        {['vault help', 'vault balance', 'vault status', 'vault generate 32'].map(cmd => (
+                            <button
+                                key={cmd}
+                                onClick={async () => {
+                                    const input = document.getElementById('terminal-input') as HTMLInputElement;
+                                    if (input) {
+                                        input.value = cmd;
+                                        input.focus();
+                                        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+                                    }
+                                }}
+                                className="px-3 py-1 bg-green-500/20 text-green-400 text-xs rounded hover:bg-green-500/30 transition-all font-mono"
+                            >
+                                {cmd}
+                            </button>
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
