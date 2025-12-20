@@ -17,6 +17,7 @@
     - **Zero-Knowledge**: Master password never stored; derived key stays in RAM.
 - **Key Modules**:
     - `browser_service.py`: "Universal Switchboard" proxy for routing traffic via Tor (9050), I2P (4444), or Direct. Sanitizes HTML (removes JS/IFrames).
+    - `truthsync_service.py`: **[NEW]** Real-time AI content verification using local LLM (Ollama). Detects misinformation and logical fallacies.
     - `finance_service.py`: Aggregates crypto balances (Web3/BIP32) and manual assets. 
     - `terminal_service.py`: Command implementation for CLI-like control.
 
@@ -46,7 +47,12 @@
     - Is the BIP32 derivation path standard?
     - Are private keys cleared from memory effectively?
 
-4.  **Docker Security**:
+4.  **TruthSync AI Verification**:
+    - Can the prompt in `truthsync_service.py` be injected/jailbroken?
+    - Is the JSON parsing robust against hallucinated formats?
+    - Privacy: Are we sending sensitive URL data to the local LLM in a way that logs could leak?
+
+5.  **Docker Security**:
     - Are we running containers as root? (Check `Dockerfile` user directives).
     - Are volume permissions too open?
 
