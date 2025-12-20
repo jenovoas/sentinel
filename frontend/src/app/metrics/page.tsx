@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 type MetricTab = "overview" | "host" | "database" | "network" | "ai";
 
@@ -20,13 +20,7 @@ export default function MetricsPage() {
     ];
 
     // Grafana dashboard URLs (adjust based on your actual dashboard IDs)
-    const grafanaUrls: Record<MetricTab, string> = {
-        overview: "http://localhost:3001/d/sentinel-overview/sentinel-overview?orgId=1&refresh=5s&kiosk",
-        host: "http://localhost:3001/d/sentinel-host/host-metrics?orgId=1&refresh=5s&kiosk",
-        database: "http://localhost:3001/d/sentinel-db/database-metrics?orgId=1&refresh=5s&kiosk",
-        network: "http://localhost:3001/d/sentinel-network/network-metrics?orgId=1&refresh=5s&kiosk",
-        ai: "http://localhost:3001/d/sentinel-ai/ai-performance?orgId=1&refresh=5s&kiosk",
-    };
+    // Grafana URLs removed
 
     const getTabDescription = (tab: MetricTab): string => {
         switch (tab) {

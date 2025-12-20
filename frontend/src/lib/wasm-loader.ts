@@ -65,7 +65,7 @@ export function calculateAnomalyScore(values: number[], threshold: number = 2.0)
         throw new Error('WASM not initialized. Call initWasm() first.');
     }
 
-    return wasmModule.calculate_anomaly_score(values, threshold);
+    return wasmModule.calculate_anomaly_score(new Float64Array(values), threshold);
 }
 
 /**

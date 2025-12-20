@@ -21,21 +21,21 @@ export async function GET(request: Request) {
 
     // Leer logs CSV
     if (!fs.existsSync(csvPath)) {
-      return NextResponse.json({ 
-        ok: true, 
-        logs: [], 
-        summary: summary || { critical_count: 0, error_count: 0, warning_count: 0, total_issues: 0 } 
+      return NextResponse.json({
+        ok: true,
+        logs: [],
+        summary: summary || { critical_count: 0, error_count: 0, warning_count: 0, total_issues: 0 }
       });
     }
 
     const content = fs.readFileSync(csvPath, "utf8");
     const lines = content.trim().split(/\r?\n/);
-    
+
     if (lines.length <= 1) {
       return NextResponse.json({ ok: true, logs: [], summary });
     }
 
-    const header = lines[0].split(",");
+    // const header = lines[0].split(",");
     const dataLines = lines.slice(1);
 
     // Parsear y filtrar logs
@@ -58,11 +58,11 @@ export async function GET(request: Request) {
     logs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
     logs = logs.slice(0, limit);
 
-    return NextResponse.json({ 
-      ok: true, 
+    return NextResponse.json({
+      ok: true,
       logs,
       summary: summary || { critical_count: 0, error_count: 0, warning_count: 0, total_issues: 0 },
-      total: logs.length 
+      total: logs.length
     });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e?.message || "error" }, { status: 500 });

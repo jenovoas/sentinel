@@ -9,7 +9,6 @@ import {
     detectAIOpsD,
     detectAIOpsDoomBatch,
     benchmarkDetection,
-    isWasmReady,
     type TelemetryEvent
 } from "@/lib/wasm-loader";
 

@@ -315,7 +315,7 @@ export default function AnalyticsPage() {
                       </span>
                     </div>
                     <p className="text-xs text-gray-400">
-                      Valor: {a.value != null ? a.value.toFixed(2) : 'N/A'}%
+                      Valor: {a.metricValue != null ? a.metricValue.toFixed(2) : 'N/A'}%
                     </p>
                   </div>
                 ))}
@@ -349,14 +349,14 @@ export default function AnalyticsPage() {
                   <div
                     key={i}
                     className={`bg-white/5 rounded-lg p-2 border text-xs ${log.level === 'CRITICAL' ? 'border-rose-500/30' :
-                        log.level === 'ERROR' ? 'border-amber-500/30' :
-                          'border-orange-500/20'
+                      log.level === 'ERROR' ? 'border-amber-500/30' :
+                        'border-orange-500/20'
                       }`}
                   >
                     <div className="flex items-start gap-2 mb-1">
                       <span className={`font-semibold whitespace-nowrap ${log.level === 'CRITICAL' ? 'text-rose-400' :
-                          log.level === 'ERROR' ? 'text-amber-400' :
-                            'text-orange-400'
+                        log.level === 'ERROR' ? 'text-amber-400' :
+                          'text-orange-400'
                         }`}>
                         {log.level}
                       </span>

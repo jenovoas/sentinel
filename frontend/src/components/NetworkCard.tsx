@@ -56,7 +56,7 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
   const getWiFiSignalColor = () => {
     if (!effectiveWifi?.connected)
       return { color: "text-gray-500", bg: "bg-gray-500/10", label: "Desconectado" };
-    const signal = effectiveWifi.signal ?? effectiveWifi.signalStrength ?? 0;
+    const signal = effectiveWifi.signal ?? (effectiveWifi as any).signalStrength ?? 0;
     if (signal >= 75) return { color: "text-emerald-400", bg: "bg-emerald-400/10", label: "Excelente" };
     if (signal >= 50) return { color: "text-cyan-400", bg: "bg-cyan-400/10", label: "Bueno" };
     if (signal >= 25) return { color: "text-amber-400", bg: "bg-amber-400/10", label: "Moderado" };
@@ -80,16 +80,15 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
       );
     }
 
-    const signal = (effectiveWifi.signal ?? effectiveWifi.signalStrength ?? 0) as number;
+    const signal = (effectiveWifi.signal ?? (effectiveWifi as any).signalStrength ?? 0) as number;
     const bars = Math.ceil((signal / 100) * 4);
     return (
       <div className="flex items-end gap-1">
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className={`w-1 rounded-sm transition-all duration-300 ${
-              i <= bars ? `${wifiState.color} h-${4 + i}` : "bg-gray-600/30 h-2"
-            }`}
+            className={`w-1 rounded-sm transition-all duration-300 ${i <= bars ? `${wifiState.color} h-${4 + i}` : "bg-gray-600/30 h-2"
+              }`}
             style={{
               height: i <= bars ? `${4 + i * 2}px` : "8px",
             }}
@@ -154,7 +153,7 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
               </svg>
               <span className="text-xs font-medium text-gray-300">
                 {effectiveWifi.connected
-                  ? effectiveWifi.ssid || effectiveWifi.frequency ? "Conectado" : "Conectado"
+                  ? effectiveWifi.ssid || (effectiveWifi as any).frequency ? "Conectado" : "Conectado"
                   : "Desconectado"}
               </span>
             </div>
@@ -165,7 +164,7 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
             <div className="flex items-center justify-between text-xs mb-2">
               <span className={`${wifiState.color} font-semibold`}>{wifiState.label}</span>
               <span className="text-gray-400">
-                {(effectiveWifi.signal ?? effectiveWifi.signalStrength ?? 0)}%
+                {(effectiveWifi.signal ?? (effectiveWifi as any).signalStrength ?? 0)}%
               </span>
             </div>
           )}

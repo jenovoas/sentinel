@@ -97,14 +97,6 @@ const formatBytes = (bytes: number) => {
   return `${value.toFixed(value >= 10 ? 0 : 1)} ${units[i]}`;
 };
 
-const formatDuration = (seconds: number) => {
-  if (!Number.isFinite(seconds)) return "-";
-  if (seconds < 60) return `${seconds.toFixed(seconds >= 10 ? 0 : 1)}s`;
-  const minutes = seconds / 60;
-  if (minutes < 60) return `${minutes.toFixed(minutes >= 10 ? 0 : 1)}m`;
-  const hours = minutes / 60;
-  return `${hours.toFixed(hours >= 10 ? 0 : 1)}h`;
-};
 
 // ============ Components ============
 
@@ -184,9 +176,8 @@ const Pill = ({ status }: { status: "healthy" | "unhealthy" }) => {
   const isHealthy = status === "healthy";
   return (
     <span
-      className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
-        isHealthy ? "bg-emerald-500/10 text-emerald-200" : "bg-rose-500/10 text-rose-200"
-      }`}
+      className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${isHealthy ? "bg-emerald-500/10 text-emerald-200" : "bg-rose-500/10 text-rose-200"
+        }`}
     >
       <span className={`h-2 w-2 rounded-full ${isHealthy ? "bg-emerald-400" : "bg-rose-400"}`} />
       {isHealthy ? "Healthy" : "Unhealthy"}
@@ -200,11 +191,11 @@ export default function DashboardPage() {
   const router = useRouter();
   const [state, setState] = useState<FetchState>({ loading: true });
   const [notes, setNotes] = useState<NotesState>({ text: "" });
-  const { history, anomalies, storage, normalizeNetworkPercent, anomaliesByMetric } = useAnalytics();
+  const { anomalies, storage } = useAnalytics();
   const { modal, open, close } = useDetailModal();
 
   const API_REFRESH_MS = 15000;
-    const clientNetwork = useNetworkInfo();
+  const clientNetwork = useNetworkInfo();
   const [hostSample, setHostSample] = useState<any>(null);
 
   const load = async () => {
@@ -232,7 +223,7 @@ export default function DashboardPage() {
         const res = await fetch("/api/host-metrics?limit=60", { cache: "no-store" });
         const json = await res.json();
         if (json?.ok && json.history) setHostSample(json.history);
-      } catch {}
+      } catch { }
     };
     fetchHostHistory();
     const id = setInterval(fetchHostHistory, 60000);
@@ -249,8 +240,7 @@ export default function DashboardPage() {
   }, [notes]);
 
   const { data, loading, error } = state;
-  const activeQueries = data?.db_activity ?? [];
-  const repo = data?.repo_activity;
+  /* const repo = data?.repo_activity; */
 
   const computeIssues = (data?: DashboardData) => {
     if (!data) return [] as string[];
@@ -385,8 +375,8 @@ export default function DashboardPage() {
 
         {/* Network & Storage Cards */}
         <section className="mt-6 grid gap-4 md:grid-cols-4">
-          <NetworkCard 
-            network={hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.network : data?.network} 
+          <NetworkCard
+            network={hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.network : data?.network}
             clientNetwork={clientNetwork}
             history={
               hostSample?.map((s: any) => ({
