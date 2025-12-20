@@ -327,6 +327,7 @@ async def upload_document(
     """Upload encrypted document"""
     try:
         from document_service import DocumentService
+        from database import SessionLocal, Document
         import secrets
         
         # Read file
@@ -346,9 +347,32 @@ async def upload_document(
             tags=tags.split(",") if tags else []
         )
         
+        # Save metadata to database
+        db = SessionLocal()
+        db_doc = Document(
+            id=metadata['id'],
+            user_id='test-user',  # In production, get from auth
+            filename=metadata['filename'],
+            file_path=metadata['file_path'],
+            file_hash=metadata['file_hash'],
+            file_size=metadata['file_size'],
+            category=metadata['category'],
+            tags=metadata['tags'],
+            nonce=metadata['nonce']
+        )
+        db.add(db_doc)
+        db.commit()
+        db.close()
+        
         return {
             "success": True,
-            "document": metadata,
+            "document": {
+                "id": metadata['id'],
+                "filename": metadata['filename'],
+                "size": metadata['file_size'],
+                "category": metadata['category'],
+                "tags": metadata['tags']
+            },
             "message": "Document uploaded and encrypted successfully"
         }
     
@@ -385,11 +409,25 @@ async def download_document(doc_id: str):
 async def list_documents():
     """List all documents (metadata only)"""
     try:
-        # In production, query database for user's documents
-        # For POC, return empty list
+        from database import SessionLocal, Document
+        
+        db = SessionLocal()
+        documents = db.query(Document).filter_by(user_id='test-user').all()
+        db.close()
+        
         return {
-            "documents": [],
-            "message": "List endpoint needs database integration"
+            "documents": [
+                {
+                    "id": doc.id,
+                    "filename": doc.filename,
+                    "size": doc.file_size,
+                    "category": doc.category,
+                    "tags": doc.tags,
+                    "created_at": doc.created_at.isoformat()
+                }
+                for doc in documents
+            ],
+            "count": len(documents)
         }
     
     except Exception as e:
