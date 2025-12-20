@@ -1,0 +1,537 @@
+[
+  {
+    "num_stages": 1,
+    "acceleration_factor": 1.5,
+    "iterations": 3524,
+    "total_events_in": 352400,
+    "total_events_out": 352400,
+    "elapsed_sec": 5.000460386276245,
+    "throughput_in": 70473.51099254005,
+    "throughput_out": 70473.51099254005,
+    "speedup_measured": 1.0,
+    "speedup_theoretical": 1.5,
+    "accuracy": 66.66666666666666,
+    "stage_metrics": [
+      {
+        "stage_id": 0,
+        "events_in": 352400,
+        "events_out": 352400,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 4734.984874725342
+      }
+    ]
+  },
+  {
+    "num_stages": 2,
+    "acceleration_factor": 1.5,
+    "iterations": 1734,
+    "total_events_in": 173400,
+    "total_events_out": 173400,
+    "elapsed_sec": 5.000209808349609,
+    "throughput_in": 34678.54483034846,
+    "throughput_out": 34678.54483034846,
+    "speedup_measured": 1.0,
+    "speedup_theoretical": 2.25,
+    "accuracy": 44.44444444444444,
+    "stage_metrics": [
+      {
+        "stage_id": 0,
+        "events_in": 173400,
+        "events_out": 173400,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 2409.1014862060547
+      },
+      {
+        "stage_id": 1,
+        "events_in": 173400,
+        "events_out": 173400,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 2406.395673751831
+      }
+    ]
+  },
+  {
+    "num_stages": 3,
+    "acceleration_factor": 1.5,
+    "iterations": 1175,
+    "total_events_in": 117500,
+    "total_events_out": 117500,
+    "elapsed_sec": 5.00139594078064,
+    "throughput_in": 23493.440909551362,
+    "throughput_out": 23493.440909551362,
+    "speedup_measured": 1.0,
+    "speedup_theoretical": 3.375,
+    "accuracy": 29.629629629629626,
+    "stage_metrics": [
+      {
+        "stage_id": 0,
+        "events_in": 117500,
+        "events_out": 117500,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 1626.5592575073242
+      },
+      {
+        "stage_id": 1,
+        "events_in": 117500,
+        "events_out": 117500,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 1620.4841136932373
+      },
+      {
+        "stage_id": 2,
+        "events_in": 117500,
+        "events_out": 117500,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 1619.1046237945557
+      }
+    ]
+  },
+  {
+    "num_stages": 4,
+    "acceleration_factor": 1.5,
+    "iterations": 851,
+    "total_events_in": 85100,
+    "total_events_out": 85100,
+    "elapsed_sec": 5.003627300262451,
+    "throughput_in": 17007.66162090776,
+    "throughput_out": 17007.66162090776,
+    "speedup_measured": 1.0,
+    "speedup_theoretical": 5.0625,
+    "accuracy": 19.753086419753085,
+    "stage_metrics": [
+      {
+        "stage_id": 0,
+        "events_in": 85100,
+        "events_out": 85100,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 1220.1871871948242
+      },
+      {
+        "stage_id": 1,
+        "events_in": 85100,
+        "events_out": 85100,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 1220.9336757659912
+      },
+      {
+        "stage_id": 2,
+        "events_in": 85100,
+        "events_out": 85100,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 1218.6009883880615
+      },
+      {
+        "stage_id": 3,
+        "events_in": 85100,
+        "events_out": 85100,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 1217.4928188323975
+      }
+    ]
+  },
+  {
+    "num_stages": 5,
+    "acceleration_factor": 1.5,
+    "iterations": 673,
+    "total_events_in": 67300,
+    "total_events_out": 67300,
+    "elapsed_sec": 5.002403736114502,
+    "throughput_in": 13453.53225173178,
+    "throughput_out": 13453.53225173178,
+    "speedup_measured": 1.0,
+    "speedup_theoretical": 7.59375,
+    "accuracy": 13.168724279835391,
+    "stage_metrics": [
+      {
+        "stage_id": 0,
+        "events_in": 67300,
+        "events_out": 67300,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 981.0869693756104
+      },
+      {
+        "stage_id": 1,
+        "events_in": 67300,
+        "events_out": 67300,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 978.7850379943848
+      },
+      {
+        "stage_id": 2,
+        "events_in": 67300,
+        "events_out": 67300,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 975.1107692718506
+      },
+      {
+        "stage_id": 3,
+        "events_in": 67300,
+        "events_out": 67300,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 976.5877723693848
+      },
+      {
+        "stage_id": 4,
+        "events_in": 67300,
+        "events_out": 67300,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 975.7769107818604
+      }
+    ]
+  },
+  {
+    "num_stages": 6,
+    "acceleration_factor": 1.5,
+    "iterations": 585,
+    "total_events_in": 58500,
+    "total_events_out": 58500,
+    "elapsed_sec": 5.002630233764648,
+    "throughput_in": 11693.848488973124,
+    "throughput_out": 11693.848488973124,
+    "speedup_measured": 1.0,
+    "speedup_theoretical": 11.390625,
+    "accuracy": 8.77914951989026,
+    "stage_metrics": [
+      {
+        "stage_id": 0,
+        "events_in": 58500,
+        "events_out": 58500,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 820.2552795410156
+      },
+      {
+        "stage_id": 1,
+        "events_in": 58500,
+        "events_out": 58500,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 817.6465034484863
+      },
+      {
+        "stage_id": 2,
+        "events_in": 58500,
+        "events_out": 58500,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 817.6124095916748
+      },
+      {
+        "stage_id": 3,
+        "events_in": 58500,
+        "events_out": 58500,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 815.89674949646
+      },
+      {
+        "stage_id": 4,
+        "events_in": 58500,
+        "events_out": 58500,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 813.2388591766357
+      },
+      {
+        "stage_id": 5,
+        "events_in": 58500,
+        "events_out": 58500,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 817.2869682312012
+      }
+    ]
+  },
+  {
+    "num_stages": 7,
+    "acceleration_factor": 1.5,
+    "iterations": 479,
+    "total_events_in": 47900,
+    "total_events_out": 47900,
+    "elapsed_sec": 5.0083699226379395,
+    "throughput_in": 9563.990028670001,
+    "throughput_out": 9563.990028670001,
+    "speedup_measured": 1.0,
+    "speedup_theoretical": 17.0859375,
+    "accuracy": 5.852766346593507,
+    "stage_metrics": [
+      {
+        "stage_id": 0,
+        "events_in": 47900,
+        "events_out": 47900,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 704.190731048584
+      },
+      {
+        "stage_id": 1,
+        "events_in": 47900,
+        "events_out": 47900,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 703.6967277526855
+      },
+      {
+        "stage_id": 2,
+        "events_in": 47900,
+        "events_out": 47900,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 699.0249156951904
+      },
+      {
+        "stage_id": 3,
+        "events_in": 47900,
+        "events_out": 47900,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 700.3543376922607
+      },
+      {
+        "stage_id": 4,
+        "events_in": 47900,
+        "events_out": 47900,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 699.3188858032227
+      },
+      {
+        "stage_id": 5,
+        "events_in": 47900,
+        "events_out": 47900,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 699.3973255157471
+      },
+      {
+        "stage_id": 6,
+        "events_in": 47900,
+        "events_out": 47900,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 699.5978355407715
+      }
+    ]
+  },
+  {
+    "num_stages": 8,
+    "acceleration_factor": 1.5,
+    "iterations": 430,
+    "total_events_in": 43000,
+    "total_events_out": 43000,
+    "elapsed_sec": 5.004700183868408,
+    "throughput_in": 8591.923276163754,
+    "throughput_out": 8591.923276163754,
+    "speedup_measured": 1.0,
+    "speedup_theoretical": 25.62890625,
+    "accuracy": 3.9018442310623382,
+    "stage_metrics": [
+      {
+        "stage_id": 0,
+        "events_in": 43000,
+        "events_out": 43000,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 613.5637760162354
+      },
+      {
+        "stage_id": 1,
+        "events_in": 43000,
+        "events_out": 43000,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 613.1942272186279
+      },
+      {
+        "stage_id": 2,
+        "events_in": 43000,
+        "events_out": 43000,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 613.7304306030273
+      },
+      {
+        "stage_id": 3,
+        "events_in": 43000,
+        "events_out": 43000,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 614.9044036865234
+      },
+      {
+        "stage_id": 4,
+        "events_in": 43000,
+        "events_out": 43000,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 611.8068695068359
+      },
+      {
+        "stage_id": 5,
+        "events_in": 43000,
+        "events_out": 43000,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 613.2068634033203
+      },
+      {
+        "stage_id": 6,
+        "events_in": 43000,
+        "events_out": 43000,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 612.7400398254395
+      },
+      {
+        "stage_id": 7,
+        "events_in": 43000,
+        "events_out": 43000,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 612.701416015625
+      }
+    ]
+  },
+  {
+    "num_stages": 9,
+    "acceleration_factor": 1.5,
+    "iterations": 384,
+    "total_events_in": 38400,
+    "total_events_out": 38400,
+    "elapsed_sec": 5.0107080936431885,
+    "throughput_in": 7663.587517444088,
+    "throughput_out": 7663.587517444088,
+    "speedup_measured": 1.0,
+    "speedup_theoretical": 38.443359375,
+    "accuracy": 2.601229487374892,
+    "stage_metrics": [
+      {
+        "stage_id": 0,
+        "events_in": 38400,
+        "events_out": 38400,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 548.661470413208
+      },
+      {
+        "stage_id": 1,
+        "events_in": 38400,
+        "events_out": 38400,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 547.5955009460449
+      },
+      {
+        "stage_id": 2,
+        "events_in": 38400,
+        "events_out": 38400,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 545.2377796173096
+      },
+      {
+        "stage_id": 3,
+        "events_in": 38400,
+        "events_out": 38400,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 546.7238426208496
+      },
+      {
+        "stage_id": 4,
+        "events_in": 38400,
+        "events_out": 38400,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 545.5820560455322
+      },
+      {
+        "stage_id": 5,
+        "events_in": 38400,
+        "events_out": 38400,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 546.0941791534424
+      },
+      {
+        "stage_id": 6,
+        "events_in": 38400,
+        "events_out": 38400,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 545.6299781799316
+      },
+      {
+        "stage_id": 7,
+        "events_in": 38400,
+        "events_out": 38400,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 546.7872619628906
+      },
+      {
+        "stage_id": 8,
+        "events_in": 38400,
+        "events_out": 38400,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 542.9496765136719
+      }
+    ]
+  },
+  {
+    "num_stages": 10,
+    "acceleration_factor": 1.5,
+    "iterations": 341,
+    "total_events_in": 34100,
+    "total_events_out": 34100,
+    "elapsed_sec": 5.003594160079956,
+    "throughput_in": 6815.101087146342,
+    "throughput_out": 6815.101087146342,
+    "speedup_measured": 1.0,
+    "speedup_theoretical": 57.6650390625,
+    "accuracy": 1.7341529915832612,
+    "stage_metrics": [
+      {
+        "stage_id": 0,
+        "events_in": 34100,
+        "events_out": 34100,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 493.3757781982422
+      },
+      {
+        "stage_id": 1,
+        "events_in": 34100,
+        "events_out": 34100,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 492.4437999725342
+      },
+      {
+        "stage_id": 2,
+        "events_in": 34100,
+        "events_out": 34100,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 489.60137367248535
+      },
+      {
+        "stage_id": 3,
+        "events_in": 34100,
+        "events_out": 34100,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 491.43242835998535
+      },
+      {
+        "stage_id": 4,
+        "events_in": 34100,
+        "events_out": 34100,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 491.33849143981934
+      },
+      {
+        "stage_id": 5,
+        "events_in": 34100,
+        "events_out": 34100,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 489.92323875427246
+      },
+      {
+        "stage_id": 6,
+        "events_in": 34100,
+        "events_out": 34100,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 489.8078441619873
+      },
+      {
+        "stage_id": 7,
+        "events_in": 34100,
+        "events_out": 34100,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 489.70794677734375
+      },
+      {
+        "stage_id": 8,
+        "events_in": 34100,
+        "events_out": 34100,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 490.6506538391113
+      },
+      {
+        "stage_id": 9,
+        "events_in": 34100,
+        "events_out": 34100,
+        "acceleration_factor": 1.0,
+        "processing_time_ms": 491.42909049987793
+      }
+    ]
+  }
+]
