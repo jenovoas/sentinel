@@ -13,11 +13,12 @@
 
 Sentinel is not just an app; it is a **Sovereign Overlay OS** designed to reclaim control over your digital life. It consists of two powerful pillars:
 
-### 🛡️ **1. Sentinel Cortex™ (Server Defense)**
-*Protects your infrastructure.*
+### 🛡️ **1. Sentinel Cortex™ (Server Defense & Research)**
+*Protects your infrastructure and extends human capability.*
 - **AIOpsShield**: Defends AI systems from adversarial injection.
 - **TruthSync**: Verifies information at neural speeds (90.5x speedup).
 - **Dual-Guardian**: Kernel-level monitoring for critical systems.
+- **Neural Interface (Research)**: Experimental BCI ingestion engine.
 
 ### 🦅 **2. Sentinel Vault™ (Personal Sovereignty)**
 *Protects your identity and assets.*
