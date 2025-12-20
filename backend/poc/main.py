@@ -656,7 +656,7 @@ async def browse_url(request: BrowserRequest):
         service = BrowserService()
         service.set_mode(request.mode)
         
-        result = service.fetch_page(request.url)
+        result = await service.fetch_page(request.url)
         return result
         
     except Exception as e:

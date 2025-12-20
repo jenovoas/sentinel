@@ -421,6 +421,35 @@ export default function VaultPage() {
                                     <div className="text-red-400 text-center py-20">❌ {browserContent.error}</div>
                                 ) : (
                                     <div className="bg-white text-black p-8 rounded-lg shadow-inner min-h-full font-serif">
+                                        {browserContent.verification && (
+                                            <div className={`mb-6 p-4 rounded-lg border-2 ${browserContent.verification.score >= 70
+                                                    ? 'bg-green-50 border-green-500 text-green-800'
+                                                    : 'bg-red-50 border-red-500 text-red-900'
+                                                }`}>
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <h3 className="font-bold text-lg flex items-center gap-2">
+                                                        {browserContent.verification.score >= 70 ? '✅ Verified Fact' : '⚠️ Misinformation Alert'}
+                                                        <span className={`text-xs px-3 py-1 rounded-full text-white ${browserContent.verification.score >= 70 ? 'bg-green-600' : 'bg-red-600'
+                                                            }`}>
+                                                            Trust Score: {browserContent.verification.score}/100
+                                                        </span>
+                                                    </h3>
+                                                    <span className="font-mono text-sm font-bold tracking-widest uppercase">
+                                                        {browserContent.verification.verdict}
+                                                    </span>
+                                                </div>
+                                                <p className="text-sm italic mb-3 opacity-90">{browserContent.verification.reasoning}</p>
+                                                {browserContent.verification.flags && browserContent.verification.flags.length > 0 && (
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {browserContent.verification.verification_flags?.map((flag: string, i: number) => (
+                                                            <span key={i} className="text-xs px-2 py-1 bg-black/10 rounded-full font-semibold">🚩 {flag}</span>
+                                                        )) || browserContent.verification.flags.map((flag: string, i: number) => (
+                                                            <span key={i} className="text-xs px-2 py-1 bg-black/10 rounded-full font-semibold">🚩 {flag}</span>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
                                         <h1 className="text-3xl font-bold mb-4 border-b pb-2">{browserContent.title}</h1>
                                         <div dangerouslySetInnerHTML={{ __html: browserContent.content }} />
                                     </div>

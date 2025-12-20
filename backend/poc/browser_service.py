@@ -18,6 +18,9 @@ class BrowseMode(Enum):
     GHOST = "ghost"         # Nym Mixnet (Metadata Protection)
     DEEP = "deep"           # I2P (Decentralized / Internal)
 
+from .truthsync_service import TruthSyncService
+import asyncio
+
 class BrowserService:
     """
     Secure Browser Backend - Triad Architecture
@@ -34,6 +37,7 @@ class BrowserService:
     def __init__(self):
         self.session = requests.Session()
         self.current_mode = BrowseMode.CLEAR
+        self.truth_service = TruthSyncService()
         
         # Anti-Fingerprinting Headers
         self.session.headers.update({
@@ -67,9 +71,9 @@ class BrowserService:
             else:
                 logger.warning(f"⚠️ Mode: {mode.name} selected but no proxy defined.")
 
-    def fetch_page(self, url: str) -> Dict:
+    async def fetch_page(self, url: str) -> Dict:
         """
-        Fetch and sanitize a webpage using current mode
+        Fetch, sanitize, and verify a webpage using current mode
         """
         try:
             # Protocol enforcement
@@ -85,10 +89,14 @@ class BrowserService:
             # Timeout varies by mode (Mixnets are slower)
             timeout = 30 if self.current_mode in [BrowseMode.GHOST, BrowseMode.DEEP] else 15
             
-            response = self.session.get(url, timeout=timeout)
+            # Run blocking request in thread pool to not block Async event loop
+            response = await asyncio.to_thread(self.session.get, url, timeout=timeout)
             response.raise_for_status()
             
             sanitized = self._sanitize_content(response.text, url)
+            
+            # 🚀 TRUTHSYNC INTEGRATION
+            verification = await self.truth_service.verify_content(sanitized['text_only'], url)
             
             return {
                 "success": True,
@@ -96,10 +104,11 @@ class BrowserService:
                 "url": response.url,
                 "status_code": response.status_code,
                 "title": sanitized['title'],
-                "content": sanitized['content']
+                "content": sanitized['content'],
+                "verification": verification
             }
             
-        except requests.exceptions.RequestException as e:
+        except Exception as e:
             msg = str(e)
             logger.error(f"Error fetching {url}: {msg}")
             
@@ -119,7 +128,7 @@ class BrowserService:
             }
 
     def _sanitize_content(self, html_content: str, base_url: str) -> Dict:
-        """Sanitize HTML (Strip scripts, iframes, ads)"""
+        """Sanitize HTML and extract clear text for AI analysis"""
         soup = BeautifulSoup(html_content, 'html.parser')
         
         # Security: Remove active executable content
@@ -132,13 +141,13 @@ class BrowserService:
             for attr in attrs_to_remove:
                 del tag[attr]
 
-        # Formatting: Simple Reader View
-        # (Same logic as before, just ensuring it's robust)
         title = soup.title.string if soup.title else "No Title"
+        text_only = soup.get_text(separator=' ', strip=True) # For AI analysis
         
         return {
             "title": title,
-            "content": str(soup)
+            "content": str(soup),
+            "text_only": text_only
         }
 
 # ============================================================================
