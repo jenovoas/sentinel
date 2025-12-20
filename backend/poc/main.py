@@ -634,6 +634,25 @@ async def delete_note(note_id: str):
 
 
 # ============================================================================
+# Endpoints - Terminal
+# ============================================================================
+
+@app.post("/terminal/execute")
+async def execute_terminal_command(command: str):
+    """Execute vault command"""
+    try:
+        from terminal_service import TerminalService
+        
+        service = TerminalService()
+        result = service.execute(command)
+        
+        return result
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
 # Health Check
 # ============================================================================
 async def health_check():
