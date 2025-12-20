@@ -10154,3 +10154,35 @@ timestamp,level,unit,message
 2025-12-20T22:36:45.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=9778 DF PROTO=2 
 2025-12-20T22:38:50.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=19985 DF PROTO=2 
 2025-12-20T22:40:55.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=26818 DF PROTO=2 
+2025-12-20T22:43:00.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=38228 DF PROTO=2 
+2025-12-20T22:43:00.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=38228 DF PROTO=2 
+2025-12-20T22:45:18.000Z,CRITICAL,user@1002.service,pam_unix(sudo:auth): auth could not identify password for [jnovoas]
+2025-12-20T22:45:33.000Z,CRITICAL,systemd-coredump@4-12293-1477318_1477618-0.service,no message
+2025-12-20T22:45:33.000Z,CRITICAL,systemd-coredump,no message
+2025-12-20T22:45:33.000Z,WARNING,user@1002.service,Unable to find file for pid 1187200 expected at "kcrash-metadata/antigravity.493051f702fa44f583dd3f506657c3a7.1187200.ini"
+2025-12-20T22:45:33.000Z,WARNING,user@1002.service,Nothing handled the dump :O
+2025-12-20T22:47:10.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=44750 DF PROTO=2 
+2025-12-20T22:49:15.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=56834 DF PROTO=2 
+2025-12-20T22:50:18.000Z,WARNING,init.scope,drkonqi-coredump-processor@5-16385-1477329-0.service: Service reached runtime time limit. Stopping.
+2025-12-20T22:50:18.000Z,WARNING,init.scope,drkonqi-coredump-processor@5-16385-1477329-0.service: Failed with result 'timeout'.
+2025-12-20T22:51:20.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=65185 DF PROTO=2 
+2025-12-20T22:53:25.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=4718 DF PROTO=2 
+2025-12-20T22:54:21.000Z,WARNING,user@1002.service,world-item.vala:291: Sunrise for (-90;000000;0;000000) resulted in 2025-12-20 -2147483648:-2147483648
+2025-12-20T22:54:21.000Z,WARNING,user@1002.service,world-item.vala:311: Sunset for (-90;000000;0;000000) resulted in 2025-12-20 -2147483648:-2147483648
+2025-12-20T22:54:21.000Z,WARNING,user@1002.service,Using GtkSettings:gtk-application-prefer-dark-theme with libadwaita is unsupported. Please use AdwStyleManager:color-scheme instead.
+2025-12-20T22:54:21.000Z,WARNING,user@1002.service,Unknown key gtk-monospace-font-name in /home/jnovoas/.config/gtk-3.0/settings.ini
+2025-12-20T22:54:23.000Z,WARNING,user@1002.service,Unknown key gtk-monospace-font-name in /home/jnovoas/.config/gtk-3.0/settings.ini
+2025-12-20T22:55:21.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libaspell.so.15: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T22:55:21.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libhspell.so.0: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T22:55:21.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libnuspell.so.5: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T22:55:21.000Z,WARNING,user@1002.service,broker.vala:156: Error loading plugin: libvoikko.so.1: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+2025-12-20T22:55:31.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=8895 DF PROTO=2 
+2025-12-20T22:57:35.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=19323 DF PROTO=2 
+2025-12-20T22:59:40.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=26132 DF PROTO=2 
+2025-12-20T23:01:45.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=33295 DF PROTO=2 
+2025-12-20T23:03:50.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=37423 DF PROTO=2 
+2025-12-20T23:05:55.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=49617 DF PROTO=2 
+2025-12-20T23:08:00.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=50698 DF PROTO=2 
+2025-12-20T23:10:05.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=53360 DF PROTO=2 
+2025-12-20T23:12:10.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=55904 DF PROTO=2 
+2025-12-20T23:14:15.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=63836 DF PROTO=2 
