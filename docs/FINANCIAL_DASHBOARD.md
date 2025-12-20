@@ -75,7 +75,256 @@ Dashboard completo para monitorear:
 
 ---
 
-### **3. Data Science Features** 📈
+### **3. Custom Scripts & Analytics** 🐍
+
+**Purpose**: Ejecutar scripts personalizados para análisis avanzado
+
+**Supported Languages**:
+- 🐍 **Python**: Pandas, NumPy, scikit-learn, TensorFlow
+- 📊 **R**: dplyr, ggplot2, tidyverse
+- 🔢 **Julia**: DataFrames.jl, Flux.jl
+- 📈 **SQL**: Custom queries on portfolio data
+- 🦀 **Rust**: High-performance computations
+
+**Features**:
+- **Sandboxed execution**: Scripts run in isolated containers
+- **Data access**: Read portfolio data via API
+- **Custom visualizations**: Return charts, tables
+- **Scheduled execution**: Run daily, weekly, monthly
+- **Version control**: Git integration for scripts
+- **Sharing**: Share scripts with team
+
+**Use Cases**:
+```python
+# Example: Custom risk analysis
+import pandas as pd
+from sentinel_api import get_portfolio
+
+portfolio = get_portfolio()
+
+# Calculate custom risk metric
+risk_score = calculate_custom_risk(portfolio)
+
+# Return result
+return {
+    'risk_score': risk_score,
+    'recommendation': 'Reduce crypto exposure by 10%'
+}
+```
+
+**Script Library**:
+- **Tax optimization**: Find tax-loss harvesting opportunities
+- **Rebalancing**: Calculate optimal trades to rebalance
+- **Backtesting**: Test trading strategies on historical data
+- **Custom alerts**: Complex alert conditions
+- **Portfolio optimization**: Modern Portfolio Theory
+- **Risk analysis**: VaR, CVaR, stress testing
+
+**Security**:
+- **Sandboxed**: Docker containers with resource limits
+- **No network access**: Scripts can't make external requests
+- **Read-only data**: Can't modify portfolio directly
+- **Audit trail**: All script executions logged
+- **Code review**: Optional team review before execution
+
+**API**:
+```python
+# Sentinel API for custom scripts
+from sentinel_api import (
+    get_portfolio,
+    get_historical_prices,
+    get_market_data,
+    send_alert,
+    create_visualization
+)
+
+# Get portfolio data
+portfolio = get_portfolio()
+
+# Get historical prices
+prices = get_historical_prices('BTC', days=365)
+
+# Send custom alert
+send_alert('Custom risk threshold exceeded')
+
+# Create visualization
+chart = create_visualization(data, type='line')
+```
+
+---
+
+### **4. AI-Powered Recommendations** 🎯
+
+**Purpose**: Recomendaciones personalizadas basadas en objetivos del usuario
+
+**User Configuration**:
+```yaml
+# User financial profile
+profile:
+  risk_tolerance: medium  # low, medium, high
+  investment_horizon: 5_years
+  target_return: 15%  # annual
+  
+  goals:
+    - type: retirement
+      target_amount: $2M
+      deadline: 2045
+    
+    - type: house_purchase
+      target_amount: $500K
+      deadline: 2028
+    
+    - type: emergency_fund
+      target_amount: $50K
+      deadline: 2025
+  
+  constraints:
+    - max_crypto_allocation: 40%
+    - min_liquidity: $10K
+    - no_leverage: true
+  
+  preferences:
+    - esg_investing: true  # Environmental, Social, Governance
+    - tax_optimization: true
+    - auto_rebalancing: false
+```
+
+**AI Recommendations**:
+
+**1. Asset Allocation**:
+```python
+# AI analyzes user profile + market conditions
+recommendation = {
+    'current_allocation': {
+        'crypto': 45%,
+        'stocks': 30%,
+        'bonds': 15%,
+        'cash': 10%
+    },
+    'recommended_allocation': {
+        'crypto': 40%,  # Reduce (over limit)
+        'stocks': 35%,  # Increase
+        'bonds': 15%,  # Keep
+        'cash': 10%   # Keep
+    },
+    'rationale': 'Your crypto allocation exceeds your 40% limit. Consider rebalancing.',
+    'actions': [
+        'Sell $25K in Bitcoin',
+        'Buy $25K in S&P 500 ETF'
+    ],
+    'expected_impact': {
+        'risk_reduction': '5%',
+        'return_impact': '-0.5%'
+    }
+}
+```
+
+**2. Investment Opportunities**:
+```python
+# AI finds opportunities based on goals
+opportunities = [
+    {
+        'asset': 'Ethereum',
+        'action': 'buy',
+        'amount': '$5K',
+        'rationale': 'Undervalued vs Bitcoin, strong fundamentals',
+        'confidence': 0.85,
+        'risk': 'medium',
+        'expected_return': '20% (12 months)',
+        'aligns_with_goals': ['retirement']
+    },
+    {
+        'asset': 'VTSAX',  # Vanguard Total Stock Market
+        'action': 'buy',
+        'amount': '$10K',
+        'rationale': 'Diversification, low fees, tax-efficient',
+        'confidence': 0.92,
+        'risk': 'low',
+        'expected_return': '10% (annual)',
+        'aligns_with_goals': ['retirement', 'house_purchase']
+    }
+]
+```
+
+**3. Tax Optimization**:
+```python
+# AI finds tax-saving opportunities
+tax_recommendations = [
+    {
+        'strategy': 'tax_loss_harvesting',
+        'action': 'Sell Ethereum at $3K loss',
+        'benefit': 'Offset $3K in Bitcoin gains',
+        'tax_savings': '$720 (24% tax bracket)',
+        'deadline': '2024-12-31'
+    },
+    {
+        'strategy': 'long_term_capital_gains',
+        'action': 'Hold Bitcoin for 3 more months',
+        'benefit': 'Qualify for long-term rate (15% vs 24%)',
+        'tax_savings': '$4,500 on $50K gain'
+    }
+]
+```
+
+**4. Goal Progress**:
+```python
+# AI tracks progress towards goals
+goal_analysis = {
+    'retirement': {
+        'target': '$2M by 2045',
+        'current': '$500K',
+        'progress': '25%',
+        'on_track': True,
+        'recommendation': 'Continue current strategy',
+        'monthly_contribution_needed': '$2,500'
+    },
+    'house_purchase': {
+        'target': '$500K by 2028',
+        'current': '$100K',
+        'progress': '20%',
+        'on_track': False,
+        'recommendation': 'Increase monthly savings by $1,000',
+        'shortfall': '$50K at current rate'
+    }
+}
+```
+
+**5. Market Timing**:
+```python
+# AI suggests optimal timing for actions
+timing_recommendations = [
+    {
+        'action': 'Buy Ethereum',
+        'timing': 'Wait 2 weeks',
+        'rationale': 'Expected price dip after upcoming event',
+        'confidence': 0.75,
+        'potential_savings': '$500'
+    },
+    {
+        'action': 'Rebalance portfolio',
+        'timing': 'Now',
+        'rationale': 'Drift exceeds 5% threshold',
+        'urgency': 'high'
+    }
+]
+```
+
+**AI Models**:
+- **Reinforcement Learning**: Optimal portfolio allocation
+- **Time Series**: Price predictions, market timing
+- **Classification**: Risk scoring, opportunity detection
+- **NLP**: News sentiment, earnings call analysis
+- **Optimization**: Tax optimization, rebalancing
+
+**Personalization**:
+- **Learning**: AI learns from user actions (accept/reject recommendations)
+- **Feedback loop**: Improve recommendations over time
+- **A/B testing**: Test different strategies
+- **Explainability**: Clear rationale for each recommendation
+
+---
+
+### **5. Data Science Features** 📈
 
 **Statistical Analysis**:
 - **Correlation matrix**: Asset correlations
