@@ -818,7 +818,160 @@ $ `}
                     </div>
                 </div>
             </div>
+
+            {/* Secure Browser (Triad) */}
+            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 col-span-1 lg:col-span-2">
+                <h2 className="text-2xl font-semibold text-white mb-4 flex items-center gap-2">
+                    🦅 Secure Browser <span className="text-sm font-normal text-white/40 bg-white/10 px-2 py-0.5 rounded">Triad Architecture</span>
+                </h2>
+
+                {/* Mode Selector */}
+                <div className="flex gap-4 mb-4">
+                    <button
+                        onClick={() => (window as any).setBrowserMode('clear')}
+                        id="mode-clear"
+                        className="flex-1 py-3 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 transition-all flex flex-col items-center gap-1 group focus:ring-2 focus:ring-blue-500"
+                    >
+                        <span className="text-2xl">🌐</span>
+                        <span className="text-white font-medium">Clear Mode</span>
+                        <span className="text-white/40 text-xs text-center">Direct Connection<br />(Standard)</span>
+                    </button>
+                    <button
+                        onClick={() => (window as any).setBrowserMode('velocity')}
+                        id="mode-velocity"
+                        className="flex-1 py-3 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 transition-all flex flex-col items-center gap-1 group focus:ring-2 focus:ring-purple-500"
+                    >
+                        <span className="text-2xl">⚡</span>
+                        <span className="text-white font-medium">Velocity</span>
+                        <span className="text-white/40 text-xs text-center">Rotating Proxies<br />(Speed + Privacy)</span>
+                    </button>
+                    <button
+                        onClick={() => (window as any).setBrowserMode('ghost')}
+                        id="mode-ghost"
+                        className="flex-1 py-3 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 transition-all flex flex-col items-center gap-1 group focus:ring-2 focus:ring-orange-500"
+                    >
+                        <span className="text-2xl">👻</span>
+                        <span className="text-white font-medium">Ghost</span>
+                        <span className="text-white/40 text-xs text-center">Nym Mixnet<br />(Metadata Proof)</span>
+                    </button>
+                    <button
+                        onClick={() => (window as any).setBrowserMode('deep')}
+                        id="mode-deep"
+                        className="flex-1 py-3 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 transition-all flex flex-col items-center gap-1 group focus:ring-2 focus:ring-green-500"
+                    >
+                        <span className="text-2xl">🕸️</span>
+                        <span className="text-white font-medium">Deep</span>
+                        <span className="text-white/40 text-xs text-center">I2P Network<br />(Decentralized)</span>
+                    </button>
+                </div>
+
+                {/* Browser Bar */}
+                <div className="flex gap-2 mb-4">
+                    <input
+                        type="text"
+                        placeholder="https://example.com or site.i2p"
+                        className="flex-1 bg-black/40 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/30 font-mono text-sm focus:border-blue-500 focus:outline-none"
+                        id="browser-url"
+                        onKeyDown={(e) => e.key === 'Enter' && (document.getElementById('browser-go') as HTMLButtonElement).click()}
+                    />
+                    <button
+                        id="browser-go"
+                        onClick={async () => {
+                            const urlInput = document.getElementById('browser-url') as HTMLInputElement;
+                            const contentDiv = document.getElementById('browser-content');
+                            const statusDiv = document.getElementById('browser-status');
+                            const mode = (window as any).currentBrowserMode || 'clear';
+
+                            if (!urlInput.value) return;
+
+                            // Reset UI
+                            if (contentDiv) contentDiv.innerHTML = '<div class="text-center py-20 text-white/40 animate-pulse">Establishing Secure Connection...</div>';
+                            if (statusDiv) statusDiv.textContent = `Connecting via ${mode}...`;
+
+                            try {
+                                const response = await fetch('http://localhost:8000/browser/browse', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ url: urlInput.value, mode: mode })
+                                });
+                                const data = await response.json();
+
+                                if (data.success) {
+                                    if (contentDiv) {
+                                        // Render Sanitized HTML in Shadow DOM or simple div for POC
+                                        contentDiv.innerHTML = `
+                                                <div class="bg-white text-black p-8 min-h-[400px] rounded-lg shadow-inner overflow-auto font-serif">
+                                                    <h1 class="text-3xl font-bold mb-4 border-b pb-2">${data.title}</h1>
+                                                    <div class="prose max-w-none">
+                                                        ${data.content}
+                                                    </div>
+                                                </div>
+                                            `;
+                                    }
+                                    if (statusDiv) statusDiv.innerHTML = `<span class="text-green-400">●</span> Connected via ${mode.toUpperCase()} | Sanitized ✅`;
+                                } else {
+                                    if (contentDiv) contentDiv.innerHTML = `<div class="text-red-400 text-center py-10">❌ Connection Failed: ${data.error}</div>`;
+                                    if (statusDiv) statusDiv.textContent = 'Connection Error';
+                                }
+                            } catch (error) {
+                                if (contentDiv) contentDiv.innerHTML = `<div class="text-red-400 text-center py-10">❌ Error: ${error}</div>`;
+                            }
+                        }}
+                        className="px-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all"
+                    >
+                        Go ➔
+                    </button>
+                </div>
+
+                {/* Status Bar */}
+                <div className="flex justify-between items-center bg-black/40 rounded-t-lg px-4 py-2 border-b border-white/10">
+                    <span className="text-xs font-mono text-white/60" id="browser-status">Ready</span>
+                    <div className="flex gap-2">
+                        <span className="text-xs bg-red-500/20 text-red-300 px-2 rounded">JS Disabled</span>
+                        <span className="text-xs bg-green-500/20 text-green-300 px-2 rounded">Sanitized</span>
+                    </div>
+                </div>
+
+                {/* Content Viewport */}
+                <div id="browser-content" className="bg-white/5 rounded-b-lg min-h-[400px] border border-white/10 border-t-0 p-4 relative">
+                    <div className="text-center py-20 text-white/20">
+                        <h3 className="text-xl mb-2">Secure Viewport</h3>
+                        <p>Enter a URL to browse securely.</p>
+                        <p className="text-sm mt-4 text-white/10">Scripts & Trackers are stripped automatically.</p>
+                    </div>
+                </div>
+
+                {/* Inline Script for Mode Selection (POC Hack) */}
+                <script dangerouslySetInnerHTML={{
+                    __html: `
+                        window.currentBrowserMode = 'clear';
+                        window.setBrowserMode = function(mode) {
+                            window.currentBrowserMode = mode;
+                            // Reset styles
+                            ['clear', 'velocity', 'ghost', 'deep'].forEach(m => {
+                                const btn = document.getElementById('mode-' + m);
+                                if(btn) {
+                                    btn.classList.remove('ring-2', 'ring-blue-500', 'ring-purple-500', 'ring-orange-500', 'ring-green-500', 'bg-white/20');
+                                    btn.classList.add('bg-white/5');
+                                }
+                            });
+                            
+                            // Set active style
+                            const btn = document.getElementById('mode-' + mode);
+                            const color = mode === 'clear' ? 'blue' : mode === 'velocity' ? 'purple' : mode === 'ghost' ? 'orange' : 'green';
+                            if(btn) {
+                                btn.classList.add('ring-2', 'ring-' + color + '-500', 'bg-white/20');
+                                btn.classList.remove('bg-white/5');
+                            }
+                            
+                            document.getElementById('browser-status').textContent = 'Mode selected: ' + mode.toUpperCase();
+                        }
+                        // Init
+                        setTimeout(() => window.setBrowserMode('clear'), 500);
+                    `}} />
+            </div>
         </div>
     </div>
+    </div >
 );
 }
