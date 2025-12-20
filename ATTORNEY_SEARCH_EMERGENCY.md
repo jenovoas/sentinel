@@ -61,16 +61,13 @@ ADJUNTO:
 
 Disponible para call de emergencia hoy/mañana.
 
-Saludos urgentes,
+Saludos,
 
-Jaime Novoa
+[Your Name]
 Founder & Lead Architect - Sentinel Cortex™
-Email: jaime.novoase@gmail.com
-Phone: +56 9 73711829
+Email: [your-email]
+Phone: [your-phone]
 GitHub: github.com/jenovoas/sentinel
-
-P.S. - Situación es time-critical. Si no puede tomar el caso, ¿puede 
-recomendar colega con experiencia en emergency filings?
 ```
 
 ---
