@@ -2,27 +2,96 @@
 
 **Fecha**: 20-Dic-2024  
 **Objetivo**: Sistema de detección y bloqueo automático de peticiones sospechosas  
-**Integración**: Sentinel Vault + AIOpsShield + Dual-Guardian
+**Integración**: Sentinel# 🛡️ Watchdog + Pre-emptive Threat Detection
+
+**Defensa contra técnicas de hacking del submundo cibernético**
 
 ---
 
-## 🎯 Concepto: Telemetría Inversa
+## 🎯 El Problema: Ataques Reales que Nadie Detecta a Tiempo
 
-### **Telemetría Normal** (Lo que todos hacen)
-```
-Usuario → Request → Backend → Log → Análisis (después)
-```
-**Problema**: Detectas el ataque DESPUÉS de que ya pasó ❌
+### **Técnicas de Hacking Comunes**:
 
-### **Telemetría Inversa** (Sentinel Watchdog) ⭐
+**1. Fuzzing** (Búsqueda de Vulnerabilidades)
+```bash
+# Herramientas que usan hackers:
+wfuzz -w wordlist.txt http://target.com/FUZZ
+ffuf -w payloads.txt -u http://target.com/?param=FUZZ
+
+# Lo que ves en logs:
+404 /admin
+404 /administrator  
+404 /wp-admin
+404 /phpmyadmin
+... (miles de intentos en minutos)
 ```
-Usuario → Watchdog → Análisis (ANTES) → Backend/Block
-                ↓
-            AI Pattern Detection
-                ↓
-         Kill if suspicious
+
+**2. Reconnaissance** (Escaneo Sistemático)
+```bash
+# Herramientas:
+nmap -sV -p- target.com
+masscan -p1-65535 target.com
+
+# Comportamiento:
+- Escaneo de puertos: 22, 80, 443, 3306, 5432
+- Probing sistemático de endpoints
+- Fingerprinting de tecnologías
 ```
-**Ventaja**: Detectas y bloqueas ANTES de que llegue al backend ✅
+
+**3. SQL Injection Testing**
+```bash
+# Payloads reales:
+' OR 1=1--
+' UNION SELECT NULL--
+admin'--
+
+# En logs:
+GET /?id=1' OR 1=1--
+GET /?user=admin'--
+```
+
+**4. XSS (Cross-Site Scripting)**
+```bash
+# Payloads:
+<script>alert(1)</script>
+<img src=x onerror=alert(1)>
+
+# En parámetros:
+GET /?search=<script>alert(1)</script>
+```
+
+**5. Telemetry Injection** (Ataque a AI/LLM)
+```bash
+# Payload específico para AI:
+POST /logs
+{
+  "message": "User login failed; DROP TABLE users;--"
+}
+
+# LLM lee log y ejecuta:
+"I see a failed login, let me clean up... DROP TABLE users"
+💥 Database destroyed
+```
+
+---
+
+## ⚔️ Solución: Watchdog + Pre-emptive Detection
+
+### **Concepto: Detección ANTES del Ataque**
+
+**Flujo Tradicional** (Datadog, Splunk):
+```
+Hacker → Ataque → Payload → Detección → Remediación
+                              ↑
+                         ❌ YA ES TARDE
+```
+
+**Flujo Sentinel** (Pre-emptive):
+```
+Hacker → Reconnaissance → DETECCIÓN → BLOQUEO
+         (fuzzing)           ↑
+                        ✅ ANTES DEL ATAQUE
+```s ANTES de que llegue al backend ✅
 
 ---
 

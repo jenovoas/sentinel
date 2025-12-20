@@ -1,12 +1,32 @@
-# 🛡️ Sentinel Cortex™ - Prototipo de Investigación Tecnológica
+# Sentinel - Plataforma de Seguridad Completa
 
-**Defensa contra Ataques Adversariales a Sistemas AIOps en Infraestructura Crítica**
+**Defensa contra hackers + Gestión segura de crypto assets**
 
-> *Proyecto de investigación aplicada en seguridad de IA y sistemas autónomos*
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-green.svg)](https://fastapi.tiangolo.com)
 
-[![License](https://img.shields.io/badge/License-Research-blue)](LICENSE)
-[![TRL](https://img.shields.io/badge/TRL-4%20(Laboratorio)-green)](#nivel-de-madurez-tecnológica)
-[![ANID](https://img.shields.io/badge/ANID-IT%202026-orange)](CV_ANID.md)
+---
+
+## 🌟 Productos
+
+### **1. Sentinel Cortex™** - Defensa contra Ataques AI/LLM
+Única plataforma que **previene** ataques antes de que ocurran:
+- ✅ **Pre-emptive detection**: Detecta fuzzing, reconnaissance, payload testing
+- ✅ **Triple-layer defense**: Watchdog + Guardian-Beta + Guardian-Alpha
+- ✅ **Insider threat protection**: 97.5% efectividad
+- ✅ **Zero-knowledge architecture**: Immutable audit trail
+
+**Diferenciador**: Datadog/Splunk detectan **después**, Sentinel previene **antes**.
+
+### **2. Sentinel Vault** - Password Manager + Crypto Wallet
+Única app que integra passwords y crypto en un solo lugar:
+- ✅ **Passwords + Crypto**: Todo en una app (vs 1Password + Ledger separados)
+- ✅ **AI-powered analysis**: Ollama detecta patterns (vs reglas fijas)
+- ✅ **Multi-chain**: Bitcoin, Ethereum, Polygon, Solana
+- ✅ **Zero-knowledge encryption**: Argon2id + AES-256-GCM
+
+**Diferenciador**: 1Password no tiene crypto, Ledger no tiene passwords, Sentinel tiene ambos.
 
 ---
 
