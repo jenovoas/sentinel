@@ -63,10 +63,9 @@ Disponible para call de emergencia hoy/mañana.
 
 Saludos,
 
-[Your Name]
+Jaime Novoa
 Founder & Lead Architect - Sentinel Cortex™
-Email: [your-email]
-Phone: [your-phone]
+Email: jaime.novoase@gmail.com
 GitHub: github.com/jenovoas/sentinel
 ```
 
