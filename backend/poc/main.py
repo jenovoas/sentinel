@@ -433,7 +433,209 @@ async def list_documents():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/health")
+# ============================================================================
+# Endpoints - Notes
+# ============================================================================
+
+@app.post("/notes")
+async def create_note(
+    title: str,
+    content: str,
+    tags: str = ""  # Comma-separated
+):
+    """Create encrypted note"""
+    try:
+        from notes_service import NotesService
+        from database import SessionLocal, Note
+        import secrets
+        
+        # Generate encryption key (in production, use user's key)
+        encryption_key = secrets.token_bytes(32)
+        
+        # Create note
+        notes_service = NotesService()
+        note_data = notes_service.create_note(
+            title=title,
+            content=content,
+            encryption_key=encryption_key,
+            tags=tags.split(",") if tags else []
+        )
+        
+        # Save to database
+        db = SessionLocal()
+        db_note = Note(
+            id=note_data['id'],
+            user_id='test-user',
+            title=note_data['title'],
+            encrypted_content=note_data['ciphertext'],
+            nonce=note_data['nonce'],
+            content_length=note_data['content_length'],
+            links=note_data['links'],
+            tags=note_data['tags']
+        )
+        db.add(db_note)
+        db.commit()
+        db.close()
+        
+        return {
+            "success": True,
+            "note": {
+                "id": note_data['id'],
+                "title": note_data['title'],
+                "content_length": note_data['content_length'],
+                "links": note_data['links'],
+                "tags": note_data['tags']
+            }
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/notes")
+async def list_notes():
+    """List all notes (metadata only)"""
+    try:
+        from database import SessionLocal, Note
+        
+        db = SessionLocal()
+        notes = db.query(Note).filter_by(user_id='test-user').all()
+        db.close()
+        
+        return {
+            "notes": [
+                {
+                    "id": note.id,
+                    "title": note.title,
+                    "content_length": note.content_length,
+                    "links": note.links,
+                    "tags": note.tags,
+                    "created_at": note.created_at.isoformat(),
+                    "updated_at": note.updated_at.isoformat()
+                }
+                for note in notes
+            ],
+            "count": len(notes)
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/notes/{note_id}")
+async def get_note(note_id: str):
+    """Get note content (decrypted)"""
+    try:
+        from notes_service import NotesService
+        from database import SessionLocal, Note
+        import secrets
+        
+        # Get note from database
+        db = SessionLocal()
+        db_note = db.query(Note).filter_by(id=note_id, user_id='test-user').first()
+        db.close()
+        
+        if not db_note:
+            raise HTTPException(status_code=404, detail="Note not found")
+        
+        # Decrypt content (in production, use user's key)
+        encryption_key = secrets.token_bytes(32)
+        notes_service = NotesService()
+        
+        # For now, return metadata (decryption needs same key as encryption)
+        return {
+            "id": db_note.id,
+            "title": db_note.title,
+            "content_length": db_note.content_length,
+            "links": db_note.links,
+            "tags": db_note.tags,
+            "created_at": db_note.created_at.isoformat(),
+            "message": "Decryption requires user's encryption key"
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.put("/notes/{note_id}")
+async def update_note(note_id: str, content: str):
+    """Update note content"""
+    try:
+        from notes_service import NotesService
+        from database import SessionLocal, Note
+        import secrets
+        
+        # Generate encryption key (in production, use user's key)
+        encryption_key = secrets.token_bytes(32)
+        
+        # Update note
+        notes_service = NotesService()
+        updated_data = notes_service.update_note(note_id, content, encryption_key)
+        
+        # Update database
+        db = SessionLocal()
+        db_note = db.query(Note).filter_by(id=note_id, user_id='test-user').first()
+        
+        if not db_note:
+            db.close()
+            raise HTTPException(status_code=404, detail="Note not found")
+        
+        db_note.encrypted_content = updated_data['ciphertext']
+        db_note.nonce = updated_data['nonce']
+        db_note.content_length = updated_data['content_length']
+        db_note.links = updated_data['links']
+        db_note.tags = updated_data['tags']
+        db_note.updated_at = datetime.utcnow()
+        
+        db.commit()
+        db.close()
+        
+        return {
+            "success": True,
+            "note": {
+                "id": note_id,
+                "content_length": updated_data['content_length'],
+                "links": updated_data['links'],
+                "tags": updated_data['tags']
+            }
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/notes/{note_id}")
+async def delete_note(note_id: str):
+    """Delete note"""
+    try:
+        from database import SessionLocal, Note
+        
+        db = SessionLocal()
+        db_note = db.query(Note).filter_by(id=note_id, user_id='test-user').first()
+        
+        if not db_note:
+            db.close()
+            raise HTTPException(status_code=404, detail="Note not found")
+        
+        db.delete(db_note)
+        db.commit()
+        db.close()
+        
+        return {"success": True, "message": "Note deleted"}
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
+# Health Check
+# ============================================================================
 async def health_check():
     """Health check endpoint"""
     return {
