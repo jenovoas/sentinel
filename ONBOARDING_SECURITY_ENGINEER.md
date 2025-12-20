@@ -75,47 +75,65 @@ Sentinel necesita:
   - Time-based attacks (delayed execution)
 - [ ] Documentar en `docs/EVASION_TECHNIQUES.md`
 
-### Tarea 2.3: Mejorar AIOpsShield
-- [ ] Archivo: `backend/app/security/aiops_shield_v2.py`
-- [ ] Agregar detección para evasiones encontradas
-- [ ] Implementar multi-layer validation
-- [ ] Tests con nuevos payloads
-- [ ] Validar 100% detección
+### Tarea 2.3: Implementar Watchdog Middleware
+- [ ] Archivo: `backend/app/middleware/watchdog.py`
+- [ ] Implementar análisis multi-factor:
+  - Rate limiting (Redis)
+  - IP reputation (AbuseIPDB)
+  - Payload patterns (regex + AI)
+  - Behavioral anomaly (ML)
+  - AI patterns (Ollama)
+- [ ] Threat scoring (0-100)
+- [ ] Auto-kill requests (score > 80)
+- [ ] Integrar con n8n para auto-remediation
+- [ ] Tests con fuzzer
+- [ ] Validar <5ms overhead
 
 **Entregable Semana 2**: 3 Pull Requests + reporte de pentesting
 
 ---
 
-## 📅 Semana 3: Dual-Guardian Security Validation
+## 📅 Semana 3: Triple-Layer Defense Implementation
 
-### Objetivo: Validar que Dual-Guardian es imposible de evadir
+### Objetivo: Implementar Watchdog + Guardian-Alpha + Guardian-Beta
 
-### Tarea 3.1: Análisis de eBPF Security
-- [ ] Revisar diseño de Guardian-Alpha (eBPF)
-- [ ] Identificar vectores de bypass:
-  - Kernel exploits (privilege escalation)
-  - eBPF program tampering
-  - Syscall hooking evasion
-  - Race conditions
-- [ ] Documento: `docs/DUAL_GUARDIAN_SECURITY_ANALYSIS.md`
+### Tarea 3.1: Integración Triple Capa
+- [ ] Documento: `docs/TRIPLE_LAYER_DEFENSE.md` (ya creado)
+- [ ] Implementar flujo de decisión:
+  - Layer 1: Watchdog (application-level)
+  - Layer 2: Guardian-Beta (AI validation)
+  - Layer 3: Guardian-Alpha (kernel-level veto)
+- [ ] Mutual surveillance entre capas
+- [ ] Heartbeat monitoring (100ms)
+- [ ] Auto-regeneration si capa cae
 
-### Tarea 3.2: Threat Scenarios
-- [ ] Archivo: `docs/DUAL_GUARDIAN_THREAT_SCENARIOS.md`
-- [ ] Escenarios de ataque:
-  1. Atacante con root access
-  2. Atacante con kernel module loading
-  3. Atacante con eBPF capabilities
-  4. Insider threat (admin malicioso)
-- [ ] Mitigaciones para cada escenario
+### Tarea 3.2: Guardian-Beta Implementation
+- [ ] Archivo: `backend/app/services/guardian_beta.py`
+- [ ] AI-powered intent analysis (Ollama)
+- [ ] Context validation
+- [ ] Anomaly detection
+- [ ] Decision logic (ALLOW/VERIFY/BLOCK)
+- [ ] Integration con Guardian-Alpha
 
-### Tarea 3.3: Security Testing Plan
-- [ ] Archivo: `docs/DUAL_GUARDIAN_TESTING_PLAN.md`
-- [ ] Tests de seguridad requeridos
-- [ ] Herramientas (syzkaller, Trinity fuzzer)
-- [ ] Criterios de aceptación
-- [ ] Timeline de implementación
+### Tarea 3.3: Guardian-Alpha Design
+- [ ] Documento: `docs/GUARDIAN_ALPHA_EBPF.md`
+- [ ] eBPF hooks para syscall interception
+- [ ] Pre-execution blocking
+- [ ] Immutable audit log (WAL + blockchain)
+- [ ] Kernel-level validation rules
+- [ ] Testing plan con syzkaller
 
-**Entregable Semana 3**: 3 documentos técnicos
+### Tarea 3.4: Effectiveness Testing
+- [ ] Archivo: `docs/TRIPLE_LAYER_TESTING.md`
+- [ ] Test de evasión por capa:
+  - Watchdog bypass attempts
+  - Guardian-Beta evasion
+  - Guardian-Alpha kernel exploits
+- [ ] Validar 99.99856% effectiveness
+- [ ] Medir latencia total (<16ms)
+- [ ] False positive rate (<1%)
+
+**Entregable Semana 3**: Triple-layer defense funcionando + tests
 
 ---
 
@@ -187,9 +205,10 @@ Sentinel necesita:
 - [ ] Evasion techniques documentadas
 
 ### Semana 3
-- [ ] Dual-Guardian security analysis completo
-- [ ] 5+ threat scenarios documentados
-- [ ] Testing plan definido
+- [ ] Triple-layer defense implementado
+- [ ] Watchdog + Guardian-Beta + Guardian-Alpha integrados
+- [ ] 99.99856% effectiveness validado
+- [ ] Mutual surveillance funcionando
 
 ### Semana 4
 - [ ] SOC 2 gap analysis completo
@@ -226,9 +245,10 @@ Sentinel necesita:
 ## 💡 Proyectos Futuros
 
 ### Corto Plazo (1-2 meses)
-1. **Bug Bounty Program**: Lanzar "Hack Me If You Can"
-2. **Penetration Testing**: Contratar red team externo
-3. **Security Training**: Educar equipo en secure coding
+1. **Triple-Layer Defense**: Watchdog + Guardian-Alpha + Guardian-Beta
+2. **Bug Bounty Program**: Lanzar "Hack Me If You Can"
+3. **Penetration Testing**: Contratar red team externo
+4. **Security Training**: Educar equipo en secure coding
 
 ### Mediano Plazo (3-6 meses)
 1. **SOC 2 Type II**: Certificación completa
