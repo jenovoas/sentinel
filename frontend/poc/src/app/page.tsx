@@ -290,7 +290,7 @@ export default function VaultPage() {
                                 <div className="flex justify-between items-center">
                                     <span className="text-white font-medium">Score:</span>
                                     <span className={`text-lg font-bold ${analysis.score >= 80 ? 'text-green-400' :
-                                            analysis.score >= 50 ? 'text-yellow-400' : 'text-red-400'
+                                        analysis.score >= 50 ? 'text-yellow-400' : 'text-red-400'
                                         }`}>
                                         {analysis.score}/100
                                     </span>
@@ -381,14 +381,83 @@ export default function VaultPage() {
                                     </div>
                                 )}
 
-                                <div>
-                                    <p className="text-white/60 text-sm">Bitcoin</p>
-                                    <p className="text-white font-mono text-sm break-all">{wallet.bitcoin.address}</p>
-                                </div>
+                                {/* Bitcoin */}
+                                {wallet.wallets?.bitcoin && (
+                                    <div className="border-t border-white/20 pt-3">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-white/60 text-sm">Bitcoin (BTC)</span>
+                                            <span className="text-orange-400 font-semibold">
+                                                {wallet.wallets.bitcoin.balance?.toFixed(6) || '0.000000'} BTC
+                                            </span>
+                                        </div>
+                                        <p className="text-white font-mono text-xs break-all">{wallet.wallets.bitcoin.address}</p>
+                                        <p className="text-white/40 text-xs mt-1">
+                                            ${wallet.wallets.bitcoin.balance_usd?.toFixed(2) || '0.00'} USD
+                                        </p>
+                                    </div>
+                                )}
 
-                                <div>
-                                    <p className="text-white/60 text-sm">Ethereum</p>
-                                    <p className="text-white font-mono text-sm break-all">{wallet.ethereum.address}</p>
+                                {/* Ethereum */}
+                                {wallet.wallets?.ethereum && (
+                                    <div className="border-t border-white/20 pt-3">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-white/60 text-sm">Ethereum (ETH)</span>
+                                            <span className="text-blue-400 font-semibold">
+                                                {wallet.wallets.ethereum.balance?.toFixed(6) || '0.000000'} ETH
+                                            </span>
+                                        </div>
+                                        <p className="text-white font-mono text-xs break-all">{wallet.wallets.ethereum.address}</p>
+                                        <p className="text-white/40 text-xs mt-1">
+                                            ${wallet.wallets.ethereum.balance_usd?.toFixed(2) || '0.00'} USD
+                                        </p>
+                                    </div>
+                                )}
+
+                                {/* Polygon */}
+                                {wallet.wallets?.polygon && (
+                                    <div className="border-t border-white/20 pt-3">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-white/60 text-sm">Polygon (MATIC)</span>
+                                            <span className="text-purple-400 font-semibold">
+                                                {wallet.wallets.polygon.balance?.toFixed(6) || '0.000000'} MATIC
+                                            </span>
+                                        </div>
+                                        <p className="text-white font-mono text-xs break-all">{wallet.wallets.polygon.address}</p>
+                                        <p className="text-white/40 text-xs mt-1">
+                                            ${wallet.wallets.polygon.balance_usd?.toFixed(2) || '0.00'} USD
+                                        </p>
+                                    </div>
+                                )}
+
+                                {/* Solana */}
+                                {wallet.wallets?.solana && (
+                                    <div className="border-t border-white/20 pt-3">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-white/60 text-sm">Solana (SOL)</span>
+                                            <span className="text-green-400 font-semibold">
+                                                {wallet.wallets.solana.balance?.toFixed(6) || '0.000000'} SOL
+                                            </span>
+                                        </div>
+                                        <p className="text-white font-mono text-xs break-all">{wallet.wallets.solana.address}</p>
+                                        <p className="text-white/40 text-xs mt-1">
+                                            ${wallet.wallets.solana.balance_usd?.toFixed(2) || '0.00'} USD
+                                        </p>
+                                    </div>
+                                )}
+
+                                {/* Portfolio Total */}
+                                <div className="border-t-2 border-white/30 pt-3 mt-3">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-white font-semibold">Total Portfolio</span>
+                                        <span className="text-green-400 font-bold text-lg">
+                                            ${(
+                                                (wallet.wallets?.bitcoin?.balance_usd || 0) +
+                                                (wallet.wallets?.ethereum?.balance_usd || 0) +
+                                                (wallet.wallets?.polygon?.balance_usd || 0) +
+                                                (wallet.wallets?.solana?.balance_usd || 0)
+                                            ).toFixed(2)} USD
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         )}
