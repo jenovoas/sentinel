@@ -59,6 +59,23 @@ class Password(Base):
     updated_at = Column(DateTime, default=datetime.utcnow)
 
 
+class Note(Base):
+    """Encrypted notes (Obsidian-style)"""
+    __tablename__ = 'notes'
+    
+    id = Column(String, primary_key=True)
+    user_id = Column(String, nullable=False)
+    title = Column(String, nullable=False)
+    encrypted_content = Column(String, nullable=False)  # Ciphertext
+    nonce = Column(String, nullable=False)  # For decryption
+    content_length = Column(Integer, default=0)  # Original length
+    links = Column(JSON, default=[])  # [[Note Name]] links
+    tags = Column(JSON, default=[])  # #tags
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow)
+    accessed_at = Column(DateTime, default=datetime.utcnow)
+
+
 # Database setup
 DATABASE_URL = os.getenv('DATABASE_URL', 'sqlite:///./sentinel_vault.db')
 engine = create_engine(DATABASE_URL)
