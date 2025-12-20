@@ -319,45 +319,6 @@ ROI: 125-296× (protege $32-58M en IP)
 
 ---
 
-## 🚀 PLAN DE ACCIÓN 57 DÍAS
-
-### ESTA SEMANA (20-26 Dic 2024)
-
-**Lunes 23 Dic**:
-- [ ] Buscar 7-10 patent attorneys (6 claims requiere más expertise)
-- [ ] Criterios: Security + Kernel + AI/ML patents
-- [ ] Budget: $40-50K provisional
-
-**Miércoles 25 Dic**:
-- [ ] Enviar intro emails con:
-  - Executive summary (6 claims)
-  - AIOpsDoom threat validation
-  - Timeline (Feb 15 deadline)
-  - Budget ($40-50K)
-
-**Viernes 27 Dic**:
-- [ ] Revisar respuestas
-- [ ] Seleccionar top 3 candidatos
-- [ ] Programar calls técnicas
-
-### SEMANA 2-3 (30 Dic - 12 Ene 2026)
-
-- [ ] Calls con attorneys (deep-dive técnico)
-- [ ] Seleccionar attorney final
-- [ ] Kick-off meeting
-- [ ] Decidir cuáles claims van en provisional (4-5 vs 6)
-
-### SEMANA 4-8 (13 Ene - 15 Feb 2026)
-
-- [ ] Intensive patent drafting (4-5 claims)
-- [ ] Technical disclosure documents
-- [ ] UML diagrams (arquitectura completa)
-- [ ] Prior art analysis documentation
-- [ ] Attorney review cycles
-- [ ] **FILE PROVISIONAL PATENT** 🚨
-
----
-
 ## 🎖️ VENTAJA COMPETITIVA ÚNICA
 
 | Feature | Sentinel (6 Claims) | Datadog | Splunk | Palo Alto |
