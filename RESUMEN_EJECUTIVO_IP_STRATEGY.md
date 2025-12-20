@@ -1,8 +1,12 @@
 # 🎯 Resumen Ejecutivo - Estrategia IP Consolidada
 
-**Fecha**: 19 Diciembre 2024  
-**Estado**: ✅ VALIDADO - Listo para ejecución  
-**Deadline Crítico**: 15 Febrero 2026 (90 días)
+> [!CAUTION]
+> **ALERTA COMPETITIVA (20 Dic 2024)**: Logs de GitHub muestran descargas de módulos de buffers. **TIMELINE ACELERADO A 30 DÍAS**. Prioridad máxima en filing provisional.
+
+**Fecha**: 20 Diciembre 2024  
+**Estado**: 🚨 EMERGENCY MODE - Competitor risk detected  
+**Deadline Original**: 15 Febrero 2026 (90 días)  
+**Deadline Ajustado**: 20 Enero 2026 (30 días) 🚨
 
 ---
 
@@ -139,43 +143,66 @@ hallucination triggers). Diferenciado de WAF tradicional."
 
 ---
 
-## 📅 PLAN DE EJECUCIÓN 90 DÍAS
+## 📍 PLAN DE EJECUCIÓN EMERGENCY (30 DÍAS)
 
-### ESTA SEMANA (16-22 Dic 2025)
+> [!WARNING]
+> **COMPETIDORES ACTIVOS**: Descargas confirmadas desde GitHub. **Actuar AHORA o perder first-to-file**.
 
-**Lunes 16 Dic**:
-- [ ] Buscar 5-7 patent attorneys (USPTO database, Bar associations, LinkedIn)
-- [ ] Criterios: Security patents, kernel expertise, eBPF experience, startup-friendly
+### ESTA SEMANA (20-27 Dic 2025) - URGENTE
 
-**Miércoles 18 Dic**:
-- [ ] Enviar intro emails con:
-  - Executive summary (AIOpsDoom threat)
-  - 3 claims abstracts
-  - Timeline (Feb 15 deadline)
-  - Budget ($35K provisional)
+**Viernes 20 Dic (HOY)**:
+- [ ] Buscar 5-7 patent attorneys con EXPRESS service
+- [ ] Criterios: Security patents, kernel expertise, emergency filing experience
+- [ ] Budget: $17-23K provisional (3-4 claims críticos)
 
-**Viernes 20 Dic**:
-- [ ] Revisar respuestas
-- [ ] Seleccionar top 2-3 candidatos
-- [ ] Programar calls
+**Sábado-Domingo 21-22 Dic**:
+- [ ] Preparar materials express:
+  - Executive summary (2 páginas)
+  - 3-4 claims abstracts (Claims 1-3 + opcional 4)
+  - Technical evidence (benchmarks, código eBPF)
+  - Prior art search results
 
-### PRÓXIMAS 2 SEMANAS (23 Dic - 7 Ene 2026)
+**Lunes 23 Dic**:
+- [ ] Enviar emails URGENTES a attorneys
+- [ ] Subject: "EMERGENCY - Provisional Patent (Competitor Risk)"
+- [ ] Calls de emergencia (30 min cada uno)
+- [ ] Seleccionar attorney + pagar retainer ($5K)
 
-- [ ] Calls con attorneys (technical deep-dive)
-- [ ] Seleccionar attorney final
-- [ ] Kick-off meeting
-- [ ] Crear UML diagrams (Draw.io/Lucidchart)
-- [ ] Documentar eBPF implementation spec
+**Deliverable**: Attorney contratado, retainer pagado, kick-off programado
 
-### 90 DÍAS (10 Ene - 15 Feb 2026)
+---
 
-- [ ] Intensive patent drafting
-- [ ] Technical disclosure document
-- [ ] Claims drafted (1-3)
-- [ ] Drawings + implementation examples
-- [ ] Prior art analysis + differentiation
-- [ ] Attorney review cycles
-- [ ] **FILE PROVISIONAL PATENT** 🚨
+### SEMANA 2-3 (30 Dic - 10 Ene 2026) - Drafting Acelerado
+
+- [ ] Technical disclosure acelerado (Claims 1-3 prioritarios)
+- [ ] Attorney drafts initial claims (focus en HOME RUNS)
+- [ ] Minimal drawings (arquitectura básica)
+
+**SEMANA 4 (13-20 Ene 2026)**:
+- [ ] Claims refinement (1-3, opcional 4)
+- [ ] Final attorney review
+- [ ] Filing preparation
+- [ ] **FILE PROVISIONAL PATENT - 20 ENERO 2026** 🚨
+
+**Deliverable**: Provisional patent filed, "Patent Pending" status achieved
+
+---
+
+### CLAIMS PRIORITARIOS (Emergency Filing)
+
+**MUST INCLUDE** (3 Claims Críticos):
+1. **Claim 3**: Kernel-Level Protection (eBPF) - HOME RUN, $8-15M
+2. **Claim 2**: Semantic Firewall (AIOpsDoom) - Defensa única, $5-8M
+3. **Claim 1**: Dual-Lane Telemetry - Arquitectura base, $4-6M
+
+**OPTIONAL** (Si tiempo permite):
+4. **Claim 4**: Forensic WAL - Complementa Claim 1, $3-5M
+
+**Dejar para Non-Provisional**:
+- Claim 5: Zero Trust mTLS
+- Claim 6: Cognitive OS Kernel
+
+**TOTAL PROTECCIÓN EMERGENCY**: $17-29M (3-4 claims)
 
 ---
 
