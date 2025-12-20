@@ -107,7 +107,88 @@ Option 3: Tor Browser (maximum privacy)
 
 ---
 
-### **3. Encrypted Notes (Obsidian-style)** 📝
+### **3. Secure Terminal** 💻
+
+**Purpose**: Terminal integrada ultra-segura para developers/crypto users
+
+**Features**:
+- 🖥️ **GPU-accelerated**: Kitty-like performance
+- 🔀 **Multiplexing**: tmux-style sessions/windows
+- 🔐 **Encrypted sessions**: All I/O encrypted
+- 🔑 **SSH key management**: Store SSH keys in vault
+- 📝 **Session recording**: Audit trail of commands
+- 🎨 **Themes**: Customizable (Dracula, Nord, etc.)
+- 🔍 **Search**: Full-text search in scrollback
+- 📋 **Smart clipboard**: Secure copy/paste
+- 🚀 **Fast**: Hardware acceleration (GPU)
+
+**Security Features**:
+- **Sandboxed**: Isolated from main system
+- **Encrypted storage**: Command history encrypted
+- **No telemetry**: Zero data collection
+- **SSH key vault**: Keys never touch disk unencrypted
+- **Audit logging**: All commands logged (immutable)
+- **Session isolation**: Each session in separate container
+
+**Use Cases**:
+- **Crypto developers**: Deploy smart contracts
+- **DevOps**: Manage servers securely
+- **Traders**: Run trading bots
+- **Security researchers**: Pentesting tools
+- **General dev**: Git, npm, docker, etc.
+
+**Technical Stack**:
+```
+Option 1: Electron + xterm.js + node-pty
+Option 2: Tauri + alacritty (Rust)
+Option 3: Native (platform-specific)
+```
+
+**Features vs Kitty/tmux**:
+| Feature | Kitty | tmux | Sentinel Terminal |
+|---------|-------|------|-------------------|
+| GPU acceleration | ✅ | ❌ | ✅ |
+| Multiplexing | ❌ | ✅ | ✅ |
+| **Encryption** | ❌ | ❌ | ✅ |
+| **SSH key vault** | ❌ | ❌ | ✅ |
+| **Audit trail** | ❌ | ❌ | ✅ |
+| **Crypto integration** | ❌ | ❌ | ✅ |
+
+**Unique Features**:
+- **Crypto shortcuts**: Quick access to wallet commands
+  - `vault send 0.1 BTC to <address>` (with confirmation)
+  - `vault balance` (show all wallets)
+  - `vault gas` (check gas prices)
+- **Smart contract deployment**: One-click deploy
+- **Hardware wallet integration**: Sign transactions from terminal
+- **Encrypted environment variables**: Store API keys securely
+
+**UI**:
+```
+┌─────────────────────────────────────────────────┐
+│ Session 1: dev  │ Session 2: prod  │ + New     │
+├─────────────────────────────────────────────────┤
+│ $ vault balance                                 │
+│ Bitcoin:  0.5 BTC ($44,000)                     │
+│ Ethereum: 2.5 ETH ($7,500)                      │
+│                                                 │
+│ $ git push origin main                          │
+│ Enumerating objects: 5, done.                   │
+│ ...                                             │
+│                                                 │
+│ $ _                                             │
+└─────────────────────────────────────────────────┘
+```
+
+**Integration with Vault**:
+- Access passwords: `vault get github`
+- Copy to clipboard: `vault copy aws-key`
+- Generate password: `vault gen 32`
+- SSH with stored key: `vault ssh production`
+
+---
+
+### **4. Encrypted Notes (Obsidian-style)** 📝
 
 **Purpose**: Sistema de notas cifradas con linking
 
@@ -170,6 +251,7 @@ Sentinel Vault
 ├── Crypto Wallet ✅
 ├── Document Vault 🆕
 ├── Secure Browser 🆕
+├── Secure Terminal 🆕
 └── Encrypted Notes 🆕
 ```
 
