@@ -152,9 +152,14 @@ class BlockchainService:
             # Precio actual (usar CoinGecko)
             coin_id = "ethereum" if chain == "ethereum" else "matic-network"
             price_url = f"https://api.coingecko.com/api/v3/simple/price?ids={coin_id}&vs_currencies=usd"
-            price_response = await self.http_client.get(price_url)
-            price_data = price_response.json()
-            usd_price = price_data[coin_id]["usd"]
+            
+            try:
+                price_response = await self.http_client.get(price_url)
+                price_data = price_response.json()
+                usd_price = price_data.get(coin_id, {}).get("usd", 0)
+            except Exception as price_error:
+                print(f"Warning: Could not fetch price for {chain}: {price_error}")
+                usd_price = 0
             
             currency = "ETH" if chain == "ethereum" else "MATIC"
             
