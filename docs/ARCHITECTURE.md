@@ -42,37 +42,37 @@ Sentinel is a **production-ready multi-tenant SaaS platform** that combines:
 │   (Next.js)     │ │   (FastAPI)     │ │     (n8n)       │
 │   Port 3000     │ │   Port 8000     │ │   Port 5678     │
 └────────┬────────┘ └────────┬────────┘ └────────┬────────┘
-         │                   │                   │
-         │                   │                   │
+         │                   │                   ▲
+         │                   │                   │ Webhook (JSON)
          │         ┌─────────┼─────────┐         │
          │         │         │         │         │
-         ▼         ▼         ▼         ▼         ▼
-┌─────────────────────────────────────────────────────────┐
-│                   DATA LAYER                             │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │  PostgreSQL  │  │    Redis     │  │   Ollama AI  │  │
-│  │  (Database)  │  │   (Cache)    │  │   (LLM)      │  │
-│  │  Port 5432   │  │  Port 6379   │  │  Port 11434  │  │
-│  └──────────────┘  └──────────────┘  └──────────────┘  │
-└─────────────────────────────────────────────────────────┘
-                             │
-                             ▼
-┌─────────────────────────────────────────────────────────┐
-│                OBSERVABILITY LAYER                       │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │  Prometheus  │  │     Loki     │  │   Grafana    │  │
-│  │  (Metrics)   │  │    (Logs)    │  │ (Dashboards) │  │
-│  │  Port 9090   │  │  Port 3100   │  │  Port 3001   │  │
-│  └──────────────┘  └──────────────┘  └──────────────┘  │
+         ▼         ▼         ▼         ▼         │
+┌─────────────────────────────────────────────────────────┐   ┌───────────────┐
+│                   DATA LAYER                            │   │  BCI ENGINE   │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │   │  (Rust)       │
+│  │  PostgreSQL  │  │    Redis     │  │   Ollama AI  │   │   │  - Rubato     │
+│  │  (Database)  │  │   (Cache)    │  │   (LLM)      │   │   │  - ndarray    │
+│  │  Port 5432   │  │  Port 6379   │  │  Port 11434  │   │◀──┤  - CereStim   │
+│  └──────────────┘  └──────────────┘  └──────────────┘   │   │  Port 9000    │
+└─────────────────────────────────────────────────────────┘   └───────▲───────┘
+                             │                                        │
+                             ▼                                        │ Raw Signal
+┌─────────────────────────────────────────────────────────┐   ┌───────┴───────┐
+│                OBSERVABILITY LAYER                       │   │  NEURAL DATA  │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │   │ (Simulated)   │
+│  │  Prometheus  │  │     Loki     │  │   Grafana    │   │   │ - Neuralink   │
+│  │  (Metrics)   │  │    (Logs)    │  │ (Dashboards) │   │   │ - GigaScience │
+│  │  Port 9090   │  │  Port 3100   │  │  Port 3001   │   │   │ - OpenNeuro   │
+│  └──────────────┘  └──────────────┘  └──────────────┘   │   └───────────────┘
 └─────────────────────────────────────────────────────────┘
                              │
                              ▼
 ┌─────────────────────────────────────────────────────────┐
 │                  SECURITY LAYER                          │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │   Auditd     │  │   Seccomp    │  │   AppArmor   │  │
-│  │  Watchdog    │  │   Profiles   │  │   Profiles   │  │
-│  └──────────────┘  └──────────────┘  └──────────────┘  │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
+│  │   Auditd     │  │   Seccomp    │  │   AppArmor   │   │
+│  │  Watchdog    │  │   Profiles   │  │   Profiles   │   │
+│  └──────────────┘  └──────────────┘  └──────────────┘   │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -108,6 +108,14 @@ Sentinel is a **production-ready multi-tenant SaaS platform** that combines:
   - P95 latency: <100ms
   - Throughput: 1000+ req/s
   - Concurrent users: 150+
+
+#### Document Vault Module (Seguridad Zero-Knowledge)
+- **Tecnología**: AES-256-GCM + Argon2id
+- **Arquitectura**: Cifrado del lado del cliente (o servidor con aislamiento estricto) para documentos sensibles.
+- **Flujo**:
+  - **Cifrado**: Clave derivada de Master Password (nunca almacenada).
+  - **Integridad**: Verificación SHA-256 de cada archivo.
+  - **Storage**: Blobs cifrados en disco, metadatos en DB.
 
 #### Nginx Reverse Proxy
 - **Purpose**: Load balancing, TLS termination, rate limiting
@@ -241,9 +249,52 @@ Sentinel is a **production-ready multi-tenant SaaS platform** that combines:
 - **Grafana**: Dashboard links
 - **AI Engine**: Report enrichment (future)
 
+### 5. TruthSync (Verificación de Veracidad)
+
+#### Arquitectura Dual-Container
+TruthSync implementa un diseño híbrido para equilibrar precisión y latencia:
+
+**A. Truth Core (Contenedor Pesado)**
+- **Rol**: Fuente de la Verdad y Análisis Profundo.
+- **Componentes**:
+  - **Base de Datos**: PostgreSQL con hechos verificados.
+  - **Motor**: Rust + Python ML para inferencia compleja.
+- **Latencia**: ~50-100ms.
+
+**B. TruthSync Edge (Contenedor Contenidos)**
+- **Rol**: Caché Predictiva y Filtrado Rápido.
+- **Componentes**:
+  - **Caché**: In-Memory (Rust) para respuestas <1ms.
+  - **Proxy**: Intercepta consultas DNS/HTTP.
+- **Latencia**: <1ms (Cache Hit).
+
+#### Flujo de Datos
+1. **Consulta**: Usuario navega o consulta.
+2. **Edge Check**: TruthSync Edge verifica caché.
+3. **Miss**: Si no está, consulta a Truth Core (gRPC).
+4. **Learning**: El Core actualiza sus modelos basado en feedback.
+
 ---
 
-### 5. Security Layer
+### 6. Neural Interface (Experimental Research Module)
+
+#### BCI Ingestion Engine
+- **Purpose**: Real-time bio-signal processing and event detection
+- **Status**: **Research Prototype** (Not in production)
+- **Technology**: Rust (Tokio, Rubato, ndarray)
+- **Features**:
+  - **High-Performance**: Handles >30k samples/sec
+  - **Signal Processing**: Bandpass filtering, Spike detection
+  - **Event Dispatch**: Webhook payloads to n8n
+  - **Simulation Mode**: Replays .mat/.wav files as live streams
+- **Integration**:
+  - **Input**: Raw neural data (Neuralink/Blackrock formats)
+  - **Output**: JSON Events to n8n Webhook
+  - **Mocking**: Implements CereStim API traits for hardware compatibility
+
+---
+
+### 6. Security Layer
 
 #### Auditd Watchdog
 - **Purpose**: Real-time exploit detection
@@ -368,15 +419,16 @@ Kernel Syscall → Auditd → Watchdog → Pattern Match
 | postgres-exporter | PG Exporter | 9187 | DB metrics |
 | redis-exporter | Redis Exporter | 9121 | Cache metrics |
 
-### AI & Automation Services (4)
+### AI & Automation Services (5)
 | Service | Technology | Port | Purpose |
 |---------|-----------|------|---------|
 | ollama | Ollama | 11434 | LLM inference |
 | ollama-init | Ollama | - | Model downloader |
 | n8n | n8n | 5678 | Workflow automation |
 | n8n-loader | Custom | - | Workflow loader |
+| bci-engine | Rust | 9000 | BCI signal ingestion |
 
-**Total**: 18 services
+**Total**: 19 services
 
 ---
 
