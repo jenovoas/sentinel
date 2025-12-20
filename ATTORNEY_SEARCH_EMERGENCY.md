@@ -9,17 +9,17 @@
 ## 📧 EMAIL TEMPLATE - EMERGENCY FILING
 
 ```
-Subject: URGENT - Emergency Provisional Patent Filing (Competitor Risk Detected)
+Subject: High-Priority Provisional Patent - Kernel Security & AI Defense (6 Claims)
 
 Estimado/a [Attorney Name],
 
 Mi nombre es Jaime Novoa, creador de Sentinel Cortex™, sistema de seguridad 
 AIOps con 6 innovaciones patentables validadas.
 
-SITUACIÓN DE EMERGENCIA:
-- GitHub logs muestran descargas de módulos críticos por potenciales competidores
-- Riesgo de perder first-to-file si no actuamos INMEDIATAMENTE
-- Necesito provisional patent filing en 15-20 días (vs 90 días estándar)
+CONTEXTO COMPETITIVO:
+- Kernel-level security y AI defense son áreas de alta competencia tech
+- Empresas como Datadog, Splunk, Palo Alto invierten millones en R&D similar
+- First-to-file es crítico: necesito provisional patent en 45-60 días
 
 CLAIMS PRIORITARIOS (3-4 para provisional):
 1. Kernel-Level Protection via eBPF LSM (HOME RUN - zero prior art)
