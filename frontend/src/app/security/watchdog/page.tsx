@@ -18,7 +18,7 @@ interface AuditEvent {
 }
 
 export default function SecurityWatchdogPage() {
-    const [securityStatus, setSecurityStatus] = useState<"secure" | "warning" | "critical">("secure");
+    const [securityStatus] = useState<"secure" | "warning" | "critical">("secure");
     const [events, setEvents] = useState<AuditEvent[]>([]);
     const [threatsDetected, setThreatsDetected] = useState(0);
     const [eventsToday, setEventsToday] = useState(0);

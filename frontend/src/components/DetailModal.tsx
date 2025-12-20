@@ -81,13 +81,12 @@ const DetailContent: React.FC<{
                   <div key={a.id} className="text-xs border border-white/5 rounded p-2 flex items-center justify-between">
                     <span className="text-gray-200">{a.title}</span>
                     <span
-                      className={`px-2 py-1 rounded text-xs font-semibold ${
-                        a.severity === "critical"
+                      className={`px-2 py-1 rounded text-xs font-semibold ${a.severity === "critical"
                           ? "bg-rose-500/20 text-rose-300"
                           : a.severity === "warning"
-                          ? "bg-amber-500/20 text-amber-300"
-                          : "bg-cyan-500/20 text-cyan-300"
-                      }`}
+                            ? "bg-amber-500/20 text-amber-300"
+                            : "bg-cyan-500/20 text-cyan-300"
+                        }`}
                     >
                       {a.severity}
                     </span>
@@ -155,7 +154,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({
 }) => {
   if (!isOpen || !type) return null;
 
-  const { title, color } = getTitleAndColor(type);
+  const { title } = getTitleAndColor(type);
 
   return (
     <div
