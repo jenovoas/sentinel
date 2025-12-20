@@ -39,6 +39,19 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  BarChart2,
+  AlertTriangle,
+  Database,
+  FileText,
+  Shield,
+  Bell,
+  User,
+  ChevronDown,
+  Settings,
+  LogOut
+} from "lucide-react";
 
 interface NavItem {
   label: string;
@@ -52,105 +65,35 @@ const MAIN_NAV_ITEMS: NavItem[] = [
   {
     label: "Dashboard",
     href: "/dash-op",
-    icon: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-        />
-      </svg>
-    ),
+    icon: <LayoutDashboard className="w-5 h-5" />,
     color: "cyan",
     description: "Monitoreo en tiempo real",
   },
   {
     label: "Analytics",
     href: "/analytics",
-    icon: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-        />
-      </svg>
-    ),
+    icon: <BarChart2 className="w-5 h-5" />,
     color: "green",
     description: "Análisis históricos y tendencias",
   },
   {
     label: "Alertas",
     href: "/alerts",
-    icon: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-        />
-      </svg>
-    ),
+    icon: <AlertTriangle className="w-5 h-5" />,
     color: "amber",
     description: "Anomalías y eventos críticos",
   },
   {
     label: "Bases de Datos",
     href: "/db",
-    icon: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M12 3c4.97 0 9 1.79 9 4s-4.03 4-9 4-9-1.79-9-4 4.03-4 9-4zm0 8c4.97 0 9 1.79 9 4s-4.03 4-9 4-9-1.79-9-4 4.03-4 9-4z"
-        />
-      </svg>
-    ),
+    icon: <Database className="w-5 h-5" />,
     color: "amber",
     description: "Instancias y consultas activas",
   },
   {
     label: "Reportes",
     href: "/reports",
-    icon: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-        />
-      </svg>
-    ),
+    icon: <FileText className="w-5 h-5" />,
     color: "purple",
     description: "Reportes y documentación",
   },
@@ -212,13 +155,7 @@ export const CognitiveNavBar: React.FC<CognitiveNavBarProps> = ({
             <div className="relative">
               <div className="absolute inset-0 bg-cyan-400 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity" />
               <div className="relative bg-gradient-to-br from-cyan-400 to-blue-500 rounded-lg p-2">
-                <svg
-                  className="w-6 h-6 text-white"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z" />
-                </svg>
+                <Shield className="w-6 h-6 text-white" />
               </div>
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent hidden sm:inline">
@@ -253,19 +190,7 @@ export const CognitiveNavBar: React.FC<CognitiveNavBarProps> = ({
           <div className="flex items-center gap-4">
             {/* Notifications Badge - Psicología: rojo capta atención */}
             <button className="relative p-2 text-gray-300 hover:text-white transition-colors duration-300 hover:bg-white/5 rounded-lg group">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                />
-              </svg>
+              <Bell className="w-5 h-5" />
               <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full animate-pulse" />
             </button>
 
@@ -278,35 +203,23 @@ export const CognitiveNavBar: React.FC<CognitiveNavBarProps> = ({
                 <span className="text-sm font-medium hidden sm:inline">
                   {userEmail?.split("@")[0] || "User"}
                 </span>
-                <svg
-                  className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                  />
-                </svg>
+                <ChevronDown className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
               </button>
 
               {/* Dropdown Menu - Escondido por defecto */}
               <div className="absolute right-0 top-full mt-0 w-48 bg-slate-900 border border-white/10 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 py-2">
-                <button className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors">
-                  ⚙️ Preferencias
+                <button className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors flex items-center">
+                  <Settings className="w-4 h-4 mr-2" /> Preferencias
                 </button>
-                <button className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors">
-                  👤 Mi Perfil
+                <button className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors flex items-center">
+                  <User className="w-4 h-4 mr-2" /> Mi Perfil
                 </button>
                 <hr className="my-2 border-white/10" />
                 <button
                   onClick={onLogout}
-                  className="w-full text-left px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
+                  className="w-full text-left px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors flex items-center"
                 >
-                  🚪 Logout
+                  <LogOut className="w-4 h-4 mr-2" /> Logout
                 </button>
               </div>
             </div>
