@@ -662,6 +662,42 @@ async def browse_url(request: BrowserRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# ============================================================================
+# Endpoints - Finance Dashboard
+# ============================================================================
+from finance_service import FinanceService
+
+@app.get("/finance/summary")
+async def get_finance_summary(db: Session = Depends(get_db)):
+    try:
+        service = FinanceService(db)
+        return await service.get_dashboard_summary()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/finance/assets")
+async def add_asset(
+    name: str = Form(...),
+    category: str = Form(...),
+    value_usd: float = Form(...),
+    db: Session = Depends(get_db)
+):
+    try:
+        service = FinanceService(db)
+        service.add_asset(name, category, value_usd)
+        return {"success": True}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/finance/assets/{asset_id}")
+async def delete_asset(asset_id: int, db: Session = Depends(get_db)):
+    try:
+        service = FinanceService(db)
+        if service.delete_asset(asset_id):
+            return {"success": True}
+        raise HTTPException(status_code=404, detail="Asset not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # ============================================================================
 # Endpoints - Terminal
