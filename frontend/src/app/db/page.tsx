@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 type DbStats = {
   connections_total: number;
@@ -90,7 +90,7 @@ export default function DatabasesPage() {
               query: q.query.replace(/\n/g, " "),
             }));
             const header = Object.keys(rows[0] || { pid: "", user: "", state: "", wait_event: "", duration_seconds: 0, query: "" });
-            const csv = [header.join(","), ...rows.map((r) => header.map((h) => String((r as any)[h]).replace(/","/g, "\"\,\"" )).join(","))].join("\n");
+            const csv = [header.join(","), ...rows.map((r) => header.map((h) => String((r as any)[h]).replace(/","/g, "\"\,\"")).join(","))].join("\n");
             const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
@@ -120,11 +120,10 @@ export default function DatabasesPage() {
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-medium text-gray-300">Instancia</h2>
               <span
-                className={`text-xs px-2 py-1 rounded-full ${
-                  data.db_health.status === "healthy"
+                className={`text-xs px-2 py-1 rounded-full ${data.db_health.status === "healthy"
                     ? "bg-emerald-500/15 text-emerald-300"
                     : "bg-rose-500/15 text-rose-300"
-                }`}
+                  }`}
               >
                 {data.db_health.status}
               </span>
@@ -164,19 +163,19 @@ export default function DatabasesPage() {
                   .filter((q) => (filterUser ? q.user.toLowerCase().includes(filterUser.toLowerCase()) : true))
                   .sort((a, b) => (sortByDuration ? b.duration_seconds - a.duration_seconds : 0))
                 ).map((q) => (
-                <div key={q.pid} className="rounded-lg bg-white/5 p-3">
-                  <div className="flex items-center justify-between">
-                    <div className="text-xs text-gray-300">
-                      <span className="font-mono">PID {q.pid}</span> · {q.user} · {q.state}
+                  <div key={q.pid} className="rounded-lg bg-white/5 p-3">
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs text-gray-300">
+                        <span className="font-mono">PID {q.pid}</span> · {q.user} · {q.state}
+                      </div>
+                      <div className="text-xs text-gray-400">{Math.round(q.duration_seconds)}s</div>
                     </div>
-                    <div className="text-xs text-gray-400">{Math.round(q.duration_seconds)}s</div>
+                    {q.wait_event && (
+                      <p className="mt-1 text-xs text-amber-300">{q.wait_event}</p>
+                    )}
+                    <pre className="mt-2 whitespace-pre-wrap break-words text-xs text-gray-400">{q.query}</pre>
                   </div>
-                  {q.wait_event && (
-                    <p className="mt-1 text-xs text-amber-300">{q.wait_event}</p>
-                  )}
-                  <pre className="mt-2 whitespace-pre-wrap break-words text-xs text-gray-400">{q.query}</pre>
-                </div>
-              )))
+                )))
               }
             </div>
           </div>
