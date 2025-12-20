@@ -1,16 +1,24 @@
 # 🎯 IP Strategy Execution Plan - Sentinel Cortex™
 
-**Deadline**: February 15, 2026 (90 days)  
-**Objective**: File provisional patent and consolidate IP protection strategy  
-**Status**: ✅ READY FOR EXECUTION
+> [!CAUTION]
+> **EMERGENCY UPDATE (20 Dic 2024)**: GitHub logs muestran descargas de módulos de buffers por potenciales competidores. **TIMELINE ACELERADO A 30 DÍAS**. Ver [IP_EMERGENCY_PLAN.md](IP_EMERGENCY_PLAN.md) para estrategia urgente.
+
+**Deadline Original**: February 15, 2026 (90 days)  
+**Deadline Ajustado**: January 20, 2026 (30 days) 🚨  
+**Objective**: File provisional patent URGENTE - Competitor risk detected  
+**Status**: 🚨 EMERGENCY MODE - IMMEDIATE ACTION REQUIRED
 
 ---
 
-## 🚨 CRITICAL TIMELINE
+## 🚨 CRITICAL TIMELINE - EMERGENCY UPDATE
 
-> **DEADLINE**: Provisional Patent Filing - **February 15, 2026** (90 days)  
-> **BUDGET**: $35,000 (provisional) + $40,000 (non-provisional 2027) = $75,000 total  
-> **ROI**: 533-1,013× (protects $40-76M in IP)
+> [!WARNING]
+> **COMPETITOR ACTIVITY DETECTED**: GitHub logs show downloads of buffer modules.  
+> **ORIGINAL DEADLINE**: Provisional Patent Filing - **February 15, 2026** (90 days)  
+> **ADJUSTED DEADLINE**: **January 20, 2026** (30 days) 🚨  
+> **BUDGET EMERGENCY**: $17,000-23,000 (express provisional, 3-4 claims)  
+> **ROI**: 730-1,676× (protects $17-29M in critical IP)  
+> **RISK IF DELAYED**: -$67-129M (competitor first-to-file)
 
 ---
 

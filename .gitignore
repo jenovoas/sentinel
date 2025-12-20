@@ -50,3 +50,35 @@ n8n-cybersecurity-workflows/
 # Workflow index (too large - 11MB)
 workflow_index.json
 
+# ========================================
+# SENSITIVE METHODOLOGY & SESSION FILES
+# ========================================
+# These files contain our AI-assisted development methodology
+# which could be dangerous in wrong hands. Keep private.
+
+# Session summaries and context
+*SESSION*.md
+*SESION*.md
+SESSION_*.md
+SESION_*.md
+
+# Strategic planning and methodology
+RESUMEN_MAESTRO_SESION.md
+RESUMEN_FINAL_SESION.md
+SESION_HISTORICA_FINAL.md
+FINAL_SUMMARY.md
+CONTEXT_NOTE.md
+
+# AI methodology and prompts (CRITICAL - DO NOT EXPOSE)
+docs/*SESSION*.md
+docs/*SESION*.md
+truth_algorithm/SESSION_CONTEXT.md
+
+# Temporary/work-in-progress strategic docs
+temporal/
+mensaje/
+
+# Personal notes and brainstorming
+*_NOTES.md
+*_DRAFT.md
+*_WIP.md
