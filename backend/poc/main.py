@@ -190,9 +190,13 @@ async def analyze_password(req: AnalyzePasswordRequest):
 
 @app.post("/crypto/generate")
 async def generate_crypto_wallet():
-    """Generar nuevo crypto wallet (Bitcoin + Ethereum)"""
+    """Generar nuevo crypto wallet (Bitcoin + Ethereum + Polygon + Solana)"""
     try:
-        wallet = crypto.generate_wallet()
+        from wallet_complete import CryptoWalletComplete
+        
+        wallet_service = CryptoWalletComplete()
+        wallet = await wallet_service.create_wallet()
+        await wallet_service.close()
         
         # ⚠️ En producción, seed phrase debe cifrarse con master password
         # y mostrarse SOLO UNA VEZ
@@ -207,11 +211,67 @@ async def generate_crypto_wallet():
 async def recover_crypto_wallet(seed_phrase: str):
     """Recuperar wallet desde seed phrase"""
     try:
+        from crypto_wallet import CryptoWallet
+        
+        crypto = CryptoWallet()
         wallet = crypto.recover_wallet(seed_phrase)
+        
         return wallet
     
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/crypto/balance/{chain}/{address}")
+async def get_crypto_balance(chain: str, address: str):
+    """Obtener balance de una wallet específica"""
+    try:
+        from blockchain import BlockchainService
+        
+        blockchain = BlockchainService()
+        balance = await blockchain.get_balance(chain, address)
+        await blockchain.close()
+        
+        return balance
+    
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/crypto/portfolio")
+async def get_portfolio_value():
+    """
+    Obtener valor total del portfolio
+    (En producción, esto vendría de la DB del usuario)
+    """
+    try:
+        # Mock data para demo
+        # En producción, obtener wallets del usuario desde DB
+        mock_wallets = {
+            "bitcoin": {
+                "address": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+                "balance": 0,
+                "balance_usd": 0
+            },
+            "ethereum": {
+                "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+                "balance": 0,
+                "balance_usd": 0
+            }
+        }
+        
+        from wallet_complete import CryptoWalletComplete
+        
+        wallet_service = CryptoWalletComplete()
+        portfolio = await wallet_service.get_portfolio_value(mock_wallets)
+        await wallet_service.close()
+        
+        return portfolio
+    
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
