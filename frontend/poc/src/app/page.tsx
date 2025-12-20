@@ -463,7 +463,100 @@ export default function VaultPage() {
                         )}
                     </div>
 
-                    {/* Benchmarks */}
+                    {/* Document Vault */}
+                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                        <h2 className="text-2xl font-semibold text-white mb-4">📄 Document Vault</h2>
+
+                        {/* Upload Area */}
+                        <div
+                            className="border-2 border-dashed border-white/30 rounded-lg p-8 text-center hover:border-purple-500 transition-all cursor-pointer bg-white/5"
+                            onDragOver={(e) => {
+                                e.preventDefault();
+                                e.currentTarget.classList.add('border-purple-500', 'bg-purple-500/10');
+                            }}
+                            onDragLeave={(e) => {
+                                e.currentTarget.classList.remove('border-purple-500', 'bg-purple-500/10');
+                            }}
+                            onDrop={async (e) => {
+                                e.preventDefault();
+                                e.currentTarget.classList.remove('border-purple-500', 'bg-purple-500/10');
+
+                                const files = e.dataTransfer.files;
+                                if (files.length > 0) {
+                                    const file = files[0];
+
+                                    // Upload file
+                                    const formData = new FormData();
+                                    formData.append('file', file);
+                                    formData.append('category', 'general');
+
+                                    try {
+                                        const response = await fetch('http://localhost:8000/documents/upload', {
+                                            method: 'POST',
+                                            body: formData
+                                        });
+                                        const data = await response.json();
+
+                                        if (data.success) {
+                                            alert(`✅ ${file.name} uploaded and encrypted!`);
+                                        }
+                                    } catch (error) {
+                                        alert('❌ Upload failed');
+                                    }
+                                }
+                            }}
+                        >
+                            <div className="text-6xl mb-4">📁</div>
+                            <p className="text-white text-lg mb-2">Drag & Drop Files Here</p>
+                            <p className="text-white/60 text-sm">or click to browse</p>
+                            <p className="text-white/40 text-xs mt-2">All files are encrypted with AES-256-GCM</p>
+                        </div>
+
+                        {/* Categories */}
+                        <div className="mt-4 flex gap-2 flex-wrap">
+                            <span className="text-white/60 text-sm">Categories:</span>
+                            {['General', 'Identity', 'Contracts', 'Receipts', 'Medical', 'Legal'].map(cat => (
+                                <button
+                                    key={cat}
+                                    className="px-3 py-1 bg-white/10 text-white text-xs rounded-full hover:bg-purple-500/30 transition-all"
+                                >
+                                    {cat}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Recent Documents */}
+                        <div className="mt-6">
+                            <h3 className="text-white font-semibold mb-3">Recent Documents</h3>
+                            <div className="space-y-2">
+                                <div className="bg-white/5 rounded-lg p-3 flex items-center justify-between hover:bg-white/10 transition-all">
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-2xl">📄</span>
+                                        <div>
+                                            <p className="text-white text-sm font-medium">passport.pdf</p>
+                                            <p className="text-white/40 text-xs">Identity • 2.3 MB • Encrypted</p>
+                                        </div>
+                                    </div>
+                                    <button className="text-purple-400 hover:text-purple-300 text-sm">
+                                        Download
+                                    </button>
+                                </div>
+
+                                <div className="bg-white/5 rounded-lg p-3 flex items-center justify-between hover:bg-white/10 transition-all">
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-2xl">📋</span>
+                                        <div>
+                                            <p className="text-white text-sm font-medium">contract.pdf</p>
+                                            <p className="text-white/40 text-xs">Legal • 1.1 MB • Encrypted</p>
+                                        </div>
+                                    </div>
+                                    <button className="text-purple-400 hover:text-purple-300 text-sm">
+                                        Download
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
                         <h2 className="text-2xl font-semibold text-white mb-4">📊 Benchmarks</h2>
 
