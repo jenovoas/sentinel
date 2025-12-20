@@ -25,6 +25,7 @@ export default function VaultPage() {
     // Benchmarks
     const [benchmarks, setBenchmarks] = useState(null);
     const [documents, setDocuments] = useState([]);  // New: documents list
+    const [notes, setNotes] = useState([]);  // New: notes list
 
     async function unlockVault() {
         try {
@@ -80,18 +81,11 @@ export default function VaultPage() {
         }
     }
 
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-        master_password: masterPassword,
-        service: serviceName
-    })
-});
-
-if (res.ok) {
-    const data = await res.json();
-    alert(`Password for ${serviceName}: ${data.password}`);
-}
-        } catch (error) {
+    if (res.ok) {
+        const data = await res.json();
+        alert(`Password for ${serviceName}: ${data.password}`);
+    }
+} catch (error) {
     alert('Error: ' + error.message);
 }
     }
@@ -556,7 +550,138 @@ return (
                                 ))
                             )}
                         </div>
-                    </div>                </div>
+                    </div>
+
+                    {/* Encrypted Notes */}
+                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                        <h2 className="text-2xl font-semibold text-white mb-4">📝 Encrypted Notes</h2>
+
+                        {/* Create Note */}
+                        <div className="mb-6">
+                            <input
+                                type="text"
+                                placeholder="Note title..."
+                                className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/40 mb-3"
+                                id="note-title"
+                            />
+                            <textarea
+                                placeholder="Write your note in Markdown...
+
+Try:
+- [[Link to another note]]
+- #tags for organization
+- **bold** and *italic*
+- # Headings"
+                                className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/40 font-mono text-sm h-48 resize-none"
+                                id="note-content"
+                            />
+                            <div className="flex gap-2 mt-3">
+                                <button
+                                    onClick={async () => {
+                                        const title = (document.getElementById('note-title') as HTMLInputElement).value;
+                                        const content = (document.getElementById('note-content') as HTMLTextAreaElement).value;
+
+                                        if (!title || !content) {
+                                            alert('Please enter title and content');
+                                            return;
+                                        }
+
+                                        try {
+                                            const response = await fetch('http://localhost:8000/notes', {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                                body: new URLSearchParams({ title, content })
+                                            });
+                                            const data = await response.json();
+
+                                            if (data.success) {
+                                                alert(`✅ Note "${title}" created and encrypted!`);
+                                                (document.getElementById('note-title') as HTMLInputElement).value = '';
+                                                (document.getElementById('note-content') as HTMLTextAreaElement).value = '';
+                                                // Refresh notes list
+                                                fetchNotes();
+                                            }
+                                        } catch (error) {
+                                            alert('❌ Failed to create note');
+                                        }
+                                    }}
+                                    className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-all"
+                                >
+                                    💾 Save Note
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        (document.getElementById('note-title') as HTMLInputElement).value = '';
+                                        (document.getElementById('note-content') as HTMLTextAreaElement).value = '';
+                                    }}
+                                    className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all"
+                                >
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Notes List */}
+                        <div>
+                            <h3 className="text-white font-semibold mb-3">Your Notes ({notes.length})</h3>
+                            <div className="space-y-2">
+                                {notes.length === 0 ? (
+                                    <p className="text-white/40 text-sm text-center py-4">
+                                        No notes yet. Create your first note above!
+                                    </p>
+                                ) : (
+                                    notes.map((note: any) => (
+                                        <div key={note.id} className="bg-white/5 rounded-lg p-4 hover:bg-white/10 transition-all">
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex-1">
+                                                    <h4 className="text-white font-medium mb-1">{note.title}</h4>
+                                                    <p className="text-white/60 text-sm mb-2">
+                                                        {note.content_length} characters • {note.links?.length || 0} links • {note.tags?.length || 0} tags
+                                                    </p>
+                                                    {note.links && note.links.length > 0 && (
+                                                        <div className="flex gap-2 flex-wrap mb-2">
+                                                            {note.links.map((link: string, i: number) => (
+                                                                <span key={i} className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">
+                                                                    [[{link}]]
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                    {note.tags && note.tags.length > 0 && (
+                                                        <div className="flex gap-2 flex-wrap">
+                                                            {note.tags.map((tag: string, i: number) => (
+                                                                <span key={i} className="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded">
+                                                                    #{tag}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <button
+                                                    onClick={async () => {
+                                                        if (confirm(`Delete note "${note.title}"?`)) {
+                                                            try {
+                                                                await fetch(`http://localhost:8000/notes/${note.id}`, {
+                                                                    method: 'DELETE'
+                                                                });
+                                                                fetchNotes();
+                                                            } catch (error) {
+                                                                alert('❌ Failed to delete note');
+                                                            }
+                                                        }
+                                                    }}
+                                                    className="text-red-400 hover:text-red-300 text-sm ml-4"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
                     <h2 className="text-2xl font-semibold text-white mb-4">📊 Benchmarks</h2>
 
