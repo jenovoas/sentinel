@@ -69,11 +69,25 @@ class Note(Base):
     encrypted_content = Column(String, nullable=False)  # Ciphertext
     nonce = Column(String, nullable=False)  # For decryption
     content_length = Column(Integer, default=0)  # Original length
-    links = Column(JSON, default=[])  # [[Note Name]] links
-    tags = Column(JSON, default=[])  # #tags
+    links = Column(String, default="[]")  # JSON list of links found
+    tags = Column(String, default="[]")   # JSON list of tags found
     created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     accessed_at = Column(DateTime, default=datetime.utcnow)
+
+
+class Asset(Base):
+    """Manual Financial Asset (Fiat, Stock, Gold, etc.)"""
+    __tablename__ = "assets"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(String, index=True)
+    name = Column(String)           # e.g. "Cash under mattress", "AAPL Stock"
+    category = Column(String)       # fiat, stock, real_estate, crypto_manual, gold
+    amount = Column(Float)          # quantity
+    value_usd = Column(Float)       # total value in USD (manual entry for now)
+    currency = Column(String, default="USD")
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
 # Database setup

@@ -1,34 +1,70 @@
-# Sentinel - Plataforma de Seguridad Completa
+# 🦅 Sentinel Ecosystem
 
-**Defensa contra hackers + Gestión segura de crypto assets**
+**Sovereign Intelligence & Defense Platform**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-green.svg)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React-18+-blue.svg)](https://react.dev)
 
 ---
 
-## 🌟 Productos
+## 🌟 The Vision: A Sovereign Operating System
 
-### **1. Sentinel Cortex™** - Defensa contra Ataques AI/LLM
-Única plataforma que **previene** ataques antes de que ocurran:
-- ✅ **Pre-emptive detection**: Detecta fuzzing, reconnaissance, payload testing
-- ✅ **Triple-layer defense**: Watchdog + Guardian-Beta + Guardian-Alpha
-- ✅ **Insider threat protection**: 97.5% efectividad
-- ✅ **Zero-knowledge architecture**: Immutable audit trail
+Sentinel is not just an app; it is a **Sovereign Overlay OS** designed to reclaim control over your digital life. It consists of two powerful pillars:
 
-**Diferenciador**: Datadog/Splunk detectan **después**, Sentinel previene **antes**.
+### 🛡️ **1. Sentinel Cortex™ (Server Defense)**
+*Protects your infrastructure.*
+- **AIOpsShield**: Defends AI systems from adversarial injection.
+- **TruthSync**: Verifies information at neural speeds (90.5x speedup).
+- **Dual-Guardian**: Kernel-level monitoring for critical systems.
 
-### **2. Sentinel Vault** - Password Manager + Crypto Wallet
-Única app que integra passwords y crypto en un solo lugar:
-- ✅ **Passwords + Crypto**: Todo en una app (vs 1Password + Ledger separados)
-- ✅ **AI-powered analysis**: Ollama detecta patterns (vs reglas fijas)
-- ✅ **Multi-chain**: Bitcoin, Ethereum, Polygon, Solana
-- ✅ **Zero-knowledge encryption**: Argon2id + AES-256-GCM
-
-**Diferenciador**: 1Password no tiene crypto, Ledger no tiene passwords, Sentinel tiene ambos.
+### 🦅 **2. Sentinel Vault™ (Personal Sovereignty)**
+*Protects your identity and assets.*
+- **Password Vault**: Argon2id Zero-Knowledge storage.
+- **Crypto Wallet**: Native support for BTC, ETH, SOL, MATIC.
+- **Sovereign Finance**: Unified Net Worth Dashboard (Crypto + Fiat + Assets).
+- **Triad Browser**: Anonymous routing via Nym, I2P, and Tor.
+- **Secure Terminal**: Command palette for system control.
 
 ---
+
+## 🦅 Sentinel Vault: The Sovereign User Interface
+
+Sentinel Vault integrates 7 critical privacy tools into one unified interface, eliminating the need for fragmented SaaS subscriptions.
+
+| Feature | Competitor | Sentinel Vault Advantage |
+|---------|------------|--------------------------|
+| **Identity** | 1Password | + Integrated Crypto Wallet & Local AI Analysis |
+| **Finance** | Mint/YNAB | + Zero-Knowledge (Local DB) & Manual Asset Tracking |
+| **Browsing** | Tor Browser | + **Triad Routing** (Ghost/Deep/Velocity Modes) |
+| **Storage** | Google Drive | + AES-256 Drag & Drop Encryption (Local) |
+| **Notes** | Obsidian | + Encrypted-at-Rest & Terminal Integration |
+
+### 🚀 Key Capabilities (V1.0)
+
+#### 1. 🔐 Identity & Secrets
+- **Zero-Knowledge Architecture**: Your master password never leaves your device.
+- **AI Strength Analysis**: Local Ollama model evaluates password entropy.
+
+#### 2. 💰 Sovereign Finance (Phase 6)
+- **Unified Dashboard**: Aggregates Real-time Crypto Balances + Manual Assets (Gold, Cash, Real Estate).
+- **Privacy-First**: No bank API connections. You own the data.
+
+#### 3. 🦅 Triad Secure Browser (Phase 5)
+- **Universal Switchboard**: Dynamic routing engine.
+    - 🌐 **Clear**: Sanitized direct connection.
+    - ⚡ **Velocity**: Rotating Proxies.
+    - 👻 **Ghost**: Nym Mixnet (Timing obfuscation).
+    - 🕸️ **Deep**: I2P Hidden Services.
+- **Virtual Air Gap**: Frontend receives only sanitized HTML, no executable JS.
+
+#### 4. 📄 Docs & Notes
+- **Encrypted Vault**: Store sensitive PDFs/Images with AES-256.
+- **Secure Notes**: Markdown editor with link detection and tagging.
+
+---
+
 
 ## 🎯 Problema de Investigación
 
