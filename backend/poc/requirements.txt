@@ -19,3 +19,9 @@ pydantic==2.5.3
 # Testing
 pytest==7.4.4
 pytest-asyncio==0.23.3
+
+# Database & Utilities
+sqlalchemy==2.0.25
+requests==2.31.0
+beautifulsoup4==4.12.2
+python-multipart==0.0.6
