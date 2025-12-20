@@ -4,9 +4,9 @@
  */
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { 
-  AnomalyPoint, 
-  HistoryState, 
+import {
+  AnomalyPoint,
+  HistoryState,
   StorageSummary,
   MetricHistory,
 } from "@/lib/types";
@@ -38,7 +38,7 @@ export const useAnalytics = () => {
 
   const hydrateHistory = useCallback(async () => {
     const samples = await AnalyticsAPI.getRecentMetrics(200);
-    
+
     // Cargar historial completo del host
     let hostData: any[] = [];
     try {
@@ -47,7 +47,7 @@ export const useAnalytics = () => {
       if (json?.ok && json.history) {
         hostData = json.history;
       }
-    } catch {}
+    } catch { }
 
     if (samples.length === 0 && hostData.length === 0) return;
 
@@ -63,23 +63,23 @@ export const useAnalytics = () => {
         }))
         .slice(-HISTORY_SIZE);
 
-    const hostToHistory = (selector: (s: any) => number): MetricHistory =>
+    /* const hostToHistory = (selector: (s: any) => number): MetricHistory =>
       hostData
         .map((s) => ({
           timestamp: new Date(s.timestamp).getTime(),
           value: selector(s),
         }))
-        .slice(-HISTORY_SIZE);
+        .slice(-HISTORY_SIZE); */
 
     setHistory({
       cpu: toHistory((s) => s.cpu_percent),
       memory: toHistory((s) => s.memory_percent),
       gpu: toHistory((s) => s.gpu_percent ?? 0),
       network: toHistory((s) => normalizeNetworkPercent(s.network_bytes_sent, s.network_bytes_recv)),
-      hostCpu: hostToHistory((s) => s.cpu_percent),
+      /* hostCpu: hostToHistory((s) => s.cpu_percent),
       hostMemory: hostToHistory((s) => s.mem_percent),
       hostGpu: hostToHistory((s) => s.gpu_percent ?? 0),
-      hostNetwork: hostToHistory((s) => normalizeNetworkPercent(s.network?.net_bytes_sent ?? 0, s.network?.net_bytes_recv ?? 0)),
+      hostNetwork: hostToHistory((s) => normalizeNetworkPercent(s.network?.net_bytes_sent ?? 0, s.network?.net_bytes_recv ?? 0)), */
     });
   }, [normalizeNetworkPercent]);
 
