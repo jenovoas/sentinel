@@ -1,0 +1,201 @@
+f0f5c975d8b41c191f51645e2aba21ff7c66925c 2025-12-21 10:47:27 -0300 Legal protection: Proprietary license + eBPF LSM validation
+060cc665d6fef407cfa94095b6d42f8de7a5d75b 2025-12-21 02:19:52 -0300 💭 Ideas futuras guardadas para no olvidar (CFD, hexágonos, resonancia, predicción cuántica)
+4a41ad8151d2cf26f6f47b64bc5fea675715f1b3 2025-12-21 02:08:47 -0300 📝 Resumen ejecutivo de validación para recordar mañana
+f38e87c6161378e8f975c1e069a4ac8244b03a6c 2025-12-21 02:08:16 -0300 ✅ Validación experimental: Teoría hidrodinámica confirmada (79.4% mejora, Reynolds 80% precisión, airbag 35x)
+78f5e614b2431f82a1bd3eb48bc09d5493da510a 2025-12-21 01:43:25 -0300 roadmap: Complete pending work plan
+129c48bcee0d8c764203182679ec18a728c52465 2025-12-21 01:42:15 -0300 paper: Hydrodynamic Validation - Ready for Peer Review
+b2245093085c03524d0237e52c95bb30005a9bb5 2025-12-21 01:36:58 -0300 research: Hydrodynamic theory of data flow - VALIDATED
+8e00fba7d9bf6a96d28d9f3e20e0e5733dbc7ca8 2025-12-21 01:25:51 -0300 session: 8+ hours of intense work - pattern discovery
+50f00bd69f6bab898136cd3fb57dc1697cc4afd0 2025-12-21 01:20:38 -0300 refactor: Rename to Buffer Control Pattern (more appropriate)
+fd7a12e6076e24d1fd363b2497ecdf7049bd9c32 2025-12-21 01:19:59 -0300 discovery: The Sentinel Law - Buffer Control Equation
+1ba91c5b27135d7e7deaf8ae393c567b58cb4f61 2025-12-21 01:04:04 -0300 research: Control Systems Theory foundations
+3ddc37147b7d1ba5dfb045160999063a0a0d8056 2025-12-21 00:44:18 -0300 docs: Clean README - only validated results
+3e0f841116c8be0106a881c69da2cad86f8642b3 2025-12-21 00:42:33 -0300 fix: Second threshold bug + 67% drop reduction achieved
+676fc702a1de68da2e91002bca8f10cc5e309194 2025-12-21 00:27:15 -0300 fix: Critical bug in precursor detection (> to >=)
+a1e6be754dd90e341823686724111833221b9486 2025-12-21 00:18:44 -0300 docs: Technical Validation Status - Facts vs Theory
+b5fad2d67832f6702f33ddeb9fab888aa4b152dd 2025-12-21 00:15:46 -0300 docs: The Ancient Truth - Connecting Sentinel to Lost Knowledge
+964be025dcec5c1fdd8ae585f61f05729a1dfae5 2025-12-20 23:55:48 -0300 feat: Cluster Architecture + Calibration Fixes
+fefc789709b3691fdbba7e0d44f85ead139a01e6 2025-12-20 23:49:44 -0300 feat: First benchmark execution and visualization
+d296b1b804c3374078d6b4b5387dc2b592448178 2025-12-20 21:54:18 -0300 feat: Hybrid AI Control Architecture - Predictive Burst Prevention System
+4714f5dda5f8a6b702cd250a547cd5bd942201ef 2025-12-20 20:16:35 -0300 feat: Captura visión completa Sentinel - El Corazón del Internet
+37a31946e707470a368bbe88544b2b078ca6b2ee 2025-12-20 19:43:42 -0300 💡 Captura rápida de ideas clave - Resonancia planetaria
+3ed505f1a91d575c9d5110768ae5f9868f0e15b8 2025-12-20 19:41:27 -0300 🚀 Sentinel Global: Portfolio completo -600M
+f99f72714686a92a676e7ccc6aa31090cc487338 2025-12-20 18:22:50 -0300 fix(frontend): implement smart polling with usePageVisibility
+28ef9d64ebfe2870f6dc7299d8ab88511cb20731 2025-12-20 18:17:03 -0300 fix(frontend): resolve all typescript errors and tech debt
+d0c9e385d473e48d99d02e483729e57bc1ad0e8b 2025-12-20 18:13:27 -0300 feat(frontend): polish UI with lucide icons, hooks and skeletons
+a787a1dbebf7ec10988ed92a5af8e11a12df4e23 2025-12-20 17:58:10 -0300 docs: add career strategy plan
+0c56ba9fcc3fc27af1e42a273fb472c1eb67af98 2025-12-20 17:53:59 -0300 docs: consolidate architecture and add BCI research plan
+756cdd40a3d88514ee435cdcc6fb87f516b54339 2025-12-20 16:49:02 -0300 docs: add technical disclaimer to market valuation report
+e07520bbd6537bcb5980f4b3f1ed3a1acd21fc86 2025-12-20 16:38:59 -0300 docs: update README with TruthSync capabilities
+c12b40f847838af7b4a6513b2c5279a7c91b5e2f 2025-12-20 16:22:53 -0300 feat: integrate TruthSync for real-time AI content verification
+bfc1eca808c84c6c7d2c0909cb05a9f98f95df40 2025-12-20 16:18:04 -0300 feat: release Sentinel Vault v1.0 (Phase 1-7 complete) with full documentation and Docker hardening
+79c40ff022ba0e71c36b726a9621c20400eaac10 2025-12-20 15:47:46 -0300 feat: add secure browser UI with Triad mode selector
+89952d4a85bc6edc2f0b0ac75cd1514e75b3bedc 2025-12-20 15:47:17 -0300 feat: implement Triad Browser architecture
+1761e516dea1a5b700cb5b01bb14d62107250bde 2025-12-20 15:40:05 -0300 feat: add terminal UI with command palette
+08a422d3fb03c8b7d092b41bd87b18a0810984c4 2025-12-20 15:38:49 -0300 feat: add command palette terminal
+ed47f7a2601af49523793dfe356dadabf42a5917 2025-12-20 15:36:55 -0300 docs: add progress summary (3/7 phases complete)
+b9f5a1d3018749a3e2eb7eafa526a396a469a6fe 2025-12-20 15:27:16 -0300 feat: add encrypted notes UI with Markdown editor
+0ad3cc22d3b87370569ea582cff5c0cc1c377b21 2025-12-20 15:25:25 -0300 feat: add encrypted notes feature (Obsidian-style)
+bb541dd46e37399761077dd6b161de35a6c42301 2025-12-20 15:23:06 -0300 test: add comprehensive document vault tests + documentation
+b361387d1432a2bf79e1fe9079c65a26c484170f 2025-12-20 15:19:39 -0300 feat: connect frontend to database for document management
+e92289c24f2581a50647f68edc731550dc86b38d 2025-12-20 15:18:14 -0300 feat: add database storage for documents
+28b207188ed62587c144ded12b6972b01e895f3a 2025-12-20 15:14:59 -0300 feat: add document vault UI with drag & drop upload
+32aba5a0fae5bb7fa76c7dd257c54a446fda488a 2025-12-20 15:10:42 -0300 feat: add document vault - encrypted file storage
+207ad20e1e1707517fd984540f4263c45504845e 2025-12-20 15:07:43 -0300 docs: add master implementation plan - let's build something amazing
+3536f5aa3940830d12fa497ea123de844f325482 2025-12-20 15:05:24 -0300 feat: add custom scripts and AI recommendations to financial dashboard
+fcee906eebf55f871235da2d26cf042380512ad1 2025-12-20 15:04:22 -0300 docs: add AI-powered financial dashboard design
+929bce02527d95b82a70c07e5216b3dd1b2af21f 2025-12-20 15:01:13 -0300 docs: add secure terminal feature to Sentinel Vault
+0673bd41987d05c2bf2013c5eb439fd4567576b8 2025-12-20 15:00:30 -0300 docs: add extended features roadmap for Sentinel Vault
+43d37f73174af8949e3b43446353bbd0af888869 2025-12-20 14:58:26 -0300 test: add comprehensive integration tests + documentation
+8ef1777b7a8c96bc1620bcf7ef6f515bae495345 2025-12-20 14:56:09 -0300 fix: add proper favicon for Sentinel Vault
+57c15c7e306e38cddd5f5e6db5cd4789bdd989dd 2025-12-20 14:52:48 -0300 feat: complete crypto wallet integration (backend + frontend)
+17c832555f147511da13ad6087548a6ae4196ff8 2025-12-20 14:49:10 -0300 docs: update security engineer onboarding with compliance roadmap
+8fbe1228d5eea2a9bb8e58babb39b1af01734a11 2025-12-20 14:47:22 -0300 docs: add comprehensive international security compliance
+2431306ca41756209fce55f076f68a690521a80a 2025-12-20 14:45:55 -0300 docs: add immutable audit trail for crypto wallet
+6763cd549658da476814bce56eb4be5e05d49dc4 2025-12-20 14:44:40 -0300 docs: major update - integrate crypto wallet + hacker defense focus
+587748fc01c14ed4379f60cd982d3fa6ae5a1aef 2025-12-20 14:40:40 -0300 feat: complete crypto wallet with multi-chain balance tracking
+cf6789d698ef562b3b08ede00cc9edc41d53e51f 2025-12-20 14:36:36 -0300 feat: add crypto wallet focused plan and blockchain service
+f525e998a4af5a619acb374c5f5612eaedf64576 2025-12-20 14:29:44 -0300 feat: add Next.js frontend for Vault POC
+253cf4be9a07120c07196c7fca3f31ba9d3816bf 2025-12-20 14:28:23 -0300 feat: add FastAPI backend for Vault POC
+b14febb89cabfee7efb038dd67bac4f72c1756eb 2025-12-20 14:26:34 -0300 feat: add Sentinel Vault POC base implementation
+b70a6f34bccde5cd78e56b24b0ec697fc162994d 2025-12-20 14:23:11 -0300 docs: add external validation for Sentinel Vault
+632aa0ca7145403c22b7c299fb3e87142d6ce9d0 2025-12-20 14:21:00 -0300 docs: add 2-week POC plan for Sentinel Vault
+aaf2fddb8e3836f85f17eecda975b16501ea94e2 2025-12-20 14:15:47 -0300 docs: add corrected technical summary based on critical analysis
+281607f489cf1b269c3573e35a291f81eb972b82 2025-12-20 14:12:10 -0300 docs: add technical progress summary for external review
+c2127d36a802a0d4fac50948d739baca80664242 2025-12-20 14:06:02 -0300 docs: update security engineer onboarding with triple-layer defense
+468f003aa225b926431f1a71e3e6c2039e8ac372 2025-12-20 14:05:11 -0300 feat: complete security architecture with triple-layer defense
+5b27ceac1b26290c43c5c1fabeca13116c671de2 2025-12-20 13:50:08 -0300 planning: add improved authentication system design
+658f80963ca7124c87097e251642966362d531b6 2025-12-20 13:33:54 -0300 security: add insider threat protection and credential policies
+d7209cc9f98f94d6d30589b8815d932e62d62b9d 2025-12-20 13:25:00 -0300 docs: add DevOps/SRE and Security Engineer onboarding plans
+9a202748f4d298a5d8ae91c823a5cb0ef48710b3 2025-12-20 13:22:26 -0300 docs: add software architect onboarding and evaluation strategy
+2c0ec98cc7649bd7dfffe1e8ed7fe2f041201613 2025-12-20 12:41:07 -0300 docs: optimize session files and add data scientist onboarding plan
+0f6f2239bc2aec8a7f0d450d919e9061ce506ded 2025-12-20 12:20:49 -0300 docs: Add onboarding guides for new contributors
+dab90a3f2475fa88bbd03b62259954badd41d250 2025-12-20 12:06:04 -0300 feat: WASM module working in browser! 🎉
+416c8c95ac084d06480a2a0aaf3dadeee6667fc6 2025-12-20 11:55:07 -0300 feat: Rust WASM module with tests passing
+04ed8e2b8f31e8b3d26f915412aa3d5b127a1cb7 2025-12-20 11:50:52 -0300 feat: Initial Rust WASM integration + Frontend work structure
+da5a3841cd43c2d40abe4f612a80274d2ce4205e 2025-12-20 11:32:38 -0300 Privacy: Keep name and email, remove phone and location
+c1891b8ce18e97b062a96aace4f39c3063ebc893 2025-12-20 11:32:10 -0300 Privacy: Remove personal contact information from IP documents
+b18b180e8e0ef4d0b9df21f2ed64e3f048c39166 2025-12-20 11:28:55 -0300 Security: Remove operational details from public IP documents
+da4db20eccd5c75456896f35c5a16ed4000d84ad 2025-12-20 11:25:54 -0300 Refine IP urgency narrative - Industry competitive dynamics
+57fa614a54b3091b0c239cb8119f1b41be578e2e 2025-12-20 11:19:57 -0300 🚨 EMERGENCY IP PROTECTION - 6 Claims Consolidation + Security
+f0d9b931e3927d4863dc57f3856b7394ebb541d4 2025-12-19 19:42:44 -0300 docs: Add IP strategy execution plan and collaboration roadmap
+ff687e4187b1891d4605c223c4d7e9f552cec641 2025-12-19 18:40:31 -0300 🦸‍♂️ SENTINELOS VIGILANTE - The Living Operating System
+2992643ff655b61bea4455ec3932f40232aed6bb 2025-12-19 18:37:26 -0300 🦀 RUST OS LEARNING PATH - Custom SentinelOS from Scratch
+5b4ddd04d360260677def85852b9e8ac28a711e1 2025-12-19 18:26:52 -0300 🧪 STAGING ENVIRONMENT - Internal Testing Setup
+ec9429ae2f25da223068af71993ba1dd16868fe4 2025-12-19 18:00:29 -0300 📢 OFFICIAL ANNOUNCEMENTS - Ready for Launch
+7e6a5c93695cd0750e0c8ab61ed5f9a522dbf474 2025-12-19 17:53:27 -0300 🥊 HACK ME IF YOU CAN - K Bug Bounty Challenge
+304efdc7d65c56a20777bfadc87a42caa7cd9627 2025-12-19 17:30:39 -0300 🔒 PRIVACY: Remove personal identification (RUT/DNI)
+373471afa56c9a37bdc44d73354e7bd2bdf1990b 2025-12-19 17:03:53 -0300 📧 LKML RFC PROPOSAL - Linux Kernel Upstream
+cf89ff9354b32745955c9b3a1977cc7f7569a468 2025-12-19 17:01:52 -0300 📚 QUICKSTART GUIDE - For 13+ Reviewers
+e2f19e3bf1e83ac583537c61a7be0b965c0dc2e0 2025-12-19 16:59:22 -0300 🌍 ENGLISH DOCUMENTATION - International Community Support
+f53ca7acbc6b8d44bc55e0e9784ce66e0fdae223 2025-12-19 16:41:41 -0300 🔒 SECURITY HARDENING COMPLETE - Grado Militar HARDENED
+2ab836afac3b351c689e8ba2c466060323c1de4e 2025-12-19 16:33:32 -0300 🧠 COGNITIVE KERNEL VISION - Foundation for Next-Gen OS
+de2044e355350a8d38653d9ca2936ac73858b39d 2025-12-19 16:11:34 -0300 🎖️ SUPREMACÍA DEL KERNEL VALIDADA
+522e9eee8c249ba4b32cd1305cbf8f8b29ace50f 2025-12-19 14:49:12 -0300 📊 Resultados benchmark reales - Buffers dinámicos
+27e80fd7c211358a6bd26ab93225d67d142da650 2025-12-19 14:39:44 -0300 📚 Documentación: Investigación Reproducible vs Papers Teóricos
+f3560a6ab2a001db54b840be1ef208c373b3085c 2025-12-19 14:18:07 -0300 🚀 Buffers dinámicos completos - Integración HA
+d356b1ced057ce2743a09ba7aa1abe2988244908 2025-12-19 13:54:47 -0300 📊 Benchmarks reales ejecutados + Análisis de mejoras
+20ef2090a770fb7c0168828ff091b9c02aff1ee6 2025-12-19 13:41:05 -0300 ⚡ Optimización Ollama + Protección Telemétrica Paralela
+8ccb79d18875a7a7250c3c8673c6dc28dfa24372 2025-12-19 03:20:07 -0300 📚 README: Reestructuración completa para evaluación ANID IT 2026
+04ed0617694810e14799c4fbcdbc8ad36cd71928 2025-12-19 03:13:48 -0300 🎓 CV: Adaptación completa para ANID IT 2026 - Investigador Independiente
+f8b13342531c669b8271ff9ae441948c7f11c84e 2025-12-19 03:06:05 -0300 📚 CV: Agregadas líneas de investigación actuales
+8686e7d1ebfc5067ae6669ca3aea85b00a27af14 2025-12-19 01:53:39 -0300 📍 Actualización final: Ubicación y referencias al roadmap
+2e6d0147b0f91198c66ec29983fbac774a54034e 2025-12-19 01:52:29 -0300 📋 Roadmap público: Alcance proyectado para evaluación ANID
+1236fb1db410a317c7d8efadd7c3e90996101fd0 2025-12-19 01:46:36 -0300 🔒 Protección IP: Documentación lista para evaluación ANID
+0e844657b39ae4bd9671a89b5c882ca8b117318a 2025-12-19 01:20:10 -0300 docs: Update phone number to current contact
+c7413448eb1a65e2eb85ee9d405493c7b79625f3 2025-12-19 01:19:17 -0300 docs: Update personal information in CV
+e617e18122c382025ddfad041c7b836a094162c0 2025-12-19 01:16:46 -0300 docs: Add final summary - Ready for ANID submission
+7e4af1ee48bd94f464a17095c4916a9dafe07c88 2025-12-19 01:04:27 -0300 docs: Shift to pure technical focus for ANID evaluation
+4295b15251b3a19d68332ac66ebc88c64a6d072d 2025-12-19 01:00:38 -0300 docs: Improve CV with pure technical focus for ANID
+e0df5923c32ef28aefd3d3e24f0ac001148772cc 2025-12-19 00:47:01 -0300 docs: Add system integrity verification report
+f432c5666532718ad4f3c380309631b886744ba5 2025-12-19 00:39:54 -0300 docs: Remove untracked obsolete files
+ba88405687584b7bcb7159dc6e46d039cd96334d 2025-12-19 00:39:02 -0300 docs: Clean repository - move obsolete files to archive
+5eeeb476ea8f1b17cb8ee01878681edd3dde5ae7 2025-12-19 00:36:13 -0300 docs: Complete CV with full work history (2002-2025)
+ce2de8d040065092780f5f0fa9b61676f56d9c04 2025-12-19 00:30:35 -0300 docs: Remove financial references from CV
+4ba2511434430e70dd9316f12430fc1a1e79427d 2025-12-19 00:29:58 -0300 docs: Add professional CV for ANID application
+0350534530d85db497a5d909f949248eac559a53 2025-12-18 21:33:34 -0300 📚 Session Context: Complete documentation of TruthSync + AIOpsShield implementation
+4df4ce00c230a4f674e58fd6ea7a886dc40fcac9 2025-12-18 21:13:24 -0300 ✅ AIOpsShield: Backend API Integration Complete
+04cd6af6ad44f60133128d469e7fb0e63319cb73 2025-12-18 20:08:53 -0300 🛡️ AIOpsShield: AIOpsDoom Defense Layer Implemented
+05a177bce3b23d3d41980f9c1f2117e455869e6b 2025-12-18 19:52:33 -0300 🔧 Fix: Use Debian stable (bookworm) instead of Ubuntu
+3b637b5d9f4feb45399b32eeaff751d6999aedb8 2025-12-18 19:52:04 -0300 🚀 TruthSync Integration: Added as Service #19 to Sentinel
+a07f75b9ea5d854bc0c8f4a9877010c1959b61e2 2025-12-18 19:08:28 -0300 🚀 TruthSync Production Ready: Deployment + Stress Testing
+0916c92d63ea4355419bf74c6afb8d72418276cc 2025-12-18 18:11:25 -0300 📊 TruthSync Cache Integration: 90.5x Speedup Validated
+e8d2c42d0876acfbfa487d1b9059324b2642ac0f 2025-12-18 17:53:37 -0300 🚀 TruthSync POC: 33.94x Speedup Achievement
+833d9d3fa2463adba785f19321f351bfdf53571e 2025-12-18 04:34:59 -0300 docs: Add comprehensive technical audit checklist
+9fae9115e21a50a5032f877b324e185b4762b21a 2025-12-18 04:03:36 -0300 fix: Add git basic skills test to pre-screener
+0c16c02bd793a28b6b1cb8571cd882baa5a9fb69 2025-12-18 04:01:33 -0300 feat: Add pre-assessment screener to filter unqualified candidates
+d0bb18f9c8d5f75c92297f7a7ac8dc2ae7b1d559 2025-12-18 03:57:09 -0300 feat: Add technical assessment frameworks for hiring
+9049d734fca8d5455e5c64ec3fd5ebb116e3fe6c 2025-12-18 00:42:40 -0300 docs: Add installation summary for all platforms
+6c154e8922965082f00668c2d616de95dbd4fbe6 2025-12-18 00:37:53 -0300 feat: Add Windows installation support with WSL2
+a01faac25bdb99ea8b37162beea07b4bb01ec194 2025-12-18 00:29:23 -0300 feat: Add comprehensive installation guide and automated installer
+0634aded22750e37239779344258afa6abccb527 2025-12-17 18:21:21 -0300 Update documentation: funding, patent materials, UML diagrams, and testing status
+21fa325468ef08a290315bc033bc6971560f7477 2025-12-17 04:00:51 -0300 docs: Add consolidated UML + technical analysis
+81870ce660ae6db5ee9cbf1a9464d9a39a2455ef 2025-12-17 03:58:23 -0300 docs: Add Dual Guardian technical viability analysis and UML specifications
+b85c451acaf4406d84d6aaadd5c2d25df8f5eebb 2025-12-17 02:07:42 -0300 docs: Final session closure - Epic 5-hour transformation complete
+083ebb2a00a9ea66f180ba17bee86c6c9824fc4c 2025-12-17 01:56:52 -0300 docs: Add v1.1 corrections summary
+4ea63c94efb24cf537ef2a0c2a52f550eeaf8a88 2025-12-17 01:55:05 -0300 docs: Apply v1.1 LEGAL CORRECTIONS to master consolidation
+929c24d0d8c764b565183bb4879c5dd19f042bf9 2025-12-17 01:47:31 -0300 docs: Update session summary with final statistics
+9d2c51d616d88ddbda76deb0ced3cbf41a4680cd 2025-12-17 01:40:54 -0300 docs: Add comprehensive AIOpsDoom risk analysis deep dive
+8511a092b186993be293bd80a9abc0dcdc4fe9d4 2025-12-17 01:27:59 -0300 docs: Priority date Dec 17, 2025 SECURED - Final validation complete
+f4177f6c301b6218b1ca66a540290967931fb3e2 2025-12-17 01:16:51 -0300 docs: Add comprehensive session summary for Dec 17, 2025
+989d134a984bf99db0bd2970cfe49c26c3c71342 2025-12-17 01:14:41 -0300 docs: Add final legal validation - Constructive Reduction to Practice achieved
+a7946d33242a87f2f74b09a1990bd35068a53dd7 2025-12-17 01:07:21 -0300 docs: Add comprehensive repository audit for patent readiness
+6466980d8c3a760bd4b09cbb8d47509377bfabea 2025-12-17 01:01:39 -0300 docs: Add technical architecture validation
+d1986c6601938e3b2042409360b1eb9c8b6e960f 2025-12-17 00:51:33 -0300 feat: Add master security & IP consolidation with external validation
+d66b40be0513f5cf5fe0318e2bfc2b2403d74ac6 2025-12-16 23:07:19 -0300 feat: Workflow Recommendation POC - Core Implementation
+3de5ced7b280ec1f9ab23823a46540558a7c4e23 2025-12-16 03:00:20 -0300 feat: add new host metrics and system logs, and update logs summary timestamp
+0e1a0025217b9f9c6d7b7456e7468b8b93632e15 2025-12-16 02:58:35 -0300 chore: Update gitignore for consolidated PROJECT_CONTEXT.md
+b2387fedb1e66f060369ab93b97da651989a8edf 2025-12-16 02:23:56 -0300 feat: Update host metrics data and reports, and add enterprise repository context documentation.
+3214038cea877ab869cd9a8f815e43b028514b3b 2025-12-16 02:15:08 -0300 docs(patent): Add curated list of 10 AI/ML patent attorneys
+9adb9dac657ad7d9345cdfee414170668e8a8a04 2025-12-16 02:09:28 -0300 docs: Add Enterprise Edition section and licensing info
+c2018bcc9db3c74127c854509e69e46122a59747 2025-12-16 01:29:26 -0300 docs: Add final session summary
+b19a86cec4864fc636ffaa9a66a0939d873aaa47 2025-12-16 01:28:23 -0300 docs(patent): Add 90-day patent filing action plan
+b8aff298408da62996b19cc2f44a35fc597ba8b1 2025-12-16 01:18:00 -0300 docs(critical): Add external validation, patent strategy and valuation update
+6ffba5e6eca6a0847620144b6d2f0724113d8acd 2025-12-16 00:57:15 -0300 docs: Add session summary
+b217a9e5eb5b09428acb3e385ce5caaa8d20bd6e 2025-12-16 00:57:06 -0300 docs(security): Add critical security analysis and AIOpsDoom defense
+88c50311e2b288ed2eb1f158d2b46049ba469b4f 2025-12-16 00:46:18 -0300 chore: Update host metrics data
+0f315b4667d1536b01fffd8ac7148bfb73af4568 2025-12-16 00:45:41 -0300 docs(technical): Add comprehensive technical guide for developers
+fbe631ebb633b11fdda9773e232e1965352c8fbc 2025-12-16 00:45:20 -0300 docs(investor): Add complete investor documentation suite
+301a787ce22df02e598e8e13d8ab7372693b31e1 2025-12-16 00:44:57 -0300 docs: Add session backup and investor docs checklist
+401bd2ed4af54b3ceca80663f28e87ba1926bf14 2025-12-16 00:18:07 -0300 docs: External technical validation ✅
+c7b267cb431080acc2807922e14791da4c919fb2 2025-12-15 23:58:29 -0300 docs: Master Execution Plan - 21 weeks to Production 🚀
+78d802ec9baf8bc10e840b3bba3774cd27e65453 2025-12-15 23:01:23 -0300 feat: Add Cortex Dos Nervios architecture + Complete narrative 🧠🚨🔒
+de3d59f7c260669a60bf16cb370bdc71c957b990 2025-12-15 22:37:56 -0300 docs: Add 'Superpoderes en Caja Segura' pitch document
+9dc641a2dcf129650f98578fdc2cb7c16e3c5ebb 2025-12-15 22:10:21 -0300 feat: Neural Guard setup + cognitive security hardening + patent docs
+4fbf2dc7ce7179e96b95b5b23e78a82f48f58599 2025-12-15 10:31:29 -0300 feat: Implement comprehensive observability stack with Loki, Prometheus, Grafana, n8n automation, and host-level auditing, alongside updates to application backend and frontend.
+c384bcd5d58a2a0ab32b86ab0b62646f062813b6 2025-12-15 02:43:56 -0300 chore: Add SESSION_STATE.md to gitignore
+3658c6907fd67b404fc9be9a2bb5cb9d5d4222b8 2025-12-15 02:38:16 -0300 docs: Investor-ready documentation overhaul
+5d817106ee94bcc274219471a5c9634b33021770 2025-12-15 02:28:19 -0300 fix: Replace Grafana iframes with setup instructions
+36bf9c26bcbf5ed7ac3d87bd0bf12a6ec28e9975 2025-12-15 02:20:34 -0300 fix: Enable Grafana iframe embedding for metrics page
+90b0988acc6edb3fdf60344fc2dea22368892329 2025-12-15 02:16:50 -0300 feat: Redis HA with Sentinel - Phase 3 complete
+b5e42ed19d6303bd7880b0ef57bb428cf7d660a3 2025-12-15 01:29:47 -0300 feat: Complete HA infrastructure and documentation
+79d51303d7e21d2abbd731694df1db931dfb9367 2025-12-15 00:37:32 -0300 feat: Complete frontend modernization with Security Dashboard
+bb9cd1e3883a49f57c236d08693ba5d4f68caaa7 2025-12-14 23:44:08 -0300 feat: Add Executive Dashboard and AI Playground with shadcn/ui
+8fcfea75c8d01e69b2c5e43633249844a321c616 2025-12-14 22:28:57 -0300 docs: Add CHANGELOG and comprehensive architecture documentation
+73ebaef6e2263ff721b9e178ff6b83e8e77c7d8e 2025-12-14 22:14:01 -0300 docs: Organize documentation in bilingual structure (EN/ES)
+50e44c5b024b773517ee83f71ceea362af6a7464 2025-12-14 22:04:11 -0300 docs: Add comprehensive security architecture documentation
+6b602eb1eae82c21a76f9394e33b6db6328d0ed7 2025-12-14 22:00:39 -0300 docs: Add comprehensive README, startup script, and performance metrics
+9e7b52a77ec9a78d281649b465ffb767abc0273a 2025-12-14 21:46:18 -0300 feat: Integrate Ollama AI with GPU support and n8n workflows
+acddeae4a37f458c34564fe676e7159bb8a92a7c 2025-12-13 23:12:06 -0300 feat(analytics): página de análisis completa con gráficos comparativos
+1d7fa57cc018cef3a1f3459728ac27129e45ed53 2025-12-13 23:05:24 -0300 feat(dashboard): historial de métricas con mini-gráficos
+9184aa4eff222918c02ee287f4d2d27857b2cd33 2025-12-13 23:00:24 -0300 fix(frontend): configuración de rewrites y volúmenes para API routes
+1ed71458cb523d3ca649e8c600ad695a7ad3e05f 2025-12-13 22:51:30 -0300 docs(host-metrics): actualizar README con captura directa del host
+2e6ff4bc551ac0725bcfe307e815957556a695fb 2025-12-13 22:48:08 -0300 feat(host-metrics): captura directa desde máquina host
+f70e82242b1bf3e3de207e11d7c2bbc75b7ac314 2025-12-13 22:39:28 -0300 feat(db): filtros, orden y exportación CSV; link desde dashboard
+ba82a03a54b2c188c6ab22779bb06b8cd5252feb 2025-12-13 22:37:33 -0300 feat(db): página de detalle de bases de datos y enlace en navbar
+fab85ff9ec7dd8329b4352be82dedc43f0c258f6 2025-12-13 22:35:13 -0300 feat(dashboard): integrar host-metrics en NetworkCard
+421330d75be9c657df24a54d0b50b561272cbaea 2025-12-13 22:33:34 -0300 chore(host-metrics): setup-cron.sh para configurar tareas automáticamente
+4257df30c4e357e291badf76a16da7b7b0ba1172 2025-12-13 22:29:19 -0300 docs(host-metrics): ejemplo de crontab y guía de configuración
+339f9d44aa6115ce69a911960c10f19596723678 2025-12-13 22:27:27 -0300 chore(host-metrics): estructura local de almacenamiento y scripts
+d3b6f17b145de1a56cd32ef7416af694d0a2070a 2025-12-13 22:22:47 -0300 feat: browser-native WiFi detection with NetworkInformation API
+a9225310e98b48f9880e91dd37a56c31962dcac9 2025-12-13 22:16:59 -0300 feat: improve wifi and gpu monitoring
+9c7e6ea0f1fff52c5ba4b75fcb72b51789cd3d48 2025-12-13 21:54:27 -0300 docs: cognitive psychology design principles for navbar
+6e4e5939105d79ae439eb13e86f3a7ae796d2198 2025-12-13 21:52:18 -0300 feat: WiFi integration, SOLID architecture refactoring, modular components
+3fc2ddbd6ba0c93179845b2815382bef0a5f35f8 2025-12-13 21:29:56 -0300 docs: Add comprehensive Phase 2 Analytics documentation
+f8e0d36f7a661afa0ff815d09dd1111752af3c02 2025-12-13 21:29:01 -0300 Phase 2: Analytics & Anomaly Detection Foundation
+57189e329c7b3772f32f2da09f81309c1e891869 2025-12-13 20:57:57 -0300 docs: Add maintenance guide and health check script
+517b980fa391b8fc3e0c699d16b787b677cf20a6 2025-12-13 20:53:00 -0300 feat: Add btop-style historic graphs modal for metrics
+8a289341c0e1c43b851e951e72b7583f72905515 2025-12-13 20:47:59 -0300 feat: Add GPU and Network metrics to operational dashboard
+13487aaa8a23248f643e068e723a9739e1d92e41 2025-12-13 20:42:49 -0300 refactor: Modernize models to SQLAlchemy 2.0 with Organization support
+35df3565e00715b1afc5e1d2cfe2d45f2055363f 2025-12-13 19:38:01 -0300 Initial commit: Sentinel multi-tenant SaaS platform
+1cce513925e5ca7b94b3b467e2e625f981779221 2025-12-13 19:41:30 -0300 Initial commit
