@@ -12307,3 +12307,28 @@ timestamp,level,unit,message
 2025-12-21T23:09:50.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
 2025-12-21T23:11:47.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=10108 DF PROTO=2 
 2025-12-21T23:13:52.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=10824 DF PROTO=2 
+2025-12-21T23:15:57.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=18160 DF PROTO=2 
+2025-12-21T23:16:29.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-21T23:17:31.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-21T23:17:31.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-21T23:18:24.000Z,WARNING,kernel,pcieport 0000:00:1d.2:    [ 0] RxErr                  (First)
+2025-12-21T23:18:24.000Z,ERROR,kernel,pcieport 0000:00:1d.2: AER:   Error of this Agent is reported first
+2025-12-21T23:18:24.000Z,WARNING,kernel,nvme 0000:07:00.0: PCIe Bus Error: severity=Correctable; type=Physical Layer; (Receiver ID)
+2025-12-21T23:18:24.000Z,WARNING,kernel,nvme 0000:07:00.0:   device [8086:0975] error status/mask=00000001/00002000
+2025-12-21T23:18:24.000Z,WARNING,kernel,nvme 0000:07:00.0:    [ 0] RxErr                  (First)
+2025-12-21T23:20:07.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=29023 DF PROTO=2 
+2025-12-21T23:20:28.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-21T23:20:28.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-21T23:22:12.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=31178 DF PROTO=2 
+2025-12-21T23:24:17.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=39738 DF PROTO=2 
+2025-12-21T23:25:44.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-21T23:25:44.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-21T23:26:22.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=44176 DF PROTO=2 
+2025-12-21T23:26:44.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-21T23:26:44.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-21T23:28:06.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-21T23:28:06.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-21T23:28:27.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=48603 DF PROTO=2 
+2025-12-21T23:30:32.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=58390 DF PROTO=2 
+2025-12-21T23:32:37.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=65062 DF PROTO=2 
+2025-12-21T23:34:42.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=8039 DF PROTO=2 
