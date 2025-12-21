@@ -33,7 +33,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from app.config import get_settings, get_allowed_origins
 from app.logging_config import setup_logging
 from app.database import init_db, close_db, check_db_connection
-from app.routers import health, users, tenants, dashboard, analytics, ai, auth, backup, failsafe, incidents
+from app.routers import health, users, tenants, dashboard, analytics, ai, auth, backup, failsafe, incidents, gamma
 from app.api import workflows
 from app.shutdown import setup_signal_handlers  # Graceful shutdown
 
@@ -192,6 +192,7 @@ app.include_router(incidents.router)  # Incident Management (ITIL)
 app.include_router(backup.router)  # Backup API (prefix defined in router)
 app.include_router(failsafe.router)  # Fail-Safe Security Layer
 app.include_router(workflows.router)  # Workflow Recommendations
+app.include_router(gamma.router, prefix="/api/v1")  # Guardian Gamma (HITL)
 
 
 # ============================================================================
