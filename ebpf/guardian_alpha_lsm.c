@@ -77,28 +77,28 @@ static __always_inline void log_event(__u32 pid, __u32 uid,
 
 /* LSM Hook: Intercept bprm_check_security (execve) */
 SEC("lsm/bprm_check_security")
-int BPF_PROG(guardian_execve, struct linux_binprm *bprm)
+int BPF_PROG(guardian_execve, struct linux_binprm *bprm, int ret)
 {
-    char filename[256] = {0};
+    char comm[256] = {0};
     __u32 pid = bpf_get_current_pid_tgid() >> 32;
     __u32 uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
     
-    // Read executable path
-    bpf_probe_read_kernel_str(filename, sizeof(filename), bprm->filename);
+    // Get current process name (simpler approach)
+    bpf_get_current_comm(comm, sizeof(comm));
     
     // Check whitelist
-    if (!is_whitelisted(filename)) {
+    if (!is_whitelisted(comm)) {
         // Log blocked event
-        log_event(pid, uid, filename, 0);
+        log_event(pid, uid, comm, 0);
         
         // BLOCK: Return -EACCES
         bpf_printk("Guardian-Alpha: BLOCKED execve: %s (pid=%d)", 
-                   filename, pid);
+                   comm, pid);
         return -EACCES;
     }
     
     // Log allowed event
-    log_event(pid, uid, filename, 1);
+    log_event(pid, uid, comm, 1);
     
     // ALLOW
     return 0;
