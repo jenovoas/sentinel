@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Guardian Gamma Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .decision { border: 1px solid #ccc; padding: 15px; margin: 10px 0; }
+        button { padding: 10px; margin: 5px; cursor: pointer; }
+        .approve { background: green; color: white; }
+        .deny { background: red; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Guardian Gamma - Decision Queue</h1>
+    <div id="decisions"></div>
+    
+    <script>
+        const API_URL = 'http://localhost:8000'\;
+        
+        async function loadDecisions() {
+            const res = await fetch(`${API_URL}/api/v1/gamma/pending`);
+            const decisions = await res.json();
+            
+            const container = document.getElementById('decisions');
+            container.innerHTML = decisions.map(d => `
+                <div class="decision">
+                    <h3>Guardian ${d.guardian} - ${d.type}</h3>
+                    <p><strong>Confidence:</strong> ${Math.round(d.confidence * 100)}%</p>
+                    <p><strong>Context:</strong> <pre>${JSON.stringify(d.context, null, 2)}</pre></p>
+                    <textarea id="feedback-${d.id}" placeholder="Feedback..."></textarea><br>
+                    <button class="approve" onclick="approve(${d.id})">Approve</button>
+                    <button class="deny" onclick="deny(${d.id})">Deny</button>
+                </div>
+            `).join('');
+        }
+        
+        async function approve(id) {
+            const feedback = document.getElementById(`feedback-${id}`).value;
+            await fetch(`${API_URL}/api/v1/gamma/approve/${id}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({feedback})
+            });
+            loadDecisions();
+        }
+        
+        async function deny(id) {
+            const feedback = document.getElementById(`feedback-${id}`).value;
+            await fetch(`${API_URL}/api/v1/gamma/deny/${id}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({feedback})
+            });
+            loadDecisions();
+        }
+        
+        loadDecisions();
+        setInterval(loadDecisions, 5000);
+    </script>
+</body>
+</html>
