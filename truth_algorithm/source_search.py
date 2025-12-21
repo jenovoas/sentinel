@@ -66,7 +66,8 @@ class SecurityValidator:
         
         # Patrones peligrosos
         dangerous_patterns = [
-            r'[;&|`$]',  # Shell commands
+            r'[;&|`]\s*\w',  # Shell commands (con espacio y comando después)
+            r'\$\(',  # Command substitution
             r'\.\./',     # Path traversal
             r'<script',   # XSS
             r"['\"].*OR.*['\"]",  # SQL injection con OR
