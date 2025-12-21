@@ -335,3 +335,54 @@ MEJORA: 67% reducción en drops
 **Autor**: Sentinel Cortex™ Team  
 **Fecha**: 2025-12-21  
 **Status**: 📋 **VALIDACIÓN TÉCNICA DOCUMENTADA**
+
+---
+
+## 🧪 VALIDACIÓN ADICIONAL (2025-12-21 01:59)
+
+### 6. Teoría Hidrodinámica
+
+**Estado**: ⚠️ **PARCIALMENTE VALIDADA**
+
+**Evidencia**:
+- Archivo: `tests/test_hydrodynamic_theory.py`
+- Ejecutado: 2025-12-21 01:59
+- Benchmark data: `/tmp/levitation_benchmark_data.json`
+
+**Resultados**:
+```
+✅ Número de Reynolds: 80% precisión prediciendo drops
+✅ Comportamiento asimétrico: 35.28x ratio expansión/contracción
+❌ Viscosidad: α = 0.96 (esperado 0.90, error 5.95%)
+❌ Conservación: Correlación -0.035 (débil)
+```
+
+**Conclusión**: 
+- ✅ Los datos SÍ se comportan como fluidos
+- ✅ Reynolds number es predictor válido
+- ⚠️ Modelo necesita ajustes en viscosidad y conservación
+
+---
+
+### 7. Patrón de Control de Buffer
+
+**Estado**: ⚠️ **PARCIALMENTE VALIDADO**
+
+**Evidencia**:
+- Archivo: `tests/test_control_pattern.py`
+- Ecuación: `Buffer(t) = 0.50 + 0.1610 × (Throughput - 1.19)`
+
+**Resultados**:
+```
+✅ Predicciones manuales: 100% dentro de tolerancia
+❌ Datos reales: 42.24% precisión (esperado \u003e95%)
+```
+
+**Conclusión**:
+- ✅ Ecuación funciona para casos estáticos
+- ❌ No captura dinámica real (bursts, predicción, inercia)
+- ⏳ Necesita modelo no-lineal con estado
+
+---
+
+**Documento detallado**: `docs/VALIDATION_RESULTS_2025_12_21.md`
