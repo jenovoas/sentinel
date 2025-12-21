@@ -1,14 +1,14 @@
 
 # Análisis de Métricas (Host)
 
-- Muestras: 7321
-- Rango: 2025-12-14T01:30:27.903492Z → 2025-12-21T02:59:00.055Z
+- Muestras: 7381
+- Rango: 2025-12-14T01:30:27.903492Z → 2025-12-21T03:59:00.720Z
 
 ## Promedios
-- CPU: 202238.29%
-- Memoria: 2476731.37%
-- GPU: 3.49%
-- WiFi (señal): 62.98%
+- CPU: 200594.45%
+- Memoria: 2456598.57%
+- GPU: 3.47%
+- WiFi (señal): 62.95%
 
 ## Alertas
 - CPU promedio alto (>= 85.0%)
