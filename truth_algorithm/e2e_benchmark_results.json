@@ -1,0 +1,98 @@
+{
+  "avg_latency_ms": 0.07267210021382198,
+  "throughput": 13760.438972559148,
+  "avg_sources": 1.0,
+  "total_claims": 10,
+  "results": [
+    {
+      "claim": "La tasa de desempleo en EE.UU. es 3.5%",
+      "status": "\u2705 VERIFIED",
+      "confidence": 1.0,
+      "sources_found": 1,
+      "total_time_ms": 0.4420039913384244,
+      "search_time_ms": 0.41801799670793116,
+      "consensus_time_ms": 0.010894000297412276
+    },
+    {
+      "claim": "El PIB de EE.UU. creci\u00f3 2.1% en Q3 2024",
+      "status": "\u2705 VERIFIED",
+      "confidence": 1.0,
+      "sources_found": 1,
+      "total_time_ms": 0.05101200076751411,
+      "search_time_ms": 0.031755989766679704,
+      "consensus_time_ms": 0.008176997653208673
+    },
+    {
+      "claim": "La poblaci\u00f3n mundial super\u00f3 los 8 mil millones",
+      "status": "\u2705 VERIFIED",
+      "confidence": 1.0,
+      "sources_found": 1,
+      "total_time_ms": 0.036177996662445366,
+      "search_time_ms": 0.023268992663361132,
+      "consensus_time_ms": 0.005173991667106748
+    },
+    {
+      "claim": "La temperatura global ha aumentado 1.1\u00b0C",
+      "status": "\u2705 VERIFIED",
+      "confidence": 1.0,
+      "sources_found": 1,
+      "total_time_ms": 0.030615992727689445,
+      "search_time_ms": 0.019554005120880902,
+      "consensus_time_ms": 0.004187997546978295
+    },
+    {
+      "claim": "El cambio clim\u00e1tico est\u00e1 causado por actividad humana",
+      "status": "\u2705 VERIFIED",
+      "confidence": 1.0,
+      "sources_found": 1,
+      "total_time_ms": 0.03152899444103241,
+      "search_time_ms": 0.01975698978640139,
+      "consensus_time_ms": 0.004226996679790318
+    },
+    {
+      "claim": "Las vacunas COVID son efectivas seg\u00fan estudios",
+      "status": "\u2705 VERIFIED",
+      "confidence": 1.0,
+      "sources_found": 1,
+      "total_time_ms": 0.029453003662638366,
+      "search_time_ms": 0.01874299778137356,
+      "consensus_time_ms": 0.004064000677317381
+    },
+    {
+      "claim": "La Tierra tiene 4.5 mil millones de a\u00f1os",
+      "status": "\u2705 VERIFIED",
+      "confidence": 1.0,
+      "sources_found": 1,
+      "total_time_ms": 0.027990012313239276,
+      "search_time_ms": 0.01800799509510398,
+      "consensus_time_ms": 0.0036290002753958106
+    },
+    {
+      "claim": "Habr\u00e1 vida en Marte en 2050",
+      "status": "\u2705 VERIFIED",
+      "confidence": 1.0,
+      "sources_found": 1,
+      "total_time_ms": 0.026138004614040256,
+      "search_time_ms": 0.017077007214538753,
+      "consensus_time_ms": 0.003264998667873442
+    },
+    {
+      "claim": "La IA superar\u00e1 a humanos en 2030",
+      "status": "\u2705 VERIFIED",
+      "confidence": 1.0,
+      "sources_found": 1,
+      "total_time_ms": 0.02656600554473698,
+      "search_time_ms": 0.01742799940984696,
+      "consensus_time_ms": 0.0032990064937621355
+    },
+    {
+      "claim": "Bitcoin llegar\u00e1 a $1 mill\u00f3n",
+      "status": "\u2705 VERIFIED",
+      "confidence": 1.0,
+      "sources_found": 1,
+      "total_time_ms": 0.02523500006645918,
+      "search_time_ms": 0.016252000932581723,
+      "consensus_time_ms": 0.003377004759386182
+    }
+  ]
+}
