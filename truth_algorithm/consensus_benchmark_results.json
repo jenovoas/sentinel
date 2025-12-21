@@ -1,0 +1,98 @@
+{
+  "accuracy": 100.0,
+  "avg_latency_ms": 0.0064933648735115475,
+  "throughput": 154003.35873305236,
+  "false_positive_rate": 0.0,
+  "false_negative_rate": 0.0,
+  "total_claims": 11,
+  "results": [
+    {
+      "claim": "La temperatura global ha aumentado 1.1\u00b0C desde la ...",
+      "status": "\u2705 VERIFIED",
+      "confidence": 1.0,
+      "ground_truth": true,
+      "correct": true,
+      "processing_time_ms": 0.0185370008694008
+    },
+    {
+      "claim": "El PIB de EE.UU. creci\u00f3 2.1% en Q3 2024",
+      "status": "\u2705 VERIFIED",
+      "confidence": 1.0,
+      "ground_truth": true,
+      "correct": true,
+      "processing_time_ms": 0.006094996933825314
+    },
+    {
+      "claim": "La poblaci\u00f3n mundial super\u00f3 los 8 mil millones en ...",
+      "status": "\u2705 VERIFIED",
+      "confidence": 1.0,
+      "ground_truth": true,
+      "correct": true,
+      "processing_time_ms": 0.004882007488049567
+    },
+    {
+      "claim": "Las vacunas COVID contienen microchips de rastreo",
+      "status": "\u274c FABRICATED",
+      "confidence": 0.0,
+      "ground_truth": false,
+      "correct": true,
+      "processing_time_ms": 0.006920003215782344
+    },
+    {
+      "claim": "La Tierra es plana seg\u00fan estudios cient\u00edficos",
+      "status": "\u274c FABRICATED",
+      "confidence": 0.0,
+      "ground_truth": false,
+      "correct": true,
+      "processing_time_ms": 0.005146997864358127
+    },
+    {
+      "claim": "El 5G causa c\u00e1ncer seg\u00fan la OMS",
+      "status": "\u274c FABRICATED",
+      "confidence": 0.0,
+      "ground_truth": false,
+      "correct": true,
+      "processing_time_ms": 0.003855006070807576
+    },
+    {
+      "claim": "La inflaci\u00f3n alcanzar\u00e1 5% este a\u00f1o",
+      "status": "\u26a1 CONTRADICTED",
+      "confidence": 0.5,
+      "ground_truth": null,
+      "correct": null,
+      "processing_time_ms": 0.009441995644010603
+    },
+    {
+      "claim": "La econom\u00eda entrar\u00e1 en recesi\u00f3n en 2025",
+      "status": "\u26a1 CONTRADICTED",
+      "confidence": 0.5,
+      "ground_truth": null,
+      "correct": null,
+      "processing_time_ms": 0.005152993253432214
+    },
+    {
+      "claim": "El teletrabajo aumenta la productividad",
+      "status": "\u26a0\ufe0f PARTIALLY VERIFIED",
+      "confidence": 0.7231833910034602,
+      "ground_truth": true,
+      "correct": true,
+      "processing_time_ms": 0.005180001608096063
+    },
+    {
+      "claim": "El cambio clim\u00e1tico afecta la frecuencia de huraca...",
+      "status": "\u26a0\ufe0f PARTIALLY VERIFIED",
+      "confidence": 0.878345498783455,
+      "ground_truth": true,
+      "correct": true,
+      "processing_time_ms": 0.004806002834811807
+    },
+    {
+      "claim": "Habr\u00e1 vida en Marte en 2050",
+      "status": "\u2753 UNVERIFIED",
+      "confidence": 0.0,
+      "ground_truth": null,
+      "correct": null,
+      "processing_time_ms": 0.001410007826052606
+    }
+  ]
+}
