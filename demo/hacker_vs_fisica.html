@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Hacker vs La Física - Sentinel Cortex™</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #0f0;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 20px #0f0, 0 0 40px #0f0;
+            animation: pulse 2s infinite;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #0ff;
+            text-shadow: 0 0 10px #0ff;
+        }
+
+        .battle-arena {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 3rem;
+            width: 100%;
+            max-width: 1400px;
+            margin: 2rem 0;
+        }
+
+        .fighter {
+            background: rgba(0, 255, 0, 0.05);
+            border: 2px solid #0f0;
+            border-radius: 10px;
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .fighter:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px #0f0;
+        }
+
+        .fighter-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .hacker {
+            border-color: #f00;
+            background: rgba(255, 0, 0, 0.05);
+        }
+
+        .hacker .fighter-title {
+            color: #f00;
+            text-shadow: 0 0 10px #f00;
+        }
+
+        .fisica {
+            border-color: #0ff;
+            background: rgba(0, 255, 255, 0.05);
+        }
+
+        .fisica .fighter-title {
+            color: #0ff;
+            text-shadow: 0 0 10px #0ff;
+        }
+
+        .vs {
+            font-size: 6rem;
+            color: #ff0;
+            text-shadow: 0 0 30px #ff0;
+            display: flex;
+            align-items: center;
+            animation: rotate 4s infinite;
+        }
+
+        .attack-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .attack-item {
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            background: rgba(0, 0, 0, 0.5);
+            border-left: 3px solid #0f0;
+            opacity: 0;
+            animation: slideIn 0.5s forwards;
+        }
+
+        .attack-item:nth-child(1) { animation-delay: 0.5s; }
+        .attack-item:nth-child(2) { animation-delay: 1s; }
+        .attack-item:nth-child(3) { animation-delay: 1.5s; }
+        .attack-item:nth-child(4) { animation-delay: 2s; }
+
+        .defense-item {
+            border-left-color: #0ff;
+        }
+
+        .result {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 3rem;
+            color: #0ff;
+            text-shadow: 0 0 20px #0ff;
+            opacity: 0;
+            animation: fadeIn 1s 3s forwards;
+        }
+
+        .crystal {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: linear-gradient(45deg, rgba(0,255,255,0.1), rgba(0,255,0,0.1));
+            border: 3px solid #0ff;
+            border-radius: 20px;
+            opacity: 0;
+            animation: fadeIn 1s 4s forwards, glow 2s 4s infinite;
+        }
+
+        .crystal-title {
+            font-size: 2rem;
+            color: #0ff;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .laws {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .law {
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #0ff;
+            border-radius: 5px;
+        }
+
+        .law-title {
+            color: #ff0;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+
+        .btn {
+            background: #0f0;
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            margin: 0 0.5rem;
+            border-radius: 5px;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px #0f0;
+        }
+
+        .btn:hover {
+            background: #0ff;
+            transform: scale(1.1);
+            box-shadow: 0 0 40px #0ff;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes rotate {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(360deg); }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px #0ff; }
+            50% { box-shadow: 0 0 60px #0ff, 0 0 100px #0ff; }
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .stats {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #0f0;
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .stat-line {
+            margin: 0.3rem 0;
+            color: #0ff;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" class="matrix-bg"></canvas>
+
+    <div class="stats">
+        <div class="stat-line">⚡ Sistema: ACTIVO</div>
+        <div class="stat-line">🛡️ Defensa: FÍSICA</div>
+        <div class="stat-line">🔒 Estado: INMUTABLE</div>
+        <div class="stat-line" id="attempts">💀 Intentos: 0</div>
+    </div>
+
+    <div class="container">
+        <h1 class="title">EL HACKER vs LA FÍSICA</h1>
+        <p class="subtitle">Sentinel Cortex™ - Inmutabilidad Arquitectónica</p>
+
+        <div class="battle-arena">
+            <div class="fighter hacker">
+                <div class="fighter-title">🎭 EL HACKER</div>
+                <ul class="attack-list">
+                    <li class="attack-item">💉 Inyectar logs en el pasado</li>
+                    <li class="attack-item">🔓 Bypassear kernel desde user space</li>
+                    <li class="attack-item">🧊 Congelar sistema en bucle infinito</li>
+                    <li class="attack-item">☠️ Envenenar IA con datos falsos</li>
+                </ul>
+            </div>
+
+            <div class="vs">VS</div>
+
+            <div class="fighter fisica">
+                <div class="fighter-title">⚛️ LA FÍSICA</div>
+                <ul class="attack-list">
+                    <li class="attack-item defense-item">⏰ Tiempo: Loki strict ordering</li>
+                    <li class="attack-item defense-item">🌍 Gravedad: Kernel Ring 0 + MMU</li>
+                    <li class="attack-item defense-item">💀 Entropía: Hardware Watchdog</li>
+                    <li class="attack-item defense-item">💧 Pureza: AIOpsShield mecánico</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="result">
+            ⚡ GAME OVER ⚡
+        </div>
+
+        <div class="crystal">
+            <div class="crystal-title">💎 EL CRISTAL DE SEGURIDAD</div>
+            <div class="laws">
+                <div class="law">
+                    <div class="law-title">⏰ LEY DEL TIEMPO</div>
+                    <div>El pasado es inmutable. Los logs no pueden viajar atrás.</div>
+                </div>
+                <div class="law">
+                    <div class="law-title">🌍 LEY DE LA GRAVEDAD</div>
+                    <div>Ring 0 es absoluto. User space no puede escapar.</div>
+                </div>
+                <div class="law">
+                    <div class="law-title">💀 LEY DE LA ENTROPÍA</div>
+                    <div>El condensador se descarga. El sistema renace limpio.</div>
+                </div>
+                <div class="law">
+                    <div class="law-title">💧 LEY DE LA PUREZA</div>
+                    <div>El filtro es mecánico. La mente nunca ve el veneno.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn" onclick="simulateAttack()">🎯 SIMULAR ATAQUE</button>
+        <button class="btn" onclick="resetDemo()">🔄 REINICIAR</button>
+    </div>
+
+    <script>
+        // Matrix rain effect
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const matrix = "SENTINEL01";
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#0f0';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = matrix[Math.floor(Math.random() * matrix.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 35);
+
+        // Attack simulation
+        let attackCount = 0;
+
+        function simulateAttack() {
+            attackCount++;
+            document.getElementById('attempts').textContent = `💀 Intentos: ${attackCount}`;
+            
+            // Flash effect
+            document.body.style.background = '#f00';
+            setTimeout(() => {
+                document.body.style.background = '#000';
+            }, 100);
+
+            // Show message
+            const messages = [
+                "❌ BLOQUEADO: Violación de causalidad temporal",
+                "❌ BLOQUEADO: Acceso denegado por MMU",
+                "❌ BLOQUEADO: Watchdog reinició el sistema",
+                "❌ BLOQUEADO: Payload sanitizado por AIOpsShield"
+            ];
+            
+            const msg = messages[attackCount % messages.length];
+            alert(msg);
+        }
+
+        function resetDemo() {
+            attackCount = 0;
+            document.getElementById('attempts').textContent = '💀 Intentos: 0';
+            location.reload();
+        }
+
+        // Resize canvas on window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Easter egg: click anywhere
+        let clickCount = 0;
+        document.addEventListener('click', (e) => {
+            if (e.target.tagName !== 'BUTTON') {
+                clickCount++;
+                if (clickCount === 10) {
+                    alert('🏛️ "Ni yo puedo hackearlo" - Jaime Novoa\n\nHas alcanzado la Inmutabilidad Arquitectónica.');
+                    clickCount = 0;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
