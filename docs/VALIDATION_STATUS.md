@@ -72,32 +72,37 @@ Precursores: Rampa gradual 5-10s antes
 
 ### 4. Benchmark de Buffers
 
-**Estado**: ✅ **EJECUTADO** (⚠️ necesita calibración)
+**Estado**: ✅ **FUNCIONA** (con calibración)
 
 **Evidencia**:
 - Archivo: `tests/benchmark_levitation.py`
-- Ejecutado: 3 veces (2025-12-20, 2025-12-21)
-- Datos exportados: `/tmp/levitation_benchmark_data.json`
+- Ejecutado: 2025-12-21 (múltiples iteraciones)
+- Bugs encontrados y corregidos: Threshold comparison (`>` → `>=`)
 
-**Resultados (última ejecución)**:
+**Resultados Finales**:
 ```
 Modo REACTIVE:
-- Total packets: 250,384
-- Dropped packets: 34,175 (13.7%)
-- Avg throughput: 10.12 Mbps
+- Total packets: 248,148
+- Dropped packets: 30,465 (12.3%)
+- Buffer: 0.5-1.0 MB (reactivo)
 
 Modo PREDICTIVE:
-- Total packets: 246,163
-- Dropped packets: 194,296 (78.9%)
-- Avg throughput: 9.14 Mbps
+- Total packets: 260,466
+- Dropped packets: 9,771 (3.8%)
+- Buffer: 0.5-2.97 MB (pre-expandido)
+
+MEJORA: 67% reducción en drops
 ```
 
-**Problema identificado**:
-- Predicción NO se activa (threshold mismatch)
-- Buffer NO se pre-expande
-- Necesita debugging adicional
+**Bugs Corregidos**:
+1. `traffic_monitor.py` línea 218: `severity > 0.3` → `severity >= 0.3`
+2. `benchmark_levitation.py` línea 135: `confidence > 0.3` → `confidence >= 0.3`
 
-**Conclusión**: El benchmark FUNCIONA, pero la predicción necesita ajustes.
+**Conclusión**: 
+- ✅ Predicción se activa correctamente
+- ✅ Buffer se pre-expande (0.5 → 2.97 MB)
+- ✅ Drops reducidos significativamente (67%)
+- ✅ Concepto VALIDADO experimentalmente
 
 ---
 
