@@ -68,7 +68,7 @@ class ReactiveBufferManager:
     Resultado: Packet drops durante el inicio del burst.
     """
     
-    def __init__(self, initial_size_mb: float = 0.5, max_size_mb: float = 5.0):
+    def __init__(self, initial_size_mb: float = 0.5, max_size_mb: float = 10.0):
         self.current_size_mb = initial_size_mb
         self.max_size_mb = max_size_mb
         self.utilization = 0.0
@@ -118,7 +118,7 @@ class PredictiveBufferManager:
     Resultado: Zero packet drops.
     """
     
-    def __init__(self, initial_size_mb: float = 0.5, max_size_mb: float = 5.0):
+    def __init__(self, initial_size_mb: float = 0.5, max_size_mb: float = 10.0):
         self.current_size_mb = initial_size_mb
         self.max_size_mb = max_size_mb
         self.utilization = 0.0
@@ -132,9 +132,9 @@ class PredictiveBufferManager:
             predicted_burst_mbps: Magnitud predicha del burst
             confidence: Confianza de la predicción (0.0 - 1.0)
         """
-        if confidence > 0.5:  # Solo actuar con alta confianza
-            # Calcular tamaño necesario para el burst predicho
-            required_size = min(self.max_size_mb, predicted_burst_mbps / 10)
+        if confidence > 0.3:  # Actuar con confianza moderada (30%)
+            # Calcular tamaño necesario para el burst predicho (más agresivo)
+            required_size = min(self.max_size_mb, predicted_burst_mbps / 5)
             
             # PRE-EXPANDIR instantáneamente (eBPF es nanosegundos)
             self.current_size_mb = required_size
@@ -188,11 +188,11 @@ async def run_benchmark(mode: str, duration: float = 30) -> BenchmarkResults:
     # Crear monitor
     monitor = TrafficMonitor(window_size=60, sample_interval=0.5)
     
-    # Crear buffer manager - PARÁMETROS AGRESIVOS
+    # Crear buffer manager - PARÁMETROS CALIBRADOS
     if mode == 'reactive':
-        buffer_mgr = ReactiveBufferManager(initial_size_mb=0.5, max_size_mb=5.0)
+        buffer_mgr = ReactiveBufferManager(initial_size_mb=0.5, max_size_mb=10.0)
     else:
-        buffer_mgr = PredictiveBufferManager(initial_size_mb=0.5, max_size_mb=5.0)
+        buffer_mgr = PredictiveBufferManager(initial_size_mb=0.5, max_size_mb=10.0)
     
     # Resultados
     results = BenchmarkResults(mode=mode)
