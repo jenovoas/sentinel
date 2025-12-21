@@ -224,9 +224,15 @@ async def run_benchmark(mode: str, duration: float = 30) -> BenchmarkResults:
         # PREDICTIVE: Detectar precursores y pre-expandir
         if mode == 'predictive':
             precursors = monitor.detect_precursors()
+            
+            # DEBUG: Ver qué está pasando
+            if precursors.get('severity', 0) > 0.2:
+                print(f"🔍 DEBUG: Severity={precursors['severity']:.2f}, Detected={precursors['precursors_detected']}, Active={buffer_mgr.prediction_active}")
+            
             if precursors['precursors_detected'] and not buffer_mgr.prediction_active:
                 # Predecir magnitud del burst (10x el throughput actual)
                 predicted_burst = throughput_mbps * 10
+                print(f"🎯 CALLING predict_and_prepare: burst={predicted_burst:.1f} Mbps, severity={precursors['severity']:.2f}")
                 buffer_mgr.predict_and_prepare(predicted_burst, precursors['severity'])
         
         # Actualizar buffer (reactivo o predictivo)
