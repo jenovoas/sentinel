@@ -215,7 +215,7 @@ class TrafficMonitor:
             severity += 0.3
         
         precursors['severity'] = severity
-        precursors['precursors_detected'] = severity > 0.3  # Threshold más bajo para detección temprana
+        precursors['precursors_detected'] = severity >= 0.3  # >= para incluir el threshold exacto
         
         return precursors
     
