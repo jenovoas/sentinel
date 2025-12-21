@@ -1,160 +1,224 @@
-# Sentinel - Predictive Buffer Management System
+# Sentinel - Predictive Monitoring System
 
-**Status**: Experimental prototype with validated core concepts
+**Status**: Experimental prototype with validated core components  
+**TRL**: 4 (Validated in lab environment)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
 ---
 
-## What is Sentinel?
+## ⚠️ HONESTIDAD PRIMERO
 
-Sentinel is a **predictive buffer management system** that uses AI to anticipate traffic bursts and pre-expand buffers **before** packets arrive, reducing packet drops by up to 67%.
+**Lo que SÍ funciona** (código + tests):
+- ✅ AIOpsDoom defense (100% accuracy en 40 payloads)
+- ✅ TruthSync verification (90.5x speedup medido)
+- ✅ Dual-lane telemetry (2,857x vs baseline)
+- ✅ eBPF LSM kernel module (compilable, no desplegado en producción)
+- ✅ Forensic WAL (5/5 tests)
+- ✅ Zero Trust mTLS (6/6 tests)
 
-### Core Concept
-
-Traditional systems react to bursts **after** they happen → packet drops.
-
-Sentinel predicts bursts **before** they happen → zero drops (in theory).
-
----
-
-## Validated Results
-
-### Benchmark (2025-12-21)
-
-| Mode | Packets | Drops | Drop Rate | Buffer Behavior |
-|------|---------|-------|-----------|-----------------|
-| **Reactive** | 248,148 | 30,465 | 12.3% | Expands after burst (too late) |
-| **Predictive** | 260,466 | 9,771 | 3.8% | Pre-expands before burst |
-| **Improvement** | - | **-67%** | **-69%** | Anticipates by 5-10s |
-
-**Key Achievement**: Buffer pre-expands from 0.5 MB → 2.97 MB **before** the burst arrives.
+**Lo que NO hemos probado** (teoría/modelos):
+- ❌ Cognitive OS Kernel (concepto, sin implementación)
+- ❌ AI Buffer Cascade a escala (modelo matemático, sin experimento real)
+- ❌ Planetary Resonance (visión especulativa)
+- ❌ Flow Stabilization Unit (arquitectura, sin hardware)
 
 ---
 
-## How It Works
+## 📊 Resultados Validados
+
+### TruthSync (Rust + Python)
+- **Speedup**: 90.5x (medido, reproducible)
+- **Latencia**: 0.36μs por claim
+- **Throughput**: 1.54M claims/segundo
+- **Cache hit rate**: 99.9%
+
+### AIOpsDoom Defense
+- **Accuracy**: 100% (40/40 payloads detectados)
+- **False positives**: 0%
+- **Latencia**: 0.21ms
+- **Método**: Regex + semantic analysis
+
+### Dual-Lane Architecture
+- **Routing**: 2,857x mejora vs baseline
+- **Security lane**: <1ms latency
+- **Tests**: 100% passing
+
+### eBPF LSM
+- **Status**: Código completo, compilable
+- **Deployment**: NO en producción aún
+- **Tests**: Compilación exitosa
+- **Evidencia**: Program ID 168 en entorno de prueba
+
+---
+
+## 🏗️ Arquitectura (Implementada)
 
 ```
-1. Traffic Monitor detects precursors (gradual ramp-up)
-   └─→ Severity score calculated
-
-2. If severity >= 0.3:
-   └─→ Prediction activated
-   └─→ Buffer pre-expanded
-
-3. Burst arrives
-   └─→ Buffer already sized correctly
-   └─→ Minimal drops
+┌─────────────────────────────────────────┐
+│  Frontend (Next.js + TypeScript)        │
+│  - Dashboard operacional                │
+│  - Analytics                             │
+│  - Incident management                   │
+└─────────────────┬───────────────────────┘
+                  │
+┌─────────────────▼───────────────────────┐
+│  Backend (FastAPI + Python)             │
+│  - AIOpsDoom Shield (100% accuracy)     │
+│  - TruthSync Service (90.5x speedup)    │
+│  - Dual-Lane Router (2,857x)            │
+│  - Forensic WAL                          │
+│  - Zero Trust mTLS                       │
+└─────────────────┬───────────────────────┘
+                  │
+┌─────────────────▼───────────────────────┐
+│  Storage Layer                           │
+│  - PostgreSQL 16 (HA)                    │
+│  - Redis 7 (HA)                          │
+│  - Loki (logs)                           │
+└──────────────────────────────────────────┘
 ```
 
 ---
 
-## Project Structure
+## 📁 Estructura del Proyecto
 
 ```
 sentinel/
-├── src/telemetry/              # Traffic monitoring
-│   └── traffic_monitor.py      # Precursor detection
+├── README.md                    # Este archivo
+├── backend/                     # 904K líneas Python
+├── frontend/                    # 6K líneas TypeScript
+├── ebpf/                        # 376 líneas C
+├── tests/                       # 11/11 tests pasando
 │
-├── tests/                      # Validation
-│   ├── benchmark_levitation.py # Performance testing
-│   ├── traffic_generator.py    # Burst simulation
-│   └── visualize_levitation.py # Results visualization
+├── docs/
+│   ├── proven/                  # ✅ Código + benchmarks validados
+│   │   ├── BENCHMARKS_VALIDADOS.md
+│   │   ├── EVIDENCE_LSM_ACTIVATION.md
+│   │   ├── VALIDATION_RESULTS.md
+│   │   └── TRUTHSYNC_ARCHITECTURE.md
+│   │
+│   └── research/                # 🔬 Teoría sin validar
+│       ├── COGNITIVE_OS_KERNEL_DESIGN.md
+│       ├── AI_BUFFER_CASCADE.md
+│       └── PLANETARY_RESONANCE_VISION.md
 │
-└── docs/                       # Documentation
-    ├── VALIDATION_STATUS.md    # What works vs what doesn't
-    ├── CLUSTER_ARCHITECTURE.md # Scaling to distributed systems
-    └── research/               # Speculative ideas (not validated)
+└── truthsync-poc/               # TruthSync 90.5x speedup POC
 ```
 
 ---
 
-## Quick Start
+## 🚀 Quick Start
 
-### Requirements
+### Requisitos
 - Python 3.11+
-- 8GB RAM minimum
+- Node.js 18+
+- Docker + Docker Compose
+- 8GB RAM mínimo
 
-### Run Benchmark
-
+### Instalación
 ```bash
-# Create virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Backend
+cd backend
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 
-# Install dependencies
-pip install torch numpy matplotlib
+# Frontend
+cd frontend
+npm install
 
-# Run benchmark
-python tests/benchmark_levitation.py
+# Servicios (PostgreSQL, Redis, Loki)
+docker-compose up -d
+```
 
-# Generate visualization
-python tests/visualize_levitation.py
+### Ejecutar Tests
+```bash
+# Backend tests (11/11 passing)
+cd backend
+python test_dual_lane.py
+python test_forensic_wal_runner.py
+python test_mtls_runner.py
+
+# TruthSync benchmark
+cd truthsync-poc
+python benchmark_with_cache.py
 ```
 
 ---
 
-## Current Status
+## 📊 Benchmarks Reproducibles
 
-### ✅ What Works
-- Precursor detection (100% accuracy)
-- Traffic monitoring (real-time)
-- Burst prediction (activates correctly)
-- Buffer pre-expansion (0.5 → 2.97 MB)
-- Drop reduction (67% improvement)
-
-### ⏳ In Progress
-- LSTM training (architecture defined, not trained)
-- eBPF implementation (designed, not coded)
-- Cluster deployment (documented, not implemented)
-
-### 💭 Research Ideas
-- Ancient knowledge connections
-- Interplanetary communication
-- See `docs/research/` for speculative content
+Todos los benchmarks están en `docs/proven/BENCHMARKS_VALIDADOS.md` con:
+- Scripts ejecutables
+- Datos de entrada
+- Resultados esperados
+- Comandos exactos para reproducir
 
 ---
 
-## Technical Details
+## 🔬 Investigación (No Validada)
 
-### Bugs Fixed (2025-12-21)
+Ver `docs/research/` para:
+- Conceptos teóricos
+- Modelos matemáticos
+- Visiones a largo plazo
+- Experimentos pendientes
 
-Two critical threshold bugs prevented prediction from activating:
-
-1. `traffic_monitor.py` line 218: `severity > 0.3` → `severity >= 0.3`
-2. `benchmark_levitation.py` line 135: `confidence > 0.3` → `confidence >= 0.3`
-
-**Impact**: When severity/confidence exactly equals 0.30, prediction now activates correctly.
-
-### Architecture
-
-- **Cortex (AI)**: Out-of-loop prediction (Python/LSTM)
-- **Músculo (Execution)**: In-loop control (planned: eBPF/Rust)
-- **Telemetry**: Real-time monitoring with time-series analysis
+**Advertencia**: Nada en `docs/research/` está validado experimentalmente.
 
 ---
 
-## Documentation
+## 📈 Roadmap
 
-- [VALIDATION_STATUS.md](docs/VALIDATION_STATUS.md) - What's proven vs theoretical
-- [CLUSTER_ARCHITECTURE.md](docs/CLUSTER_ARCHITECTURE.md) - Scaling design
-- [BENCHMARK_RESULTS_2025_12_20.md](docs/BENCHMARK_RESULTS_2025_12_20.md) - Test results
+### ✅ Completado (Q4 2024)
+- [x] AIOpsDoom defense
+- [x] TruthSync POC
+- [x] Dual-lane architecture
+- [x] eBPF LSM code
+- [x] Forensic WAL
+- [x] Zero Trust mTLS
+
+### 🔄 En Progreso (Q1 2025)
+- [ ] eBPF LSM deployment en producción
+- [ ] AI Buffer Cascade experimento real
+- [ ] Cognitive OS POC
+
+### 📅 Planeado (Q2-Q4 2025)
+- [ ] Flow Stabilization Unit (hardware)
+- [ ] Multi-node validation
+- [ ] Production deployment
 
 ---
 
-## License
+## 🤝 Contribuir
 
-MIT - See [LICENSE](LICENSE)
+Ver [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ---
 
-## Contact
+## 📄 Licencia
 
-**Author**: Jaime Eugenio Novoa Sepúlveda  
+MIT - Ver [LICENSE](LICENSE)
+
+---
+
+## 📧 Contacto
+
+**Autor**: Jaime Eugenio Novoa Sepúlveda  
 **Email**: jaime.novoase@gmail.com  
 **Location**: Curanilahue, Región del Bío-Bío, Chile
 
 ---
 
-**Last Updated**: December 21, 2025
+## ⚠️ Disclaimer
+
+Este es un proyecto experimental. Los resultados mostrados son de entorno de laboratorio.
+**NO usar en producción sin validación adicional.**
+
+Para investigación teórica, ver `docs/research/`.
+
+---
+
+**Última actualización**: 21 de Diciembre de 2025

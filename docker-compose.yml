@@ -1,21 +1,71 @@
 version: '3.8'
 
 services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: sentinel-postgres
+    environment:
+      POSTGRES_USER: sentinel_user
+      POSTGRES_PASSWORD: darkfenix
+      POSTGRES_DB: sentinel_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - sentinel-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U sentinel_user" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: sentinel-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - sentinel-net
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
   backend:
     build:
-      context: ./backend/poc
+      context: ./backend
       dockerfile: Dockerfile
     container_name: sentinel-vault-backend
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/poc:/app
+      - ./backend:/app
       - vault_data:/app/storage
     environment:
       - PYTHONUNBUFFERED=1
+      - DATABASE_URL=postgresql+asyncpg://sentinel_user:darkfenix@postgres:5432/sentinel_db
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - sentinel-net
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
+  # Frontend
   frontend:
     build:
       context: ./frontend/poc
@@ -30,6 +80,7 @@ services:
     networks:
       - sentinel-net
 
+  # Nginx Reverse Proxy
   nginx:
     image: nginx:stable-alpine
     container_name: sentinel-vault-nginx
@@ -50,4 +101,6 @@ networks:
     driver: bridge
 
 volumes:
+  postgres_data:
+  redis_data:
   vault_data:
