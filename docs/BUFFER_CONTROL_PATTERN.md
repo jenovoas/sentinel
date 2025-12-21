@@ -1,4 +1,4 @@
-# La Ley de Sentinel: Ecuación de Control de Buffer
+# Patrón de Control de Buffer: Ecuación Proporcional
 
 **Fecha**: 2025-12-21  
 **Estado**: ✅ Validado experimentalmente
@@ -185,11 +185,11 @@ Usar esta ecuación como baseline y dejar que LSTM aprenda desviaciones.
 
 ## Conclusión
 
-Hemos descubierto la **Ley de Sentinel**:
+Hemos descubierto el **Patrón de Control de Buffer**:
 
 > El buffer necesario crece linealmente con el throughput, con una ganancia de 0.161 MB/Mbps.
 
-Esta es una **ley física del sistema**, medida experimentalmente y validada con 99.9% de precisión.
+Esta es una **relación funcional del sistema**, medida experimentalmente y validada con 99.9% de precisión.
 
 **No es teoría. Es un hecho medible y reproducible.** ✅
 
