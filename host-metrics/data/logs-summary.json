@@ -1,7 +1,7 @@
 {
-  "timestamp": "2025-12-21T04:20:00.078Z",
+  "timestamp": "2025-12-21T04:25:00.836Z",
   "critical_count": 0,
   "error_count": 0,
-  "warning_count": 0,
-  "total_issues": 0
+  "warning_count": 1,
+  "total_issues": 1
 }
