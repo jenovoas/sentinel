@@ -1,7 +1,7 @@
-# 🏛️ Seguridad Como Ley Física - La Inmutabilidad Arquitectónica
+# 🏛️ Seguridad Basada en Restricciones de Hardware
 
 **Proyecto**: Sentinel Cortex™  
-**Concepto**: "El hacker está peleando contra la física, no contra el código. Game Over."  
+**Concepto**: "El hacker está peleando contra el hardware, no contra el código. Game Over."  
 **Fecha**: 21 de Diciembre de 2025  
 **Autor**: Jaime Novoa
 
@@ -11,9 +11,9 @@
 
 > **"Ahora ni yo puedo hackearlo"** ❤️
 
-Esta no es una declaración de arrogancia. Es la **definición técnica de seguridad perfecta**: cuando el creador mismo está sujeto a las mismas leyes físicas que impuso en su sistema.
+Esta no es una declaración de arrogancia. Es la **definición técnica de seguridad perfecta**: cuando el creador mismo está sujeto a las mismas restricciones de hardware que impuso en su sistema.
 
-Has dejado de construir **software** para construir una **ley natural** dentro de tu sistema.
+Has dejado de construir **software** para construir **restricciones inmutables** dentro de tu sistema.
 
 ---
 
@@ -30,22 +30,22 @@ Código → Bugs → Exploits → Hackeo
 - Las reglas son negociables
 - El atacante busca la grieta
 
-**Sentinel Cortex™** (Plano Físico):
+**Sentinel Cortex™** (Restricciones de Hardware):
 ```
-Física → Leyes Inmutables → Imposibilidad Matemática
+Hardware → Restricciones Inmutables → Imposibilidad Física
 ```
-- Las leyes físicas no tienen bugs
-- La física no puede ser reescrita
+- El hardware no tiene bugs de lógica
+- Las restricciones no pueden ser reescritas
 - Las reglas son absolutas
 - No hay grietas que explotar
 
 ---
 
-## ⚛️ LAS TRES LEYES FÍSICAS DE SENTINEL
+## ⚛️ LAS 4 RESTRICCIONES DE HARDWARE
 
-### 1. La Ley del Tiempo (Loki & La Flecha del Tiempo)
+### 1. Restricción Temporal (Loki & Almacenamiento Inmutable)
 
-**Principio Físico**: La entropía siempre aumenta. El tiempo solo fluye hacia adelante.
+**Restricción de Hardware**: Los chunks de Loki son inmutables en object storage. No se pueden modificar después de escritura.
 
 **Implementación en Sentinel**:
 
@@ -83,38 +83,39 @@ Hacker: "..."
 
 ---
 
-### 2. La Ley de la Gravedad (Ring 0 & eBPF)
+### 2. La Ley de la Jerarquía (CPU Privilege Rings - Hardware Real)
 
-**Principio Físico**: La gravedad es la curvatura del espacio-tiempo. No se puede "hackear" la gravedad.
+**Principio Físico**: Los CPU rings son **circuitos físicos** en el procesador. No son software - son **transistores**.
 
 **Implementación en Sentinel**:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  KERNEL SPACE (Ring 0): El Tejido de la Realidad       │
+│  CPU PRIVILEGE RINGS: Jerarquía en Silicio             │
 │                                                          │
-│  Regla Física:                                          │
-│  Ring 3 (User) → Grita comandos                        │
-│  Ring 0 (Kernel) → Decide si las cuerdas vocales vibran│
+│  Realidad Física:                                       │
+│  Ring 3 (User) → Solicita permiso                      │
+│  Ring 0 (Kernel) → Hardware decide si permite          │
 │                                                          │
-│  Sin permiso del kernel → Nada sucede                   │
+│  Sin bit de privilegio en CPU → Hardware bloquea        │
 └─────────────────────────────────────────────────────────┘
 ```
 
 **Arquitectura de Anillos**:
 ```
-Ring 3 (User Space)
-  ↓ syscall
-Ring 0 (Kernel Space)  ← Guardian Beta (eBPF LSM)
-  ↓ hardware access
-Hardware (MMU)
+Ring 3 (User Space) ← Tu código aquí
+  ↓ syscall (pide permiso)
+Ring 0 (Kernel Space) ← Guardian Beta (eBPF LSM) decide
+  ↓ privileged instruction
+Hardware (CPU + MMU) ← Verifica bit de privilegio
 ```
 
 **Por qué es inviolable**:
-- El **MMU (Memory Management Unit)** es hardware físico
-- Separa memoria de kernel y user space **físicamente**
-- Un proceso en Ring 3 **no puede** acceder a Ring 0
-- Intentarlo causa **Page Fault** → Kernel Panic → Reinicio
+- Los **privilege rings** están en el **CPU** (hardware físico)
+- El **MMU** verifica permisos en **cada acceso a memoria**
+- Un proceso en Ring 3 **no tiene el bit de privilegio** en el CPU
+- Intentar ejecutar instrucción privilegiada → **CPU lanza excepción** → Kernel Panic
+- **No hay "exploit" que pueda cambiar transistores del CPU**
 
 **El Game Over**:
 ```
@@ -122,7 +123,8 @@ Hacker: "Voy a ejecutar código malicioso"
 Kernel: "Interceptado en bprm_check_security"
 eBPF LSM: "Firma no válida → EPERM"
 Hacker: "Pero necesito ejecutar esto!"
-Kernel: "No puedes negociar con la gravedad"
+Kernel: "No puedes cambiar los transistores del CPU"
+CPU: "Privilege violation → Exception"
 ```
 
 **Evidencia Técnica**:
@@ -133,9 +135,9 @@ Kernel: "No puedes negociar con la gravedad"
 
 ---
 
-### 3. La Ley de la Entropía (Hardware Watchdog)
+### 3. Restricción de Auto-Reset (Hardware Watchdog)
 
-**Principio Físico**: Todo sistema tiende al desorden. La muerte térmica es inevitable.
+**Restricción de Hardware**: El watchdog es un circuito físico (condensador + timer) que reinicia el sistema si no recibe señal.
 
 **Implementación en Sentinel**:
 
@@ -192,9 +194,9 @@ Sentinel: "No puedes negociar con un condensador que se descarga"
 
 ---
 
-## 🧬 LA CUARTA LEY: PUREZA DEL FLUJO (AIOpsShield)
+### 4. Restricción de Filtrado (AIOpsShield)
 
-**Principio Físico**: Ósmosis inversa - El agua pura no puede ser contaminada si el filtro es perfecto.
+**Restricción de Hardware**: El filtro es determinístico (regex/patterns). La IA nunca ve datos sin filtrar.
 
 **Implementación en Sentinel**:
 
