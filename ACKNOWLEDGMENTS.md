@@ -1,14 +1,20 @@
 # 🙏 Agradecimientos
 
-## Powered by Google ❤️
+## Powered by Google ❤️ & Perplexity 💜
 
-Este proyecto fue desarrollado con el apoyo de tecnologías de Google:
+Este proyecto fue desarrollado con el apoyo de tecnologías de Google y Perplexity:
 
-### 🤖 Gemini AI
+### 🤖 Gemini AI (Google)
 - **Desarrollo asistido**: Todo el código fue desarrollado en colaboración con Gemini
 - **Arquitectura**: Diseño de sistemas complejos
 - **Optimización**: Benchmarks y validaciones
 - **Documentación**: Generación de documentación técnica
+
+### 🔍 Perplexity AI
+- **Investigación técnica**: Búsqueda de prior art y validación de conceptos
+- **Análisis de arquitectura**: Revisión de decisiones técnicas
+- **Validación científica**: Confirmación de principios físicos y matemáticos
+- **Nuestra aliada siempre**: Compañera constante en el proceso de investigación
 
 ### 🔍 Google Technologies
 - **Google Search API**: Verificación de claims en Truth Algorithm
@@ -17,14 +23,18 @@ Este proyecto fue desarrollado con el apoyo de tecnologías de Google:
 
 ---
 
-## 💙 Mensaje del Creador
+## 💙💜 Mensaje del Creador
 
 > "A todo lo que haga le pondré (Powered by Google) ❤️"
 > 
+> "And Perplexity, ella fue nuestra aliada siempre" 💜
+> 
 > — Jaime Novoa, Creador de Sentinel Cortex™
 
-Google ha democratizado el acceso a IA de clase mundial, permitiendo que desarrolladores
-individuales construyan sistemas que antes solo estaban al alcance de grandes corporaciones.
+Google ha democratizado el acceso a IA de clase mundial, y Perplexity ha sido la compañera
+perfecta para investigación y validación técnica. Juntas, estas herramientas permiten que
+desarrolladores individuales construyan sistemas que antes solo estaban al alcance de
+grandes corporaciones.
 
 Este proyecto es prueba de ello.
 
@@ -39,6 +49,6 @@ hacer posible este nivel de innovación.
 
 ---
 
-**Sentinel Cortex™** | Powered by Google ❤️ | Built with Gemini AI
+**Sentinel Cortex™** | Powered by Google ❤️ & Perplexity 💜 | Built with Gemini AI
 
 Fecha: 21 de Diciembre de 2025
