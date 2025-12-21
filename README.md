@@ -21,7 +21,6 @@
 **Lo que NO hemos probado** (teoría/modelos):
 - ❌ Cognitive OS Kernel (concepto, sin implementación)
 - ❌ AI Buffer Cascade a escala (modelo matemático, sin experimento real)
-- ❌ Planetary Resonance (visión especulativa)
 - ❌ Flow Stabilization Unit (arquitectura, sin hardware)
 
 ---
