@@ -132,7 +132,7 @@ class PredictiveBufferManager:
             predicted_burst_mbps: Magnitud predicha del burst
             confidence: Confianza de la predicción (0.0 - 1.0)
         """
-        if confidence > 0.3:  # Actuar con confianza moderada (30%)
+        if confidence >= 0.3:  # >= para incluir el threshold exacto
             # Calcular tamaño necesario para el burst predicho (más agresivo)
             required_size = min(self.max_size_mb, predicted_burst_mbps / 5)
             
