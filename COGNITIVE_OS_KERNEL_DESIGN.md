@@ -14,7 +14,32 @@ Un sistema operativo que **piensa** antes de ejecutar, con IA integrada directam
 
 ---
 
-## 🏗️ ARQUITECTURA
+## 🏗️ ARQUITECTURA: SISTEMA NERVIOSO DIGITAL
+
+### Metáfora Biológica
+
+El Cognitive OS funciona como un **sistema nervioso humano**:
+
+```
+CUERPO HUMANO              →    COGNITIVE OS KERNEL
+────────────────────────────────────────────────────
+Reflejo Espinal            →    Fase 1: eBPF XDP
+(reacción automática)           (nanosegundos, sin pensar)
+
+Pensamiento Cortical       →    Fase 2: NPU Offload  
+(decisión consciente)           (microsegundos, con análisis)
+
+Precognición               →    LSTM Scheduler
+(anticipar necesidades)         (predicción de recursos)
+
+Sistema Inmune             →    AIOpsShield
+(defensa contra toxinas)        (sanitización de telemetría)
+
+Botón de Pánico            →    Hardware Watchdog
+(reinicio de emergencia)        (/dev/watchdog)
+```
+
+---
 
 ### Componentes Principales
 
@@ -27,45 +52,57 @@ Un sistema operativo que **piensa** antes de ejecutar, con IA integrada directam
 │       │             │              │                        │
 │       └─────────────┴──────────────┘                        │
 │                     │                                       │
-│              System Calls (execve, open, etc.)             │
+│              System Calls / IRQs                           │
 │                     │                                       │
 ├─────────────────────┼───────────────────────────────────────┤
 │                     ▼                                       │
 │              KERNEL SPACE (Ring 0)                          │
 │                                                             │
 │  ┌──────────────────────────────────────────────────────┐  │
-│  │         COGNITIVE KERNEL LAYER                       │  │
+│  │    COGNITIVE LAYER (Sistema Nervioso Digital)       │  │
 │  │                                                      │  │
 │  │  ┌────────────────────────────────────────────────┐ │  │
-│  │  │  1. eBPF LSM Hooks (Interception)             │ │  │
-│  │  │     - bprm_check_security (execve)            │ │  │
-│  │  │     - file_open (file access)                 │ │  │
-│  │  │     - socket_connect (network)                │ │  │
+│  │  │  FASE 1: REFLEJO ESPINAL (eBPF XDP)           │ │  │
+│  │  │  - Latencia: <10 nanosegundos                 │ │  │
+│  │  │  - Contexto: Interrupción (IRQ)               │ │  │
+│  │  │  - Acción: Bloqueo inmediato                  │ │  │
+│  │  │                                                │ │  │
+│  │  │  if (known_attack) → DROP                     │ │  │
+│  │  │  if (suspicious) → MARK + Send to NPU         │ │  │
+│  │  │  if (normal) → PASS                           │ │  │
+│  │  └────────────────┬───────────────────────────────┘ │  │
+│  │                   │                                  │  │
+│  │                   │ (Ring Buffer - Shared Memory)    │  │
+│  │                   │                                  │  │
+│  │                   ▼                                  │  │
+│  │  ┌────────────────────────────────────────────────┐ │  │
+│  │  │  FASE 2: PENSAMIENTO CORTICAL (NPU Offload)  │ │  │
+│  │  │  - Latencia: ~100 microsegundos              │ │  │
+│  │  │  - Contexto: GPU/NPU (GTX 1050)              │ │  │
+│  │  │  - Acción: Análisis profundo                 │ │  │
+│  │  │                                                │ │  │
+│  │  │  • Modelo: phi3:mini (cuantizado)            │ │  │
+│  │  │  • Inferencia en paralelo (no bloquea CPU)   │ │  │
+│  │  │  • Actualiza mapas eBPF dinámicamente        │ │  │
 │  │  └────────────────┬───────────────────────────────┘ │  │
 │  │                   │                                  │  │
 │  │                   ▼                                  │  │
 │  │  ┌────────────────────────────────────────────────┐ │  │
-│  │  │  2. Semantic Analyzer (AI-Driven)             │ │  │
-│  │  │     - Intent Classification                   │ │  │
-│  │  │     - Anomaly Detection                       │ │  │
-│  │  │     - Threat Scoring                          │ │  │
-│  │  │     - Context Awareness                       │ │  │
+│  │  │  SCHEDULER PREDICTIVO (LSTM)                  │ │  │
+│  │  │  - Predice demanda de recursos                │ │  │
+│  │  │  - Pre-asigna RAM/CPU antes de solicitud     │ │  │
+│  │  │  - Ajusta Cgroups dinámicamente              │ │  │
+│  │  │                                                │ │  │
+│  │  │  Input: sched_switch tracepoints             │ │  │
+│  │  │  Output: Resource allocation decisions       │ │  │
 │  │  └────────────────┬───────────────────────────────┘ │  │
 │  │                   │                                  │  │
 │  │                   ▼                                  │  │
 │  │  ┌────────────────────────────────────────────────┐ │  │
-│  │  │  3. Decision Engine (Real-Time)               │ │  │
-│  │  │     - Allow / Deny / Quarantine               │ │  │
-│  │  │     - Latency: <1 microsecond                 │ │  │
-│  │  │     - Adaptive Learning                       │ │  │
-│  │  └────────────────┬───────────────────────────────┘ │  │
-│  │                   │                                  │  │
-│  │                   ▼                                  │  │
-│  │  ┌────────────────────────────────────────────────┐ │  │
-│  │  │  4. Enforcement (Kernel-Level)                │ │  │
-│  │  │     - ALLOW: Execute syscall                  │ │  │
-│  │  │     - DENY: Return -EPERM                     │ │  │
-│  │  │     - QUARANTINE: Sandbox execution           │ │  │
+│  │  │  DEFENSA: AIOpsShield + Watchdog              │ │  │
+│  │  │  - Sanitiza telemetría (anti-poisoning)      │ │  │
+│  │  │  - Hardware watchdog (failsafe)              │ │  │
+│  │  │  - Reinicio automático si kernel panic       │ │  │
 │  │  └────────────────────────────────────────────────┘ │  │
 │  └──────────────────────────────────────────────────────┘  │
 │                                                             │
@@ -83,158 +120,206 @@ Un sistema operativo que **piensa** antes de ejecutar, con IA integrada directam
 
 ## 🔬 COMPONENTES DETALLADOS
 
-### 1. eBPF LSM Hooks (Interception Layer)
+### FASE 1: Reflejo Espinal (eBPF XDP)
 
-**Función**: Interceptar syscalls ANTES de ejecución
+**Función**: Reacción inmediata sin "pensar"
+
+**Contexto de ejecución**: Interrupción de hardware (IRQ)  
+**Latencia objetivo**: <10 nanosegundos  
+**Hardware**: CPU (Ring 0)
 
 **Implementación**:
 ```c
-SEC("lsm/bprm_check_security")
-int BPF_PROG(guardian_execve, struct linux_binprm *bprm) {
-    // Extraer información del proceso
-    char comm[16];
-    bpf_get_current_comm(&comm, sizeof(comm));
+SEC("xdp")
+int cognitive_irq_handler(struct xdp_md *ctx) {
+    // Extraer información del paquete
+    void *data = (void *)(long)ctx->data;
+    void *data_end = (void *)(long)ctx->data_end;
     
-    // Enviar a Semantic Analyzer
-    struct event evt = {
-        .pid = bpf_get_current_pid_tgid() >> 32,
-        .comm = comm,
-        .timestamp = bpf_ktime_get_ns()
-    };
-    
-    // Decisión del Cognitive Layer
-    int decision = semantic_analyze(&evt);
-    
-    if (decision == DENY) {
-        return -EPERM;  // Bloquear ejecución
+    // 1. PATRÓN CONOCIDO → Bloqueo inmediato
+    if (is_known_attack_signature(data, data_end)) {
+        bpf_printk("REFLEJO: Ataque conocido bloqueado");
+        return XDP_DROP;  // <10ns
     }
     
-    return 0;  // Permitir
+    // 2. SOSPECHOSO → Marcar y enviar a análisis profundo
+    if (is_suspicious_pattern(data, data_end)) {
+        // Marcar paquete
+        mark_for_deep_analysis(ctx);
+        
+        // Enviar copia a NPU (ring buffer, async)
+        send_to_npu_ringbuf(data, data_end);
+        
+        // Permitir mientras se analiza (o bloquear según política)
+        return XDP_PASS;  // o XDP_DROP si política es restrictiva
+    }
+    
+    // 3. NORMAL → Permitir
+    return XDP_PASS;
 }
 ```
 
-**Hooks críticos**:
-- `bprm_check_security`: execve (ejecución de programas)
-- `file_open`: Apertura de archivos
-- `socket_connect`: Conexiones de red
-- `task_kill`: Señales entre procesos
+**Características**:
+- ✅ No bloquea el sistema (ejecución en IRQ context)
+- ✅ Decisiones basadas en patrones conocidos (cache)
+- ✅ Offload de análisis complejo a NPU
+- ✅ Latencia sub-microsegundo
+
+**Analogía**: Como cuando tocas algo caliente - tu mano se retira ANTES de que tu cerebro procese "está caliente"
 
 ---
 
-### 2. Semantic Analyzer (AI-Driven)
+### FASE 2: Pensamiento Cortical (NPU Offload)
 
-**Función**: Analizar intención y contexto del syscall
+**Función**: Análisis profundo con IA
+
+**Contexto de ejecución**: GPU/NPU (paralelo a CPU)  
+**Latencia objetivo**: ~100 microsegundos  
+**Hardware**: NVIDIA GTX 1050 (tu hardware actual)
+
+**Implementación**:
+```python
+# Proceso en GPU/NPU (no bloquea kernel)
+class CorticalAnalyzer:
+    def __init__(self):
+        # Modelo cuantizado para latencia baja
+        self.model = load_quantized_model("phi3:mini-q4")
+        self.ringbuf = NPURingBuffer("/sys/fs/bpf/cognitive_ringbuf")
+    
+    def run(self):
+        while True:
+            # Leer del ring buffer (shared memory con eBPF)
+            packet = self.ringbuf.read()
+            
+            if packet is None:
+                continue
+            
+            # Inferencia en GPU
+            threat_score = self.model.predict(packet.features)
+            
+            # Decisión basada en score
+            if threat_score > 0.9:
+                # BLOQUEAR: Actualizar mapa eBPF
+                update_ebpf_map(packet.src_ip, ACTION_BLOCK)
+                log_threat(packet, threat_score)
+            
+            elif threat_score > 0.5:
+                # CUARENTENA: Sandbox
+                update_ebpf_map(packet.src_ip, ACTION_QUARANTINE)
+                create_sandbox(packet.process_id)
+            
+            else:
+                # PERMITIR: Agregar a whitelist
+                update_ebpf_map(packet.src_ip, ACTION_ALLOW)
+```
 
 **Características**:
-- **Intent Classification**: ¿Qué intenta hacer el proceso?
-- **Anomaly Detection**: ¿Es comportamiento normal?
-- **Threat Scoring**: Nivel de riesgo (0-100)
-- **Context Awareness**: Historial, relaciones, timing
+- ✅ Ejecución en paralelo (no bloquea CPU)
+- ✅ Modelo cuantizado (latencia optimizada)
+- ✅ Actualización dinámica de mapas eBPF
+- ✅ Aprendizaje continuo
 
-**Modelo de IA**:
+**Analogía**: Como cuando tu cerebro procesa "eso estaba caliente, no volver a tocar"
+
+---
+
+### SCHEDULER PREDICTIVO (LSTM)
+
+**Función**: Anticipar demanda de recursos
+
+**Base**: Tu LSTM de predicción de ráfagas (ya validado: 67% reducción drops)
+
+**Implementación**:
 ```python
-class SemanticAnalyzer:
+class PredictiveScheduler:
     def __init__(self):
-        # Modelo ligero para latencia <1μs
-        self.model = TinyBERT()  # 4.4M params
-        self.cache = LRUCache(10000)
+        # Reutilizar tu LSTM de buffer prediction
+        self.lstm = load_model("buffer_prediction_lstm.h5")
+        self.ebpf_tracer = BPFTracer()
     
-    def analyze(self, event):
-        # 1. Feature extraction
-        features = self.extract_features(event)
+    @self.ebpf_tracer.trace("sched_switch")
+    def monitor_process(self, pid, cpu_time, mem_usage, io_ops):
+        # Alimentar LSTM con métricas actuales
+        features = [pid, cpu_time, mem_usage, io_ops]
         
-        # 2. Cache lookup (99% hit rate)
-        cache_key = hash(features)
-        if cache_key in self.cache:
-            return self.cache[cache_key]
+        # Predicción: "En 10ms necesitará X recursos"
+        prediction = self.lstm.predict(features)
         
-        # 3. Model inference (<100ns)
-        threat_score = self.model.predict(features)
+        # PRE-ASIGNAR recursos antes de que los pida
+        if prediction.ram_needed > current_allocation(pid):
+            # Ajustar Cgroup
+            cgroup_set_memory_limit(pid, prediction.ram_needed)
+            
+            # Elevar prioridad si es crítico
+            if prediction.criticality > 0.8:
+                renice(pid, priority=-5)
         
-        # 4. Decision
-        if threat_score > 0.9:
-            decision = DENY
-        elif threat_score > 0.5:
-            decision = QUARANTINE
-        else:
-            decision = ALLOW
-        
-        # 5. Cache result
-        self.cache[cache_key] = decision
-        
-        return decision
+        # Predicción de CPU
+        if prediction.cpu_needed > current_cpu_share(pid):
+            cgroup_set_cpu_shares(pid, prediction.cpu_needed)
 ```
 
-**Optimizaciones para latencia**:
-- Cache LRU (99% hit rate)
-- Modelo ultra-ligero (TinyBERT 4.4M params)
-- Shared memory con kernel
-- Prefetching predictivo
+**Flujo**:
+```
+1. eBPF monitorea: "postgres recibió 500 conexiones en 1ms"
+2. LSTM predice: "Necesitará 2GB RAM + 4 cores en 10ms"
+3. Scheduler PRE-ASIGNA recursos
+4. Proceso recibe recursos ANTES de pedirlos
+5. Resultado: CERO page faults, CERO context switches innecesarios
+```
+
+**Ventaja vs Linux CFS**:
+- Linux CFS: Reactivo (espera a que pidas)
+- Cognitive OS: Predictivo (te da antes de que pidas)
 
 ---
 
-### 3. Decision Engine (Real-Time)
+### DEFENSA: AIOpsShield + Watchdog
 
-**Función**: Tomar decisión en <1 microsegundo
+**Problema**: Envenenamiento de IA (AIOpsDoom)
 
-**Algoritmo**:
+**Escenario de ataque**:
 ```
-INPUT: Event (syscall + context)
-OUTPUT: Decision (ALLOW/DENY/QUARANTINE)
-
-1. Cache Lookup (O(1))
-   IF cached THEN return cached_decision
-
-2. Fast Path (99% of cases)
-   IF whitelist_match THEN return ALLOW
-   IF blacklist_match THEN return DENY
-
-3. Semantic Analysis (1% of cases)
-   threat_score = semantic_analyzer.analyze(event)
-   
-   IF threat_score > 0.9 THEN
-       return DENY
-   ELIF threat_score > 0.5 THEN
-       return QUARANTINE
-   ELSE
-       return ALLOW
-
-4. Cache Result
-   cache[event_hash] = decision
+1. Atacante inyecta: "DB está inactiva" (FALSO)
+2. LSTM cree la telemetría
+3. Scheduler quita recursos a DB
+4. DB colapsa (Auto-DoS)
 ```
 
-**Latencia objetivo**: <1 microsegundo
-- Cache hit: ~10 nanosegundos
-- Whitelist/blacklist: ~100 nanosegundos
-- Semantic analysis: ~500 nanosegundos
+**Defensa Multi-Capa**:
 
----
+**Capa 1: AIOpsShield** (ya validado - Claim 2)
+```python
+# Sanitizar ANTES de alimentar LSTM
+telemetry = receive_telemetry()
+sanitized = aiopsdoom_sanitizer.clean(telemetry)
 
-### 4. Enforcement (Kernel-Level)
+# Solo telemetría limpia va al LSTM
+lstm_input = sanitized
+```
 
-**Función**: Ejecutar decisión a nivel kernel
-
-**Acciones**:
-
-**ALLOW**:
+**Capa 2: Hardware Watchdog**
 ```c
-return 0;  // Continuar ejecución normal
+// Si el scheduler se equivoca y congela el sistema
+int watchdog_fd = open("/dev/watchdog", O_WRONLY);
+
+// "Acariciar al perro" cada segundo
+while (system_healthy()) {
+    write(watchdog_fd, "\0", 1);
+    sleep(1);
+}
+
+// Si no se "acaricia" → Hardware reinicia el sistema
+// Es el "botón de pánico" biológico
 ```
 
-**DENY**:
-```c
-return -EPERM;  // Permission denied
-// Syscall bloqueado, proceso recibe error
-```
-
-**QUARANTINE**:
-```c
-// Crear sandbox temporal
-create_sandbox(pid);
-// Ejecutar en entorno aislado
-execute_sandboxed(bprm);
-// Monitorear comportamiento
-monitor_execution(pid);
+**Capa 3: Rollback Automático**
+```python
+# Si predicción causa degradación
+if system_performance < baseline:
+    # Rollback a scheduler tradicional
+    switch_to_cfs_scheduler()
+    log_incident("LSTM prediction caused degradation")
 ```
 
 ---
@@ -338,35 +423,94 @@ monitor_execution(pid);
 
 ## 🔬 VALIDACIÓN TÉCNICA
 
-### Proof of Concept
+### Proof of Concept: eBPF → LSTM → Buffer
 
-**Ya tenemos**:
+**Objetivo**: Probar que eBPF puede alimentar LSTM en tiempo real
+
+**Ya tenemos** (Validado):
 - ✅ eBPF LSM compilado y cargado (Program ID 168)
-- ✅ Hooks funcionando en kernel
-- ✅ Infraestructura básica
+- ✅ LSTM de predicción de ráfagas (67% reducción drops)
+- ✅ GPU disponible (GTX 1050)
+- ✅ AIOpsShield (sanitización)
 
-**Falta**:
-- ⏳ Semantic Analyzer (modelo IA)
-- ⏳ Decision Engine (algoritmo)
-- ⏳ Cache layer (shared memory)
-- ⏳ Benchmarks de latencia
+**Próximo PoC** (Recomendación de Perplexity):
+
+**Paso 1: eBPF Sensor**
+```c
+// Detectar "viene ola de tráfico"
+SEC("xdp")
+int detect_burst(struct xdp_md *ctx) {
+    // Contar paquetes por segundo
+    u64 pps = count_packets_per_second();
+    
+    // Si detecta burst → Señal a Python
+    if (pps > THRESHOLD) {
+        send_signal_to_userspace(BURST_INCOMING, pps);
+    }
+    
+    return XDP_PASS;
+}
+```
+
+**Paso 2: LSTM Prediction**
+```python
+# Recibir señal de eBPF
+signal = ebpf_ringbuf.read()
+
+if signal.type == BURST_INCOMING:
+    # Predecir tamaño de ola
+    burst_size = lstm.predict(signal.pps)
+    
+    # Ajustar buffer ANTES de que llegue
+    adjust_buffer_size(burst_size)
+```
+
+**Paso 3: Validación**
+- Medir latencia end-to-end
+- Comparar con buffer estático
+- Validar reducción de drops
+
+**Si esto funciona** → Has probado el concepto completo del Cognitive OS
+
+---
 
 ### Roadmap de Implementación
 
-**Fase 1: Prototype** (1-2 semanas)
-- Semantic Analyzer básico (reglas)
-- Decision Engine simple
+**Fase 0: PoC Inmediato** (1 semana)
+- eBPF sensor de bursts
+- Integración con LSTM existente
 - Benchmarks de latencia
+- **Objetivo**: Probar viabilidad del concepto
 
-**Fase 2: ML Integration** (1 mes)
-- Entrenar modelo TinyBERT
-- Integrar con eBPF
-- Optimizar latencia
+**Fase 1: Reflejo Espinal** (2-4 semanas)
+- eBPF XDP para IRQs
+- Patrones de ataque conocidos
+- Ring buffer con userspace
+- Latencia <10ns validada
 
-**Fase 3: Production** (2-3 meses)
+**Fase 2: Pensamiento Cortical** (1-2 meses)
+- NPU offload (GTX 1050)
+- Modelo phi3:mini cuantizado
+- Actualización dinámica de mapas eBPF
+- Latencia ~100μs validada
+
+**Fase 3: Scheduler Predictivo** (2-3 meses)
+- LSTM para predicción de recursos
+- Integración con Cgroups
+- Pre-asignación de RAM/CPU
+- Benchmarks vs CFS
+
+**Fase 4: Defensa Completa** (1 mes)
+- AIOpsShield integration
+- Hardware watchdog
+- Rollback automático
+- Testing de adversarial attacks
+
+**Fase 5: Production** (1-2 meses)
 - Adaptive learning
 - Context awareness
 - Full testing
+- Performance tuning
 
 ---
 
