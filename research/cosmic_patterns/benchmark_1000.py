@@ -74,20 +74,20 @@ def run_single_test(pattern):
 
 def main():
     print("="*70)
-    print("🧊⚛️ QUANTUM COOLING - 1000 ITERATION BENCHMARK")
+    print("🧊⚛️ QUANTUM COOLING - 10,000 ITERATION BENCHMARK")
     print("="*70)
     print()
-    print("Generating 1000 random traffic patterns...")
-    print("This will take ~2 minutes...")
+    print("Generating 10,000 random traffic patterns...")
+    print("This will take ~1 minute...")
     print()
     
     results = []
     start_time = time.time()
     
-    for i in range(1000):
-        if (i + 1) % 100 == 0:
+    for i in range(10000):
+        if (i + 1) % 1000 == 0:
             elapsed = time.time() - start_time
-            print(f"Progress: {i+1}/1000 ({elapsed:.1f}s elapsed)")
+            print(f"Progress: {i+1}/10,000 ({elapsed:.1f}s elapsed)")
         
         pattern = generate_random_pattern()
         result = run_single_test(pattern)
@@ -112,7 +112,7 @@ def main():
     # Print results
     print()
     print("="*70)
-    print("📊 STATISTICAL RESULTS (n=1000)")
+    print("📊 STATISTICAL RESULTS (n=10,000)")
     print("="*70)
     print()
     print(f"Execution time: {total_time:.1f}s")
@@ -134,7 +134,7 @@ def main():
     print("✅ STATISTICAL VALIDATION COMPLETE")
     print("="*70)
     print()
-    print(f"Quantum Cooling validated across 1000 random scenarios")
+    print(f"Quantum Cooling validated across 10,000 random scenarios")
     print(f"Consistent improvement: {avg_improvement:.2f}% ± {max_improvement - min_improvement:.2f}%")
     print()
 
