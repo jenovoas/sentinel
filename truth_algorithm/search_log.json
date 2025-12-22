@@ -1,62 +1,62 @@
 [
   {
-    "search_id": "d365d3d78f84be44",
+    "search_id": "bb83c2cffb8ae812",
     "claim": "La tasa de desempleo en EE.UU. es 3.5%",
-    "timestamp": 1766341643.3263257,
-    "provider": "mock"
+    "timestamp": 1766364645.762075,
+    "provider": "duckduckgo"
   },
   {
-    "search_id": "cb0c2a5e0ee9d61d",
+    "search_id": "229a72c0ea27b213",
     "claim": "Test claim 0",
-    "timestamp": 1766341643.3263867,
-    "provider": "mock"
+    "timestamp": 1766364645.762392,
+    "provider": "duckduckgo"
   },
   {
-    "search_id": "220f2da181eee5ce",
+    "search_id": "98c9c6a6d7a7e55b",
     "claim": "Test claim 1",
-    "timestamp": 1766341643.3264077,
-    "provider": "mock"
+    "timestamp": 1766364645.7625642,
+    "provider": "duckduckgo"
   },
   {
-    "search_id": "3a040b0c421ef138",
+    "search_id": "3a53e9eff86ea7e7",
     "claim": "Test claim 2",
-    "timestamp": 1766341643.3264222,
-    "provider": "mock"
+    "timestamp": 1766364645.7627149,
+    "provider": "duckduckgo"
   },
   {
-    "search_id": "bb1898a40f5d83c4",
+    "search_id": "022ee9a67cb354bd",
     "claim": "Test claim 3",
-    "timestamp": 1766341643.3264353,
-    "provider": "mock"
+    "timestamp": 1766364645.7628503,
+    "provider": "duckduckgo"
   },
   {
-    "search_id": "a700b228273b2fdd",
+    "search_id": "406455949a53f004",
     "claim": "Test claim 4",
-    "timestamp": 1766341643.3264484,
-    "provider": "mock"
+    "timestamp": 1766364645.762982,
+    "provider": "duckduckgo"
   },
   {
-    "search_id": "26147adb703a196f",
+    "search_id": "184fd49f04eb29e5",
     "claim": "Test claim 5",
-    "timestamp": 1766341643.3264604,
-    "provider": "mock"
+    "timestamp": 1766364645.7631195,
+    "provider": "duckduckgo"
   },
   {
-    "search_id": "ce6682fed8163b18",
+    "search_id": "4795d60b428f7cc0",
     "claim": "Test claim 6",
-    "timestamp": 1766341643.3264725,
-    "provider": "mock"
+    "timestamp": 1766364645.7632759,
+    "provider": "duckduckgo"
   },
   {
-    "search_id": "7416cd5f636cf69e",
+    "search_id": "c3ca27e8a5b17273",
     "claim": "Test claim 7",
-    "timestamp": 1766341643.3265114,
-    "provider": "mock"
+    "timestamp": 1766364645.7634127,
+    "provider": "duckduckgo"
   },
   {
-    "search_id": "b865be4bcb211ada",
+    "search_id": "aecc49052e46a9b0",
     "claim": "Test claim 8",
-    "timestamp": 1766341643.3265278,
-    "provider": "mock"
+    "timestamp": 1766364645.76355,
+    "provider": "duckduckgo"
   }
 ]

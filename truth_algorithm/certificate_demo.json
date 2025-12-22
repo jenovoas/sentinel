@@ -1,0 +1,34 @@
+{
+  "content_hash": "30fce9f61d2f31ca3cee654dab9e382a7acb7bb62007b712f9a4a360b665b04b",
+  "certificate_id": "f3be886a4f9bee9d",
+  "timestamp": "2025-12-22T01:23:52.260947",
+  "truth_score": 0.7499999999999999,
+  "confidence_level": "medium",
+  "verdict": "Contenido probablemente cierto",
+  "claims_total": 3,
+  "claims_verified": 3,
+  "verification_rate": 1.0,
+  "sources_total": 3,
+  "provider": "mock",
+  "processing_time_ms": 2.351,
+  "claim_details": [
+    {
+      "claim": "Python es un lenguaje de programaci\u00f3n creado por Guido van Rossum en 1991",
+      "score": 0.7499999999999999,
+      "confidence": "low",
+      "sources": 1
+    },
+    {
+      "claim": "Es ampliamente usado en ciencia de datos y desarrollo web",
+      "score": 0.7499999999999999,
+      "confidence": "low",
+      "sources": 1
+    },
+    {
+      "claim": "La sintaxis de Python es clara y legible",
+      "score": 0.7499999999999999,
+      "confidence": "low",
+      "sources": 1
+    }
+  ]
+}
