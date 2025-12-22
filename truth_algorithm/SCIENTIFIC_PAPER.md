@@ -6,6 +6,9 @@
 **Version**: 1.0  
 **Status**: Peer Review Ready
 
+> [!NOTE]
+> **AI-Assisted Development**: This system was designed and implemented with the assistance of Google Gemini 2.0 Flash (Experimental). The core architecture, mathematical formulas, and algorithmic innovations were conceived by the human researcher, with AI providing implementation support, code generation, and documentation assistance.
+
 ---
 
 ## Abstract
@@ -328,9 +331,12 @@ All test claims and results are included in:
 ## 9. Acknowledgments
 
 This work was developed as part of the Sentinel Cortex™ project. We thank:
+- **Google Gemini 2.0 Flash (Experimental)** for AI-assisted development, code generation, and documentation
 - Perplexity AI for API access
 - DuckDuckGo for privacy-focused search
 - Google for Custom Search API
+
+**Development Methodology**: This project exemplifies human-AI collaboration, where the researcher provided the vision, architecture, and algorithmic innovations, while AI accelerated implementation, testing, and documentation.
 
 ---
 
