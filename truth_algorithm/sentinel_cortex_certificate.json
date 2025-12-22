@@ -1,0 +1,22 @@
+{
+  "content_hash": "d35c9f33e0b3ee3c4db9f74a8f1295edc0f9c573ae932f5faccaae8c93cb40b2",
+  "certificate_id": "701180c463a1fd84",
+  "timestamp": "2025-12-22T02:04:12.758916",
+  "truth_score": 0.7166666666666667,
+  "confidence_level": "medium",
+  "verdict": "Contenido probablemente cierto",
+  "claims_total": 1,
+  "claims_verified": 1,
+  "verification_rate": 1.0,
+  "sources_total": 5,
+  "provider": "perplexity",
+  "processing_time_ms": 3793.56,
+  "claim_details": [
+    {
+      "claim": "Sentinel Cortex reduce packet drops en 67% durante bursts de tr\u00e1fico",
+      "score": 0.7166666666666667,
+      "confidence": "high",
+      "sources": 5
+    }
+  ]
+}
