@@ -4,6 +4,27 @@
 
 ---
 
+## 🎯 Research Scope
+
+**Our Goal**: Bridge current academic research with Sentinel architecture
+
+**NOT doing**: Original academic research  
+**ARE doing**: Integration research
+
+**Method**:
+1. Find current academic research (via Perplexity, etc.)
+2. Adapt to Sentinel's proven architecture
+3. Test and validate integration
+4. Document findings
+
+**Example**: Neural interface
+- Academic research: Bone conduction, aDBS, OPMs (existing)
+- Our contribution: Apply to Sentinel's quantum control framework
+- Integration: Adapt OptomechanicalCooling to neural signals
+- Validation: Test algorithms (n=1,000) ✅
+
+---
+
 ## ✅ VALIDATED BY US (`/quantum_control/`)
 
 **What we actually tested**:
