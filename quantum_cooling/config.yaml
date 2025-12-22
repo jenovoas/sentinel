@@ -1,0 +1,19 @@
+# Quantum Cooling Service - Configuration
+
+# Prometheus connection
+prometheus_url: http://localhost:9090
+
+# Polling interval (seconds)
+poll_interval: 1.0
+
+# Buffer size limits (bytes)
+min_buffer_size: 512
+max_buffer_size: 16384
+
+# Enable automatic buffer resizing
+# WARNING: Requires root privileges
+# Set to false for monitoring-only mode
+enable_auto_resize: false
+
+# Logging level
+log_level: INFO
