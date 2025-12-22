@@ -1,0 +1,17 @@
+{
+  "decision_id": "gamma_001",
+  "timestamp": "2025-12-22T03:53:05.616003",
+  "context": "Sentinel Cortex reduce packet drops en 67% durante bursts de tr\u00e1fico",
+  "decision": "APPROVE",
+  "confidence": 0.85,
+  "user_feedback": null,
+  "truth_score": 0.7166666666666667,
+  "truth_confidence": "medium",
+  "truth_sources": 5,
+  "certification": {
+    "certificate_id": "46c6f8757ef40ec9",
+    "verdict": "Contenido probablemente cierto",
+    "provider": "perplexity",
+    "timestamp": "2025-12-22T03:53:11.034531"
+  }
+}
