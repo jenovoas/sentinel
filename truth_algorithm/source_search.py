@@ -31,7 +31,8 @@ import re
 class SearchProvider(Enum):
     """Proveedores de búsqueda soportados"""
     GOOGLE = "google"
-    DUCKDUCKGO = "duckduckgo"  # Alternativa sin API key
+    DUCKDUCKGO = "duckduckgo"
+    PERPLEXITY = "perplexity"  # Perplexity AI Search
     MOCK = "mock"  # Para testing sin llamadas reales
 
 
@@ -188,6 +189,8 @@ class SourceSearchEngine:
             return self._google_search(claim, max_results)
         elif self.provider == SearchProvider.DUCKDUCKGO:
             return self._duckduckgo_search(claim, max_results)
+        elif self.provider == SearchProvider.PERPLEXITY:
+            return self._perplexity_search(claim, max_results)
         else:
             raise ValueError(f"Provider no soportado: {self.provider}")
     
@@ -236,30 +239,206 @@ class SourceSearchEngine:
     
     def _google_search(self, claim: str, max_results: int) -> List[SearchResult]:
         """
-        Búsqueda real usando Google Custom Search API
+        Búsqueda usando Google Custom Search API oficial
         
         REQUIERE:
         - GOOGLE_SEARCH_API_KEY en environment
         - GOOGLE_SEARCH_CX en environment
+        
+        NOTA: Para evitar cargos, se recomienda usar DuckDuckGo como alternativa.
         """
         if not self.google_api_key or not self.google_cx:
-            raise ValueError(
-                "Google Search requiere API key y CX en environment.\n"
-                "Set: GOOGLE_SEARCH_API_KEY y GOOGLE_SEARCH_CX"
-            )
+            print("⚠️  Google Search requiere API key y CX")
+            print("   Alternativa recomendada: DuckDuckGo (gratis)")
+            return self._mock_search(claim, max_results)
         
-        # TODO: Implementar llamada real a Google API
-        # Por ahora, retornar mock
-        print("⚠️  Google Search API no implementado aún. Usando mock.")
-        return self._mock_search(claim, max_results)
+        try:
+            from googleapiclient.discovery import build
+            
+            service = build("customsearch", "v1", developerKey=self.google_api_key)
+            result = service.cse().list(
+                q=claim,
+                cx=self.google_cx,
+                num=min(max_results, 10)
+            ).execute()
+            
+            results = []
+            for item in result.get('items', []):
+                url = item.get('link', '')
+                source_type = self._classify_source(url)
+                
+                results.append(SearchResult(
+                    title=item.get('title', ''),
+                    url=url,
+                    snippet=item.get('snippet', ''),
+                    source_type=source_type,
+                    confidence=self._calculate_confidence(source_type),
+                    timestamp=time.strftime("%Y-%m-%d")
+                ))
+            
+            print(f"✅ Google API: {len(results)} resultados")
+            return results
+            
+        except ImportError:
+            print("⚠️  google-api-python-client no instalado")
+            print("   Instalar con: pip install google-api-python-client")
+            return self._mock_search(claim, max_results)
+        except Exception as e:
+            print(f"❌ Error en Google API: {e}")
+            return self._mock_search(claim, max_results)
     
     def _duckduckgo_search(self, claim: str, max_results: int) -> List[SearchResult]:
         """
-        Búsqueda usando DuckDuckGo (no requiere API key)
+        Búsqueda usando DuckDuckGo (100% GRATIS, sin API key)
+        
+        VENTAJAS:
+        - Gratis ilimitado
+        - Sin API key
+        - Sin riesgo de cargos inesperados
+        - Privacidad respetada
         """
-        # TODO: Implementar con duckduckgo_search library
-        print("⚠️  DuckDuckGo search no implementado aún. Usando mock.")
-        return self._mock_search(claim, max_results)
+        try:
+            from duckduckgo_search import DDGS
+            
+            results = []
+            with DDGS() as ddgs:
+                search_results = ddgs.text(claim, max_results=max_results)
+                
+                for item in search_results:
+                    # Clasificar tipo de fuente
+                    url = item.get('href', '')
+                    source_type = self._classify_source(url)
+                    
+                    results.append(SearchResult(
+                        title=item.get('title', ''),
+                        url=url,
+                        snippet=item.get('body', ''),
+                        source_type=source_type,
+                        confidence=self._calculate_confidence(source_type),
+                        timestamp=time.strftime("%Y-%m-%d")
+                    ))
+            
+            return results
+            
+        except ImportError:
+            print("⚠️  DuckDuckGo library no instalada.")
+            print("   Instalar con: pip install duckduckgo-search")
+            print("   Usando mock por ahora...")
+            return self._mock_search(claim, max_results)
+        except Exception as e:
+            print(f"⚠️  Error en DuckDuckGo search: {e}")
+            print("   Usando mock como fallback...")
+            return self._mock_search(claim, max_results)
+    
+    def _perplexity_search(self, claim: str, max_results: int) -> List[SearchResult]:
+        """
+        Búsqueda usando Perplexity AI (API de pago pero muy precisa)
+        
+        VENTAJAS:
+        - Resultados de alta calidad con IA
+        - Fuentes verificadas automáticamente
+        - Respuestas con contexto
+        
+        REQUIERE:
+        - PERPLEXITY_API_KEY en environment
+        """
+        api_key = os.getenv('PERPLEXITY_API_KEY')
+        
+        if not api_key:
+            print("⚠️  Perplexity requiere API key")
+            print("   Set: PERPLEXITY_API_KEY")
+            print("   Alternativa: DuckDuckGo (gratis)")
+            return self._mock_search(claim, max_results)
+        
+        try:
+            import requests
+            
+            # Endpoint de Perplexity
+            url = "https://api.perplexity.ai/chat/completions"
+            
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+            
+            # Prompt optimizado para búsqueda de fuentes
+            payload = {
+                "model": "sonar",  # Modelo correcto de Perplexity
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "You are a fact-checking assistant. Provide sources to verify claims."
+                    },
+                    {
+                        "role": "user",
+                        "content": f"Find reliable sources to verify this claim: {claim}. List URLs and brief descriptions."
+                    }
+                ],
+                "max_tokens": 500,
+                "temperature": 0.2,
+                "return_citations": True,
+                "return_images": False
+            }
+            
+            response = requests.post(url, json=payload, headers=headers, timeout=30)
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            # Extraer fuentes de las citaciones
+            results = []
+            citations = data.get('citations', [])
+            
+            for i, citation in enumerate(citations[:max_results]):
+                url = citation
+                source_type = self._classify_source(url)
+                
+                results.append(SearchResult(
+                    title=f"Source {i+1} from Perplexity",
+                    url=url,
+                    snippet=data.get('choices', [{}])[0].get('message', {}).get('content', '')[:200],
+                    source_type=source_type,
+                    confidence=self._calculate_confidence(source_type),
+                    timestamp=time.strftime("%Y-%m-%d")
+                ))
+            
+            if results:
+                print(f"✅ Perplexity: {len(results)} fuentes encontradas")
+            else:
+                print("⚠️  Perplexity no retornó fuentes. Usando mock...")
+                return self._mock_search(claim, max_results)
+            
+            return results
+            
+        except ImportError:
+            print("⚠️  requests no instalado")
+            print("   Instalar con: pip install requests")
+            return self._mock_search(claim, max_results)
+        except Exception as e:
+            print(f"⚠️  Error en Perplexity search: {e}")
+            print("   Usando mock como fallback...")
+            return self._mock_search(claim, max_results)
+    
+    def _classify_source(self, url: str) -> str:
+        """Clasifica el tipo de fuente según la URL"""
+        if any(domain in url for domain in ['.gov', '.gob']):
+            return 'official'
+        elif '.edu' in url:
+            return 'academic'
+        elif any(domain in url for domain in ['reuters.com', 'apnews.com', 'bbc.com', 'nytimes.com']):
+            return 'news'
+        else:
+            return 'general'
+    
+    def _calculate_confidence(self, source_type: str) -> float:
+        """Calcula confianza basada en tipo de fuente"""
+        confidence_map = {
+            'official': 0.95,
+            'academic': 0.90,
+            'news': 0.75,
+            'general': 0.60
+        }
+        return confidence_map.get(source_type, 0.50)
     
     def get_search_log(self) -> List[Dict]:
         """Retorna log de búsquedas (para auditoría)"""
@@ -275,11 +454,13 @@ class SourceSearchEngine:
 def demo_secure_search():
     """Demo del motor de búsqueda seguro"""
     print("="*70)
-    print("DEMO - SOURCE SEARCH ENGINE (MODO SEGURO)")
+    print("DEMO - SOURCE SEARCH ENGINE (100% GRATIS)")
+    print("="*70)
+    print("🆓 Usando DuckDuckGo - Sin API key, sin cargos")
     print("="*70)
     
-    # Crear engine en modo MOCK (sin llamadas reales)
-    engine = SourceSearchEngine(provider=SearchProvider.MOCK)
+    # Crear engine en modo DuckDuckGo (gratis, sin API key)
+    engine = SourceSearchEngine(provider=SearchProvider.DUCKDUCKGO)
     
     # Test 1: Búsqueda normal
     print("\n📊 Test 1: Búsqueda normal")
