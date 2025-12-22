@@ -8,6 +8,8 @@
 
 **Goal**: Bridge academic research with Sentinel architecture
 
+**Inspiration**: Quantum mechanics principles
+
 **We are NOT**:
 - Doing original academic research
 - Claiming peer-reviewed validation
@@ -15,9 +17,16 @@
 
 **We ARE**:
 - Finding current academic research (multi-AI search)
-- Adapting it to Sentinel's proven framework
+- Applying quantum-inspired principles to IT
+- Adapting to Sentinel's proven framework
 - Testing the integration
 - Documenting results
+
+**Quantum Inspiration**:
+- Optomechanical cooling → Resource control
+- Ground state → Optimal efficiency
+- Damping → Stability
+- Quadratic force (v²) → Burst response
 
 **Example**:
 - Academic: Bone conduction exists (Perplexity finding)
