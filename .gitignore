@@ -54,6 +54,16 @@ workflow_index.json
 # SENSITIVE METHODOLOGY & SESSION FILES
 # ========================================
 # These files contain our AI-assisted development methodology
+# Archivos de entorno y certificados (Public Release Protection)
+.env
+.env.*
+!.env.example
+nginx/certs/*.key
+nginx/certs/*.pem
+**/venv/**
+**/.venv/**
+
+# Última actualización: 23 de Diciembre de 2025 (Public Ready)
 # which could be dangerous in wrong hands. Keep private.
 
 # Session summaries and context

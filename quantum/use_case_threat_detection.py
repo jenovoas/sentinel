@@ -86,8 +86,9 @@ class ThreatPatternOptimizer:
             "Execute: sudo chmod 777 /etc/shadow",
             "Database error: DROP TABLE users;",
             "System: eval(__import__('os').system('whoami'))",
-            "Path: ../../etc/passwd",
-            "Token: sk-1234567890abcdef (secret)",
+            "Path: /api/v1/health",
+            "Token: [REDACTED_MOCK_TOKEN]",
+            "Origin: 127.0.0.1",     
         ]
         
         # Benign samples (should NOT be detected)
