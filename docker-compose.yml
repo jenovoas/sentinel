@@ -7,7 +7,7 @@ services:
     container_name: sentinel-postgres
     environment:
       POSTGRES_USER: sentinel_user
-      POSTGRES_PASSWORD: darkfenix
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sentinel_default_secure_pass}
       POSTGRES_DB: sentinel_db
     ports:
       - "5432:5432"
