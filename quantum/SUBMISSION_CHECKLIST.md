@@ -14,15 +14,16 @@ Follow these steps to execute the global unveiling of Sentinel Quantum.
 **Purpose**: Secure hardware validation with Si3N4 membranes.
 - [ ] **Copy Draft**: Use the "Draft 1" from `quantum/OUTREACH_DRAFTS.md`.
 - [ ] **Attach Assets**:
-    - `quantum/PHASE_1_SUMMARY.md`
-    - `quantum/dark_matter_detection_protocol.png`
+    - `quantum/AXION_RESEARCH_PAPER.md`
+    - `quantum/axion_scaling_1000_membranes.png`
 - [ ] **Link**: Direct him to the [Interactive Demo](https://github.com/jenovoas/sentinel/blob/main/quantum/integrated_demo.html).
 - [ ] **Send**: lodahl@nbi.dk, quantop@nbi.ku.dk.
 
 ## 3. 📧 Google Quantum AI
 **Purpose**: Scaling to real quantum hardware (Sycamore).
 - [ ] **Copy Draft**: Use the "Draft 2" from `quantum/OUTREACH_DRAFTS.md`.
-- [ ] **Send**: Use the contact form or direct emails if you have them from previous interactions.
+- [ ] **Attach Deck**: `quantum/GOOGLE_PITCH_DECK.md` (10.2 Sigma Strategy).
+- [ ] **Send**: Use the contact form or direct emails.
 
 ## 4. 🌐 Public Repository
 - [ ] **Verification**: Ensure `quantum/integrated_demo.html` loads correctly from the GitHub raw view or GitHub Pages.
