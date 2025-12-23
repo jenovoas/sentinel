@@ -46,6 +46,14 @@ if [ ! -f .env ]; then
     fi
 fi
 
+# Load environment variables from .env into the script (so AI_ENABLED and others are available)
+if [ -f .env ]; then
+    set -o allexport
+    # shellcheck disable=SC1091
+    . ./.env
+    set +o allexport
+fi
+
 # Start core infrastructure first
 echo ""
 echo "📦 Starting Core Infrastructure..."
@@ -54,7 +62,7 @@ sleep 3
 
 # Wait for PostgreSQL to be ready
 echo "⏳ Waiting for PostgreSQL..."
-until docker-compose exec -T postgres pg_isready -U sentinel_user > /dev/null 2>&1; do
+until docker-compose exec -T postgres pg_isready -U ${POSTGRES_USER:-sentinel_user} -d ${POSTGRES_DB:-sentinel_db} > /dev/null 2>&1; do
     echo -n "."
     sleep 1
 done
@@ -110,24 +118,28 @@ print_status "n8n started"
 # Start AI services
 echo ""
 echo "🧠 Starting AI Services..."
-docker-compose up -d ollama
-sleep 5
+if [ "${AI_ENABLED:-false}" = "true" ]; then
+    docker-compose up -d ollama
+    sleep 5
 
-# Check if Ollama is healthy
-if docker-compose ps ollama | grep -q "healthy\|Up"; then
-    print_status "Ollama started"
-    
-    # Download models if not present
-    if ! curl -s http://localhost:11434/api/tags | grep -q "phi3:mini"; then
-        print_warning "Downloading AI model (phi3:mini, ~2GB)..."
-        print_warning "This may take 5-10 minutes on first run..."
-        docker-compose up ollama-init
-        print_status "AI model downloaded"
+    # Check if Ollama is healthy
+    if docker-compose ps ollama | grep -q "healthy\|Up"; then
+        print_status "Ollama started"
+
+        # Download models if not present
+        if ! curl -s http://localhost:11434/api/tags | grep -q "phi3:mini"; then
+            print_warning "Downloading AI model (phi3:mini, ~2GB)..."
+            print_warning "This may take 5-10 minutes on first run..."
+            docker-compose up ollama-init
+            print_status "AI model downloaded"
+        else
+            print_status "AI model already present"
+        fi
     else
-        print_status "AI model already present"
+        print_warning "Ollama started but may not be healthy yet"
     fi
 else
-    print_warning "Ollama started but may not be healthy yet"
+    print_status "AI disabled (AI_ENABLED=${AI_ENABLED:-false}), skipping Ollama"
 fi
 
 # Final status check

@@ -266,6 +266,8 @@ ENCRYPT_ENABLED=false
 OLLAMA_MODEL=phi3:mini  # Modelo ligero (1.9GB)
 # OLLAMA_MODEL=llama3.2:1b  # Alternativa más ligera (1.3GB)
 AI_ENABLED=true
+
+> Note: If you have no GPU, you can keep AI disabled (default: `AI_ENABLED=false`). Ollama is optional and the stack fully supports CPU-only deployments; to enable AI on a GPU machine set `AI_ENABLED=true` and ensure GPU drivers are installed.
 ```
 
 #### 3. Configurar GPU (Opcional - Solo NVIDIA)
@@ -692,7 +694,7 @@ docker-compose ps postgres
 docker-compose logs postgres
 
 # Verificar conectividad
-docker-compose exec postgres pg_isready -U sentinel_user
+docker-compose exec postgres pg_isready -U ${POSTGRES_USER:-sentinel_user} -d ${POSTGRES_DB:-sentinel_db}
 
 # Reiniciar PostgreSQL
 docker-compose restart postgres

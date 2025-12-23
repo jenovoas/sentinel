@@ -61,7 +61,7 @@ services:
     depends_on:
       - etcd
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U sentinel" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sentinel} -d ${POSTGRES_DB:-sentinel}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -97,7 +97,7 @@ services:
       - etcd
       - postgres-primary
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U sentinel" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sentinel} -d ${POSTGRES_DB:-sentinel}" ]
       interval: 10s
       timeout: 5s
       retries: 5

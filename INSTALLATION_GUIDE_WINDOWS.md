@@ -276,7 +276,7 @@ docker-compose logs -f
 docker-compose ps
 
 # Verificar PostgreSQL
-docker-compose exec postgres pg_isready -U sentinel_user
+docker-compose exec postgres pg_isready -U ${POSTGRES_USER:-sentinel_user} -d ${POSTGRES_DB:-sentinel_db}
 
 # Verificar Redis
 docker-compose exec redis redis-cli ping

@@ -15,7 +15,7 @@ services:
     networks:
       - sentinel_network
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sentinel_user}" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sentinel_user} -d ${POSTGRES_DB:-sentinel_db}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -70,7 +70,7 @@ services:
       - sentinel_network
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/health" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -188,7 +188,7 @@ services:
       - '--collector.systemd'
       - '--collector.processes'
     volumes:
-      - /:/host:ro,rslave
+      # Removed root mount (/:/host) due to mount-propagation restrictions on non-Linux hosts (Windows/Docker Desktop)
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
     ports:
@@ -383,20 +383,15 @@ services:
     environment:
       - OLLAMA_HOST=0.0.0.0
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:11434/api/tags" ]
+      test: [ "CMD-SHELL", "/bin/ollama --version >/dev/null 2>&1" ]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 60s
+      start_period: 20s
+
     restart: unless-stopped
-    # GPU support for NVIDIA GTX 1050 (3GB VRAM)
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [ gpu ]
+    profiles: ["ai"]
+    # GPU support removed for CPU-only deployments. Use AI_ENABLED=true to enable local AI services and ensure GPU drivers are present if you plan to use GPU-backed models.
     # Ollama Model Loader - Downloads models on first run
   ollama-init:
     image: ollama/ollama:latest
@@ -416,6 +411,7 @@ services:
              echo '✅ llama3.2:1b downloaded successfully' &&
              echo '🎉 All models ready!'"
     restart: "no" # Solo ejecuta una vez
+    profiles: ["ai"]
 
 volumes:
   postgres_data:

@@ -55,6 +55,15 @@ EOF
 
 echo ""
 print_info "Iniciando instalación de Sentinel..."
+
+# Load environment variables from .env if available so AI_ENABLED is known
+if [ -f .env ]; then
+    set -o allexport
+    # shellcheck disable=SC1091
+    . ./.env
+    set +o allexport
+fi
+
 sleep 2
 
 # ============================================================================
@@ -303,7 +312,7 @@ SERVICES_TOTAL=0
 
 # PostgreSQL
 SERVICES_TOTAL=$((SERVICES_TOTAL + 1))
-if docker-compose exec -T postgres pg_isready -U sentinel_user > /dev/null 2>&1; then
+if docker-compose exec -T postgres pg_isready -U ${POSTGRES_USER:-sentinel_user} -d ${POSTGRES_DB:-sentinel_db} > /dev/null 2>&1; then
     print_success "PostgreSQL: OK"
     SERVICES_OK=$((SERVICES_OK + 1))
 else

@@ -6,6 +6,7 @@
 # Web Framework
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
+gunicorn==21.2.0
 prometheus-fastapi-instrumentator==5.11.2
 watchdog==4.0.0
 requests==2.32.3
@@ -19,6 +20,8 @@ sqlalchemy==2.0.23
 sqlalchemy[asyncio]==2.0.23
 # PostgreSQL async driver (asyncpg - 3-5x faster than psycopg2)
 asyncpg==0.29.0
+# PostgreSQL sync driver (needed for Alembic migrations)
+psycopg2-binary==2.9.9
 # Database migrations
 alembic==1.13.0
 

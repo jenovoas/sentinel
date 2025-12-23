@@ -64,8 +64,8 @@ limits_config:
   # Impact: ~10-15% latency increase, but prevents data loss from timestamp skew
   unordered_writes: true
   
-  # Enforce metric name validation
-  enforce_metric_name: false
+  # Enforce metric name validation (removed/commented out - unsupported by this Loki version)
+  # enforce_metric_name: false
 
 # Configuración de compactación
 compactor:

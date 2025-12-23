@@ -193,10 +193,10 @@ Patroni uses etcd for distributed consensus. As long as etcd quorum is maintaine
 curl http://localhost:7000
 
 # Test direct connection to primary
-docker exec sentinel-postgres-primary pg_isready -U sentinel
+docker exec sentinel-postgres-primary pg_isready -U ${POSTGRES_USER:-sentinel} -d ${POSTGRES_DB:-sentinel}
 
 # Test direct connection to replica
-docker exec sentinel-postgres-replica pg_isready -U sentinel
+docker exec sentinel-postgres-replica pg_isready -U ${POSTGRES_USER:-sentinel} -d ${POSTGRES_DB:-sentinel}
 ```
 
 ---

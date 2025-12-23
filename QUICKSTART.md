@@ -105,6 +105,18 @@ Una vez instalado:
 | **Grafana** | http://localhost:3001 | admin / (ver .env) |
 | **n8n** | http://localhost:5678 | admin / (ver .env) |
 
+### AI (Local LLM)
+
+- Ollama API: `http://localhost:11434` (models are downloaded automatically by `ollama-init` when using the `ai` profile)
+- Start CPU-only AI services:
+
+```bash
+# Recommended: use the helper scripts
+./scripts/start-cpu-ollama.sh
+# Or (Windows PowerShell)
+./scripts/start-cpu-ollama.ps1
+```
+
 ---
 
 ## Requisitos Mínimos

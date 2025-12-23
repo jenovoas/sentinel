@@ -27,14 +27,15 @@ COPY backend/alembic ./alembic/
 
 # Copy entrypoint script
 COPY backend/entrypoint.sh /entrypoint.sh
-RUN chmod 755 /entrypoint.sh
+# Ensure Unix line endings to avoid "exec /entrypoint.sh: no such file or directory" on Windows hosts
+RUN sed -i 's/\r$//' /entrypoint.sh && chmod 755 /entrypoint.sh
 
 # Create logs directory
 RUN mkdir -p logs
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:8000/api/v1/health || exit 1
+    CMD curl -f http://localhost:8000/health || exit 1
 
 # Expose port
 EXPOSE 8000

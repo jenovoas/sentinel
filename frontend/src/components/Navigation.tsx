@@ -146,8 +146,9 @@ export function Navigation() {
                             <div className="flex items-center justify-between text-xs text-gray-400">
                                 <span>Status</span>
                                 <span className="flex items-center gap-1">
-                                    <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                                    Online
+                                    <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" aria-hidden></span>
+                                    {/* Render status text in a dedicated span and suppress hydration warnings to avoid dev-only mismatch errors */}
+                                    <span suppressHydrationWarning>{typeof navigator !== 'undefined' ? (navigator.onLine ? 'Online' : 'Offline') : 'Online'}</span>
                                 </span>
                             </div>
                             <div className="flex items-center justify-between text-xs text-gray-400">
@@ -157,7 +158,7 @@ export function Navigation() {
                         </div>
                     ) : (
                         <div className="flex justify-center">
-                            <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+                            <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" aria-hidden></span>
                         </div>
                     )}
                 </div>

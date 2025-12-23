@@ -46,13 +46,24 @@ async def check_database() -> Dict[str, Any]:
     try:
         import os
         from time import time
+        from urllib.parse import urlparse
         
-        # Get DB config from environment
-        db_host = os.getenv("DATABASE_HOST", "postgres")
-        db_port = int(os.getenv("DATABASE_PORT", "5432"))
-        db_user = os.getenv("DATABASE_USER", "sentinel")
-        db_password = os.getenv("DATABASE_PASSWORD", "darkfenix")
-        db_name = os.getenv("DATABASE_NAME", "sentinel")
+        # Prefer DATABASE_URL if present (parse it), otherwise use individual vars
+        database_url = os.getenv("DATABASE_URL")
+        if database_url:
+            # e.g. postgresql+asyncpg://user:pass@host:5432/dbname
+            parsed = urlparse(database_url)
+            db_host = parsed.hostname or os.getenv("DATABASE_HOST", "postgres")
+            db_port = parsed.port or int(os.getenv("DATABASE_PORT", "5432"))
+            db_user = parsed.username or os.getenv("DATABASE_USER", "sentinel_user")
+            db_password = parsed.password or os.getenv("DATABASE_PASSWORD", "darkfenix")
+            db_name = (parsed.path or "/sentinel_db").lstrip('/') or os.getenv("DATABASE_NAME", "sentinel_db")
+        else:
+            db_host = os.getenv("DATABASE_HOST", "postgres")
+            db_port = int(os.getenv("DATABASE_PORT", "5432"))
+            db_user = os.getenv("DATABASE_USER", "sentinel_user")
+            db_password = os.getenv("DATABASE_PASSWORD", "darkfenix")
+            db_name = os.getenv("DATABASE_NAME", "sentinel_db")
         
         start = time()
         
@@ -96,8 +107,12 @@ async def check_redis() -> Dict[str, Any]:
     """
     Check Redis connection and basic operation
     
-    Now uses Redis Sentinel for HA support
-    
+    Supports two modes:
+    - Sentinel (high-availability cluster)
+    - Standalone (single redis instance)
+
+    Behavior is selected via env var `REDIS_USE_SENTINEL` (default: false).
+
     Returns:
         dict: {
             "status": "healthy" | "unhealthy",
@@ -108,68 +123,74 @@ async def check_redis() -> Dict[str, Any]:
     """
     try:
         from time import time
-        
-        # Try to use Sentinel client if available
-        try:
-            from app.redis_client import get_redis_master, check_redis_health
-            
-            start = time()
-            
-            # Get master connection via Sentinel
-            master = await get_redis_master()
-            
-            # Ping Redis
-            await master.ping()
-            
-            # Test set/get
-            test_key = "health_check_test"
-            await master.set(test_key, "ok", ex=10)
-            value = await master.get(test_key)
-            
-            latency = (time() - start) * 1000
-            
-            if value != "ok":
-                raise Exception("Redis set/get test failed")
-            
-            # Get cluster info from Sentinel
-            cluster_info = await check_redis_health()
-            
-            return {
-                "status": "healthy",
-                "latency_ms": round(latency, 2),
-                "mode": "sentinel",
-                "cluster": cluster_info
-            }
-            
-        except ImportError:
-            # Fallback to simple Redis if Sentinel not configured
-            import os
-            import redis.asyncio as redis
-            
-            redis_url = os.getenv("REDIS_URL", "redis://redis:6379")
-            
-            start = time()
-            
-            r = redis.from_url(redis_url, decode_responses=True)
-            await r.ping()
-            
-            test_key = "health_check_test"
-            await r.set(test_key, "ok", ex=10)
-            value = await r.get(test_key)
-            
-            await r.close()
-            
-            latency = (time() - start) * 1000
-            
-            if value != "ok":
-                raise Exception("Redis set/get test failed")
-            
-            return {
-                "status": "healthy",
-                "latency_ms": round(latency, 2),
-                "mode": "standalone"
-            }
-        
+        import os
+
+        use_sentinel = os.getenv("REDIS_USE_SENTINEL", "false").lower() == "true"
+
+        if use_sentinel:
+            # Try to use Sentinel client if available
+            try:
+                from app.redis_client import get_redis_master, check_redis_health
+
+                start = time()
+
+                # Get master connection via Sentinel
+                master = await get_redis_master()
+
+                # Ping Redis
+                await master.ping()
+
+                # Test set/get
+                test_key = "health_check_test"
+                await master.set(test_key, "ok", ex=10)
+                value = await master.get(test_key)
+
+                latency = (time() - start) * 1000
+
+                if value != "ok":
+                    raise Exception("Redis set/get test failed")
+
+                # Get cluster info from Sentinel
+                cluster_info = await check_redis_health()
+
+                return {
+                    "status": "healthy",
+                    "latency_ms": round(latency, 2),
+                    "mode": "sentinel",
+                    "cluster": cluster_info
+                }
+
+            except Exception:
+                # If Sentinel is configured but not reachable, fall back to standalone
+                pass
+
+        # Fallback to simple Redis standalone
+        import redis.asyncio as redis
+
+        redis_url = os.getenv("REDIS_URL", "redis://redis:6379")
+
+        start = time()
+
+        r = redis.from_url(redis_url, decode_responses=True)
+        await r.ping()
+
+        test_key = "health_check_test"
+        await r.set(test_key, "ok", ex=10)
+        value = await r.get(test_key)
+
+        await r.close()
+
+        latency = (time() - start) * 1000
+
+        if value != "ok":
+            raise Exception("Redis set/get test failed")
+
+        return {
+            "status": "healthy",
+            "latency_ms": round(latency, 2),
+            "mode": "standalone"
+        }
+
     except Exception as e:
         return {
             "status": "unhealthy",
@@ -357,6 +378,27 @@ async def liveness_check():
         "timestamp": datetime.now().isoformat(),
         "uptime_seconds": round((datetime.now() - startup_time).total_seconds(), 2)
     }
+
+
+# ---------------------------------------------------------------------------
+# Backwards-compatible API routes (proxied paths expected by nginx)
+# ---------------------------------------------------------------------------
+@router.get("/api/v1/health")
+async def api_v1_health(response: Response):
+    """Compatibility proxy for nginx route `/api/v1/health`"""
+    return await health_check(response)
+
+
+@router.get("/api/v1/ready")
+async def api_v1_ready(response: Response):
+    """Compatibility proxy for nginx route `/api/v1/ready`"""
+    return await readiness_check(response)
+
+
+@router.get("/api/v1/live")
+async def api_v1_live():
+    """Compatibility proxy for nginx route `/api/v1/live`"""
+    return await liveness_check()
 
 
 @router.post("/promote")
