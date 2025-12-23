@@ -35,7 +35,8 @@ viz_files = {
     'buffer': quantum_dir / 'buffer_optimization_comparison.png',
     'threat': quantum_dir / 'threat_detection_optimization.png',
     'algorithm': quantum_dir / 'algorithm_comparison.png',
-    'executive': quantum_dir / 'executive_presentation.png'
+    'executive': quantum_dir / 'executive_presentation.png',
+    'dark_matter': quantum_dir / 'dark_matter_detection_protocol.png'
 }
 
 viz_data = {}
@@ -70,6 +71,12 @@ METRICS = {
         'total_memory': 0.01,
         'cpu_temp': 62,
         'cpu_usage': 7.0
+    },
+    'dark_matter': {
+        'snr_gain': 4.2,
+        'confidence': 4.0,
+        'freq': 153.4,
+        'squeezing': 12.5
     }
 }
 
@@ -91,8 +98,8 @@ html_content = f"""<!DOCTYPE html>
         
         body {{
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
+            background: #020617; /* slate-950 */
+            color: #e2e8f0; /* slate-200 */
             padding: 20px;
             min-height: 100vh;
         }}
@@ -103,22 +110,27 @@ html_content = f"""<!DOCTYPE html>
         }}
         
         header {{
-            background: white;
+            background: rgba(15, 23, 42, 0.8); /* slate-900/80 */
+            border: 1px solid rgba(255, 255, 255, 0.05);
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(12px);
             margin-bottom: 30px;
             text-align: center;
         }}
         
         h1 {{
-            color: #667eea;
+            background: linear-gradient(to right, #22d3ee, #3b82f6); /* cyan-400 to blue-500 */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             font-size: 2.5em;
             margin-bottom: 10px;
         }}
         
         .subtitle {{
-            color: #666;
+            color: #94a3b8; /* slate-400 */
             font-size: 1.2em;
         }}
         
@@ -130,20 +142,23 @@ html_content = f"""<!DOCTYPE html>
         }}
         
         .metric-card {{
-            background: white;
+            background: rgba(15, 23, 42, 0.8); /* slate-900/80 */
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
             padding: 25px;
             border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }}
         
         .metric-card:hover {{
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(34, 211, 238, 0.2); /* cyan glow */
+            border-color: rgba(34, 211, 238, 0.3);
         }}
         
         .metric-label {{
-            color: #888;
+            color: #64748b; /* slate-500 */
             font-size: 0.9em;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -153,12 +168,12 @@ html_content = f"""<!DOCTYPE html>
         .metric-value {{
             font-size: 2.5em;
             font-weight: bold;
-            color: #667eea;
+            color: #22d3ee; /* cyan-400 */
             margin-bottom: 5px;
         }}
         
         .metric-unit {{
-            color: #666;
+            color: #94a3b8; /* slate-400 */
             font-size: 0.9em;
         }}
         
@@ -174,15 +189,17 @@ html_content = f"""<!DOCTYPE html>
         }}
         
         .viz-section {{
-            background: white;
+            background: rgba(15, 23, 42, 0.8); /* slate-900/80 */
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             margin-bottom: 30px;
         }}
         
         .viz-section h2 {{
-            color: #667eea;
+            color: #22d3ee; /* cyan-400 */
             margin-bottom: 20px;
             font-size: 1.8em;
         }}
@@ -202,22 +219,27 @@ html_content = f"""<!DOCTYPE html>
         
         .tab {{
             padding: 12px 25px;
-            background: #f3f4f6;
-            border: none;
+            background: rgba(30, 41, 59, 0.5); /* slate-800/50 */
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 8px;
             cursor: pointer;
             font-size: 1em;
             font-weight: 600;
+            color: #94a3b8; /* slate-400 */
             transition: all 0.3s ease;
         }}
         
         .tab:hover {{
-            background: #e5e7eb;
+            background: rgba(30, 41, 59, 0.8); /* slate-800/80 */
+            border-color: rgba(34, 211, 238, 0.3); /* cyan */
+            color: #e2e8f0; /* slate-200 */
         }}
         
         .tab.active {{
-            background: #667eea;
+            background: linear-gradient(to right, #22d3ee, #3b82f6); /* cyan to blue */
+            border-color: #22d3ee;
             color: white;
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
         }}
         
         .tab-content {{
@@ -249,14 +271,15 @@ html_content = f"""<!DOCTYPE html>
         }}
         
         .info-card {{
-            background: #f9fafb;
+            background: rgba(30, 41, 59, 0.5); /* slate-800/50 */
+            border: 1px solid rgba(255, 255, 255, 0.05);
             padding: 20px;
             border-radius: 10px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #22d3ee; /* cyan-400 */
         }}
         
         .info-card h3 {{
-            color: #667eea;
+            color: #22d3ee; /* cyan-400 */
             margin-bottom: 10px;
         }}
         
@@ -267,7 +290,7 @@ html_content = f"""<!DOCTYPE html>
         
         .info-card li {{
             padding: 5px 0;
-            color: #666;
+            color: #cbd5e1; /* slate-300 */
         }}
         
         .info-card li::before {{
@@ -325,6 +348,7 @@ html_content = f"""<!DOCTYPE html>
                 <button class="tab active" onclick="showTab('buffer')">Buffer Optimization</button>
                 <button class="tab" onclick="showTab('threat')">Threat Detection</button>
                 <button class="tab" onclick="showTab('algorithm')">Algorithm Comparison</button>
+                <button class="tab" onclick="showTab('dark_matter')">Dark Matter (New)</button>
                 <button class="tab" onclick="showTab('executive')">Executive Summary</button>
             </div>
             
@@ -419,6 +443,37 @@ html_content = f"""<!DOCTYPE html>
                     </div>
                 </div>
                 {f'<img src="data:image/png;base64,{viz_data["algorithm"]}" class="viz-image" alt="Algorithm Comparison">' if viz_data['algorithm'] else '<p style="color: #888; text-align: center; padding: 40px;">Visualization not available</p>'}
+            </div>
+            
+            <div id="dark_matter" class="tab-content">
+                <h3 style="color: #22d3ee; margin-bottom: 15px;">Dark Matter Discovery Protocol (Axion Detection)</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>Scientific Hook</h3>
+                        <ul>
+                            <li>Target: QCD Axions (153.4 MHz)</li>
+                            <li>Physics: Primakoff Effect</li>
+                            <li>Validation: NBI Membranes</li>
+                        </ul>
+                    </div>
+                    <div class="info-card">
+                        <h3>Breakthrough</h3>
+                        <ul>
+                            <li>SNR Gain: {METRICS['dark_matter']['snr_gain']}x improvement</li>
+                            <li>Quantum Squeezing: {METRICS['dark_matter']['squeezing']} dB</li>
+                            <li>Confidence: {METRICS['dark_matter']['confidence']} Sigma</li>
+                        </ul>
+                    </div>
+                    <div class="info-card">
+                        <h3>Sentinel Edge</h3>
+                        <ul>
+                            <li>VQE-Filtered Noise</li>
+                            <li>No High-Cost Cryogenics</li>
+                            <li>Status: Prototyped ✅</li>
+                        </ul>
+                    </div>
+                </div>
+                {f'<img src="data:image/png;base64,{viz_data["dark_matter"]}" class="viz-image" alt="Dark Matter Detection">' if viz_data['dark_matter'] else '<p style="color: #888; text-align: center; padding: 40px;">Visualization not available</p>'}
             </div>
             
             <div id="executive" class="tab-content">
