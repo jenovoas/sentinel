@@ -3,8 +3,6 @@
 // Bloquea syscalls destructivas ANTES de ejecución (Ring 0)
 
 #include <linux/bpf.h>
-#include <linux/fs.h>
-#include <linux/path.h>
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
 
