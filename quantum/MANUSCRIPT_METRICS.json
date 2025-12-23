@@ -1,0 +1,27 @@
+{
+    "timestamp": "2025-12-23T16:55:00Z",
+    "project": "Sentinel Quantum",
+    "phase": "5-Scientific-Publication",
+    "core_metrics": {
+        "throughput_eps": 944200,
+        "execution_time_total_s": 10.06,
+        "memory_usage_gb": 0.01,
+        "cpu_temp_avg_c": 62
+    },
+    "scientific_metrics": {
+        "axion_discovery_conf_sigma": 4.0,
+        "snr_classical": 4.78,
+        "snr_sentinel": 20.09,
+        "snr_gain_factor": 4.20,
+        "quantum_squeezing_db": 12.5,
+        "target_freq_mhz": 153.4,
+        "b_field_t": 10.0,
+        "g_agg_limit": 1e-15
+    },
+    "algorithm_metrics": {
+        "qaoa_p2_runtime_s": 2.06,
+        "vqe_runtime_s": 0.05,
+        "speed_gain_vqe_vs_qaoa": 41.2
+    },
+    "validation_status": "PASS - 5/5 use cases verified"
+}

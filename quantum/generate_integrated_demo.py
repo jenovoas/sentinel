@@ -542,9 +542,15 @@ html_content = f"""<!DOCTYPE html>
         <footer>
             <p><strong>Sentinel Quantum Core v1.0</strong></p>
             <p>José Jaime Novoa Schilling | jenovoas@gmail.com</p>
-            <p style="margin-top: 10px; opacity: 0.8;">
-                <a href="https://github.com/jenovoas/sentinel" style="color: white; text-decoration: none;">
+            <p style="margin-top: 15px; display: flex; justify-content: center; gap: 20px;">
+                <a href="https://github.com/jenovoas/sentinel" style="color: #22d3ee; text-decoration: none; font-weight: bold;">
                     📦 GitHub Repository
+                </a>
+                <a href="AXION_RESEARCH_PAPER.md" style="color: #10b981; text-decoration: none; font-weight: bold;">
+                    📄 Scientific Manuscript (Draft)
+                </a>
+                <a href="arXiv_metadata.txt" style="color: #f59e0b; text-decoration: none; font-weight: bold;">
+                    📑 arXiv Metadata
                 </a>
             </p>
         </footer>
