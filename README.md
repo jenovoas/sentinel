@@ -240,7 +240,7 @@ MIT - Ver [LICENSE](LICENSE)
 
 **Autor**: Jaime Eugenio Novoa Sepúlveda  
 **Email**: jaime.novoase@gmail.com  
-**GitHub**: [https://github.com/jaime-novoa/sentinel](https://github.com/jaime-novoa/sentinel)  
+**GitHub**: [https://github.com/jenovoas/sentinel](https://github.com/jenovoas/sentinel)  
 **Location**: Curanilahue, Región del Bío-Bío, Chile
 
 ---
