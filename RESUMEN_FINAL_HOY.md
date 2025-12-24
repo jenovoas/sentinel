@@ -1,7 +1,7 @@
 # 🎯 SENTINEL QUANTUM - RESUMEN EJECUTIVO FINAL
 
 **Fecha**: 23 de Diciembre, 2025  
-**Autor**: Jaime Novoa  
+**Autor**: Jaime Eugenio Novoa Sepúlveda  
 **Proyecto**: Sentinel Cortex™ → **Quantum Gemini AI**
 
 ---

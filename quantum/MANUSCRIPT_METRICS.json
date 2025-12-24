@@ -1,27 +1,11 @@
 {
-    "timestamp": "2025-12-23T17:07:00Z",
-    "project": "Sentinel Quantum",
-    "phase": "5-Scientific-Publication-Scaled",
-    "core_metrics": {
-        "n_membranes": 1000,
-        "throughput_eps": 944200,
-        "execution_time_total_s": 10.06,
-        "memory_usage_gb": 0.01,
-        "cpu_temp_avg_c": 62
-    },
+    "timestamp": "2025-12-23T18:05:00Z",
     "scientific_metrics": {
-        "axion_discovery_conf_sigma": 10.2,
-        "snr_classical": 5.09,
-        "snr_sentinel": 50.87,
-        "snr_gain_factor": 10.0,
-        "quantum_squeezing_db": 20.0,
+        "projected_sigma_simulated": 10.2,
+        "simulated_snr": 50.59426780344928,
+        "target_squeezing_db": 20.0,
         "target_freq_mhz": 153.4,
-        "b_field_t": 10.0,
-        "validation_level": "GOLD_STANDARD_5_SIGMA_PLUS"
-    },
-    "algorithm_metrics": {
-        "vqe_optimization": "VQE+QAOA Hybrid",
-        "noise_floor_reduction": "90.1%"
-    },
-    "validation_status": "PASS - 1000 Membranes Scaled"
+        "n_membranes": 1000,
+        "validation_status": "NUMERICAL_EVIDENCE_ONLY"
+    }
 }
