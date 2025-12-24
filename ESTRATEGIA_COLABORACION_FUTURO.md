@@ -401,7 +401,7 @@ Estoy postulando a ANID IT 2026 y busco colaboración académica para:
 
 ¿Tendría disponibilidad para una reunión exploratoria?
 
-Repositorio: github.com/jaime-novoa/sentinel
+Repositorio: github.com/jenovoas/sentinel
 Documentación: [adjuntar RESUMEN_EJECUTIVO_IP_STRATEGY.md]
 
 Saludos cordiales,
@@ -441,7 +441,7 @@ Propuesta de POC (30-60 días):
 
 ¿Tendría interés en explorar esta colaboración?
 
-Repositorio: github.com/jaime-novoa/sentinel
+Repositorio: github.com/jenovoas/sentinel
 Validación: CVE-2025-42957 (SAP S/4HANA, CVSS 9.9)
 
 Saludos cordiales,
@@ -484,7 +484,7 @@ Valoración: $2-3M pre-money
 
 ¿Tendría interés en revisar el pitch deck?
 
-Repositorio: github.com/jaime-novoa/sentinel
+Repositorio: github.com/jenovoas/sentinel
 Documentación: [adjuntar IP_EXECUTION_PLAN.md]
 
 Saludos cordiales,

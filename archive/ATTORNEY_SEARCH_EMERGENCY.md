@@ -66,7 +66,7 @@ Saludos,
 Jaime Novoa
 Founder & Lead Architect - Sentinel Cortex™
 Email: jaime.novoase@gmail.com
-GitHub: github.com/jaime-novoa/sentinel
+GitHub: github.com/jenovoas/sentinel
 ```
 
 ---

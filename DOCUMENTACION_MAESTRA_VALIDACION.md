@@ -445,7 +445,7 @@ Primer OS con verificación semántica a nivel Ring 0, integrando IA directament
 
 ### Repositorio
 
-**URL**: `git@github.com:jaime-novoa/sentinel.git`  
+**URL**: `git@github.com:jenovoas/sentinel.git`  
 **Visibilidad**: PRIVADO  
 **Commits**: 4 (todos exitosos)  
 **Último commit**: `4acd6f5`

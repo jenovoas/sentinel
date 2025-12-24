@@ -268,7 +268,7 @@
 ---
 
 **Fecha**: 21 de Diciembre de 2025, 12:49 PM  
-**Repositorio**: git@github.com:jaime-novoa/sentinel.git  
+**Repositorio**: git@github.com:jenovoas/sentinel.git  
 **Commit**: 4a00c5c
 
 ---

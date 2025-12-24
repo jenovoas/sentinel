@@ -50,7 +50,7 @@ Key Results (Dec 23, 2025):
 Strong synergy with Willow chip for hybrid quantum-classical systems.
 
 Attachments: EXECUTIVE_SUMMARY.md, executive_presentation.png
-Repository: https://github.com/jaime-novoa/sentinel
+Repository: https://github.com/jenovoas/sentinel
 
 Open to 30-min call to discuss collaboration?
 

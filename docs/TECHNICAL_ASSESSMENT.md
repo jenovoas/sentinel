@@ -43,7 +43,7 @@ Welcome to Sentinel's technical assessment!
 
 Your first task is to install and run Sentinel on your local machine.
 
-Repository: https://github.com/jaime-novoa/sentinel
+Repository: https://github.com/jenovoas/sentinel
 Documentation: See INSTALLATION_GUIDE.md (Linux) or INSTALLATION_GUIDE_WINDOWS.md (Windows)
 
 Requirements:
@@ -436,7 +436,7 @@ Welcome to Level 1!
 
 Your task: Install and run Sentinel on your local machine.
 
-Repository: https://github.com/jaime-novoa/sentinel
+Repository: https://github.com/jenovoas/sentinel
 Documentation: INSTALLATION_GUIDE.md
 
 Time limit: 1 hour from when you start

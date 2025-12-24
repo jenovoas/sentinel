@@ -136,7 +136,7 @@ executive_summary = f"""
 ---
 
 **Contact**: Jaime Novoa  
-**Repository**: github.com/jaime-novoa/sentinel  
+**Repository**: github.com/jenovoas/sentinel  
 **Documentation**: See QUANTUM_IMPLEMENTATION_RESULTS.md
 
 ---

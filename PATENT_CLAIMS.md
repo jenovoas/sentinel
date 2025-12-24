@@ -239,7 +239,7 @@ A computer operating system kernel with integrated semantic verification at Ring
 
 ## EVIDENCE REPOSITORY
 
-**GitHub**: https://github.com/jaime-novoa/sentinel  
+**GitHub**: https://github.com/jenovoas/sentinel  
 **Benchmarks**: `backend/benchmark_dual_lane.py`  
 **Fuzzer**: `backend/fuzzer_aiopsdoom.py`  
 **Documentation**: `BENCHMARKS_VALIDADOS.md`, `DOCUMENTO_FINAL_ANID.md`

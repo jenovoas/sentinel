@@ -507,7 +507,7 @@ Breakdown:
 
 **Founder:** Jaime Novoa  
 **Email:** jaime@sentinel-cortex.com  
-**GitHub:** @jaime-novoa
+**GitHub:** @jenovoas
 
 ---
 

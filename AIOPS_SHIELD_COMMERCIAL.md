@@ -157,7 +157,7 @@ Result: Production database deleted
 **Interested in pilot?**
 - Email: [contact email]
 - Demo: [link]
-- GitHub: github.com/jaime-novoa/sentinel
+- GitHub: github.com/jenovoas/sentinel
 
 ### For Investors
 **Seeking seed funding** ($500K-1M):

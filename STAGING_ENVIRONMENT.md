@@ -87,7 +87,7 @@ wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudfla
 sudo dpkg -i cloudflared-linux-amd64.deb
 
 # 3. Clone repository
-git clone https://github.com/jaime-novoa/sentinel.git
+git clone https://github.com/jenovoas/sentinel.git
 cd sentinel
 ```
 

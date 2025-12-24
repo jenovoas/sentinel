@@ -296,13 +296,13 @@ We have demonstrated a novel multi-provider consensus algorithm for content veri
 
 ### 8.1 Code Availability
 
-All code is available at: `github.com/jaime-novoa/sentinel/truth_algorithm`
+All code is available at: `github.com/jenovoas/sentinel/truth_algorithm`
 
 ### 8.2 Reproduction Steps
 
 ```bash
 # Clone repository
-git clone https://github.com/jaime-novoa/sentinel.git
+git clone https://github.com/jenovoas/sentinel.git
 cd sentinel/truth_algorithm
 
 # Setup environment
