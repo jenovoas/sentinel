@@ -1,7 +1,7 @@
 TITLE: Numerical Evidence for High-Significance Axion Detection in Distributed Quantum-Enhanced Sensor Arrays
 AUTHORS: Jaime Eugenio Novoa Sepúlveda (Sentinel Research), Antigravity (Advanced Agentic Coding Group, Google DeepMind)
 CATEGORIES: quant-ph (Quantum Physics), hep-ph (High Energy Physics - Phenomenology), physics.ins-det (Instrumentation and Detectors)
-LICENSE: cc-by-nc-sa (Attribution-NonCommercial-ShareAlike)
+LICENSE: cc-by-nc-nd (Attribution-NonCommercial-NoDerivs)
 ABSTRACT: 
 We propose a scalable "Digital Haloscope" architecture for the high-sensitivity search of QCD axion dark matter candidates. 
 Utilizing high-fidelity numerical simulations, we demonstrate that a distributed array of 1000 nano-mechanical membranes, enhanced by VQE-optimized noise squeezing, can theoretically achieve a 20.0 dB reduction in spectral noise density below the Standard Quantum Limit (SQL). 
