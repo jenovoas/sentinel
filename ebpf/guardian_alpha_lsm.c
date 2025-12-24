@@ -12,11 +12,11 @@
 #include <bpf/bpf_tracing.h>
 #include <bpf/bpf_core_read.h>
 
-/* Whitelist map: SHA256(command) -> allowed (1) or blocked (0) */
+/* Whitelist map: Full path string -> allowed (1) or blocked (0) */
 struct {
     __uint(type, BPF_MAP_TYPE_HASH);
     __uint(max_entries, 10000);
-    __type(key, char[64]);      // SHA256 hex string
+    __type(key, char[256]);     // Increased for full paths
     __type(value, __u8);        // 1 = allowed, 0 = blocked
 } whitelist_map SEC(".maps");
 
@@ -31,7 +31,6 @@ struct event {
     __u32 pid;
     __u32 uid;
     char filename[256];
-    char hash[64];
     __u8 action;  // 0 = blocked, 1 = allowed
     __u64 timestamp;
 };
@@ -44,10 +43,9 @@ struct event {
 static __always_inline int is_whitelisted(const char *path)
 {
     __u8 *allowed;
-    char key[64] = {0};
+    char key[256] = {0};
     
-    // In a production scenario, we would hash the path or the binary.
-    // For this POC, we use the path string as the key.
+    // Read the filename/path into the key
     bpf_probe_read_kernel_str(key, sizeof(key), path);
     
     allowed = bpf_map_lookup_elem(&whitelist_map, key);
@@ -84,11 +82,15 @@ static __always_inline void log_event(__u32 pid, __u32 uid,
 SEC("lsm/bprm_check_security")
 int BPF_PROG(guardian_execve, struct linux_binprm *bprm, int ret)
 {
+    // If a previous LSM already denied access, respect it
+    if (ret != 0)
+        return ret;
+
     const char *filename;
     __u32 pid = bpf_get_current_pid_tgid() >> 32;
     __u32 uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
     
-    // Get the actual filename being executed using CO-RE
+    // Get the filename being executed
     filename = BPF_CORE_READ(bprm, filename);
     
     // Check whitelist (FAIL-CLOSED)

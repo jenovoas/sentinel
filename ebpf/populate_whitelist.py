@@ -39,7 +39,7 @@ def populate_whitelist():
         
         for cmd in ALLOWED_COMMANDS:
             # Convertir comando a bytes (key)
-            key = cmd.encode('utf-8').ljust(64, b'\0')
+            key = cmd.encode('utf-8').ljust(256, b'\0')
             
             # Valor: 1 = allowed
             value = 1

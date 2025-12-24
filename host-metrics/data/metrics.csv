@@ -11349,3 +11349,7 @@ timestamp,cpu_percent,mem_percent,gpu_percent,net_bytes_sent,net_bytes_recv,wifi
 0,189505953,2597703322,PinguinoSeguro,66
 2025-12-24T11:04:00.102Z,54.0,55.1,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
 0,195904163,2598259760,PinguinoSeguro,66
+2025-12-24T11:05:00.528Z,90.0,57.2,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,205776483,2598952572,PinguinoSeguro,66
+2025-12-24T11:06:00.774Z,78.0,53.0,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,211694887,2599718534,PinguinoSeguro,66
