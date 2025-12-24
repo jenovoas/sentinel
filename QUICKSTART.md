@@ -20,7 +20,7 @@
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/jaime-novoa/sentinel.git
+git clone https://github.com/jenovoas/sentinel.git
 cd sentinel
 ```
 
@@ -267,9 +267,9 @@ docker-compose up -d
 
 ## 📞 Contact
 
-- **GitHub**: https://github.com/jaime-novoa/sentinel
-- **Issues**: https://github.com/jaime-novoa/sentinel/issues
-- **Discussions**: https://github.com/jaime-novoa/sentinel/discussions
+- **GitHub**: https://github.com/jenovoas/sentinel
+- **Issues**: https://github.com/jenovoas/sentinel/issues
+- **Discussions**: https://github.com/jenovoas/sentinel/discussions
 
 ---
 
