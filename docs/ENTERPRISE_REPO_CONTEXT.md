@@ -420,7 +420,7 @@ Breakdown:
 
 **Community Edition (Public Repo):**
 - Free forever
-- MIT License
+- Proprietary License
 - Basic features
 
 **Enterprise Edition (This Repo):**
