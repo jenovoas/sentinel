@@ -28,7 +28,7 @@ Before we proceed, please reply with the following (copy-paste from your termina
 1. Your primary development OS:
 2. `uname -a` (or `systeminfo` if Windows):
 3. Clone our repo and show last 5 commits:
-   `git clone https://github.com/jenovoas/sentinel.git && cd sentinel && git log --oneline -5`
+   `git clone https://github.com/jaime-novoa/sentinel.git && cd sentinel && git log --oneline -5`
 4. `docker --version`:
 5. `docker-compose --version`:
 6. `git --version`:

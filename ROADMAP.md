@@ -285,7 +285,7 @@ Este roadmap demuestra:
 
 ---
 
-**Repositorio**: https://github.com/jenovoas/sentinel  
+**Repositorio**: https://github.com/jaime-novoa/sentinel  
 **Contacto**: jaime.novoase@gmail.com  
 **Estado**: Activo, en desarrollo continuo  
 **Licencia**: Ver LICENSE file

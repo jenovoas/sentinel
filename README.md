@@ -238,9 +238,9 @@ MIT - Ver [LICENSE](LICENSE)
 
 ## 📧 Contacto
 
-**Autor**: José Jaime Novoa Schilling  
-**Email**: jenovoas@gmail.com  
-**GitHub**: [https://github.com/jenovoas/sentinel](https://github.com/jenovoas/sentinel)  
+**Autor**: Jaime Eugenio Novoa Sepúlveda  
+**Email**: jaime.novoase@gmail.com  
+**GitHub**: [https://github.com/jaime-novoa/sentinel](https://github.com/jaime-novoa/sentinel)  
 **Location**: Curanilahue, Región del Bío-Bío, Chile
 
 ---
