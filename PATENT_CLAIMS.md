@@ -244,7 +244,7 @@ A computer operating system kernel with integrated semantic verification at Ring
 **Fuzzer**: `backend/fuzzer_aiopsdoom.py`  
 **Documentation**: `BENCHMARKS_VALIDADOS.md`, `DOCUMENTO_FINAL_ANID.md`
 
-**All code is open source** (MIT License) to enable independent verification and reproduction of claims.
+**All code is PROPRIETARY AND CONFIDENTIAL** (See [LICENSE](LICENSE)) to ensure protection of intellectual property and patent-ready claims.
 
 ---
 

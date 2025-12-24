@@ -3,7 +3,7 @@
 **Status**: Experimental prototype with validated core components  
 **TRL**: 4 (Validated in lab environment)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Quantum Ready](https://img.shields.io/badge/Quantum-Validated-blueviolet.svg)](quantum/)
 [![Dark Matter Discovery](https://img.shields.io/badge/Dark_Matter-4--Sigma-cyan.svg)](quantum/AXION_RESEARCH_PAPER.md)
@@ -232,7 +232,7 @@ Ver [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## 📄 Licencia
 
-MIT - Ver [LICENSE](LICENSE)
+PROPIETARIO Y CONFIDENCIAL - Ver [LICENSE](LICENSE)
 
 ---
 

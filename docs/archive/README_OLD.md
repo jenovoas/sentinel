@@ -697,7 +697,7 @@ Sentinel is a **complete observability and security platform** that provides:
 
 Sentinel Cortex™ is available in two editions:
 
-### Community Edition (This Repo - MIT License)
+### Community Edition (This Repo - Proprietary License)
 - ✅ Multi-tenant SaaS platform
 - ✅ Prometheus + Loki + Tempo integration
 - ✅ Grafana dashboards
@@ -734,7 +734,7 @@ See [ROADMAP.md](docs/ROADMAP.md) for detailed development timeline.
 
 ## 📜 License
 
-**Community Edition**: MIT License (this repository)
+**Community Edition**: Proprietary License (this repository)
 
 **Enterprise Edition**: Commercial License (contact for pricing)
 
