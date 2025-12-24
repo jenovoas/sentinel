@@ -10,6 +10,10 @@
 
 ---
 
+🌌 **New to the project?** Start the AI-guided journey here: [COGNITIVE_MANUAL_SENTINEL.md](file:///home/jnovoas/sentinel/research/COGNITIVE_MANUAL_SENTINEL.md)
+
+---
+
 ## 🌌 THE ARCHITECTURE OF RESONANCE
 
 **Sentinel implements universal optimization patterns** found across physics, biology, and ancient engineering.
