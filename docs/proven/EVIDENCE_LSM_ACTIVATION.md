@@ -127,20 +127,6 @@ BTF ID: 278
 - Pre-execution veto at Ring 0
 - Autonomous decision loop
 
-**Conclusión**: **NOVEDAD CONFIRMADA**
-
----
-
-## VALOR DE PROPIEDAD INTELECTUAL
-
-**Claim 3**: Kernel-Level Protection via eBPF LSM Hooks
-
-**Valoración IP**: $8-15 millones USD  
-**Potencial de Licenciamiento**: $50-100 millones USD  
-**Prior Art**: ZERO (HOME RUN)
-
-**Estado**: ✅ **REDUCIDO A PRÁCTICA** (21 Dic 2025)
-
 ---
 
 ## HASH CRIPTOGRÁFICO DEL CÓDIGO FUENTE

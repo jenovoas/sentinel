@@ -28,27 +28,29 @@ COMMANDS=(
     "/usr/sbin/ss"
 )
 
-# Encontrar el ID del map (ahora buscamos por nombre exacto y tipo)
-MAP_ID=$(sudo bpftool map list | grep -E "name whitelist_map" | awk '{print $1}' | cut -d: -f1)
+# Ruta del map pinned (establecida por load.sh)
+MAP_PATH="/sys/fs/bpf/guardian_alpha/whitelist_map"
 
-if [ -z "$MAP_ID" ]; then
-    echo "❌ Error: No se encontró whitelist_map. ¿Está el eBPF LSM cargado?"
+if [ ! -f "$MAP_PATH" ]; then
+    echo "❌ Error: No se encontró el map en $MAP_PATH"
+    echo "💡 ¿Has ejecutado 'sudo bash ebpf/load.sh' primero?"
     exit 1
 fi
 
-echo "✅ Map ID: $MAP_ID"
+echo "✅ Map encontrado en: $MAP_PATH"
 echo ""
 
 # Poblar con comandos
 for cmd in "${COMMANDS[@]}"; do
-    # Crear key de 256 bytes (comando + padding) - Coincide con struct en guardian_alpha_lsm.c
-    key_hex=$(printf "%-256s" "$cmd" | xxd -p -c 512)
+    # Generar key de 256 bytes (zero-padded) en formato hex con espacios
+    # Esto asegura compatibilidad con char[256] y bpftool parsing
+    key_hex=$(python3 -c "import sys; cmd=sys.argv[1].encode(); print(' '.join(f'{b:02x}' for b in cmd.ljust(256, b'\0')))" "$cmd")
     
     # Valor: 01 (allowed) - 1 byte para __u8
     value_hex="01"
     
-    # Intentar agregar
-    sudo bpftool map update id $MAP_ID \
+    # Intentar agregar usando el path pinned
+    sudo bpftool map update pinned "$MAP_PATH" \
         key hex $key_hex \
         value hex $value_hex \
         any
@@ -65,4 +67,4 @@ echo "======================================"
 echo "✅ Intentado poblar ${#COMMANDS[@]} comandos"
 echo ""
 echo "📊 Verificar contenido del map:"
-echo "   sudo bpftool map dump id $MAP_ID"
+echo "   sudo bpftool map dump pinned $MAP_PATH"

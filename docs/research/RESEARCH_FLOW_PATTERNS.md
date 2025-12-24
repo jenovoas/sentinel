@@ -159,15 +159,6 @@ R(τ) = E[F(t) * F(t+τ)]
 
 ---
 
-## Próximos Pasos:
-
-1. **Recolectar datos** - Ejecutar benchmark largo (100+ bursts)
-2. **Aplicar análisis** - Implementar cada técnica
-3. **Validar modelos** - Comparar predicciones vs realidad
-4. **Optimizar** - Usar insights para mejorar predicción
-
----
-
 ## Conexión con Física:
 
 Este patrón de flujo es análogo a:

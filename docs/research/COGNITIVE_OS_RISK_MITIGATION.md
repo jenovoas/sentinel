@@ -16,7 +16,7 @@
 - ✅ End-to-end latency < 200μs
 - ✅ Exit code: 0 (no errors)
 
-**This validates Claim 6 (Cognitive OS Kernel)**: $10-20M IP value
+**This validates Claim 6 (Cognitive OS Kernel)**
 
 ---
 
@@ -216,12 +216,12 @@ class SafeStateTransition:
 **Claim 8 (Hysteresis-Based Resource Allocation)**:
 - Novel: Asymmetric scaling (fast up, slow down)
 - Prevents: Oscillation/thrashing
-- Value: $2-5M
+
 
 **Claim 9 (Global Memory Guard)**:
 - Novel: Cross-connection memory limits
 - Prevents: AIOpsDoom memory exhaustion
-- Value: $3-7M
+
 
 ---
 

@@ -70,7 +70,6 @@ Pipeline de Defensa:
 
 ---
 
-## ❓ PREGUNTA 2: Explique el flujo del bucle cerrado de respuesta en Sentinel
 
 ### El Bucle Cerrado (Closed-Loop Response)
 
