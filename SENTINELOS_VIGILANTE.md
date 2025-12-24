@@ -487,7 +487,7 @@ The first OS with COGNITIVE SCIENCE.
 
 Not just secure. SENTIENT.
 
-github.com/jenovoas/sentinel-os"
+github.com/jaime-novoa/sentinel-os"
 ```
 
 ---

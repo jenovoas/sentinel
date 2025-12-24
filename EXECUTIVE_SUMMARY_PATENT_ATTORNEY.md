@@ -1,7 +1,7 @@
 # TECHNICAL DISCLOSURE FOR PATENT COUNSEL
 ## Title: Sentinel Cortex™ - Distributed Cognitive Architecture for Autonomic Systems
 **Date**: December 23, 2025  
-**Inventors**: J. Jaime Novoa Schilling, Antigravity (Advanced Agentic Coding Group)  
+**Inventors**: Jaime Eugenio Novoa Sepúlveda, Antigravity (Advanced Agentic Coding Group)  
 **Security Classification**: CONFIDENTIAL / PROPRIETARY  
 
 ---

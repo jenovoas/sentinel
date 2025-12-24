@@ -235,7 +235,7 @@ Cognitive Kernel (Sentinel):
 ## 🚀 CALL TO ACTION
 
 ### For Researchers
-- Review our benchmarks: `github.com/jenovoas/sentinel`
+- Review our benchmarks: `github.com/jaime-novoa/sentinel`
 - Reproduce our results: `backend/benchmark_dual_lane.py`
 - Contribute to the cognitive kernel vision
 
@@ -256,7 +256,7 @@ Cognitive Kernel (Sentinel):
 ## 📞 CONTACT
 
 **Project**: Sentinel Cortex™ → SentinelOS  
-**GitHub**: github.com/jenovoas/sentinel  
+**GitHub**: github.com/jaime-novoa/sentinel  
 **Email**: [Contact via GitHub]
 
 ---

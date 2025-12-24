@@ -16862,3 +16862,128 @@ timestamp,level,unit,message
 2025-12-24T01:30:01.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
 2025-12-24T01:30:29.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
 2025-12-24T01:30:34.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=11260 DF PROTO=2 
+2025-12-24T01:31:15.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T01:31:15.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T01:31:15.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T01:31:15.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T01:31:16.000Z,WARNING,user@1002.service,Unknown key gtk-monospace-font-name in /home/jnovoas/.config/gtk-3.0/settings.ini
+2025-12-24T01:32:01.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T01:32:01.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T01:32:01.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T01:32:01.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T01:32:39.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=19736 DF PROTO=2 
+2025-12-24T01:33:01.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T01:33:01.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T01:33:01.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T01:33:01.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T01:33:01.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T01:37:06.000Z,WARNING,kernel,pcieport 0000:00:1d.6: AER: subordinate device reset failed
+2025-12-24T01:37:06.000Z,WARNING,kernel,pcieport 0000:00:1d.6: DPC: containment event; status:0x1f01: unmasked uncorrectable error detected
+2025-12-24T01:37:06.000Z,ERROR,kernel,pcieport 0000:00:1d.6: PCIe Bus Error: severity=Uncorrectable (Non-Fatal); type=Transaction Layer; (Receiver ID)
+2025-12-24T01:37:06.000Z,ERROR,kernel,pcieport 0000:00:1d.6:   device [8086:06b6] error status/mask=00200000/00010000
+2025-12-24T01:37:06.000Z,ERROR,kernel,pcieport 0000:00:1d.6:    [21] ACSViol                (First)
+2025-12-24T01:38:00.000Z,ERROR,kernel,pcieport 0000:00:1d.6:   device [8086:06b6] error status/mask=00200000/00010000
+2025-12-24T01:38:00.000Z,ERROR,kernel,pcieport 0000:00:1d.6:    [21] ACSViol                (First)
+2025-12-24T01:38:00.000Z,WARNING,kernel,pcieport 0000:00:1d.6: PCIe Bus Error: severity=Correctable; type=Physical Layer; (Receiver ID)
+2025-12-24T01:38:00.000Z,WARNING,kernel,pcieport 0000:00:1d.6:   device [8086:06b6] error status/mask=00000001/00002000
+2025-12-24T01:38:00.000Z,WARNING,kernel,pcieport 0000:00:1d.6:    [ 0] RxErr                  (First)
+2025-12-24T01:38:58.000Z,ERROR,kernel,pcieport 0000:00:1d.6:   device [8086:06b6] error status/mask=00200000/00010000
+2025-12-24T01:38:58.000Z,ERROR,kernel,pcieport 0000:00:1d.6:    [21] ACSViol                (First)
+2025-12-24T01:38:58.000Z,WARNING,kernel,pcieport 0000:00:1d.6: PCIe Bus Error: severity=Correctable; type=Physical Layer; (Receiver ID)
+2025-12-24T01:38:58.000Z,WARNING,kernel,pcieport 0000:00:1d.6:   device [8086:06b6] error status/mask=00000001/00002000
+2025-12-24T01:38:58.000Z,WARNING,kernel,pcieport 0000:00:1d.6:    [ 0] RxErr                  (First)
+2025-12-24T01:39:59.000Z,WARNING,kernel,pcieport 0000:00:1d.6: AER: subordinate device reset failed
+2025-12-24T01:39:59.000Z,WARNING,kernel,pcieport 0000:00:1d.6: DPC: containment event; status:0x1f01: unmasked uncorrectable error detected
+2025-12-24T01:39:59.000Z,ERROR,kernel,pcieport 0000:00:1d.6: PCIe Bus Error: severity=Uncorrectable (Non-Fatal); type=Transaction Layer; (Receiver ID)
+2025-12-24T01:39:59.000Z,ERROR,kernel,pcieport 0000:00:1d.6:   device [8086:06b6] error status/mask=00200000/00010000
+2025-12-24T01:39:59.000Z,ERROR,kernel,pcieport 0000:00:1d.6:    [21] ACSViol                (First)
+2025-12-24T01:40:59.000Z,WARNING,kernel,pcieport 0000:00:1d.6: DPC: containment event; status:0x1f01: unmasked uncorrectable error detected
+2025-12-24T01:40:59.000Z,ERROR,kernel,pcieport 0000:00:1d.6: PCIe Bus Error: severity=Uncorrectable (Non-Fatal); type=Transaction Layer; (Receiver ID)
+2025-12-24T01:40:59.000Z,ERROR,kernel,pcieport 0000:00:1d.6:   device [8086:06b6] error status/mask=00200000/00010000
+2025-12-24T01:40:59.000Z,ERROR,kernel,pcieport 0000:00:1d.6:    [21] ACSViol                (First)
+2025-12-24T01:40:59.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=45276 DF PROTO=2 
+2025-12-24T01:42:00.000Z,WARNING,kernel,pcieport 0000:00:1d.6: AER: subordinate device reset failed
+2025-12-24T01:42:00.000Z,WARNING,kernel,pcieport 0000:00:1d.6: DPC: containment event; status:0x1f01: unmasked uncorrectable error detected
+2025-12-24T01:42:00.000Z,ERROR,kernel,pcieport 0000:00:1d.6: PCIe Bus Error: severity=Uncorrectable (Non-Fatal); type=Transaction Layer; (Receiver ID)
+2025-12-24T01:42:00.000Z,ERROR,kernel,pcieport 0000:00:1d.6:   device [8086:06b6] error status/mask=00200000/00010000
+2025-12-24T01:42:00.000Z,ERROR,kernel,pcieport 0000:00:1d.6:    [21] ACSViol                (First)
+2025-12-24T01:43:00.000Z,WARNING,kernel,pcieport 0000:00:1d.6: AER: subordinate device reset failed
+2025-12-24T01:43:00.000Z,WARNING,kernel,pcieport 0000:00:1d.6: DPC: containment event; status:0x1f01: unmasked uncorrectable error detected
+2025-12-24T01:43:00.000Z,ERROR,kernel,pcieport 0000:00:1d.6: PCIe Bus Error: severity=Uncorrectable (Non-Fatal); type=Transaction Layer; (Receiver ID)
+2025-12-24T01:43:00.000Z,ERROR,kernel,pcieport 0000:00:1d.6:   device [8086:06b6] error status/mask=00200000/00010000
+2025-12-24T01:43:00.000Z,ERROR,kernel,pcieport 0000:00:1d.6:    [21] ACSViol                (First)
+2025-12-24T01:43:58.000Z,WARNING,kernel,pcieport 0000:00:1d.6: AER: subordinate device reset failed
+2025-12-24T01:43:58.000Z,WARNING,kernel,pcieport 0000:00:1d.6: DPC: containment event; status:0x1f01: unmasked uncorrectable error detected
+2025-12-24T01:43:58.000Z,ERROR,kernel,pcieport 0000:00:1d.6: PCIe Bus Error: severity=Uncorrectable (Non-Fatal); type=Transaction Layer; (Receiver ID)
+2025-12-24T01:43:58.000Z,ERROR,kernel,pcieport 0000:00:1d.6:   device [8086:06b6] error status/mask=00200000/00010000
+2025-12-24T01:43:58.000Z,ERROR,kernel,pcieport 0000:00:1d.6:    [21] ACSViol                (First)
+2025-12-24T01:44:58.000Z,ERROR,kernel,pcieport 0000:00:1d.6:   device [8086:06b6] error status/mask=00200000/00010000
+2025-12-24T01:44:58.000Z,ERROR,kernel,pcieport 0000:00:1d.6:    [21] ACSViol                (First)
+2025-12-24T01:44:58.000Z,WARNING,kernel,pcieport 0000:00:1d.6: PCIe Bus Error: severity=Correctable; type=Physical Layer; (Receiver ID)
+2025-12-24T01:44:58.000Z,WARNING,kernel,pcieport 0000:00:1d.6:   device [8086:06b6] error status/mask=00000001/00002000
+2025-12-24T01:44:58.000Z,WARNING,kernel,pcieport 0000:00:1d.6:    [ 0] RxErr                  (First)
+2025-12-24T01:50:03.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T01:50:07.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T01:50:07.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T01:50:07.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T01:50:07.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T01:50:57.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T01:51:00.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T01:51:00.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T01:51:00.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T01:51:00.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T01:51:25.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T01:51:25.000Z,ERROR,kernel,mmc0: error -110 whilst initialising SD card
+2025-12-24T01:51:36.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T01:51:46.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T01:51:56.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T01:52:29.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T01:52:37.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=14:18:c3:78:b7:a7:64:85:05:25:cb:1a:08:00 SRC=34.107.243.93 DST=192.168.1.16 LEN=76 TOS=0x00 PREC=0x00 TTL=122 ID=39335 PROTO=TCP SPT=443 DPT=57996 WINDOW=1044 RES=0x00 A
+2025-12-24T01:52:40.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T01:52:50.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T01:53:00.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T01:53:29.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T01:53:29.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=16708 DF PROTO=2 
+2025-12-24T01:53:39.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T01:53:49.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T01:53:59.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T01:54:40.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T01:54:50.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T01:54:53.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=14:18:c3:78:b7:a7:64:85:05:25:cb:1a:08:00 SRC=104.18.27.48 DST=192.168.1.16 LEN=91 TOS=0x00 PREC=0x00 TTL=58 ID=15126 DF PROTO=TCP SPT=443 DPT=39522 WINDOW=16 RES=0x00 AC
+2025-12-24T01:55:00.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T01:55:00.000Z,ERROR,kernel,mmc0: error -110 whilst initialising SD card
+2025-12-24T01:55:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T01:55:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T01:55:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T01:55:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T01:55:34.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=18508 DF PROTO=2 
+2025-12-24T01:56:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T01:56:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T01:56:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T01:56:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T01:56:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T01:57:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T01:57:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T01:57:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T01:57:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T01:57:39.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=19106 DF PROTO=2 
+2025-12-24T01:58:21.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=14:18:c3:78:b7:a7:64:85:05:25:cb:1a:08:00 SRC=151.101.1.91 DST=192.168.1.16 LEN=127 TOS=0x00 PREC=0x00 TTL=56 ID=64560 DF PROTO=TCP SPT=443 DPT=58290 WINDOW=276 RES=0x00 
+2025-12-24T01:58:22.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=14:18:c3:78:b7:a7:64:85:05:25:cb:1a:08:00 SRC=151.101.65.91 DST=192.168.1.16 LEN=127 TOS=0x00 PREC=0x00 TTL=56 ID=15536 DF PROTO=TCP SPT=443 DPT=50772 WINDOW=281 RES=0x00
+2025-12-24T01:58:23.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=14:18:c3:78:b7:a7:64:85:05:25:cb:1a:08:00 SRC=151.101.1.91 DST=192.168.1.16 LEN=127 TOS=0x00 PREC=0x00 TTL=56 ID=26250 DF PROTO=TCP SPT=443 DPT=36964 WINDOW=210 RES=0x00 
+2025-12-24T01:58:25.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=14:18:c3:78:b7:a7:64:85:05:25:cb:1a:08:00 SRC=151.101.1.91 DST=192.168.1.16 LEN=127 TOS=0x00 PREC=0x00 TTL=56 ID=64561 DF PROTO=TCP SPT=443 DPT=58290 WINDOW=276 RES=0x00 
+2025-12-24T01:58:47.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=14:18:c3:78:b7:a7:64:85:05:25:cb:1a:08:00 SRC=151.101.1.91 DST=192.168.1.16 LEN=127 TOS=0x00 PREC=0x00 TTL=56 ID=64563 DF PROTO=TCP SPT=443 DPT=58290 WINDOW=276 RES=0x00 
+2025-12-24T01:59:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T01:59:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T01:59:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T01:59:15.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=14:18:c3:78:b7:a7:64:85:05:25:cb:1a:08:00 SRC=151.101.1.91 DST=192.168.1.16 LEN=127 TOS=0x00 PREC=0x00 TTL=56 ID=64564 DF PROTO=TCP SPT=443 DPT=58290 WINDOW=276 RES=0x00 
+2025-12-24T01:59:44.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=24333 DF PROTO=2 
+2025-12-24T02:00:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T02:00:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T02:00:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T02:00:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T02:00:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T02:01:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T02:01:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T02:01:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T02:01:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T02:01:49.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=33910 DF PROTO=2 

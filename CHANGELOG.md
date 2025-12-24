@@ -248,4 +248,4 @@ This project is proprietary software.
 
 ---
 
-**For detailed changes, see the [commit history](https://github.com/jenovoas/sentinel/commits/main).**
+**For detailed changes, see the [commit history](https://github.com/jaime-novoa/sentinel/commits/main).**

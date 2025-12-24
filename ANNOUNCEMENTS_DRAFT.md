@@ -43,7 +43,7 @@ All benchmarks are reproducible:
 ## Open Source
 
 The code, benchmarks, and documentation are public:
-📊 GitHub: github.com/jenovoas/sentinel
+📊 GitHub: github.com/jaime-novoa/sentinel
 🔬 Benchmarks: `backend/benchmark_dual_lane.py`
 🧪 Fuzzer: `backend/fuzzer_aiopsdoom.py`
 
@@ -120,7 +120,7 @@ WAL: 0.01ms (10,000x faster than Splunk)
 Security Lane: 0.00ms (instantaneous)
 AIOpsDoom: 100% detection (0 false negatives)
 
-All reproducible: github.com/jenovoas/sentinel
+All reproducible: github.com/jaime-novoa/sentinel
 ```
 
 **Tweet 5** (Military-Grade):
@@ -153,7 +153,7 @@ $1.5T+ market opportunity.
 ```
 Everything is open source:
 
-📊 Code: github.com/jenovoas/sentinel
+📊 Code: github.com/jaime-novoa/sentinel
 🔬 Benchmarks: backend/benchmark_dual_lane.py
 🧪 Fuzzer: backend/fuzzer_aiopsdoom.py
 📚 Docs: COGNITIVE_KERNEL_VISION_EN.md
@@ -245,7 +245,7 @@ Measured on Intel Core i7-8700K, 32GB RAM, NVMe SSD:
 | Memory Footprint | 2-4GB | 200MB | 10-20x smaller |
 
 All benchmarks are reproducible:
-https://github.com/jenovoas/sentinel
+https://github.com/jaime-novoa/sentinel
 
 ## Security Validation
 
@@ -293,7 +293,7 @@ Seeking feedback on:
 
 All feedback welcome!
 
-Repository: https://github.com/jenovoas/sentinel
+Repository: https://github.com/jaime-novoa/sentinel
 Documentation: COGNITIVE_KERNEL_VISION_EN.md
 
 Signed-off-by: [Your Name] <[your-email]>
@@ -327,7 +327,7 @@ Example:
 - Cognitive: User runs `rm -rf /` → Kernel detects "SUICIDAL" → BLOCKED at 0.00ms
 
 All code and benchmarks are open source and reproducible:
-https://github.com/jenovoas/sentinel
+https://github.com/jaime-novoa/sentinel
 
 Technical details:
 - Dual-lane architecture (security vs observability)
@@ -373,11 +373,11 @@ Cognitive Kernel understands SEMANTICS via eBPF LSM + local LLM:
 - Security Lane: 0.00ms (instantaneous)
 - WAL: 0.01ms (10,000x faster than Splunk)
 
-**Code**: https://github.com/jenovoas/sentinel
+**Code**: https://github.com/jaime-novoa/sentinel
 
 **Run benchmarks**:
 ```bash
-git clone https://github.com/jenovoas/sentinel
+git clone https://github.com/jaime-novoa/sentinel
 cd backend
 python benchmark_dual_lane.py
 ```

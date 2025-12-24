@@ -16,7 +16,7 @@ This RFC proposes a dual-lane telemetry architecture for the Linux kernel that s
 - **Sub-microsecond attack blocking** via eBPF LSM hooks (0.00ms measured)
 - **100% detection rate** for cognitive injection attacks (validated with fuzzer)
 
-All benchmarks are reproducible: https://github.com/jenovoas/sentinel
+All benchmarks are reproducible: https://github.com/jaime-novoa/sentinel
 
 ---
 
@@ -106,7 +106,7 @@ Measured on: Intel Core i7-8700K, 32GB RAM, NVMe SSD
 | **Context Switches** | 10,000+/s | **<100/s** | **100x reduction** |
 | **Memory Footprint** | 2-4GB | **200MB** | **10-20x smaller** |
 
-**Reproducibility**: `git clone https://github.com/jenovoas/sentinel && cd backend && python benchmark_dual_lane.py`
+**Reproducibility**: `git clone https://github.com/jaime-novoa/sentinel && cd backend && python benchmark_dual_lane.py`
 
 ---
 
@@ -187,7 +187,7 @@ cd backend && python fuzzer_aiopsdoom.py
 
 ## References
 
-- **Repository**: https://github.com/jenovoas/sentinel
+- **Repository**: https://github.com/jaime-novoa/sentinel
 - **Benchmarks**: `backend/benchmark_dual_lane.py`
 - **Fuzzer**: `backend/fuzzer_aiopsdoom.py`
 - **Documentation**: `COGNITIVE_KERNEL_VISION_EN.md`
@@ -224,7 +224,7 @@ This is an RFC to gather feedback on:
 ## How to Apply Patches
 
 ```bash
-git clone https://github.com/jenovoas/sentinel.git
+git clone https://github.com/jaime-novoa/sentinel.git
 cd sentinel
 # Patches will be sent as follow-up emails
 ```

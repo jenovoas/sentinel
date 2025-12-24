@@ -2,7 +2,7 @@
 **Sentinel Cortex™ - Patent Readiness Assessment**
 
 **Fecha:** 17 Diciembre 2025  
-**Repo:** github.com/jenovoas/sentinel (PRIVADO)  
+**Repo:** github.com/jaime-novoa/sentinel (PRIVADO)  
 **Último Commit:** 6466980  
 **Status:** ⚠️ GAPS IDENTIFICADOS - ACCIÓN REQUERIDA
 

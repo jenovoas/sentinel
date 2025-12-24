@@ -573,7 +573,7 @@ sentinel/
 
 ```bash
 # 1. Clonar repositorio
-git clone https://github.com/jenovoas/sentinel.git
+git clone https://github.com/jaime-novoa/sentinel.git
 cd sentinel
 
 # 2. Instalar dependencias Rust

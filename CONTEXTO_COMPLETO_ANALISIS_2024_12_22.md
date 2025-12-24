@@ -571,7 +571,7 @@ Fase 5 (2035-2045):         $150-200B+ (Planetary Resonance)
 **Autor**: Jaime Eugenio Novoa Sepúlveda  
 **Email**: jaime.novoase@gmail.com  
 **Location**: Curanilahue, Región del Bío-Bío, Chile  
-**GitHub**: github.com/jenovoas/sentinel
+**GitHub**: github.com/jaime-novoa/sentinel
 
 ---
 

@@ -177,7 +177,7 @@ Adjunto:
 listos para escalar con Gemini local.
 
 Contacto: jaime.novoase@gmail.com
-GitHub: github.com/jenovoas/sentinel
+GitHub: github.com/jaime-novoa/sentinel
 
 Saludos,
 Jaime Novoa
