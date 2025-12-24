@@ -33,7 +33,12 @@ The simulated detection pipeline was evaluated against a synthetic axion signal 
 | Confidence | ~3σ | 10.2σ (Simulated) |
 
 ## 4. Discussion: Toward Experimental Validation
-These results establish a robust benchmark for the "Digital Haloscope" concept. It is critical to emphasize that while the 10.2-Sigma result is mathematically consistent within our simulation, real-world implementation will encounter challenges such as phonon decoherence, electronic noise, and magnetic field misalignments. The Sentinel platform serves as a high-level design and simulation engine for these future experiments. The "Perpetual Flow" observed in associated benchmarks suggests high efficiency in data organization, proposed here as a mechanism for reducing data-entropy in large-scale sensing networks.
+These results establish a robust benchmark for the "Digital Haloscope" concept. It is critical to emphasize that while the 10.2-Sigma result is mathematically consistent within our simulation, real-world implementation will encounter challenges such as phonon decoherence, electronic noise, and magnetic field misalignments. 
+
+### 4.1 Numerical Stability via Sexagesimal Exactitude
+A key finding during the integration of these protocols is the role of the "Sexagesimal Stability Key". Inspired by ancient sexagesimal trigonometry (Plimpton 322), we hypothesize that migrating control loops from Base-10 floating-point to Base-60 relational logic eliminates "mathematical friction" caused by rounding errors. This exactitude is proposed as the primary mechanism for maintaining stable standing wave nodes in the optomechanical array, potentially allowing for even higher integration times without decoherence.
+
+The Sentinel platform serves as a high-level design and simulation engine for these future experiments. The "Perpetual Flow" observed in associated benchmarks suggests high efficiency in data organization, proposed here as a mechanism for reducing data-entropy in large-scale sensing networks.
 
 ## 5. Conclusion
 Sentinel Quantum offers a code-backed template for quantum-enhanced axion detection. By achieving a simulated 10.2-Sigma significance, we provide a scalable pathway for exploring the axion parameter space. Future work will focus on integrating these protocols with physical hardware at institutions such as the Niels Bohr Institute and Google Quantum AI to validate these projected sensitivities.
