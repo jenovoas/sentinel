@@ -1,8 +1,5 @@
 # Sentinel Frontend - Análisis de Stacks Avanzados
 
-**Contexto**: Acabas de aprender Rust, quieres lo mejor, complejidad no es problema
-
----
 
 ## 🎯 Opciones Analizadas
 
