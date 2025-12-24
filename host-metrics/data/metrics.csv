@@ -11313,3 +11313,37 @@ timestamp,cpu_percent,mem_percent,gpu_percent,net_bytes_sent,net_bytes_recv,wifi
 0,171383304,41702203,PinguinoSeguro,59
 2025-12-24T02:56:00.880Z,53.0,49.2,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
 0,177404525,41992473,PinguinoSeguro,59
+2025-12-24T02:57:00.070Z,38.0,52.2,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,179000310,43772634,PinguinoSeguro,60
+2025-12-24T02:58:00.301Z,24.0,51.2,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,179030010,43855685,PinguinoSeguro,59
+2025-12-24T02:59:00.248Z,20.0,50.7,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,179112654,46987834,PinguinoSeguro,60
+2025-12-24T10:50:31.651Z,58.0,46.3,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,179599873,49616059,PinguinoSeguro,65
+2025-12-24T10:51:00.894Z,42.0,50.6,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,180692326,54773019,PinguinoSeguro,65
+2025-12-24T10:52:00.219Z,23.0,49.9,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,180786142,55659663,PinguinoSeguro,63
+2025-12-24T10:53:00.137Z,51.0,49.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,180867227,55757984,PinguinoSeguro,63
+2025-12-24T10:54:00.114Z,29.0,49.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,180972805,56023164,PinguinoSeguro,65
+2025-12-24T10:55:00.696Z,20.0,49.6,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,181071686,56507365,PinguinoSeguro,63
+2025-12-24T10:56:00.783Z,58.0,49.7,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,181425156,56905694,PinguinoSeguro,63
+2025-12-24T10:57:01.013Z,29.0,50.3,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,181784736,58599842,PinguinoSeguro,65
+2025-12-24T10:58:00.913Z,27.0,46.3,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,181894774,67686958,PinguinoSeguro,65
+2025-12-24T10:59:00.870Z,47.0,48.2,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,185277138,1426381855,PinguinoSeguro,67
+2025-12-24T11:00:01.036Z,59.0,47.3,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,188078265,2586557879,PinguinoSeguro,66
+2025-12-24T11:01:01.018Z,74.0,47.3,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,188102039,2586619330,PinguinoSeguro,66
+2025-12-24T11:02:00.793Z,57.0,47.3,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,188440422,2594092269,PinguinoSeguro,66
+2025-12-24T11:03:00.734Z,37.0,51.3,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,189505953,2597703322,PinguinoSeguro,66
