@@ -11207,3 +11207,21 @@ timestamp,cpu_percent,mem_percent,gpu_percent,net_bytes_sent,net_bytes_recv,wifi
 0,135713848,13169911,PinguinoSeguro,60
 2025-12-24T02:03:01.013Z,24.0,51.8,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
 0,147132769,13687891,PinguinoSeguro,59
+2025-12-24T02:04:00.362Z,76.0,52.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,147472665,16493103,PinguinoSeguro,60
+2025-12-24T02:05:00.605Z,54.0,58.3,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,149679322,19915549,PinguinoSeguro,62
+2025-12-24T02:06:00.726Z,32.0,55.8,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,150620155,20315209,PinguinoSeguro,59
+2025-12-24T02:07:00.684Z,69.0,54.8,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,151492104,20562575,PinguinoSeguro,58
+2025-12-24T02:08:00.754Z,29.0,55.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,152030539,20975560,PinguinoSeguro,71
+2025-12-24T02:09:00.741Z,29.0,52.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,152355361,26975783,PinguinoSeguro,58
+2025-12-24T02:10:00.986Z,23.0,51.8,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,152443936,27186805,PinguinoSeguro,59
+2025-12-24T02:11:00.858Z,24.0,56.7,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,156944698,27585839,PinguinoSeguro,59
+2025-12-24T02:12:00.981Z,85.0,51.5,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,159934877,29356395,PinguinoSeguro,59

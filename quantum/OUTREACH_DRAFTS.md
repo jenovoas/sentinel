@@ -26,7 +26,7 @@ Best regards,
 
 **Jaime Eugenio Novoa Sepúlveda** 
 CTO, Sentinel
-https://github.com/jaime-novoa/sentinel
+https://github.com/jenovoas/sentinel
 
 ---
 

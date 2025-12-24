@@ -495,7 +495,7 @@ html_content = f"""
             </div>
             <div class="links">
                 <a href="AXION_RESEARCH_PAPER.pdf">Full Paper (PDF)</a>
-                <a href="https://github.com/jaime-novoa/sentinel">Repository</a>
+                <a href="https://github.com/jenovoas/sentinel">Repository</a>
                 <a href="OUTREACH_DRAFTS.md">Outreach</a>
             </div>
         </footer>

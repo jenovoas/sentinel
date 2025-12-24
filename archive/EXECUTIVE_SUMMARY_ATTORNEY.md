@@ -159,7 +159,7 @@ Bypass resistance: Impossible from userspace
 - `ebpf/lsm_ai_guardian.c` - eBPF LSM implementation
 - `backend/app/core/wal.py` - Forensic WAL
 
-**Repositorio**: https://github.com/jaime-novoa/sentinel (15,000+ líneas, MIT License)
+**Repositorio**: https://github.com/jenovoas/sentinel (15,000+ líneas, MIT License)
 
 ---
 
@@ -284,7 +284,7 @@ ROI:
 Founder & Lead Architect - Sentinel Cortex™
 
 **Email**: jaime.novoase@gmail.com  
-**GitHub**: github.com/jaime-novoa/sentinel
+**GitHub**: github.com/jenovoas/sentinel
 
 **Disponibilidad**: Inmediata para call
 

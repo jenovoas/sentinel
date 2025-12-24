@@ -322,7 +322,7 @@ A computer operating system kernel with integrated semantic verification, compri
 ## 🚀 CALL TO ACTION
 
 ### For Researchers
-- Review our benchmarks: `github.com/jaime-novoa/sentinel`
+- Review our benchmarks: `github.com/jenovoas/sentinel`
 - Reproduce our results: `backend/benchmark_dual_lane.py`
 - Contribute to the cognitive kernel vision
 
@@ -345,7 +345,7 @@ A computer operating system kernel with integrated semantic verification, compri
 **Project**: Sentinel Cortex™ → SentinelOS  
 **Founder**: [Your Name]  
 **Email**: [Your Email]  
-**GitHub**: github.com/jaime-novoa/sentinel  
+**GitHub**: github.com/jenovoas/sentinel  
 **LinkedIn**: [Your LinkedIn]
 
 ---
