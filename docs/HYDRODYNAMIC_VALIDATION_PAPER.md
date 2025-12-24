@@ -334,12 +334,12 @@ All results were independently verified using raw data:
 **Data Availability**:
 - Raw data: `/tmp/levitation_benchmark_data.json`
 - Analysis scripts: `tests/test_hydrodynamic_theory.py`
-- Repository: https://github.com/jenovoas/sentinel
+- Repository: https://github.com/jaime-novoa/sentinel
 
 **Reproduction Steps**:
 ```bash
 # 1. Clone repository
-git clone https://github.com/jenovoas/sentinel.git
+git clone https://github.com/jaime-novoa/sentinel.git
 cd sentinel
 
 # 2. Run benchmark

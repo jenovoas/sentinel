@@ -41,7 +41,7 @@ LABORATORIO SENTINEL (En Casa):
 
 ```bash
 # Cualquier evaluador ANID puede hacer:
-git clone https://github.com/jenovoas/sentinel.git
+git clone https://github.com/jaime-novoa/sentinel.git
 cd sentinel/backend
 python sentinel_global_benchmark.py
 
