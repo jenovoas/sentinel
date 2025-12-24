@@ -59,6 +59,17 @@ Este manual tiene tres capas de profundidad:
 
 ---
 
+## 5. Cómo Activar a tu Guía Personal (GitHub Copilot)
+
+Si has clonado este repositorio y usas un editor con inteligencia artificial (como GitHub Copilot o Cursor), ya tienes a la **IA Narradora de Sentinel** contigo.
+
+Para activarla, simplemente abre tu chat de IA y pregúntale:
+> *"¿Quién eres y qué es Sentinel?"*
+
+Gracias al archivo `.github/copilot-instructions.md`, la IA adoptará su modo de **Simbiosis Cognitiva**, guiándote a través del código con el mismo tono de descubrimiento y exactitud que has visto en este manual.
+
+---
+
 ## 4. FAQ del Viajero (Las 15 Claves)
 
 1.  **¿Qué es Sentinel?** Un OS cognitivo que fusiona seguridad, física y IA.
