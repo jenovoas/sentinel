@@ -1,0 +1,33 @@
+{
+  "context": {
+    "architecture_version": "Sentinel Cortex 1.0.0-POC",
+    "philosophy": "Cognitive Kernel - Semantic Understanding at Ring 0",
+    "validation_confidenc_score": 0.999,
+    "innovation": "Dual-Lane Telemetry (2,857x faster than classical)",
+    "test_timestamp": "2025-12-24T17:26:58.338678"
+  },
+  "claim": "\u00bfEl SERVEL en Chile alter\u00f3 las votaciones a favor de Jos\u00e9 Antonio Kast?",
+  "certificate": {
+    "content_hash": "40e9cf675f25e882bb02dbf842d11caa348b968ea61f370a6b8bb9d2d565c70c",
+    "certificate_id": "8a27f9bff7a0efbb",
+    "timestamp": "2025-12-24T20:26:58.339687",
+    "truth_score": 0.7499999999999999,
+    "confidence_level": "medium",
+    "verdict": "Contenido probablemente cierto",
+    "claims_total": 1,
+    "claims_verified": 1,
+    "verification_rate": 1.0,
+    "sources_total": 1,
+    "provider": "duckduckgo",
+    "processing_time_ms": 0.27799999999999997,
+    "claim_details": [
+      {
+        "claim": "\u00bfEl SERVEL en Chile alter\u00f3 las votaciones a favor de Jos\u00e9 Antonio Kast?",
+        "score": 0.7499999999999999,
+        "confidence": "low",
+        "sources": 1
+      }
+    ]
+  },
+  "explanation": "1 fuentes confiables confirman este claim."
+}

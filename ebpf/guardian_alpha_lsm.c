@@ -93,6 +93,8 @@ int BPF_PROG(guardian_execve, struct linux_binprm *bprm, int ret)
     // Get the filename being executed
     filename = BPF_CORE_READ(bprm, filename);
     
+    bpf_printk("Guardian-Alpha DEBUG: Intercepting %s (pid=%d, uid=%d)", filename, pid, uid);
+    
     // Check whitelist (FAIL-CLOSED)
     if (!is_whitelisted(filename)) {
         // Log blocked event

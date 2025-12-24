@@ -57,6 +57,7 @@ class Source:
     confidence: float  # 0.0 - 1.0
     date: str  # ISO format
     url: str = ""
+    snippet: str = ""
     
     @property
     def weight(self) -> float:

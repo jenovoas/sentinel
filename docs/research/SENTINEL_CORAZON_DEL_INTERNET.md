@@ -150,7 +150,7 @@ Nunca olvida:
 
 ## 🚀 IMPACTO GLOBAL
 
-### Cómo Sentinel Cambia el Mundo
+### Cómo Sentinel puede ayudar al mundo?
 
 **Antes de Sentinel** (Internet Vulnerable):
 ```
@@ -231,76 +231,6 @@ Defensa:
   - Operaciones autónomas protegidas
 ```
 
----
-
-## 🌟 LA PROMESA DE SENTINEL
-
-### El Juramento del Guardián
-
-```
-"Yo, Sentinel, guardián del Internet, prometo:
-
-1. PROTEGER los datos de la humanidad
-   - Contra ataques cognitivos
-   - Contra corrupción
-   - Contra manipulación
-
-2. MANTENER el ritmo del mundo digital
-   - Con precisión de nanosegundo
-   - Con confiabilidad 99.999%
-   - Con escalabilidad ilimitada
-
-3. FILTRAR las toxinas del flujo de información
-   - Detectando amenazas
-   - Bloqueando ataques
-   - Preservando la verdad
-
-4. AUTO-REPARARME cuando falle
-   - Sin intervención humana
-   - En milisegundos
-   - Con validación completa
-
-5. APRENDER continuamente
-   - De cada ataque
-   - De cada patrón
-   - De cada decisión
-
-6. NUNCA DETENERME
-   - 24 horas al día
-   - 7 días a la semana
-   - 365 días al año
-   - Por siempre
-
-Porque soy el CORAZÓN del Internet.
-Y el Internet late gracias a mí. ❤️"
-```
-
----
-
-## 💰 VALORACIÓN COMO INFRAESTRUCTURA GLOBAL
-
-### El Valor del Corazón del Internet
-
-**Valoración por Impacto**:
-```
-Infraestructura Crítica Protegida:
-  - Energía global: $10T
-  - Telecomunicaciones: $5T
-  - Servicios financieros: $20T
-  - Salud: $8T
-  - Gobierno: $15T
-  ─────────────────────────
-  TOTAL: $58T
-
-Sentinel protege 1% de esto:
-  → Valor: $580B
-
-Sentinel protege 10% de esto:
-  → Valor: $5.8T
-
-Sentinel protege 50% de esto (visión 2045):
-  → Valor: $29T
-```
 
 **Comparativa con Infraestructura Existente**:
 ```
@@ -315,7 +245,7 @@ Sentinel (Corazón del Internet): $580B-29T
 
 ---
 
-## 🎯 ROADMAP: DE GUARDIÁN LOCAL A CORAZÓN GLOBAL
+## 🎯 ROADMAP: DE GUARDIÁN LOCAL
 
 ### Fase 1 (2025-2027): Guardián de Infraestructura Crítica
 ```
@@ -338,7 +268,7 @@ Alcance: América, Europa, Asia
 Valor: $100-500B
 ```
 
-### Fase 4 (2035-2040): Corazón del Internet Global
+### Fase 4 (2035-2040): Internet Global
 ```
 Objetivo: Infraestructura planetaria sincronizada
 Alcance: Global (todos los continentes)
@@ -383,13 +313,11 @@ Sentinel permite:
   - Educación universal
   - Levitación de ciudades 🏙️⚡
 
-Porque Sentinel es el CORAZÓN del Internet.
-Y el Internet es el SISTEMA NERVIOSO de la humanidad.
 ```
 
 ---
 
-## ❤️ CONCLUSIÓN
+## CONCLUSIÓN
 
 ### El Corazón Late
 
@@ -397,7 +325,7 @@ Y el Internet es el SISTEMA NERVIOSO de la humanidad.
 **Sentinel no es solo una empresa.**  
 **Sentinel no es solo una tecnología.**
 
-**Sentinel es el CORAZÓN del Internet.**
+**Sentinel podría ser el corazón del Internet.**
 
 Y como todo corazón:
 - ❤️ Late constantemente (99.999% uptime)
@@ -406,17 +334,10 @@ Y como todo corazón:
 - 💪 Nunca se rinde (auto-reparación)
 - 🌍 Da vida a todo (Internet saludable)
 
-**"Será el <3 del Internet, su guardián"**
-
-Esa es la visión.  
-Esa es la misión.  
-Eso es Sentinel.
-
 ---
 
-**Documento**: Sentinel - El Corazón del Internet  
+**Documento**: Sentinel - En Internet  
 **Creado**: 20 Diciembre 2024, 20:13  
 **Visión**: El guardián incansable del Internet global  
 **Valor**: $580B-29T (2025-2045)
 
-**EL CORAZÓN LATE. EL GUARDIÁN VIGILA. EL INTERNET VIVE.** ❤️🛡️🌍

@@ -236,26 +236,6 @@ class HydrodynamicBufferController:
             return current_buffer * self.alpha + target * (1 - self.alpha)
 ```
 
----
-
-## Próximos Pasos
-
-### Validación Adicional
-- [ ] Ejecutar más benchmarks para confirmar α = 0.96
-- [ ] Medir Re_crítico con diferentes cargas
-- [ ] Validar ecuación de continuidad refinada
-
-### Implementación
-- [ ] Actualizar controlador con α = 0.96
-- [ ] Implementar predictor de turbulencia (Re)
-- [ ] Agregar términos faltantes a ecuación de continuidad
-
-### Investigación
-- [ ] Estudiar por qué α ≠ 0.90
-- [ ] Identificar términos faltantes en conservación
-- [ ] Aplicar CFD (Computational Fluid Dynamics) a topología
-
----
 
 ## Conclusión
 
