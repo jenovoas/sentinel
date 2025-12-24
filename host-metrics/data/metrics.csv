@@ -11353,3 +11353,215 @@ timestamp,cpu_percent,mem_percent,gpu_percent,net_bytes_sent,net_bytes_recv,wifi
 0,205776483,2598952572,PinguinoSeguro,66
 2025-12-24T11:06:00.774Z,78.0,53.0,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
 0,211694887,2599718534,PinguinoSeguro,66
+2025-12-24T11:07:00.507Z,45.0,51.9,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,218042432,2600327926,PinguinoSeguro,66
+2025-12-24T11:08:00.720Z,65.0,52.9,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,218180776,2600523809,PinguinoSeguro,66
+2025-12-24T11:09:00.498Z,21.0,51.0,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,218239650,2600636174,PinguinoSeguro,66
+2025-12-24T11:10:00.295Z,32.0,51.8,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,218316822,2600712587,PinguinoSeguro,66
+2025-12-24T11:11:00.393Z,22.0,46.7,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,218388576,2600832707,PinguinoSeguro,66
+2025-12-24T11:12:00.286Z,20.0,46.5,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,218455486,2600935821,PinguinoSeguro,66
+2025-12-24T11:13:00.070Z,19.0,48.9,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,218699928,2602768138,PinguinoSeguro,68
+2025-12-24T11:14:00.349Z,43.0,50.1,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,218820404,2602864786,PinguinoSeguro,66
+2025-12-24T11:15:00.087Z,20.0,47.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,218861531,2602966420,PinguinoSeguro,66
+2025-12-24T11:16:00.974Z,46.0,47.7,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,218898653,2603054435,PinguinoSeguro,66
+2025-12-24T11:17:00.918Z,51.0,47.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,218917876,2603118296,PinguinoSeguro,65
+2025-12-24T11:18:00.514Z,20.0,47.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,218958814,2603220057,PinguinoSeguro,61
+2025-12-24T11:19:00.288Z,20.0,47.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,218995116,2603336975,PinguinoSeguro,65
+2025-12-24T11:20:00.188Z,19.0,47.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,219009970,2603398946,PinguinoSeguro,67
+2025-12-24T11:21:00.117Z,19.0,47.7,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,219055422,2603508512,PinguinoSeguro,66
+2025-12-24T11:28:02.203Z,35.0,48.7,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,219156540,2603651105,PinguinoSeguro,61
+2025-12-24T11:29:00.260Z,80.0,52.5,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,219431778,2617103649,PinguinoSeguro,61
+2025-12-24T11:30:00.874Z,20.0,55.6,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,219590978,2621734358,PinguinoSeguro,61
+2025-12-24T11:31:00.654Z,50.0,54.0,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,219690566,2621933962,PinguinoSeguro,60
+2025-12-24T11:32:00.411Z,21.0,54.8,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,219720396,2622011516,PinguinoSeguro,63
+2025-12-24T11:33:00.583Z,21.0,53.8,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,219762286,2622113255,PinguinoSeguro,63
+2025-12-24T11:34:00.483Z,20.0,54.0,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,219799610,2622187378,PinguinoSeguro,62
+2025-12-24T11:35:00.513Z,28.0,54.5,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,219822452,2622258700,PinguinoSeguro,65
+2025-12-24T11:36:00.693Z,20.0,54.8,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,225872912,2622731067,PinguinoSeguro,62
+2025-12-24T11:37:00.159Z,22.0,55.8,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,230003622,2622981406,PinguinoSeguro,61
+2025-12-24T11:38:00.783Z,21.0,56.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,238655265,2623384434,PinguinoSeguro,62
+2025-12-24T11:39:00.792Z,59.0,56.5,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,246318618,2623812698,PinguinoSeguro,61
+2025-12-24T11:40:00.649Z,21.0,56.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,248245919,2624000463,PinguinoSeguro,62
+2025-12-24T11:41:00.746Z,26.0,57.7,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,254800124,2624385411,PinguinoSeguro,66
+2025-12-24T11:42:00.949Z,36.0,57.5,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,254860787,2624509362,PinguinoSeguro,63
+2025-12-24T11:43:00.349Z,21.0,54.7,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,254917774,2624610903,PinguinoSeguro,63
+2025-12-24T11:44:00.373Z,24.0,54.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,255041945,2625794597,PinguinoSeguro,62
+2025-12-24T11:45:00.447Z,22.0,53.0,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,255086620,2625898645,PinguinoSeguro,62
+2025-12-24T11:46:00.385Z,22.0,52.7,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,255193494,2626076509,PinguinoSeguro,62
+2025-12-24T11:47:00.344Z,46.0,46.1,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,255226947,2626164812,PinguinoSeguro,61
+2025-12-24T11:48:00.969Z,51.0,46.1,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,255273893,2626272313,PinguinoSeguro,62
+2025-12-24T11:49:00.589Z,20.0,46.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,255288605,2626334053,PinguinoSeguro,63
+2025-12-24T11:50:00.444Z,20.0,46.3,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,255320855,2626418867,PinguinoSeguro,62
+2025-12-24T11:51:00.199Z,22.0,46.3,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,255373298,2626566177,PinguinoSeguro,63
+2025-12-24T11:52:00.068Z,24.0,46.6,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,259582638,2626801234,PinguinoSeguro,62
+2025-12-24T11:53:00.451Z,25.0,49.1,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,260667434,2626913112,PinguinoSeguro,60
+2025-12-24T11:54:00.225Z,23.0,49.1,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,260737323,2627022385,PinguinoSeguro,60
+2025-12-24T11:55:00.168Z,23.0,49.0,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,260759409,2627092044,PinguinoSeguro,60
+2025-12-24T11:56:00.360Z,42.0,55.1,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,261338153,2631096522,PinguinoSeguro,60
+2025-12-24T11:57:00.669Z,74.0,55.7,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,261527942,2633015812,PinguinoSeguro,60
+2025-12-24T11:58:00.755Z,24.0,54.9,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,261550550,2633082919,PinguinoSeguro,60
+2025-12-24T11:59:00.658Z,19.0,53.9,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,261581637,2633156781,PinguinoSeguro,61
+2025-12-24T12:00:00.410Z,35.0,53.9,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,261626804,2633267571,PinguinoSeguro,60
+2025-12-24T12:01:00.345Z,29.0,53.6,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,261642708,2633330146,PinguinoSeguro,61
+2025-12-24T12:02:00.192Z,22.0,53.8,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,261664689,2633405359,PinguinoSeguro,61
+2025-12-24T12:03:00.305Z,30.0,55.1,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,261718802,2633537279,PinguinoSeguro,63
+2025-12-24T12:04:00.479Z,38.0,54.2,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,261733797,2633599162,PinguinoSeguro,66
+2025-12-24T12:05:00.526Z,68.0,54.5,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,261755706,2633667886,PinguinoSeguro,69
+2025-12-24T12:06:00.547Z,28.0,55.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,261815276,2633786844,PinguinoSeguro,70
+2025-12-24T12:07:00.925Z,21.0,53.3,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,261897053,2634710698,PinguinoSeguro,63
+2025-12-24T12:08:00.887Z,27.0,52.9,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,261919096,2634779875,PinguinoSeguro,62
+2025-12-24T12:09:00.802Z,41.0,52.7,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,261974364,2634929827,PinguinoSeguro,61
+2025-12-24T12:10:00.811Z,22.0,52.9,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,261989588,2634992267,PinguinoSeguro,61
+2025-12-24T12:11:00.718Z,28.0,55.2,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,262152715,2636666452,PinguinoSeguro,61
+2025-12-24T12:12:00.838Z,26.0,55.8,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,262992434,2636838607,PinguinoSeguro,61
+2025-12-24T12:13:00.727Z,26.0,60.2,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,270925382,2637159386,PinguinoSeguro,62
+2025-12-24T12:14:00.093Z,54.0,61.7,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,281094269,2637606743,PinguinoSeguro,61
+2025-12-24T12:15:01.022Z,27.0,60.1,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,285836656,2637879088,PinguinoSeguro,61
+2025-12-24T12:16:00.734Z,23.0,59.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,285889075,2637973100,PinguinoSeguro,59
+2025-12-24T12:17:00.636Z,23.0,59.2,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,285931696,2638074361,PinguinoSeguro,61
+2025-12-24T12:18:00.290Z,23.0,56.2,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,287732384,2638257663,PinguinoSeguro,62
+2025-12-24T12:19:00.103Z,22.0,55.7,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,287756660,2638324651,PinguinoSeguro,62
+2025-12-24T12:20:00.837Z,19.0,54.5,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,287794282,2638442672,PinguinoSeguro,60
+2025-12-24T12:21:00.628Z,21.0,54.6,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,292898382,2638753667,PinguinoSeguro,62
+2025-12-24T12:22:00.840Z,20.0,56.6,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,292992662,2639046012,PinguinoSeguro,62
+2025-12-24T12:23:00.777Z,54.0,56.7,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,295278928,2639242928,PinguinoSeguro,87
+2025-12-24T12:24:00.674Z,23.0,56.5,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,295441756,2639454393,PinguinoSeguro,61
+2025-12-24T12:25:00.527Z,24.0,56.0,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,295465287,2639526475,PinguinoSeguro,62
+2025-12-24T12:26:00.385Z,21.0,56.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,297555599,2639780038,PinguinoSeguro,61
+2025-12-24T12:27:00.069Z,22.0,56.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,297607784,2639899090,PinguinoSeguro,63
+2025-12-24T12:28:00.778Z,35.0,56.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,297646063,2639976219,PinguinoSeguro,89
+2025-12-24T12:29:00.836Z,26.0,54.7,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,299659102,2640173893,PinguinoSeguro,62
+2025-12-24T12:30:00.856Z,23.0,55.1,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,299712611,2640289089,PinguinoSeguro,63
+2025-12-24T12:31:00.603Z,29.0,54.9,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,299753485,2640412425,PinguinoSeguro,71
+2025-12-24T12:32:00.580Z,48.0,56.8,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,306273660,2640689492,PinguinoSeguro,62
+2025-12-24T12:33:00.520Z,22.0,60.5,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,313855336,2641012331,PinguinoSeguro,60
+2025-12-24T12:34:00.366Z,23.0,60.1,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,313875296,2641078266,PinguinoSeguro,60
+2025-12-24T12:35:00.308Z,22.0,54.0,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,313926170,2641159551,PinguinoSeguro,63
+2025-12-24T12:36:00.075Z,23.0,53.3,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,313994817,2641321557,PinguinoSeguro,60
+2025-12-24T12:37:00.959Z,22.0,53.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,314041355,2641409532,PinguinoSeguro,61
+2025-12-24T12:38:00.818Z,19.0,53.3,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,314073546,2641486943,PinguinoSeguro,60
+2025-12-24T12:39:00.565Z,30.0,53.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,314116502,2641593650,PinguinoSeguro,61
+2025-12-24T12:40:00.365Z,23.0,53.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,314136346,2641662900,PinguinoSeguro,61
+2025-12-24T12:41:00.293Z,48.0,54.5,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,315818785,2641907796,PinguinoSeguro,62
+2025-12-24T12:42:00.068Z,25.0,54.8,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,317894627,2642094123,PinguinoSeguro,62
+2025-12-24T12:43:00.376Z,22.0,58.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,320307819,2642247134,PinguinoSeguro,63
+2025-12-24T12:44:00.175Z,20.0,58.3,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,320358434,2642342602,PinguinoSeguro,63
+2025-12-24T12:45:00.081Z,27.0,57.6,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,320406252,2642447615,PinguinoSeguro,63
+2025-12-24T12:46:00.980Z,43.0,56.2,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,321937872,2642713973,PinguinoSeguro,61
+2025-12-24T12:47:00.739Z,23.0,56.7,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,323378618,2642858966,PinguinoSeguro,61
+2025-12-24T12:48:00.394Z,20.0,56.6,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,323495144,2643247112,PinguinoSeguro,62
+2025-12-24T12:49:00.709Z,38.0,56.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,323532481,2643491371,PinguinoSeguro,60
+2025-12-24T12:50:00.479Z,47.0,55.6,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,323571637,2643575310,PinguinoSeguro,60
+2025-12-24T12:51:01.031Z,21.0,54.9,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,323627747,2643693362,PinguinoSeguro,61
+2025-12-24T12:52:00.603Z,39.0,57.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,323788324,2644690229,PinguinoSeguro,62
+2025-12-24T12:53:00.749Z,29.0,57.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,323818330,2644885798,PinguinoSeguro,61
+2025-12-24T12:54:00.594Z,35.0,57.1,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,323892845,2645084978,PinguinoSeguro,70
+2025-12-24T12:55:00.395Z,19.0,57.2,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,323924484,2645154357,PinguinoSeguro,63
+2025-12-24T12:56:00.148Z,22.0,57.8,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,324353850,2645256877,PinguinoSeguro,63
+2025-12-24T12:57:00.303Z,40.0,62.4,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,329464064,2645625008,PinguinoSeguro,63
+2025-12-24T12:58:00.575Z,24.0,62.5,NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+0,329497748,2645698027,PinguinoSeguro,62
