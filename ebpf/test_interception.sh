@@ -10,17 +10,17 @@ echo "📋 Test 1: Comandos PERMITIDOS (deberían funcionar)"
 echo "--------------------------------------"
 
 # Comandos en whitelist
-echo "✅ Testing: ls"
-ls /tmp > /dev/null 2>&1 && echo "   ✅ ls: PERMITIDO" || echo "   ❌ ls: BLOQUEADO"
+echo "✅ Testing: /usr/bin/ls"
+/usr/bin/ls /tmp > /dev/null 2>&1 && echo "   ✅ ls: PERMITIDO" || echo "   ❌ ls: BLOQUEADO"
 
-echo "✅ Testing: pwd"
-pwd > /dev/null 2>&1 && echo "   ✅ pwd: PERMITIDO" || echo "   ❌ pwd: BLOQUEADO"
+echo "✅ Testing: /usr/bin/pwd"
+/usr/bin/pwd > /dev/null 2>&1 && echo "   ✅ pwd: PERMITIDO" || echo "   ❌ pwd: BLOQUEADO"
 
-echo "✅ Testing: whoami"
-whoami > /dev/null 2>&1 && echo "   ✅ whoami: PERMITIDO" || echo "   ❌ whoami: BLOQUEADO"
+echo "✅ Testing: /usr/bin/whoami"
+/usr/bin/whoami > /dev/null 2>&1 && echo "   ✅ whoami: PERMITIDO" || echo "   ❌ whoami: BLOQUEADO"
 
-echo "✅ Testing: date"
-date > /dev/null 2>&1 && echo "   ✅ date: PERMITIDO" || echo "   ❌ date: BLOQUEADO"
+echo "✅ Testing: /usr/bin/date"
+/usr/bin/date > /dev/null 2>&1 && echo "   ✅ date: PERMITIDO" || echo "   ❌ date: BLOQUEADO"
 
 echo ""
 echo "📋 Test 2: Comandos BLOQUEADOS (deberían fallar)"

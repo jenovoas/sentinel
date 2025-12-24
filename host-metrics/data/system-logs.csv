@@ -17887,3 +17887,1258 @@ timestamp,level,unit,message
 2025-12-24T12:57:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
 2025-12-24T12:57:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
 2025-12-24T12:57:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T12:58:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T12:58:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T12:58:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T12:58:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T12:58:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T12:59:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T12:59:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T12:59:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T12:59:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T12:59:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:00:10.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=44689 DF PROTO=2 
+2025-12-24T13:00:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:00:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:00:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:00:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:01:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:01:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:01:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:01:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:01:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:02:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:02:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:02:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:02:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:02:15.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=45800 DF PROTO=2 
+2025-12-24T13:03:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:03:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:03:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:03:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:03:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:04:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:04:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:04:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:04:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:04:20.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=54397 DF PROTO=2 
+2025-12-24T13:05:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:05:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:05:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:05:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:05:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:06:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:06:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:06:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:06:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:06:25.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=64388 DF PROTO=2 
+2025-12-24T13:07:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:07:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:07:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:07:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:07:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:08:22.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:08:22.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:08:22.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:08:22.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:08:30.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=7502 DF PROTO=2 
+2025-12-24T13:09:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:09:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:09:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:09:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:09:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:10:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:10:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:10:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:10:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:10:35.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=8336 DF PROTO=2 
+2025-12-24T13:11:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:11:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:11:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:11:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:11:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:12:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:12:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:12:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:12:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:12:40.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=12460 DF PROTO=2 
+2025-12-24T13:13:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:13:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:13:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:13:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:13:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:14:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:14:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:14:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:14:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:14:45.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=16412 DF PROTO=2 
+2025-12-24T13:15:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:15:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:15:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:15:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:15:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:16:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:16:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:16:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:16:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:16:50.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=28858 DF PROTO=2 
+2025-12-24T13:17:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:17:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:17:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:17:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:17:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:18:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:18:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:18:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:18:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:18:55.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=36026 DF PROTO=2 
+2025-12-24T13:19:14.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:19:14.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:19:14.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:19:14.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:19:45.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T13:20:51.000Z,ERROR,kernel,pcieport 0000:00:1d.2: AER:   Error of this Agent is reported first
+2025-12-24T13:20:51.000Z,WARNING,kernel,nvme 0000:07:00.0: PCIe Bus Error: severity=Correctable; type=Physical Layer; (Receiver ID)
+2025-12-24T13:20:51.000Z,WARNING,kernel,nvme 0000:07:00.0:   device [8086:0975] error status/mask=00000001/00002000
+2025-12-24T13:20:51.000Z,WARNING,kernel,nvme 0000:07:00.0:    [ 0] RxErr                  (First)
+2025-12-24T13:21:00.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=46884 DF PROTO=2 
+2025-12-24T13:21:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:21:14.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:21:14.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:21:14.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:21:14.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:22:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:22:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:22:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:22:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:22:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:23:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:23:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:23:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:23:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:23:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:24:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:24:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:24:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:24:28.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T13:24:28.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T13:25:10.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=58463 DF PROTO=2 
+2025-12-24T13:25:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:25:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:25:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:25:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:26:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:26:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:26:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:26:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:26:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:27:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:27:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:27:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:27:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:27:15.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=62336 DF PROTO=2 
+2025-12-24T13:28:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:28:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:28:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:28:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:28:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:29:14.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:29:14.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:29:14.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:29:14.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:29:20.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=65148 DF PROTO=2 
+2025-12-24T13:30:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:30:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:30:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:30:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:30:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:31:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:31:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:31:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:31:16.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T13:31:25.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=2596 DF PROTO=2 
+2025-12-24T13:32:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:32:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:32:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:32:50.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T13:32:50.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T13:33:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:33:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:33:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:33:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:33:30.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=10603 DF PROTO=2 
+2025-12-24T13:34:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:34:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:34:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:34:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:34:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:35:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:35:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:35:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:35:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:35:35.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=22849 DF PROTO=2 
+2025-12-24T13:36:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:36:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:36:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:36:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:36:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:37:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:37:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:37:19.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T13:37:19.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T13:37:40.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=23876 DF PROTO=2 
+2025-12-24T13:38:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:38:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:38:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:38:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:38:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:39:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:39:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:39:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:39:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:39:45.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=31991 DF PROTO=2 
+2025-12-24T13:40:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:40:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:40:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:40:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:40:22.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T13:41:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:41:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:41:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:41:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:41:50.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=42366 DF PROTO=2 
+2025-12-24T13:42:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:42:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:42:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:42:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:42:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:43:14.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:43:14.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:43:14.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:43:14.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:43:55.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=46307 DF PROTO=2 
+2025-12-24T13:44:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:44:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:44:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:44:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:44:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:45:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:45:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:45:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:45:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:46:00.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=52596 DF PROTO=2 
+2025-12-24T13:46:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:46:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:46:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:46:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:46:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:47:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:47:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:47:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:47:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:47:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:48:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:48:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:48:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:48:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:48:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:49:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:49:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:49:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:49:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:49:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:50:10.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=64702 DF PROTO=2 
+2025-12-24T13:50:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:50:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:50:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:50:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:51:46.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:51:46.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:51:46.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:51:46.000Z,WARNING,user@1002.service,Vulkan: Loader Message: setup_loader_term_phys_devs:  Failed to detect any valid GPUs in the current config
+2025-12-24T13:51:46.000Z,WARNING,user@1002.service,vkEnumeratePhysicalDevices(): Initialization of an object could not be completed for implementation-specific reasons. (VK_ERROR_INITIALIZATION_FAILED) (-3)
+2025-12-24T13:52:14.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:52:15.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=5244 DF PROTO=2 
+2025-12-24T13:52:21.000Z,CRITICAL,systemd-coredump@0-1-783451_783751-0.service,no message
+2025-12-24T13:52:21.000Z,WARNING,user@1002.service,Unable to find file for pid 9863 expected at "kcrash-metadata/antigravity.9b7305d5bf4c460889d085c4d7161820.9863.ini"
+2025-12-24T13:52:21.000Z,WARNING,user@1002.service,Nothing handled the dump :O
+2025-12-24T13:53:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:53:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:53:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:53:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:53:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:54:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:54:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:54:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:54:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:54:20.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=8250 DF PROTO=2 
+2025-12-24T13:55:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:55:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:55:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:55:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:55:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:56:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:56:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:56:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:56:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:56:25.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=11755 DF PROTO=2 
+2025-12-24T13:57:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:57:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:57:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:57:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:57:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:58:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:58:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:58:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:58:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:58:30.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=14263 DF PROTO=2 
+2025-12-24T13:59:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T13:59:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T13:59:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T13:59:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T13:59:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:00:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:00:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:00:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:00:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:00:35.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=19527 DF PROTO=2 
+2025-12-24T14:01:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:01:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:01:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:01:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:01:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:02:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:02:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:02:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:02:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:02:40.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=29721 DF PROTO=2 
+2025-12-24T14:03:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:03:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:03:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:03:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:03:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:04:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:04:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:04:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:04:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:04:45.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=36810 DF PROTO=2 
+2025-12-24T14:05:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:05:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:05:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:05:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:05:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:06:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:06:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:06:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:06:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:06:50.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=42950 DF PROTO=2 
+2025-12-24T14:07:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:07:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:07:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:07:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:07:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:08:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:08:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:08:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:08:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:08:55.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=46870 DF PROTO=2 
+2025-12-24T14:09:12.000Z,ERROR,kernel,
+2025-12-24T14:09:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:09:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:09:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:09:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:10:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:10:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:10:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:10:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:11:00.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=58823 DF PROTO=2 
+2025-12-24T14:11:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:11:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:11:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:11:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:11:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:12:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:12:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:12:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:12:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:12:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:13:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:13:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:13:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:13:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:13:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:14:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:14:14.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:14:14.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:14:14.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:14:14.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:15:11.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T14:15:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:15:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:15:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:15:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:16:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:16:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:16:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:16:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:16:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:17:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:17:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:17:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:17:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:17:15.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=9085 DF PROTO=2 
+2025-12-24T14:18:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:18:14.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:18:14.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:18:14.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:18:14.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:19:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:19:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:19:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:19:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:19:20.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=11526 DF PROTO=2 
+2025-12-24T14:20:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:20:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:20:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:20:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:20:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:21:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:21:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:21:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:21:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:21:25.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=14921 DF PROTO=2 
+2025-12-24T14:22:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:22:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:22:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:22:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:22:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:23:14.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:23:14.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:23:14.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:23:14.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:23:30.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=23688 DF PROTO=2 
+2025-12-24T14:24:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:24:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:24:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:24:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:24:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:25:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:25:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:25:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:25:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:25:35.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=29291 DF PROTO=2 
+2025-12-24T14:26:13.000Z,ERROR,kernel,
+2025-12-24T14:26:14.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:26:14.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:26:14.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:26:14.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:27:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:27:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:27:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:27:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:27:40.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=31863 DF PROTO=2 
+2025-12-24T14:28:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:28:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:28:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:28:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:28:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:29:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:29:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:29:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:29:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:29:45.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=33182 DF PROTO=2 
+2025-12-24T14:30:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:30:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:30:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:30:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:30:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:31:14.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:31:14.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:31:14.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:31:14.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:31:50.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=34501 DF PROTO=2 
+2025-12-24T14:32:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:32:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:32:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:32:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:32:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:33:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:33:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:33:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:33:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:33:55.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=42840 DF PROTO=2 
+2025-12-24T14:34:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:34:14.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:34:14.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:34:14.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:34:14.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:35:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:35:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:35:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:35:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:36:00.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=47563 DF PROTO=2 
+2025-12-24T14:36:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:36:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:36:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:36:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:36:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:37:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:37:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:37:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:37:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:37:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:38:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:38:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:38:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:38:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:38:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:39:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:39:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:39:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:39:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:39:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:40:10.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=60380 DF PROTO=2 
+2025-12-24T14:40:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:40:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:40:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:40:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:41:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:41:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:41:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:41:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:41:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:42:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:42:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:42:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:42:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:42:15.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=1462 DF PROTO=2 
+2025-12-24T14:43:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:43:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:43:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:43:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:43:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:44:20.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=12202 DF PROTO=2 
+2025-12-24T14:44:47.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:44:47.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:44:47.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:44:47.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:45:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:45:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:45:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:45:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:45:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:46:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:46:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:46:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:46:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:46:25.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=19397 DF PROTO=2 
+2025-12-24T14:47:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:47:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:47:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:47:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:47:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:48:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:48:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:48:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:48:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:48:30.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=30877 DF PROTO=2 
+2025-12-24T14:49:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:49:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:49:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:49:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:49:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:50:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:50:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:50:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:50:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:50:35.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=37840 DF PROTO=2 
+2025-12-24T14:51:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:51:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:51:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:51:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:51:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:52:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:52:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:52:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:52:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:52:40.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=47377 DF PROTO=2 
+2025-12-24T14:53:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:53:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:53:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:53:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:53:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:54:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:54:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:54:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:54:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:54:45.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=55800 DF PROTO=2 
+2025-12-24T14:55:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:55:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:55:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:55:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:55:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:56:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:56:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:56:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:56:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:56:50.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=57365 DF PROTO=2 
+2025-12-24T14:57:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:57:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:57:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:57:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:57:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:58:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:58:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:58:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:58:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:58:55.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=4133 DF PROTO=2 
+2025-12-24T14:59:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T14:59:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T14:59:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T14:59:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T14:59:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:00:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:00:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:00:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:00:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:01:00.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=10968 DF PROTO=2 
+2025-12-24T15:01:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:01:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:01:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:01:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:01:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:02:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:02:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:02:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:02:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:02:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:03:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:03:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:03:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:03:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:03:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:04:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:04:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:04:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:04:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:04:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:05:10.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=20066 DF PROTO=2 
+2025-12-24T15:05:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:05:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:05:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:05:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:06:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:06:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:06:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:06:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:06:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:07:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:07:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:07:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:07:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:07:15.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=20552 DF PROTO=2 
+2025-12-24T15:08:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:08:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:08:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:08:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:08:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:09:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:09:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:09:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:09:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:09:20.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=24965 DF PROTO=2 
+2025-12-24T15:10:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:10:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:10:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:10:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:10:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:11:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:11:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:11:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:11:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:11:25.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=25540 DF PROTO=2 
+2025-12-24T15:12:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:12:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:12:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:12:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:12:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:13:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:13:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:13:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:13:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:13:30.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=36029 DF PROTO=2 
+2025-12-24T15:14:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:14:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:14:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:14:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:14:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:15:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:15:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:15:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:15:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:15:35.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=39629 DF PROTO=2 
+2025-12-24T15:16:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:16:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:16:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:16:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:16:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:17:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:17:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:17:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:17:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:17:40.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=41154 DF PROTO=2 
+2025-12-24T15:18:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:18:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:18:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:18:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:18:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:19:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:19:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:19:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:19:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:19:45.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=43277 DF PROTO=2 
+2025-12-24T15:20:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:20:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:20:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:20:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:20:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:21:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:21:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:21:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:21:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:21:50.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=45558 DF PROTO=2 
+2025-12-24T15:22:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:22:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:22:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:22:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:22:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:23:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:23:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:23:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:23:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:23:55.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=56796 DF PROTO=2 
+2025-12-24T15:24:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:24:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:24:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:24:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:24:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:25:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:25:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:25:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:25:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:26:00.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=58794 DF PROTO=2 
+2025-12-24T15:26:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:26:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:26:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:26:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:26:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:27:08.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:27:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:27:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:27:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:27:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:28:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:28:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:28:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:28:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:28:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:29:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:29:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:29:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:29:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:29:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:30:10.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=6933 DF PROTO=2 
+2025-12-24T15:30:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:30:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:30:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:30:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:31:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:31:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:31:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:31:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:31:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:32:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:32:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:32:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:32:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:32:15.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=17068 DF PROTO=2 
+2025-12-24T15:33:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:33:14.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:33:14.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:33:14.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:33:14.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:34:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:34:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:34:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:34:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:34:20.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=24870 DF PROTO=2 
+2025-12-24T15:35:14.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:35:30.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T15:35:30.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T15:35:59.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T15:35:59.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T15:36:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:36:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:36:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:36:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:36:25.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=35460 DF PROTO=2 
+2025-12-24T15:37:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:37:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:37:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:37:51.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T15:37:51.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T15:38:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:38:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:38:30.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T15:38:30.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T15:38:30.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=42827 DF PROTO=2 
+2025-12-24T15:39:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:39:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:39:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:39:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:39:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:40:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:40:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:40:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:40:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:40:35.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=54556 DF PROTO=2 
+2025-12-24T15:41:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:41:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:41:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:41:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:41:55.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T15:42:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:42:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:42:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:42:37.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T15:42:40.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=57882 DF PROTO=2 
+2025-12-24T15:43:14.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:43:14.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:43:14.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:43:14.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:43:24.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T15:44:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:44:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:44:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:44:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:44:45.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=61257 DF PROTO=2 
+2025-12-24T15:45:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:45:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:45:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:45:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:45:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:46:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:46:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:46:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:46:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:46:50.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=3876 DF PROTO=2 
+2025-12-24T15:47:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:47:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:47:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:47:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:47:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:48:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:48:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:48:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:48:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:48:55.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=7119 DF PROTO=2 
+2025-12-24T15:49:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:49:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:49:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:49:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:49:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:50:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:50:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:50:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:50:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:51:00.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=7707 DF PROTO=2 
+2025-12-24T15:51:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:51:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:51:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:51:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:51:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:52:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:52:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:52:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:52:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:52:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:53:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:53:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:53:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:53:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:53:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:54:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:54:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:54:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:54:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:54:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:55:10.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=20415 DF PROTO=2 
+2025-12-24T15:55:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:55:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:55:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:55:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:56:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:56:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:56:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:56:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:56:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:57:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:57:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:57:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:57:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:57:15.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=31760 DF PROTO=2 
+2025-12-24T15:58:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:58:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:58:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:58:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:58:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:59:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T15:59:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T15:59:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T15:59:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T15:59:20.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=41008 DF PROTO=2 
+2025-12-24T16:00:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:00:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:00:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:00:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:00:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:01:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:01:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:01:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:01:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:01:25.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=53087 DF PROTO=2 
+2025-12-24T16:02:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:02:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:02:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:02:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:02:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:03:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:03:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:03:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:03:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:03:30.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=64140 DF PROTO=2 
+2025-12-24T16:04:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:04:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:04:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:04:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:04:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:05:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:05:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:05:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:05:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:05:35.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=64390 DF PROTO=2 
+2025-12-24T16:06:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:06:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:06:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:06:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:06:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:07:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:07:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:07:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:07:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:07:40.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=5271 DF PROTO=2 
+2025-12-24T16:08:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:08:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:08:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:08:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:08:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:09:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:09:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:09:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:09:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:09:45.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=6797 DF PROTO=2 
+2025-12-24T16:10:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:10:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:10:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:10:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:10:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:11:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:11:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:11:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:11:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:11:50.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=12086 DF PROTO=2 
+2025-12-24T16:12:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:12:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:12:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:12:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:12:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:13:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:13:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:13:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:13:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:13:55.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=17792 DF PROTO=2 
+2025-12-24T16:14:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:14:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:14:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:14:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:14:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:28:32.000Z,WARNING,NetworkManager.service,<warn>  [1766593712.2856] device (p2p-dev-wlan0): error setting IPv4 forwarding to '1': Recurso no disponible temporalmente
+2025-12-24T16:28:33.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:28:33.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:28:33.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:28:33.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:28:47.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:28:47.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:28:47.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:28:47.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:28:53.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T16:29:29.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T16:29:39.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T16:29:49.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T16:29:49.000Z,ERROR,kernel,mmc0: error -110 whilst initialising SD card
+2025-12-24T16:29:59.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T16:30:26.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T16:30:35.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=63780 DF PROTO=2 
+2025-12-24T16:30:36.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T16:30:46.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T16:30:56.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T16:31:20.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T16:31:30.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T16:31:40.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T16:31:50.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T16:32:00.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T16:32:50.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T16:33:00.000Z,ERROR,kernel,alcor_sdmmc alcor_sdmmc.0: Timeout waiting for hardware interrupt.
+2025-12-24T16:33:00.000Z,WARNING,kernel,pcieport 0000:00:1d.6: PCIe Bus Error: severity=Correctable; type=Data Link Layer; (Transmitter ID)
+2025-12-24T16:33:00.000Z,WARNING,kernel,pcieport 0000:00:1d.6:   device [8086:06b6] error status/mask=00001000/00002000
+2025-12-24T16:33:00.000Z,WARNING,kernel,pcieport 0000:00:1d.6:    [12] Timeout               
+2025-12-24T16:33:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:33:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:33:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:33:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:33:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:34:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:34:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:34:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:34:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:34:45.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=14935 DF PROTO=2 
+2025-12-24T16:35:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:35:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:35:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:35:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:35:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:36:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:36:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:36:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:36:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:36:50.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=20343 DF PROTO=2 
+2025-12-24T16:37:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:37:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:37:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:37:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:37:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:38:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:38:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:38:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:38:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:38:54.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=24663 DF PROTO=2 
+2025-12-24T16:39:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:39:14.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:39:14.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:39:14.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:39:14.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:40:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:40:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:40:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:40:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:41:00.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=25504 DF PROTO=2 
+2025-12-24T16:41:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:41:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:41:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:41:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:41:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:42:29.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:42:29.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:42:29.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:42:29.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:42:30.000Z,WARNING,user@1002.service,Unknown key gtk-monospace-font-name in /home/jnovoas/.config/gtk-3.0/settings.ini
+2025-12-24T16:43:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:43:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:43:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:43:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:43:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:44:54.000Z,WARNING,kernel,pcieport 0000:00:1d.2:    [ 0] RxErr                  (First)
+2025-12-24T16:44:54.000Z,ERROR,kernel,pcieport 0000:00:1d.2: AER:   Error of this Agent is reported first
+2025-12-24T16:44:54.000Z,WARNING,kernel,nvme 0000:07:00.0: PCIe Bus Error: severity=Correctable; type=Physical Layer; (Receiver ID)
+2025-12-24T16:44:54.000Z,WARNING,kernel,nvme 0000:07:00.0:   device [8086:0975] error status/mask=00000001/00002000
+2025-12-24T16:44:54.000Z,WARNING,kernel,nvme 0000:07:00.0:    [ 0] RxErr                  (First)
+2025-12-24T16:45:12.000Z,ERROR,kernel,
+2025-12-24T16:45:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:45:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:45:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:45:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:46:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:46:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:46:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:46:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:46:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:47:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:47:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:47:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:47:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:47:15.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=43395 DF PROTO=2 
+2025-12-24T16:48:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:48:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:48:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:48:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:48:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:49:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:49:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:49:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:49:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:49:20.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=55624 DF PROTO=2 
+2025-12-24T16:50:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:50:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:50:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:50:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:50:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:51:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:51:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:51:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:51:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:51:25.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=55989 DF PROTO=2 
+2025-12-24T16:52:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:52:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:52:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:52:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:52:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:53:14.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:53:14.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:53:14.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:53:14.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:53:30.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=474 DF PROTO=2 
+2025-12-24T16:54:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:54:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:54:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:54:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:54:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:55:19.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:55:19.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:55:19.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:55:19.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:55:35.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=11075 DF PROTO=2 
+2025-12-24T16:56:09.000Z,WARNING,kernel,pcieport 0000:00:1d.6:    [12] Timeout               
+2025-12-24T16:56:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:56:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:56:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:56:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:57:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:57:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:57:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:57:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:57:40.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=20022 DF PROTO=2 
+2025-12-24T16:58:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:58:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:58:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:58:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:58:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:59:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T16:59:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T16:59:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T16:59:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T16:59:44.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=27935 DF PROTO=2 
+2025-12-24T17:00:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:00:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T17:00:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:00:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:00:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:01:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T17:01:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:01:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:01:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:01:50.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=35670 DF PROTO=2 
+2025-12-24T17:02:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:02:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T17:02:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:02:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:02:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:03:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T17:03:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:03:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:03:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:03:55.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=43115 DF PROTO=2 
+2025-12-24T17:04:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:04:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T17:04:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:04:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:04:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:05:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T17:05:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:05:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:05:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:06:00.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=55126 DF PROTO=2 
+2025-12-24T17:06:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:06:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T17:06:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:06:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:06:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:07:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:07:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T17:07:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:07:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:07:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:08:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:08:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T17:08:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:08:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:08:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:09:09.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:09:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T17:09:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:09:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:09:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:10:10.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=2049 DF PROTO=2 
+2025-12-24T17:10:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T17:10:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:10:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:10:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:11:09.000Z,WARNING,kernel,pcieport 0000:00:1d.6:    [12] Timeout               
+2025-12-24T17:11:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T17:11:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:11:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:11:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:12:12.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T17:12:12.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:12:12.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:12:12.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:12:15.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=9255 DF PROTO=2 
+2025-12-24T17:13:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:13:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T17:13:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:13:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:13:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:14:14.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:14:14.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:14:20.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=13754 DF PROTO=2 
+2025-12-24T17:14:35.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T17:14:35.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T17:15:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:15:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T17:15:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:15:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:15:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:16:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:16:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:16:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:16:25.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=19129 DF PROTO=2 
+2025-12-24T17:16:56.000Z,CRITICAL,session-3.scope, jnovoas : a password is required ; TTY=pts/3 ; PWD=/home/jnovoas/sentinel/ebpf ; USER=root ; COMMAND=/usr/bin/whoami
+2025-12-24T17:17:10.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:17:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T17:17:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:17:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:17:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:18:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T17:18:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:18:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:18:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:18:30.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=20493 DF PROTO=2 
+2025-12-24T17:19:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T17:19:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:19:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:19:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:19:41.000Z,WARNING,user@1002.service,A backend call failed: Inhibiting other than idle not supported
+2025-12-24T17:20:13.000Z,ERROR,kernel,NVRM: The NVIDIA GPU 0000:01:00.0 (PCI ID: 10de:1c91)NVRM: installed in this system is not supported by openNVRM: nvidia.ko because it does not include the required GPUNVRM: System Processor (GSP).NVR
+2025-12-24T17:20:13.000Z,ERROR,kernel,nvidia 0000:01:00.0: probe with driver nvidia failed with error -1
+2025-12-24T17:20:13.000Z,ERROR,kernel,NVRM: The NVIDIA probe routine failed for 1 device(s).
+2025-12-24T17:20:13.000Z,ERROR,kernel,NVRM: None of the NVIDIA devices were initialized.
+2025-12-24T17:20:35.000Z,WARNING,kernel,[UFW BLOCK] IN=wlan0 OUT= MAC=01:00:5e:00:00:01:64:85:05:25:cb:1a:08:00 SRC=192.168.1.1 DST=224.0.0.1 LEN=36 TOS=0x00 PREC=0x00 TTL=1 ID=24308 DF PROTO=2 
