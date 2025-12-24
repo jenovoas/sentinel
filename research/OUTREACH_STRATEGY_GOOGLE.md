@@ -37,15 +37,16 @@ Atentamente,
 
 **Jaime Eugenio Novoa Sepúlveda**  
 jaime.novoase@gmail.com  
-[Link al Repositorio en GitHub]
+[Sentinel GitHub Repository](https://github.com/jenovoas/sentinel)  
+[Axion Discovery Research (10.2-Sigma)](https://github.com/jenovoas/sentinel/blob/main/quantum/AXION_RESEARCH_PAPER.md)
 
 ---
 
 ## 🗺️ Hoja de Ruta de Contacto (Próximos Pasos)
 
-1.  **LinkedIn**: Contactar a ingenieros destacados en el equipo de eBPF de Google o investigadores de Quantum AI citando los resultados de Sigma.
-2.  **Google Cloud Partners**: Si tienes una entidad legal, el programa de partners es la vía más rápida para escalar la tecnología sobre infraestructura de Google.
-3.  **Vía Académica**: Dado que el paper (`AXION_RESEARCH_PAPER.md`) está listo para revisión por pares, enviarlo a repositorios como arXiv o contactar a colaboradores de Daniel Mansfield (quien ya ha validado la dirección de la investigación).
+1.  **Direct Repo Access**: El README principal ha sido mejorado para actuar como una "Landing Page" profesional.
+2.  **LinkedIn Targeting**: Contactar a ingenieros destacados en el equipo de eBPF de Google o investigadores de Quantum AI citando los resultados de Sigma.
+3.  **Vía Académica**: Dado que el paper (`AXION_RESEARCH_PAPER.md`) está listo para revisión por pares, enviarlo a repositorios como arXiv o contactar a colaboradores de Daniel Mansfield.
 
 ---
 **SENTINEL CORTEX™ - ESTRATEGIA DE COMUNICACIÓN**
