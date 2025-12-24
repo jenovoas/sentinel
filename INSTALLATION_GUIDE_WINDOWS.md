@@ -143,7 +143,7 @@ wsl
 ```bash
 # Dentro de WSL2 (Ubuntu)
 cd ~
-git clone https://github.com/jaime-novoa/sentinel.git
+git clone https://github.com/jenovoas/sentinel.git
 cd sentinel
 ```
 
@@ -216,7 +216,7 @@ Restart-Computer
 ```bash
 # En Git Bash
 cd ~
-git clone https://github.com/jaime-novoa/sentinel.git
+git clone https://github.com/jenovoas/sentinel.git
 cd sentinel
 
 # Copiar configuración
@@ -487,7 +487,7 @@ chmod +x *.sh
 
 # Correcto:
 cd ~
-git clone https://github.com/jaime-novoa/sentinel.git
+git clone https://github.com/jenovoas/sentinel.git
 
 # Incorrecto:
 cd /mnt/c/Users/...
@@ -600,7 +600,7 @@ Sentinel está instalado y corriendo en tu Windows. Ahora puedes:
 
 1. Consulta [Solución de Problemas](#-solución-de-problemas)
 2. Revisa [INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md) (Linux)
-3. Abre un issue: https://github.com/jaime-novoa/sentinel/issues
+3. Abre un issue: https://github.com/jenovoas/sentinel/issues
 
 **Comunidad**:
 - Discord: (próximamente)

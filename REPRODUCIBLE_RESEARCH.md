@@ -34,7 +34,7 @@ Si estás estudiando Sentinel, esto es lo que diferencia este proyecto de un pap
 
 ```bash
 # 1. Clonar repositorio
-git clone https://github.com/jaime-novoa/sentinel
+git clone https://github.com/jenovoas/sentinel
 
 # 2. Ejecutar benchmarks
 cd sentinel/backend
@@ -76,7 +76,7 @@ cat app/core/adaptive_buffers.py
 ### Paso 1: Clonar Repositorio
 
 ```bash
-git clone https://github.com/jaime-novoa/sentinel
+git clone https://github.com/jenovoas/sentinel
 cd sentinel
 ```
 
@@ -306,7 +306,7 @@ Si estás haciendo investigación, pregúntate:
 
 ```bash
 # Pregunta 1: ¿Código disponible?
-✅ https://github.com/jaime-novoa/sentinel
+✅ https://github.com/jenovoas/sentinel
 
 # Pregunta 2: ¿Validable?
 ✅ git clone && python benchmark.py
@@ -330,7 +330,7 @@ DECISIÓN: APROBAR ✅
 
 ```bash
 # 1. Clona el repo
-git clone https://github.com/jaime-novoa/sentinel
+git clone https://github.com/jenovoas/sentinel
 
 # 2. Lee el código
 cat backend/app/core/adaptive_buffers.py
@@ -452,7 +452,7 @@ AHORRO: $6,573-12,573 (99.6% reducción)
 ### Para Todos
 **Valida Sentinel ahora**:
 ```bash
-git clone https://github.com/jaime-novoa/sentinel
+git clone https://github.com/jenovoas/sentinel
 cd sentinel/backend
 python sentinel_global_benchmark.py
 ```
