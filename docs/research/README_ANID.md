@@ -362,7 +362,7 @@ sentinel/
 
 ```bash
 # Clonar repositorio
-git clone https://github.com/jenovoas/sentinel.git
+git clone https://github.com/jaime-novoa/sentinel.git
 cd sentinel
 
 # Configurar variables de entorno
@@ -512,11 +512,11 @@ open http://localhost:3001
 
 **Investigador Responsable**: Jaime Eugenio Novoa Sepúlveda  
 **Email**: jaime.novoase@gmail.com  
-**GitHub**: [github.com/jenovoas/sentinel](https://github.com/jenovoas/sentinel)  
+**GitHub**: [github.com/jaime-novoa/sentinel](https://github.com/jaime-novoa/sentinel)  
 **LinkedIn**: [linkedin.com/in/jaime-novoa-710391204](https://linkedin.com/in/jaime-novoa-710391204)  
 **Ubicación**: Curanilahue, Región del Bío-Bío, Chile
 
-**Repositorio**: https://github.com/jenovoas/sentinel  
+**Repositorio**: https://github.com/jaime-novoa/sentinel  
 **Documentación**: Ver carpeta `docs/`  
 **Estado**: Prototipo funcional (TRL 4), listo para validación en entorno relevante
 
@@ -671,7 +671,7 @@ open http://localhost:3001
 
 ```bash
 # Clone repository
-git clone https://github.com/jenovoas/sentinel.git
+git clone https://github.com/jaime-novoa/sentinel.git
 cd sentinel
 
 # Start all services
@@ -729,9 +729,9 @@ Proprietary - See [LICENSE](LICENSE) for details.
 
 ## 🔗 Links
 
-- **GitHub**: [github.com/jenovoas/sentinel](https://github.com/jenovoas/sentinel)
+- **GitHub**: [github.com/jaime-novoa/sentinel](https://github.com/jaime-novoa/sentinel)
 - **Documentation**: [Full technical documentation](docs/)
-- **Issues**: [GitHub Issues](https://github.com/jenovoas/sentinel/issues)
+- **Issues**: [GitHub Issues](https://github.com/jaime-novoa/sentinel/issues)
 
 ---
 

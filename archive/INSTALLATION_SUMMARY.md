@@ -19,7 +19,7 @@ chmod +x install.sh
 
 ```powershell
 # PowerShell como Administrador
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jenovoas/sentinel/main/install-windows.ps1" -OutFile "install-windows.ps1"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jaime-novoa/sentinel/main/install-windows.ps1" -OutFile "install-windows.ps1"
 .\install-windows.ps1
 ```
 
