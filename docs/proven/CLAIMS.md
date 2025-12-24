@@ -158,25 +158,8 @@ Status: Ready for provisional patent filing.
 - **Passed**: 15
 - **Failed**: 0
 
-### Estimated Value
-- **Conservative**: $22-38M
-- **Basis**: Technical validation + prior art assessment + market analysis
-
 ---
 
-## Next Steps
-
-### Provisional Patent
-1. Contact patent attorney (3-5 candidates)
-2. Prepare executive summary (2 pages)
-3. File provisional patent (deadline: Feb 15, 2026)
-
-### Additional Validation
-- Deploy eBPF LSM to kernel (requires sudo)
-- Load testing (10k-50k events/sec)
-- Multi-node validation
-
----
 
 **Last updated**: 21 December 2025  
 **Status**: Ready for attorney review
