@@ -298,7 +298,7 @@ sudo apt install -y curl git jq > /dev/null 2>&1
 if [ ! -d "$HOME/sentinel" ]; then
     echo "📥 Clonando repositorio Sentinel..."
     cd ~
-    git clone https://github.com/jenovoas/sentinel.git
+    git clone https://github.com/jaime-novoa/sentinel.git
     cd sentinel
 else
     echo "✓ Repositorio ya existe"
