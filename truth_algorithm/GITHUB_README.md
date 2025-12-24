@@ -223,7 +223,7 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) for details.
+Proprietary License - see [LICENSE](LICENSE) for details.
 
 ---
 

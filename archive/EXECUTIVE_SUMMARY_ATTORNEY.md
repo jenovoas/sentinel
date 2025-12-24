@@ -159,7 +159,7 @@ Bypass resistance: Impossible from userspace
 - `ebpf/lsm_ai_guardian.c` - eBPF LSM implementation
 - `backend/app/core/wal.py` - Forensic WAL
 
-**Repositorio**: https://github.com/jenovoas/sentinel (15,000+ líneas, MIT License)
+**Repositorio**: https://github.com/jenovoas/sentinel (15,000+ líneas, Proprietary License)
 
 ---
 

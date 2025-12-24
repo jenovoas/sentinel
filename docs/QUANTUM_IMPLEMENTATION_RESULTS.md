@@ -283,7 +283,7 @@ Based on current performance:
    - Benchmark noise resilience
 
 2. **Open Source Release**:
-   - Release quantum simulators under MIT license
+   - Release quantum simulators under Proprietary license
    - Publish use cases and benchmarks
    - Create tutorial notebooks
 
