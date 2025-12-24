@@ -56,7 +56,7 @@
 Install Sentinel. Make it work. Screenshot the dashboard.
 
 Time: 30 minutes MAX
-Repo: github.com/jenovoas/sentinel
+Repo: github.com/jaime-novoa/sentinel
 Docs: INSTALLATION_GUIDE.md
 
 If you can't do this in 30 minutes, stop here. You're not ready.

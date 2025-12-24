@@ -38,7 +38,7 @@ Subject: Quantum Optimization for Cybersecurity - Validated Results
 
 Dear Google Quantum AI Team,
 
-I'm José Jaime Novoa, developer of Sentinel Cortex™. I've successfully 
+I'm Jaime Eugenio Novoa Sepúlveda, developer of Sentinel Cortex™. I've successfully 
 validated QAOA and VQE algorithms for real-time cybersecurity optimization.
 
 Key Results (Dec 23, 2025):
@@ -50,13 +50,13 @@ Key Results (Dec 23, 2025):
 Strong synergy with Willow chip for hybrid quantum-classical systems.
 
 Attachments: EXECUTIVE_SUMMARY.md, executive_presentation.png
-Repository: https://github.com/jenovoas/sentinel
+Repository: https://github.com/jaime-novoa/sentinel
 
 Open to 30-min call to discuss collaboration?
 
 Best,
-José Jaime Novoa Schilling
-jenovoas@gmail.com
+Jaime Eugenio Novoa Sepúlveda
+jaime.novoase@gmail.com
 ```
 
 ### Opción B: ANID Application

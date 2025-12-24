@@ -9,7 +9,7 @@
 ### Linux (Ubuntu, Debian, CentOS, RHEL)
 
 ```bash
-git clone https://github.com/jenovoas/sentinel.git
+git clone https://github.com/jaime-novoa/sentinel.git
 cd sentinel
 chmod +x install.sh
 ./install.sh
@@ -27,7 +27,7 @@ Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jenovoas/sentinel/main
 
 ```bash
 # Instalar Docker Desktop desde: https://www.docker.com/products/docker-desktop/
-git clone https://github.com/jenovoas/sentinel.git
+git clone https://github.com/jaime-novoa/sentinel.git
 cd sentinel
 cp .env.example .env
 docker-compose up -d
@@ -207,8 +207,8 @@ Sentinel despliega **18 servicios** en contenedores Docker:
 - [docs/](docs/) - Documentación completa
 
 **Comunidad**:
-- **Issues**: https://github.com/jenovoas/sentinel/issues
-- **Discussions**: https://github.com/jenovoas/sentinel/discussions
+- **Issues**: https://github.com/jaime-novoa/sentinel/issues
+- **Discussions**: https://github.com/jaime-novoa/sentinel/discussions
 - **Email**: support@sentinel.dev
 
 ---

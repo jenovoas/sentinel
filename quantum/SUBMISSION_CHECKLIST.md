@@ -16,7 +16,7 @@ Follow these steps to execute the global unveiling of Sentinel Quantum.
 - [ ] **Attach Assets**:
     - `quantum/AXION_RESEARCH_PAPER.md`
     - `quantum/axion_scaling_1000_membranes.png`
-- [ ] **Link**: Direct him to the [Interactive Demo](https://github.com/jenovoas/sentinel/blob/main/quantum/integrated_demo.html).
+- [ ] **Link**: Direct him to the [Interactive Demo](https://github.com/jaime-novoa/sentinel/blob/main/quantum/integrated_demo.html).
 - [ ] **Send**: lodahl@nbi.dk, quantop@nbi.ku.dk.
 
 ## 3. 📧 Google Quantum AI

@@ -339,7 +339,7 @@ int BPF_PROG(guardian_file_open, struct file *file) {
 **Interested in pilot?**
 - Email: [your-email]
 - Demo: [link to video]
-- GitHub: github.com/jenovoas/sentinel
+- GitHub: github.com/jaime-novoa/sentinel
 
 ### For Investors
 **Seeking seed funding ($500K-1M)**:

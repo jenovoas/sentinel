@@ -287,7 +287,7 @@ function validatePort(port: string): boolean {
 ### 1. Setup Inicial
 ```bash
 # Clonar repo
-git clone https://github.com/jenovoas/sentinel.git
+git clone https://github.com/jaime-novoa/sentinel.git
 cd sentinel
 
 # Frontend

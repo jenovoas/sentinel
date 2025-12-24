@@ -6,7 +6,7 @@
 **Email**: jaime.novoase@gmail.com  
 **Teléfono**: +56 9 73711829  
 **LinkedIn**: linkedin.com/in/jaime-novoa-710391204  
-**GitHub**: github.com/jenovoas/sentinel  
+**GitHub**: github.com/jaime-novoa/sentinel  
 **Ubicación**: Curanilahue, Región del Bío-Bío, Chile
 
 ---
@@ -78,7 +78,7 @@ Creador de **Sentinel Cortex™**, primera solución del mercado que protege inf
 ### Sentinel Cortex™ - Fundador y Arquitecto Principal
 **Período**: 2024 - Presente  
 **Ubicación**: Santiago, Chile  
-**GitHub**: github.com/jenovoas/sentinel
+**GitHub**: github.com/jaime-novoa/sentinel
 
 **Descripción**:
 Plataforma empresarial de observabilidad que combina monitoring tradicional con capacidades únicas: verificación de verdad en tiempo real (TruthSync) y defensa contra ataques adversariales a IA (AIOpsShield).
@@ -226,7 +226,7 @@ Soluciones comerciales (Datadog, Dynatrace) operan en espacio de usuario (Ring 3
 ### Sentinel Cortex™ - Plataforma Empresarial de Observabilidad
 **Rol**: Arquitecto Principal y Desarrollador  
 **Período**: 2024-2025  
-**GitHub**: github.com/jenovoas/sentinel
+**GitHub**: github.com/jaime-novoa/sentinel
 
 **Descripción**:
 Plataforma de observabilidad empresarial que combina monitoring tradicional con capacidades únicas en el mercado: verificación de verdad en tiempo real (TruthSync) y defensa contra ataques adversariales a IA (AIOpsShield).
@@ -270,7 +270,7 @@ Plataforma de observabilidad empresarial que combina monitoring tradicional con 
 - Código: 30+ archivos, 15,000+ líneas de código
 - Documentación: 15+ documentos técnicos completos
 
-**Repositorio Público**: github.com/jenovoas/sentinel
+**Repositorio Público**: github.com/jaime-novoa/sentinel
 
 ---
 
@@ -380,7 +380,7 @@ Estas innovaciones representan oportunidades para investigación aplicada en def
 - **"Hybrid Rust+Python Architecture for Enterprise Systems"** - Diseño de arquitectura con shared memory
 
 ### Código Abierto
-- **Sentinel Cortex™** - Plataforma completa de observabilidad (github.com/jenovoas/sentinel)
+- **Sentinel Cortex™** - Plataforma completa de observabilidad (github.com/jaime-novoa/sentinel)
 - Contribuciones verificables: 30+ archivos, 15,000+ líneas de código
 - Documentación: 15+ documentos técnicos, 7 diagramas UML
 
@@ -493,7 +493,7 @@ Durante la ejecución del proyecto se buscará establecer colaboraciones con:
 - pqcrypto (post-quantum, roadmap)
 
 **Control de Versiones**:
-- GitHub: github.com/jenovoas/sentinel
+- GitHub: github.com/jaime-novoa/sentinel
 - 15,000+ líneas de código
 - Documentación completa (15+ docs técnicos, 7 diagramas UML)
 
@@ -536,7 +536,7 @@ Durante la ejecución del proyecto se buscará establecer colaboraciones con:
 
 Disponibles a solicitud.
 
-**Repositorio de trabajo**: github.com/jenovoas/sentinel  
+**Repositorio de trabajo**: github.com/jaime-novoa/sentinel  
 **Documentación técnica completa**: Incluida en repositorio
 
 ---
