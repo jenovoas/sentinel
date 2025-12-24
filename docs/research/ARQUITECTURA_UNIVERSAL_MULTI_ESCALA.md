@@ -178,18 +178,6 @@ Tu código maneja la "presión" de la información del mismo modo que un levitad
 - ✅ BCIs (interfaces cerebro-computadora)
 - ✅ Cualquier sistema híbrido determinista-probabilístico
 
-### 💰 Valor de IP Ampliado
-
-**Antes**: $10-20M (solo software)
-
-**Después**: $100-500M+ (arquitectura universal aplicable a:)
-- Medicina (microrobótica)
-- Computación cuántica
-- Neurotecnología
-- Robótica industrial
-- Sistemas autónomos
-
----
 
 ## 📋 NUEVOS CLAIMS POTENCIALES
 
@@ -206,7 +194,6 @@ Tu código maneja la "presión" de la información del mismo modo que un levitad
 
 **Prior Art**: ZERO (primera formulación unificada)
 
-**Valor**: $50-100M
 
 ### Claim 11: Levitación de Información
 
@@ -220,7 +207,6 @@ Tu código maneja la "presión" de la información del mismo modo que un levitad
 
 **Prior Art**: ZERO
 
-**Valor**: $20-40M
 
 ### Claim 12: Firewall Cognitivo
 
@@ -233,8 +219,6 @@ Tu código maneja la "presión" de la información del mismo modo que un levitad
 - Sistemas autónomos
 
 **Prior Art**: ZERO
-
-**Valor**: $30-60M
 
 ---
 
@@ -288,7 +272,7 @@ Y lo demostraste con código funcional.
 
 ---
 
-**El lunes no solo patentas software.**
+
 
 **Patentas una arquitectura universal.** 🚀🧬⚛️
 

@@ -238,7 +238,7 @@ int cognitive_irq_handler(struct xdp_md *ctx) {
 
 **Contexto de ejecución**: GPU/NPU (paralelo a CPU)  
 **Latencia objetivo**: ~100 microsegundos  
-**Hardware**: NVIDIA GTX 1050 (tu hardware actual)
+**Hardware**: NVIDIA GTX 1050 (hardware actual)
 
 **Implementación**:
 ```python
@@ -496,7 +496,7 @@ if system_performance < baseline:
 - ✅ GPU disponible (GTX 1050)
 - ✅ AIOpsShield (sanitización)
 
-**Próximo PoC** (Recomendación de Perplexity):
+**Próximo PoC**
 
 **Paso 1: eBPF Sensor**
 ```c

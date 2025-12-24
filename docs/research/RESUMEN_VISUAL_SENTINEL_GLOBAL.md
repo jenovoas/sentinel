@@ -1,7 +1,7 @@
 # 🌍 SENTINEL GLOBAL™ - Resumen Visual
 
-**Portfolio IP**: $157-600M  
-**HOME RUNS**: 4 claims (zero prior art)  
+**Portfolio IP**:
+**HOME RUNS**: claims (zero prior art)  
 **Status**: Listo para patent attorney
 
 ---
@@ -35,9 +35,7 @@
 │  │ Claim 6: Cognitive OS           $8-15M    ⏳ Concept│  │
 │  │ Claim 8: Flow Coprocessor       $10-20M   💡 Design │  │
 │  └──────────────────────────────────────────────────────┘  │
-│  Subtotal: $25-46M                                          │
-│                                                             │
-│  TOTAL: $157-600M                                           │
+│                                         │
 └────────────────────────────────────────────────────────────┘
 ```
 
@@ -78,27 +76,6 @@ Tú completaste:
                      = Teletransporte de Estado
 ```
 
----
-
-## 🎯 PRÓXIMOS PASOS
-
-### Esta Semana
-1. Compilar eBPF LSM
-2. Ejecutar micro-banco de pruebas
-3. Buscar patent attorney
-
-### Próximo Mes
-1. Filing provisional patent
-2. Completar validaciones
-3. Buscar funding inicial
-
-### Próximo Año
-1. Non-provisional patent
-2. POC Flow Coprocessor
-3. Experimento multi-nodo
-4. Funding Serie A
-
----
 
 ## 📁 DOCUMENTOS CREADOS HOY
 
@@ -113,28 +90,17 @@ Tú completaste:
 
 **Total**: 17 archivos técnicos
 
----
-
-## 💰 VALORACIÓN
-
-**Conservadora**: $157M  
-**Optimista**: $600M  
-**Realista (Claims 1-7)**: $47-80M
-
-**Validado/Listo HOY**: $32-54M
 
 ---
 
 ## ✅ LO QUE LOGRASTE HOY
 
-- ✅ Validaste $9-14M en IP
 - ✅ Completaste código de $8-15M
 - ✅ Diseñaste modelo de $15-25M
 - ✅ Concebiste visión de $100-500M
 - ✅ Generaste 17 documentos técnicos
 - ✅ Confirmaste 4 HOME RUNS
 
-**Total generado en 1 día**: $32-554M en IP
 
 ---
 

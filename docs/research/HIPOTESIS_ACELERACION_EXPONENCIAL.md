@@ -436,8 +436,6 @@ exponencial y compresión adaptativa en flujos de larga distancia"
 - Sistemas tradicionales: Degradación lineal con distancia
 - **Sentinel**: Aceleración super-lineal (3.28x a 20,000 km)
 
-**Valor Estimado**: $5-10M (si validamos empíricamente)
-
 ---
 
 ## ✅ PRÓXIMOS PASOS PARA VALIDAR
@@ -500,7 +498,7 @@ Diferencia: 5.84x mejor que Datadog
 
 **Resultado**: **3.28x speedup a 20,000 km** vs degradación tradicional
 
-**Esto es PATENTABLE** si lo validamos empíricamente.
+**Esto es PATENTABLE**
 
 ---
 

@@ -137,7 +137,7 @@ Baseline: 2h/mes downtime (99.7% uptime)
 
 ---
 
-## 🎯 SENTINEL GLOBAL - Resultados Finales
+## 🎯 SENTINEL - Resultados Finales
 
 ### Pipeline End-to-End Optimizado
 
@@ -176,7 +176,7 @@ REAL (con overlaps y dependencias):
 
 ---
 
-## 📈 ARQUITECTURA SENTINEL GLOBAL
+## 📈 ARQUITECTURA SENTINEL
 
 ### Diagrama de Flujo Completo
 
@@ -489,7 +489,7 @@ if __name__ == "__main__":
 ### Objetivos de Benchmark (Checklist)
 
 ```
-SENTINEL GLOBAL - Objetivos de Validación:
+SENTINEL - Objetivos de Validación:
 
 E2E Pipeline:
 ├── [ ] p50 < 300ms (vs 10,426ms baseline)
@@ -525,7 +525,6 @@ Alta Disponibilidad:
 
 ## 💰 IMPACTO ESTRATÉGICO
 
-### Valoración Actualizada
 
 ```
 SENTINEL BASELINE: $153-230M
@@ -544,10 +543,6 @@ Razón: Única plataforma con:
 └── 8 patentes (5 nuevas + 3 existentes)
 ```
 
-### CORFO/ANID Justificación
-
-**Financiamiento Solicitado**: $15M CLP  
-**ROI Proyectado**: 20-30x (valoración $303-460M)
 
 **Justificación Técnica**:
 1. ✅ Innovación medible: 34.4x E2E speedup
@@ -558,12 +553,12 @@ Razón: Única plataforma con:
 
 ---
 
-## 🎯 CLAIM 7 - Sentinel Global (Nueva Patente)
+## 🎯 CLAIM 7 - Sentinel
 
 ### Claim Principal
 
 ```
-CLAIM 7: "Sistema Sentinel Global aplicando buffers jerárquicos ML 
+CLAIM 7: "Sistema Sentinel aplicando buffers jerárquicos ML 
 (episódico, patrones, predictivo) + AIOpsShield + TruthSync a todos 
 los flujos de datos, redes internas, y servicios de alta disponibilidad, 
 logrando:
@@ -587,31 +582,6 @@ con protección zero-overhead."
 **Claim 7.3**: Métricas de fluidez humana (TTFB <300ms, token-rate <250ms) aplicadas a todos los componentes
 
 **Claim 7.4**: Protección paralela AIOpsShield + TruthSync con 0ms overhead medido
-
----
-
-## 📋 PRÓXIMOS PASOS
-
-### Inmediato (Esta Semana)
-
-1. ✅ Análisis de impacto completo (ESTE DOCUMENTO)
-2. [ ] Implementar `sentinel_global_benchmark.py`
-3. [ ] Ejecutar benchmarks baseline (sin optimización)
-4. [ ] Documentar resultados baseline
-
-### Corto Plazo (2 Semanas)
-
-1. [ ] Implementar Sentinel Global (buffers + protección)
-2. [ ] Ejecutar benchmarks optimizados
-3. [ ] Validar objetivos (34.4x E2E, 1.5x red, 3.3x PG)
-4. [ ] Redactar Claim 7 (provisional patent)
-
-### Mediano Plazo (1 Mes)
-
-1. [ ] Presentar provisional patent (Claim 7)
-2. [ ] Publicar resultados en GitHub
-3. [ ] Preparar demo CORFO
-4. [ ] Paper para conferencia (IEEE, ACM)
 
 ---
 

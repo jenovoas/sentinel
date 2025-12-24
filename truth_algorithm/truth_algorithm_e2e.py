@@ -129,7 +129,8 @@ class TruthAlgorithm:
                 verdict=verdict,
                 confidence=result.confidence,
                 date=result.timestamp,
-                url=result.url
+                url=result.url,
+                snippet=result.snippet
             )
             
             sources.append(source)
@@ -160,13 +161,17 @@ class TruthAlgorithm:
         # Palabras que indican contradicción
         contradiction_words = [
             'false', 'incorrect', 'wrong', 'debunked', 'myth',
-            'not true', 'misleading', 'fabricated', 'fake'
+            'not true', 'misleading', 'fabricated', 'fake',
+            'falso', 'incorrecto', 'mentira', 'desmentido', 'mito',
+            'no es cierto', 'engañoso', 'fabricado', 'falsa', 'error'
         ]
         
         # Palabras que indican apoyo
         support_words = [
             'confirmed', 'verified', 'true', 'accurate', 'correct',
-            'according to', 'shows', 'demonstrates', 'proves'
+            'according to', 'shows', 'demonstrates', 'proves',
+            'confirmado', 'verificado', 'cierto', 'exacto', 'correcto',
+            'según', 'muestra', 'demuestra', 'prueba', 'verdad'
         ]
         
         # Contar palabras de contradicción
@@ -185,8 +190,12 @@ class TruthAlgorithm:
         if contradiction_count > support_count:
             return False
         
-        # Por defecto, asumir que apoya (optimista)
-        return True
+        # Si no hay ninguna señal clara, ser escéptico (retornar False para que el consenso lo marque como unverified/ contradicted)
+        if support_count == 0 and contradiction_count == 0:
+            return False
+            
+        # Si hay apoyo, retornar True
+        return support_count >= contradiction_count
 
 
 def print_verification_result(result: TruthVerificationResult):

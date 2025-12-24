@@ -166,6 +166,9 @@ class SourceSearchEngine:
         # SEGURIDAD: Validar input
         self.validator.validate_claim(claim)
         
+        # LIMPIEZA: Simplificar query para búsqueda
+        clean_query = self._clean_query(claim)
+        
         # SEGURIDAD: Rate limiting
         self.rate_limiter.check_rate_limit()
         
@@ -184,15 +187,27 @@ class SourceSearchEngine:
         
         # Ejecutar búsqueda según provider
         if self.provider == SearchProvider.MOCK:
-            return self._mock_search(claim, max_results)
+            return self._mock_search(clean_query, max_results)
         elif self.provider == SearchProvider.GOOGLE:
-            return self._google_search(claim, max_results)
+            return self._google_search(clean_query, max_results)
         elif self.provider == SearchProvider.DUCKDUCKGO:
-            return self._duckduckgo_search(claim, max_results)
+            return self._duckduckgo_search(clean_query, max_results)
         elif self.provider == SearchProvider.PERPLEXITY:
-            return self._perplexity_search(claim, max_results)
+            return self._perplexity_search(clean_query, max_results)
         else:
             raise ValueError(f"Provider no soportado: {self.provider}")
+
+    def _clean_query(self, query: str) -> str:
+        """Limpia la query para mejorar resultados de búsqueda"""
+        # Quitar símbolos comunes de preguntas
+        q = re.sub(r'[¿?¡!]', '', query)
+        
+        # Quitar palabras de ruido (stop words simples)
+        noise = ['la', 'el', 'los', 'las', 'un', 'una', 'de', 'del', 'en', 'y', 'es', 'son']
+        words = q.split()
+        filtered = [w for w in words if w.lower() not in noise or len(words) < 4]
+        
+        return " ".join(filtered)
     
     def _mock_search(self, claim: str, max_results: int) -> List[SearchResult]:
         """
@@ -287,22 +302,34 @@ class SourceSearchEngine:
             print(f"❌ Error en Google API: {e}")
             return self._mock_search(claim, max_results)
     
-    def _duckduckgo_search(self, claim: str, max_results: int) -> List[SearchResult]:
+    def _duckduckgo_search(self, claim: str, max_results: int, region: str = "cl-es") -> List[SearchResult]:
         """
         Búsqueda usando DuckDuckGo (100% GRATIS, sin API key)
         
-        VENTAJAS:
-        - Gratis ilimitado
-        - Sin API key
-        - Sin riesgo de cargos inesperados
-        - Privacidad respetada
+        Args:
+            claim: Consulta
+            max_results: Número de resultados
+            region: Región de búsqueda (cl-es por defecto para Chile/Español)
         """
         try:
             from duckduckgo_search import DDGS
             
             results = []
             with DDGS() as ddgs:
-                search_results = ddgs.text(claim, max_results=max_results)
+                # Usar región para mejorar relevancia
+                search_params = {
+                    "keywords": claim,
+                    "max_results": max_results,
+                    "region": region
+                }
+                
+                search_results = list(ddgs.text(**search_params))
+                
+                # FALLBACK: Si no hay resultados con región, intentar sin ella
+                if not search_results and region:
+                    print(f"⚠️  No hay resultados en región {region}. Intentando búsqueda global...")
+                    search_params["region"] = None
+                    search_results = list(ddgs.text(**search_params))
                 
                 for item in search_results:
                     # Clasificar tipo de fuente

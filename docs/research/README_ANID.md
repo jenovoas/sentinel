@@ -218,20 +218,8 @@ Sistema AIOps (sin defensa):
 - ✅ Stack completo: Desplegado en laboratorio propio
 - ✅ Documentación: Completa y publicada en GitHub
 
-**TRL Objetivo: TRL 6** - Prototipo validado en entorno relevante
-- 🎯 Validación en infraestructura crítica real (banca, energía)
-- 🎯 Testing con partners industriales en Chile
-- 🎯 Certificación de seguridad
-- 🎯 Publicación en conferencias internacionales
 
 ### Próxima Fase de Investigación (24 meses)
-
-**Objetivos Específicos**:
-1. Implementar Dual-Guardian con monitoreo eBPF kernel-level
-2. Validar en entornos de producción reales (infraestructura crítica chilena)
-3. Optimizar TruthSync con cache Rust (proyectado 644x speedup)
-4. Publicar resultados en conferencias de seguridad (IEEE, ACM)
-5. Solicitar patentes provisionales (5 innovaciones identificadas)
 
 ---
 
@@ -333,7 +321,7 @@ sentinel/
 └── README.md               # Este archivo
 ```
 
-### Archivos Clave para Evaluadores ANID
+### Archivos Clave para Evaluadores
 
 **Documentación de Investigación**:
 1. **[CV_ANID.md](CV_ANID.md)** - CV del investigador responsable
@@ -414,7 +402,7 @@ open http://localhost:3001
 
 ## 📚 Documentación Técnica Completa
 
-### Para Evaluadores ANID
+### Para Evaluadores
 
 - **[CV_ANID.md](CV_ANID.md)** - Perfil del investigador responsable
 - **[ROADMAP.md](ROADMAP.md)** - Visión técnica y fases de desarrollo
@@ -452,14 +440,6 @@ open http://localhost:3001
 - Datasets públicos (DARPA IDS, NSL-KDD, CICIDS2017)
 - Telemetría de sistemas de testing propios
 
-### Próxima Fase (TRL 6 - Entorno Relevante)
-
-**Validación Pendiente**:
-1. 🎯 Testing en infraestructura crítica real (banca, energía, telecomunicaciones)
-2. 🎯 Validación con partners industriales en Chile
-3. 🎯 Certificación de seguridad y cumplimiento normativo
-4. 🎯 Publicación de resultados en conferencias internacionales (IEEE, ACM)
-5. 🎯 Solicitud de patentes provisionales
 
 **Colaboraciones Buscadas**:
 - Universidades de la Región del Bío-Bío (UdeC, UBB, UCSC)
@@ -501,7 +481,7 @@ open http://localhost:3001
 - Innovaciones patentables: Protegidas según normativa ANID
 - Publicaciones: Creative Commons
 
-**Compromiso ANID**:
+**Compromiso**:
 - Protección de resultados mediante patentes
 - Publicación de hallazgos científicos
 - Transferencia tecnológica a industria nacional

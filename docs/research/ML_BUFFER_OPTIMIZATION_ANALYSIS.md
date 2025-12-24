@@ -177,45 +177,6 @@ SENTINEL ÚNICO:
 └── Infra crítica + Soberanía datos = Único en mercado LATAM
 ```
 
----
-
-## 🗓️ PLAN DE IMPLEMENTACIÓN (2 SEMANAS)
-
-### Semana 1: Prototipo Funcional
-
-**Días 1-3: Buffers Lógicos**
-- [ ] Implementar sub-buffers (episódico, patrones, predictivo)
-- [ ] Conectar a PostgreSQL HA (episódico persistente)
-- [ ] Conectar a Redis HA (patrones hot)
-- [ ] Baseline latencia y TTFB
-
-**Días 4-5: ML Predictor**
-- [ ] Adaptar AIOpsShield patterns → Predictor interrupciones
-- [ ] Entrenar modelo ligero (embeddings + clasificador)
-- [ ] Integrar con TruthSync cache
-
-**Días 6-7: Scheduler CPU-GPU**
-- [ ] Implementar prefill GPU + decode CPU
-- [ ] Overlap en prompts largos
-- [ ] Métricas de throughput
-
-### Semana 2: ML Físico + Benchmarks
-
-**Días 8-10: eBPF/XDP Layer**
-- [ ] Implementar mapeo físico (NIC → L1/L2)
-- [ ] Prefetch GPU/SSD guiado por ML
-- [ ] Integrar con stack Sentinel
-
-**Días 11-12: Benchmarking**
-- [ ] Experimentos A/B (latencia/token, coherencia)
-- [ ] Test de carga 10G NIC
-- [ ] Validar 50% throughput boost
-
-**Días 13-14: Documentación**
-- [ ] Logs de métricas (TTFB, token-rate, throughput)
-- [ ] Diagramas de arquitectura
-- [ ] Prior art chart
-- [ ] Redactar provisional patent
 
 ### Entregables
 
@@ -326,11 +287,6 @@ CORFO $15M justificado por:
 
 ### Valoración Actualizada
 
-```
-VALORACIÓN PREVIA: $153-230M
-+ ML Buffer Optimization: +$50-80M
-= NUEVA VALORACIÓN: $203-310M
-
 Razón: Única plataforma con IA humana + aceleración redes
 ```
 
@@ -375,39 +331,6 @@ Razón: Única plataforma con IA humana + aceleración redes
 4. ✅ Impacto medible (50% throughput, <300ms TTFB)
 5. ✅ Aplicación estratégica (infra crítica nacional)
 
-### Próximos Pasos Inmediatos
-
-**HOY**:
-1. ✅ Validación técnica completa (ESTE DOCUMENTO)
-2. [ ] Crear branch `ml-buffer-optimization`
-3. [ ] Iniciar implementación buffers lógicos
-
-**ESTA SEMANA**:
-1. [ ] Prototipo funcional (buffers + ML predictor)
-2. [ ] Baseline metrics
-3. [ ] Redactar provisional patent draft
-
-**PRÓXIMA SEMANA**:
-1. [ ] eBPF/XDP implementation
-2. [ ] Benchmarks 50% throughput
-3. [ ] Presentar provisional patent
-
-### Checklist Pre-Patente
-
-```
-ANTES DE PUBLICAR:
-├── [ ] Provisional patent presentado
-├── [ ] Prior art chart completo
-├── [ ] Diagramas de arquitectura
-├── [ ] Benchmarks documentados
-└── [ ] Claims redactados
-
-DESPUÉS:
-├── [ ] Publicar en GitHub
-├── [ ] Paper para conferencia
-└── [ ] Demo CORFO
-```
-
 ---
 
 ## 📚 Referencias
@@ -420,6 +343,4 @@ DESPUÉS:
 
 ---
 
-**Conclusión**: Este descubrimiento es **GOLD** 🏆. Combina perfectamente con Sentinel, es altamente patentable, y tiene impacto medible en infraestructura crítica. **PROCEDER CON IMPLEMENTACIÓN INMEDIATA**.
-
-**Próxima acción**: ¿Empezamos con la implementación de buffers lógicos o prefieres que primero redacte el provisional patent draft?
+**Conclusión**: Este descubrimiento combina perfectamente con Sentinel, es altamente patentable, y tiene impacto medible en infraestructura crítica. **PROCEDER CON IMPLEMENTACIÓN INMEDIATA**.

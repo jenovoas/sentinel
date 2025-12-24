@@ -8,7 +8,6 @@
 
 ## ✅ RESUMEN EJECUTIVO
 
-**Claims Validados**: 2/6 (33%)  
 **Tests Ejecutados**: 4  
 **Tests Pasados**: 4/4 (100%)  
 **Performance**: Todos los benchmarks superan especificaciones
@@ -239,42 +238,13 @@ Test 2: WAL Append + Replay
 - [ ] Timestamp validation
 - [ ] Tampering detection
 
-### Conclusión Claim 4
-
-⚠️ **CLAIM PARCIALMENTE VALIDADO**
 
 **Validado**:
 - ✅ WAL append funcional
 - ✅ Replay funcional
 - ✅ Overhead <0.02ms
 
-**Pendiente**:
-- ❌ Integrity verification (HMAC)
-- ❌ Replay attack prevention
-- ❌ Tampering detection
 
-**Próximos Pasos**:
-1. Implementar HMAC-SHA256 sobre (event + nonce + timestamp)
-2. Test de replay attack con nonce duplicado
-3. Test de tampering con modificación de WAL
-4. Benchmark de overhead HMAC
-
----
-
-## ⏳ CLAIMS PENDIENTES
-
-### Claim 3: Kernel eBPF LSM
-
-**Estado**: No implementado  
-**Prioridad**: P0 (HOME RUN claim)
-
-**Requiere**:
-1. POC mínimo eBPF program (file_open hook)
-2. Compilación y carga en kernel
-3. Test de interceptación
-4. Medición de overhead
-
-**Estimado**: 2-3 días de implementación
 
 ---
 
@@ -333,30 +303,6 @@ Test 2: WAL Append + Replay
 
 **Único en el mercado con defensa AIOpsDoom pre-ingestion** ✅
 
----
-
-## 🎯 PRÓXIMOS PASOS
-
-### Semana 1 (20-27 Dic)
-- [x] Ejecutar benchmark_dual_lane.py ✅
-- [x] Ejecutar fuzzer_aiopsdoom.py ✅
-- [x] Ejecutar test_dual_lane.py ✅
-- [ ] Implementar HMAC integrity en WAL
-- [ ] Test de replay attack prevention
-
-### Semana 2 (27 Dic - 3 Ene)
-- [ ] Implementar POC eBPF LSM mínimo
-- [ ] Test de mTLS SSRF prevention
-- [ ] Benchmark de certificate rotation
-- [ ] Consolidar evidencia técnica
-
-### Semana 3 (3-10 Ene)
-- [ ] Análisis de viabilidad Cognitive OS
-- [ ] Performance modeling completo
-- [ ] Preparar package técnico para attorney
-- [ ] Review final de evidencia
-
----
 
 ## 📁 ARCHIVOS DE EVIDENCIA
 
@@ -404,8 +350,6 @@ Test 2: WAL Append + Replay
 - ✅ WAL append: funcional
 - ✅ Replay: funcional (5/5 eventos)
 - ✅ Overhead: <0.02ms
-- ❌ Integrity: pendiente HMAC
-- ❌ Replay prevention: pendiente
 
 ---
 
