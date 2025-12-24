@@ -70,9 +70,9 @@
 
 ---
 
-**Contact**: José Jaime Novoa Schilling  
-**Email**: jenovoas@gmail.com  
-**Repository**: https://github.com/jenovoas/sentinel  
+**Contact**: Jaime Eugenio Novoa Sepúlveda  
+**Email**: jaime.novoase@gmail.com  
+**Repository**: https://github.com/jaime-novoa/sentinel  
 **Documentation**: See QUANTUM_IMPLEMENTATION_RESULTS.md
 
 ---

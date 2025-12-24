@@ -344,7 +344,7 @@ out_of_order_time_window: 2s
 - WAL: **500x** más rápido que Datadog
 - Security Lane: **Instantánea** (0.00ms)
 
-**Código abierto**: github.com/jenovoas/sentinel
+**Código abierto**: github.com/jaime-novoa/sentinel
 
 ---
 
@@ -422,7 +422,7 @@ out_of_order_time_window: 2s
 **Proyecto**: Sentinel Cortex™  
 **Investigador**: [Tu Nombre]  
 **Email**: [Tu Email]  
-**GitHub**: github.com/jenovoas/sentinel  
+**GitHub**: github.com/jaime-novoa/sentinel  
 **LinkedIn**: [Tu LinkedIn]
 
 ---

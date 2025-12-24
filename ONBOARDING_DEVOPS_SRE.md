@@ -257,7 +257,7 @@ Sentinel necesita:
 
 ```bash
 # Setup local
-git clone https://github.com/jenovoas/sentinel.git
+git clone https://github.com/jaime-novoa/sentinel.git
 cd sentinel
 docker-compose up -d
 

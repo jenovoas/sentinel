@@ -299,7 +299,7 @@ async def flush_buffer(self, lane: DataLane):
 
 ### How to Submit
 
-1. **GitHub Security Advisory**: https://github.com/jenovoas/sentinel/security/advisories/new
+1. **GitHub Security Advisory**: https://github.com/jaime-novoa/sentinel/security/advisories/new
 2. **Email**: security@[your-domain] (encrypted with PGP)
 3. **Include**:
    - Detailed reproduction steps
@@ -390,10 +390,10 @@ Find a way to:
 
 ## Get Started
 
-1. Clone: `git clone https://github.com/jenovoas/sentinel`
+1. Clone: `git clone https://github.com/jaime-novoa/sentinel`
 2. Run: `docker-compose up -d`
 3. Attack: `http://staging.sentinel.example.com`
-4. Report: https://github.com/jenovoas/sentinel/security
+4. Report: https://github.com/jaime-novoa/sentinel/security
 
 **Hackers of the world: Come at us.** 🥊
 

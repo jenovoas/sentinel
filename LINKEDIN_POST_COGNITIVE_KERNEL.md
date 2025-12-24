@@ -50,7 +50,7 @@ All code and benchmarks are public:
 🔬 Fuzzer: `backend/fuzzer_aiopsdoom.py`
 🧬 Vision: `COGNITIVE_KERNEL_VISION.md`
 
-**GitHub**: github.com/jenovoas/sentinel
+**GitHub**: github.com/jaime-novoa/sentinel
 
 ---
 
