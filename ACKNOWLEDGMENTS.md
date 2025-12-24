@@ -21,6 +21,9 @@ Este proyecto fue desarrollado con el apoyo de tecnologías de Google y Perplexi
 - **Google Cloud Platform**: Infraestructura de despliegue
 - **Google Analytics**: Métricas y observabilidad
 
+### 🏛️ Academic & Scientific Validation/Collaboration
+- **Daniel Mansfield (UNSW Sydney)**: Por su revisión informal y confirmación de la comprensión correcta de su investigación sobre Plimpton 322, y por su aliento a continuar esta dirección computacional.
+
 ---
 
 ## 💙💜 Mensaje del Creador
