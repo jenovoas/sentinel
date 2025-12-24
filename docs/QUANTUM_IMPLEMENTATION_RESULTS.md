@@ -1,7 +1,7 @@
 # Sentinel Quantum Implementation - Results & Analysis
 
 **Date**: December 23, 2025  
-**Author**: Jaime Novoa  
+**Author**: Jaime Eugenio Novoa Sepúlveda  
 **Project**: Sentinel Cortex™ - Quantum Integration  
 **Status**: Phase 1 Complete ✅ | Phase 2 In Progress
 

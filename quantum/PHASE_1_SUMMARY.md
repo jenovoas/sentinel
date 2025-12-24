@@ -178,5 +178,5 @@ With Phase 1 complete, we have:
 ---
 
 **Generated**: 2025-12-23 16:15:00  
-**Author**: Jaime Novoa  
+**Author**: Jaime Eugenio Novoa Sepúlveda  
 **Project**: Sentinel Cortex™ Quantum Integration

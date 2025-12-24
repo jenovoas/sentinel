@@ -4,12 +4,26 @@
 echo "🔐 Poblando whitelist del eBPF LSM (v2)..."
 echo "======================================"
 
-# Comandos básicos permitidos
+# Comandos básicos permitidos (Paths completos requeridos por el nuevo eBPF)
 COMMANDS=(
-    "ls"
-    "cat"
-    "pwd"
-    "date"
+    "/usr/bin/bash"
+    "/usr/bin/sh"
+    "/usr/bin/ls"
+    "/usr/bin/cat"
+    "/usr/bin/pwd"
+    "/usr/bin/date"
+    "/usr/bin/sudo"
+    "/usr/bin/bpftool"
+    "/usr/bin/rm"
+    "/usr/bin/ps"
+    "/usr/bin/grep"
+    "/usr/bin/awk"
+    "/usr/bin/sed"
+    "/usr/bin/python3"
+    "/usr/bin/make"
+    "/usr/bin/clang"
+    "/usr/bin/llvm-strip"
+    "/usr/bin/xxd"
 )
 
 # Encontrar el ID del map

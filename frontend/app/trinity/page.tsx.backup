@@ -1,0 +1,577 @@
+/**
+ * Trinity Resonance Architecture - Immersive 3D Experience
+ * Live monitoring with Three.js visualization
+ */
+
+'use client';
+
+import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
+
+// Dynamically import TrinityScene3D to avoid SSR issues
+const TrinityScene3D = dynamic(() => import('./components/TrinityScene3D'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center bg-black">
+      <div className="text-white text-xl">Loading Trinity Experience...</div>
+    </div>
+  ),
+});
+
+interface CoherenceData {
+  micro: number;
+  macro: number;
+  coherence: number;
+  state: 'THERMAL' | 'SYNCING' | 'RESONANT' | 'MERKABAH';
+}
+
+interface HierarchyLevel {
+  name: string;
+  alpha: number;
+  beta: number;
+  status: 'OK' | 'WARN' | 'ERROR';
+}
+
+interface Component {
+  name: string;
+  utilization: number;
+  status: 'OK' | 'WARN' | 'ERROR';
+}
+
+export default function TrinityDashboard() {
+  const [coherence, setCoherence] = useState<CoherenceData>({
+    micro: 0.062,
+    macro: 0.45,
+    coherence: 0.0,
+    state: 'THERMAL'
+  });
+
+  const [audioEnabled, setAudioEnabled] = useState(false);
+  const [view3D, setView3D] = useState(true);
+
+  const [hierarchy] = useState<HierarchyLevel[]>([
+    { name: 'Systems', alpha: 0.95, beta: 0.92, status: 'OK' },
+    { name: 'Areas', alpha: 0.88, beta: 0.91, status: 'OK' },
+    { name: 'Columns', alpha: 0.72, beta: 0.85, status: 'WARN' },
+    { name: 'Circuits', alpha: 0.94, beta: 0.89, status: 'OK' },
+    { name: 'Neurons', alpha: 0.91, beta: 0.93, status: 'OK' },
+    { name: 'Synapses', alpha: 0.87, beta: 0.88, status: 'OK' },
+    { name: 'Molecules', alpha: 0.96, beta: 0.94, status: 'OK' }
+  ]);
+
+  const [components] = useState<Component[]>([
+    { name: 'Buffer', utilization: 0.67, status: 'OK' },
+    { name: 'Thread', utilization: 0.45, status: 'OK' },
+    { name: 'Memory', utilization: 0.82, status: 'WARN' },
+    { name: 'Network', utilization: 0.34, status: 'OK' },
+    { name: 'CPU', utilization: 0.91, status: 'WARN' },
+    { name: 'Disk', utilization: 0.23, status: 'OK' },
+    { name: 'API', utilization: 0.56, status: 'OK' }
+  ]);
+
+  // Simulate real-time data updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newCoherence = Math.random();
+      let state: CoherenceData['state'] = 'THERMAL';
+
+      if (newCoherence >= 0.95) state = 'MERKABAH';
+      else if (newCoherence >= 0.75) state = 'RESONANT';
+      else if (newCoherence >= 0.50) state = 'SYNCING';
+
+      setCoherence({
+        micro: 0.05 + Math.random() * 0.05,
+        macro: 0.3 + Math.random() * 0.3,
+        coherence: newCoherence,
+        state
+      });
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const getStateColor = (state: string) => {
+    const colors = {
+      THERMAL: '#FF3366',
+      SYNCING: '#FFCC33',
+      RESONANT: '#33FF99',
+      MERKABAH: '#FFD700'
+    };
+    return colors[state as keyof typeof colors] || '#888888';
+  };
+
+  return (
+    <div className="relative w-full h-screen bg-black overflow-hidden">
+      {/* 3D Trinity Scene */}
+      {view3D && (
+        <div className="absolute inset-0">
+          <TrinityScene3D
+            coherence={coherence.coherence}
+            audioEnabled={audioEnabled}
+            onAudioToggle={setAudioEnabled}
+          />
+        </div>
+      )}
+
+      {/* Header Overlay */}
+      <div className="absolute top-0 left-0 right-0 p-6 pointer-events-none z-10">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-white mb-2 opacity-90">
+            THE ARCHITECTURE OF RESONANCE
+          </h1>
+          <p className="text-white/60">Universal Optimization Pattern - Live Monitoring</p>
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="absolute top-6 right-6 flex gap-2 z-20">
+        <button
+          onClick={() => setView3D(!view3D)}
+          className="px-4 py-2 bg-blue-600/80 hover:bg-blue-600 text-white rounded backdrop-blur-sm transition-colors"
+        >
+          {view3D ? '2D View' : '3D View'}
+        </button>
+        <button
+          onClick={() => setAudioEnabled(!audioEnabled)}
+          className={`px-4 py-2 rounded backdrop-blur-sm transition-colors ${audioEnabled
+            ? 'bg-green-600/80 hover:bg-green-600 text-white'
+            : 'bg-gray-600/80 hover:bg-gray-600 text-white'
+            }`}
+        >
+          🎤 {audioEnabled ? 'Audio ON' : 'Audio OFF'}
+        </button>
+      </div>
+
+      {/* Metrics Overlay */}
+      <div className="absolute bottom-0 left-0 right-0 p-6 pointer-events-none z-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-6xl mx-auto">
+          {/* Coherence Card */}
+          <div className="bg-black/50 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+            <div className="text-white/60 text-sm mb-2">COHERENCE STATE</div>
+            <div
+              className="text-3xl font-bold mb-2"
+              style={{ color: getStateColor(coherence.state) }}
+            >
+              {coherence.state}
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-white/60">Micro: {coherence.micro.toFixed(3)}</span>
+              <span className="text-white/60">Macro: {coherence.macro.toFixed(3)}</span>
+            </div>
+            <div className="w-full h-2 bg-gray-800 rounded-full mt-2 overflow-hidden">
+              <div
+                className="h-full transition-all duration-300"
+                style={{
+                  width: `${coherence.coherence * 100}%`,
+                  backgroundColor: getStateColor(coherence.state)
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Hierarchy Card */}
+          <div className="bg-black/50 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+            <div className="text-white/60 text-sm mb-2">NEURAL HIERARCHY</div>
+            <div className="text-white text-sm space-y-1">
+              {hierarchy.slice(0, 3).map((level, i) => (
+                <div key={i} className="flex justify-between">
+                  <span>{level.name}</span>
+                  <span className="text-white/60">
+                    α:{(level.alpha * 100).toFixed(0)}% β:{(level.beta * 100).toFixed(0)}%
+                  </span>
+                </div>
+              ))}
+              <div className="text-white/40 text-xs">+4 more levels...</div>
+            </div>
+          </div>
+
+          {/* Components Card */}
+          <div className="bg-black/50 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+            <div className="text-white/60 text-sm mb-2">SYSTEM COMPONENTS</div>
+            <div className="text-white text-sm space-y-1">
+              {components.slice(0, 4).map((comp, i) => (
+                <div key={i} className="flex justify-between">
+                  <span>{comp.name}</span>
+                  <span className={comp.utilization > 0.8 ? 'text-yellow-400' : 'text-green-400'}>
+                    {(comp.utilization * 100).toFixed(0)}%
+                  </span>
+                </div>
+              ))}
+              <div className="text-white/40 text-xs">+{components.length - 4} more...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="absolute bottom-4 left-0 right-0 text-center text-white/40 text-xs pointer-events-none z-10">
+        <p>Sentinel Cortex™ 2025 - Minimize Entropy = Maximize Coherence</p>
+      </div>
+    </div>
+  );
+}
+
+micro: 0.062,
+  macro: 0.45,
+    coherence: 0.0,
+      state: 'THERMAL'
+});
+
+const [hierarchy] = useState<HierarchyLevel[]>([
+  { name: 'Systems', alpha: 0.95, beta: 0.92, status: 'OK' },
+  { name: 'Areas', alpha: 0.88, beta: 0.91, status: 'OK' },
+  { name: 'Columns', alpha: 0.72, beta: 0.85, status: 'WARN' },
+  { name: 'Circuits', alpha: 0.94, beta: 0.89, status: 'OK' },
+  { name: 'Neurons', alpha: 0.91, beta: 0.93, status: 'OK' },
+  { name: 'Synapses', alpha: 0.87, beta: 0.88, status: 'OK' },
+  { name: 'Molecules', alpha: 0.96, beta: 0.94, status: 'OK' }
+]);
+
+const [components] = useState<Component[]>([
+  { name: 'Buffer', utilization: 0.67, status: 'OK' },
+  { name: 'Thread', utilization: 0.45, status: 'OK' },
+  { name: 'Memory', utilization: 0.82, status: 'WARN' },
+  { name: 'Network', utilization: 0.34, status: 'OK' },
+  { name: 'CPU', utilization: 0.91, status: 'WARN' },
+  { name: 'Disk', utilization: 0.23, status: 'OK' },
+  { name: 'API', utilization: 0.56, status: 'OK' }
+]);
+
+// Simulate real-time data updates
+useEffect(() => {
+  const interval = setInterval(() => {
+    const newCoherence = Math.random();
+    let state: CoherenceData['state'] = 'THERMAL';
+
+    if (newCoherence >= 0.95) state = 'MERKABAH';
+    else if (newCoherence >= 0.75) state = 'RESONANT';
+    else if (newCoherence >= 0.50) state = 'SYNCING';
+
+    setCoherence({
+      micro: 0.05 + Math.random() * 0.05,
+      macro: 0.3 + Math.random() * 0.3,
+      coherence: newCoherence,
+      state
+    });
+  }, 2000);
+
+  return () => clearInterval(interval);
+}, []);
+
+const getStateColor = (state: string) => {
+  const colors = {
+    THERMAL: '#FF3366',
+    SYNCING: '#FFCC33',
+    RESONANT: '#33FF99',
+    MERKABAH: '#FFD700'
+  };
+  return colors[state as keyof typeof colors] || '#888888';
+};
+
+const getStatusColor = (status: string) => {
+  const colors = {
+    OK: '#10B981',
+    WARN: '#F59E0B',
+    ERROR: '#EF4444'
+  };
+  return colors[status as keyof typeof colors] || '#6B7280';
+};
+
+return (
+  <div style={{ minHeight: '100vh', backgroundColor: '#0a0a0a', color: '#ffffff', padding: '2rem' }}>
+    {/* Header */}
+    <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+      <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+        THE ARCHITECTURE OF RESONANCE
+      </h1>
+      <p style={{ color: '#9CA3AF' }}>Universal Optimization Pattern - Live Monitoring</p>
+    </div>
+
+
+    {/* Main Grid */}
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))',
+      gap: '2rem',
+      maxWidth: '1400px',
+      margin: '0 auto'
+    }}>
+
+      {/* Merkabah Layer (Physics) */}
+      <div style={{ backgroundColor: '#1F2937', borderRadius: '0.5rem', padding: '1.5rem' }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+          ⚛️ Merkabah - Coherence State
+        </h2>
+
+        {/* Merkabah Visualization */}
+        <div style={{
+          width: '100%',
+          height: '400px',
+          backgroundColor: '#000',
+          borderRadius: '0.5rem',
+          marginBottom: '1rem',
+          position: 'relative',
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          {/* Star Tetrahedron Symbol */}
+          <div style={{ position: 'relative', width: '200px', height: '200px' }}>
+            {/* Upward Triangle (MACRO - Blue) */}
+            <div style={{
+              position: 'absolute',
+              top: '25%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 0,
+              height: 0,
+              borderLeft: '80px solid transparent',
+              borderRight: '80px solid transparent',
+              borderBottom: '140px solid #3B82F6',
+              opacity: 0.7,
+              animation: 'pulse 3s ease-in-out infinite'
+            }} />
+
+            {/* Downward Triangle (MICRO - Red) */}
+            <div style={{
+              position: 'absolute',
+              bottom: '25%',
+              left: '50%',
+              transform: 'translate(-50%, 50%)',
+              width: 0,
+              height: 0,
+              borderLeft: '80px solid transparent',
+              borderRight: '80px solid transparent',
+              borderTop: '140px solid #EF4444',
+              opacity: 0.7,
+              animation: 'pulse 3s ease-in-out infinite reverse'
+            }} />
+
+            {/* Coherence Sphere */}
+            <div style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '80px',
+              height: '80px',
+              borderRadius: '50%',
+              backgroundColor: getStateColor(coherence.state),
+              boxShadow: `0 0 40px ${getStateColor(coherence.state)}`,
+              animation: 'glow 2s ease-in-out infinite',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '0.75rem',
+              fontWeight: 'bold'
+            }}>
+              {(coherence.coherence * 100).toFixed(0)}%
+            </div>
+          </div>
+
+          {/* State Label */}
+          <div style={{
+            position: 'absolute',
+            bottom: '1rem',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            fontSize: '1.5rem',
+            fontWeight: 'bold',
+            color: getStateColor(coherence.state),
+            textShadow: `0 0 20px ${getStateColor(coherence.state)}`
+          }}>
+            {coherence.state}
+          </div>
+        </div>
+
+        {/* Metrics */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '1rem',
+          textAlign: 'center'
+        }}>
+          <div>
+            <div style={{ fontSize: '0.875rem', color: '#9CA3AF' }}>MICRO (Kernel)</div>
+            <div style={{ fontSize: '1.5rem', fontFamily: 'monospace' }}>
+              {coherence.micro.toFixed(3)}
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: '0.875rem', color: '#9CA3AF' }}>Coherence</div>
+            <div style={{ fontSize: '2rem', fontWeight: 'bold', color: getStateColor(coherence.state) }}>
+              {coherence.coherence.toFixed(3)}
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: '0.875rem', color: '#9CA3AF' }}>MACRO (AI)</div>
+            <div style={{ fontSize: '1.5rem', fontFamily: 'monospace' }}>
+              {coherence.macro.toFixed(3)}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Neural Hierarchy (Biology) */}
+      <div style={{ backgroundColor: '#1F2937', borderRadius: '0.5rem', padding: '1.5rem' }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+          🧠 Neural Hierarchy - 7 Levels
+        </h2>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {hierarchy.map((level, index) => (
+            <div key={index} style={{
+              backgroundColor: '#374151',
+              borderRadius: '0.375rem',
+              padding: '0.75rem'
+            }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '0.5rem'
+              }}>
+                <span style={{ fontWeight: '600' }}>{level.name}</span>
+                <span style={{
+                  padding: '0.25rem 0.5rem',
+                  borderRadius: '0.25rem',
+                  fontSize: '0.75rem',
+                  backgroundColor: getStatusColor(level.status)
+                }}>
+                  {level.status}
+                </span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
+                <div>
+                  <div style={{ fontSize: '0.75rem', color: '#9CA3AF' }}>α (Excitation)</div>
+                  <div style={{
+                    width: '100%',
+                    backgroundColor: '#4B5563',
+                    borderRadius: '9999px',
+                    height: '0.5rem'
+                  }}>
+                    <div style={{
+                      width: `${level.alpha * 100}%`,
+                      backgroundColor: '#3B82F6',
+                      height: '0.5rem',
+                      borderRadius: '9999px',
+                      transition: 'width 0.3s'
+                    }} />
+                  </div>
+                  <div style={{ fontSize: '0.75rem', textAlign: 'right' }}>
+                    {(level.alpha * 100).toFixed(0)}%
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.75rem', color: '#9CA3AF' }}>β (Inhibition)</div>
+                  <div style={{
+                    width: '100%',
+                    backgroundColor: '#4B5563',
+                    borderRadius: '9999px',
+                    height: '0.5rem'
+                  }}>
+                    <div style={{
+                      width: `${level.beta * 100}%`,
+                      backgroundColor: '#EF4444',
+                      height: '0.5rem',
+                      borderRadius: '9999px',
+                      transition: 'width 0.3s'
+                    }} />
+                  </div>
+                  <div style={{ fontSize: '0.75rem', textAlign: 'right' }}>
+                    {(level.beta * 100).toFixed(0)}%
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Flower of Life (Technology) */}
+      <div style={{
+        backgroundColor: '#1F2937',
+        borderRadius: '0.5rem',
+        padding: '1.5rem',
+        gridColumn: '1 / -1'
+      }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+          🌸 Flower of Life - System Components
+        </h2>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+          gap: '1rem'
+        }}>
+          {components.map((comp, index) => (
+            <div key={index} style={{
+              backgroundColor: '#374151',
+              borderRadius: '0.5rem',
+              padding: '1rem',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>◉</div>
+              <div style={{ fontWeight: '600', marginBottom: '0.5rem' }}>{comp.name}</div>
+              <div style={{ fontSize: '1.5rem', fontFamily: 'monospace', marginBottom: '0.25rem' }}>
+                {(comp.utilization * 100).toFixed(0)}%
+              </div>
+              <div style={{
+                width: '100%',
+                backgroundColor: '#4B5563',
+                borderRadius: '9999px',
+                height: '0.5rem',
+                marginBottom: '0.5rem'
+              }}>
+                <div style={{
+                  width: `${comp.utilization * 100}%`,
+                  backgroundColor: comp.utilization > 0.8 ? '#F59E0B' : '#10B981',
+                  height: '0.5rem',
+                  borderRadius: '9999px',
+                  transition: 'width 0.3s'
+                }} />
+              </div>
+              <span style={{
+                padding: '0.25rem 0.5rem',
+                borderRadius: '0.25rem',
+                fontSize: '0.75rem',
+                backgroundColor: getStatusColor(comp.status)
+              }}>
+                {comp.status}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Force Equation */}
+        <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+          <div style={{ fontSize: '0.875rem', color: '#9CA3AF', marginBottom: '0.25rem' }}>
+            Optimization Force
+          </div>
+          <div style={{ fontSize: '1.5rem', fontFamily: 'monospace' }}>
+            F = v² × (1 + a) = {(coherence.macro * coherence.macro * (1 + coherence.micro) * 100).toFixed(1)} N
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Footer */}
+    <div style={{ textAlign: 'center', marginTop: '2rem', color: '#6B7280', fontSize: '0.875rem' }}>
+      <p>Sentinel Cortex™ 2025 - The Architecture of Resonance</p>
+      <p style={{ marginTop: '0.25rem' }}>Minimize Entropy = Maximize Coherence</p>
+    </div>
+
+    <style jsx>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+          50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+        }
+        @keyframes glow {
+          0%, 100% { box-shadow: 0 0 20px currentColor; }
+          50% { box-shadow: 0 0 40px currentColor, 0 0 60px currentColor; }
+        }
+      `}</style>
+  </div>
+);
+}

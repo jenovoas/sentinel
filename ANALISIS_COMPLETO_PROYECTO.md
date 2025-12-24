@@ -111,15 +111,17 @@ Sistema AIOps → Ejecuta comando → Pérdida total de datos
 - **Prior Art**: **ZERO** (combinación AIOps + kernel-level veto única)
 - **Estado**: ✅ Código completo (`ebpf/guardian_alpha_lsm.c`)
 
-#### CLAIM 4: Forensic-Grade WAL with Replay Protection
-- **Valor IP**: $3-5M
+#### Claim 4: Forensic-Grade WAL
+- **Valor**: $3-5M
 - **Licensing**: $20-30M
-- **Performance Validado**:
-  - WAL overhead: 0.01ms
-  - Replay detection: 100%
-  - 500-2,000x vs soluciones comerciales
-- **Prior Art**: Ninguno con HMAC + dual-lane + replay detection combinados
-- **Estado**: ✅ Implementado
+- **Prior Art**: Medio
+- **Estado**: ✅ VALIDADO (5/5 tests pasando)
+- **Evidencia**: `test_forensic_wal_runner.py`
+- **Performance**:
+  - HMAC-SHA256: ✅ 100% accuracy
+  - Replay detection: ✅ 10/10 attacks blocked (100%)
+  - Timestamp validation: ✅ Future + Past detected
+  - False positives: ✅ 0% (3/3 legitimate events accepted)
 
 #### CLAIM 5: Zero Trust mTLS Architecture
 - **Valor IP**: $2-4M

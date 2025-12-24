@@ -7,11 +7,10 @@
  * Copyright (c) 2024 Sentinel Cortex™
  */
 
-#include <linux/bpf.h>
-#include <linux/bpf_common.h>
+#include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
-#include <linux/errno.h>
+#include <bpf/bpf_core_read.h>
 
 /* Whitelist map: SHA256(command) -> allowed (1) or blocked (0) */
 struct {
@@ -37,18 +36,24 @@ struct event {
     __u64 timestamp;
 };
 
-/* Helper: Check if command is in whitelist */
-static __always_inline int is_whitelisted(const char *filename)
+#ifndef EACCES
+#define EACCES 13
+#endif
+
+/* Helper: Check if command path is whitelisted */
+static __always_inline int is_whitelisted(const char *path)
 {
-    char hash[64] = {0};
     __u8 *allowed;
+    char key[64] = {0};
     
-    // For POC, use simple string comparison
-    bpf_probe_read_kernel_str(hash, sizeof(hash), filename);
+    // In a production scenario, we would hash the path or the binary.
+    // For this POC, we use the path string as the key.
+    bpf_probe_read_kernel_str(key, sizeof(key), path);
     
-    allowed = bpf_map_lookup_elem(&whitelist_map, hash);
+    allowed = bpf_map_lookup_elem(&whitelist_map, key);
     if (!allowed) {
-        return 0;  // Not in whitelist = blocked
+        // FAIL-CLOSED: Not in whitelist = blocked
+        return 0;
     }
     
     return *allowed;
@@ -79,29 +84,30 @@ static __always_inline void log_event(__u32 pid, __u32 uid,
 SEC("lsm/bprm_check_security")
 int BPF_PROG(guardian_execve, struct linux_binprm *bprm, int ret)
 {
-    char comm[256] = {0};
+    const char *filename;
     __u32 pid = bpf_get_current_pid_tgid() >> 32;
     __u32 uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
     
-    // Get current process name (simpler approach)
-    bpf_get_current_comm(comm, sizeof(comm));
+    // Get the actual filename being executed using CO-RE
+    filename = BPF_CORE_READ(bprm, filename);
     
-    // Check whitelist
-    if (!is_whitelisted(comm)) {
+    // Check whitelist (FAIL-CLOSED)
+    if (!is_whitelisted(filename)) {
         // Log blocked event
-        log_event(pid, uid, comm, 0);
+        log_event(pid, uid, filename, 0);
         
-        // BLOCK: Return -EACCES
-        bpf_printk("Guardian-Alpha: BLOCKED execve: %s (pid=%d)", 
-                   comm, pid);
-        return -EACCES;
+        // Critical block message in kernel log
+        bpf_printk("Guardian-Alpha [CRITICAL]: BLOCKED execution of unverified binary: %s (uid=%d)", 
+                   filename, uid);
+        
+        return -EACCES; // Permission denied
     }
     
     // Log allowed event
-    log_event(pid, uid, comm, 1);
+    log_event(pid, uid, filename, 1);
+    bpf_printk("Guardian-Alpha [INFO]: Allowed verified binary: %s", filename);
     
-    // ALLOW
-    return 0;
+    return 0; // Success
 }
 
 char LICENSE[] SEC("license") = "GPL";

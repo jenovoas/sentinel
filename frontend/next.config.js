@@ -4,6 +4,7 @@ const nextConfig = {
   swcMinify: true,
   poweredByHeader: false,
   compress: true,
+  transpilePackages: ['three'],
   // Enable WebAssembly support
   webpack: (config, { isServer }) => {
     config.experiments = {

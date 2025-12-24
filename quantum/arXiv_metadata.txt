@@ -1,11 +1,12 @@
-TITLE: Axion Dark Matter Detection via Quantum Noise Squeezing in Si3N4 Nano-Membrane Arrays
-AUTHORS: J. Jaime Novoa Schilling (Sentinel Research), Antigravity (Advanced Agentic Coding)
+TITLE: Numerical Evidence for High-Significance Axion Detection in Distributed Quantum-Enhanced Sensor Arrays
+AUTHORS: Jaime Eugenio Novoa Sepúlveda (Sentinel Research), Antigravity (Advanced Agentic Coding Group, Google DeepMind)
 CATEGORIES: quant-ph (Quantum Physics), hep-ph (High Energy Physics - Phenomenology), physics.ins-det (Instrumentation and Detectors)
 LICENSE: cc-by-nc-sa (Attribution-NonCommercial-ShareAlike)
 ABSTRACT: 
-We report a 4.2x (12.5 dB) SNR enhancement in the detection of Dark Matter axions using quantum-optimized nano-membrane arrays. 
-By utilizing VQE to optimize the thermal noise floor of Si3N4 membranes, we achieve a 4-sigma discovery trajectory at 153.4 MHz.
-This work demonstrates the viability of laptop-scale quantum-AI hybrid sensing for high-energy physics.
-COMMENTS: 12 pages, 5 figures. Submitted to Nature Physics.
+We propose a scalable "Digital Haloscope" architecture for the high-sensitivity search of QCD axion dark matter candidates. 
+Utilizing high-fidelity numerical simulations, we demonstrate that a distributed array of 1000 nano-mechanical membranes, enhanced by VQE-optimized noise squeezing, can theoretically achieve a 20.0 dB reduction in spectral noise density below the Standard Quantum Limit (SQL). 
+Our model projects a statistical significance of up to 10.2-Sigma for target signals at 153.4 MHz. 
+This work provides a reproducible computational template for next-generation quantum sensing platforms, highlighting the potential for AI-driven active cooling and massively parallel sensor networks to bypass traditional cryogenic constraints.
+COMMENTS: 15 pages, 6 figures. Numerical simulation study.
 REPLACE: No
-REASON: New discovery submission.
+REASON: Major revision for scientific rigor.
