@@ -24,13 +24,15 @@ COMMANDS=(
     "/usr/bin/clang"
     "/usr/bin/llvm-strip"
     "/usr/bin/xxd"
+    "/usr/sbin/ip"
+    "/usr/sbin/ss"
 )
 
-# Encontrar el ID del map
-MAP_ID=$(sudo bpftool map list | grep whitelist_map | awk '{print $1}' | cut -d: -f1)
+# Encontrar el ID del map (ahora buscamos por nombre exacto y tipo)
+MAP_ID=$(sudo bpftool map list | grep -E "name whitelist_map" | awk '{print $1}' | cut -d: -f1)
 
 if [ -z "$MAP_ID" ]; then
-    echo "❌ Error: No se encontró whitelist_map"
+    echo "❌ Error: No se encontró whitelist_map. ¿Está el eBPF LSM cargado?"
     exit 1
 fi
 
@@ -39,22 +41,22 @@ echo ""
 
 # Poblar con comandos
 for cmd in "${COMMANDS[@]}"; do
-    # Crear key de 64 bytes (comando + padding)
-    key_hex=$(printf "%-64s" "$cmd" | xxd -p -c 256)
+    # Crear key de 256 bytes (comando + padding) - Coincide con struct en guardian_alpha_lsm.c
+    key_hex=$(printf "%-256s" "$cmd" | xxd -p -c 512)
     
-    # Valor: 01 (allowed)
+    # Valor: 01 (allowed) - 1 byte para __u8
     value_hex="01"
     
-    # Intentar agregar (usando any flag para crear si no existe)
+    # Intentar agregar
     sudo bpftool map update id $MAP_ID \
         key hex $key_hex \
         value hex $value_hex \
-        any 2>/dev/null
+        any
     
     if [ $? -eq 0 ]; then
         echo "✅ $cmd"
     else
-        echo "⚠️  $cmd (puede que ya exista)"
+        echo "❌ Falló: $cmd"
     fi
 done
 
