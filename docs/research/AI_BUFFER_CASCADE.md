@@ -369,8 +369,6 @@ de variabilidad de flujo"
 - Buffers adaptativos simples: Algunos (basados en heurísticas)
 - **Buffers ML-driven en cascada**: NADIE
 
-**Valor Estimado**: $15-25M
-
 ---
 
 ## ✅ VALIDACIÓN EMPÍRICA
@@ -423,7 +421,7 @@ print(f"Speedup: {speedup:.2f}x")
 - ✅ Buffers en serie SÍ aceleran
 - ✅ La clave es **tamaño controlado por IA**
 - ✅ Aceleración es **exponencial** (smooth_factor^N)
-- ✅ Esto es **PATENTABLE** ($15-25M)
+- ✅ Esto es **PATENTABLE**
 
 **Próximos Pasos**:
 1. Implementar AI Buffer Optimizer (ML model)
@@ -435,5 +433,4 @@ print(f"Speedup: {speedup:.2f}x")
 
 **Documento**: AI-Driven Buffer Cascade  
 **Status**: 🧠 Modelo Completo  
-**Valor IP**: $15-25M  
 **Prior Art**: ZERO
