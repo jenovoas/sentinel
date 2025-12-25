@@ -262,30 +262,6 @@ def plot_levitation(reactive_data, predictive_data):
 
 ---
 
-## Roadmap de Implementación
-
-### Fase 1: Fundamentos (Semana 1-2)
-- [ ] Implementar Traffic Monitor con InfluxDB
-- [ ] Crear generador de tráfico bursty
-- [ ] Capturar dataset de entrenamiento (1000 bursts)
-
-### Fase 2: Modelo Predictivo (Semana 3-4)
-- [ ] Implementar arquitectura LSTM/Transformer
-- [ ] Entrenar modelo con dataset sintético
-- [ ] Validar precisión de predicción (target: >90%)
-
-### Fase 3: Integración (Semana 5-6)
-- [ ] Implementar FSU Controller
-- [ ] Conectar predictor con eBPF
-- [ ] Ejecutar benchmark Reactive vs Predictive
-
-### Fase 4: Validación (Semana 7-8)
-- [ ] Generar visualización de levitación
-- [ ] Documentar resultados para patente
-- [ ] Preparar demo para inversores
-
----
-
 ## Métricas de Éxito
 
 | Métrica | Target | Justificación |
