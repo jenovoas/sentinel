@@ -122,16 +122,5 @@ Layer 3: Human-in-the-Loop (Guardian Gamma)
 2. RSAC Labs - AIOpsDoom Methodology
 3. George Mason University - AIOpsShield Defense Mechanism
 
----
-
-## 5. Next Steps
-
-1. Complete eBPF integration
-2. Design controlled attack experiments
-3. Collect empirical data
-4. Publish security analysis
-5. Submit to USENIX Security or similar venue
-
----
 
 **Note**: This is a technical analysis based on published research. Experimental validation is required before making security claims.

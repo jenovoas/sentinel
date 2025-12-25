@@ -228,8 +228,6 @@ int BPF_PROG(guardian_file_open, struct file *file) {
 
 ---
 
-## 💰 Commercial Value
-
 ### Market Opportunity
 
 | Competitor | Vulnerability | Price | Sentinel Advantage |
@@ -278,33 +276,6 @@ int BPF_PROG(guardian_file_open, struct file *file) {
 
 ---
 
-## 📈 Go-to-Market Strategy
-
-### Phase 1: Proof (This Week)
-1. ✅ Complete implementation
-2. ✅ Create demo video
-3. ✅ Write white paper
-4. ✅ Publish on GitHub
-
-### Phase 2: Awareness (Week 2-4)
-1. Post on Hacker News: "Show HN: AIOpsShield - Defense Against AIOpsDoom"
-2. Reddit: r/netsec, r/devops, r/sysadmin
-3. LinkedIn: Target DevOps/Security leaders
-4. Twitter: Tag @Datadog, @GrafanaLabs, @NewRelic
-
-### Phase 3: Validation (Month 2)
-1. Contact 10 target companies
-2. Offer free pilot (30 days)
-3. Collect testimonials
-4. Refine product
-
-### Phase 4: Scale (Month 3+)
-1. First paying customers
-2. Case studies
-3. Conference talks (RSA 2026, KubeCon)
-4. Partnership discussions
-
----
 
 ## 🎯 Competitive Moat
 
@@ -333,28 +304,6 @@ int BPF_PROG(guardian_file_open, struct file *file) {
 
 ---
 
-## 📞 Next Steps
-
-### For Enterprises
-**Interested in pilot?**
-- Email: [your-email]
-- Demo: [link to video]
-- GitHub: github.com/jenovoas/sentinel
-
-### For Investors
-**Seeking seed funding ($500K-1M)**:
-- Accelerate development
-- Hire security team
-- Scale go-to-market
-
-### For Partners
-**Integration opportunities**:
-- Datadog plugin
-- Grafana datasource
-- Splunk connector
-
----
-
 ## 🔒 Security Disclosure
 
 **Responsible Disclosure**:
@@ -373,8 +322,5 @@ int BPF_PROG(guardian_file_open, struct file *file) {
 4. LGTM Stack Best Practices
 
 ---
-
-**Built with 💙 by Jaime Novoa**  
-**For everyone. Para todos. 为了所有人.**
 
 **Sentinel Cortex™ - The Future of Secure Observability**

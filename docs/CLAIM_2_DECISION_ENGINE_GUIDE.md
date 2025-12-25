@@ -497,7 +497,7 @@ impl N8NClient {
 }
 ```
 
-**Tiempo**: 3-4 horas
+
 
 ---
 
@@ -645,24 +645,6 @@ COPY --from=builder /app/target/release/neural-guard /usr/local/bin/
 CMD ["neural-guard"]
 ```
 
-**Tiempo**: 2-3 horas
-
----
-
-## ✅ Checklist Semana 3-4
-
-### Semana 3
-- [ ] Día 1: Setup proyecto Rust
-- [ ] Día 2-3: Modelos de datos (Event, DetectedPattern)
-- [ ] Día 4-5: Prometheus collector
-- [ ] Día 6-7: Pattern detector (5 patrones)
-
-### Semana 4
-- [ ] Día 8-9: N8N client (webhooks)
-- [ ] Día 10-11: Main loop + orquestación
-- [ ] Día 12-13: Tests
-- [ ] Día 14: Deployment + documentación
-
 ---
 
 ## 🎯 Resultado Final
@@ -684,24 +666,3 @@ Al terminar estas 2 semanas tendrás:
 
 ---
 
-## 💡 Tips para no perderte
-
-1. **Empieza simple**: Primero haz que funcione con 1 patrón, luego agrega los otros 4
-2. **Testea cada día**: No avances sin probar que lo anterior funciona
-3. **Usa logs**: `tracing::info!()` en todas partes para ver qué pasa
-4. **Pide ayuda**: Si algo no compila o no funciona, pregúntame
-
----
-
-## 🚀 ¿Empezamos?
-
-**Próximo paso**: Crear el proyecto Rust (Día 1)
-
-¿Quieres que te ayude con el setup inicial o prefieres intentarlo tú primero? 
-
-También puedo:
-- Crear los archivos base del proyecto
-- Explicar alguna parte en más detalle
-- Mostrarte ejemplos de cómo testear
-
-¿Qué prefieres? 😊
