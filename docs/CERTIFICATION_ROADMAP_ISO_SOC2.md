@@ -81,18 +81,6 @@ Payback: 1-2 meses
 
 ---
 
-## 🗓️ Roadmap de Certificaciones
-
-### Fase 1: Preparación (Mes 1-2)
-
-**Objetivo**: Implementar controles necesarios
-
-**Tareas**:
-- [ ] Contratar consultor ISO/SOC (recomendación: $5K-8K)
-- [ ] Gap analysis (qué te falta)
-- [ ] Documentar políticas de seguridad
-- [ ] Implementar controles faltantes
-
 **Entregables**:
 - Política de seguridad de información
 - Política de control de acceso
@@ -100,27 +88,6 @@ Payback: 1-2 meses
 - Política de backup y recuperación
 - Registro de activos
 - Registro de riesgos
-
----
-
-### Fase 2: ISO 27001 (Mes 3-4)
-
-**Objetivo**: Obtener certificación ISO 27001
-
-**Tareas**:
-- [ ] Implementar ISMS (Information Security Management System)
-- [ ] Auditoría interna
-- [ ] Auditoría de certificación (externa)
-- [ ] Remediar hallazgos
-- [ ] Obtener certificado
-
-**Entregables**:
-- Certificado ISO 27001 ✅
-- Statement of Applicability (SoA)
-- Plan de tratamiento de riesgos
-
-**Costo**: $20K  
-**Tiempo**: 2 meses
 
 ---
 
@@ -277,44 +244,6 @@ Después del piloto, contrato de $150K/año."
 
 ---
 
-## 🚧 Controles que Faltan (Gap Analysis)
-
-### ❌ Controles a Implementar
-
-1. **Políticas Documentadas**
-   - [ ] Information Security Policy
-   - [ ] Acceptable Use Policy
-   - [ ] Incident Response Plan
-   - [ ] Business Continuity Plan
-   - [ ] Data Retention Policy
-
-2. **RBAC Completo**
-   - [ ] Role-based access control
-   - [ ] Least privilege principle
-   - [ ] Access review process
-
-3. **Audit Trail**
-   - [ ] Immutable audit logs
-   - [ ] User activity tracking
-   - [ ] Change tracking
-
-4. **Vulnerability Management**
-   - [ ] Regular security scans
-   - [ ] Patch management process
-   - [ ] Penetration testing (anual)
-
-5. **Vendor Management**
-   - [ ] Third-party risk assessment
-   - [ ] Vendor security reviews
-
-6. **Training**
-   - [ ] Security awareness training
-   - [ ] Incident response training
-
-**Tiempo para implementar**: 1-2 meses  
-**Costo**: $5K-8K (consultor)
-
----
 
 ## 🏆 Ventajas Competitivas Post-Certificación
 
@@ -365,38 +294,6 @@ ISO 27001 + SOC 2, diseñada para banca y gobierno.
 
 **ROI**: 852% (9.5x)  
 **Payback**: 1-2 meses
-
----
-
-## 🎯 Plan de Acción Inmediato
-
-### Esta Semana
-- [ ] Contactar 3 consultores ISO/SOC (pedir cotizaciones)
-- [ ] Aplicar a CORFO SSAF (para financiar certificaciones)
-- [ ] Documentar controles existentes
-
-### Próximas 2 Semanas
-- [ ] Contratar consultor (mejor precio/experiencia)
-- [ ] Iniciar gap analysis
-- [ ] Crear políticas de seguridad
-
-### Mes 1-2
-- [ ] Implementar controles faltantes
-- [ ] Preparar documentación ISO 27001
-- [ ] Iniciar auditoría interna
-
-### Mes 3-4
-- [ ] Auditoría ISO 27001
-- [ ] Obtener certificado ISO 27001 ✅
-
-### Mes 5-6
-- [ ] Auditoría SOC 2 Type 1
-- [ ] Obtener reporte SOC 2 Type 1 ✅
-
-### Mes 7-18
-- [ ] Operar 6-12 meses
-- [ ] Auditoría SOC 2 Type 2
-- [ ] Obtener reporte SOC 2 Type 2 ✅
 
 ---
 
