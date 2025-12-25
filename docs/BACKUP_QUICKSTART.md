@@ -128,16 +128,6 @@ aws sts get-caller-identity
 aws s3 ls s3://your-bucket/
 ```
 
-## ✅ Checklist de Producción
-
-- [ ] Backups automáticos configurados (cron)
-- [ ] Notificaciones funcionando (webhook test)
-- [ ] S3 off-site habilitado
-- [ ] Encriptación habilitada
-- [ ] Restore testeado al menos una vez
-- [ ] Logs monitoreados
-- [ ] Retention policy configurada (BACKUP_RETENTION_DAYS)
-
 ## 🎊 ¡Listo!
 
 El sistema está **production-ready**. Los backups se ejecutarán automáticamente y recibirás notificaciones en caso de problemas.

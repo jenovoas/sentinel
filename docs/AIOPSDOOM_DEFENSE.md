@@ -623,22 +623,6 @@ assert(guardianResult.approved === true);
 | **Bypass Rate** | 🔴 95%+ | 🟢 0% |
 | **CVSS Score** | 🔴 9.1 (CRÍTICA) | 🟢 0.0 (INMUNE) |
 
----
-
-## 💰 Impacto en Valoración
-
-### Valor Agregado por Defensa AIOpsDoom
-
-```
-IP Base (3 claims):                     $10-20M
-+ Defensa AIOpsDoom (RSA 2025):         +$5-10M
-+ Evidencia de investigación:           +$3-5M
-+ Implementación validada:              +$2-3M
-────────────────────────────────────────────────
-TOTAL IP Valuation:                     $20-38M
-
-Incremento: +100% sobre valoración base
-```
 
 ### Ventaja Competitiva
 
@@ -649,48 +633,12 @@ Incremento: +100% sobre valoración base
 
 ---
 
-## 📋 Roadmap de Implementación
-
-### Phase 1: Capa 1 + 2 (Weeks 3-4) ✅ EN PROGRESO
-- [x] Telemetry Sanitization (40+ patrones)
-- [x] Multi-Factor Validation (5 señales)
-- [ ] Testing exhaustivo
-- [ ] Documentación completa
-
-### Phase 2: Capa 3 (Weeks 5-8)
-- [ ] Guardian-Alpha implementation
-- [ ] Guardian-Beta implementation
-- [ ] Mutual validation protocol
-- [ ] Integration testing
-
-### Phase 3: Capa 4 + 5 (Weeks 9-13)
-- [ ] HITL dashboard
-- [ ] Context-aware decision engine
-- [ ] Slack/Email notifications
-- [ ] Timeout handling
-
-### Phase 4: Validation (Weeks 14-21)
-- [ ] Penetration testing
-- [ ] Red team exercises
-- [ ] CVE disclosure (si aplicable)
-- [ ] Patent filing con evidencia
-
----
-
 ## 🎓 Referencias
 
 1. **RSA Conference 2025** - "AIOpsDoom: Adversarial Reward-Hacking in AIOps Systems"
 2. **CVSS 3.1 Calculator** - https://www.first.org/cvss/calculator/3.1
 3. **OWASP Top 10 for LLM Applications** - https://owasp.org/www-project-top-10-for-large-language-model-applications/
 4. **Sentinel Cortex™ Patent Claims** - PATENT_STRATEGY_SUMMARY.md
-
----
-
-## 📞 Contacto
-
-**Security Team:** security@sentinel.dev  
-**Vulnerability Disclosure:** security-disclosure@sentinel.dev  
-**Bug Bounty:** https://sentinel.dev/security/bug-bounty
 
 ---
 

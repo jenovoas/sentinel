@@ -353,47 +353,6 @@ MINIO_BUCKET="sentinel-backups/postgres"
 ```bash
 ./scripts/backup-postgres.sh
 ```
-
----
-
-## ✅ Checklist de Verificación
-
-### Configuración Básica
-- [ ] Script ejecuta sin errores
-- [ ] Backup se crea en `/var/backups/sentinel/postgres/`
-- [ ] Verificación de integridad pasa
-- [ ] Logs se escriben correctamente
-
-### Webhook (Opcional)
-- [ ] Webhook URL configurado
-- [ ] Alertas llegan a Slack/Discord
-- [ ] Alertas de éxito ✅
-- [ ] Alertas de error 🚨
-
-### S3 (Opcional)
-- [ ] AWS CLI instalado y configurado
-- [ ] Bucket S3 creado
-- [ ] Backups se suben a S3
-- [ ] Cleanup S3 funciona
-
-### Encriptación (Opcional)
-- [ ] Clave de encriptación generada
-- [ ] Backups se encriptan (.enc)
-- [ ] Verificación funciona con encriptación
-- [ ] Restore funciona con decrypt
-
-### Cron
-- [ ] Cron job configurado
-- [ ] Logs se escriben en `/var/log/sentinel-backup.log`
-- [ ] Backups automáticos funcionan
-
-### Testing
-- [ ] Backup manual exitoso
-- [ ] Restore manual exitoso
-- [ ] Datos se recuperan correctamente
-
----
-
 ## 🔧 Troubleshooting
 
 ### Error: "Encryption key not found"
@@ -468,16 +427,6 @@ Crear dashboard con:
 
 ---
 
-## 🎯 Próximos Pasos
-
-Una vez completado este paso:
-
-1. ✅ **Backups mejorados** (COMPLETADO)
-2. ⏭️ **Health check endpoints** (Próximo)
-3. ⏭️ **Testing PostgreSQL HA**
-4. ⏭️ **Redis HA**
-
----
 
 ## 📝 Resumen de Mejoras
 
