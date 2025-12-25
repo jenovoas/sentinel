@@ -87,23 +87,6 @@ impl DataIngestionPipeline {
 
 ## Phase 2A: Sentinel Cortex + Auto-Ingestion (Weeks 1-4)
 
-### Week 1: Foundation + Data Collectors
-
-#### Days 1-2: Project Setup
-- [x] Create Rust workspace
-- [x] Axum web server
-- [x] PostgreSQL config
-- [ ] **Prometheus client** (scrape metrics)
-- [ ] **Redis client** (real-time data)
-- [ ] Observability (tracing, metrics)
-
-#### Days 3-4: Data Ingestion
-- [ ] **PrometheusCollector** (CPU, memory, network)
-- [ ] **PostgresCollector** (events, anomalies, alerts)
-- [ ] **RedisCollector** (cache stats, sessions)
-- [ ] **OllamaCollector** (AI insights, predictions)
-- [ ] **AuditdCollector** (security events)
-- [ ] **DockerCollector** (container metrics)
 
 **Code Example**:
 ```rust

@@ -435,55 +435,6 @@ def run_experiment(duration_sec=60):
     return results
 ```
 
----
-
-## 📋 CHECKLIST PARA PATENT
-
-### Evidencia de Utilidad
-
-- [ ] Generador BMAP implementado
-- [ ] Controlador ML sencillo implementado
-- [ ] Experimento Static vs AI ejecutado
-- [ ] Gráficas p50/p95/p99 generadas
-- [ ] Drop rate documentado
-- [ ] Burst ratio medido
-- [ ] Ablation study (1, 2, 3 stages) completado
-
-### Documentación
-
-- [ ] Claim refinado con fraseo académico
-- [ ] BDP citado como baseline
-- [ ] Novedad ML en cascada destacada
-- [ ] Smooth factor demostrado
-- [ ] Comparativa vs mercado documentada
-
-### Límites y Salvaguardas
-
-- [ ] Upper bounds por RAM documentados
-- [ ] Fairness para evitar bufferbloat
-- [ ] Hysteresis para evitar flapping
-- [ ] Guías de BDP y RTT seguidas
-
----
-
-## 🎯 PRÓXIMOS PASOS INMEDIATOS
-
-### Hoy (20 Dic - Tarde)
-- [ ] Implementar generador BMAP
-- [ ] Implementar controlador ML sencillo
-- [ ] Ejecutar experimento inicial
-
-### Mañana (21 Dic)
-- [ ] Ablation study (1, 2, 3 stages)
-- [ ] Generar gráficas p95/p99
-- [ ] Documentar resultados
-
-### Esta Semana
-- [ ] Refinar claim con fraseo académico
-- [ ] Consolidar evidencia de utilidad
-- [ ] Preparar package para attorney
-
----
 
 ## ✅ CONCLUSIÓN
 

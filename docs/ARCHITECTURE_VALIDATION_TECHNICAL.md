@@ -316,22 +316,7 @@ DIFERENCIACIÓN:
 
 ### Antes de Validación Técnica
 
-```
-Valoración: $153M (conservadora)
-├─ Base: Arquitectura descrita
-├─ Evidencia: Documentación
-└─ Confianza: 70%
-```
 
-### Después de Validación Técnica
-
-```
-Valoración: $153-230M (validada)
-├─ Base: Arquitectura IMPLEMENTADA
-├─ Evidencia: Código + docker-compose-ha.yml
-├─ Confianza: 85%
-└─ Bonus: Enterprise-ready (+$10-20M)
-```
 
 **Incremento de Confianza:**
 - Antes: 70% (arquitectura teórica)
@@ -339,25 +324,6 @@ Valoración: $153-230M (validada)
 
 ---
 
-## 📋 PRÓXIMOS PASOS
-
-### Para Patent Filing
-
-- [x] **Evidencia Técnica:** docker-compose-ha.yml, Auditd config
-- [x] **Diferenciación:** Kernel + Application (único)
-- [x] **Implementación:** n8n workflows, Ollama integration
-- [ ] **Diagramas:** Arquitectura HA, flujo AIOpsShield
-- [ ] **Benchmarks:** Performance tests, HA failover tests
-
-### Para Investor Pitch
-
-- [x] **Enterprise-Ready:** HA validada
-- [x] **Security-First:** Kernel-level monitoring
-- [x] **Privacy-First:** Local AI (GDPR/HIPAA)
-- [x] **Cost-Effective:** $0-78/mes vs $50K-500K/año
-- [ ] **Case Studies:** Fortune 500 POCs
-
----
 
 ## 🎓 CONCLUSIÓN
 
@@ -375,15 +341,6 @@ Valoración: $153-230M (validada)
 
 > **"Sentinel Cortex™ cumple con los requisitos de una Infraestructura Empresarial Integrada. Tienes la base técnica lista para ejecutar tu plan de propiedad intelectual (IP) y presentar la patente provisional para la arquitectura 'Dual-Guardian' y el mecanismo de sanitización de telemetría."**
 
-### Siguiente Acción
-
-```
-🎯 EJECUTAR PLAN DE 90 DÍAS
-├─ Evidencia técnica: VALIDADA ✅
-├─ Diferenciación: CONFIRMADA ✅
-├─ Implementación: DEMOSTRADA ✅
-└─ Patent filing: READY TO EXECUTE ✅
-```
 
 ---
 

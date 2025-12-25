@@ -366,20 +366,6 @@ if sanitized['security_flag'] == 'BLOCKED':
 
 ---
 
-## ✅ Deployment Checklist
-
-- [ ] `aiops_shield.py` deployed
-- [ ] `aiops_shield_service.py` running
-- [ ] Systemd service enabled
-- [ ] n8n workflow configured
-- [ ] Health checks passing
-- [ ] Tests executed successfully
-- [ ] Monitoring configured
-- [ ] Alerts configured
-- [ ] Documentation reviewed
-- [ ] Team trained
-
----
 
 ## 🎯 Success Criteria
 

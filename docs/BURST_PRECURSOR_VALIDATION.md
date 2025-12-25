@@ -138,30 +138,6 @@ Con 5 segundos de anticipación, el FSU Controller puede:
 
 ---
 
-## Próximos Pasos
-
-### Fase 1: Mejorar Detección (Semana 1-2)
-- [ ] Ajustar umbrales de severity para diferentes tipos de tráfico
-- [ ] Implementar detección de queue filling en tráfico real
-- [ ] Agregar más features: connection rate, error rate
-
-### Fase 2: Modelo Predictivo (Semana 3-4)
-- [ ] Generar dataset de entrenamiento (1000+ bursts)
-- [ ] Entrenar modelo LSTM/Transformer
-- [ ] Validar precisión de predicción (target: >90%)
-
-### Fase 3: Integración con FSU (Semana 5-6)
-- [ ] Implementar FSU Controller
-- [ ] Conectar con eBPF para ejecución de mitigación
-- [ ] Benchmark completo: Reactive vs Predictive
-
-### Fase 4: Levitación (Semana 7-8)
-- [ ] Test de "Zero Drops" bajo bursts extremos
-- [ ] Generar visualización de levitación
-- [ ] Documentar para patente y demo de inversores
-
----
-
 ## Conclusión
 
 🎯 **ÉXITO**: El sistema de detección de precursores funciona correctamente.

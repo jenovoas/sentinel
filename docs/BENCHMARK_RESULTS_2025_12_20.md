@@ -114,10 +114,6 @@ Podemos cuantificar exactamente el impacto de cada cambio.
 
 **El sistema FUNCIONA.** La arquitectura es correcta. Solo necesita calibración.
 
-**Esto valida**:
-- ✅ Claim 8: Neural-Supervised Control
-- ✅ Claim 9: Predictive Burst Mitigation
-- ✅ Arquitectura Híbrida (Cortex + Músculo)
 
 **Próximo hito**: LSTM entrenado con datos reales.
 

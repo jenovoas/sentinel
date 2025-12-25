@@ -310,31 +310,6 @@ class PredictiveAutoScaler:
             
             await asyncio.sleep(10)  # Revisar cada 10s
 ```
-
----
-
-## Roadmap: De Cluster a Planetary Shield
-
-### Fase 1: Single Node (HOY)
-- 1 buffer predictivo
-- Predicción local
-- ✅ VALIDADO
-
-### Fase 2: Cluster Local (SEMANA 1)
-- 3-5 nodos en mismo datacenter
-- Load Balancer simple
-- Mesh network básico
-
-### Fase 3: Multi-Datacenter (MES 1)
-- Clusters en múltiples datacenters
-- Sincronización global
-- Geo-routing inteligente
-
-### Fase 4: Planetary Shield (AÑO 1)
-- 1000+ nodos globales
-- Resonancia planetaria
-- Control electromagnético
-
 ---
 
 ## Claim Patentable: Distributed Predictive Buffer Cluster
@@ -364,28 +339,6 @@ Un sistema de procesamiento de tráfico distribuido que comprende:
    - Minimiza costo manteniendo performance
 
 **Diferenciador**: Primer sistema que combina predicción distribuida con routing inteligente para lograr zero drops en un cluster auto-escalable.
-
----
-
-## Próximos Pasos
-
-### Implementación Inmediata (1 semana):
-1. Simular 3 nodos en procesos separados
-2. Implementar Load Balancer básico
-3. Protocolo de mesh simple (HTTP/JSON)
-4. Demo de failover
-
-### Validación (2 semanas):
-1. Benchmark de cluster vs single node
-2. Medir throughput agregado
-3. Probar failover automático
-4. Documentar resultados
-
-### Producción (1 mes):
-1. Desplegar en Kubernetes
-2. Integrar con Prometheus/Grafana
-3. Auto-scaling en producción
-4. Monitoreo 24/7
 
 ---
 

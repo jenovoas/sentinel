@@ -143,5 +143,3 @@
 - ✅ Simple
 - ✅ Funcional
 - ✅ Podemos iterar después
-
-**¿Qué te parece?**
