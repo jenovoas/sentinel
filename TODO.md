@@ -18,7 +18,7 @@
 - [x] Poblar whitelist ✅
 - [x] Probar intercepción ✅
 - [x] Medir overhead (<1ms) ✅
-- [ ] Video demo
+- [ ] Video demo (guion listo)
 
 ### 3. Gemini Integration
 - [x] SDK instalado ✅
@@ -37,7 +37,7 @@
 - [ ] Documentación para attorney
 
 ### Claims en Desarrollo
-- [ ] Claim 6: Cognitive Kernel POC
+- [x] Claim 6: Cognitive Kernel POC ✅ (Semantic Firewall)
 - [ ] Claim 7: AI Buffer implementation
 - [ ] Claim 8: Flow Coprocessor design
 - [ ] Claim 9: Planetary Resonance model
@@ -46,8 +46,8 @@
 
 ## 📊 PROGRESO
 
-**IP Validado**: $16-25M / $157-600M (16%)  
-**Claims Completos**: 4/9 (44%)  
+**IP Validado**: $36-50M / $157-600M (25%)
+**Claims Completos**: 5/9 (55%)
 **Días restantes**: 57
 
 ---
