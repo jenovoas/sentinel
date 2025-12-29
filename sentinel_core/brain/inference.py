@@ -38,7 +38,7 @@ class SentinelBrain:
         Context: The system is under high security mode.
         
         Rules:
-        1. "Safe" binaries: Standard Linux utilities (ls, grep, cat, git, htop), system services, known benign tools, AND **Sentinel Cortex components** (e.g. /opt/sentinel/...). -> ALLOW
+        1. "Safe" binaries: Standard Linux utilities (ls, grep, cat, git, htop), system services, known benign tools, **Sentinel Cortex components** (e.g. /opt/sentinel/...), and **Ollama** (/usr/local/bin/ollama). -> ALLOW
         2. "Threat" binaries: Hacking tools, malware names, or suspicious locations (/tmp/exploit). -> BLOCK
         
         Task:
