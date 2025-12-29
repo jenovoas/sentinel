@@ -14,7 +14,7 @@ import json
 
 
 class Sefirah:
-    """
+  """
     A single sefirah (emanation) in the Tree of Life.
     
     Contains dual nature (Alpha/Beta) and can contain
