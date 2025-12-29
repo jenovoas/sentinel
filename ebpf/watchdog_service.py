@@ -14,6 +14,8 @@ import sys
 import fcntl
 import struct
 
+import signal
+
 WATCHDOG_DEVICE = "/dev/watchdog"
 HEARTBEAT_INTERVAL = 10  # seconds
 
@@ -53,6 +55,16 @@ def main():
     
     wd = setup_watchdog()
     
+    running = True
+
+    def signal_handler(signum, frame):
+        nonlocal running
+        print(f"\nReceived signal {signum}, stopping...")
+        running = False
+
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
     if wd:
         print(f"💓 Sending heartbeat every {HEARTBEAT_INTERVAL}s")
         print("⚠️  If this process dies, system will reboot in 30s")
@@ -61,24 +73,30 @@ def main():
     
     print("")
     
-    try:
-        while True:
-            if send_heartbeat(wd):
-                print(f"💓 Heartbeat sent at {time.strftime('%H:%M:%S')}")
-            else:
-                print("❌ Heartbeat failed - system will reboot!")
+    while running:
+        if send_heartbeat(wd):
+            print(f"💓 Heartbeat sent at {time.strftime('%H:%M:%S')}")
+        else:
+            print("❌ Heartbeat failed - system will reboot!")
+            break
+        
+        # Sleep in short intervals to respond to signals faster
+        for _ in range(HEARTBEAT_INTERVAL):
+            if not running:
                 break
+            time.sleep(1)
             
-            time.sleep(HEARTBEAT_INTERVAL)
-    except KeyboardInterrupt:
-        print("\n🛑 Stopping watchdog service...")
-        if wd:
-            # Write 'V' to disable watchdog before exit
+    print("\n🛑 Stopping watchdog service...")
+    if wd:
+        # Write 'V' to disable watchdog before exit
+        try:
             os.write(wd, b'V')
             os.close(wd)
             print("✅ Watchdog disabled")
-        else:
-            print("✅ Service stopped")
+        except Exception as e:
+            print(f"❌ Error closing watchdog: {e}")
+    else:
+        print("✅ Service stopped")
 
 if __name__ == "__main__":
     main()
