@@ -1,7 +1,7 @@
 # Guardian-Alpha eBPF LSM Build System
 
 CLANG ?= clang
-LLVM_STRIP ?= llvm-strip
+LLVM_STRIP ?= llvm-strip-19
 BPFTOOL ?= bpftool
 
 ARCH := $(shell uname -m | sed 's/x86_64/x86/' | sed 's/aarch64/arm64/')
