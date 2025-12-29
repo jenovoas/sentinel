@@ -11,9 +11,17 @@ COMMANDS=(
     "/usr/bin/zsh"
     "/bin/zsh"
     "/usr/bin/tmux"
+    "/usr/bin/bash"
+    "/bin/bash"
+    "/usr/bin/sh"
+    "/bin/sh"
+    "/usr/bin/cp"
+    "/bin/cp"
+    "/bin/ls"
     "/usr/bin/ls"
     "/usr/bin/cat"
     "/usr/bin/nvim"
+    "/usr/bin/dmesg"
     "/usr/local/bin/nvim"
     "/usr/bin/vim"
     "/usr/bin/nano"
@@ -58,8 +66,23 @@ COMMANDS=(
     "/usr/bin/cut"
     "/usr/bin/env"
     "/usr/bin/sleep"
-    "/usr/libexec/sudo/sudoers.so" # Sudo internal modules might be needed depending on execution context, but usually execve is for binaries.
-    # Note: Libraries loaded via mmap/dlopen are NOT checked by execve hook, so .so files are usually fine unless executed directly.)
+    "/bin/true"               # Required for testing
+    "/usr/bin/true"           # Required for testing
+    "/usr/bin/find"           # Useful utility
+    "/usr/bin/xargs"          # Useful utility
+    "/usr/bin/nawk"           # Used by starship/shell plugins
+    "/tmp/malicious_attack_tool" # FOR POC: Whitelisted but Semantic Blocked
+    "/usr/lib/git-core/git-remote-https" # Required for git push
+    "/usr/lib/git-core/git"   # Internal git binary
+    "/usr/libexec/sudo/sudoers.so" # Sudo internal modules
+    # Shell & desktop utilities to prevent annoyance
+    "/usr/bin/mkfifo"
+    "/usr/bin/dircolors"
+    "/usr/bin/zoxide"
+    "/usr/bin/fzf"
+    "/usr/bin/mawk"
+    "/usr/bin/lesspipe"
+    "/usr/bin/basename"
 )
 
 # Ruta del map pinned (establecida por load.sh)
