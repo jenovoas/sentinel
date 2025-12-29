@@ -74,6 +74,7 @@ COMMANDS=(
     "/tmp/malicious_attack_tool" # FOR POC: Whitelisted but Semantic Blocked
     "/usr/lib/git-core/git-remote-https" # Required for git push
     "/usr/lib/git-core/git"   # Internal git binary
+    "/usr/lib/git-core/git-credential-store" # Required to save password
     "/usr/libexec/sudo/sudoers.so" # Sudo internal modules
     # Shell & desktop utilities to prevent annoyance
     "/usr/bin/mkfifo"
