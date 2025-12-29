@@ -73,7 +73,7 @@ Desarrollar **Sentinel Cortex™**, una plataforma de observabilidad y seguridad
 - [x] eBPF LSM monitoring (Claim 3 validado)
 - [x] Cognitive Kernel (Claim 6 validado - semantic blocking)
 - [x] AI Adaptive Buffers (Claim 7 validado - 31x speedup)
-- [x] Real AI Integration (Ollama + Phi3 Mini - 5/5 accuracy)
+- [x] Real AI Integration (Ollama + Llama 3.2 - 5/5 accuracy)
 - [x] Modular Architecture (sentinel_core package)
 - [x] E2E Integration Testing
 - [ ] Memory forensics (procfs)
@@ -205,7 +205,7 @@ Desarrollar **Sentinel Cortex™**, una plataforma de observabilidad y seguridad
 - **Cryptography**: AES-256-GCM, X25519, Kyber-1024 (roadmap)
 
 ### AI & Automation
-- **Ollama**: LLM local (phi3:mini)
+- **Ollama**: LLM local (llama3.2:3b)
 - **n8n**: Workflow automation
 - **scikit-learn**: ML baseline (roadmap)
 
