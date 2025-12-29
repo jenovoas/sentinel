@@ -52,16 +52,19 @@ class GuardianMonitor:
 
     def _handle_block_event(self, filename: str):
         """Coordina la respuesta ante un evento de bloqueo."""
+        # Limpiar el filename (a veces bpftool/printk añade basura al final)
+        filename = filename.split('\0')[0].strip()
         print(f"🔍 [Monitor] Detectado bloqueo: {filename}")
         
         # 1. Consultar al Cerebro (IA)
         should_allow = self.brain.analyze_threat(filename)
         
         if should_allow:
-            print(f"🛡️  [Brain] Decisión: PERMITIR '{filename}'")
             # 2. Actualizar el Kernel si la IA aprueba
             success = self.map_manager.whitelist_binary(filename)
             if success:
-                print(f"✅ [Kernel] Whitelist actualizada.")
+                print(f"✅ [Kernel] Whitelist actualizada para: {filename}")
+            else:
+                print(f"❌ [Kernel] Fallo al actualizar whitelist para: {filename}")
         else:
-            print(f"🚫 [Brain] Decisión: BLOQUEO CONFIRMADO para '{filename}'")
+            print(f"🚫 [Monitor] Bloqueo CONFIRMADO por IA para: {filename}")
