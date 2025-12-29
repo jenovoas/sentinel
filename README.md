@@ -24,6 +24,14 @@ Security is implemented as a physical restriction in **Ring 0**. Using eBPF LSM 
 Data throughput is optimized using **Optomechanical Cooling** metaphors. By eliminating "computational friction" using Base-60 arithmetic and Dual-Lane telemetry, we achieve stable flow in conditions that would collapse standard systems.
 - [**Visual Guide**](VISUAL_GUIDE_TRINITY.md) | [**Base-60 Proof**](research/PLIMPTON_322_DECODED.md)
 
+### 4. Cognitive Loop (AI-Driven Defense)
+The system integrates a local LLM (Llama 3.2) with a real-time memory forensics engine. This **Cognitive Loop** autonomously detects, analyzes, and blocks sophisticated threats in milliseconds, updating kernel policies without human intervention.
+- [**Walkthrough**](walkthrough_phase5.md) | [**Optimization Plan**](optimization_plan.md)
+
+### 5. Premium Visualization
+A Cyberpunk-inspired dashboard provides real-time visibility into the kernel's decision-making process. Powered by WebSockets and Rust, it visualizes threat detection and AI reasoning instantly.
+- [**Start Dashboard**](START_DASHBOARD.md) | [**Visual Report**](walkthrough_phase6.md)
+
 ---
 
 ## 🚀 The AI-Guided Journey
