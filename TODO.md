@@ -5,7 +5,7 @@
 
 ---
 
-## 🚨 CRÍTICO - Esta Semana
+## Esta Semana
 
 ### 1. Patent Attorney (P0)
 - [ ] Buscar 3-5 attorneys especializados
@@ -41,14 +41,6 @@
 - [ ] Claim 7: AI Buffer implementation
 - [ ] Claim 8: Flow Coprocessor design
 - [ ] Claim 9: Planetary Resonance model
-
----
-
-## 📊 PROGRESO
-
-**IP Validado**: $36-50M / $157-600M (25%)
-**Claims Completos**: 5/9 (55%)
-**Días restantes**: 57
 
 ---
 
