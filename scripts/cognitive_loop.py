@@ -35,6 +35,10 @@ def main():
                         if len(parts) > 1:
                             filename = parts[1].strip()
                             
+                            # Skip ollama to prevent infinite loop
+                            if "ollama" in filename:
+                                continue
+                            
                             print(f"🔍 [Monitor] Detectado bloqueo: {filename}")
                             
                             # Use real AI Brain

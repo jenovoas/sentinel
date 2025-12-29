@@ -84,6 +84,7 @@ COMMANDS=(
     "/usr/bin/mawk"
     "/usr/bin/lesspipe"
     "/usr/bin/basename"
+    "/usr/local/bin/ollama"
 )
 
 # Ruta del map pinned (establecida por load.sh)
@@ -103,16 +104,16 @@ for cmd in "${COMMANDS[@]}"; do
     # Generar key de 256 bytes (zero-padded) en formato hex con espacios
     # Esto asegura compatibilidad con char[256] y bpftool parsing
     key_hex=$(python3 -c "import sys; cmd=sys.argv[1].encode(); print(' '.join(f'{b:02x}' for b in cmd.ljust(256, b'\0')))" "$cmd")
-    
+
     # Valor: 01 (allowed) - 1 byte para __u8
     value_hex="01"
-    
+
     # Intentar agregar usando el path pinned
     sudo bpftool map update pinned "$MAP_PATH" \
         key hex $key_hex \
         value hex $value_hex \
         any
-    
+
     if [ $? -eq 0 ]; then
         echo "✅ $cmd"
     else
