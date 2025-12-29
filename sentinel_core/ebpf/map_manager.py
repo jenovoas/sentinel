@@ -31,7 +31,7 @@ class MapManager:
         padding = " 00" * (256 - current_len)
         full_hex_key = hex_key + padding
         
-        # Comando para actualizar el mapaPinned
+        # Comando para actualizar el mapa Pinned
         cmd = [
             "sudo", "bpftool", "map", "update", "pinned", self.map_path,
             "key", "hex", *full_hex_key.split(),
@@ -39,8 +39,10 @@ class MapManager:
         ]
         
         try:
-            subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL)
+            # print(f"DEBUG: Running cmd: {' '.join(cmd)}")
+            subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
             return True
         except subprocess.CalledProcessError as e:
-            print(f"❌ [MapManager] Error actualizando mapa: {e}")
+            error_msg = e.stderr.decode() if e.stderr else str(e)
+            print(f"❌ [MapManager] Error actualizando mapa para {filename}: {error_msg}")
             return False

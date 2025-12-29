@@ -6,7 +6,7 @@ BPF_FS_PATH = "/sys/fs/bpf/guardian_alpha"
 BPF_MAP_PATH = os.path.join(BPF_FS_PATH, "whitelist_map")
 
 # AI Configuration
-AI_MODEL_NAME = "phi3:mini"  # Ollama model name
+AI_MODEL_NAME = "llama3.2:3b"  # Switched to Llama 3.2 for better reasoning
 AI_CONFIDENCE_THRESHOLD = 0.8
 AI_LATENCY_SIMULATION = 0.0 # Remove artificial latency, use real inference time
 
