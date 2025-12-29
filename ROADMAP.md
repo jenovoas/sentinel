@@ -27,9 +27,10 @@ Desarrollar **Sentinel Cortex™**, una plataforma de observabilidad y seguridad
 - Automatización con n8n
 
 **Innovaciones Técnicas**:
-- **TruthSync POC**: 90.5x speedup (Rust + Python híbrido)
-  - 1.54M claims/segundo
-  - 0.36μs latencia
+- **TruthSync POC**: 323.8x speedup (Native Rust Edge)
+  - 10M+ req/s projected
+  - 0.09μs internal latency
+  - Port 8001 (Axum)
   - 99.9% cache hit rate
   
 - **AIOpsShield**: Defensa AIOpsDoom
@@ -57,8 +58,8 @@ Desarrollar **Sentinel Cortex™**, una plataforma de observabilidad y seguridad
 
 ### Fase 2: TruthSync Production 🚧 EN PROGRESO (Semanas 3-6)
 - [x] POC validado (90.5x speedup)
-- [ ] Migrar cache a Rust (proyectado 644x speedup)
-- [ ] Integración completa con Sentinel backend
+- [x] Migrar cache a Rust (✅ 323x speedup validado)
+- [x] Servidor Edge Axum (✅ puerto 8001)
 - [ ] Load testing en producción
 - [ ] Deployment Kubernetes
 
@@ -76,8 +77,8 @@ Desarrollar **Sentinel Cortex™**, una plataforma de observabilidad y seguridad
 - [x] Real AI Integration (Ollama + Llama 3.2 - 5/5 accuracy)
 - [x] Modular Architecture (sentinel_core package)
 - [x] E2E Integration Testing
-- [ ] Memory forensics (procfs)
-- [ ] Network packet analysis
+- [x] Memory forensics core (✅ Rust Rayon Scanner)
+- [/] Network packet analysis (eBPF XDP)
 - [ ] Encrypted Guardian channel (X25519+ChaCha20)
 
 ### Fase 5: Guardian-Beta™ (Semanas 15-18)

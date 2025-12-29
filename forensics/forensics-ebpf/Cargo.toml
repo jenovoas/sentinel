@@ -1,0 +1,16 @@
+[package]
+name = "forensics-ebpf"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+aya-ebpf = { git = "https://github.com/aya-rs/aya" }
+aya-log-ebpf = { git = "https://github.com/aya-rs/aya" }
+forensics-common = { path = "../forensics-common" }
+
+[lib]
+path = "src/main.rs"
+
+[[example]]
+name = "forensics"
+path = "src/main.rs"
