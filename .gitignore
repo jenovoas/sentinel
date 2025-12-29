@@ -99,3 +99,4 @@ target/
 # C/C++ Artifacts
 *.o
 attacher
+ebpf/benchmark_exec
