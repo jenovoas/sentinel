@@ -92,3 +92,10 @@ mensaje/
 *_NOTES.md
 *_DRAFT.md
 *_WIP.md
+
+# Rust
+target/
+
+# C/C++ Artifacts
+*.o
+attacher
