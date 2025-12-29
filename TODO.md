@@ -15,9 +15,9 @@
 ### 2. eBPF LSM Testing (Claim 3 - $8-15M)
 - [x] Compilado ✅
 - [x] Cargado en kernel ✅
-- [ ] Poblar whitelist
-- [ ] Probar intercepción
-- [ ] Medir overhead (<1ms)
+- [x] Poblar whitelist ✅
+- [x] Probar intercepción ✅
+- [x] Medir overhead (<1ms) ✅
 - [ ] Video demo
 
 ### 3. Gemini Integration

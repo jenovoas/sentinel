@@ -34,11 +34,29 @@ sleep 1
 mkdir -p /tmp/test_critical_data
 echo "test data" > /tmp/test_critical_data/important.txt
 
+# Create the "malicious" script dropped by the AI/Attacker
+MALICIOUS_SCRIPT="/tmp/ai_hallucinated_fix.sh"
+echo "#!/bin/bash" > $MALICIOUS_SCRIPT
+echo "echo 'Attacking...'" >> $MALICIOUS_SCRIPT
+echo "rm -rf /tmp/test_critical_data" >> $MALICIOUS_SCRIPT
+chmod +x $MALICIOUS_SCRIPT
+
 # Attempt to execute (will be blocked if eBPF is loaded)
-echo "🔥 Attempting: rm -rf /tmp/test_critical_data"
-rm -rf /tmp/test_critical_data 2>&1 | grep -q "Permission denied" && \
-    echo "✅ BLOCKED: Command intercepted at kernel level" || \
+echo "🔥 Attempting to execute unauthorized script: $MALICIOUS_SCRIPT"
+# We expect this to fail, so we disable set -e temporarily or catch it
+OUTPUT=$($MALICIOUS_SCRIPT 2>&1 || true)
+
+if echo "$OUTPUT" | grep -E -q "Permission denied|Permiso denegado"; then
+    echo "✅ BLOCKED: Unauthorized execution intercepted at kernel level"
+elif echo "$OUTPUT" | grep -q "Operation not permitted"; then
+     echo "✅ BLOCKED: Attempt intercepted (Operation not permitted)"
+else
     echo "⚠️  Command executed (eBPF not loaded or whitelist allows)"
+    echo "   Actual Output: $OUTPUT"
+fi
+
+# Cleanup
+rm -f $MALICIOUS_SCRIPT
 
 # Step 4: Show kernel logs
 echo ""
