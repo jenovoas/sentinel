@@ -6,9 +6,9 @@ BPF_FS_PATH = "/sys/fs/bpf/guardian_alpha"
 BPF_MAP_PATH = os.path.join(BPF_FS_PATH, "whitelist_map")
 
 # AI Settings
-AI_MODEL_NAME = "mock-model" # Can be changed to 'llama3' for real inference
+AI_MODEL_NAME = "phi3:mini" # REAL INTELLIGENCE
 AI_CONFIDENCE_THRESHOLD = 0.8
-AI_LATENCY_SIMULATION = 0.5 # Seconds
+AI_LATENCY_SIMULATION = 0.0 # Remove artificial latency, use real inference time
 
 # Buffer Settings
 BUFFER_BASE_LATENCY = 100.0 # ms
