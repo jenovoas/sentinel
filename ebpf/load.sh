@@ -4,7 +4,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROG="$SCRIPT_DIR/guardian_alpha_lsm.o"
+PROG="$SCRIPT_DIR/guardian_cognitive.o"
 BPF_DIR="/sys/fs/bpf/guardian_alpha"
 PIN="$BPF_DIR/guardian_prog"
 LINK_PIN="$BPF_DIR/guardian_link"
