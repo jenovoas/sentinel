@@ -1,46 +1,46 @@
 #!/bin/bash
 # Unload Guardian-Alpha LSM
 
-BOLD='\033[1m'
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
+set -e
 
-echo -e "${BOLD}Unloading Guardian-Alpha LSM...${NC}"
+BPF_DIR="/sys/fs/bpf/guardian_alpha"
 
-# Find Guardian programs
-PROG_IDS=$(sudo bpftool prog show | grep -A 1 "guardian" | grep -oP '^\d+' || true)
+echo "🛑 Unloading Guardian-Alpha LSM..."
 
-if [ -n "$PROG_IDS" ]; then
-    echo "Found Guardian programs: $PROG_IDS"
-    
-    # Try to unload each program
-    for ID in $PROG_IDS; do
-        echo "Attempting to unload program ID $ID..."
-        
-        # LSM programs cannot be unloaded while attached
-        # We can only remove the pinned reference
-        if [ -f /sys/fs/bpf/guardian_alpha_lsm ]; then
-            sudo rm -f /sys/fs/bpf/guardian_alpha_lsm
-            echo -e "${GREEN}✅ Removed pinned reference${NC}"
-        fi
-    done
-    
-    echo ""
-    echo -e "${YELLOW}⚠️  Note: LSM programs remain in kernel until reboot${NC}"
-    echo -e "${YELLOW}   This is normal eBPF LSM behavior for security${NC}"
-else
-    echo -e "${GREEN}✅ No Guardian programs found${NC}"
+# Check if Guardian is loaded
+if [ ! -d "$BPF_DIR" ]; then
+    echo "✅ Guardian-Alpha is not loaded"
+    exit 0
 fi
 
-# Final verification
+# Remove pinned link first (detach)
+if [ -f "$BPF_DIR/guardian_link" ]; then
+    echo "🔓 Detaching LSM link..."
+    sudo rm -f "$BPF_DIR/guardian_link"
+    echo "✅ LSM detached"
+fi
+
+# Remove all pinned objects
+echo "🧹 Removing pinned objects..."
+sudo rm -rf "$BPF_DIR"/*
+
+# Remove directory
+if [ -d "$BPF_DIR" ]; then
+    sudo rmdir "$BPF_DIR" 2>/dev/null || true
+fi
+
 echo ""
-if sudo bpftool prog show | grep -q guardian; then
-    echo -e "${YELLOW}📊 Guardian programs still in kernel (expected):${NC}"
-    sudo bpftool prog show | grep -A 3 guardian
-    echo ""
-    echo -e "${YELLOW}💡 To fully remove: reboot the system${NC}"
+echo "✅ Guardian-Alpha LSM unloaded successfully"
+echo ""
+echo "⚠️  Note: The eBPF program may remain in kernel memory until:"
+echo "   1. All references are released"
+echo "   2. System reboot (if still attached)"
+echo ""
+
+# Verify
+if sudo bpftool prog show | grep -q "guardian"; then
+    echo "📊 Guardian programs still in kernel:"
+    sudo bpftool prog show | grep -A 3 "guardian"
 else
-    echo -e "${GREEN}✅ Verified: No Guardian programs loaded${NC}"
+    echo "✅ No Guardian programs found in kernel"
 fi
