@@ -1,0 +1,9 @@
+[build]
+target = "bpfel-unknown-none"
+
+[target.bpfel-unknown-none]
+runner = "true"
+rustflags = ["-C", "linker=bpf-linker"]
+
+[unstable]
+build-std = ["core"]
