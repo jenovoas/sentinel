@@ -13,7 +13,14 @@ which bpftool && echo "✅ bpftool instalado" || echo "❌ bpftool NO instalado"
 
 echo ""
 echo "Instalando herramientas faltantes..."
-sudo pacman -S --needed clang llvm bpf libbpf bpftool
+echo ""
+echo "Instalando herramientas faltantes..."
+
+if [ -f /etc/debian_version ]; then
+    ./install_deps_debian.sh
+else
+    sudo pacman -S --needed clang llvm bpf libbpf bpftool
+fi
 
 echo ""
 echo "✅ Toolchain instalado"

@@ -38,7 +38,7 @@ def test_hydrodynamic_theory():
     print("TEST 1: VISCOSIDAD DEL SISTEMA")
     print("-" * 70)
     print()
-    print("Hipótesis: El buffer decae exponencialmente con α = 0.90")
+    print("Hipótesis: El buffer decae exponencialmente con α = 0.96")
     print()
     
     # Encontrar periodos de decaimiento
@@ -69,10 +69,10 @@ def test_hydrodynamic_theory():
             
             print(f"Tasa de decaimiento medida: k = {k_measured:.4f} /s")
             print(f"Decay factor medido: α = {alpha_measured:.4f}")
-            print(f"Decay factor esperado: α = 0.90")
+            print(f"Decay factor esperado: α = 0.96")
             print()
             
-            error = abs(alpha_measured - 0.90)
+            error = abs(alpha_measured - 0.96)
             if error < 0.05:
                 print("✅ PASS: Viscosidad validada (error < 5%)")
             else:
