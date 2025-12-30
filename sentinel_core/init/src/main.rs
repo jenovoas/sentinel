@@ -98,13 +98,34 @@ impl CognitiveDecider {
     }
 
     async fn report_threat(&self, pid: u32, score: f32, details: String) -> Result<(), Box<dyn Error>> {
-        let mut stream = UnixStream::connect(BRAIN_SOCKET).await?;
+        // VIRTIO-SERIAL UPDATE for QEMU Gap Bridging
+        // Instead of connecting to a socket (which doesn't exist in guest), we write to the virtio port
+        let device_path = "/dev/virtio-ports/org.sentinel.cortex";
         let report = ThreatReport { pid, score, details };
-        let req_json = serde_json::to_vec(&report)?;
+        let req_json = serde_json::to_string(&report)?; // to_string provides newline
         
-        stream.write_all(&req_json).await?;
-        stream.shutdown().await?; // Close for writing, but we don't expect a response for reports
-        Ok(())
+        // Use standard fs::OpenOptions for blocking write (simple & robust for init)
+        // In async context, we could use tokio::fs but blocking on a serial port write is acceptable here
+        // as reports are rare and critical events.
+        use std::fs::OpenOptions;
+        use std::io::Write;
+
+        match OpenOptions::new().write(true).open(device_path) {
+            Ok(mut file) => {
+                writeln!(file, "{}", req_json)?;
+                println!("[init] [BRIDGE] 🚀 Report EXFILTRATED via Quantum Tunnel (virtio-serial).");
+                Ok(())
+            },
+            Err(e) => {
+                // Fallback to old socket if device missing (e.g., bare metal)
+                 eprintln!("[init] [BRIDGE] ⚠️ Quantum Tunnel collapsed (virtio port missing): {}", e);
+                 // Try old socket just in case
+                 let mut stream = UnixStream::connect(BRAIN_SOCKET).await?;
+                 stream.write_all(req_json.as_bytes()).await?;
+                 stream.shutdown().await?;
+                 Ok(())
+            }
+        }
     }
 }
 #[tokio::main]
