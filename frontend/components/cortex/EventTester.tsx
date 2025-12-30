@@ -99,7 +99,8 @@ export default function EventTester() {
     const submitEvent = async (testEvent: TestEvent) => {
         setLoading(testEvent.name);
         try {
-            const response = await fetch('http://localhost:8000/api/v1/cortex/events', {
+            const baseUrl = typeof window !== 'undefined' ? '' : 'http://sentinel-vault-backend:8000';
+            const response = await fetch(`${baseUrl}/api/v1/cortex/events`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
