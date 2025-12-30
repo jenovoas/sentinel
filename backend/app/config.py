@@ -117,6 +117,7 @@ class Settings(BaseSettings):
         """Pydantic configuration for Settings."""
         env_file = ".env"
         case_sensitive = False
+        extra = "ignore"
 
 
 # Global settings instance (singleton pattern)
