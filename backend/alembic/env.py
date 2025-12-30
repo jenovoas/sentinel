@@ -14,7 +14,8 @@ config = context.config
 
 settings = get_settings()
 # Convert async URL to sync for migrations
-sync_url = settings.database_url.replace("postgresql+asyncpg://", "postgresql://")
+# Use psycopg (v3) instead of psycopg2
+sync_url = settings.database_url.replace("postgresql+asyncpg://", "postgresql+psycopg://")
 config.set_main_option("sqlalchemy.url", sync_url)
 
 # Interpret the config file for Python logging.

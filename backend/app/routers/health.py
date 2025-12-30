@@ -46,13 +46,26 @@ async def check_database() -> Dict[str, Any]:
     try:
         import os
         from time import time
+        from urllib.parse import urlparse
         
-        # Get DB config from environment
-        db_host = os.getenv("DATABASE_HOST", "postgres")
-        db_port = int(os.getenv("DATABASE_PORT", "5432"))
-        db_user = os.getenv("DATABASE_USER", "sentinel")
-        db_password = os.getenv("DATABASE_PASSWORD", "darkfenix")
-        db_name = os.getenv("DATABASE_NAME", "sentinel")
+        # Parse DATABASE_URL to get connection parameters
+        database_url = os.getenv(
+            "DATABASE_URL",
+            "postgresql+asyncpg://sentinel_user:sentinel_password@postgres:5432/sentinel_db"
+        )
+        
+        # Remove the asyncpg driver prefix if present
+        if database_url.startswith("postgresql+asyncpg://"):
+            database_url = database_url.replace("postgresql+asyncpg://", "postgresql://")
+        
+        # Parse URL
+        parsed = urlparse(database_url)
+        
+        db_user = parsed.username or "sentinel_user"
+        db_password = parsed.password or "sentinel_password"
+        db_host = parsed.hostname or "postgres"
+        db_port = parsed.port or 5432
+        db_name = parsed.path.lstrip("/") or "sentinel_db"
         
         start = time()
         
