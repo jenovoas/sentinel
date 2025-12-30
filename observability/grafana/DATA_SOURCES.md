@@ -41,7 +41,14 @@
 - Docker containers
 - Niveles: critical, error, warning, info, debug
 
-### 3. ✅ TestData
+### 3. ✅ PostgreSQL (Direct Forensic)
+- **Tipo**: postgres
+- **URL**: `postgres:5432`
+- **UID**: `postgres`
+- **Descripción**: Conexión directa a la base de datos `sentinel_staging` para consultas SQL complejas
+- **Uso**: Dashboards forenses (Kill Board) y tablas de incidentes ITIL
+
+### 4. ✅ TestData
 - **Tipo**: testdata
 - **UID**: `testdata`
 - **Descripción**: Fuente de datos de prueba para desarrollo de dashboards
