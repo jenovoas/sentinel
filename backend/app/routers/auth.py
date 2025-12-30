@@ -7,7 +7,7 @@ from app.services.user_service import authenticate_user
 from app.auth_utils import create_access_token
 from datetime import timedelta
 
-router = APIRouter()
+router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
 @router.post("/login", response_model=Token)
 def login_for_access_token(

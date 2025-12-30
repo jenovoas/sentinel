@@ -104,6 +104,15 @@ class Settings(BaseSettings):
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
     """Logging level (DEBUG/INFO/WARNING/ERROR/CRITICAL)."""
     
+    # ============================================================================
+    # TELEMETRY CONFIGURATION
+    # ============================================================================
+    internal_telemetry_token: str = os.getenv(
+        "INTERNAL_TELEMETRY_TOKEN", 
+        "sentinel-internal-ebpf-key-2025"
+    )
+    """Secret token for validating telemetry source (Guardian Alpha)."""
+    
     class Config:
         """Pydantic configuration for Settings."""
         env_file = ".env"

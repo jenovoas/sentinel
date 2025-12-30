@@ -61,6 +61,13 @@ export function Navigation() {
             description: "Decision Engine",
         },
         {
+            label: "Gamma",
+            href: "/gamma",
+            icon: "⚖️",
+            badge: "HITL",
+            description: "Human validation",
+        },
+        {
             label: "Metrics",
             href: "/metrics",
             icon: "📈",
