@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: truthsync-edge
+  labels:
+    app: sentinel
+    component: truthsync-edge
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sentinel
+      component: truthsync-edge
+  template:
+    metadata:
+      labels:
+        app: sentinel
+        component: truthsync-edge
+    spec:
+      containers:
+      - name: truthsync-edge
+        image: sentinel-truthsync-edge:latest
+        ports:
+        - containerPort: 8001
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+          requests:
+            cpu: "250m"
+            memory: "128Mi"
+        healthCheck:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: truthsync-edge-service
+spec:
+  selector:
+    app: sentinel
+    component: truthsync-edge
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8001
+  type: ClusterIP

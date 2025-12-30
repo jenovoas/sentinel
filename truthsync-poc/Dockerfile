@@ -1,48 +1,28 @@
-# Dockerfile for TruthSync Production
-# Using Debian stable minimal as per Sentinel architecture
-FROM rust:1.75-bookworm as rust-builder
+# Dockerfile for TruthSync Production (Optimized Rust Edge)
+FROM rust:1.75-bookworm as builder
 
 WORKDIR /app
-
-# Copy Rust source
-COPY Cargo.toml ./
-COPY src/ ./src/
-COPY benches/ ./benches/
+COPY . .
 
 # Build release binary
-RUN cargo build --release
+RUN cargo build --release --manifest-path truthsync-poc/Cargo.toml
 
-# Python runtime stage - Debian stable minimal
-FROM python:3.11-slim-bookworm
+# Minimal runtime image
+FROM debian:bookworm-slim
 
 WORKDIR /app
 
-# Install system dependencies
+# Install runtime dependencies (OpenSSL might be needed by some crates)
 RUN apt-get update && apt-get install -y \
-    libssl-dev \
+    ca-certificates \
+    libssl3 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy Rust library
-COPY --from=rust-builder /app/target/release/libtruthsync_core.so /usr/local/lib/
-COPY --from=rust-builder /app/target/release/truthsync_core /usr/local/bin/
+# Copy the binary from the builder stage
+COPY --from=builder /app/truthsync-poc/target/release/truthsync_core /usr/local/bin/truthsync-edge
 
-# Copy Python code
-COPY *.py ./
+# Expose the Axum server port
+EXPOSE 8001
 
-# Install Python dependencies
-RUN pip install --no-cache-dir \
-    prometheus-client \
-    asyncio
-
-# Set library path
-ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-
-# Expose metrics port
-EXPOSE 9090
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD python -c "import truthsync_buffer; print('OK')" || exit 1
-
-# Run application
-CMD ["python", "truthsync_server.py"]
+# Run the server
+CMD ["truthsync-edge"]

@@ -2,7 +2,7 @@
 
 **Versión**: 1.0  
 **Última actualización**: Diciembre 2024  
-**Propósito**: Transparencia para evaluadores ANID y comunidad
+**Propósito**: Transparencia para evaluadores y comunidad
 
 ---
 
@@ -240,7 +240,7 @@ Desarrollar **Sentinel Cortex™**, una plataforma de observabilidad y seguridad
 - Validación en infraestructura crítica
 - Contribuciones open source
 
-### Para Evaluadores ANID
+### Para Evaluadores
 Este roadmap demuestra:
 - ✅ Visión técnica clara y ambiciosa
 - ✅ Innovaciones con aplicación estratégica
