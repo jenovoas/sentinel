@@ -56,6 +56,8 @@ class CortexDecisionEngine:
         self.db = db
         self.pattern_detector = PatternDetector(db)
         self.confidence_scorer = ConfidenceScorer()
+        self.guardian_heartbeats = {"guardian_alpha": time.time(), "guardian_beta": time.time()} # Simulación multi-guardián
+        self.autoinmune_mode = False
     
     @track_time(CORTEX_PROCESSING_TIME)
     async def process_event(self, event_data: Dict[str, Any]) -> CortexDecision:
@@ -396,10 +398,24 @@ class CortexDecisionEngine:
             "total_decisions": sum(s["count"] for s in stats_by_type.values())
         }
 
+    def detect_guardian_failure(self) -> str:
+        """
+        Detección de "Ceguera de Guardianes" (Chaos Engineering).
+        Si un Guardián no reporta latido en > 500ms, se activa el Fail-Closed.
+        """
+        now = time.time()
+        for guardian, last_beat in self.guardian_heartbeats.items():
+            if now - last_beat > 0.5: # 500ms de gracia
+                self.autoinmune_mode = True
+                return guardian
+        return None
+
     def _is_ring_overloaded(self) -> bool:
         """
         Detecta si el sistema de telemetría está bajo un ataque de inundación.
         (Mecánica simulada para el Hackathon Global).
         """
-        # En una situación real, consultaríamos estadísticas de eBPF
+        # Si estamos en modo autoinmune por fallo de guardian, forzar alerta
+        if self.autoinmune_mode:
+            return True
         return False # Cambiar a True manualmente durante PoC
