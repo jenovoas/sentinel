@@ -40,6 +40,13 @@ export function Navigation() {
             description: "Executive overview",
         },
         {
+            label: "Dash Op",
+            href: "/dash-op",
+            icon: "⚙️",
+            badge: "OPS",
+            description: "Operations Panel",
+        },
+        {
             label: "AI Playground",
             href: "/ai/playground",
             icon: "🤖",
@@ -73,6 +80,7 @@ export function Navigation() {
             icon: "📈",
             description: "Grafana dashboards",
         },
+
         {
             label: "Analytics",
             href: "/analytics",
