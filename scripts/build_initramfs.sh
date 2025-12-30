@@ -44,7 +44,13 @@ else
     echo "Warning: Busybox not found. Debug shell won't be available."
 fi
 
-# 4. Copy eBPF objects (Init system expects them at relative paths)
+# 4. Copy the Attack PoC (static C binary)
+if [ -f "$PROJECT_ROOT/scripts/attack_poc" ]; then
+    cp "$PROJECT_ROOT/scripts/attack_poc" "$BUILD_DIR/bin/attack_poc"
+    chmod +x "$BUILD_DIR/bin/attack_poc"
+fi
+
+# 5. Copy eBPF objects (Init system expects them at relative paths)
 # We recreate the path structure expected by the Rust binary: ../../../ebpf/...
 mkdir -p "$BUILD_DIR/ebpf"
 cp "$EBPF_OBJ" "$BUILD_DIR/ebpf/init_kprobe.o"
