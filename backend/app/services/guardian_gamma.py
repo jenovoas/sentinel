@@ -266,6 +266,31 @@ class GuardianGammaService:
         
         return result.rowcount
 
+    async def get_decision(self, decision_id: int) -> Optional[GammaDecision]:
+        """
+        Get a specific decision by ID.
+        """
+        query = select(GammaDecision).where(GammaDecision.id == decision_id)
+        result = await self.db.execute(query)
+        return result.scalar_one_or_none()
+    
+    async def submit_human_verdict(
+        self,
+        decision_id: int,
+        verdict: DecisionType,
+        user_id: str,
+        notes: str = ""
+    ) -> Optional[GammaDecision]:
+        """
+        Submit a human verdict (Approve/Deny wrapper).
+        """
+        if verdict == DecisionType.ALLOW:
+            await self.approve_decision(decision_id, feedback=notes)
+        else:
+            await self.deny_decision(decision_id, feedback=notes)
+            
+        return await self.get_decision(decision_id)
+
 
 async def get_gamma_service(db: AsyncSession = None) -> GuardianGammaService:
     """Get Guardian Gamma service instance"""
