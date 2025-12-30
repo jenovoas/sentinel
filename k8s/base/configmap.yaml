@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sentinel-config
+  namespace: sentinel-system
+data:
+  # Internal Cluster DNS names
+  DATABASE_URL: "postgresql+asyncpg://sentinel_user:$(POSTGRES_PASSWORD)@sentinel-postgres-0.sentinel-postgres.sentinel-system.svc.cluster.local:5432/sentinel_db"
+  REDIS_URL: "redis://sentinel-redis-0.sentinel-redis.sentinel-system.svc.cluster.local:6379/0"
+  NEXT_PUBLIC_API_URL: "http://api.sentinel.local"
+  LOG_LEVEL: "INFO"

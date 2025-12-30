@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentinel-frontend
+  namespace: sentinel-system
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sentinel-frontend
+  template:
+    metadata:
+      labels:
+        app: sentinel-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: sentinel-frontend:latest # Placeholder
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NEXT_PUBLIC_API_URL
+          valueFrom:
+            configMapKeyRef:
+              name: sentinel-config
+              key: NEXT_PUBLIC_API_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sentinel-frontend
+  namespace: sentinel-system
+spec:
+  ports:
+  - port: 80
+    targetPort: 3000
+  selector:
+    app: sentinel-frontend
+  type: LoadBalancer
