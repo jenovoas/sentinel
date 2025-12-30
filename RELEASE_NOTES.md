@@ -1,11 +1,11 @@
-# Release Notes - Sentinel Cortex v4.0.0 "Antigravity"
+# Release Notes - Sentinel Cortex v1.0.0 "Antigravity"
 
 **Codename**: Antigravity  
 **Date**: December 30, 2025  
 **Type**: Major Release  
 
 ## 🚀 Overview
-Version 4.0.0 marks the final evolution of the Sentinel Cortex platform into a **Quantum-Ready Cognitive Operating System**. This release introduces military-grade security features including Post-Quantum Cryptography for internal communications, a Dual-Guardian reliability system, and automated Neural Reflexes for instant threat containment.
+Version 1.0.0 marks the initial release of the Sentinel Cortex platform as a **Quantum-Ready Cognitive Operating System**. This release introduces military-grade security features including Post-Quantum Cryptography for internal communications, a Dual-Guardian reliability system, and automated Neural Reflexes for instant threat containment.
 
 ## ✨ New Features
 
