@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # PostgreSQL Database
   postgres:
@@ -50,7 +48,7 @@ services:
       - vault_data:/app/storage
     environment:
       - PYTHONUNBUFFERED=1
-      - DATABASE_URL=postgresql+asyncpg://sentinel_user:darkfenix@postgres:5432/sentinel_db
+      - DATABASE_URL=postgresql+asyncpg://sentinel_user:${POSTGRES_PASSWORD:-darkfenix}@postgres:5432/sentinel_db
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       postgres:
@@ -70,7 +68,7 @@ services:
   # Frontend
   frontend:
     build:
-      context: ./frontend/poc
+      context: ./frontend
       dockerfile: Dockerfile
     container_name: sentinel-vault-frontend
     ports:
