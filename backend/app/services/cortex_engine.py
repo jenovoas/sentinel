@@ -21,8 +21,21 @@ from app.models.cortex_decision import CortexDecision
 from app.models.security_pattern import SecurityPattern
 from app.services.pattern_detector import PatternDetector
 from app.services.confidence_scorer import ConfidenceScorer
+from app.services.metrics_service import (
+    CORTEX_PROCESSING_TIME,
+    CORTEX_PATTERNS_TOTAL,
+    CORTEX_DECISIONS_TOTAL,
+    CORTEX_ERRORS_TOTAL,
+    track_time
+)
 
 logger = logging.getLogger(__name__)
+
+# Umbral máximo de tiempo de procesamiento permitido antes de Fail-Closed (TOCTOU Defense)
+MAX_SAFE_PROCESS_TIME_MS = 100.0
+
+# Umbral de eventos por segundo para detectar inundación (Ring Wrap-around Defense)
+MAX_EVENTS_PER_SECOND = 100
 
 
 class CortexDecisionEngine:
@@ -44,75 +57,86 @@ class CortexDecisionEngine:
         self.pattern_detector = PatternDetector(db)
         self.confidence_scorer = ConfidenceScorer()
     
+    @track_time(CORTEX_PROCESSING_TIME)
     async def process_event(self, event_data: Dict[str, Any]) -> CortexDecision:
         """
-        Process a security event and make a decision
-        
-        Pipeline:
-        1. Validate event
-        2. Enrich with context
-        3. Detect patterns
-        4. Calculate confidence
-        5. Make decision
-        6. Save to database
-        7. Escalate if needed
-        
-        Args:
-            event_data: Event data dictionary
-        
-        Returns:
-            CortexDecision object
+        Procesa un evento de seguridad y toma una decisión inteligente.
         """
-        start_time = time()
+        start_time_total = time()
         
         try:
-            # Step 1: Validate and enrich event
+            # MECANISMO DE INTEGRIDAD DE VERDAD (Ring Wrap-around Defense)
+            # Monitorear la tasa de eventos para detectar inundaciones que oculten exploits
+            # (Simulado: en prod esto leería flags de overflow del ring buffer eBPF)
+            if self._is_ring_overloaded():
+                logger.error("🛑 TRUTH INCONSISTENCY: Posible Ring Buffer Wrap-around detectado. Datos comprometidos.")
+                event_data["risk_score"] = 1.0
+                event_data["truth_compromised"] = True
+            
+            # Paso 1: Validar y enriquecer evento
             enriched_event = await self._enrich_event(event_data)
             
-            # Step 2: Save event to database
+            # Paso 2: Guardar evento en la DB
             db_event = await self._save_event(enriched_event)
             
-            # Step 3: Detect patterns
-            patterns = await self.pattern_detector.detect(enriched_event)
+            # Paso 3: Detectar patrones (ahora devuelve objetos SecurityPattern)
+            detected_patterns = await self.pattern_detector.detect(enriched_event)
+            pattern_names = [p.name for p in detected_patterns]
             
-            # Step 4: Calculate confidence
-            confidence = await self.confidence_scorer.score(enriched_event, patterns)
+            # Registrar métricas de patrones detectados
+            for p in detected_patterns:
+                CORTEX_PATTERNS_TOTAL.labels(
+                    pattern_type=p.name,
+                    severity=p.severity
+                ).inc()
             
-            # Step 5: Make decision
+            # Paso 4: Calcular confianza
+            confidence = await self.confidence_scorer.score(enriched_event, pattern_names)
+            
+            # Paso 5: Tomar decisión
             decision_type = self.confidence_scorer.get_decision_type(confidence)
             reasoning = self.confidence_scorer.generate_reasoning(
-                enriched_event, patterns, confidence
+                enriched_event, pattern_names, confidence
             )
             
-            # Step 6: Calculate processing time
-            processing_time = (time() - start_time) * 1000  # Convert to ms
+            # Registrar métrica de decisión
+            CORTEX_DECISIONS_TOTAL.labels(decision_type=decision_type).inc()
             
-            # Step 7: Create decision
+            # Paso 6: Calcular tiempo de procesamiento real
+            p_time_ms = (time() - start_time_total) * 1000
+            
+            # MECANISMO FAIL-CLOSED (Defensa TOCTOU)
+            # Si el procesamiento ha sido demasiado lento, bloqueamos preventivamente
+            if p_time_ms > MAX_SAFE_PROCESS_TIME_MS:
+                logger.warning(f"⚠️ FAIL-CLOSED ACTIVADO: Procesamiento lento ({p_time_ms:.1f}ms > {MAX_SAFE_PROCESS_TIME_MS}ms). Bloqueo preventivo.")
+                decision_type = "block"
+                reasoning = f"SEC_FAIL_CLOSED - Processing latency ({p_time_ms:.1f}ms) exceeded safety threshold to prevent TOCTOU attack."
+            
+            # Paso 7: Crear objeto de decisión
             decision = CortexDecision(
                 event_id=db_event.id,
                 decision_type=decision_type,
                 confidence=confidence,
-                patterns_detected=patterns,
+                patterns_detected=pattern_names,
                 reasoning=reasoning,
-                processing_time_ms=processing_time
+                processing_time_ms=p_time_ms
             )
             
             self.db.add(decision)
             await self.db.commit()
             await self.db.refresh(decision)
             
-            logger.info(
-                f"✅ Decision made: {decision_type} "
-                f"(confidence: {confidence:.3f}, "
-                f"patterns: {len(patterns)}, "
-                f"time: {processing_time:.2f}ms)"
-            )
-            
-            # Step 8: Escalate to Guardian Gamma if needed
+            # Paso 8: Escalar a Guardian Gamma si es necesario
             if decision_type == "escalate":
                 await self._escalate_to_gamma(decision, enriched_event)
             
             return decision
+            
+        except Exception as e:
+            CORTEX_ERRORS_TOTAL.labels(error_type=type(e).__name__).inc()
+            logger.error(f"❌ Error procesando evento en Cortex: {e}", exc_info=True)
+            await self.db.rollback()
+            raise
             
         except Exception as e:
             logger.error(f"❌ Error processing event: {e}", exc_info=True)
@@ -199,7 +223,7 @@ class CortexDecisionEngine:
             # Map decision to Gamma decision type
             decision_type_map = {
                 "block": DecisionType.BINARY_BLOCK,
-                "escalate": DecisionType.NETWORK_BLOCK,
+                "escalate": DecisionType.ESCALATED,
                 "allow": DecisionType.ALLOW
             }
             
@@ -371,3 +395,11 @@ class CortexDecisionEngine:
             "decisions_by_type": stats_by_type,
             "total_decisions": sum(s["count"] for s in stats_by_type.values())
         }
+
+    def _is_ring_overloaded(self) -> bool:
+        """
+        Detecta si el sistema de telemetría está bajo un ataque de inundación.
+        (Mecánica simulada para el Hackathon Global).
+        """
+        # En una situación real, consultaríamos estadísticas de eBPF
+        return False # Cambiar a True manualmente durante PoC
