@@ -51,10 +51,12 @@ export default function CortexDashboard() {
 
     const fetchData = async () => {
         try {
+            // Use relative URLs - Next.js will proxy to backend
+            const baseUrl = typeof window !== 'undefined' ? '' : 'http://sentinel-vault-backend:8000';
             const [patternsRes, decisionsRes, statsRes] = await Promise.all([
-                fetch('http://localhost:8000/api/v1/cortex/patterns'),
-                fetch('http://localhost:8000/api/v1/cortex/decisions?limit=10'),
-                fetch('http://localhost:8000/api/v1/cortex/stats?hours=24'),
+                fetch(`${baseUrl}/api/v1/cortex/patterns`),
+                fetch(`${baseUrl}/api/v1/cortex/decisions?limit=10`),
+                fetch(`${baseUrl}/api/v1/cortex/stats?hours=24`),
             ]);
 
             const patternsData = await patternsRes.json();
