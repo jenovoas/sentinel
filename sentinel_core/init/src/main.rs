@@ -46,6 +46,11 @@ struct BrainResponse {
     block_ip: Option<String>,
 }
 
+#[derive(Serialize)]
+struct Heartbeat {
+    hb: u64,
+}
+
 struct NetworkGuardian {
     ebpf: Arc<Mutex<Ebpf>>,
 }
@@ -244,6 +249,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
         tokio::spawn(async move {
             run_serial_monitor(g_listener).await;
         });
+
+        // Start Heartbeat Emitter (Dead Man's Switch) - only if we have a guardian/network up? 
+        // Or always? Always is safer for Kernel integrity.
+        tokio::spawn(async move {
+            start_heartbeat_loop().await; 
+        });
     }
 
     // Run Main Loop (Unified)
@@ -258,7 +269,41 @@ async fn load_kprobe() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+
+async fn start_heartbeat_loop() {
+    println!("[init] [HEARTBEAT] Starting Dead Man's Switch Pulse...");
+    let device_path = "/dev/ttyS1";
+    use std::time::{SystemTime, UNIX_EPOCH};
+    use tokio::fs::OpenOptions; // Use async open options
+    use tokio::io::AsyncWriteExt;
+
+    // Use async file IO
+    let mut file = match OpenOptions::new().write(true).open(device_path).await {
+        Ok(f) => f,
+        Err(e) => {
+             eprintln!("[init] [HEARTBEAT] Failed to open UART: {}", e);
+             return;
+        }
+    };
+
+    loop {
+        let start = SystemTime::now();
+        let since_the_epoch = start.duration_since(UNIX_EPOCH).unwrap_or(Duration::from_secs(0));
+        let hb = Heartbeat { hb: since_the_epoch.as_millis() as u64 };
+        
+        if let Ok(json) = serde_json::to_string(&hb) {
+            // Write JSON + newline
+            if let Err(e) = file.write_all(format!("{}\n", json).as_bytes()).await {
+                 eprintln!("[init] [HEARTBEAT] Write failed: {}", e);
+                 // Try to re-open? For now, just log.
+            }
+        }
+        sleep(Duration::from_millis(50)).await;
+    }
+}
+
 async fn run_serial_monitor(guardian: Arc<NetworkGuardian>) {
+// ...
         println!("[init] [IPC] Starting Serial Monitor on /dev/ttyS1...");
         let device_path = "/dev/ttyS1";
         use tokio::io::{AsyncBufReadExt, BufReader};
