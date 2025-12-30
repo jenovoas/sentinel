@@ -15,12 +15,27 @@ struct {
   __uint(value_size, sizeof(u32));
 } suspicious_events SEC(".maps");
 
+struct {
+  __uint(type, BPF_MAP_TYPE_HASH);
+  __uint(max_entries, 1024);
+  __uint(key_size, sizeof(u32));
+  __uint(value_size, sizeof(u8));
+} freeze_commands SEC(".maps");
+
 SEC("tracepoint/syscalls/sys_exit_execve")
 int trace_exit_execve(struct trace_event_raw_sys_exit *ctx) {
   if (ctx->ret != 0)
     return 0; // Ignore failed execve calls
 
   u32 pid = bpf_get_current_pid_tgid() >> 32;
+
+  // Check if this PID is marked for freezing
+  u8 *should_freeze = bpf_map_lookup_elem(&freeze_commands, &pid);
+  if (should_freeze) {
+    bpf_send_signal(19); // SIGSTOP (19 is SIGSTOP on x86_64)
+    return 0;
+  }
+
   u64 ts = bpf_ktime_get_ns();
 
   struct event_t event = {.pid = pid, .ts = ts, ._pad = 0};
