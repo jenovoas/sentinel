@@ -113,6 +113,31 @@ services:
     networks:
       - sentinel-net
 
+  # Loki - Log Aggregation
+  loki:
+    image: grafana/loki:latest
+    container_name: sentinel-loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./configs/loki-config.yaml:/etc/loki/local-config.yaml
+    networks:
+      - sentinel-net
+
+  # Promtail - Log Shipping
+  promtail:
+    image: grafana/promtail:latest
+    container_name: sentinel-promtail
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./configs/promtail-config.yaml:/etc/promtail/config.yaml
+    command: -config.file=/etc/promtail/config.yaml
+    depends_on:
+      - loki
+    networks:
+      - sentinel-net
+
 networks:
   sentinel-net:
     driver: bridge
