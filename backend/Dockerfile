@@ -13,20 +13,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements
-COPY backend/requirements.txt .
+COPY requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY backend/app/ ./app/
+COPY app/ ./app/
 
 # Copy Alembic migrations
-COPY backend/alembic.ini ./alembic.ini
-COPY backend/alembic ./alembic/
+COPY alembic.ini ./alembic.ini
+COPY alembic ./alembic/
 
-# Copy entrypoint script
-COPY backend/entrypoint.sh /entrypoint.sh
+COPY entrypoint.sh /entrypoint.sh
 RUN chmod 755 /entrypoint.sh
 
 # Create logs directory

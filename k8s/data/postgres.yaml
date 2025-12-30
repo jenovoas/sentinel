@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sentinel-postgres
+  namespace: sentinel-system
+spec:
+  serviceName: "sentinel-postgres"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sentinel-postgres
+  template:
+    metadata:
+      labels:
+        app: sentinel-postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          value: "sentinel_user"
+        - name: POSTGRES_DB
+          value: "sentinel_db"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: sentinel-secrets
+              key: POSTGRES_PASSWORD
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sentinel-postgres
+  namespace: sentinel-system
+spec:
+  ports:
+  - port: 5432
+  clusterIP: None
+  selector:
+    app: sentinel-postgres
