@@ -1,7 +1,7 @@
 # RESUMEN TÉCNICO EJECUTIVO: Sentinel Cortex™
 
 **Preparado para**: CISO / Inversores Estratégicos
-**Clasifición**: Confidencial - Propiedad Intelectual Propietaria ($1.285B IP)
+**Clasifición**: Confidencial - Propiedad Intelectual Propietaria ($1.335B IP)
 
 ## 🎯 La Propuesta de Valor
 Sentinel Cortex™ representa el fin de la era de los drivers de kernel inseguros. Al mover la lógica de seguridad a **eBPF LSM** y **XDP**, Sentinel ofrece una "Inmunidad Matemática" que las soluciones tradicionales (CrowdStrike, SentinelOne) no pueden igualar.
