@@ -57,5 +57,19 @@ El filtrado a **15.4M PPS** garantiza que el sistema mantiene su disponibilidad 
 ## 8. Conclusión
 Sentinel Cortex ha trascendido su propósito inicial. No es solo un producto de seguridad; es un **Estándar Tecnológico** de Inmunidad Computacional. Al combinar la verificación matemática de eBPF con la integridad física del hardware, hemos definido el futuro de la computación segura e inmutable.
 
+
+---
+
+## 9. Referencias y Bibliografía
+
+Para un desglose detallado de las 47 fuentes técnicas (IEEE/APA) y la investigación de base sobre eBPF/XDP, consulte:
+
+👉 [**Bibliografía Técnica Completa (REFERENCES.md)**](../REFERENCES.md)
+
+**Fuentes Clave:**
+- [1] He et al., "Cross Container Attacks," USENIX Security '23.
+- [9] Linux Kernel Docs, "eBPF Verifier v6.5".
+- [47] Sentinel Team, "BENCHMARK_SUITE_v1.0".
+
 ---
 **Clasificación: INVESTIGACIÓN ORIGINAL / PROPIEDAD INTELECTUAL**
