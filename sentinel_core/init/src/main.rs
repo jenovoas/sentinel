@@ -1,4 +1,5 @@
 // sentinel_core/init/src/main.rs
+mod forensics;
 
 use aya::programs::KProbe;
 use aya::{Ebpf, include_bytes_aligned};
@@ -17,6 +18,7 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::UnixStream;
 use tokio::signal::unix::{signal, SignalKind};
 use tokio::time::{sleep, Duration};
+use crate::forensics::MemoryScanner;
 
 // Placeholder: load eBPF object compiled separately (e.g., init_kprobe.o)
 const BPF_OBJECT: &[u8] = include_bytes_aligned!("../../../ebpf/init_kprobe.o");
@@ -111,16 +113,18 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // 3. Load eBPF or enter Fallback Mode
     let decider = Arc::new(CognitiveDecider::new());
-    if let Err(e) = load_and_run(decider.clone()).await {
+    let hunter = Arc::new(MemoryScanner::new());
+
+    if let Err(e) = load_and_run(decider.clone(), hunter.clone()).await {
         eprintln!("[init] Cog-Loop Error: {}", e);
         eprintln!("[init] eBPF unavailable. Entering Heuristic Fallback Mode...");
-        fallback_run(decider).await?;
+        fallback_run(decider, hunter).await?;
     }
 
     Ok(())
 }
 
-async fn fallback_run(decider: Arc<CognitiveDecider>) -> Result<(), Box<dyn Error>> {
+async fn fallback_run(decider: Arc<CognitiveDecider>, hunter: Arc<MemoryScanner>) -> Result<(), Box<dyn Error>> {
     println!("[init] Sentinel Heuristic-Loop active. Supervising scans...");
 
     let mut sigint = signal(SignalKind::interrupt())?;
@@ -140,11 +144,27 @@ async fn fallback_run(decider: Arc<CognitiveDecider>) -> Result<(), Box<dyn Erro
                 reap_zombies();
                 if let Ok(pids) = scan_cgroups() {
                     for pid in pids {
-                        let risk = decider.check_risk(pid).await;
-                        if risk > 0.9 {
-                            let _ = kill(Pid::from_raw(pid as i32), Signal::SIGKILL);
-                            println!("[init] 🚫 (Fallback) KILLED PID {} due to risk ({:.2})", pid, risk);
-                        }
+                        let d_inner = decider.clone();
+                        let h_inner = hunter.clone();
+                        
+                        tokio::spawn(async move {
+                            // 1. Cognitive Risk Scan
+                            let risk = d_inner.check_risk(pid).await;
+                            
+                            // 2. Proactive Memory Hunt (The Hunter)
+                            if let Ok(result) = h_inner.hunt_pid(pid) {
+                                if result.score >= 1.0 {
+                                    println!("[init] [HUNTER] THREAT: PID {} score={:.1}", pid, result.score);
+                                    let _ = kill(Pid::from_raw(pid as i32), Signal::SIGKILL);
+                                    return;
+                                }
+                            }
+
+                            if risk > 0.9 {
+                                let _ = kill(Pid::from_raw(pid as i32), Signal::SIGKILL);
+                                println!("[init] 🚫 (Fallback) KILLED PID {} due to risk ({:.2})", pid, risk);
+                            }
+                        });
                     }
                 }
             }
@@ -153,7 +173,7 @@ async fn fallback_run(decider: Arc<CognitiveDecider>) -> Result<(), Box<dyn Erro
     Ok(())
 }
 
-async fn load_and_run(decider: Arc<CognitiveDecider>) -> Result<(), Box<dyn Error>> {
+async fn load_and_run(decider: Arc<CognitiveDecider>, hunter: Arc<MemoryScanner>) -> Result<(), Box<dyn Error>> {
     // Load eBPF program
     let mut ebpf = Ebpf::load(BPF_OBJECT)?;
     let program: &mut KProbe = ebpf.program_mut("sentinel_init").ok_or("program sentinel_init not found")?.try_into()?;
@@ -181,17 +201,30 @@ async fn load_and_run(decider: Arc<CognitiveDecider>) -> Result<(), Box<dyn Erro
                 reap_zombies();
 
                 // Scan cgroup processes
-                match scan_cgroups() {
-                    Ok(pids) => {
-                        for pid in pids {
-                            let risk = decider.check_risk(pid).await;
+                if let Ok(pids) = scan_cgroups() {
+                    for pid in pids {
+                        let d_inner = decider.clone();
+                        let h_inner = hunter.clone();
+                        
+                        tokio::spawn(async move {
+                            // 1. Cognitive Risk
+                            let risk = d_inner.check_risk(pid).await;
+                            
+                            // 2. Memory Hunt
+                            if let Ok(hunt) = h_inner.hunt_pid(pid) {
+                                if hunt.score >= 1.0 {
+                                    println!("[init] [HUNTER] 🏹 TERMINATED MALICIOUS PID {} (Score: {:.1})", pid, hunt.score);
+                                    let _ = kill(Pid::from_raw(pid as i32), Signal::SIGKILL);
+                                    return;
+                                }
+                            }
+
                             if risk > 0.9 {
                                 let _ = kill(Pid::from_raw(pid as i32), Signal::SIGKILL);
-                                println!("[init] 🚫 KILLED PID {} due to high cognitive risk ({:.2})", pid, risk);
+                                println!("[init] 🚫 Cog-Loop KILLED PID {} due to high cognitive risk ({:.2})", pid, risk);
                             }
-                        }
+                        });
                     }
-                    Err(e) => eprintln!("[init] Error scanning cgroups: {}", e),
                 }
             }
         }
