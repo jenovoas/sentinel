@@ -132,6 +132,30 @@ class CortexDecisionEngine:
             if decision_type == "escalate":
                 await self._escalate_to_gamma(decision, enriched_event)
             
+            # BROADCAST REAL-TIME EVENT (Battlefield UI)
+            # Enviar el evento y decisión al sistema de visualización vía WebSocket
+            try:
+                from app.managers.connection_manager import manager
+                import json
+                
+                # Serializar para el frontend
+                ws_message = {
+                    "type": "decision",
+                    "data": {
+                        "id": decision.id,
+                        "decision_type": decision.decision_type,
+                        "confidence": decision.confidence,
+                        "patterns": decision.patterns_detected,
+                        "process": enriched_event.get("process_name"),
+                        "timestamp": enriched_event.get("timestamp"),
+                        "latency_ms": p_time_ms
+                    }
+                }
+                await manager.broadcast(json.dumps(ws_message))
+            except Exception as e:
+                logger.error(f"⚠️ Failed to broadcast WebSocket event: {e}")
+                # No fallar el procesamiento principal por error de UI
+
             return decision
             
         except Exception as e:

@@ -37,36 +37,31 @@ class PatternDetector:
         self._patterns_cache = {p.name: p for p in patterns}
         logger.info(f"Loaded {len(self._patterns_cache)} active security patterns")
     
-    async def detect(self, event: Dict[str, Any]) -> List[str]:
+    async def detect(self, event: Dict[str, Any]) -> List[SecurityPattern]:
         """
-        Detect patterns in an event
+        Detecta patrones de seguridad en un evento.
         
         Args:
-            event: Event data dictionary with fields like:
-                - event_type: 'syscall', 'network', 'memory', 'file'
-                - syscall: syscall name (if event_type == 'syscall')
-                - process_path: path to binary
-                - user: username
-                - uid: user ID
-                - etc.
+            event: Diccionario con los datos del evento.
         
         Returns:
-            List of detected pattern names
+            Lista de objetos SecurityPattern detectados.
         """
         if not self._patterns_cache:
             await self.load_patterns()
         
         detected = []
         
-        # Check each pattern
+        # Comprobar cada patrón
         for pattern_name, pattern in self._patterns_cache.items():
             if await self._check_pattern(event, pattern):
-                detected.append(pattern_name)
-                # Update detection count
+                detected.append(pattern)
+                # Actualizar contador de detección
                 pattern.detection_count += 1
         
         if detected:
-            logger.info(f"Detected patterns: {detected} in event type {event.get('event_type')}")
+            names = [p.name for p in detected]
+            logger.info(f"Patrones detectados: {names} en evento de tipo {event.get('event_type')}")
         
         return detected
     
