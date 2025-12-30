@@ -21,6 +21,7 @@ except ImportError:
     import tiny_crypto
 
 SOCKET_PATH = "/tmp/sentinel_cortex.sock"
+# SOCKET_PATH = "/tmp/sentinel_spy.sock" # Blackbox Test Mode
 DB_PATH = "/home/jnovoas/sentinel/forensics/evidence.db"
 
 class CortexBridge:
@@ -88,7 +89,7 @@ class CortexBridge:
                     os._exit(1)
                 
                 # Debug Raw Data
-                # print(f"BYTE DUMP: {data}")
+                print(f"BYTE DUMP: {data}")
                 
                 buffer += data.decode('utf-8', errors='ignore')
                 while '\n' in buffer:
