@@ -33,7 +33,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from app.config import get_settings, get_allowed_origins
 from app.logging_config import setup_logging
 from app.database import init_db, close_db, check_db_connection
-from app.routers import health, users, tenants, dashboard, analytics, ai, auth, backup, failsafe, incidents, gamma
+from app.routers import health, users, tenants, dashboard, analytics, ai, auth, backup, failsafe, incidents, gamma, cortex
 from app.api import workflows
 from app.shutdown import setup_signal_handlers  # Graceful shutdown
 
@@ -188,6 +188,7 @@ app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["users"])
 app.include_router(tenants.router, prefix="/api/v1/tenants", tags=["tenants"])
 app.include_router(dashboard.router, prefix="/api/v1/dashboard", tags=["dashboard"])
+app.include_router(cortex.router)  # Cortex Decision Engine (prefix defined in router)
 app.include_router(incidents.router)  # Incident Management (ITIL)
 app.include_router(backup.router)  # Backup API (prefix defined in router)
 app.include_router(failsafe.router)  # Fail-Safe Security Layer
