@@ -24,6 +24,8 @@ Start with: uvicorn app.main:app --host 0.0.0.0 --port 8000
 from contextlib import asynccontextmanager
 import logging
 import os
+import uuid
+import time
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -33,7 +35,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from app.config import get_settings, get_allowed_origins
 from app.logging_config import setup_logging
 from app.database import init_db, close_db, check_db_connection
-from app.routers import health, users, tenants, dashboard, analytics, ai, auth, backup, failsafe, incidents, gamma, cortex
+from app.routers import health, users, tenants, dashboard, analytics, ai, auth, backup, failsafe, incidents, gamma, cortex, metrics_summary, websocket
 from app.api import workflows
 from app.shutdown import setup_signal_handlers  # Graceful shutdown
 
@@ -134,13 +136,54 @@ app.add_middleware(
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     """
-    Middleware to log all HTTP requests.
-    
-    Logs HTTP method, path, and response status code.
-    Useful for debugging and monitoring API usage.
+    Middleware para loguear todas las peticiones HTTP con trazabilidad.
     """
-    logger.info(f"{request.method} {request.url.path}")
+    start_time = time.time()
+    
+    # Intentar obtener el ID (será 'unknown' si este middleware es el más externo en la fase de petición)
+    correlation_id = getattr(request.state, "correlation_id", "unknown")
+    
+    try:
+        response = await call_next(request)
+        process_time = (time.time() - start_time) * 1000
+        
+        # Refrescar el correlation_id después de que otros middlewares lo hayan podido establecer
+        correlation_id = getattr(request.state, "correlation_id", correlation_id)
+        extra = {"correlation_id": correlation_id}
+        
+        logger.info(
+            f"📥 {request.method} {request.url.path} - "
+            f"Status: {response.status_code} - "
+            f"Time: {process_time:.2f}ms",
+            extra=extra
+        )
+        return response
+    except Exception as e:
+        process_time = (time.time() - start_time) * 1000
+        correlation_id = getattr(request.state, "correlation_id", correlation_id)
+        extra = {"correlation_id": correlation_id}
+        
+        logger.error(
+            f"❌ Error: {request.method} {request.url.path} - "
+            f"Error: {str(e)} - "
+            f"Time: {process_time:.2f}ms",
+            extra=extra,
+            exc_info=True
+        )
+        raise
+
+
+@app.middleware("http")
+async def add_correlation_id(request: Request, call_next):
+    """
+    Middleware que añade un ID de correlación único a cada petición.
+    Al estar definido DESPUÉS de log_requests, será el MÁS EXTERNO en la fase de petición.
+    """
+    correlation_id = request.headers.get("X-Correlation-ID", str(uuid.uuid4()))
+    request.state.correlation_id = correlation_id
+    
     response = await call_next(request)
+    response.headers["X-Correlation-ID"] = correlation_id
     return response
 
 
@@ -182,18 +225,20 @@ Each router handles a specific domain of functionality.
 app.include_router(health.router, tags=["health"])
 
 # API endpoints
-app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["analytics"])
-app.include_router(ai.router, prefix="/api/v1/ai", tags=["ai"])
-app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
-app.include_router(users.router, prefix="/api/v1/users", tags=["users"])
-app.include_router(tenants.router, prefix="/api/v1/tenants", tags=["tenants"])
-app.include_router(dashboard.router, prefix="/api/v1/dashboard", tags=["dashboard"])
-app.include_router(cortex.router)  # Cortex Decision Engine (prefix defined in router)
+app.include_router(analytics.router, tags=["analytics"])
+app.include_router(ai.router, tags=["ai"])
+app.include_router(auth.router, tags=["auth"])
+app.include_router(users.router, tags=["users"])
+app.include_router(tenants.router, tags=["tenants"])
+app.include_router(dashboard.router, tags=["dashboard"])
+app.include_router(cortex.router)  # Cortex Decision Engine
 app.include_router(incidents.router)  # Incident Management (ITIL)
-app.include_router(backup.router)  # Backup API (prefix defined in router)
+app.include_router(backup.router)  # Backup API
 app.include_router(failsafe.router)  # Fail-Safe Security Layer
 app.include_router(workflows.router)  # Workflow Recommendations
-app.include_router(gamma.router, prefix="/api/v1")  # Guardian Gamma (HITL)
+app.include_router(gamma.router)  # Guardian Gamma (HITL)
+app.include_router(metrics_summary.router)  # Metrics Summary for GUI
+app.include_router(websocket.router)  # Real-time Battlefield UI
 
 
 # ============================================================================
