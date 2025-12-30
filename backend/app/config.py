@@ -59,10 +59,37 @@ class Settings(BaseSettings):
     # ============================================================================
     # SECURITY CONFIGURATION
     # ============================================================================
+    # ============================================================================
+    # SECURITY CONFIGURATION
+    # ============================================================================
+    human_in_the_loop_required: bool = True
+    """
+    If True, destructive actions proposed by AI require manual confirmation.
+    Mitigation for 'Adversarial Reward-Hacking' where AI might be tricked 
+    into lowering security defenses.
+    """
+
     secret_key: str = os.getenv(
         "SECRET_KEY", 
         "your-secret-key-change-in-production-min-32-chars-xyz123"
     )
+    
+    def __init__(self, **data):
+        super().__init__(**data)
+        self._validate_security()
+
+    def _validate_security(self):
+        """Perform startup security checks."""
+        # Check for weak SECRET_KEY in production
+        default_key = "your-secret-key-change-in-production-min-32-chars-xyz123"
+        if self.environment == "production":
+            if self.secret_key == default_key:
+                raise ValueError(
+                    "❌ CRITICAL SECURITY ERROR: Default SECRET_KEY detected in production! "
+                    "You MUST set a secure SECRET_KEY environment variable."
+                )
+            if len(self.secret_key) < 32:
+                 raise ValueError("❌ SECURITY ERROR: SECRET_KEY is too short (min 32 chars).")
     """
     JWT signing key for token generation.
     
