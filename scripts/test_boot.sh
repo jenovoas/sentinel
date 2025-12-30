@@ -21,13 +21,16 @@ fi
 echo "[sentinel-test] Launching Sentinel OS Foundation Core in QEMU..."
 echo "[sentinel-test] Kernel: $KERNEL"
 
+# Clean up stale socket to prevent QEMU bind error
+rm -f /tmp/sentinel_cortex.sock
+
 qemu-system-x86_64 \
     -kernel "$KERNEL" \
     -initrd "$INITRD" \
     -append "console=ttyS0 quiet panic=1 init=/init sysctl.kernel.perf_event_paranoid=-1" \
-    -device virtio-serial \
-    -chardev socket,path=/tmp/sentinel_cortex.sock,server,nowait,id=cortex_channel \
-    -device virtserialport,chardev=cortex_channel,name=org.sentinel.cortex \
+    -chardev socket,path=/tmp/sentinel_cortex.sock,server=on,wait=off,id=cortex_channel \
+    -serial mon:stdio \
+    -serial chardev:cortex_channel \
     -nographic \
     -m 512M \
     -no-reboot
