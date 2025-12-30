@@ -89,3 +89,32 @@ jobs:
     - name: Build
       working-directory: ./frontend
       run: npm run build --if-present
+
+  rust-core-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Cargo
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+    - name: Test Sentinel Cortex (Rust)
+      working-directory: ./sentinel-cortex
+      run: cargo test --verbose
+
+  e2e-benchmarks:
+    needs: [backend-test, frontend-build, rust-core-test]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+    - name: Install Benchmark Deps
+      run: |
+        pip install requests numpy
+    - name: Run Chaos & Benchmarks
+      run: |
+        # Simulate environment (no docker-compose in CI for speed, mocking local)
+        python3 backend/scripts/performance_bench.py
