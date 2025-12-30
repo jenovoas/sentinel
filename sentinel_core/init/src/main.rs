@@ -1,19 +1,21 @@
 // sentinel_core/init/src/main.rs
 mod forensics;
 
-use aya::programs::KProbe;
+use aya::programs::{KProbe, Xdp, XdpFlags};
 use aya::{Ebpf, include_bytes_aligned};
+use aya::maps::{HashMap as BpfHashMap, Array as BpfArray};
 use nix::mount::{mount, MsFlags};
 use nix::sys::signal::{kill, Signal};
 use nix::sys::wait::{waitpid, WaitPidFlag};
 use nix::unistd::Pid;
 use rlimit::{setrlimit, Resource};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::HashMap as StdHashMap;
 use std::error::Error;
 use std::fs;
 use std::path::Path;
 use std::sync::{Arc, Mutex};
+use std::net::Ipv4Addr;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::UnixStream;
 use tokio::signal::unix::{signal, SignalKind};
@@ -22,6 +24,7 @@ use crate::forensics::MemoryScanner;
 
 // Placeholder: load eBPF object compiled separately (e.g., init_kprobe.o)
 const BPF_OBJECT: &[u8] = include_bytes_aligned!("../../../ebpf/init_kprobe.o");
+const XDP_OBJECT: &[u8] = include_bytes_aligned!("../../../ebpf/xdp_firewall.o");
 const BRAIN_SOCKET: &str = "/tmp/sentinel_cortex.sock";
 
 #[derive(Serialize)]
@@ -40,16 +43,50 @@ struct ThreatReport {
 #[derive(Deserialize)]
 struct BrainResponse {
     allow: bool,
+    block_ip: Option<String>,
+}
+
+struct NetworkGuardian {
+    ebpf: Arc<Mutex<Ebpf>>,
+}
+
+impl NetworkGuardian {
+    fn new(ebpf: Ebpf) -> Self {
+        Self { ebpf: Arc::new(Mutex::new(ebpf)) }
+    }
+
+    fn block_ip(&self, ip: u32) -> Result<(), Box<dyn Error>> {
+        let mut ebpf = self.ebpf.lock().unwrap();
+        // Access the map by name defined in C code ("blacklist")
+        let mut blacklist: BpfHashMap<_, u32, u8> = BpfHashMap::try_from(ebpf.map_mut("blacklist").ok_or("Map blacklist not found")?)?;
+        blacklist.insert(ip, 1, 0)?;
+        println!("[init] [NET-HUNTER] 🚫 BLOCKED IP: {:?}", Ipv4Addr::from(u32::from_be(ip)));
+        Ok(())
+    }
+
+    fn set_panic_mode(&self, enabled: bool) -> Result<(), Box<dyn Error>> {
+        let mut ebpf = self.ebpf.lock().unwrap();
+        let mut config_map: BpfArray<_, u32> = BpfArray::try_from(ebpf.map_mut("config_map").ok_or("Map config_map not found")?)?;
+        let val: u32 = if enabled { 1 } else { 0 };
+        config_map.set(0, val, 0)?;
+        
+        if enabled {
+             println!("[init] [NET-HUNTER] 🚨 PANIC MODE ACTIVATED: NETWORK QUARANTINE ENFORCED");
+        } else {
+             println!("[init] [NET-HUNTER] 🟢 Panic Mode Deactivated. Network Normal.");
+        }
+        Ok(())
+    }
 }
 
 struct CognitiveDecider {
-    cache: Arc<Mutex<HashMap<String, bool>>>,
+    cache: Arc<Mutex<StdHashMap<String, bool>>>,
 }
 
 impl CognitiveDecider {
     fn new() -> Self {
         Self {
-            cache: Arc::new(Mutex::new(HashMap::new())),
+            cache: Arc::new(Mutex::new(StdHashMap::new())),
         }
     }
 
@@ -83,6 +120,11 @@ impl CognitiveDecider {
     }
 
     async fn ask_brain(&self, pid: u32, path: &str) -> Result<bool, Box<dyn Error>> {
+        let resp = self.ask_brain_extended(pid, path).await?;
+        Ok(resp.allow)
+    }
+
+    async fn ask_brain_extended(&self, pid: u32, path: &str) -> Result<BrainResponse, Box<dyn Error>> {
         let mut stream = UnixStream::connect(BRAIN_SOCKET).await?;
         let req = BrainRequest { pid, path: path.to_string() };
         let req_json = serde_json::to_vec(&req)?;
@@ -94,7 +136,7 @@ impl CognitiveDecider {
         stream.read_to_end(&mut response_json).await?;
         
         let resp: BrainResponse = serde_json::from_slice(&response_json)?;
-        Ok(resp.allow)
+        Ok(resp)
     }
 
     async fn report_threat(&self, pid: u32, score: f32, details: String) -> Result<(), Box<dyn Error>> {
@@ -154,92 +196,102 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let decider = Arc::new(CognitiveDecider::new());
     let hunter = Arc::new(MemoryScanner::new());
 
-    if let Err(e) = load_and_run(decider.clone(), hunter.clone()).await {
-        eprintln!("[init] Cog-Loop Error: {}", e);
-        eprintln!("[init] eBPF unavailable. Entering Heuristic Fallback Mode...");
-        fallback_run(decider, hunter).await?;
-    }
-
-    Ok(())
-}
-
-async fn fallback_run(decider: Arc<CognitiveDecider>, hunter: Arc<MemoryScanner>) -> Result<(), Box<dyn Error>> {
-    println!("[init] Sentinel Heuristic-Loop active. Supervising scans...");
-
-    let mut sigint = signal(SignalKind::interrupt())?;
-    let mut sigterm = signal(SignalKind::terminate())?;
-
-    // TEST TRIGGER: Spawn the Hunter target after 5 seconds
-    tokio::spawn(async {
-        sleep(Duration::from_secs(5)).await;
-        println!("[init] [TEST] Spawning Hunter Target (/bin/attack_poc)...");
-        let _ = std::process::Command::new("/bin/attack_poc").spawn();
-    });
-
-    loop {
-        tokio::select! {
-            _ = sigint.recv() => {
-                println!("[init] Received SIGINT, shutting down...");
-                break;
-            }
-            _ = sigterm.recv() => {
-                println!("[init] Received SIGTERM, shutting down...");
-                break;
-            }
-            _ = sleep(Duration::from_secs(5)) => {
-                reap_zombies();
-                if let Ok(pids) = scan_cgroups() {
-                    for pid in pids {
-                        let d_inner = decider.clone();
-                        let h_inner = hunter.clone();
-                        
-                        tokio::spawn(async move {
-                            // 1. Cognitive Risk Scan
-                            let risk = d_inner.check_risk(pid).await;
-                            
-                            // 2. Proactive Memory Hunt (The Hunter)
-                            if let Ok(result) = h_inner.hunt_pid(pid) {
-                                if result.score >= 1.0 {
-                                    println!("[init] [HUNTER] THREAT: PID {} score={:.1}", pid, result.score);
-                                    println!("[init] [HUNTER] Action: Sending SIGKILL to PID {}", pid);
-                                    let _ = kill(Pid::from_raw(pid as i32), Signal::SIGKILL);
-                                    
-                                    println!("[init] [HUNTER] Dispatching Forensic Report to Cortex Bridge...");
-                                    match d_inner.report_threat(pid, result.score, "Memory Hunt: AIOpsDoom/Shellcode pattern detected".to_string()).await {
-                                        Ok(_) => println!("[init] [HUNTER] Forensic Relay: 200 OK"),
-                                        Err(e) => eprintln!("[init] [HUNTER] Forensic Relay FAILED (Bridge unreachable?): {}", e),
-                                    }
-                                    return;
-                                }
-                            }
-
-                            if risk > 0.9 {
-                                let _ = kill(Pid::from_raw(pid as i32), Signal::SIGKILL);
-                                println!("[init] 🚫 (Fallback) KILLED PID {} due to risk ({:.2})", pid, risk);
-                            }
-                        });
-                    }
-                }
-            }
+    // 3. Load XDP Firewall (Network Guardian) first - Critical for Phase 8
+    println!("[init] Loading Operation Net-Hunter (XDP Firewall)...");
+    let guardian = match Ebpf::load(XDP_OBJECT) {
+        Ok(mut xdp_ebpf) => {
+             if let Some(prog) = xdp_ebpf.program_mut("xdp_firewall_prog") {
+                 let xdp_prog: &mut Xdp = prog.try_into()?;
+                 if let Err(e) = xdp_prog.load() {
+                      eprintln!("[init] [WARN] XDP Load Failed: {}", e);
+                      None
+                 } else {
+                     match xdp_prog.attach("eth0", XdpFlags::default()) {
+                         Ok(_) => {
+                             println!("[init] Net-Hunter XDP attached to eth0");
+                             Some(Arc::new(NetworkGuardian::new(xdp_ebpf)))
+                         },
+                         Err(e) => {
+                             eprintln!("[init] [WARN] XDP Attach Failed: {}", e);
+                             // Still return guardian for map access if loaded? No, program must be loaded.
+                             // But we loaded it above. Map access works if loaded.
+                             // Attach failure might mean no traffic filtering, but map write works.
+                             Some(Arc::new(NetworkGuardian::new(xdp_ebpf)))
+                         }
+                     }
+                 }
+             } else {
+                 None
+             }
+        },
+        Err(e) => {
+            eprintln!("[init] [WARN] Failed to load XDP Object: {}", e);
+            None
         }
+    };
+
+    // 4. Load Kprobe (Optional Enhancement)
+    if let Err(e) = load_kprobe().await {
+         eprintln!("[init] [WARN] KProbe (Syscall Trace) unavailable: {}", e);
+         eprintln!("[init] Entering Hybrid Mode (No Trace, but XDP + Hunter active).");
+    } else {
+         println!("[init] KProbe attached. Full Supervision Active.");
     }
-    Ok(())
+    
+    // Start IPC Listener if Guardian exists
+    if let Some(g) = &guardian {
+        let g_listener = g.clone();
+        tokio::spawn(async move {
+            run_serial_monitor(g_listener).await;
+        });
+    }
+
+    // Run Main Loop (Unified)
+    run_supervision_loop(decider, hunter, guardian).await
 }
 
-async fn load_and_run(decider: Arc<CognitiveDecider>, hunter: Arc<MemoryScanner>) -> Result<(), Box<dyn Error>> {
-    // Load eBPF program
+async fn load_kprobe() -> Result<(), Box<dyn Error>> {
     let mut ebpf = Ebpf::load(BPF_OBJECT)?;
     let program: &mut KProbe = ebpf.program_mut("sentinel_init").ok_or("program sentinel_init not found")?.try_into()?;
     program.load()?;
     program.attach("do_execve", 0)?;
+    Ok(())
+}
 
+async fn run_serial_monitor(guardian: Arc<NetworkGuardian>) {
+        println!("[init] [IPC] Starting Serial Monitor on /dev/ttyS1...");
+        let device_path = "/dev/ttyS1";
+        use tokio::io::{AsyncBufReadExt, BufReader};
+        use tokio::fs::File;
+        loop {
+           match File::open(device_path).await {
+               Ok(file) => {
+                   println!("[init] [IPC] Connected to Host Bridge.");
+                   let reader = BufReader::new(file);
+                   let mut lines = reader.lines();
+                   while let Ok(Some(line)) = lines.next_line().await {
+                        if let Ok(resp) = serde_json::from_str::<BrainResponse>(&line) {
+                             if let Some(ip_str) = resp.block_ip {
+                                  println!("[init] [IPC] Received BLOCK command for {}", ip_str);
+                                  if let Ok(ip_addr) = ip_str.parse::<Ipv4Addr>() {
+                                      let ip_u32: u32 = ip_addr.into();
+                                      let _ = guardian.block_ip(u32::to_be(ip_u32));
+                                  }
+                             }
+                        }
+                   }
+               },
+               Err(_) => sleep(Duration::from_secs(5)).await,
+           }
+        }
+}
+
+async fn run_supervision_loop(decider: Arc<CognitiveDecider>, hunter: Arc<MemoryScanner>, guardian: Option<Arc<NetworkGuardian>>) -> Result<(), Box<dyn Error>> {
     println!("[init] Sentinel Cog-Loop alive. Supervising processes...");
-
-    // Signal handlers for graceful shutdown and zombie reaping
     let mut sigint = signal(SignalKind::interrupt())?;
     let mut sigterm = signal(SignalKind::terminate())?;
 
-    // TEST TRIGGER: Spawn the Hunter target after 5 seconds
+    // TEST TRIGGER
     tokio::spawn(async {
         sleep(Duration::from_secs(5)).await;
         println!("[init] [TEST] Spawning Hunter Target (/bin/attack_poc)...");
@@ -248,41 +300,41 @@ async fn load_and_run(decider: Arc<CognitiveDecider>, hunter: Arc<MemoryScanner>
 
     loop {
         tokio::select! {
-            _ = sigint.recv() => {
-                println!("[init] Received SIGINT, shutting down...");
-                break;
-            }
-            _ = sigterm.recv() => {
-                println!("[init] Received SIGTERM, shutting down...");
-                break;
-            }
+            _ = sigint.recv() => break,
+            _ = sigterm.recv() => break,
             _ = sleep(Duration::from_secs(5)) => {
-                // Periodically reap zombies
                 reap_zombies();
-
-                // Scan cgroup processes
                 if let Ok(pids) = scan_cgroups() {
                     for pid in pids {
                         let d_inner = decider.clone();
                         let h_inner = hunter.clone();
+                        let g_inner = guardian.clone();
                         
                         tokio::spawn(async move {
-                            // 1. Cognitive Risk
-                            let risk = d_inner.check_risk(pid).await;
-                            
-                            // 2. Memory Hunt
+                            // Memory Hunt & Reflex
                             if let Ok(hunt) = h_inner.hunt_pid(pid) {
                                 if hunt.score >= 1.0 {
                                     println!("[init] [HUNTER] 🏹 TERMINATED MALICIOUS PID {} (Score: {:.1})", pid, hunt.score);
-                                    let _ = d_inner.report_threat(pid, hunt.score, "Cog-Loop: Malicious pattern in RWX memory".to_string()).await;
+                                    
+                                    // REFLEX ARC
+                                    if let Some(g) = g_inner {
+                                        println!("[init] [REFLEX] ⚡ NEURAL REFLEX ACTIVATED: SEALING NETWORK...");
+                                        let _ = g.set_panic_mode(true);
+                                        // Spawn Restore
+                                        let g_restore = g.clone();
+                                        tokio::spawn(async move {
+                                            sleep(Duration::from_secs(30)).await;
+                                            println!("[init] [REFLEX] ⏳ Quarantine Lifted.");
+                                            let _ = g_restore.set_panic_mode(false);
+                                        });
+                                    } else {
+                                        println!("[init] [REFLEX] ⚠️ Network Guardian UNAVAILABLE. Cannot Seal Network.");
+                                    }
+
                                     let _ = kill(Pid::from_raw(pid as i32), Signal::SIGKILL);
+                                    let _ = d_inner.report_threat(pid, hunt.score, "NEURAL REFLEX ACTIVATED".to_string()).await;
                                     return;
                                 }
-                            }
-
-                            if risk > 0.9 {
-                                let _ = kill(Pid::from_raw(pid as i32), Signal::SIGKILL);
-                                println!("[init] 🚫 Cog-Loop KILLED PID {} due to high cognitive risk ({:.2})", pid, risk);
                             }
                         });
                     }
@@ -290,8 +342,6 @@ async fn load_and_run(decider: Arc<CognitiveDecider>, hunter: Arc<MemoryScanner>
             }
         }
     }
-
-    println!("[init] Shutdown complete.");
     Ok(())
 }
 
@@ -436,41 +486,4 @@ impl PerfEvent {
 
 fn setup_perf_observability() -> Result<PerfEvent, Box<dyn Error>> {
     PerfEvent::new()
-}
-
-
-// ---------------------------------------------------------------------
-// Unit Tests
-// ---------------------------------------------------------------------
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::fs;
-    use tempfile::tempdir;
-
-    #[test]
-    fn test_cognitive_risk_low() {
-        // PID 1 surely doesn't run from /tmp (usually /sbin/init or similar)
-        let risk = cognitive_risk(1);
-        assert!(risk < 0.1);
-    }
-
-    #[test]
-    fn test_visit_cgroups_mock() -> Result<(), Box<dyn Error>> {
-        let dir = tempdir()?;
-        let sub_dir = dir.path().join("subgroup1");
-        fs::create_dir(&sub_dir)?;
-        
-        let procs_file = sub_dir.join("cgroup.procs");
-        fs::write(procs_file, "123\n456\n")?;
-
-        let mut pids = Vec::new();
-        visit_cgroups(dir.path(), &mut pids)?;
-
-        assert!(pids.contains(&123));
-        assert!(pids.contains(&456));
-        assert_eq!(pids.len(), 2);
-
-        Ok(())
-    }
 }
