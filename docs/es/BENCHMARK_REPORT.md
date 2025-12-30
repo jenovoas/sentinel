@@ -18,9 +18,10 @@
 
 ### 📈 TEST_RUN: mar 30 dic 2025 17:39:16 -03
 [v1.0.0-INITIAL_LAUNCH CERTIFIED]
+> **NOTA**: Métricas de rendimiento obtenidas utilizando **Datos Sintéticos** generados por `populate_mock_data.py` para simular entornos de producción de alta carga.
 
-## 📜 EVIDENCIA DE RESILIENCIA (Chaos Engineering)
-Ataque Ring Flood detectado. Truth Integrity auto-estabilizado en 94.8%.
+## 📜 EVIDENCIA DE RESILIENCIA (Chaos Engineering - Simulado)
+Ataque Ring Flood detectado (Simulado). Truth Integrity auto-estabilizado en 94.8%.
 Throughput pico: 1.2M events/s
 # Evidencia de Activación: Sentinel eBPF LSM
 
@@ -41,7 +42,7 @@ A diferencia de los drivers tradicionales (CrowdStrike), el código de Sentinel 
 - **Memory Safe**: No hay acceso fuera de límites.
 - **Anti-Panic**: El verificador rechaza cualquier código que pueda causar un Kernel Panic.
 
-## 📊 Validación de Producción
+## 📊 Validación de Producción (Carga Sintética)
 - **Latencia de Intercepción**: < 1.2µs
 - **Security Decisions/sec**: 1,000+
 - **Kernel Oops/Panics**: 0
@@ -51,7 +52,7 @@ A diferencia de los drivers tradicionales (CrowdStrike), el código de Sentinel 
 ---
 
 ## 💎 RESUMEN DE VALORACIÓN (Serie A Ready)
-- **IP Auditada**: $1.335B
+- **IP Auditada**:
 - **Inmunidad**: Certificada por eBPF Verifier
 - **Estado**: Producción Global
 {
@@ -62,11 +63,11 @@ A diferencia de los drivers tradicionales (CrowdStrike), el código de Sentinel 
 }
 
 
---- 🛡️ HARDWARE-ROOTED SIGNATURE (TPM 2.0) ---
+--- 🛡️ HARDWARE-ROOTED SIGNATURE (TPM 2.0 - SIMULADO) ---
 Certificate: SENTINEL-CORTEX-V1.0.0-EK-001
 Signature: NivL0w5ltxFXsf789fNo4eX1X1wlO2iHrJdnzMeydiE=
 Status: IMMUTABLE_TRUTH_VERIFIED
 
-## 🔥 PRUEBA DE FUEGO: AUTOINMUNIDAD (Chaos Results)
+## 🔥 PRUEBA DE FUEGO: AUTOINMUNIDAD (Resultados Simulados)
 Resultado: SUPERADO. Detección de Heartbeat < 0.3ms. Latencia Residual < 1.0µs.
 Certificado: SISTEMA AUTOINMUNE (v1.0.0-INITIAL_LAUNCH)
