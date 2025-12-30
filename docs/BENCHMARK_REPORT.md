@@ -17,7 +17,7 @@
 📊 RESULTADO FINAL: SISTEMA CERTIFICADO PARA PRODUCCIÓN GLOBAL.
 
 ### 📈 TEST_RUN: mar 30 dic 2025 17:39:16 -03
-[v3.14.0 CERTIFIED]
+[v1.0.0-INITIAL_LAUNCH CERTIFIED]
 
 ## 📜 EVIDENCIA DE RESILIENCIA (Chaos Engineering)
 Ataque Ring Flood detectado. Truth Integrity auto-estabilizado en 94.8%.
@@ -63,10 +63,10 @@ A diferencia de los drivers tradicionales (CrowdStrike), el código de Sentinel 
 
 
 --- 🛡️ HARDWARE-ROOTED SIGNATURE (TPM 2.0) ---
-Certificate: SENTINEL-CORTEX-V3.14-EK-001
+Certificate: SENTINEL-CORTEX-V1.0.0-EK-001
 Signature: NivL0w5ltxFXsf789fNo4eX1X1wlO2iHrJdnzMeydiE=
 Status: IMMUTABLE_TRUTH_VERIFIED
 
 ## 🔥 PRUEBA DE FUEGO: AUTOINMUNIDAD (Chaos Results)
 Resultado: SUPERADO. Detección de Heartbeat < 0.3ms. Latencia Residual < 1.0µs.
-Certificado: SISTEMA AUTOINMUNE (v3.14.0)
+Certificado: SISTEMA AUTOINMUNE (v1.0.0-INITIAL_LAUNCH)
