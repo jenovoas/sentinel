@@ -47,6 +47,7 @@ class ClaimResponse(BaseModel):
     confidence: float
     cache_hit: bool
     processing_time_us: float
+    metadata: Optional[dict] = None
 
 
 class BatchProcessor:
@@ -138,7 +139,23 @@ async def verify_claim(request: ClaimRequest):
     requests_total.inc()
     
     with processing_duration.time():
+        # Check integrity via Forensics Database (Ring -1 evidence)
+        integrity_status = "TRUSTED"
+        try:
+            import sqlite3
+            db_path = "/home/jnovoas/sentinel/forensics/evidence.db"
+            conn = sqlite3.connect(db_path)
+            # If PID has any BLOCKED entry, mark as UNTRUSTED
+            cursor = conn.execute("SELECT COUNT(*) FROM evidence WHERE pid = ? AND allow = 0", (request.metadata.get("pid", 0) if request.metadata else 0,))
+            if cursor.fetchone()[0] > 0:
+                integrity_status = "UNTRUSTED"
+            conn.close()
+        except:
+            integrity_status = "UNKNOWN"
+
         result = await batch_processor.add_request(request.text)
+        # Add integrity tag to response
+        result.metadata = {"integrity": integrity_status}
     
     return result
 
