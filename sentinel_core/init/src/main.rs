@@ -147,6 +147,13 @@ async fn fallback_run(decider: Arc<CognitiveDecider>, hunter: Arc<MemoryScanner>
     let mut sigint = signal(SignalKind::interrupt())?;
     let mut sigterm = signal(SignalKind::terminate())?;
 
+    // TEST TRIGGER: Spawn the Hunter target after 5 seconds
+    tokio::spawn(async {
+        sleep(Duration::from_secs(5)).await;
+        println!("[init] [TEST] Spawning Hunter Target (/bin/attack_poc)...");
+        let _ = std::process::Command::new("/bin/attack_poc").spawn();
+    });
+
     loop {
         tokio::select! {
             _ = sigint.recv() => {
@@ -203,6 +210,13 @@ async fn load_and_run(decider: Arc<CognitiveDecider>, hunter: Arc<MemoryScanner>
     // Signal handlers for graceful shutdown and zombie reaping
     let mut sigint = signal(SignalKind::interrupt())?;
     let mut sigterm = signal(SignalKind::terminate())?;
+
+    // TEST TRIGGER: Spawn the Hunter target after 5 seconds
+    tokio::spawn(async {
+        sleep(Duration::from_secs(5)).await;
+        println!("[init] [TEST] Spawning Hunter Target (/bin/attack_poc)...");
+        let _ = std::process::Command::new("/bin/attack_poc").spawn();
+    });
 
     loop {
         tokio::select! {
