@@ -25,6 +25,9 @@ qemu-system-x86_64 \
     -kernel "$KERNEL" \
     -initrd "$INITRD" \
     -append "console=ttyS0 quiet panic=1 init=/init sysctl.kernel.perf_event_paranoid=-1" \
+    -device virtio-serial \
+    -chardev socket,path=/tmp/sentinel_cortex.sock,server,nowait,id=cortex_channel \
+    -device virtserialport,chardev=cortex_channel,name=org.sentinel.cortex \
     -nographic \
     -m 512M \
     -no-reboot
