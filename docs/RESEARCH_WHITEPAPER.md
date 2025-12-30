@@ -2,7 +2,7 @@
 
 **Autores**: Equipo de Ingeniería de Sentinel / AI Core
 **Fecha**: Diciembre 2025
-**Versión**: v3.14.0-RESEARCH
+**Versión**: v1.0.0-INITIAL_LAUNCH-RESEARCH
 
 ## 1. Resumen Ejecutivo (Abstract)
 Este documento presenta **Sentinel Cortex**, un paradigma disruptivo en la seguridad de sistemas operativos que desplaza el modelo reactivo tradicional hacia uno de **Inmunidad Matemática** e **Inmutabilidad por Hardware**. Utilizando eBPF LSM y XDP, Sentinel logra una latencia de decisión de pico de **1.25µs** y un throughput de **15.4M PPS**, eliminando la posibilidad de Kernel Panics y vulnerabilidades de Ring 0 inherentes a los drivers tradicionales.
@@ -40,7 +40,7 @@ Para garantizar la integridad de la telemetría, Sentinel ancla cada reporte de 
 
 ## 7. Axiomas de la Tesis: Sentinel como Estándar Técnico
 
-Para consolidar la arquitectura de Sentinel v3.14.0, se han definido tres axiomas fundamentales que rigen su funcionamiento:
+Para consolidar la arquitectura de Sentinel v1.0.0-INITIAL_LAUNCH, se han definido tres axiomas fundamentales que rigen su funcionamiento:
 
 ### Axioma 1: Inmutabilidad (LSM + Rust)
 **"La superficie de ataque no se reduce, se elimina."**
@@ -58,4 +58,4 @@ El filtrado a **15.4M PPS** garantiza que el sistema mantiene su disponibilidad 
 Sentinel Cortex ha trascendido su propósito inicial. No es solo un producto de seguridad; es un **Estándar Tecnológico** de Inmunidad Computacional. Al combinar la verificación matemática de eBPF con la integridad física del hardware, hemos definido el futuro de la computación segura e inmutable.
 
 ---
-**Clasificación: INVESTIGACIÓN ORIGINAL / PROPIEDAD INTELECTUAL ($1.335B)**
+**Clasificación: INVESTIGACIÓN ORIGINAL / PROPIEDAD INTELECTUAL**

@@ -26,6 +26,6 @@ A diferencia de los drivers tradicionales (CrowdStrike), el código de Sentinel 
 
 
 --- 🛡️ HARDWARE-ROOTED SIGNATURE (TPM 2.0) ---
-Certificate: SENTINEL-CORTEX-V3.14-EK-001
+Certificate: SENTINEL-CORTEX-V1.0.0-EK-001
 Signature: mi6s2dZUits/6M+wMhCNlhzHMVOnqC5RcOTBfvOl/UY=
 Status: IMMUTABLE_TRUTH_VERIFIED
