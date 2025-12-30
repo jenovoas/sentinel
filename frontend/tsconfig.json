@@ -22,16 +22,16 @@
     "baseUrl": ".",
     "paths": {
       "@/*": [
-        "src/*"
+        "./*"
       ],
       "@/components/*": [
-        "src/components/*"
+        "components/*"
       ],
-      "@/pages/*": [
-        "src/pages/*"
+      "@/app/*": [
+        "app/*"
       ],
       "@/lib/*": [
-        "src/lib/*"
+        "lib/*"
       ]
     },
     "allowJs": true,
@@ -46,7 +46,9 @@
     ]
   },
   "include": [
-    "src",
+    "app",
+    "components",
+    "lib",
     "next.config.js",
     ".next/types/**/*.ts"
   ],
