@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import socket
 import json
 import sqlite3
@@ -39,6 +40,18 @@ class CortexBridge:
                 score REAL
             )
         """)
+        
+        # Schema Migration: Add columns if they missed the initial creation
+        try:
+            conn.execute("ALTER TABLE evidence ADD COLUMN details TEXT")
+        except sqlite3.OperationalError:
+            pass # Column likely exists
+            
+        try:
+            conn.execute("ALTER TABLE evidence ADD COLUMN score REAL")
+        except sqlite3.OperationalError:
+            pass # Column likely exists
+
         conn.commit()
         conn.close()
 
@@ -78,9 +91,6 @@ class CortexBridge:
     def start(self):
         print(f"🌲 [CortexBridge] Connecting to Quantum Tunnel at {SOCKET_PATH}...")
         
-        # In the virtio-serial architecture, QEMU creates the socket server.
-        # We must connect as a client.
-        
         # Retry loop for connection
         import time
         connected = False
@@ -94,19 +104,33 @@ class CortexBridge:
                 print(f"⏳ [CortexBridge] Waiting for Sentinel Kernel... ({e})")
                 time.sleep(2)
 
+        # Spawn listener thread
+        import threading
+        listener = threading.Thread(target=self.listen_loop, daemon=True)
+        listener.start()
+
+        # Enter Command Loop
+        self.command_loop()
+
+    def listen_loop(self):
         try:
+            self.buffer = ""
             while True:
                 data = self.sock.recv(4096)
                 if not data:
-                    print("⚠️ [CortexBridge] Connection closed by Kernel.")
-                    break
+                    print("\n⚠️ [CortexBridge] Connection closed by Kernel.")
+                    os._exit(1) # Exit main thread too
                 
-                try:
-                    # Handle multiple JSON objects in one stream (newline delimited)
-                    buffer = data.decode('utf-8').strip()
-                    for line in buffer.split('\n'):
-                        if not line: continue
-                        
+                # Append new data to buffer
+                self.buffer += data.decode('utf-8', errors='ignore')
+                
+                # Check if we have a complete newline-terminated message
+                while '\n' in self.buffer:
+                    line, self.buffer = self.buffer.split('\n', 1)
+                    line = line.strip()
+                    if not line: continue
+                    
+                    try:
                         request = json.loads(line)
                         pid = request.get("pid")
                         
@@ -115,7 +139,7 @@ class CortexBridge:
                             # This is a ThreatReport from The Hunter
                             score = request.get("score")
                             details = request.get("details", "No details")
-                            print(f"🏹 [CortexBridge] REPORTE DE CAZA: PID {pid}, Score {score}")
+                            print(f"\n🏹 [CortexBridge] REPORTE DE CAZA: PID {pid}, Score {score}")
                             
                             self._log_evidence(pid, "N/A", False, source="HUNTER", details=details, score=score)
                             self._relay_to_n8n({
@@ -126,16 +150,33 @@ class CortexBridge:
                                 "status": "Inmunidad Preservada"
                             })
                         else:
-                             # Traditional RiskCheck (Not fully supported in unidirectional serial bridge yet)
                              pass
 
-                except json.JSONDecodeError:
-                    print(f"⚠️ [CortexBridge] Malformed JSON: {line}")
-                except Exception as e:
-                     print(f"⚠️ [CortexBridge] Error processing request: {e}")
-
+                    except json.JSONDecodeError:
+                        print(f"⚠️ [CortexBridge] Incomplete/Malformed JSON (buffering): {line[:50]}...")
+                    except Exception as e:
+                         print(f"⚠️ [CortexBridge] Error processing request: {e}")
         finally:
-            self.sock.close()
+             pass
+
+    def command_loop(self):
+        print("💻 [CortexBridge] Command Link Active. Type 'block <IP>' to filter traffic.")
+        while True:
+            try:
+                cmd = input("FAIL-SAFE> ")
+                if cmd.startswith("block "):
+                    ip = cmd.split(" ")[1]
+                    # Format: BrainResponse JSON
+                    payload = json.dumps({"allow": True, "block_ip": ip}) + "\n"
+                    self.sock.sendall(payload.encode('utf-8'))
+                    print(f"🛡️ [CortexBridge] Sent BLOCK command for {ip}")
+                elif cmd == "exit":
+                    break
+            except EOFError:
+                break
+            except Exception as e:
+                print(f"Error: {e}")
+        self.sock.close()
 
 if __name__ == "__main__":
     bridge = CortexBridge()
