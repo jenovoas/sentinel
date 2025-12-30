@@ -1,8 +1,8 @@
 """
-Redis Sentinel Client for High Availability
+Redis Client for Standalone Mode
 
-Provides automatic failover support for Redis connections.
-Backend will automatically reconnect to new master when failover occurs.
+Simple Redis client for single-instance deployments.
+For HA deployments, use redis_client_ha.py with Sentinel.
 
 Usage:
     from app.redis_client import get_redis_master, get_redis_slave
@@ -11,133 +11,100 @@ Usage:
     master = await get_redis_master()
     await master.set("key", "value")
     
-    # For reads (load balanced across replicas)
+    # For reads (same as master in standalone mode)
     slave = await get_redis_slave()
     value = await slave.get("key")
 """
 
 import logging
+import os
 from typing import Optional
 import redis.asyncio as redis
-from redis.asyncio.sentinel import Sentinel
 
 logger = logging.getLogger(__name__)
 
-# Global Sentinel instance
-_sentinel: Optional[Sentinel] = None
+# Global Redis instance
+_redis_client: Optional[redis.Redis] = None
 
 
-def get_sentinel() -> Sentinel:
+def get_redis_url() -> str:
     """
-    Get or create Redis Sentinel instance
-    
-    Sentinel monitors Redis master and automatically handles failover.
+    Get Redis URL from environment
     
     Returns:
-        Sentinel: Redis Sentinel instance
+        str: Redis connection URL
     """
-    global _sentinel
+    return os.getenv("REDIS_URL", "redis://redis:6379/0")
+
+
+async def get_redis_client() -> redis.Redis:
+    """
+    Get or create Redis client instance
     
-    if _sentinel is None:
-        # List of Sentinel instances
-        # In production, these should be from environment variables
-        sentinels = [
-            ('redis-sentinel-1', 26379),
-            ('redis-sentinel-2', 26379),
-            ('redis-sentinel-3', 26379),
-        ]
-        
-        _sentinel = Sentinel(
-            sentinels,
-            socket_timeout=0.5,
-            socket_connect_timeout=0.5,
-            decode_responses=True,  # Automatically decode bytes to strings
+    Returns:
+        redis.Redis: Redis client instance
+    """
+    global _redis_client
+    
+    if _redis_client is None:
+        redis_url = get_redis_url()
+        _redis_client = redis.from_url(
+            redis_url,
+            encoding="utf-8",
+            decode_responses=True,
+            socket_timeout=5.0,
+            socket_connect_timeout=5.0,
         )
-        
-        logger.info(f"✅ Redis Sentinel initialized with {len(sentinels)} sentinels")
+        logger.info(f"✅ Redis client initialized: {redis_url}")
     
-    return _sentinel
+    return _redis_client
 
 
 async def get_redis_master() -> redis.Redis:
     """
-    Get Redis master connection for writes
+    Get Redis connection for writes
     
-    Automatically connects to current master.
-    If master fails, Sentinel will promote a replica and this will
-    automatically connect to the new master.
+    In standalone mode, this is the same as get_redis_client().
+    Kept for API compatibility with Sentinel mode.
     
     Returns:
-        redis.Redis: Connection to Redis master
+        redis.Redis: Redis client instance
     """
-    sentinel = get_sentinel()
-    
-    # Get master connection
-    # 'mymaster' is the name we configured in sentinel.conf
-    master = sentinel.master_for(
-        'mymaster',
-        socket_timeout=1.0,
-        socket_connect_timeout=1.0,
-        decode_responses=True,
-    )
-    
-    return master
+    return await get_redis_client()
 
 
 async def get_redis_slave() -> redis.Redis:
     """
-    Get Redis slave connection for reads
+    Get Redis connection for reads
     
-    Automatically load balances across available replicas.
-    Use this for read-heavy operations to offload master.
+    In standalone mode, this is the same as get_redis_client().
+    Kept for API compatibility with Sentinel mode.
     
     Returns:
-        redis.Redis: Connection to Redis replica
+        redis.Redis: Redis client instance
     """
-    sentinel = get_sentinel()
-    
-    # Get slave connection (load balanced)
-    slave = sentinel.slave_for(
-        'mymaster',
-        socket_timeout=1.0,
-        socket_connect_timeout=1.0,
-        decode_responses=True,
-    )
-    
-    return slave
+    return await get_redis_client()
 
 
 async def check_redis_health() -> dict:
     """
-    Check Redis cluster health
+    Check Redis health
     
     Returns:
-        dict: Health status including master info and replica count
+        dict: Health status
     """
     try:
-        sentinel = get_sentinel()
+        client = await get_redis_client()
+        await client.ping()
         
-        # Get master info
-        master_info = sentinel.discover_master('mymaster')
-        
-        # Get replicas info
-        replicas_info = sentinel.discover_slaves('mymaster')
-        
-        # Check if we can connect to master
-        master = await get_redis_master()
-        await master.ping()
+        # Get server info
+        info = await client.info("server")
         
         return {
             "status": "healthy",
-            "master": {
-                "host": master_info[0],
-                "port": master_info[1],
-            },
-            "replicas_count": len(replicas_info),
-            "replicas": [
-                {"host": r[0], "port": r[1]}
-                for r in replicas_info
-            ]
+            "mode": "standalone",
+            "redis_version": info.get("redis_version", "unknown"),
+            "uptime_seconds": info.get("uptime_in_seconds", 0),
         }
         
     except Exception as e:
@@ -148,68 +115,21 @@ async def check_redis_health() -> dict:
         }
 
 
-async def test_failover():
-    """
-    Test Redis failover mechanism
-    
-    This simulates a master failure and verifies automatic failover.
-    
-    WARNING: This will cause a brief service interruption!
-    Only use in testing environments.
-    """
-    logger.warning("⚠️ Testing Redis failover - this will cause brief interruption!")
-    
-    try:
-        # 1. Get current master
-        sentinel = get_sentinel()
-        master_info = sentinel.discover_master('mymaster')
-        logger.info(f"Current master: {master_info[0]}:{master_info[1]}")
-        
-        # 2. Force failover
-        sentinel.sentinel_failover('mymaster')
-        logger.info("Failover triggered...")
-        
-        # 3. Wait for new master
-        import asyncio
-        await asyncio.sleep(5)
-        
-        # 4. Get new master
-        new_master_info = sentinel.discover_master('mymaster')
-        logger.info(f"New master: {new_master_info[0]}:{new_master_info[1]}")
-        
-        # 5. Verify we can still write
-        master = await get_redis_master()
-        await master.set("failover_test", "success")
-        value = await master.get("failover_test")
-        
-        if value == "success":
-            logger.info("✅ Failover test successful!")
-            return True
-        else:
-            logger.error("❌ Failover test failed - could not write to new master")
-            return False
-            
-    except Exception as e:
-        logger.error(f"❌ Failover test failed: {e}")
-        return False
-
-
 # Example usage
 if __name__ == "__main__":
     import asyncio
     
     async def main():
         # Test connection
-        master = await get_redis_master()
-        await master.set("test_key", "test_value")
+        client = await get_redis_client()
+        await client.set("test_key", "test_value")
+        value = await client.get("test_key")
         
-        slave = await get_redis_slave()
-        value = await slave.get("test_key")
-        
-        print(f"Value from slave: {value}")
+        print(f"Value from Redis: {value}")
         
         # Check health
         health = await check_redis_health()
         print(f"Redis health: {health}")
     
     asyncio.run(main())
+
