@@ -80,8 +80,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
-          memory: 2G
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.10'
+          memory: 128M
     labels:
       - "com.sentinel.env=staging"
       - "com.sentinel.component=loki"
@@ -138,6 +141,14 @@ services:
     networks:
       - staging_internal
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
     labels:
       - "com.sentinel.env=staging"
 
@@ -164,6 +175,14 @@ services:
     restart: unless-stopped
     labels:
       - "com.sentinel.env=staging"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
 
   # PostgreSQL - Database
   postgres:
@@ -224,6 +243,14 @@ services:
     restart: unless-stopped
     labels:
       - "com.sentinel.env=staging"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 512M
 
   # Alertmanager - Alert Routing
   alertmanager:
