@@ -17,7 +17,7 @@ from app.services.guardian_gamma import (
 )
 
 
-router = APIRouter(prefix="/gamma", tags=["Guardian Gamma"])
+router = APIRouter(prefix="/api/v1/gamma", tags=["Guardian Gamma"])
 
 
 # Request/Response Models

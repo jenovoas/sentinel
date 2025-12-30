@@ -26,9 +26,12 @@ class GuardianSource(str, Enum):
 class DecisionType(str, Enum):
     """Type of decision requiring human validation"""
     BINARY_BLOCK = "binary_block"
+    NETWORK_BLOCK = "network_block"
     ANOMALY_DETECTED = "anomaly_detected"
     TELEMETRY_SUSPICIOUS = "telemetry_suspicious"
     THRESHOLD_EXCEEDED = "threshold_exceeded"
+    ESCALATED = "escalated"
+    ALLOW = "allow"
 
 
 class DecisionStatus(str, Enum):
