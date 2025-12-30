@@ -1,4 +1,4 @@
-# 🏔️ LANZAMIENTO: Sentinel Cortex v3.13.0 "TRUTH_INTEGRITY"
+# 🏔️ LANZAMIENTO: Sentinel Cortex v1.0.0-INITIAL_LAUNCH "TRUTH_INTEGRITY"
 
 El sistema Sentinel Cortex ha alcanzado su estado final de **Inmunidad Matemática** y **Guerra Psicológica**.
 
@@ -9,7 +9,7 @@ Hemos implementado el primer sistema de defensa que no solo bloquea ataques, sin
 - **Battlefield Dashboard Psyop**: Nuevo indicador de Integridad de la Verdad con umbrales de Kill Switch automáticos.
 - **ARMOR_MODE**: Activación instantánea de defensa reforzada ante cualquier inconsistencia en telemetría (Skew > 1.5µs).
 - **$1M Bug Bounty**: Lanzamiento oficial en HackerOne del "Sentinel Truth Challenge".
-- **Valoración de IP**: Elevada a **$1.285B** tras la integración exitosa de la capa de disuasión psíquica.
+- **Valoración de IP**: Elevada a **$1.335B** tras la integración exitosa de la capa de disuasión psíquica.
 
 ## 📊 Métricas de Lanzamiento:
 - **Integridad de la Verdad**: 100% (Status: NOMINAL)
