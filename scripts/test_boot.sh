@@ -24,7 +24,7 @@ echo "[sentinel-test] Kernel: $KERNEL"
 qemu-system-x86_64 \
     -kernel "$KERNEL" \
     -initrd "$INITRD" \
-    -append "console=ttyS0 quiet panic=1 init=/init" \
+    -append "console=ttyS0 quiet panic=1 init=/init sysctl.kernel.perf_event_paranoid=-1" \
     -nographic \
     -m 512M \
     -no-reboot
