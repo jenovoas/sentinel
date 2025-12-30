@@ -6,12 +6,13 @@ REST API endpoints for the Cortex Decision Engine.
 
 import logging
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Header
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, Field
 from datetime import datetime
 
 from app.database import get_db
+from app.config import get_settings
 from app.services.cortex_engine import CortexDecisionEngine
 
 logger = logging.getLogger(__name__)
@@ -61,8 +62,22 @@ class DecisionResponse(BaseModel):
 @router.post("/events", response_model=DecisionResponse, status_code=status.HTTP_201_CREATED)
 async def submit_event(
     event: EventSubmission,
+    x_sentinel_token: str = Header(None, alias="X-Sentinel-Token"),
     db: AsyncSession = Depends(get_db)
 ):
+    """
+    Envía un evento de seguridad para análisis.
+    
+    Requiere un token de seguridad válido en la cabecera X-Sentinel-Token
+    para mitigar ataques de inyección de telemetría (AIOpsDoom).
+    """
+    settings = get_settings()
+    if x_sentinel_token != settings.internal_telemetry_token:
+        logger.warning(f"🚨 Intento de inyección de telemetría rechazado (Token inválido)")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Unauthorized telemetry source"
+        )
     """
     Submit a security event for analysis
     

@@ -1,11 +1,10 @@
-'use client';
-
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Activity, Shield, AlertTriangle, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Activity, Shield, AlertTriangle, CheckCircle, XCircle, Clock, Zap } from 'lucide-react';
 import EventTester from '@/components/cortex/EventTester';
+import BattlefieldStats from '@/components/cortex/BattlefieldStats';
 
 interface Pattern {
     name: string;
@@ -51,8 +50,7 @@ export default function CortexDashboard() {
 
     const fetchData = async () => {
         try {
-            // Use relative URLs - Next.js will proxy to backend
-            const baseUrl = typeof window !== 'undefined' ? '' : 'http://sentinel-vault-backend:8000';
+            const baseUrl = '';
             const [patternsRes, decisionsRes, statsRes] = await Promise.all([
                 fetch(`${baseUrl}/api/v1/cortex/patterns`),
                 fetch(`${baseUrl}/api/v1/cortex/decisions?limit=10`),
@@ -123,24 +121,45 @@ export default function CortexDashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-6">
-            <div className="max-w-7xl mx-auto space-y-6">
+        <div className="min-h-screen bg-slate-950 text-white p-6 selection:bg-blue-500/30">
+            {/* Ambient Background Glow */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-600/10 blur-[120px] rounded-full" />
+            </div>
+
+            <div className="max-w-7xl mx-auto space-y-8 relative z-10">
                 {/* Header */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-4xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
-                            <Shield className="h-10 w-10 text-blue-600" />
-                            Cortex Decision Engine
+                        <div className="flex items-center gap-2 mb-1">
+                            <Badge variant="outline" className="text-blue-400 border-blue-400/50 uppercase tracking-widest text-[10px]">
+                                v3.9.0 Production Ready
+                            </Badge>
+                        </div>
+                        <h1 className="text-4xl font-extrabold tracking-tight flex items-center gap-3">
+                            <Shield className="h-10 w-10 text-blue-500 animate-pulse" />
+                            Sentinel <span className="text-blue-500">Cortex™</span>
                         </h1>
-                        <p className="text-slate-600 dark:text-slate-400 mt-2">
-                            AI-powered security threat analysis and decision making
+                        <p className="text-slate-400 mt-2 max-w-xl">
+                            Infraestructura de Inmunidad Matemática basada en eBPF LSM.
+                            Protección de Ring 0 con verificación formal.
                         </p>
                     </div>
-                    <Button onClick={fetchData} variant="outline" className="gap-2">
-                        <Activity className="h-4 w-4" />
-                        Refresh
-                    </Button>
+                    <div className="flex items-center gap-3">
+                        <Button onClick={fetchData} variant="ghost" className="gap-2 bg-white/5 hover:bg-white/10 border-white/10 text-white">
+                            <Activity className="h-4 w-4" />
+                            Live Telemetry
+                        </Button>
+                        <Button className="gap-2 shadow-lg shadow-blue-500/20 bg-blue-600 hover:bg-blue-500 text-white border-none">
+                            <Zap className="h-4 w-4" />
+                            Battlefield Mode
+                        </Button>
+                    </div>
                 </div>
+
+                {/* Tactical Metrics (Pitch Component) */}
+                <BattlefieldStats />
 
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -183,37 +202,37 @@ export default function CortexDashboard() {
                 <EventTester />
 
                 {/* Main Content Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Security Patterns */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Shield className="h-5 w-5 text-blue-600" />
+                    <Card className="bg-slate-900/40 border-slate-800 backdrop-blur-xl shadow-2xl overflow-hidden">
+                        <CardHeader className="border-b border-slate-800/50">
+                            <CardTitle className="flex items-center gap-2 text-white">
+                                <Shield className="h-5 w-5 text-blue-500" />
                                 Security Patterns
                             </CardTitle>
-                            <CardDescription>
+                            <CardDescription className="text-slate-400">
                                 {patterns.length} active threat detection patterns
                             </CardDescription>
                         </CardHeader>
-                        <CardContent>
-                            <div className="space-y-3">
+                        <CardContent className="p-0">
+                            <div className="divide-y divide-slate-800/50">
                                 {patterns.map((pattern) => (
                                     <div
                                         key={pattern.name}
-                                        className="flex items-center justify-between p-3 rounded-lg border bg-white dark:bg-slate-800 hover:shadow-md transition-shadow"
+                                        className="flex items-center justify-between p-4 bg-transparent hover:bg-white/5 transition-colors"
                                     >
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-2 h-2 rounded-full ${getSeverityColor(pattern.severity)}`} />
+                                        <div className="flex items-center gap-4">
+                                            <div className={`w-1.5 h-1.5 rounded-full ${getSeverityColor(pattern.severity)} shadow-[0_0_8px_rgba(59,130,246,0.5)]`} />
                                             <div>
-                                                <p className="font-medium text-slate-900 dark:text-white">
+                                                <p className="font-semibold text-slate-100">
                                                     {pattern.display_name}
                                                 </p>
-                                                <p className="text-sm text-slate-500">
+                                                <p className="text-xs text-slate-500 mt-1">
                                                     Weight: {(pattern.weight * 100).toFixed(0)}% | Detections: {pattern.detection_count}
                                                 </p>
                                             </div>
                                         </div>
-                                        <Badge variant={pattern.enabled ? 'default' : 'secondary'}>
+                                        <Badge variant="outline" className={`${pattern.enabled ? 'border-blue-500/50 text-blue-400' : 'border-slate-700 text-slate-500'} bg-transparent`}>
                                             {pattern.enabled ? 'Active' : 'Disabled'}
                                         </Badge>
                                     </div>
@@ -223,53 +242,56 @@ export default function CortexDashboard() {
                     </Card>
 
                     {/* Recent Decisions */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Activity className="h-5 w-5 text-blue-600" />
+                    <Card className="bg-slate-900/40 border-slate-800 backdrop-blur-xl shadow-2xl overflow-hidden">
+                        <CardHeader className="border-b border-slate-800/50">
+                            <CardTitle className="flex items-center gap-2 text-white">
+                                <Activity className="h-5 w-5 text-blue-500" />
                                 Recent Decisions
                             </CardTitle>
-                            <CardDescription>
-                                Last {decisions.length} security decisions
+                            <CardDescription className="text-slate-400">
+                                Real-time sequence of neural truth consensus
                             </CardDescription>
                         </CardHeader>
-                        <CardContent>
-                            <div className="space-y-3">
+                        <CardContent className="p-0">
+                            <div className="divide-y divide-slate-800/50">
                                 {decisions.length === 0 ? (
-                                    <div className="text-center py-8 text-slate-500">
-                                        <Activity className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                                        <p>No decisions yet</p>
-                                        <p className="text-sm">Submit events to see decisions here</p>
+                                    <div className="text-center py-12 text-slate-500">
+                                        <Activity className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                                        <p>No telemetry processed yet</p>
+                                        <p className="text-xs opacity-50">Sensor eBPF state: Monitoring...</p>
                                     </div>
                                 ) : (
                                     decisions.map((decision) => (
                                         <div
                                             key={decision.id}
-                                            className="flex items-start gap-3 p-3 rounded-lg border bg-white dark:bg-slate-800 hover:shadow-md transition-shadow"
+                                            className="flex items-start gap-4 p-4 bg-transparent hover:bg-white/5 transition-colors"
                                         >
                                             <div className="mt-1">{getDecisionIcon(decision.decision_type)}</div>
                                             <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <Badge className={getDecisionColor(decision.decision_type)}>
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <Badge className={`${getDecisionColor(decision.decision_type)} border-none shadow-sm`}>
                                                         {decision.decision_type.toUpperCase()}
                                                     </Badge>
-                                                    <span className="text-sm font-medium text-slate-900 dark:text-white">
-                                                        {(decision.confidence * 100).toFixed(1)}% confidence
+                                                    <span className="text-xs font-bold text-slate-300">
+                                                        {(decision.confidence * 100).toFixed(1)}% Neural Confidence
                                                     </span>
                                                 </div>
                                                 {decision.patterns.length > 0 && (
-                                                    <div className="flex flex-wrap gap-1 mb-2">
+                                                    <div className="flex flex-wrap gap-1.5 mb-3">
                                                         {decision.patterns.map((pattern) => (
-                                                            <Badge key={pattern} variant="outline" className="text-xs">
+                                                            <Badge key={pattern} variant="outline" className="text-[10px] border-slate-700 text-slate-400 py-0 bg-slate-800/50">
                                                                 {pattern}
                                                             </Badge>
                                                         ))}
                                                     </div>
                                                 )}
-                                                <div className="flex items-center gap-2 text-xs text-slate-500">
+                                                <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono">
                                                     <Clock className="h-3 w-3" />
-                                                    {new Date(decision.created_at).toLocaleString()}
+                                                    {new Date(decision.created_at).toISOString()}
                                                 </div>
+                                            </div>
+                                            <div className="text-[10px] font-mono text-slate-700">
+                                                #{decision.id}
                                             </div>
                                         </div>
                                     ))
