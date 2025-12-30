@@ -1,6 +1,10 @@
 import ollama
 import time
-from ..config import AI_MODEL_NAME, AI_LATENCY_SIMULATION
+try:
+    from ..config import AI_MODEL_NAME, AI_LATENCY_SIMULATION
+except ImportError:
+    # Fallback to absolute import if running from script (sys.path modified by parent)
+    from sentinel_core.config import AI_MODEL_NAME, AI_LATENCY_SIMULATION
 
 class SentinelBrain:
     """

@@ -1,8 +1,20 @@
-import os
 import socket
 import json
 import sqlite3
-from .inference import SentinelBrain
+import os
+import sys
+
+# Ensure project root is in path for direct execution
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(current_dir, "../../"))
+if project_root not in sys.path:
+    sys.path.append(project_root)
+
+try:
+    from .inference import SentinelBrain
+except ImportError:
+    # Fallback for direct execution 
+    from sentinel_core.brain.inference import SentinelBrain
 
 SOCKET_PATH = "/tmp/sentinel_cortex.sock"
 DB_PATH = "/home/jnovoas/sentinel/forensics/evidence.db"
