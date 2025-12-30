@@ -1,27 +1,3 @@
-🏎️  SENTINEL CORTEX BENCHMARK SUITE v1.0
-----------------------------------------
-
-🔍 1. LATENCIA DE DECISIÓN CORTEX (Cognitive Loop)
-   - Promedio: 1.009µs
-   - P99:      1.246µs
-   [STATUS] EXCEEDS CISO REQUIREMENTS (<1.5µs)
-
-⚡ 2. RENDIMIENTO XDP (Packet Processing)
-   - Throughput: 15,417,321 PPS (Line Rate 10GbE)
-   - CPU Impact: < 2.5% per core
-
-🛡️ 3. TRUTH INTEGRITY SKEW (Ring Buffer)
-   - Divergencia de Verdad: 0.0237µs
-   - Consistencia: 100% SECURE
-
-📊 RESULTADO FINAL: SISTEMA CERTIFICADO PARA PRODUCCIÓN GLOBAL.
-
-### 📈 TEST_RUN: mar 30 dic 2025 17:39:16 -03
-[v3.14.0 CERTIFIED]
-
-## 📜 EVIDENCIA DE RESILIENCIA (Chaos Engineering)
-Ataque Ring Flood detectado. Truth Integrity auto-estabilizado en 94.8%.
-Throughput pico: 1.2M events/s
 # Evidencia de Activación: Sentinel eBPF LSM
 
 **Fecha**: 2025-12-30
@@ -48,25 +24,8 @@ A diferencia de los drivers tradicionales (CrowdStrike), el código de Sentinel 
 
 **Firmado digitalmente por el Motor de Consenso de la Verdad de Sentinel.**
 
----
-
-## 💎 RESUMEN DE VALORACIÓN (Serie A Ready)
-- **IP Auditada**: $1.335B
-- **Inmunidad**: Certificada por eBPF Verifier
-- **Estado**: Producción Global
-{
-  "threats_detected_1h": 1449,
-  "cortex_accuracy": 99.2,
-  "neural_reflex_triggers": 1435,
-  "xdp_drops": 15689
-}
-
 
 --- 🛡️ HARDWARE-ROOTED SIGNATURE (TPM 2.0) ---
 Certificate: SENTINEL-CORTEX-V3.14-EK-001
-Signature: NivL0w5ltxFXsf789fNo4eX1X1wlO2iHrJdnzMeydiE=
+Signature: mi6s2dZUits/6M+wMhCNlhzHMVOnqC5RcOTBfvOl/UY=
 Status: IMMUTABLE_TRUTH_VERIFIED
-
-## 🔥 PRUEBA DE FUEGO: AUTOINMUNIDAD (Chaos Results)
-Resultado: SUPERADO. Detección de Heartbeat < 0.3ms. Latencia Residual < 1.0µs.
-Certificado: SISTEMA AUTOINMUNE (v3.14.0)
