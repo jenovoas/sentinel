@@ -1,4 +1,5 @@
 // sentinel_core/init/src/main.rs
+mod crypto;
 mod forensics;
 
 use aya::programs::{KProbe, Xdp, XdpFlags};
@@ -16,16 +17,36 @@ use std::fs;
 use std::path::Path;
 use std::sync::{Arc, Mutex};
 use std::net::Ipv4Addr;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::io::{AsyncReadExt, AsyncWriteExt, AsyncBufReadExt, BufReader};
 use tokio::net::UnixStream;
 use tokio::signal::unix::{signal, SignalKind};
 use tokio::time::{sleep, Duration};
+use tokio::fs::{File, OpenOptions};
 use crate::forensics::MemoryScanner;
+use crypto::{PqcContext, SecureSession};
 
-// Placeholder: load eBPF object compiled separately (e.g., init_kprobe.o)
+// Placeholder: load eBPF object compiled separately
 const BPF_OBJECT: &[u8] = include_bytes_aligned!("../../../ebpf/init_kprobe.o");
 const XDP_OBJECT: &[u8] = include_bytes_aligned!("../../../ebpf/xdp_firewall.o");
 const BRAIN_SOCKET: &str = "/tmp/sentinel_cortex.sock";
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(tag = "type")]
+enum PqcMessage {
+    #[serde(rename = "pqc_hello")]
+    Hello { pk: String },
+    #[serde(rename = "pqc_auth")]
+    Auth { ct: String },
+    #[serde(rename = "enc")]
+    Encrypted { payload: String },
+    #[serde(untagged)]
+    Legacy(serde_json::Value),
+}
+
+struct CryptoState {
+    session: Option<SecureSession>,
+}
+type SharedCryptoState = Arc<Mutex<CryptoState>>;
 
 #[derive(Serialize)]
 struct BrainRequest {
@@ -62,7 +83,6 @@ impl NetworkGuardian {
 
     fn block_ip(&self, ip: u32) -> Result<(), Box<dyn Error>> {
         let mut ebpf = self.ebpf.lock().unwrap();
-        // Access the map by name defined in C code ("blacklist")
         let mut blacklist: BpfHashMap<_, u32, u8> = BpfHashMap::try_from(ebpf.map_mut("blacklist").ok_or("Map blacklist not found")?)?;
         blacklist.insert(ip, 1, 0)?;
         println!("[init] [NET-HUNTER] 🚫 BLOCKED IP: {:?}", Ipv4Addr::from(u32::from_be(ip)));
@@ -86,12 +106,14 @@ impl NetworkGuardian {
 
 struct CognitiveDecider {
     cache: Arc<Mutex<StdHashMap<String, bool>>>,
+    crypto: SharedCryptoState,
 }
 
 impl CognitiveDecider {
-    fn new() -> Self {
+    fn new(crypto: SharedCryptoState) -> Self {
         Self {
             cache: Arc::new(Mutex::new(StdHashMap::new())),
+            crypto,
         }
     }
 
@@ -145,37 +167,43 @@ impl CognitiveDecider {
     }
 
     async fn report_threat(&self, pid: u32, score: f32, details: String) -> Result<(), Box<dyn Error>> {
-        // UART BRIDGE UPDATE (ttyS1)
-        // virtio-serial failed due to missing drivers in initramfs kernel.
-        // We fallback to standard serial port /dev/ttyS1 (mapped to host socket).
         let device_path = "/dev/ttyS1";
         let report = ThreatReport { pid, score, details };
-        let req_json = serde_json::to_string(&report)?; // to_string provides newline
-        
-        // Use standard fs::OpenOptions for blocking write (simple & robust for init)
-        // In async context, we could use tokio::fs but blocking on a serial port write is acceptable here
-        // as reports are rare and critical events.
-        use std::fs::OpenOptions;
+        let json_body = serde_json::to_string(&report)?; 
+
+        // Encrypt if session active
+        let final_payload = {
+            let lock = self.crypto.lock().unwrap();
+            if let Some(session) = &lock.session {
+                match session.encrypt(json_body.as_bytes()) {
+                    Ok(enc_str) => {
+                        let msg = PqcMessage::Encrypted { payload: enc_str };
+                        serde_json::to_string(&msg)?
+                    },
+                    Err(_) => json_body, // Fallback
+                }
+            } else {
+                json_body 
+            }
+        };
+
+        use std::fs::OpenOptions as StdOpenOptions;
         use std::io::Write;
 
-        match OpenOptions::new().write(true).open(device_path) {
+        match StdOpenOptions::new().write(true).open(device_path) {
             Ok(mut file) => {
-                writeln!(file, "{}", req_json)?;
-                println!("[init] [BRIDGE] 🚀 Report EXFILTRATED via Quantum Tunnel (virtio-serial).");
+                writeln!(file, "{}", final_payload)?;
+                println!("[init] [BRIDGE] 🚀 Encrypted Report EXFILTRATED.");
                 Ok(())
             },
             Err(e) => {
-                // Fallback to old socket if device missing (e.g., bare metal)
-                 eprintln!("[init] [BRIDGE] ⚠️ Quantum Tunnel collapsed (virtio port missing): {}", e);
-                 // Try old socket just in case
-                 let mut stream = UnixStream::connect(BRAIN_SOCKET).await?;
-                 stream.write_all(req_json.as_bytes()).await?;
-                 stream.shutdown().await?;
+                 eprintln!("[init] [BRIDGE] UART Write Failed: {}", e);
                  Ok(())
             }
         }
     }
 }
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     // 1. Setup environment for PID 1
@@ -188,7 +216,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Diagnostic: Check kprobe PMU
     check_kprobe_pmu();
 
-    // 2. Resilient Observability (User's request)
+    // 2. Resilient Observability
     let _perf = match setup_perf_observability() {
         Ok(p) => Some(p),
         Err(e) => {
@@ -197,11 +225,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
         }
     };
 
-    // 3. Load eBPF or enter Fallback Mode
-    let decider = Arc::new(CognitiveDecider::new());
+    // 3. Initialize Components
+    let crypto_state = Arc::new(Mutex::new(CryptoState { session: None }));
+    let decider = Arc::new(CognitiveDecider::new(crypto_state.clone()));
     let hunter = Arc::new(MemoryScanner::new());
 
-    // 3. Load XDP Firewall (Network Guardian) first - Critical for Phase 8
+    // 4. Load XDP Firewall (Network Guardian) first
     println!("[init] Loading Operation Net-Hunter (XDP Firewall)...");
     let guardian = match Ebpf::load(XDP_OBJECT) {
         Ok(mut xdp_ebpf) => {
@@ -218,9 +247,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
                          },
                          Err(e) => {
                              eprintln!("[init] [WARN] XDP Attach Failed: {}", e);
-                             // Still return guardian for map access if loaded? No, program must be loaded.
-                             // But we loaded it above. Map access works if loaded.
-                             // Attach failure might mean no traffic filtering, but map write works.
                              Some(Arc::new(NetworkGuardian::new(xdp_ebpf)))
                          }
                      }
@@ -235,7 +261,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         }
     };
 
-    // 4. Load Kprobe (Optional Enhancement)
+    // 5. Load Kprobe (Optional)
     if let Err(e) = load_kprobe().await {
          eprintln!("[init] [WARN] KProbe (Syscall Trace) unavailable: {}", e);
          eprintln!("[init] Entering Hybrid Mode (No Trace, but XDP + Hunter active).");
@@ -243,21 +269,22 @@ async fn main() -> Result<(), Box<dyn Error>> {
          println!("[init] KProbe attached. Full Supervision Active.");
     }
     
-    // Start IPC Listener if Guardian exists
+    // 6. Start Background Tasks
     if let Some(g) = &guardian {
+        // Serial Monitor (PQC)
         let g_listener = g.clone();
+        let c_listener = crypto_state.clone();
         tokio::spawn(async move {
-            run_serial_monitor(g_listener).await;
+            run_serial_monitor(g_listener, c_listener).await;
         });
 
-        // Start Heartbeat Emitter (Dead Man's Switch) - only if we have a guardian/network up? 
-        // Or always? Always is safer for Kernel integrity.
+        // Heartbeat (Dead Man's Switch)
         tokio::spawn(async move {
             start_heartbeat_loop().await; 
         });
     }
 
-    // Run Main Loop (Unified)
+    // 7. Run Main Loop (Unified)
     run_supervision_loop(decider, hunter, guardian).await
 }
 
@@ -269,13 +296,10 @@ async fn load_kprobe() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-
 async fn start_heartbeat_loop() {
     println!("[init] [HEARTBEAT] Starting Dead Man's Switch Pulse...");
     let device_path = "/dev/ttyS1";
     use std::time::{SystemTime, UNIX_EPOCH};
-    use tokio::fs::OpenOptions; // Use async open options
-    use tokio::io::AsyncWriteExt;
 
     // Use async file IO
     let mut file = match OpenOptions::new().write(true).open(device_path).await {
@@ -295,40 +319,110 @@ async fn start_heartbeat_loop() {
             // Write JSON + newline
             if let Err(e) = file.write_all(format!("{}\n", json).as_bytes()).await {
                  eprintln!("[init] [HEARTBEAT] Write failed: {}", e);
-                 // Try to re-open? For now, just log.
             }
         }
         sleep(Duration::from_millis(50)).await;
     }
 }
 
-async fn run_serial_monitor(guardian: Arc<NetworkGuardian>) {
-// ...
-        println!("[init] [IPC] Starting Serial Monitor on /dev/ttyS1...");
-        let device_path = "/dev/ttyS1";
-        use tokio::io::{AsyncBufReadExt, BufReader};
-        use tokio::fs::File;
-        loop {
-           match File::open(device_path).await {
-               Ok(file) => {
-                   println!("[init] [IPC] Connected to Host Bridge.");
-                   let reader = BufReader::new(file);
-                   let mut lines = reader.lines();
-                   while let Ok(Some(line)) = lines.next_line().await {
-                        if let Ok(resp) = serde_json::from_str::<BrainResponse>(&line) {
-                             if let Some(ip_str) = resp.block_ip {
-                                  println!("[init] [IPC] Received BLOCK command for {}", ip_str);
-                                  if let Ok(ip_addr) = ip_str.parse::<Ipv4Addr>() {
-                                      let ip_u32: u32 = ip_addr.into();
-                                      let _ = guardian.block_ip(u32::to_be(ip_u32));
-                                  }
-                             }
-                        }
-                   }
-               },
-               Err(_) => sleep(Duration::from_secs(5)).await,
-           }
+async fn run_serial_monitor(guardian: Arc<NetworkGuardian>, crypto: SharedCryptoState) {
+    println!("[init] [IPC] Starting Secure Serial Monitor on /dev/ttyS1...");
+    let device_path = "/dev/ttyS1";
+
+    let file = match OpenOptions::new().read(true).write(true).open(device_path).await {
+        Ok(f) => f,
+        Err(e) => {
+            eprintln!("[init] [PQC] Failed to open /dev/ttyS1: {}", e);
+            sleep(Duration::from_secs(5)).await;
+            return;
         }
+    };
+
+    println!("[init] [IPC] Connected to Host Bridge (Full Duplex).");
+    let (reader, mut writer) = tokio::io::split(file);
+    let mut buf_reader = BufReader::new(reader);
+
+    // 1. Initiate PQC Handshake
+    println!("[init] [PQC] Generating Ephemeral X25519 Keys...");
+    let mut pqc_ctx = Some(PqcContext::new());
+    let pk_b64 = pqc_ctx.as_ref().unwrap().public_key_base64();
+    let hello_msg = PqcMessage::Hello { pk: pk_b64 };
+    
+    // Transmit Hello
+    let json = serde_json::to_string(&hello_msg).unwrap(); 
+    println!("[init] [PQC] Sending PQC_HELLO...");
+    if let Err(e) = writer.write_all(format!("{}\n", json).as_bytes()).await {
+         eprintln!("[init] [PQC] Failed to send Hello: {}", e);
+    }
+    let _ = writer.flush().await;
+
+    let mut lines = buf_reader.lines();
+    loop {
+       match lines.next_line().await {
+           Ok(Some(line)) => {
+                if let Ok(pqc) = serde_json::from_str::<PqcMessage>(&line) {
+                    match pqc {
+                        PqcMessage::Auth { ct } => {
+                            if let Some(ctx) = pqc_ctx.take() {
+                                println!("[init] [PQC] Received AUTH. Completing Handshake...");
+                                match ctx.decapsulate(&ct) {
+                                    Ok(secret) => {
+                                        println!("[init] [PQC] 🔐 Shared Secret Established. Channel SECURE (ChaCha20-Poly1305).");
+                                        let mut lock = crypto.lock().unwrap();
+                                        lock.session = Some(SecureSession::new(&secret));
+                                    },
+                                    Err(e) => eprintln!("[init] [PQC] Handshake Failed: {}", e),
+                                }
+                            } else {
+                                println!("[init] [PQC] Ignored redundant AUTH.");
+                            }
+                        },
+                        PqcMessage::Encrypted { payload } => {
+                            let mut decrypted_json = String::new();
+                            {
+                                let lock = crypto.lock().unwrap();
+                                if let Some(session) = &lock.session {
+                                    if let Ok(pt) = session.decrypt(&payload) {
+                                        decrypted_json = String::from_utf8_lossy(&pt).to_string();
+                                    }
+                                }
+                            }
+                            if !decrypted_json.is_empty() {
+                                    process_brain_response(&decrypted_json, &guardian);
+                            }
+                        },
+                        PqcMessage::Hello { .. } => {}, 
+                        PqcMessage::Legacy(_) => {
+                            process_brain_response(&line, &guardian);
+                        }
+                    }
+                } else {
+                    process_brain_response(&line, &guardian);
+                }
+           },
+           Ok(None) => {
+               // EOF?
+               println!("[init] [IPC] EOF on Bridge. Reconnecting...");
+               break; 
+           },
+           Err(e) => {
+               eprintln!("[init] [IPC] Read Error: {}", e);
+               break;
+           }
+       }
+    }
+}
+
+fn process_brain_response(json: &str, guardian: &Arc<NetworkGuardian>) {
+    if let Ok(resp) = serde_json::from_str::<BrainResponse>(json) {
+         if let Some(ip_str) = resp.block_ip {
+              println!("[init] [IPC] Received BLOCK command for {}", ip_str);
+              if let Ok(ip_addr) = ip_str.parse::<Ipv4Addr>() {
+                  let ip_u32: u32 = ip_addr.into();
+                  let _ = guardian.block_ip(u32::to_be(ip_u32));
+              }
+         }
+    }
 }
 
 async fn run_supervision_loop(decider: Arc<CognitiveDecider>, hunter: Arc<MemoryScanner>, guardian: Option<Arc<NetworkGuardian>>) -> Result<(), Box<dyn Error>> {
@@ -397,16 +491,12 @@ fn reap_zombies() {
                 if status.pid().is_none() {
                     break;
                 }
-                // println!("[init] Reaped zombie child process: {:?}", status);
             }
             Err(_) => break,
         }
     }
 }
 
-// ---------------------------------------------------------------------
-// Helper stubs – replace with real implementations later
-// ---------------------------------------------------------------------
 fn scan_cgroups() -> Result<Vec<u32>, Box<dyn Error>> {
     let mut pids = Vec::new();
     let cgroup_root = "/sys/fs/cgroup";
@@ -415,9 +505,7 @@ fn scan_cgroups() -> Result<Vec<u32>, Box<dyn Error>> {
         return Ok(vec![]);
     }
 
-    // Recursively find pids in cgroup.procs
     visit_cgroups(Path::new(cgroup_root), &mut pids)?;
-
     Ok(pids)
 }
 
@@ -426,13 +514,11 @@ fn visit_cgroups(dir: &Path, pids: &mut Vec<u32>) -> Result<(), Box<dyn Error>> 
         return Ok(());
     }
 
-    // Read cgroup.procs in the current directory
     let procs_path = dir.join("cgroup.procs");
     if procs_path.exists() {
         if let Ok(content) = fs::read_to_string(procs_path) {
             for line in content.lines() {
                 if let Ok(pid) = line.trim().parse::<u32>() {
-                    // Skip self (PID 1)
                     if pid != 1 {
                         pids.push(pid);
                     }
@@ -441,7 +527,6 @@ fn visit_cgroups(dir: &Path, pids: &mut Vec<u32>) -> Result<(), Box<dyn Error>> 
         }
     }
 
-    // Recurse into subdirectories
     for entry in fs::read_dir(dir)? {
         let entry = entry?;
         let path = entry.path();
@@ -454,50 +539,39 @@ fn visit_cgroups(dir: &Path, pids: &mut Vec<u32>) -> Result<(), Box<dyn Error>> 
 }
 
 fn cognitive_risk(pid: u32) -> f64 {
-    // Basic heuristic: check if process is running from /tmp or /var/tmp
     let exe_path = format!("/proc/{}/exe", pid);
     if let Ok(target) = fs::read_link(exe_path) {
         let path_str = target.to_string_lossy();
         if path_str.starts_with("/tmp/") || path_str.starts_with("/var/tmp/") {
-            return 0.95; // Extreme risk for binaries in tmp
+            return 0.95;
         }
     }
     0.0
 }
 
 fn setup_env() -> Result<(), Box<dyn Error>> {
-    // 1. Mount essential filesystems
     let none: Option<&str> = None;
-    
-    // Mount proc
     let _ = fs::create_dir_all("/proc");
     mount(Some("proc"), "/proc", Some("proc"), MsFlags::empty(), none)?;
 
-    // Mount sysfs
     let _ = fs::create_dir_all("/sys");
     mount(Some("sysfs"), "/sys", Some("sysfs"), MsFlags::empty(), none)?;
 
-    // Mount devtmpfs
     let _ = fs::create_dir_all("/dev");
     let _ = mount(Some("devtmpfs"), "/dev", Some("devtmpfs"), MsFlags::empty(), none);
 
-    // Mount debugfs
     let _ = fs::create_dir_all("/sys/kernel/debug");
     mount(Some("debugfs"), "/sys/kernel/debug", Some("debugfs"), MsFlags::empty(), none)?;
 
-    // Mount tracefs at the standard location (required by some eBPF tools)
     let trace_path = "/sys/kernel/debug/tracing";
     let _ = fs::create_dir_all(trace_path);
     let _ = mount(Some("tracefs"), trace_path, Some("tracefs"), MsFlags::empty(), none);
 
-    // Mount cgroup2
     let _ = fs::create_dir_all("/sys/fs/cgroup");
     mount(Some("cgroup2"), "/sys/fs/cgroup", Some("cgroup2"), MsFlags::empty(), none)?;
 
-    // 2. Set RLIMIT_MEMLOCK (critical for eBPF loading)
     setrlimit(Resource::MEMLOCK, rlimit::INFINITY, rlimit::INFINITY)?;
 
-    // 3. Relax perf_event_paranoid for eBPF access
     let paranoid_path = "/proc/sys/kernel/perf_event_paranoid";
     if Path::new(paranoid_path).exists() {
         let _ = fs::write(paranoid_path, "-1");
@@ -520,8 +594,6 @@ fn check_kprobe_pmu() {
 struct PerfEvent;
 impl PerfEvent {
     fn new() -> Result<Self, Box<dyn Error>> {
-        // En un entorno QEMU sin PMU virtualizado, esto fallará.
-        // Simulamos la lógica que el usuario desea proteger.
         if !Path::new("/sys/bus/event_source/devices/cpu/type").exists() {
             return Err("Hardware PMU not available".into());
         }
