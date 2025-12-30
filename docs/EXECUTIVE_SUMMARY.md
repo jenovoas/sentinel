@@ -27,7 +27,7 @@ Sentinel Cortex™ representa el fin de la era de los drivers de kernel inseguro
 - **Uptime del Watchdog**: 99.98% (Userspace NMI Decoupled).
 - **Impacto en Latencia**: Negligible (< 10µs overhead por syscall).
 
-## 🌍 Global Hackathon & Bug Bounty (v3.12.0)
+## 🌍 Global Hackathon & Bug Bounty (v1.0.0-INITIAL_LAUNCH)
 
 Sentinel ha sido blindado para un lanzamiento global de tipo "Hack-Me-If-You-Can":
 - **Static Root of Trust**: Hardening de systemd para precedencia absoluta en el arranque.
@@ -46,7 +46,7 @@ Sentinel Cortex no es solo una herramienta de seguridad; es una re-arquitectura 
 
 ## ⚔️ Guerra Psicológica (Psyop Warfare)
 
-Sentinel v3.13.0 introduce el primer sistema de "Defensa Activa por Disuasión":
+Sentinel v1.0.0-INITIAL_LAUNCH introduce el primer sistema de "Defensa Activa por Disuasión":
 - **Truth Integrity Live Gauge**: Los hackers pueden ver su fracaso en tiempo real a través de indicadores de integridad pública.
 - **ARMOR_MODE Kill Switch**: El sistema entra en modo de defensa reforzada automáticamente si detecta un skew de Cortex > 1.5µs o inundación de ring buffers.
 
