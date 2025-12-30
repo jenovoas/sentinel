@@ -297,6 +297,9 @@ async fn load_kprobe() -> Result<(), Box<dyn Error>> {
 }
 
 async fn start_heartbeat_loop() {
+    // Delay heartbeat to allow PQC Handshake to settle on the shared serial port
+    sleep(Duration::from_secs(5)).await;
+    
     println!("[init] [HEARTBEAT] Starting Dead Man's Switch Pulse...");
     let device_path = "/dev/ttyS1";
     use std::time::{SystemTime, UNIX_EPOCH};
