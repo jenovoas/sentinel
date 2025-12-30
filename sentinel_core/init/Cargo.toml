@@ -1,0 +1,15 @@
+[package]
+name = "init"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+aya = "0.13"
+tokio = { version = "1", features = ["full"] }
+nix = { version = "0.28", features = ["signal", "process", "mount"] }
+rlimit = "0.10"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[dev-dependencies]
+tempfile = "3"
