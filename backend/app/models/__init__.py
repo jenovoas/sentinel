@@ -6,6 +6,9 @@ from .audit_log import AuditLog  # Must be last (has FKs to all others)
 from .monitoring import MetricSample, Anomaly, SecurityAlert, SystemReport, AnomalyType, SeverityLevel
 from .incident import Incident, IncidentAuditLog, IncidentAttachment, IncidentCategoryEnum, IncidentPriorityEnum, IncidentStatusEnum, ImpactEnum, UrgencyEnum
 from .gamma_decision import GammaDecision
+from .cortex_event import CortexEvent
+from .cortex_decision import CortexDecision
+from .security_pattern import SecurityPattern
 
 __all__ = [
     "Tenant", "Organization", "User", "UserRole", "AuditLog",
@@ -14,5 +17,6 @@ __all__ = [
     "Incident", "IncidentAuditLog", "IncidentAttachment",
     "IncidentCategoryEnum", "IncidentPriorityEnum", "IncidentStatusEnum",
     "ImpactEnum", "UrgencyEnum",
-    "GammaDecision"
+    "GammaDecision",
+    "CortexEvent", "CortexDecision", "SecurityPattern"
 ]
