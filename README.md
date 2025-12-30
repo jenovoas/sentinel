@@ -18,7 +18,7 @@ We have achieved a **10.2-Sigma** statistical confidence in the detection of axi
 
 ### 2. Guardian Alpha (LSM Security)
 Security is implemented as a physical restriction in **Ring 0**. Using eBPF LSM hooks, we enforce a "fail-closed" architecture where only whitelisted semantic patterns are allowed to execute, rendering traditional exploits mathematically impossible.
-- [**Explore Security Layer**](ebpf/README.md) | [**Kernel Log Evidence**](ebpf/GUARDIAN_ALPHA_SUCCESS.md)
+- [**Explore Security Layer**](ebpf/README.md) | [**Sentinel Init (Rust PID 1)**](sentinel_core/init/src/main.rs) | [**Kernel Log Evidence**](ebpf/GUARDIAN_ALPHA_SUCCESS.md)
 
 ### 3. The Architecture of Resonance
 Data throughput is optimized using **Optomechanical Cooling** metaphors. By eliminating "computational friction" using Base-60 arithmetic and Dual-Lane telemetry, we achieve stable flow in conditions that would collapse standard systems.

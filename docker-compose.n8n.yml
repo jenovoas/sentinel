@@ -32,13 +32,16 @@ services:
       - n8n_data:/home/node/.n8n
       - ./n8n/workflows:/home/node/.n8n/workflows
 
+    security_opt:
+      - "seccomp=./seccomp/app-hardened.json"
     networks:
-      - sentinel-network
+      - sentinel-net
 
 volumes:
   n8n_data:
     driver: local
 
 networks:
-  sentinel-network:
+  sentinel-net:
     external: true
+    name: sentinel_sentinel-net

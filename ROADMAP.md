@@ -75,6 +75,9 @@ Desarrollar **Sentinel Cortex™**, una plataforma de observabilidad y seguridad
 - [x] Cognitive Kernel (Claim 6 validado - semantic blocking)
 - [x] AI Adaptive Buffers (Claim 7 validado - 31x speedup)
 - [x] Real AI Integration (Ollama + Llama 3.2 - 5/5 accuracy)
+- [x] **Sentinel Init (PID 1)**: Binario estático en Rust (musl) para arranque seguro.
+- [x] **Early Boot Orchestration**: Montaje automático de pseudo-fs y rlimits.
+- [x] **QEMU Verification**: Arranque exitoso en entorno virtualizado.
 - [x] Modular Architecture (sentinel_core package)
 - [x] E2E Integration Testing
 - [x] Memory forensics core (✅ Rust Rayon Scanner)
@@ -84,6 +87,9 @@ Desarrollar **Sentinel Cortex™**, una plataforma de observabilidad y seguridad
 ### Fase 5: Guardian-Beta™ (Cognitive Loop & Optimization) ✅ COMPLETADA (Dic 2025)
 - [x] Memory Forensics con Rayon + Aho-Corasick (Claim 4 validado)
 - [x] DashMap Decision Cache (Latencia < 1ms)
+- [x] **Neural Bridge (IPC)**: Comunicación mediante Unix Domain Sockets (/tmp/sentinel_cortex.sock).
+- [x] **Cognitive Client**: Cliente Rust en Init para consultas al Cerebro Python.
+- [x] **Governance Store**: Registro de evidencias semánticas en SQLite.
 - [x] Optimización de escaneo selectivo (Heap/Stack/Anon)
 - [x] Auto-healing triggers (Cognitive Loop funcional)
 - [x] Bucle Cognitivo Autónomo (Detect -> Analyze -> Block)

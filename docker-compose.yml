@@ -59,6 +59,8 @@ services:
         condition: service_healthy
     networks:
       - sentinel-net
+    security_opt:
+      - "seccomp=./seccomp/app-hardened.json"
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
       interval: 30s
@@ -96,6 +98,23 @@ services:
     networks:
       - sentinel-net
 
+  # Node Exporter for Hardware and Kernel Metrics
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: sentinel-node-exporter
+    command:
+      - '--path.rootfs=/host'
+      - '--collector.perf'
+      - '--collector.perf.cpus=0-7'
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - '/:/host:ro,rslave'
+    cap_add:
+      - SYS_ADMIN
+    networks:
+      - sentinel-net
+
 networks:
   sentinel-net:
     driver: bridge
@@ -104,3 +123,5 @@ volumes:
   postgres_data:
   redis_data:
   vault_data:
+
+
