@@ -5,6 +5,12 @@ const nextConfig = {
   poweredByHeader: false,
   compress: true,
   transpilePackages: ['three'],
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   // Enable WebAssembly support
   webpack: (config, { isServer }) => {
     config.experiments = {

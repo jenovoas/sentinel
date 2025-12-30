@@ -54,6 +54,13 @@ export function Navigation() {
             description: "Auditd watchdog",
         },
         {
+            label: "Cortex",
+            href: "/cortex",
+            icon: "🧠",
+            badge: "Live",
+            description: "Decision Engine",
+        },
+        {
             label: "Metrics",
             href: "/metrics",
             icon: "📈",
