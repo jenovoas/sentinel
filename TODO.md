@@ -36,9 +36,10 @@
 - [ ] Benchmarks de mTLS
 - [ ] Documentación para attorney
 
-### Claims en Desarrollo
+### Claims en Desarrollo (Próxima Versión)
 - [x] Claim 6: Cognitive Kernel POC ✅ (Semantic Firewall)
-- [ ] Claim 7: AI Buffer implementation
+- [x] Claim 7: AI Buffer implementation (v1.0)
+- [x] Claim 10: PQC Secure Channel (v1.0)
 - [ ] Claim 8: Flow Coprocessor design
 - [ ] Claim 9: Planetary Resonance model
 
