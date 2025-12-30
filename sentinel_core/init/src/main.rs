@@ -179,8 +179,14 @@ async fn fallback_run(decider: Arc<CognitiveDecider>, hunter: Arc<MemoryScanner>
                             if let Ok(result) = h_inner.hunt_pid(pid) {
                                 if result.score >= 1.0 {
                                     println!("[init] [HUNTER] THREAT: PID {} score={:.1}", pid, result.score);
-                                    let _ = d_inner.report_threat(pid, result.score, "Memory Hunt: AIOpsDoom/Shellcode pattern detected".to_string()).await;
+                                    println!("[init] [HUNTER] Action: Sending SIGKILL to PID {}", pid);
                                     let _ = kill(Pid::from_raw(pid as i32), Signal::SIGKILL);
+                                    
+                                    println!("[init] [HUNTER] Dispatching Forensic Report to Cortex Bridge...");
+                                    match d_inner.report_threat(pid, result.score, "Memory Hunt: AIOpsDoom/Shellcode pattern detected".to_string()).await {
+                                        Ok(_) => println!("[init] [HUNTER] Forensic Relay: 200 OK"),
+                                        Err(e) => eprintln!("[init] [HUNTER] Forensic Relay FAILED (Bridge unreachable?): {}", e),
+                                    }
                                     return;
                                 }
                             }
