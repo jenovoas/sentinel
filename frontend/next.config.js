@@ -23,10 +23,12 @@ const nextConfig = {
 
   // Proxy API requests to backend
   async rewrites() {
+    // Use Docker service name in production, localhost in development
+    const backendUrl = process.env.BACKEND_URL || 'http://sentinel-vault-backend:8000';
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:8000/api/:path*',
+        destination: `${backendUrl}/api/:path*`,
       },
     ];
   },
