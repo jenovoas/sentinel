@@ -4,6 +4,7 @@
 [![Valuation: $1.335B](https://img.shields.io/badge/IP%20Valuation-%241.335B-success.svg)](docs/en/EXECUTIVE_SUMMARY.md)
 [![Status: Immutable](https://img.shields.io/badge/Status-IMMUTABLE__TRUTH-purple.svg)](proven/EVIDENCE_LSM_ACTIVATION.md)
 [![License: Proprietary](https://img.shields.io/badge/License-Sentinel__Core-black.svg)](LICENSE)
+> [🇪🇸 **Leer en Español**](README_ES.md)
 
 > **"Traditional EDRs allow the bullet to hit the vest. Sentinel dissolves the bullet before it leaves the barrel."**
 
