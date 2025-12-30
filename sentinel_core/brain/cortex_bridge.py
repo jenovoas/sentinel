@@ -22,18 +22,32 @@ class CortexBridge:
                 pid INTEGER,
                 path TEXT,
                 allow BOOLEAN,
-                source TEXT
+                source TEXT,
+                details TEXT,
+                score REAL
             )
         """)
         conn.commit()
         conn.close()
 
-    def _log_evidence(self, pid, path, allow):
+    def _log_evidence(self, pid, path, allow, source="AI_BRAIN", details=None, score=None):
         conn = sqlite3.connect(DB_PATH)
-        conn.execute("INSERT INTO evidence (pid, path, allow, source) VALUES (?, ?, ?, ?)",
-                     (pid, path, 1 if allow else 0, "AI_BRAIN"))
+        conn.execute("INSERT INTO evidence (pid, path, allow, source, details, score) VALUES (?, ?, ?, ?, ?, ?)",
+                     (pid, path, 1 if allow else 0, source, details, score))
         conn.commit()
         conn.close()
+
+    def _relay_to_n8n(self, payload):
+        import urllib.request
+        import json
+        url = os.getenv("N8N_THREAT_WEBHOOK", "http://localhost:5678/webhook/threat-autopsy")
+        try:
+            req = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), 
+                                       headers={'Content-Type': 'application/json'})
+            with urllib.request.urlopen(req, timeout=5) as response:
+                print(f"📡 [CortexBridge] Relé n8n exitoso: {response.status}")
+        except Exception as e:
+            print(f"⚠️ [CortexBridge] Error relé n8n: {e}")
 
     def start(self):
         if os.path.exists(SOCKET_PATH):
@@ -57,15 +71,29 @@ class CortexBridge:
                     
                     request = json.loads(data.decode('utf-8'))
                     pid = request.get("pid")
-                    path = request.get("path")
-
-                    allow = self.brain.analyze_threat(path)
                     
-                    # Log the decision to forensics
-                    self._log_evidence(pid, path, allow)
-
-                    response = json.dumps({"allow": allow})
-                    conn.sendall(response.encode('utf-8'))
+                    # Handle ThreatReport vs RiskCheck
+                    if "score" in request:
+                        # This is a ThreatReport from The Hunter
+                        score = request.get("score")
+                        details = request.get("details", "No details")
+                        print(f"🏹 [CortexBridge] REPORTE DE CAZA: PID {pid}, Score {score}")
+                        
+                        self._log_evidence(pid, "N/A", False, source="HUNTER", details=details, score=score)
+                        self._relay_to_n8n({
+                            "event": "THREAT_NEUTRALIZED",
+                            "pid": pid,
+                            "score": score,
+                            "details": details,
+                            "status": "Inmunidad Preservada"
+                        })
+                    else:
+                        # Traditional RiskCheck
+                        path = request.get("path")
+                        allow = self.brain.analyze_threat(path)
+                        self._log_evidence(pid, path, allow)
+                        response = json.dumps({"allow": allow})
+                        conn.sendall(response.encode('utf-8'))
                 except Exception as e:
                     print(f"⚠️ [CortexBridge] Error procesando solicitud: {e}")
                 finally:
