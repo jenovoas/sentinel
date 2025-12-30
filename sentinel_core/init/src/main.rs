@@ -100,7 +100,16 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Diagnostic: Check kprobe PMU
     check_kprobe_pmu();
 
-    // 2. Load eBPF or enter Fallback Mode
+    // 2. Resilient Observability (User's request)
+    let _perf = match setup_perf_observability() {
+        Ok(p) => Some(p),
+        Err(e) => {
+            eprintln!("[init] [WARN] Observabilidad Cuántica desactivada: {}", e);
+            None
+        }
+    };
+
+    // 3. Load eBPF or enter Fallback Mode
     let decider = Arc::new(CognitiveDecider::new());
     if let Err(e) = load_and_run(decider.clone()).await {
         eprintln!("[init] Cog-Loop Error: {}", e);
@@ -317,6 +326,22 @@ fn check_kprobe_pmu() {
     } else {
         println!("[init] [Diagnostic] WARNING: {} not found!", pmu_type_path);
     }
+}
+
+struct PerfEvent;
+impl PerfEvent {
+    fn new() -> Result<Self, Box<dyn Error>> {
+        // En un entorno QEMU sin PMU virtualizado, esto fallará.
+        // Simulamos la lógica que el usuario desea proteger.
+        if !Path::new("/sys/bus/event_source/devices/cpu/type").exists() {
+            return Err("Hardware PMU not available".into());
+        }
+        Ok(PerfEvent)
+    }
+}
+
+fn setup_perf_observability() -> Result<PerfEvent, Box<dyn Error>> {
+    PerfEvent::new()
 }
 
 
