@@ -64,58 +64,66 @@ class CortexBridge:
             print(f"⚠️ [CortexBridge] Error relé n8n: {e}")
 
     def start(self):
-        if os.path.exists(SOCKET_PATH):
-            os.remove(SOCKET_PATH)
-
-        server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        server.bind(SOCKET_PATH)
-        # Allow any user to connect to the socket (init runs as root, but let's be safe)
-        os.chmod(SOCKET_PATH, 0o666)
-        server.listen(5)
-
-        print(f"🌲 [CortexBridge] Escuchando en {SOCKET_PATH}...")
+        print(f"🌲 [CortexBridge] Connecting to Quantum Tunnel at {SOCKET_PATH}...")
+        
+        # In the virtio-serial architecture, QEMU creates the socket server.
+        # We must connect as a client.
+        
+        # Retry loop for connection
+        import time
+        connected = False
+        while not connected:
+            try:
+                self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                self.sock.connect(SOCKET_PATH)
+                connected = True
+                print(f"📡 [CortexBridge] Connected to Sentinel Kernel (QEMU Bridge).")
+            except Exception as e:
+                print(f"⏳ [CortexBridge] Waiting for Sentinel Kernel... ({e})")
+                time.sleep(2)
 
         try:
             while True:
-                conn, _ = server.accept()
+                data = self.sock.recv(4096)
+                if not data:
+                    print("⚠️ [CortexBridge] Connection closed by Kernel.")
+                    break
+                
                 try:
-                    data = conn.recv(4096)
-                    if not data:
-                        continue
-                    
-                    request = json.loads(data.decode('utf-8'))
-                    pid = request.get("pid")
-                    
-                    # Handle ThreatReport vs RiskCheck
-                    if "score" in request:
-                        # This is a ThreatReport from The Hunter
-                        score = request.get("score")
-                        details = request.get("details", "No details")
-                        print(f"🏹 [CortexBridge] REPORTE DE CAZA: PID {pid}, Score {score}")
+                    # Handle multiple JSON objects in one stream (newline delimited)
+                    buffer = data.decode('utf-8').strip()
+                    for line in buffer.split('\n'):
+                        if not line: continue
                         
-                        self._log_evidence(pid, "N/A", False, source="HUNTER", details=details, score=score)
-                        self._relay_to_n8n({
-                            "event": "THREAT_NEUTRALIZED",
-                            "pid": pid,
-                            "score": score,
-                            "details": details,
-                            "status": "Inmunidad Preservada"
-                        })
-                    else:
-                        # Traditional RiskCheck
-                        path = request.get("path")
-                        allow = self.brain.analyze_threat(path)
-                        self._log_evidence(pid, path, allow)
-                        response = json.dumps({"allow": allow})
-                        conn.sendall(response.encode('utf-8'))
+                        request = json.loads(line)
+                        pid = request.get("pid")
+                        
+                        # Handle ThreatReport vs RiskCheck
+                        if "score" in request:
+                            # This is a ThreatReport from The Hunter
+                            score = request.get("score")
+                            details = request.get("details", "No details")
+                            print(f"🏹 [CortexBridge] REPORTE DE CAZA: PID {pid}, Score {score}")
+                            
+                            self._log_evidence(pid, "N/A", False, source="HUNTER", details=details, score=score)
+                            self._relay_to_n8n({
+                                "event": "THREAT_NEUTRALIZED",
+                                "pid": pid,
+                                "score": score,
+                                "details": details,
+                                "status": "Inmunidad Preservada"
+                            })
+                        else:
+                             # Traditional RiskCheck (Not fully supported in unidirectional serial bridge yet)
+                             pass
+
+                except json.JSONDecodeError:
+                    print(f"⚠️ [CortexBridge] Malformed JSON: {line}")
                 except Exception as e:
-                    print(f"⚠️ [CortexBridge] Error procesando solicitud: {e}")
-                finally:
-                    conn.close()
+                     print(f"⚠️ [CortexBridge] Error processing request: {e}")
+
         finally:
-            server.close()
-            if os.path.exists(SOCKET_PATH):
-                os.remove(SOCKET_PATH)
+            self.sock.close()
 
 if __name__ == "__main__":
     bridge = CortexBridge()
