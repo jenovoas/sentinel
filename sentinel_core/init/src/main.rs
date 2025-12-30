@@ -98,9 +98,10 @@ impl CognitiveDecider {
     }
 
     async fn report_threat(&self, pid: u32, score: f32, details: String) -> Result<(), Box<dyn Error>> {
-        // VIRTIO-SERIAL UPDATE for QEMU Gap Bridging
-        // Instead of connecting to a socket (which doesn't exist in guest), we write to the virtio port
-        let device_path = "/dev/virtio-ports/org.sentinel.cortex";
+        // UART BRIDGE UPDATE (ttyS1)
+        // virtio-serial failed due to missing drivers in initramfs kernel.
+        // We fallback to standard serial port /dev/ttyS1 (mapped to host socket).
+        let device_path = "/dev/ttyS1";
         let report = ThreatReport { pid, score, details };
         let req_json = serde_json::to_string(&report)?; // to_string provides newline
         
