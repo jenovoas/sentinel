@@ -30,6 +30,13 @@ struct BrainRequest {
     path: String,
 }
 
+#[derive(Serialize)]
+struct ThreatReport {
+    pid: u32,
+    score: f32,
+    details: String,
+}
+
 #[derive(Deserialize)]
 struct BrainResponse {
     allow: bool,
@@ -88,6 +95,16 @@ impl CognitiveDecider {
         
         let resp: BrainResponse = serde_json::from_slice(&response_json)?;
         Ok(resp.allow)
+    }
+
+    async fn report_threat(&self, pid: u32, score: f32, details: String) -> Result<(), Box<dyn Error>> {
+        let mut stream = UnixStream::connect(BRAIN_SOCKET).await?;
+        let report = ThreatReport { pid, score, details };
+        let req_json = serde_json::to_vec(&report)?;
+        
+        stream.write_all(&req_json).await?;
+        stream.shutdown().await?; // Close for writing, but we don't expect a response for reports
+        Ok(())
     }
 }
 #[tokio::main]
@@ -155,6 +172,7 @@ async fn fallback_run(decider: Arc<CognitiveDecider>, hunter: Arc<MemoryScanner>
                             if let Ok(result) = h_inner.hunt_pid(pid) {
                                 if result.score >= 1.0 {
                                     println!("[init] [HUNTER] THREAT: PID {} score={:.1}", pid, result.score);
+                                    let _ = d_inner.report_threat(pid, result.score, "Memory Hunt: AIOpsDoom/Shellcode pattern detected".to_string()).await;
                                     let _ = kill(Pid::from_raw(pid as i32), Signal::SIGKILL);
                                     return;
                                 }
@@ -214,6 +232,7 @@ async fn load_and_run(decider: Arc<CognitiveDecider>, hunter: Arc<MemoryScanner>
                             if let Ok(hunt) = h_inner.hunt_pid(pid) {
                                 if hunt.score >= 1.0 {
                                     println!("[init] [HUNTER] 🏹 TERMINATED MALICIOUS PID {} (Score: {:.1})", pid, hunt.score);
+                                    let _ = d_inner.report_threat(pid, hunt.score, "Cog-Loop: Malicious pattern in RWX memory".to_string()).await;
                                     let _ = kill(Pid::from_raw(pid as i32), Signal::SIGKILL);
                                     return;
                                 }
