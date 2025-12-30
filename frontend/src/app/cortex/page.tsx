@@ -59,9 +59,9 @@ export default function CortexDashboard() {
                 fetch(`${baseUrl}/api/v1/cortex/stats?hours=24`),
             ]);
 
-            const patternsData = await patternsRes.json();
-            const decisionsData = await decisionsRes.json();
-            const statsData = await statsRes.json();
+            const patternsData = patternsRes.ok ? await patternsRes.json() : { patterns: [] };
+            const decisionsData = decisionsRes.ok ? await decisionsRes.json() : { decisions: [] };
+            const statsData = statsRes.ok ? await statsRes.json() : null;
 
             setPatterns(patternsData.patterns || []);
             setDecisions(decisionsData.decisions || []);
