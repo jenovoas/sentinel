@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta
 import logging
 import psutil
+import random
 import time
 
 from app.database import get_db
@@ -15,7 +16,7 @@ router = APIRouter(prefix="/api/v1/metrics", tags=["observability"])
 
 @router.get("/summary")
 async def get_metrics_summary(
-    hours: int = Query(24, ge=1, le=168),
+    hours: int = Query(24, ge=1, le=744),
     db: AsyncSession = Depends(get_db)
 ):
     """
