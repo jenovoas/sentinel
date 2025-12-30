@@ -4,26 +4,31 @@ import json
 import sqlite3
 import os
 import sys
+import threading
+import base64
+import time
 
-# Ensure project root is in path for direct execution
+# Ensure project root is in path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, "../../"))
 if project_root not in sys.path:
     sys.path.append(project_root)
 
 try:
-    from .inference import SentinelBrain
+    from . import tiny_crypto
 except ImportError:
-    # Fallback for direct execution 
-    from sentinel_core.brain.inference import SentinelBrain
+    # Direct execution fallback
+    import tiny_crypto
 
 SOCKET_PATH = "/tmp/sentinel_cortex.sock"
 DB_PATH = "/home/jnovoas/sentinel/forensics/evidence.db"
 
 class CortexBridge:
     def __init__(self):
-        self.brain = SentinelBrain()
         self._init_db()
+        self.session_key = None
+        self.sock = None
+        self.lock = threading.Lock()
 
     def _init_db(self):
         os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
@@ -40,143 +45,153 @@ class CortexBridge:
                 score REAL
             )
         """)
-        
-        # Schema Migration: Add columns if they missed the initial creation
         try:
             conn.execute("ALTER TABLE evidence ADD COLUMN details TEXT")
-        except sqlite3.OperationalError:
-            pass # Column likely exists
-            
+        except sqlite3.OperationalError: pass
         try:
             conn.execute("ALTER TABLE evidence ADD COLUMN score REAL")
-        except sqlite3.OperationalError:
-            pass # Column likely exists
-
+        except sqlite3.OperationalError: pass
         conn.commit()
         conn.close()
 
-    def _sanitize_telemetry(self, text):
-        import re
-        if not text:
-            return "N/A"
-        # 1. Remove HTML tags (XSS Prevention)
-        clean = re.sub(r'<.*?>', '', str(text))
-        # 2. Limit character range (ASCII focus)
-        clean = "".join(i for i in clean if ord(i) < 128)
-        # 3. Truncate long payloads (Dashboard stability)
-        return clean[:200]
-
-    def _log_evidence(self, pid, path, allow, source="AI_BRAIN", details=None, score=None):
-        clean_path = self._sanitize_telemetry(path)
-        clean_details = self._sanitize_telemetry(details)
-        
+    def _log_evidence(self, pid, score, details):
         conn = sqlite3.connect(DB_PATH)
-        conn.execute("INSERT INTO evidence (pid, path, allow, source, details, score) VALUES (?, ?, ?, ?, ?, ?)",
-                     (pid, clean_path, 1 if allow else 0, source, clean_details, score))
+        conn.execute("INSERT INTO evidence (pid, score, details, source, allow) VALUES (?, ?, ?, ?, ?)",
+                     (pid, score, details, "HUNTER_ENCRYPTED", 0))
         conn.commit()
         conn.close()
-
-    def _relay_to_n8n(self, payload):
-        import urllib.request
-        import json
-        url = os.getenv("N8N_THREAT_WEBHOOK", "http://localhost:5678/webhook/threat-autopsy")
-        try:
-            req = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), 
-                                       headers={'Content-Type': 'application/json'})
-            with urllib.request.urlopen(req, timeout=5) as response:
-                print(f"📡 [CortexBridge] Relé n8n exitoso: {response.status}")
-        except Exception as e:
-            print(f"⚠️ [CortexBridge] Error relé n8n: {e}")
 
     def start(self):
-        print(f"🌲 [CortexBridge] Connecting to Quantum Tunnel at {SOCKET_PATH}...")
-        
-        # Retry loop for connection
-        import time
-        connected = False
-        while not connected:
+        print(f"🌲 [CortexBridge] Connecting directly to Init Socket: {SOCKET_PATH}")
+        while True:
             try:
                 self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                 self.sock.connect(SOCKET_PATH)
-                connected = True
-                print(f"📡 [CortexBridge] Connected to Sentinel Kernel (QEMU Bridge).")
+                print(f"📡 [CortexBridge] Connected to Sentinel Kernel.")
+                break
             except Exception as e:
                 print(f"⏳ [CortexBridge] Waiting for Sentinel Kernel... ({e})")
                 time.sleep(2)
 
-        # Spawn listener thread
-        import threading
         listener = threading.Thread(target=self.listen_loop, daemon=True)
         listener.start()
 
-        # Enter Command Loop
         self.command_loop()
 
     def listen_loop(self):
-        try:
-            self.buffer = ""
-            while True:
-                data = self.sock.recv(4096)
-                if not data:
-                    print("\n⚠️ [CortexBridge] Connection closed by Kernel.")
-                    os._exit(1) # Exit main thread too
-                
-                # Append new data to buffer
-                self.buffer += data.decode('utf-8', errors='ignore')
-                
-                # Check if we have a complete newline-terminated message
-                while '\n' in self.buffer:
-                    line, self.buffer = self.buffer.split('\n', 1)
-                    line = line.strip()
-                    if not line: continue
-                    
-                    try:
-                        request = json.loads(line)
-                        pid = request.get("pid")
-                        
-                        # Handle ThreatReport vs RiskCheck
-                        if "score" in request:
-                            # This is a ThreatReport from The Hunter
-                            score = request.get("score")
-                            details = request.get("details", "No details")
-                            print(f"\n🏹 [CortexBridge] REPORTE DE CAZA: PID {pid}, Score {score}")
-                            
-                            self._log_evidence(pid, "N/A", False, source="HUNTER", details=details, score=score)
-                            self._relay_to_n8n({
-                                "event": "THREAT_NEUTRALIZED",
-                                "pid": pid,
-                                "score": score,
-                                "details": details,
-                                "status": "Inmunidad Preservada"
-                            })
-                        else:
-                             pass
-
-                    except json.JSONDecodeError:
-                        print(f"⚠️ [CortexBridge] Incomplete/Malformed JSON (buffering): {line[:50]}...")
-                    except Exception as e:
-                         print(f"⚠️ [CortexBridge] Error processing request: {e}")
-        finally:
-             pass
-
-    def command_loop(self):
-        print("💻 [CortexBridge] Command Link Active. Type 'block <IP>' to filter traffic.")
+        buffer = ""
         while True:
             try:
-                cmd = input("FAIL-SAFE> ")
+                data = self.sock.recv(4096)
+                if not data:
+                    print("\n⚠️ Connection lost.")
+                    os._exit(1)
+                
+                # Debug Raw Data
+                # print(f"BYTE DUMP: {data}")
+                
+                buffer += data.decode('utf-8', errors='ignore')
+                while '\n' in buffer:
+                    line, buffer = buffer.split('\n', 1)
+                    self.handle_message(line.strip())
+            except Exception as e:
+                print(f"Error in listener: {e}")
+                break
+
+    def handle_message(self, line):
+        if not line: return
+        try:
+            msg = json.loads(line)
+            msg_type = msg.get("type", "unknown")
+
+            if msg_type == "pqc_hello":
+                self.handle_handshake(msg["pk"])
+            elif msg_type == "enc":
+                self.handle_encrypted(msg["payload"])
+            else:
+                # Legacy/Plaintext Fallback
+                self.process_payload(msg)
+
+        except json.JSONDecodeError:
+            pass 
+
+    def handle_handshake(self, peer_pk_base64):
+        print(f"🔐 [PQC] Handshake Request Received (Key: {peer_pk_base64[:10]}...)")
+        
+        # 1. Generate Ephemeral Keypair (b, B)
+        my_secret, my_public = tiny_crypto.generate_keypair()
+        
+        # 2. Decode Peer's Public Key (A)
+        peer_pk = base64.b64decode(peer_pk_base64)
+        
+        # 3. Compute Shared Secret (S = b * A)
+        shared = tiny_crypto.shared_secret(my_secret, peer_pk)
+        
+        # 4. Derive Session Key (First 32 bytes)
+        self.session_key = shared[:32]
+        
+        # 5. Send Auth (B)
+        my_public_b64 = base64.b64encode(my_public).decode('utf-8')
+        auth_msg = json.dumps({"type": "pqc_auth", "ct": my_public_b64}) + "\n"
+        self.sock.sendall(auth_msg.encode('utf-8'))
+        
+        print("✅ [PQC] Secure Channel Established (X25519 + ChaCha20).")
+
+    def handle_encrypted(self, payload_b64):
+        if not self.session_key:
+            print("⚠️ Encrypted message received but no session key!")
+            return
+
+        try:
+            # decode format: nonce(12) + ct
+            combined = base64.b64decode(payload_b64)
+            nonce = combined[:12]
+            ciphertext = combined[12:]
+            
+            plaintext = tiny_crypto.chacha20_aead_decrypt(self.session_key, nonce, ciphertext)
+            if plaintext:
+                inner_json = json.loads(plaintext.decode('utf-8'))
+                self.process_payload(inner_json)
+            else:
+                print("⚠️ Decryption Failed (MAC Mismatch)")
+        except Exception as e:
+            print(f"Decryption Error: {e}")
+
+    def process_payload(self, data):
+        if "score" in data:
+            print(f"🏹 [SECURE-REPORT] PID {data.get('pid')} - Score: {data.get('score')}")
+            self._log_evidence(data.get('pid'), data.get('score'), data.get('details'))
+        elif "hb" in data:
+            # Heartbeats might come through encrypted now
+            # print(f"💓 Secure Heartbeat: {data['hb']}", end='\r')
+            pass
+
+    def send_command_encrypted(self, cmd_data):
+        json_bytes = json.dumps(cmd_data).encode('utf-8')
+        if self.session_key:
+            nonce = os.urandom(12)
+            ciphertext_tag = tiny_crypto.chacha20_aead_encrypt(self.session_key, nonce, json_bytes)
+            
+            # combine nonce + ct_tag
+            final = nonce + ciphertext_tag
+            payload_b64 = base64.b64encode(final).decode('utf-8')
+            
+            wrapper = json.dumps({"type": "enc", "payload": payload_b64}) + "\n"
+            self.sock.sendall(wrapper.encode('utf-8'))
+        else:
+            print("⚠️ Cannot send command: Session not established.")
+
+    def command_loop(self):
+        print("💻 Crypto-Link Active. Type 'block <IP>'")
+        while True:
+            try:
+                cmd = input("> ")
                 if cmd.startswith("block "):
                     ip = cmd.split(" ")[1]
-                    # Format: BrainResponse JSON
-                    payload = json.dumps({"allow": True, "block_ip": ip}) + "\n"
-                    self.sock.sendall(payload.encode('utf-8'))
-                    print(f"🛡️ [CortexBridge] Sent BLOCK command for {ip}")
-                elif cmd == "exit":
-                    break
-            except EOFError:
+                    self.send_command_encrypted({"allow": True, "block_ip": ip})
+                    print("Sent Encrypted Block Command.")
+            except:
                 break
-            except Exception as e:
-                print(f"Error: {e}")
-        self.sock.close()
 
 if __name__ == "__main__":
     bridge = CortexBridge()
