@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # 🚀 PROD API: Gunicorn Multi-Worker
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    image: sentinel-api:v1.1
+    command: gunicorn -w 4 -k uvicorn.workers.UvicornWorker --worker-connections 1000 app.main:app --bind 0.0.0.0:8000
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://sentinel_user:${POSTGRES_PASSWORD:-darkfenix}@postgres:5432/sentinel_db
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_POOL_SIZE=50
+      - LOG_LEVEL=WARNING
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - sentinel-net
+    restart: always
+
+  # ⚡ ASYNC WORKER: Celery for Cortex Analysis
+  celery:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    image: sentinel-worker:v1.1
+    command: celery -A app.worker worker --loglevel=info --concurrency=10
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://sentinel_user:${POSTGRES_PASSWORD:-darkfenix}@postgres:5432/sentinel_db
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - sentinel-net
+    restart: always
+
+  # 🛡️ INFRASTRUCTURE
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: sentinel_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-darkfenix}
+      POSTGRES_DB: sentinel_db
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    networks:
+      - sentinel-net
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_prod_data:/data
+    networks:
+      - sentinel-net
+
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - backend
+    networks:
+      - sentinel-net
+
+networks:
+  sentinel-net:
+    driver: bridge
+
+volumes:
+  postgres_prod_data:
+  redis_prod_data:
