@@ -22,16 +22,19 @@
     "baseUrl": ".",
     "paths": {
       "@/*": [
-        "./*"
+        "src/*"
       ],
       "@/components/*": [
-        "components/*"
+        "src/components/*"
       ],
       "@/app/*": [
-        "app/*"
+        "src/app/*"
       ],
       "@/lib/*": [
-        "lib/*"
+        "src/lib/*"
+      ],
+      "@/hooks/*": [
+        "src/hooks/*"
       ]
     },
     "allowJs": true,
@@ -47,6 +50,7 @@
   },
   "include": [
     "app",
+    "src",
     "components",
     "lib",
     "next.config.js",
