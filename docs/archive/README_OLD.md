@@ -79,7 +79,7 @@ Sentinel is a **complete observability and security platform** that provides:
    - SHA256 checksums for verification
    - Webhook notifications (Slack/Discord)
    - Automated cleanup and retention policies
-   - [Learn more →](scripts/backup/README.md)
+   - [Learn more →](../tools/scripts/backup/README.md)
 
 ---
 

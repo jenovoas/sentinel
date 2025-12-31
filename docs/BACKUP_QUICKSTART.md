@@ -99,7 +99,7 @@ LOG_LEVEL=DEBUG ./scripts/backup/backup.sh
 
 ## 📚 Documentación Completa
 
-- **README del sistema**: [scripts/backup/README.md](scripts/backup/README.md)
+- **README del sistema**: [scripts/backup/README.md](../tools/scripts/backup/README.md)
 - **Resumen para inversores**: [docs/BACKUP_SYSTEM_INVESTOR_SUMMARY.md](docs/BACKUP_SYSTEM_INVESTOR_SUMMARY.md)
 - **Plan de implementación**: [docs/BACKUP_REFACTORING_PLAN.md](docs/BACKUP_REFACTORING_PLAN.md)
 
