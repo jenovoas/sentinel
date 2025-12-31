@@ -11,6 +11,11 @@ services:
       - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
     networks:
       - sentinel-net
     healthcheck:
@@ -27,6 +32,11 @@ services:
       - "127.0.0.1:6379:6379"
     volumes:
       - redis_data:/data
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
     networks:
       - sentinel-net
     healthcheck:
@@ -48,13 +58,18 @@ services:
       - vault_data:/app/storage
     environment:
       - PYTHONUNBUFFERED=1
-      - DATABASE_URL=postgresql+asyncpg://sentinel_user:${POSTGRES_PASSWORD:-REDACTED_PASSWORD}@postgres:5432/sentinel_db
+      - DATABASE_URL=postgresql+asyncpg://sentinel_user:${POSTGRES_PASSWORD:-sentinel_default_secure_pass}@postgres:5432/sentinel_db
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
     networks:
       - sentinel-net
     security_opt:
@@ -77,6 +92,11 @@ services:
       - NEXT_PUBLIC_API_URL=http://backend:8000
     depends_on:
       - backend
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
     networks:
       - sentinel-net
 
