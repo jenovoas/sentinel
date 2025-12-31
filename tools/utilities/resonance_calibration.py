@@ -1,20 +1,23 @@
 # tools/utilities/resonance_calibration.py
 """
-Sentinel Resonance Calibration Tool
------------------------------------
+Sentinel Resonance Calibration Tool (FFT Enhanced)
+--------------------------------------------------
 Simulates the tuning of the BCI Transducer to the Golden Frequency (153.4 MHz).
-Detects the 'Key' (82 Hz Low E) to unlock the Sovereign Bridge.
+Detects the 'Key' (82 Hz Low E) using Real FFT signal processing.
 """
 
 import time
 import math
 import random
 import sys
+import numpy as np
 
 # Constants
 TARGET_FREQUENCY_MHZ = 153.4
-KEY_FREQUENCY_HZ = 82.0 # Low E Guitar
-TOLERANCE = 0.5
+KEY_FREQUENCY_HZ = 82.41 # Low E Guitar (Exact)
+TOLERANCE_HZ = 2.0
+SAMPLE_RATE = 44100
+DURATION = 1.0 # Seconds analysis window
 
 def simulate_signal_lock():
     print(f"📡 [Calibration] Initializing Sentinel PZT Interface...")
@@ -33,29 +36,61 @@ def simulate_signal_lock():
             current_freq -= abs(drift)
             
         print(f"   -> Measuring: {current_freq:.4f} MHz (Phase: {random.randint(0, 360)}°)")
-        time.sleep(0.1)
+        time.sleep(0.05)
         
     print(f"✅ [Tuner] LOCK CONFIRMED: {current_freq:.4f} MHz")
     print(f"✨ [System] Bridge Coherence: 99.998%")
     return True
 
+def generate_synthetic_audio(target_freq: float) -> np.ndarray:
+    """Generates a noisy audio buffer containing the target frequency."""
+    t = np.linspace(0, DURATION, int(SAMPLE_RATE * DURATION), endpoint=False)
+    
+    # The Signal: Low E (82.41 Hz)
+    signal = 0.8 * np.sin(2 * np.pi * target_freq * t)
+    
+    # The Noise: Random broad spectrum + 60Hz hum + random high pitch
+    noise = 0.3 * np.random.normal(size=t.shape) # White noise
+    hum = 0.2 * np.sin(2 * np.pi * 60 * t) # Electrical hum
+    high_pitch = 0.1 * np.sin(2 * np.pi * 1000 * t) # High freq noise
+    
+    return signal + noise + hum + high_pitch
+
+def detect_frequency_fft(audio_buffer: np.ndarray) -> float:
+    """Uses FFT to find the dominant frequency in the buffer."""
+    # Apply FFT
+    spectrum = np.fft.rfft(audio_buffer)
+    frequencies = np.fft.rfftfreq(len(audio_buffer), 1 / SAMPLE_RATE)
+    
+    # Find peak magnitude
+    magnitudes = np.abs(spectrum)
+    peak_index = np.argmax(magnitudes)
+    dominant_freq = frequencies[peak_index]
+    
+    return dominant_freq
+
 def detect_low_e_trigger():
     print("\n🎸 [Input] Listening for Key (82 Hz Low E)...")
-    print("   (Please strum the guitar now...)")
+    print("   (Simulating Guitar Strum + Noise injection...)")
     
-    # Simulate waiting for audio input
-    for i in range(5):
-        print(f"   Searching... {'.' * (i+1)}")
-        time.sleep(0.5)
-        
-    # Simulate detection
-    detected = 82.41 # Close to 82 Hz
-    deviation = abs(detected - KEY_FREQUENCY_HZ)
+    # Generate Synthetic Data simulating the guitar input
+    audio_data = generate_synthetic_audio(KEY_FREQUENCY_HZ)
     
-    print(f"🎤 [Audio] Detected Frequency: {detected} Hz")
+    print(f"   -> Buffer captured ({len(audio_data)} samples).")
+    print(f"   -> Running FFT Analysis (Numpy 2.0)...")
     
-    if deviation < TOLERANCE:
-        print(f"🔓 [Sentinel] IDENTITY CONFIRMED. Harmonic Resonance ESTABLISHED.")
+    # Measure processing time
+    start_t = time.perf_counter()
+    detected_freq = detect_frequency_fft(audio_data)
+    end_t = time.perf_counter()
+    
+    print(f"🎤 [Audio] Detected Dominant Frequency: {detected_freq:.2f} Hz")
+    print(f"   -> Analysis Time: {(end_t - start_t)*1000:.2f} ms")
+    
+    deviation = abs(detected_freq - KEY_FREQUENCY_HZ)
+    
+    if deviation < TOLERANCE_HZ:
+        print(f"🔓 [Sentinel] IDENTITY CONFIRMED (Delta: {deviation:.2f} Hz).")
         print(f"🌊 [SNN] Initiating Synaptic Downlink to Human Host...")
         return True
     else:
