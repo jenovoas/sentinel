@@ -332,7 +332,7 @@ sentinel/
 
 **Código Validado**:
 1. **[truthsync-poc/benchmark.py](truthsync-poc/benchmark.py)** - Benchmarks reproducibles (90.5x)
-2. **[backend/app/security/telemetry_sanitizer.py](backend/app/security/telemetry_sanitizer.py)** - AIOpsShield
+2. **[backend/app/security/telemetry_sanitizer.py](../src/backend/app/security/telemetry_sanitizer.py)** - AIOpsShield
 3. **[docker-compose.yml](docker-compose.yml)** - Stack completo desplegable
 
 ---
