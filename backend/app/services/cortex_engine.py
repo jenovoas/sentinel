@@ -21,6 +21,7 @@ from app.models.cortex_decision import CortexDecision
 from app.models.security_pattern import SecurityPattern
 from app.services.pattern_detector import PatternDetector
 from app.services.confidence_scorer import ConfidenceScorer
+from app.security.aiops_shield import AIOpsShield
 from app.services.metrics_service import (
     CORTEX_PROCESSING_TIME,
     CORTEX_PATTERNS_TOTAL,
@@ -66,6 +67,28 @@ class CortexDecisionEngine:
         """
         start_time_total = time()
         
+        # ACT 1: Cognitive Hardening (AIOpsShield)
+        # Prevent AIOpsDoom by blocking toxic logs before they reach the engine
+        if not AIOpsShield.sanitize_log(event_data):
+            logger.warning(f"🛡️ AIOpsShield: Event QUARANTINED due to AIOpsDoom pattern.")
+            # Create a synthetic decision for quarantine
+            decision = CortexDecision(
+                event_id=None, # Will be set or handled below if we want to save it
+                decision_type="quarantine",
+                confidence=1.0,
+                patterns_detected=["AIOpsDoom"],
+                reasoning="AIOpsShield: Potential cognitive injection (AIOpsDoom) detected in telemetry logs. Event blocked from LLM processing.",
+                processing_time_ms=(time() - start_time_total) * 1000
+            )
+            # We still want to save the event for forensics
+            enriched_event = await self._enrich_event(event_data)
+            db_event = await self._save_event(enriched_event)
+            decision.event_id = db_event.id
+            
+            self.db.add(decision)
+            await self.db.commit()
+            return decision
+
         try:
             # MECANISMO DE INTEGRIDAD DE VERDAD (Ring Wrap-around Defense)
             # Monitorear la tasa de eventos para detectar inundaciones que oculten exploits

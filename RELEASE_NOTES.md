@@ -25,7 +25,15 @@ Version 1.0.0 marks the initial release of the Sentinel Cortex platform as a **Q
 ## 🛠️ Components Updated
 - **Sentinel Init (Rust)**: v1.0.0 - Added `crypto` module, `x25519-dalek` integration, and full-duplex UART IO.
 - **Cortex Bridge (Python)**: v1.0.0 - Added PQC Handshake logic and `tiny_crypto` library.
-- **Documentation**: Updated `ARCHITECTURE.md` to v1.0.0 (Whitepaper).
+- **Documentation**: Updated `ARCHITECTURE.md` to# v1.0.0-AIOPS_SHIELD (2025-12-30)
+- **Phase 9: Cognitive Hardening**
+- Implemented **AIOpsShield** (LLM Immunity Middleware).
+- Neutralized **AIOpsDoom** (Telemetry injection attacks).
+- 100% Immunity confirmed in test suite.
+- Prepared Debian 13 "Trixie" transition script.
+- Standardized project version for first official release.
+
+# v1.0.0-GOLDEN_MASTER (2025-12-30).
 
 ## ⚠️ Notes
 - **QEMU Compatibility**: Due to `virtio-serial` buffer limitations in the test environment, some initial handshake packets may require manual re-triggering during boot. This does not affect the cryptographic validity of the channel.
