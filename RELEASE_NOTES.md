@@ -23,9 +23,9 @@ Version 1.0.0 marks the initial release of the Sentinel Cortex platform as a **Q
 - **Panic Mode**: Detection of High-Confidence Threats (Score > 0.9) triggers an immediate network quarantine at the packet level, dropping all ingress traffic before it reaches the OS stack.
 
 ## 🛠️ Components Updated
-- **Sentinel Init (Rust)**: v0.4.0 - Added `crypto` module, `x25519-dalek` integration, and full-duplex UART IO.
-- **Cortex Bridge (Python)**: v3.3.0 - Added PQC Handshake logic and `tiny_crypto` library.
-- **Documentation**: Updated `ARCHITECTURE.md` to v2.0.0 (Whitepaper).
+- **Sentinel Init (Rust)**: v1.0.0 - Added `crypto` module, `x25519-dalek` integration, and full-duplex UART IO.
+- **Cortex Bridge (Python)**: v1.0.0 - Added PQC Handshake logic and `tiny_crypto` library.
+- **Documentation**: Updated `ARCHITECTURE.md` to v1.0.0 (Whitepaper).
 
 ## ⚠️ Notes
 - **QEMU Compatibility**: Due to `virtio-serial` buffer limitations in the test environment, some initial handshake packets may require manual re-triggering during boot. This does not affect the cryptographic validity of the channel.
