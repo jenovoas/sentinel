@@ -1,6 +1,6 @@
 #!/bin/bash
 # scripts/deploy_sentinel.sh
-# Master Deployment Script for Sentinel OS Foundation (Ironclad v3.0.0)
+# Master Deployment Script for Sentinel OS Foundation (Ironclad v1.0.0)
 
 set -e
 
