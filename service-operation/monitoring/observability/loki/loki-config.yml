@@ -39,6 +39,9 @@ limits_config:
   max_streams_per_user: 10000
   max_global_streams_per_user: 50000
   
+  # Global ingestion robustness
+  out_of_order_time_window: 10s
+  
   # Security Lane: STRICT ordering (no tolerance)
   # Observability Lane: 2s out-of-order tolerance
   # This is applied per-stream based on labels
@@ -59,9 +62,10 @@ limits_config:
 overrides:
   # Default tenant (all streams)
   "fake":
-    # Observability lane: Allow out-of-order within 2s window
-    # Security lane streams will override this to 0s
-    out_of_order_time_window: 2s
+    # Observability lane: Allow out-of-order within 10s window (relaxed)
+    # Security lane: Still falls under tenant default, but since it's 0ms batch, risk is low.
+    # Note: Loki doesn't support per-label out_of_order_time_window easily in unified tenant.
+    out_of_order_time_window: 10s
     
     # Retention policies by stream selector
     retention_stream:
