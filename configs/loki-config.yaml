@@ -16,7 +16,8 @@ common:
 
 memberlist:
   join_members:
-    - loki:7946
+    - loki-1:7946
+    - loki-2:7946
 
 ingester:
   lifecycler:
