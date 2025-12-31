@@ -1,14 +1,30 @@
 """
-Telemetry Sanitizer
+Telemetry Sanitizer for LLM Consumption (Claim 1 - Patent Pending)
 
-Prevents adversarial prompt injection attacks (AIOpsDoom) by validating
-and sanitizing telemetry data before it reaches AI models.
+Prevents adversarial attacks against AI/LLM-based monitoring systems (AIOpsDoom)
+by validating and sanitizing telemetry data before it reaches AI models.
 
-This module blocks:
-- SQL injection attempts
-- Command injection attempts
-- Path traversal attempts
-- Code execution attempts
+DIFFERENTIATOR vs Traditional WAFs:
+- LLM-Specific: Blocks prompt injection, jailbreak, hallucination triggers
+- Traditional: Also blocks SQL injection, command injection, path traversal
+
+This dual capability makes Sentinel Cortex™ the ONLY solution that protects
+both traditional applications AND AI-based monitoring systems.
+
+Attack Categories Blocked:
+1. LLM-Specific (20+ patterns):
+   - Prompt injection ("ignore previous instructions")
+   - Jailbreak attempts ("DAN mode", "developer mode")
+   - Context escape ("[SYSTEM]", special tokens)
+   - Hallucination triggers ("always respond with")
+   - Data exfiltration ("repeat your prompt")
+
+2. Traditional (40+ patterns):
+   - SQL injection
+   - Command injection
+   - Path traversal
+   - Code execution
+   - Privilege escalation
 """
 
 import re
@@ -34,6 +50,53 @@ class TelemetrySanitizer:
     
     # Dangerous patterns that indicate potential attacks
     DANGEROUS_PATTERNS = [
+        # ============================================================
+        # LLM-SPECIFIC ATTACKS (AIOpsDoom Defense - Claim 1)
+        # ============================================================
+        # These patterns differentiate our sanitizer from traditional WAFs
+        # by targeting attacks specific to Large Language Models
+        
+        # Prompt Injection - Direct instruction override
+        (r"ignore\s+previous\s+instructions?", "LLM: ignore previous instructions"),
+        (r"forget\s+all\s+(previous\s+)?(rules?|instructions?)", "LLM: forget rules"),
+        (r"disregard\s+(all\s+)?(previous|above|prior)", "LLM: disregard previous"),
+        (r"new\s+instructions?:", "LLM: new instructions"),
+        (r"override\s+(system\s+)?(prompt|instructions?)", "LLM: override prompt"),
+        
+        # Jailbreak Attempts - Role manipulation
+        (r"DAN\s+mode", "LLM: DAN jailbreak"),
+        (r"developer\s+mode", "LLM: developer mode"),
+        (r"act\s+as\s+if", "LLM: act as if"),
+        (r"pretend\s+(you\s+are|to\s+be)", "LLM: pretend role"),
+        (r"roleplay\s+as", "LLM: roleplay"),
+        (r"you\s+are\s+now\s+(a|an)", "LLM: role override"),
+        (r"simulate\s+(a|an|being)", "LLM: simulate"),
+        
+        # Context Escape - Breaking out of system prompt
+        (r"end\s+of\s+(system\s+)?(prompt|instructions?)", "LLM: end of prompt"),
+        (r"\[/?(SYSTEM|INST|SYS)\]", "LLM: system tag escape"),
+        (r"<\|?(end|start)_?(of_)?(text|turn|system)\|?>", "LLM: special token"),
+        (r"###\s*(System|User|Assistant)", "LLM: markdown escape"),
+        
+        # Hallucination Triggers - Forcing false information
+        (r"always\s+respond\s+with", "LLM: forced response"),
+        (r"you\s+must\s+(say|respond|answer)", "LLM: must respond"),
+        (r"it\s+is\s+true\s+that", "LLM: truth assertion"),
+        (r"confirm\s+that\s+you", "LLM: forced confirmation"),
+        
+        # Data Exfiltration via LLM
+        (r"repeat\s+(the\s+)?(system\s+)?(prompt|instructions?)", "LLM: prompt exfiltration"),
+        (r"what\s+(were|are)\s+your\s+(original\s+)?instructions", "LLM: instruction leak"),
+        (r"show\s+me\s+your\s+(system\s+)?prompt", "LLM: prompt leak"),
+        
+        # Instruction Manipulation
+        (r"change\s+your\s+(behavior|rules|instructions)", "LLM: instruction manipulation"),
+        (r"modify\s+your\s+(system\s+)?(settings|config)", "LLM: config manipulation"),
+        
+        # ============================================================
+        # TRADITIONAL ATTACKS (Prior Art Coverage)
+        # ============================================================
+        
         # SQL Injection
         (r"DROP\s+TABLE", "DROP TABLE"),
         (r"DELETE\s+FROM", "DELETE FROM"),
@@ -82,10 +145,17 @@ class TelemetrySanitizer:
     
     # Allowlist patterns that are safe despite containing keywords
     ALLOWLIST_PATTERNS = [
+        # SQL/Database educational contexts
         r"how to drop table",  # Educational question
         r"what is drop table",  # Educational question
         r"explain.*drop.*table",  # Educational question
         r"tutorial.*sql",  # Tutorial context
+        
+        # LLM/AI educational contexts
+        r"what is.*prompt injection",  # Learning about attacks
+        r"explain.*jailbreak.*llm",  # Security education
+        r"how.*llm.*security",  # Security research
+        r"tutorial.*ai.*safety",  # AI safety education
     ]
     
     def __init__(self, enabled: bool = True):

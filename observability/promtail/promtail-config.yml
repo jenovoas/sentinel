@@ -190,7 +190,7 @@ scrape_configs:
             - labels:
                 job:
 
-  # Auditd log (watchdog) desde archivo
+  # Auditd log (watchdog) desde archivo - SECURITY LANE
   - job_name: auditd
     static_configs:
       - targets:
@@ -198,6 +198,7 @@ scrape_configs:
         labels:
           job: auditd
           host: sentinel
+          lane: security  # SECURITY LANE
           __path__: /var/log/audit/audit.log
     pipeline_stages:
       - regex:
@@ -211,3 +212,72 @@ scrape_configs:
                 expression: 'type=(?P<type>\w+)'
             - labels:
                 type:
+
+  # eBPF Guardian-Alpha events - SECURITY LANE
+  - job_name: ebpf-guardian
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: ebpf
+          host: sentinel
+          lane: security  # SECURITY LANE
+          source: guardian-alpha
+          __path__: /sys/kernel/debug/tracing/trace_pipe
+    pipeline_stages:
+      - regex:
+          expression: 'Guardian-Alpha.*: (?P<message>.*)'
+      - labels:
+          message:
+      - timestamp:
+          source: timestamp
+          format: Unix
+
+  # Sentinel Backend Security Events - SECURITY LANE
+  - job_name: sentinel-security
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: sentinel-backend
+          host: sentinel
+          lane: security  # SECURITY LANE
+          source: shield
+          __path__: /var/log/sentinel/security/*.log
+    pipeline_stages:
+      - json:
+          expressions:
+            level: level
+            timestamp: timestamp
+            message: message
+            threat: threat
+            action: action
+      - labels:
+          level:
+          threat:
+          action:
+      - timestamp:
+          source: timestamp
+          format: RFC3339
+
+  # Application Logs - OBSERVABILITY LANE
+  - job_name: app-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: application
+          host: sentinel
+          lane: ops  # OBSERVABILITY LANE
+          __path__: /var/log/sentinel/app/*.log
+    pipeline_stages:
+      - json:
+          expressions:
+            level: level
+            timestamp: timestamp
+            message: message
+      - labels:
+          level:
+      - timestamp:
+          source: timestamp
+          format: RFC3339
