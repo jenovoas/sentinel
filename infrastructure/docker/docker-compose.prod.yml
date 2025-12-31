@@ -4,7 +4,7 @@ services:
   # 🚀 PROD API: Gunicorn Multi-Worker (300x Scale)
   backend:
     build:
-      context: ./backend
+      context: ../../src/backend
       dockerfile: Dockerfile.prod
     image: sentinel-api:v1.1
     # Optimized for high concurrency
@@ -31,7 +31,7 @@ services:
   # ⚡ ASYNC WORKER: Celery for Cortex Analysis
   celery:
     build:
-      context: ./backend
+      context: ../../src/backend
       dockerfile: Dockerfile.prod
     image: sentinel-worker:v1.1
     command: celery -A app.worker worker --loglevel=info --concurrency=4

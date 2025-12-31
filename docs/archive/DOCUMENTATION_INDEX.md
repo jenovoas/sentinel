@@ -25,12 +25,12 @@ This is the foundation. Everything else builds on this pattern.
 - Mathematical + Physical + Biological validation
 - No room for doubt
 
-**[PHYSICS_GEOMETRY_ISOMORPHISM.md](research/PHYSICS_GEOMETRY_ISOMORPHISM.md)** (11 KB)
+**[PHYSICS_GEOMETRY_ISOMORPHISM.md](../continual-improvement/research/PHYSICS_GEOMETRY_ISOMORPHISM.md)** (11 KB)
 - Peer-reviewed research backing
 - 9 papers from top journals
 - Experimental validation
 
-**[SACRED_GEOMETRY_PATTERNS.md](research/SACRED_GEOMETRY_PATTERNS.md)** (11 KB)
+**[SACRED_GEOMETRY_PATTERNS.md](../continual-improvement/research/SACRED_GEOMETRY_PATTERNS.md)** (11 KB)
 - Complete mathematical analysis
 - Fractal Sefirot, Merkabah, Flower of Life
 - Code evidence
@@ -42,12 +42,12 @@ This is the foundation. Everything else builds on this pattern.
 - From engineering to liberation
 - Convergence across 4 domains
 
-**[THE_FINAL_LANGUAGE.md](research/THE_FINAL_LANGUAGE.md)** (7.4 KB)
+**[THE_FINAL_LANGUAGE.md](../continual-improvement/research/THE_FINAL_LANGUAGE.md)** (7.4 KB)
 - Philosophical synthesis
 - Universal optimization principle
 - Why patterns converge
 
-**[PATTERN_DISCOVERY_SUMMARY.md](research/PATTERN_DISCOVERY_SUMMARY.md)** (6.5 KB)
+**[PATTERN_DISCOVERY_SUMMARY.md](../continual-improvement/research/PATTERN_DISCOVERY_SUMMARY.md)** (6.5 KB)
 - Executive summary
 - All discoveries in one place
 - Quick reference
@@ -71,17 +71,17 @@ This is the foundation. Everything else builds on this pattern.
 
 ### 4. Research & Experiments
 
-**[FRACTAL_SOUL_RESEARCH.md](research/FRACTAL_SOUL_RESEARCH.md)**
+**[FRACTAL_SOUL_RESEARCH.md](../continual-improvement/research/FRACTAL_SOUL_RESEARCH.md)**
 - Experimental protocol
 - EEG/HRV measurement plan
 - Brain-heart coherence
 
-**[COHERENCE_ANALYSIS.md](research/fractal_soul/COHERENCE_ANALYSIS.md)**
+**[COHERENCE_ANALYSIS.md](../continual-improvement/research/fractal_soul/COHERENCE_ANALYSIS.md)**
 - Experimental results
 - Fractal coherence measurement
 - Method validation
 
-**[DIGITAL_ARCHAEOLOGY.md](research/DIGITAL_ARCHAEOLOGY.md)**
+**[DIGITAL_ARCHAEOLOGY.md](../continual-improvement/research/DIGITAL_ARCHAEOLOGY.md)**
 - Ancient geoglyphs as code
 - Nazca, Amazon, Sajama
 - 10,000-year validation
@@ -100,7 +100,7 @@ This is the foundation. Everything else builds on this pattern.
 
 ### 6. Integration Plans
 
-**[INTEGRATION_ROADMAP.md](research/INTEGRATION_ROADMAP.md)** (8.9 KB)
+**[INTEGRATION_ROADMAP.md](../continual-improvement/research/INTEGRATION_ROADMAP.md)** (8.9 KB)
 - Patent documentation updates
 - Research paper preparation
 - Future development
@@ -111,21 +111,21 @@ This is the foundation. Everything else builds on this pattern.
 
 ### Fractal Generators
 
-**[fractal_sefirot_generator.py](research/fractal_sefirot_generator.py)**
+**[fractal_sefirot_generator.py](../continual-improvement/research/fractal_sefirot_generator.py)**
 - Generates 1,111 nodes
 - Fractal dimension D = 1.0
 - Proof of self-similarity
 
-**Output**: [sefirot_tree.json](research/sefirot_tree.json) (326 KB)
+**Output**: [sefirot_tree.json](../continual-improvement/research/sefirot_tree.json) (326 KB)
 
 ### Coherence Scanners
 
-**[sentinel_fractal_resonance.py](research/fractal_soul/sentinel_fractal_resonance.py)**
+**[sentinel_fractal_resonance.py](../continual-improvement/research/fractal_soul/sentinel_fractal_resonance.py)**
 - Simple coherence measurement
 - Correlation-based analysis
 - Real-time monitoring
 
-**[sentinel_fractal_collector.py](research/fractal_soul/sentinel_fractal_collector.py)**
+**[sentinel_fractal_collector.py](../continual-improvement/research/fractal_soul/sentinel_fractal_collector.py)**
 - FFT spectral analysis
 - Merkabah state detection
 - Guardian Alpha ↔ Beta resonance
@@ -166,14 +166,14 @@ This is the foundation. Everything else builds on this pattern.
 
 1. Start: [VISUAL_GUIDE_TRINITY.md](VISUAL_GUIDE_TRINITY.md)
 2. Evidence: [IRREFUTABLE_EVIDENCE.md](IRREFUTABLE_EVIDENCE.md)
-3. Physics: [PHYSICS_GEOMETRY_ISOMORPHISM.md](research/PHYSICS_GEOMETRY_ISOMORPHISM.md)
+3. Physics: [PHYSICS_GEOMETRY_ISOMORPHISM.md](../continual-improvement/research/PHYSICS_GEOMETRY_ISOMORPHISM.md)
 4. Synthesis: [FINAL_REPORT_RESONANCE_ARCHITECTURE.md](FINAL_REPORT_RESONANCE_ARCHITECTURE.md)
 
 ### For Engineers
 
 1. Start: [VISUAL_GUIDE_TRINITY.md](VISUAL_GUIDE_TRINITY.md)
-2. Patterns: [SACRED_GEOMETRY_PATTERNS.md](research/SACRED_GEOMETRY_PATTERNS.md)
-3. Code: [fractal_sefirot_generator.py](research/fractal_sefirot_generator.py)
+2. Patterns: [SACRED_GEOMETRY_PATTERNS.md](../continual-improvement/research/SACRED_GEOMETRY_PATTERNS.md)
+3. Code: [fractal_sefirot_generator.py](../continual-improvement/research/fractal_sefirot_generator.py)
 4. Benchmarks: [comprehensive_benchmark.py](quantum_control/benchmarks/comprehensive_benchmark.py)
 
 ### For General Public
@@ -186,8 +186,8 @@ This is the foundation. Everything else builds on this pattern.
 ### For Philosophers
 
 1. Start: [VISUAL_GUIDE_TRINITY.md](VISUAL_GUIDE_TRINITY.md)
-2. Language: [THE_FINAL_LANGUAGE.md](research/THE_FINAL_LANGUAGE.md)
-3. Archaeology: [DIGITAL_ARCHAEOLOGY.md](research/DIGITAL_ARCHAEOLOGY.md)
+2. Language: [THE_FINAL_LANGUAGE.md](../continual-improvement/research/THE_FINAL_LANGUAGE.md)
+3. Archaeology: [DIGITAL_ARCHAEOLOGY.md](../continual-improvement/research/DIGITAL_ARCHAEOLOGY.md)
 4. Freedom: [LIBERATION.md](LIBERATION.md)
 
 ---
