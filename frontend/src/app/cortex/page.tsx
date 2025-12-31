@@ -1,25 +1,25 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { TruthGauge } from '@/components/cortex/TruthGauge';
+import MandalaUI from '@/components/cortex/MandalaUI';
 import { KillBoard } from '@/components/cortex/KillBoard';
 import { MetricsGrid } from '@/components/cortex/MetricsGrid';
 import { AIChat } from '@/components/cortex/AIChat';
 import { motion } from 'framer-motion';
 
 export default function CortexDashboard() {
-    const [integrity, setIntegrity] = useState(100);
+    // const [integrity, setIntegrity] = useState(100);
     const [kills, setKills] = useState(15689);
 
     // Simulación de "Armor Mode" y actividad para la demo
     useEffect(() => {
         const interval = setInterval(() => {
-            // Randomly dip integrity to show effects
-            if (Math.random() > 0.8) {
-                setIntegrity(prev => Math.max(90, prev - 5));
-            } else {
-                setIntegrity(prev => Math.min(100, prev + 1));
-            }
+            // Randomly dip integrity to show effects (Deprecated for Mandala)
+            // if (Math.random() > 0.8) {
+            //    setIntegrity(prev => Math.max(90, prev - 5));
+            // } else {
+            //    setIntegrity(prev => Math.min(100, prev + 1));
+            // }
 
             // Increment kills
             setKills(prev => prev + Math.floor(Math.random() * 5));
@@ -67,8 +67,8 @@ export default function CortexDashboard() {
                         transition={{ duration: 0.7 }}
                         className="flex-1 flex items-center justify-center p-6"
                     >
-                        <div className="scale-125">
-                            <TruthGauge integrity={integrity} />
+                        <div className="scale-100">
+                            <MandalaUI />
                         </div>
                     </motion.div>
 

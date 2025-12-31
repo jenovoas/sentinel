@@ -64,6 +64,7 @@ scrape_configs:
       labels:
         job: systemd-journal
         host: sentinel
+        lane: ops  # OBSERVABILITY LANE
     relabel_configs:
       # Agregar hostname
       - source_labels: ['__journal__hostname']
@@ -126,6 +127,8 @@ scrape_configs:
         target_label: stream
       - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
         target_label: service
+      - target_label: lane
+        replacement: ops  # OBSERVABILITY LANE
     pipeline_stages:
       # Parsear logs JSON de FastAPI (si los formateas así)
       - json:
@@ -157,6 +160,8 @@ scrape_configs:
         target_label: container
       - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
         target_label: service
+      - target_label: lane
+        replacement: ops  # OBSERVABILITY LANE
     pipeline_stages:
       # Parsear access logs de nginx
       - regex:
