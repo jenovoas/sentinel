@@ -5,8 +5,8 @@ global:
   scrape_interval: 15s # Frecuencia de scraping por defecto
   evaluation_interval: 15s # Frecuencia de evaluación de reglas
   external_labels:
-    cluster: 'sentinel-cortex'
-    replica: 'node-1' # Phase 10 HA Replica label
+    cluster: 'sentinel-prod'
+    replica: '${HOSTNAME:-sentinel-node}' # Dynamic replica label
     environment: 'production'
 
 # Alertmanager configuration (optional, para futuro)
