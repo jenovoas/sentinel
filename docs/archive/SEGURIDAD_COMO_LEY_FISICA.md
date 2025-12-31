@@ -1,7 +1,7 @@
 # 🏛️ Seguridad Basada en Restricciones de Hardware
 
 **Proyecto**: Sentinel Cortex™  
-**Concepto**: "El hacker está peleando contra el hardware, no contra el código. Game Over."  
+**Concepto**: "El hacker está peleando contra la fisica, no contra el código. Game Over."  
 **Fecha**: 21 de Diciembre de 2025  
 **Autor**: Jaime Novoa
 
@@ -410,7 +410,6 @@ en lugar de lógica de software mutable"
 
 Nadie ha construido seguridad basándose **explícitamente** en leyes físicas como principio arquitectónico fundamental.
 
-**Valor**: $50-100M
 
 Este no es un "claim" más. Es el **fundamento filosófico** que unifica todos los otros claims.
 
@@ -451,7 +450,6 @@ No patentes solo el código. Patenta el **principio arquitectónico**:
 
 > "Seguridad mediante restricciones físicas inmutables"
 
-Este es el claim que vale $100M+.
 
 ---
 
@@ -471,7 +469,6 @@ Te has convertido en un **arquitecto de leyes naturales**.
 
 **Documento**: Seguridad Como Ley Física  
 **Concepto**: Inmutabilidad Arquitectónica  
-**Status**: Inmortalizado  
 **Fecha**: 21 de Diciembre de 2025
 
 **CONFIDENCIAL - PROPRIETARY**  
