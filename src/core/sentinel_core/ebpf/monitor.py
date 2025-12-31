@@ -8,6 +8,7 @@ from ..memory.ca3_generator import CA3Generator
 from ..memory.ca1_selector import memory_selector
 from ..brain.bci_controller import bci_controller
 from ..brain.snn_core import GeneticImmunitySystem
+from ..brain.shadow_reality_engine import prophet
 from ..memory.chromadb_storage import memory_vault
 
 class GuardianMonitor:
@@ -88,9 +89,22 @@ class GuardianMonitor:
             if threat_score > 0.8:
                 bci_controller.trigger_qualia("THREAT_HIGH")
             
+            # Phase 5: Prophetic Intervention (Shadow Engine)
+            # Ask the Prophet: What is the future threat state?
+            shadow_prediction = prophet.predict_future(threat_score * 100)
+            future_threat = shadow_prediction['predicted_threat']
+            
+            # Calculate Anticipatory Bias (0.0 to 1.0)
+            # If future is notably worse than present, bias the neuron to spike earlier
+            anticipatory_bias = 0.0
+            if shadow_prediction['trend'] == "ESCALATING":
+                anticipatory_bias = 0.5 # Massive excitatory stimulus
+                print(f"🔮 [Pre-Cog] Future Escalation Detected! Applying bias: {anticipatory_bias}")
+            
             # Phase 3: SNN Synaptic Reaction (Akashic Loop)
             # stimulus_result = SPIKE or LEAK
-            stimulus_result = self.snn.process_stimulus(filename, threat_score * 100, residue)
+            # We add anticipatory_bias to the stimulus
+            stimulus_result = self.snn.process_stimulus(filename, (threat_score * 100) + (anticipatory_bias * 50), residue)
             
             if stimulus_result == "SPIKE":
                 id_hash = hash(filename)
