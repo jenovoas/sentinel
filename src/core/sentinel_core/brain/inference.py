@@ -6,6 +6,10 @@ except ImportError:
     # Fallback to absolute import if running from script (sys.path modified by parent)
     from sentinel_core.config import AI_MODEL_NAME, AI_LATENCY_SIMULATION
 
+from ..memory.chromadb_storage import memory_vault
+from ..memory.ca1_selector import memory_selector
+from .neural_thresholds import threshold_manager
+
 class SentinelBrain:
     """
     Cerebro de Sentinel Cortex (Real Intelligence).
@@ -15,6 +19,7 @@ class SentinelBrain:
 
     def __init__(self):
         print(f"🧠 [SentinelBrain] Conectando a Ollama Local: {AI_MODEL_NAME}")
+        self.memory = memory_vault
         # Verificar conexión inicial (opcional)
         try:
             ollama.list()
@@ -22,22 +27,47 @@ class SentinelBrain:
         except Exception as e:
             print(f"❌ [SentinelBrain] Error conectando a Ollama: {e}")
 
-    def analyze_threat(self, filename: str) -> bool:
+    def analyze_threat(self, filename: str, residue: int = None) -> dict:
         """
         Analiza un binario usando LLM para inferir intención.
 
         Args:
             filename (str): El nombre del binario.
+            residue (int): El residuo Base-60.
 
         Returns:
-            bool: True (PERMITIR) o False (BLOQUEAR).
+            dict: {
+                "allow": bool,
+                "score": float,
+                "threshold": float,
+                "classification": str
+            }
         """
         print(f"🤔 [Brain] Consultando a {AI_MODEL_NAME} sobre: '{filename}'...")
         
-        # Prompt Ingeniería para Seguridad (Optimizado para Llama 3.2)
+        # 1. Recuperar contexto de memoria (Digital Hippocampus)
+        print(f"🧠 [Brain] Recuperando memorias similares para: '{filename}'...")
+        past_memories = self.memory.query_similar_memories(filename, n_results=3)
+        memory_context = ""
+        if past_memories["documents"]:
+            memory_context = "\nHISTORICAL CONTEXT (Past decisions):\n"
+            for doc, meta in zip(past_memories["documents"], past_memories["metadatas"]):
+                memory_context += f"- {doc} (Context: {meta.get('threat_hypothesis', 'N/A')})\n"
+        
+        # 2. Quantum Harmony Context (Base-60)
+        harmony_context = ""
+        if residue is not None:
+            is_prime = residue in [1, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59]
+            harmony_label = "Dissonant (Prime Residue)" if is_prime else "Harmonic (Composite Residue)"
+            harmony_context = f"\nQUANTUM HARMONY (Base-60): Residue {residue} - {harmony_label}\n"
+        
+        # 3. Prompt Ingeniería para Seguridad (Optimizado para Llama 3.2 + Memoria)
         prompt = f"""
         You are an AI Security Auditor for the Sentinel Cortex Kernel.
         Your task is to analyze the execution of a binary and decide if it is SAFE to run or a THREAT.
+        
+        {memory_context}
+        {harmony_context}
         
         Binary to analyze: "{filename}"
         
@@ -49,7 +79,9 @@ class SentinelBrain:
         5. BLOCK (false) any binary that explicitly mentions "attack", "malware", "rootkit", or "exploit" in its name or path.
         
         Return the result ONLY in this JSON format:
-        {{"allow": true}} or {{"allow": false}}
+        {{"threat_score": 0.0 to 1.0}}
+        
+        Where 0.0 is PERFECTLY SAFE and 1.0 is ABSOLUTE THREAT.
         
         Analyze: "{filename}"
         JSON:
@@ -73,15 +105,33 @@ class SentinelBrain:
             if json_match:
                 try:
                     data = json.loads(json_match.group(0))
-                    decision = data.get("allow", False)
+                    threat_score = float(data.get("threat_score", 0.5))
                 except:
-                    decision = '"allow": true' in content.lower()
+                    threat_score = 0.5
             else:
-                decision = '"allow": true' in content.lower()
+                threat_score = 0.5
             
-            print(f"🧠 [Brain] Decisión para '{filename}': {'PERMITIR' if decision else 'BLOQUEAR'} (Modelo: {AI_MODEL_NAME}, Latencia: {latency:.2f}s)")
-            return decision
+            # 4. Apply Dynamic Threshold
+            threshold = threshold_manager.get_dynamic_threshold(residue)
+            classification = threshold_manager.classify_score(threat_score, threshold)
+            
+            # Decision: allow if threat_score < threshold
+            decision = threat_score < threshold
+            
+            print(f"🧠 [Brain] Decisión para '{filename}': {classification} (Score: {threat_score:.2f}, Threshold: {threshold:.2f}, Latencia: {latency:.2f}s)")
+            
+            return {
+                "allow": decision,
+                "score": threat_score,
+                "threshold": threshold,
+                "classification": classification
+            }
                 
         except Exception as e:
             print(f"⚠️ [Brain] Fallo en inferencia: {e}. Aplicando Fail-Safe (BLOQUEAR).")
-            return False
+            return {
+                "allow": False,
+                "score": 1.0,
+                "threshold": 0.5,
+                "classification": "FAIL_SAFE_BLOCK"
+            }
