@@ -130,6 +130,16 @@ COMMANDS=(
     "/home/jnovoas/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/bin/rust-lld"
     # El propio servicio de Forensics
     "/home/jnovoas/sentinel/sentinel_core/forensics/target/release/forensics"
+    # Package Management (Essential for maintenance)
+    "/usr/bin/apt"
+    "/usr/bin/apt-get"
+    "/usr/bin/dpkg"
+    "/usr/bin/dpkg-query"
+    "/usr/bin/apt-config"
+    "/usr/lib/apt/methods/http"
+    "/usr/lib/apt/methods/https"
+    "/usr/lib/apt/methods/gpgv"
+    "/usr/bin/gpgv"
 )
 
 # Ruta del map pinned (establecida por load.sh)
