@@ -1,0 +1,105 @@
+services:
+  # Multi-node Loki HA Cluster
+  loki-1:
+    image: grafana/loki:latest
+    container_name: sentinel-loki-1
+    ports:
+      - "3100:3100"
+      - "7946:7946"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./configs/loki-config.yaml:/etc/loki/local-config.yaml
+    networks:
+      - sentinel-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+
+  loki-2:
+    image: grafana/loki:latest
+    container_name: sentinel-loki-2
+    ports:
+      - "3101:3100"
+      - "7947:7946"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./configs/loki-config.yaml:/etc/loki/local-config.yaml
+    networks:
+      - sentinel-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+
+  # HA Prometheus with Deduplication
+  prometheus-ha:
+    image: prom/prometheus:latest
+    container_name: sentinel-prometheus-ha
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - sentinel-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+
+  # Standard Services
+  postgres:
+    image: postgres:16-alpine
+    container_name: sentinel-postgres
+    environment:
+      POSTGRES_USER: sentinel_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sentinel_default_secure_pass}
+      POSTGRES_DB: sentinel_db
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - sentinel-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: sentinel-redis
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - sentinel-net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sentinel-vault-backend
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DATABASE_URL=postgresql+asyncpg://sentinel_user:${POSTGRES_PASSWORD:-sentinel_default_secure_pass}@postgres:5432/sentinel_db
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - sentinel-net
+
+networks:
+  sentinel-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  vault_data:
