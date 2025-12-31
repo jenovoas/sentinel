@@ -139,6 +139,7 @@ services:
     container_name: sentinel-loki
     ports:
       - "127.0.0.1:3100:3100"
+      - "7946:7946"
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
       - ./configs/loki-config.yaml:/etc/loki/local-config.yaml
