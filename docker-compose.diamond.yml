@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  # Diamond Grade Loki Cluster
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+      - "7946:7946"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./configs/loki-config.yaml:/etc/loki/local-config.yaml
+    networks:
+      - sentinel-net
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.role == worker"
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+
+  # Global Prometheus HA
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - sentinel-net
+    deploy:
+      replicas: 2
+      placement:
+        constraints:
+          - "node.role == worker"
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+
+  # Backend API - Redundant
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DATABASE_URL=postgresql+asyncpg://sentinel_user:${POSTGRES_PASSWORD:-sentinel_default_secure_pass}@postgres:5432/sentinel_db
+      - REDIS_URL=redis://redis:6379/0
+    networks:
+      - sentinel-net
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 2
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+
+  # Core Databases
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: sentinel_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sentinel_default_secure_pass}
+      POSTGRES_DB: sentinel_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - sentinel-net
+    deploy:
+      placement:
+        constraints:
+          - "node.role == manager"
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    networks:
+      - sentinel-net
+    deploy:
+      placement:
+        constraints:
+          - "node.role == manager"
+
+networks:
+  sentinel-net:
+    driver: overlay
+    attachable: true
+
+volumes:
+  postgres_data:
+  redis_data:
+  vault_data:
