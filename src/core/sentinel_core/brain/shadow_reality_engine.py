@@ -1,82 +1,101 @@
 # src/core/sentinel_core/brain/shadow_reality_engine.py
 """
-Sentinel Cortex™ - Shadow Reality Engine (SRE)
-Quantum threat simulation and Monte Carlo validation for Base-60 thresholds.
+Sentinel Cortex™ Shadow Reality Engine (Prophetic Brain)
+Implements predictive state modeling using Base-60 Monte Carlo simulations.
+Allows Sentinel to 'see' potential futures and prepare defenses preemptively.
 """
 
 import random
 import time
-from typing import List, Dict
-from .neural_thresholds import threshold_manager
+import math
+from typing import Dict, List, Tuple
 
 class ShadowRealityEngine:
     """
-    Simula realidades de amenaza paralelas para optimizar el ThresholdManager.
-    Usa el concepto de 'Akasha' Base-60 para generar escenarios sintéticos.
+    Simulates multiple potential futures (Shadows) to determine the most likely
+    outcome based on current system harmonics.
     """
     
-    PRIMES_60 = [1, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59]
-
-    def __init__(self):
-        self.tm = threshold_manager
-
-    def generate_threat_scenarios(self, n: int = 1000) -> List[Dict]:
+    BASE_60_PRIMES = [2, 3, 5]
+    HARMONIC_DIVISORS = [1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 60]
+    
+    def __init__(self, simulation_depth: int = 60):
+        self.simulation_depth = simulation_depth # Number of futures to simulate
+        self.reality_matrix = [] # Stores potential futures
+        
+    def _calculate_probability(self, state_val: float, residue: int) -> float:
         """
-        Genera N escenarios de amenaza usando Monte Carlo.
+        Calculates the probability of a state manifestation based on Base-60 resonance.
+        Harmonic residues (divisors of 60) have higher stability/probability.
         """
-        scenarios = []
-        for _ in range(n):
-            # 1. Elegir un residuo Base-60 aleatorio (Zona de Realidad)
-            residue = random.randint(0, 59)
+        is_harmonic = residue in self.HARMONIC_DIVISORS
+        base_prob = 0.5
+        
+        # Harmonic states are more likely to manifest in a stable system
+        if is_harmonic:
+            base_prob += 0.3
+        else:
+            # Dissonant states (primes > 5) are volatile but potent
+            base_prob -= 0.1
             
-            # 2. Determinar nivel de amenaza 'base' (Probabilidad Cuántica)
-            is_prime = residue in self.PRIMES_60
-            
-            if is_prime:
-                # En zonas disonantes, la amenaza base es intrínsecamente más alta
-                base_threat = random.uniform(0.6, 0.95)
-            else:
-                # En zonas armónicas, la amenaza base tiende a ser baja
-                base_threat = random.uniform(0.05, 0.5)
+        return base_prob * state_val
 
-            # 3. Obtener el umbral dinámico para esa zona
-            threshold = self.tm.get_dynamic_threshold(residue)
+    def predict_future(self, current_threat_score: float) -> Dict[str, any]:
+        """
+        Run Monte Carlo simulation to predict system state at t+1.
+        Returns the 'Collapsed Wavefunction' (Most probable future).
+        """
+        futures = []
+        current_residue = int(current_threat_score) % 60
+        
+        # Simulate 60 parallel timelines
+        for i in range(self.simulation_depth):
+            # Chaos variable: Genetic drift or entropy
+            entropy = random.uniform(-0.1, 0.1)
             
-            # 4. Clasificar la decisión
-            classification = self.tm.classify_score(base_threat, threshold)
+            # Future Threat Projection
+            # Standard Linear Projection + Harmonic Influence
+            projected_threat = current_threat_score * (1 + entropy)
             
-            scenarios.append({
-                'residue': residue,
-                'is_dissonant': is_prime,
-                'threat_score': round(base_threat, 3),
-                'threshold': round(threshold, 2),
-                'decision': classification,
-                'status': 'SECURE' if base_threat < threshold else 'BLOCKED'
+            # If current state is dissonant, future tends towards chaos (higher threat)
+            if current_residue not in self.HARMONIC_DIVISORS:
+                projected_threat *= 1.05
+                
+            prob = self._calculate_probability(1.0, int(projected_threat) % 60)
+            
+            futures.append({
+                "id": i,
+                "threat_score": min(100.0, max(0.0, projected_threat)),
+                "probability": prob,
+                "residue": int(projected_threat) % 60
             })
             
-        return scenarios
+        return self._collapse_wavefunction(futures)
 
-    def run_stress_validation(self, n_events: int = 5000):
+    def _collapse_wavefunction(self, futures: List[Dict]) -> Dict[str, any]:
         """
-        Ejecuta una validación masiva y reporta estadísticas.
+        Selects the single most probable future state.
         """
-        start_time = time.time()
-        scenarios = self.generate_threat_scenarios(n_events)
-        duration = time.time() - start_time
+        # Sort by probability descending
+        sorted_futures = sorted(futures, key=lambda x: x["probability"], reverse=True)
         
-        blocks = len([s for s in scenarios if s['status'] == 'BLOCKED'])
-        dissonant_blocks = len([s for s in scenarios if s['is_dissonant'] and s['status'] == 'BLOCKED'])
+        # The 'Dominant Shadow'
+        dominant = sorted_futures[0]
         
-        print(f"🌌 [ShadowEngine] Validación Akáshica completada en {duration:.4f}s")
-        print(f"📊 Eventos Procesados: {n_events}")
-        print(f"🛡️ Bloqueos Totales: {blocks} ({ (blocks/n_events)*100 :.2f}%)")
-        print(f"⚛️ Eficacia en Zonas Disonantes: { (dissonant_blocks/blocks)*100 if blocks > 0 else 0 :.2f}% de los bloqueos ocurrieron en Primos")
+        # Calculate 'Prophecy Confidence'
+        avg_threat = sum(f["threat_score"] for f in futures) / len(futures)
+        deviation = dominant["threat_score"] - avg_threat
         
-        return {
-            'duration': duration,
-            'total_events': n_events,
-            'block_rate': blocks/n_events,
-            'dissonant_accuracy': dissonant_blocks/blocks if blocks > 0 else 0
+        result = {
+            "predicted_threat": dominant["threat_score"],
+            "confidence": dominant["probability"],
+            "harmonic_residue": dominant["residue"],
+            "trend": "ESCALATING" if deviation > 5 else "STABLE" if deviation > -5 else "DE-ESCALATING",
+            "simulation_count": len(futures)
         }
+        
+        print(f"🔮 [Shadow] Future Collapsed: Threat {result['predicted_threat']:.2f} ({result['trend']}) | Conf: {result['confidence']:.2f}")
+        return result
 
-shadow_engine = ShadowRealityEngine()
+# Singleton for easy access
+prophet = ShadowRealityEngine()
