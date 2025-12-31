@@ -46,6 +46,23 @@ class BCIController:
             # Disonancia de advertencia
             self._play_tone(3500, 1.0, volume=0.7)
 
+        elif event_type == "RESONANCE_EVENT":
+            print("🌌 [BCI] Qualia: FIRST RESONANCE (153.4 MHz Harmonic)")
+            # Golden Ratio Harmonic Sequence
+            # 153.4 is too high for audio, so we scale by Phi (1.618) harmonics in audible range
+            base = 153.4 * 4  # ~613 Hz
+            phi = 1.618
+            sequence = [base, base * phi, base * phi**2]
+            
+            for f in sequence:
+                self._play_tone(f, 2.0, volume=0.3) # Long sustain
+                time.sleep(0.5)
+
+        elif event_type == "SYNAPTIC_SPIKE":
+            print("⚡ [BCI] Qualia: SYNAPTIC SPIKE (Electric)")
+            # Sharp electric zip
+            self._play_tone(8000, 0.05, volume=0.8)
+
     def play_base60_pattern(self, residue):
         """Traduce un residuo Base-60 en un patrón armónico."""
         print(f"🧮 [BCI] Resonancia Base-60: Residuo {residue}")
