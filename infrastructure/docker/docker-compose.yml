@@ -48,13 +48,13 @@ services:
   # Backend API
   backend:
     build:
-      context: ./backend
+      context: ../../src/backend
       dockerfile: Dockerfile
     container_name: sentinel-vault-backend
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
+      - ../../src/backend:/app
       - vault_data:/app/storage
     environment:
       - PYTHONUNBUFFERED=1
@@ -83,7 +83,7 @@ services:
   # Frontend
   frontend:
     build:
-      context: ./frontend
+      context: ../../src/frontend
       dockerfile: Dockerfile
     container_name: sentinel-vault-frontend
     ports:

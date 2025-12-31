@@ -27,7 +27,7 @@ services:
   # Backend - FastAPI
   backend:
     build:
-      context: ./backend
+      context: ../../src/backend
       dockerfile: Dockerfile
     container_name: sentinel-backend-staging
     environment:
@@ -40,9 +40,9 @@ services:
       - ENABLE_METRICS=true
       - ENABLE_TRACING=true
     volumes:
-      - ./backend:/app
+      - ../../src/backend:/app
       - wal_data_staging:/var/lib/sentinel/wal
-      - ./backend/logs:/var/log/sentinel
+      - ../../src/backend/logs:/var/log/sentinel
     networks:
       - staging_internal
     depends_on:
@@ -70,7 +70,7 @@ services:
       - "3101:3100"
     command: -config.file=/etc/loki/loki-config.yml
     volumes:
-      - ./observability/loki/loki.staging.yml:/etc/loki/loki-config.yml:ro
+      - ../../service-operation/monitoring/observability/loki/loki.staging.yml:/etc/loki/loki-config.yml:ro
       - loki_data_staging:/loki
     networks:
       - staging_internal
@@ -93,7 +93,7 @@ services:
     container_name: sentinel-promtail-staging
     command: -config.file=/etc/promtail/promtail-config.yml
     volumes:
-      - ./observability/promtail/promtail.staging.yml:/etc/promtail/promtail-config.yml:ro
+      - ../../service-operation/monitoring/observability/promtail/promtail.staging.yml:/etc/promtail/promtail-config.yml:ro
       - /var/log:/var/log:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
     networks:
@@ -110,7 +110,7 @@ services:
     container_name: sentinel-mimir-staging
     command: -config.file=/etc/mimir/mimir-config.yml
     volumes:
-      - ./observability/mimir/mimir.staging.yml:/etc/mimir/mimir-config.yml:ro
+      - ../../service-operation/monitoring/observability/mimir/mimir.staging.yml:/etc/mimir/mimir-config.yml:ro
       - mimir_data_staging:/data
     networks:
       - staging_internal
@@ -133,7 +133,7 @@ services:
       - '--storage.tsdb.retention.time=7d'
       - '--web.enable-lifecycle'
     volumes:
-      - ./observability/prometheus/prometheus.staging.yml:/etc/prometheus/prometheus.yml:ro
+      - ../../service-operation/monitoring/observability/prometheus/prometheus.staging.yml:/etc/prometheus/prometheus.yml:ro
       - ./monitoring/alerts.staging.yml:/etc/prometheus/alerts.yml:ro
       - prometheus_data_staging:/prometheus
     networks:
@@ -162,8 +162,8 @@ services:
       - GF_SERVER_DOMAIN=staging.sentinel.example.com
       - GF_SERVER_ROOT_URL=https://staging.sentinel.example.com:3000
     volumes:
-      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
-      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - ../../service-operation/monitoring/observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ../../service-operation/monitoring/observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
       - grafana_data_staging:/var/lib/grafana
     networks:
       - staging_internal

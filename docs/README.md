@@ -25,13 +25,13 @@ System design, components, and technical architecture.
 - [Quantum-AI Base-60](architecture/quantum-ai-base60.md)
 - [Cognitive Kernel Overlay](architecture/cognitive-kernel.md)
 
-### 🔬 [Research](research/README.md)
+### 🔬 [Research](../continual-improvement/research/README.md)
 Academic research, papers, and theoretical foundations.
 
-- [Quantum-AI Research Paper](research/quantum-ai-paper.md) - **Publication-ready**
-- [Base-60 Mathematics](research/base60-mathematics.md)
-- [Physics-Geometry Isomorphism](research/physics-geometry.md)
-- [Axion Detection](research/axion-detection.md)
+- [Quantum-AI Research Paper](../continual-improvement/research/quantum-ai-paper.md) - **Publication-ready**
+- [Base-60 Mathematics](../continual-improvement/research/base60-mathematics.md)
+- [Physics-Geometry Isomorphism](../continual-improvement/research/physics-geometry.md)
+- [Axion Detection](../continual-improvement/research/axion-detection.md)
 
 ### 📖 [Guides](guides/README.md)
 Step-by-step tutorials and how-to guides.
@@ -122,8 +122,8 @@ Improvement: 2,040x vs traditional systems
 ## 📖 Additional Resources
 
 ### For Researchers
-- [Research Papers](research/README.md)
-- [Mathematical Foundations](research/base60-mathematics.md)
+- [Research Papers](../continual-improvement/research/README.md)
+- [Mathematical Foundations](../continual-improvement/research/base60-mathematics.md)
 - [Reproducible Research](validation/reproducible-research.md)
 
 ### For Developers

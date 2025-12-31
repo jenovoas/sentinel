@@ -46,7 +46,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../../service-operation/monitoring/observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - sentinel-net
     deploy:
@@ -82,7 +82,7 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: ../../src/backend
       dockerfile: Dockerfile
     container_name: sentinel-vault-backend
     environment:
