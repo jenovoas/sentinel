@@ -238,6 +238,10 @@ class SecurityLaneCollector:
             "avg_latency_ms": 0.0
         }
         self.latencies: List[float] = []
+        
+        # Import WAL module
+        from .wal import wal as wal_instance
+        self.wal = wal_instance
     
     async def emit_immediate(
         self,
@@ -258,17 +262,20 @@ class SecurityLaneCollector:
         start = time.time()
         
         try:
-            # 1. WAL (obligatorio)
-            # TODO: Implementar WAL.append()
+            # 1. WAL (obligatorio) - fsync cada 100ms
+            await self.wal.append(DataLane.SECURITY, event)
             
             # 2. Dual-Guardian (si aplica)
             # TODO: Implementar dual_guardian.evaluate()
+            # Este será el "apretón de manos" con Guardian-Alpha (eBPF)
             
             # 3. Storage forense
             # TODO: Implementar forensic_storage.append()
+            # S3 con versionado para evidencia inmutable
             
             # 4. Loki
             # TODO: Implementar loki_client.push()
+            # Push inmediato con label lane=security
             
             latency_ms = (time.time() - start) * 1000
             self.latencies.append(latency_ms)
@@ -307,6 +314,7 @@ class SecurityLaneCollector:
         )
         
         # TODO: Enviar alerta a PagerDuty/Slack/etc
+        # Este es un evento CRÍTICO que requiere investigación inmediata
     
     def get_stats(self) -> Dict[str, Any]:
         """Obtiene estadísticas del collector"""
@@ -427,11 +435,18 @@ class ObservabilityLaneCollector:
             # 1. Reordenar por timestamp
             sorted_events = sorted(self.buffer, key=lambda e: e.timestamp)
             
-            # 2. WAL
-            # TODO: Implementar WAL.append_batch()
+            # 2. WAL (batch write con fsync cada 1s)
+            from .wal import wal as wal_instance
+            written = await wal_instance.append_batch(DataLane.OBSERVABILITY, sorted_events)
+            
+            if written < len(sorted_events):
+                logger.warning(
+                    f"WAL batch write incomplete: {written}/{len(sorted_events)} events"
+                )
             
             # 3. Loki
             # TODO: Implementar loki_client.push_batch()
+            # Push batch con reordenamiento por (stream_labels, timestamp)
             
             batch_size = len(sorted_events)
             self.stats["events_flushed"] += batch_size
