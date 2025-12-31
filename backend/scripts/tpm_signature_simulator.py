@@ -23,7 +23,7 @@ def sign_file(file_path):
     encoded_sig = base64.b64encode(signature).decode('utf-8')
     
     footer = f"\n\n--- 🛡️ HARDWARE-ROOTED SIGNATURE (TPM 2.0) ---\n"
-    footer += f"Certificate: SENTINEL-CORTEX-V3.14-EK-001\n"
+    footer += f"Certificate: SENTINEL-CORTEX-V1.0.0-EK-001\n"
     footer += f"Signature: {encoded_sig}\n"
     footer += f"Status: IMMUTABLE_TRUTH_VERIFIED\n"
     
