@@ -13,21 +13,19 @@
     { type: "ai", text: "[IA] Sentinel v0.4 online. Waiting for intent." },
   ];
 
-  // Animation Loop (Mocking Resonance)
+  // Animation Loop (Real-Time Resonance)
   onMount(() => {
-    // Try to get real state from Rust if available, else mock
     const interval = setInterval(async () => {
       try {
-        // Uncomment when Rust backend is ready
-        // const state = await invoke('get_system_vector');
-        // entropy = state.entropy; ...
-        entropy = 0.1 + Math.random() * 0.05;
-        // Mock TTE blip
-        if (Math.random() > 0.9) tte = 3.2 + Math.random() * 0.1;
+        // Read "The Truth" from Rust Backend (SHM)
+        const state = (await invoke("get_system_vector")) as any;
+        entropy = state.entropy;
+        coherence = state.coherence;
+        tte = state.tte_us;
       } catch (e) {
-        console.error(e);
+        console.error("Link Error:", e);
       }
-    }, 100);
+    }, 50); // High frequency update (20Hz)
     return () => clearInterval(interval);
   });
 
