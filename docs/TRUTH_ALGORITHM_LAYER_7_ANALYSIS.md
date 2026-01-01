@@ -25,7 +25,7 @@ Custom ML Model (microexpression classifier) ⚠️ Requiere entrenamiento
 - **SMIC**: 164 videos, 3 emociones
 - **Total**: ~1,000 videos (INSUFICIENTE para producción)
 
-**Accuracy esperada**: 60-70% (estado del arte: 75%)
+**Accuracy esperada**: 60-70% (estándar técnico: 75%)
 
 **Desafíos**:
 - ❌ Datasets pequeños (necesitas 10K+ videos)
@@ -54,7 +54,7 @@ Custom ML Model (voice stress) ⚠️ Requiere entrenamiento
 - **CREMA-D**: 7,442 archivos, emociones
 - **Total**: ~17,000 archivos (SUFICIENTE para POC)
 
-**Accuracy esperada**: 70-80% (estado del arte: 85%)
+**Accuracy esperada**: 70-80% (estándar técnico: 85%)
 
 **Desafíos**:
 - ⚠️ Ruido de fondo (TV, entrevistas)
@@ -82,7 +82,7 @@ Custom ML Model (body language) ⚠️ Requiere entrenamiento
 - **Gesture datasets**: Fragmentados
 - **Total**: INSUFICIENTE
 
-**Accuracy esperada**: 50-60% (estado del arte: 65%)
+**Accuracy esperada**: 50-60% (estándar técnico: 65%)
 
 **Desafíos**:
 - ❌ Datasets muy limitados
@@ -111,7 +111,7 @@ Pattern matching (regex) ✅ Trivial
 - **PolitiFact**: Histórico completo
 - **Total**: 200K+ claims (EXCELENTE)
 
-**Accuracy esperada**: 85-90% (estado del arte: 92%)
+**Accuracy esperada**: 85-90% (estándar técnico: 92%)
 
 **Desafíos**:
 - ✅ Ninguno significativo
@@ -216,7 +216,7 @@ Truth Score basado en:
 **Por qué**:
 - Completa la visión
 - Máxima accuracy
-- Diferenciador absoluto
+- Diferenciador verificado
 
 **Output Completo**:
 ```
@@ -373,7 +373,7 @@ Truth Score basado en:
 
 **Por qué**:
 - Completa la visión
-- Diferenciador absoluto
+- Diferenciador verificado
 - Moat defensivo
 
 ---

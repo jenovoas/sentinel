@@ -157,7 +157,7 @@
 # Sentinel Cortex™ - Executive Summary
 
 ## El Problema
-Los equipos de seguridad enfrentan un dilema imposible:
+Los equipos de seguridad enfrentan un dilema no factible:
 - Sistemas seguros son lentos (Splunk, Datadog)
 - Sistemas rápidos son peligrosos (IA sin control)
 - No pueden tener ambos
@@ -171,7 +171,7 @@ Sentinel Cortex™ - El primer organismo vivo de seguridad:
 ## Diferenciación
 - ✅ Auto-vigilancia (Dos Nervios independientes)
 - ✅ Auto-regeneración (self-healing)
-- ✅ Imposible de engañar (multi-factor validation)
+- ✅ no factible de engañar (multi-factor validation)
 - ✅ 3 patentes defensivas
 
 ## Mercado

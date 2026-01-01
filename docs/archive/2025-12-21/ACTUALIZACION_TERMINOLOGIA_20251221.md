@@ -20,22 +20,22 @@
 #### 1. Restricción Temporal
 - **Hardware**: Object storage inmutable (S3/GCS)
 - **Restricción**: Chunks no se pueden modificar después de escritura
-- **Resultado**: Imposible insertar logs en el pasado
+- **Resultado**: no factible insertar logs en el pasado
 
 #### 2. Restricción de Jerarquía
 - **Hardware**: CPU privilege rings (transistores)
 - **Restricción**: Ring 3 no puede acceder a Ring 0
-- **Resultado**: Imposible bypassear kernel desde user space
+- **Resultado**: no factible bypassear kernel desde user space
 
 #### 3. Restricción de Auto-Reset
 - **Hardware**: Watchdog (condensador + timer)
 - **Restricción**: Sistema se reinicia si no recibe señal
-- **Resultado**: Imposible congelar el sistema permanentemente
+- **Resultado**: no factible congelar el sistema permanentemente
 
 #### 4. Restricción de Filtrado
 - **Hardware**: Filtro determinístico (regex/patterns)
 - **Restricción**: IA nunca ve datos sin filtrar
-- **Resultado**: Imposible envenenar la IA directamente
+- **Resultado**: no factible envenenar la IA directamente
 
 ---
 

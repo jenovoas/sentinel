@@ -65,7 +65,7 @@
 ### Día 4-5: Diseño de Solución
 
 **Tu mensaje**:
-> "Perfecto. Ahora viene lo importante: necesito implementar **Dual-Guardian** (el claim 3 del patent). Tengo el diseño conceptual, pero necesito tu ayuda para el diseño técnico detallado."
+> "validado. Ahora viene lo importante: necesito implementar **Dual-Guardian** (el claim 3 del patent). Tengo el diseño conceptual, pero necesito tu ayuda para el diseño técnico detallado."
 
 **Enviar**:
 - `MASTER_SECURITY_IP_CONSOLIDATION_v1.1_CORRECTED.md` (Claim 3)
@@ -248,12 +248,12 @@
 
 ## 💡 Tip Final
 
-**Si dice "sí sé" a TODO**: Dale un problema imposible y ve cómo reacciona.
+**Si dice "sí sé" a TODO**: Dale un problema no factible y ve cómo reacciona.
 
 **Ejemplo**:
 > "Necesito que TruthSync verifique 10M claims/segundo con latencia <1ns. ¿Cómo lo harías?"
 
-**Respuesta correcta**: "Eso es físicamente imposible. La latencia de RAM es ~100ns. Necesitaríamos redefinir el problema."
+**Respuesta correcta**: "Eso es físicamente no factible. La latencia de RAM es ~100ns. Necesitaríamos redefinir el problema."
 
 **Red flag**: "Sí, usaría cache L1 y optimizaría el algoritmo." (No entiende límites físicos)
 

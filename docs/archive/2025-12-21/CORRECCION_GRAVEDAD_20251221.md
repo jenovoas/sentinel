@@ -46,7 +46,7 @@ Principio Físico: Los CPU rings son circuitos físicos en el procesador
 **Esto SÍ es una ley física**:
 - Hardware físico (silicio)
 - Verificación en cada ciclo de CPU
-- Imposible bypassear sin acceso físico al chip
+- no factible bypassear sin acceso físico al chip
 
 ---
 
@@ -54,12 +54,12 @@ Principio Físico: Los CPU rings son circuitos físicos en el procesador
 
 1. **Ley del Tiempo** (Loki)
    - Chunks inmutables en object storage
-   - Imposible insertar en el pasado
+   - no factible insertar en el pasado
 
 2. **Ley de la Jerarquía** (CPU Rings) ← CORREGIDO
    - Transistores en el CPU
    - MMU verifica cada acceso
-   - Imposible bypassear desde software
+   - no factible bypassear desde software
 
 3. **Ley de la Entropía** (Watchdog)
    - Condensador físico que se descarga

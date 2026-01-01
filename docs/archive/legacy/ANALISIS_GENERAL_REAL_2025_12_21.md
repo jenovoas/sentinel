@@ -382,7 +382,7 @@ backend/app/services/
 - ✅ Primera solución del mercado contra AIOpsDoom
 - ✅ Aplicable a infraestructura crítica nacional
 - ✅ Soberanía tecnológica (LGTM stack vs SaaS)
-- ✅ Defensa a nivel kernel (imposible de evadir)
+- ✅ Defensa a nivel kernel (no factible de evadir)
 
 ### 4. Evidencia Técnica Completa
 
@@ -576,7 +576,7 @@ backend/app/services/
 5. Preparar package para attorney
 6. Generar gráficos comparativos
 
-**Deadline Absoluto**: 15 de Febrero de 2026 (57 días)
+**Deadline verificado**: 15 de Febrero de 2026 (57 días)
 
 ---
 

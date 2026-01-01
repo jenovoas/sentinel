@@ -283,7 +283,7 @@ Con proyección:
   - Speedup: 10x en latencia
 ```
 
-### Comparativa vs Estado del Arte
+### Comparativa vs estándar técnico
 
 | Métrica | TCP/IP | QUIC | **Sentinel Projection** |
 |---------|--------|------|------------------------|

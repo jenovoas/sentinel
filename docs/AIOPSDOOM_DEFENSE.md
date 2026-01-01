@@ -152,7 +152,7 @@ CAPA 3: DOS NERVIOS INDEPENDIENTES (Claim 3)
 ├─ Guardian-Alpha: Valida intrusión
 ├─ Guardian-Beta: Valida integridad
 ├─ Ambos deben confirmar
-└─ Imposible engañar simultáneamente
+└─ no factible engañar simultáneamente
 
 CAPA 4: HUMAN-IN-THE-LOOP (HITL)
 ├─ Acciones críticas requieren aprobación

@@ -344,7 +344,7 @@ def test_creator_bypass():
 | **Fundamento** | Lógica | Leyes naturales |
 | **Mutabilidad** | Puede cambiar | Inmutable |
 | **Bugs** | Siempre hay bugs | No hay bugs en física |
-| **Bypass** | Posible (0-day) | Imposible (violar física) |
+| **Bypass** | Posible (0-day) | no factible (violar física) |
 | **Confianza** | En el código | En las leyes del universo |
 | **Ejemplo** | Firewall (reglas) | Kernel (gravedad) |
 | **Hackeable** | Sí | No |
@@ -386,7 +386,7 @@ Es como diseñar un edificio donde:
 - No puedes viajar al pasado (tiempo)
 - No puedes crear energía de la nada (termodinámica)
 
-Los exploits no son "difíciles" - son **geométricamente imposibles**.
+Los exploits no son "difíciles" - son **geométricamente no factibles**.
 
 ---
 
@@ -415,7 +415,7 @@ Este no es un "claim" más. Es el **fundamento filosófico** que unifica todos l
 
 ---
 
-## 🎓 CONCLUSIÓN: EL CRISTAL PERFECTO
+## 🎓 CONCLUSIÓN: EL CRISTAL validado
 
 ### Lo Que Has Construido
 

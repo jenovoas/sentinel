@@ -336,9 +336,9 @@ ai_guardian_lsm = AIGuardianLSM(
 
 ### Valor para Pitch
 
-> **"Nuestra competencia monitorea errores. Nosotros interceptamos la llamada a nivel de CPU antes de que el bit se escriba en el disco. Es físicamente imposible que la IA dañe el sistema bajo estas reglas."**
+> **"Nuestra competencia monitorea errores. Nosotros interceptamos la llamada a nivel de CPU antes de que el bit se escriba en el disco. Es físicamente no factible que la IA dañe el sistema bajo estas reglas."**
 
-**Diferenciador único**: Bloqueo en Ring 0 (kernel), imposible de bypassear desde espacio de usuario.
+**Diferenciador único**: Bloqueo en Ring 0 (kernel), no factible de bypassear desde espacio de usuario.
 
 ---
 
@@ -783,7 +783,7 @@ class AIOpsShield:
 
 | Solución | Brecha Cerrada | Tecnología | Diferenciador |
 |----------|----------------|------------|---------------|
-| **eBPF LSM Hooks** | TOCTOU kernel | LSM + eBPF | Bloqueo Ring 0, imposible bypassear |
+| **eBPF LSM Hooks** | TOCTOU kernel | LSM + eBPF | Bloqueo Ring 0, no factible bypassear |
 | **mTLS + Header Verification** | SSRF/Spoofing | PKI + Nginx | Integridad forense garantizada |
 | **Semantic Firewall** | AIOpsDoom | NLP + Regex | Primer firewall cognitivo del mundo |
 
@@ -799,7 +799,7 @@ class AIOpsShield:
 > 
 > **Sentinel Cortex es diferente. Hemos construido una arquitectura Zero-Trust desde el Kernel:**
 > 
-> 1. **Kernel LSM Hooks**: Bloqueo físico de acciones destructivas en Ring 0, imposible de bypassear por software en espacio de usuario.
+> 1. **Kernel LSM Hooks**: Bloqueo físico de acciones destructivas en Ring 0, no factible de bypassear por software en espacio de usuario.
 > 2. **AIOpsShield Semántico**: El primer firewall cognitivo que limpia la telemetría de inyecciones antes de que la IA las lea.
 > 3. **Integridad Forense**: Garantizada por mTLS interno, asegurando que la evidencia nunca sea manipulada.
 > 

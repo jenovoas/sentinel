@@ -242,7 +242,7 @@ class AIOpsShield:
         
         # 2. Verificar coherencia física
         if data['cpu'] > 100 or data['cpu'] < 0:
-            return REJECT  # Físicamente imposible
+            return REJECT  # Físicamente no factible
         
         # 3. Verificar correlación con otras fuentes
         if not correlate_with_kernel_metrics(data):

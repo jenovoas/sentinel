@@ -55,7 +55,7 @@ SEQSC - QUANTIC SECURITY CORTEX™ (Technology - Licensable)
       └─────────────────────┘
            Se vigilan mutuamente
            Se auto-regeneran
-           Imposible engañar
+           no factible engañar
            
 RESULTADO: 99% de incidentes resueltos automáticamente
            0% acciones destructivas
@@ -76,7 +76,7 @@ RESULTADO: 99% de incidentes resueltos automáticamente
 **"Cerebro que correlaciona inteligentemente"**
 - 5+ señales independientes
 - Confidence scoring dinámico
-- Imposible engañar con un solo log malicioso
+- no factible engañar con un solo log malicioso
 
 ### CLAIM 3: Dos Nervios Independientes + Auto-Regeneración
 **"Organismo que se vigila a sí mismo y se autocura"**
@@ -84,7 +84,7 @@ RESULTADO: 99% de incidentes resueltos automáticamente
 - Nervio B: Integrity Assurance Police
 - Modo sombra (shadow mode)
 - Auto-regeneración automática
-- Sistema imposible de corromper simultáneamente
+- Sistema no factible de corromper simultáneamente
 
 ---
 
@@ -109,7 +109,7 @@ Si ambos dicen "ataque confirmado", accionamos.
 ¿Resultado?
 - 99% de incidentes automáticos
 - 0% de acciones malas
-- Sistema imposible de hackear
+- Sistema no factible de hackear
 
 ¿Precio? 1/10 de Datadog.
 ¿Mercado? 1M de PYMES en Latam.
@@ -168,7 +168,7 @@ Winner: Cortex (intelligent decisions, not just automation)
 ```
 Base (SaaS Backup):              $50M (5x Year 2 ARR @ $10M)
 + Cortex Automation:             +$15M (unique decision engine)
-+ Dos Nervios vigilantes:        +$20M (imposible de engañar)
++ Dos Nervios vigilantes:        +$20M (no factible de engañar)
 + Regeneración automática:       +$15M (resilience moat)
 + IP defensiva (3 claims):       +$10-20M (licensing potential)
 ---
@@ -272,7 +272,7 @@ Tres capas de inteligencia:
    ├─ Shadow mode
    └─ Auto-healing
 
-Resultado: Imposible de hackear, auto-regenerativo
+Resultado: no factible de hackear, auto-regenerativo
 ```
 
 ### SLIDE 8 (IP Strategy actualizada)
@@ -287,7 +287,7 @@ CLAIM 1: Telemetry Sanitization
 CLAIM 2: Decision Engine Multi-Factor
 ├─ 5+ señales correlacionadas
 ├─ Confidence scoring dinámico
-└─ Imposible engañar
+└─ no factible engañar
 
 CLAIM 3: Dos Nervios + Auto-Regeneración
 ├─ Independientes y vigilantes
@@ -302,7 +302,7 @@ Timeline: Provisional Feb 2026
 
 ## 🔐 DEFENSIBILIDAD TÉCNICA
 
-### Por qué es imposible copiar Sentinel Cortex
+### Por qué es no factible copiar Sentinel Cortex
 
 ```
 1. COMPLEJIDAD EXTREMA

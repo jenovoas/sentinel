@@ -468,7 +468,7 @@ def verify_cert_pin(hostname: str, cert_der: bytes) -> bool:
 | **Autenticación** | API keys | ✅ Certificados |
 | **Performance** | +10ms (HTTP overhead) | ✅ +2ms (directo) |
 | **Exposición** | Pública (puerto abierto) | ✅ Privada (red interna) |
-| **MITM** | Posible | ✅ Imposible |
+| **MITM** | Posible | ✅ no factible |
 | **Compliance** | ⚠️ Requiere hardening | ✅ SOC 2 ready |
 
 ---

@@ -1,30 +1,31 @@
-# Sentinel Cortex™ - Documentation Portal
+# Sentinel Cortex™ - Technical Documentation Portal
 
-Welcome to the central documentation portal for **Sentinel Cortex™**.
+Welcome to the central documentation portal for **Sentinel Cortex™**, a security and observability framework based on eBPF LSM and localized AI inference.
 
-## 🌌 Project Overview
-Sentinel is a quantum-inspired security and sensing framework. By leveraging axiomatic physics-based optimization and kernel-level immutable security, we have achieved a **10.2-Sigma** discovery in axion-like signal detection.
+## 📋 Project Overview
+Sentinel Cortex provides a low-latency security enforcement layer for Linux systems. By leveraging eBPF LSM (Linux Security Module) hooks, the system interposes on critical kernel operations to apply real-time security policies.
 
 - [**Repository Homepage**](https://github.com/jenovoas/sentinel)
-- [**The AI-Guided Manual**](../research/COGNITIVE_MANUAL_SENTINEL.md)
-- [**Research Paper (Pre-print)**](../quantum/AXION_RESEARCH_PAPER.md)
+- [**Technical Architecture**](./proven/TRUTHSYNC_ARCHITECTURE.md)
+- [**Benchmarks and Performance**](./BENCHMARKS_CONSOLIDATED.md)
 
 ---
 
 ## 🛠️ Key Components
 
-### 🛡️ Guardian Alpha (Security)
-Security implemented as a law of physics in Ring 0 using eBPF LSM.
-- [**Security Documentation**](../ebpf/README.md)
+### 🛡️ Kernel-Level Security (Guardian Alpha)
+Real-time security enforcement implementing a policy-driven layer at Ring 0 via eBPF LSM.
+- [**Interception Logic**](../ebpf/README.md)
+- [**C Relay Implementation**](../guardian-alpha/sentinel_relay.c)
 
-### 💎 Quantum Core (Sensing)
-High-precision distributed sensor array simulations using VQE/QAOA.
-- [**Quantum Discovery Protocol**](../quantum/README.md)
+### 🧠 Semantic Analysis (Control Plane)
+Contextual evaluation of security events using local LLM inference (Ollama/Llama 3.2:3b).
+- [**Logic Engine Documentation**](../truthsync-poc/README.md)
 
-### 📐 Resonance Architecture (Optimization)
-High-throughput data flow inspired by optomechanical cooling.
-- [**Visual Guide to Trinity**](../VISUAL_GUIDE_TRINITY.md)
+### 📊 Observability and Monitoring
+Integrated data pipeline for system health and security event telemetry.
+- [**System Audit Summary**](../SYSTEM_AUDIT_SUMMARY_2026_01_01.md)
 
 ---
 
-**© 2025 Jaime Eugenio Novoa Sepúlveda** | [Contact](mailto:jaime.novoase@gmail.com)
+**© 2026 Jaime Eugenio Novoa Sepúlveda** | [Contact](mailto:jaime.novoase@gmail.com)

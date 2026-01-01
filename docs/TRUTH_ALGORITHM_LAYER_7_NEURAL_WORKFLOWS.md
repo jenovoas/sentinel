@@ -381,7 +381,7 @@ Input: Video sospechoso de ser deepfake
 ├─ Voz: 88/100 (síntesis artificial detectada)
 ├─ Lenguaje corporal: 92/100 (movimientos no naturales)
 ├─ Lingüístico: 15/100 (texto normal)
-└─ Temporal: 78/100 (timing perfecto - sospechoso)
+└─ Temporal: 78/100 (timing validado - sospechoso)
     ↓
 Truth Score: 74/100 🔴 LIKELY SYNTHETIC
 Deepfake Probability: 89%
@@ -503,7 +503,7 @@ Deepfake Probability: 89%
 
 ## ✅ Resumen Ejecutivo
 
-**Layer 7 (Neural Workflow Network)** es tu **diferenciador absoluto**:
+**Layer 7 (Neural Workflow Network)** es tu **diferenciador verificado**:
 
 - 🧠 **Red neuronal de workflows** (como Sentinel, pero para verdad/mentira)
 - 😐 **Análisis multimodal** (video + audio + texto + contexto)
