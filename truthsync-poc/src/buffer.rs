@@ -11,7 +11,7 @@ struct MessageHeader {
 
 /// Message types
 #[allow(dead_code)]
-pub mod MessageType {
+pub mod message_type {
     pub const PROCESS_TEXT: u16 = 0x01;
     pub const GET_RESULTS: u16 = 0x02;
     pub const CONFIGURE: u16 = 0x03;
