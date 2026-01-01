@@ -20,22 +20,42 @@ struct SystemVector {
 
 #[command]
 fn get_system_vector() -> SystemVector {
-    // Mock simulation of "Resonance"
-    // In production, this reads /var/run/sentinel/truthsync_shm
-    let start = SystemTime::now();
-    let since_the_epoch = start
-        .duration_since(UNIX_EPOCH)
-        .expect("Time went backwards");
-    let seed = since_the_epoch.as_millis() as f64;
+    // Read from /var/run/sentinel/truthsync_shm (Bytes 0-32)
+    // Structure: [entropy(f64) | coherence(f64) | tte_us(f64) | timestamp(u64)]
     
-    // Generate organic-looking fluctuations
-    let entropy_base = 0.12;
-    let entropy_noise = (seed.sin() * 0.05).abs();
+    use std::fs::OpenOptions;
+    use std::io::{Read, Seek, SeekFrom};
+    use std::mem;
+
+    let shm_path = "/var/run/sentinel/truthsync_shm";
+    
+    // Fallback if SHM not ready
+    let default_vector = SystemVector {
+        entropy: 0.0,
+        coherence: 0.0,
+        tte_us: 0.0,
+    };
+
+    let mut file = match OpenOptions::new().read(true).open(shm_path) {
+        Ok(f) => f,
+        Err(_) => return default_vector,
+    };
+
+    let mut buffer = [0u8; 32]; // 3 doubles (24) + 1 u64 (8) = 32 bytes
+    if file.read_exact(&mut buffer).is_err() {
+        return default_vector;
+    }
+
+    // Unsafe transmutation to read f64s from bytes
+    // Note: This assumes Little Endian which is standard for x86_64 Linux
+    let entropy = f64::from_le_bytes(buffer[0..8].try_into().unwrap_or([0; 8]));
+    let coherence = f64::from_le_bytes(buffer[8..16].try_into().unwrap_or([0; 8]));
+    let tte_us = f64::from_le_bytes(buffer[16..24].try_into().unwrap_or([0; 8]));
     
     SystemVector {
-        entropy: entropy_base + entropy_noise,
-        coherence: 0.98 + (seed.cos() * 0.01),
-        tte_us: 3.23,
+        entropy,
+        coherence,
+        tte_us
     }
 }
 
