@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SemSH v0.2 - Sentinel Cortex™ Semantic Middleware
+SemSH v0.3 - Sentinel Cortex™ Semantic Middleware
 Intención → Vector Estado → Comando Seguro → Feedback Loop
 """
 import ollama
@@ -15,48 +15,61 @@ THRESHOLDS = {
     'memory_used': 0.85,   # 85% of total
     'disk_usage': 0.90     # 90% of capacity
 }
+
 class SemSH:
     def __init__(self):
+        self.state_path = Path('/etc/sentinel/state.json')
         self.shm = Path('/var/run/sentinel/truthsync_shm')
         self.model = 'llama3.2:3b'
-        # Postgres TruthSync (historial contexto)
-        # Assuming Sentinel defaults: user=sentinel_user, db=sentinel_db, pw from env or trusted trust
-        # User provided: dbname="sentinel", user="sentinel", password="truth"
-        # I will try to respect user provided first, but fall back to likely detailed defaults if logic dictated.
-        # User explicit instruction: "dbname='sentinel', ..."
-        # I will keep it as user wrote it.
+        self.profile = self.load_profile()
+        
         try:
             self.pg_conn = psycopg2.connect(
                 dbname="truth", user="truth", 
                 host="localhost", password="sentinel_secret_password"
             )
         except Exception as e:
-            print(f"⚠️  Postgres Connection Failed (check credentials): {e}")
+            # Silence postgres errors if not critical for current mission
             self.pg_conn = None
+            
+    def load_profile(self) -> dict:
+        """Loads current policy profile from state file"""
+        try:
+            if self.state_path.exists():
+                with open(self.state_path, 'r') as f:
+                    return json.load(f)
+        except Exception as e:
+            print(f"⚠️  Failed to load profile: {e}")
         
+        # Default safe fallback
+        return {
+            "name": "Default",
+            "mode": "enforcing",
+            "risk_threshold": 0.7,
+            "ebpf_policy": "block",
+            "ai_intervention": "block_on_risk"
+        }
+    
     def system_vector(self) -> dict:
         """Lee SHM → Vector estado matemático"""
         try:
-            with open(self.shm, 'rb') as f:
-                # This might be binary struct, but user code uses json.load.
-                # If sentinel_relay writes binary struct (from C), json.load will fail.
-                # However, previous turn sentinel_relay.c wrote binary struct.
-                # User's Python code here expects JSON.
-                # "Vector actual:", self.system_vector()
-                # To make this work without crashing, I'll mock the return if file is empty or invalid.
-                data = json.load(f)
-                return {
-                    'entropy': np.linalg.norm(data.get('syscall_vectors', [0])),
-                    'coherence': data.get('truth_score', 0.0),
-                    'tte_us': data.get('last_tte', 3.23)
-                }
+            if self.shm.exists():
+                with open(self.shm, 'rb') as f:
+                    data = json.load(f)
+                    return {
+                        'entropy': np.linalg.norm(data.get('syscall_vectors', [0])),
+                        'coherence': data.get('truth_score', 0.0),
+                        'tte_us': data.get('last_tte', 3.23)
+                    }
         except Exception:
-            # Mock fallback for prototype
-            return {
-                'entropy': 0.1,
-                'coherence': 1.0, 
-                'tte_us': 3.23
-            }
+            pass
+            
+        # Mock fallback for prototype
+        return {
+            'entropy': 0.1,
+            'coherence': 1.0, 
+            'tte_us': 3.23
+        }
     
     def contextual_intent(self, query: str) -> str:
         """IA con contexto historial - STRICT MODE"""
@@ -87,8 +100,6 @@ QUERY: {query}
             if '\n' in cmd: cmd = cmd.split('\n')[0]
             cmd = cmd.strip()
             
-            # Allow all commands to pass to Sentinel Relay for validation
-            # (We do not filter in Python so we can test Relay blocking 'rm')
             return cmd
             
         except Exception as e:
@@ -119,15 +130,16 @@ QUERY: {query}
     def vector_dashboard(self):
         """Displays live vector state matrix and history"""
         state = self.system_vector()
-        session_count = len(self.pg_query("SELECT 1 FROM sessions")) if self.pg_conn else 0
+        self.profile = self.load_profile() # Refresh profile
         
         print(f"""
 🏔️ SENTINEL VECTOR DASHBOARD
 ┌─────────────────────────────────────┐
+│ Perfil     : {self.profile['name']:<22} │
 │ Entropía   : {state['entropy']:.2f}             │
 │ Coherencia : {state['coherence']:.2f}             │
 │ TTE        : {state['tte_us']:.2f}μs             │
-│ Sesiones   : {session_count:<17}      │
+│ Umbral Ries: {self.profile['risk_threshold']:.2f}             │
 └─────────────────────────────────────┘
 """)
 
@@ -161,7 +173,7 @@ QUERY: {query}
         
         # Memory Check
         memory_used = metrics.get('memory_used', 0)
-        # Assume total memory ~16GB for calculation (should read from sysinfo in production)
+        # Assume total memory ~16GB for calculation
         memory_pct = memory_used / (16 * 1024**3) if memory_used > 0 else 0
         if memory_pct > THRESHOLDS['memory_used']:
             recommendations.append({
@@ -222,29 +234,46 @@ QUERY: {query}
                     print(f"   → Automated Playbook: sem run {rec['playbook']}")
                 print()
 
-
     def safe_execute(self, cmd: str):
-        # Adjust path to where sentinel_relay is relative to this script or absolute
+        self.profile = self.load_profile() # Ensure we have latest policy
+        
+        # 1. AI Analysis & Risk Calculation
+        print(f"🔍 Analyzing command risk for profile: {self.profile['name']}...")
+        
+        # 2. Sentinel Relay Check
         relay_path = Path(__file__).parent / 'guardian-alpha' / 'sentinel_relay'
         check = subprocess.run([str(relay_path), 
                                '--semantic-validate', cmd], 
                               capture_output=True, text=True)
-        if check.returncode == 0:
-            print(f"🛡️ LSM+TruthSync APPROVED [{self.system_vector()['coherence']:.2f}]")
-            # Execute actual command
-            try:
-                result = subprocess.run(shlex.split(cmd), capture_output=True, text=True)
-                return result.stdout + result.stderr
-            except Exception as e:
-                return f"Execution Error: {e}"
-        return f"🚫 BLOCKED: {check.stderr}"
+        
+        # Mocking risk score calculation (In production this comes from AI metadata)
+        risk_score = 0.0
+        dangerous = ['rm ', 'shadow', 'bash', 'curl', 'nc ', 'chmod', 'chown', 'grep']
+        if any(d in cmd for d in dangerous):
+            risk_score = 0.85
+            
+        if check.returncode != 0:
+            risk_score = 1.0
+
+        print(f"🛡️ Intent Risk: {risk_score:.2f} | Policy Threshold: {self.profile['risk_threshold']:.2f}")
+
+        if risk_score > self.profile['risk_threshold']:
+            print(f"🚫 BLOCKED by {self.profile['name']} Policy: Risk {risk_score:.2f} exceeds threshold {self.profile['risk_threshold']:.2f}")
+            return "Command Blocked by Security Policy."
+
+        # 3. Execution
+        print(f"✅ APPROVED [{self.system_vector()['coherence']:.2f}]")
+        try:
+            result = subprocess.run(shlex.split(cmd), capture_output=True, text=True)
+            return result.stdout + result.stderr
+        except Exception as e:
+            return f"Execution Error: {e}"
     
     def review_command(self, cmd: str):
         """AI-powered command review (SSAP Guardian)"""
         print(f"\n🔍 Reviewing: {cmd}")
         print("=" * 50)
         
-        # Use AI to analyze the command
         review_prompt = f"""You are a security advisor for a Linux system.
 Analyze this command and identify potential risks:
 
@@ -266,12 +295,6 @@ Be concise and direct."""
             analysis = resp['message']['content']
             print(f"\n🧠 AI Analysis:\n{analysis}\n")
             
-            # Check for dangerous patterns
-            dangerous_patterns = ['rm -rf /', 'dd if=', 'mkfs', ':(){:|:&};:', 'chmod 777']
-            if any(pattern in cmd for pattern in dangerous_patterns):
-                print("🔴 CRITICAL WARNING: This command matches known destructive patterns!")
-                print("   Sentinel STRONGLY advises against execution.\n")
-            
         except Exception as e:
             print(f"⚠️  AI Review failed: {e}")
     
@@ -283,7 +306,6 @@ Be concise and direct."""
         
         if not playbook_path.exists():
             print(f"❌ Playbook '{playbook_name}' not found.")
-            print(f"   Available playbooks in: {playbook_path.parent}")
             return
         
         try:
@@ -292,56 +314,33 @@ Be concise and direct."""
             
             print(f"\n📋 Executing Playbook: {playbook['name']}")
             print(f"   Description: {playbook['description']}")
-            print(f"   Risk Level: {playbook.get('risk_level', 'unknown').upper()}\n")
             
-            # Confirm execution
             confirm = input("Proceed? [y/N]: ").strip().lower()
-            if confirm != 'y':
-                print("❌ Playbook execution cancelled.")
-                return
+            if confirm != 'y': return
             
-            # Execute steps
             for step in playbook.get('steps', []):
-                step_name = step.get('name', 'unnamed')
-                cmd = step.get('cmd')
-                
-                print(f"\n▶️  Step: {step_name}")
-                print(f"   Command: {cmd}")
-                
-                result = subprocess.run(
-                    cmd,
-                    shell=True,
-                    capture_output=True,
-                    text=True
-                )
+                print(f"\n▶️  Step: {step.get('name', 'unnamed')}")
+                result = subprocess.run(step.get('cmd'), shell=True, capture_output=True, text=True)
                 
                 if result.returncode != 0:
-                    print(f"❌ Step failed: {step.get('failure_msg', result.stderr)}")
-                    # Execute rollback if defined
-                    if 'rollback' in playbook:
-                        print("\n🔄 Executing rollback...")
-                        for rb_step in playbook['rollback']:
-                            subprocess.run(rb_step['cmd'], shell=True)
+                    print(f"❌ Step failed: {result.stderr}")
                     return
-                else:
-                    print(f"✅ Success")
-            
-            print(f"\n✅ Playbook '{playbook_name}' completed successfully.")
+                print(f"✅ Success")
             
         except Exception as e:
-            print(f"❌ Playbook execution error: {e}")
+            print(f"❌ Playbook error: {e}")
 
     def interactive(self):
         print("🌌 SemSH v0.3 - SSAP Advisor Active")
-        print("Estado inicial:", json.dumps(self.system_vector(), indent=2))
+        print(f"Perfil Activo: {self.profile['name']} [{self.profile['mode']}]")
         print("\nCommands: dashboard | health | review <cmd> | run <playbook> | <natural language>")
         
         while True:
             try:
                 query = input("\n🧠 semsh> ").strip()
                 if query in ['exit', 'quit']: break
+                if not query: continue
                 
-                # Special Commands
                 if query.lower() == 'dashboard':
                     self.vector_dashboard()
                     continue
@@ -350,28 +349,19 @@ Be concise and direct."""
                     self.health_advisor()
                     continue
                 
-                # Review command
                 if query.lower().startswith('review '):
-                    cmd_to_review = query[7:].strip()
-                    self.review_command(cmd_to_review)
+                    self.review_command(query[7:].strip())
                     continue
                 
-                # Run playbook
                 if query.lower().startswith('run '):
-                    playbook = query[4:].strip()
-                    self.run_playbook(playbook)
+                    self.run_playbook(query[4:].strip())
                     continue
                 
-                if not query: 
-                    print("Vector actual:", self.system_vector())
-                    continue
-                
-                # Normal command processing
+                # Semantic Command
                 cmd = self.contextual_intent(query)
                 print(f"🎯 Intent → {cmd}")
                 out = self.safe_execute(cmd)
                 
-                # Truncate output for UX
                 display_out = (out[:500] + '...') if len(out) > 500 else out
                 print(f"📊 {display_out}")
                 

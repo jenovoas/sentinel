@@ -1,0 +1,9 @@
+{
+    "name": "Laboratory",
+    "mode": "permissive",
+    "risk_threshold": 1.0,
+    "ebpf_policy": "log_only",
+    "ai_intervention": "warn_only",
+    "shm_telemetry": "verbose",
+    "description": "Modo de recolección de datos. Registra anomalías sin bloquear la ejecución."
+}
