@@ -170,28 +170,59 @@ check_ebpf() {
     
     CLAIM_SOURCES["kernel_facts"]=$((${CLAIM_SOURCES["kernel_facts"]} + 1))
     
-    local bpf_prog=$(sudo bpftool prog list 2>/dev/null | grep -c quantum || echo 0)
-    local bpf_link=$(sudo bpftool link list 2>/dev/null | grep -c quantum || echo 0)
-    local bpf_maps=$(sudo bpftool map list 2>/dev/null | grep -c quantum || echo 0)
+    # Use explicit if blocks to avoid set -e triggers with empty strings
+    local bpf_prog_ids=""
+    bpf_prog_ids=$(sudo bpftool prog list 2>/dev/null | grep quantum | awk '{print $1}' | tr -d ':' || echo "")
+    
+    local bpf_prog=0
+    if [[ -n "$bpf_prog_ids" ]]; then
+        bpf_prog=$(echo "$bpf_prog_ids" | wc -l)
+    fi
+    
+    local bpf_link=0
+    if [[ $bpf_prog -gt 0 ]]; then
+        for pid in $bpf_prog_ids; do
+            local links=0
+            links=$(sudo bpftool link list 2>/dev/null | grep -c "prog $pid" || echo 0)
+            bpf_link=$((bpf_link + links))
+        done
+    fi
+    
+    # Check for specific maps
+    local map_list=""
+    map_list=$(sudo bpftool map list 2>/dev/null || echo "")
+    local bpf_maps=0
+    local critical_maps=("base60_threat" "inference_lut" "quantum_ringbuf" "decision_ringbu" "stats" "fingerprint_cac" "process_lineage" "quantum_.rodata")
+    
+    for m in "${critical_maps[@]}"; do
+        if echo "$map_list" | grep -q "$m"; then
+            bpf_maps=$((bpf_maps + 1))
+        fi
+    done
     
     # Save bpftool output
     sudo bpftool prog list > "$AUDIT_DIR/bpf_progs.txt" 2>/dev/null || echo "No programs" > "$AUDIT_DIR/bpf_progs.txt"
     sudo bpftool map list > "$AUDIT_DIR/bpf_maps.txt" 2>/dev/null || echo "No maps" > "$AUDIT_DIR/bpf_maps.txt"
     
     if [[ $bpf_prog -gt 0 ]]; then
-        local prog_id=$(sudo bpftool prog list 2>/dev/null | grep quantum | awk '{print $1}' | head -1 | tr -d ':')
-        log_pass "eBPF program: Loaded (ID=$prog_id, count=$bpf_prog)"
-        add_to_matrix "| eBPF Prog | quantum_bprm_check | ID=$prog_id | ✅ | OK |"
+        local first_id=$(echo "$bpf_prog_ids" | head -1)
+        log_pass "eBPF program: Loaded (ID=$first_id, count=$bpf_prog)"
+        add_to_matrix "| eBPF Prog | quantum_bprm_check | ID=$first_id | ✅ | OK |"
     else
         log_warn "eBPF program: Not loaded"
         add_to_matrix "| eBPF Prog | quantum_bprm_check | Not loaded | ❌ | **Load prog** |"
         FAILURES=$((FAILURES | EXIT_EBPF_PROG_FAIL))
     fi
     
-    add_to_matrix "| eBPF Link | Activo | $bpf_link | $([[ $bpf_link -gt 0 ]] && echo ✅ || echo ❌) | Attach link |"
-    add_to_matrix "| eBPF Maps | 3 mapas | $bpf_maps | $([[ $bpf_maps -ge 3 ]] && echo ✅ || echo ⚠️) | Create maps |"
+    local match_icon="❌"
+    [[ $bpf_link -gt 0 ]] && match_icon="✅"
+    add_to_matrix "| eBPF Link | Activo | $bpf_link | $match_icon | Attach link |"
     
-    log_info "eBPF: Progs=$bpf_prog Links=$bpf_link Maps=$bpf_maps"
+    local map_icon="⚠️"
+    [[ $bpf_maps -ge 8 ]] && map_icon="✅"
+    add_to_matrix "| eBPF Maps | 8 mapas | $bpf_maps / 8 | $map_icon | Create maps |"
+    
+    log_info "eBPF: Progs=$bpf_prog Links=$bpf_link Maps=$bpf_maps/8"
 }
 
 check_trace() {
@@ -234,12 +265,18 @@ check_trace() {
         local system_uptime=$(cat /proc/uptime | awk '{print $1}')
         local lag=$(echo "$system_uptime - $timestamp" | bc -l 2>/dev/null || echo "N/A")
         
-        if [[ "$lag" != "N/A" ]] && (( $(echo "$lag < ${THRESHOLDS["INGESTION_LAG_MAX"]}" | bc -l) )); then
-            log_pass "Ingestion lag: ${lag}s (< 5s)"
-            add_to_matrix "| Ingestion lag | <5s | ${lag}s | ✅ | OK |"
-        else
-            log_warn "Ingestion lag: ${lag}s"
-            add_to_matrix "| Ingestion lag | <5s | ${lag}s | ⚠️ | Reduce lag |"
+        if [[ "$lag" != "N/A" ]]; then
+            # Handle near-zero/negative lag (Clock Drift / Temporal Echo)
+            if (( $(echo "$lag < 0.0001" | bc -l) )) && (( $(echo "$lag > -1.0" | bc -l) )); then
+                log_pass "Ingestion lag: ~0s (Temporal Echo Detected)"
+                add_to_matrix "| Ingestion lag | <5s | ~0s (Echo) | ✅ | OK |"
+            elif (( $(echo "$lag < ${THRESHOLDS["INGESTION_LAG_MAX"]}" | bc -l) )); then
+                log_pass "Ingestion lag: ${lag}s (< 5s)"
+                add_to_matrix "| Ingestion lag | <5s | ${lag}s | ✅ | OK |"
+            else
+                log_warn "Ingestion lag: ${lag}s"
+                add_to_matrix "| Ingestion lag | <5s | ${lag}s | ⚠️ | Reduce lag |"
+            fi
         fi
     else
         add_to_matrix "| Timestamp | Decimal | Invalid | ❌ | Parse format |"
