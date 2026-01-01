@@ -50,13 +50,15 @@ class IngestionLagMonitor:
         
     def _get_system_uptime(self):
         """
-        Get system uptime with caching to reduce I/O overhead.
+        Get system monotonic time with caching.
+        
+        Uses CLOCK_MONOTONIC to match kernel trace clock.
         Cache is valid for 100ms (sufficient for event processing).
         """
         now = time.time()
         if now - self._cache_timestamp > self._cache_ttl:
-            with open('/proc/uptime', 'r') as f:
-                self._cached_uptime = float(f.read().split()[0])
+            # Use CLOCK_MONOTONIC to match kernel trace 'local' clock
+            self._cached_uptime = time.clock_gettime(time.CLOCK_MONOTONIC)
             self._cache_timestamp = now
         return self._cached_uptime
         
@@ -94,13 +96,14 @@ class IngestionLagMonitor:
         if kernel_time is None:
             return (True, 0.0, "No timestamp found (legacy format)")
         
-        # Current system uptime (cached to reduce I/O)
+        # Current system time (CLOCK_MONOTONIC, matches kernel trace)
         system_uptime = self._get_system_uptime()
         
         # Calculate lag (how old is this event?)
         lag = system_uptime - kernel_time
         
         # Detect clock drift (negative lag = event from future!)
+        # Note: Small negative lags (<100ms) are normal due to per-CPU clock drift
         if lag < -self.max_drift:
             self.drift_warnings += 1
             return (False, lag, f"Clock drift detected: event is {abs(lag):.2f}s in the future")
@@ -110,7 +113,7 @@ class IngestionLagMonitor:
             self.lag_warnings += 1
             return (False, lag, f"Excessive ingestion lag: {lag:.2f}s (max: {self.max_lag}s)")
         
-        # Valid event
+        # Valid event (including small negative lags from CPU drift)
         self.lag_samples.append(lag)
         self.events_processed += 1
         return (True, lag, "OK")
