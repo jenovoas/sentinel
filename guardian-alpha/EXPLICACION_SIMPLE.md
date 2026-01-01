@@ -36,7 +36,7 @@ Sentinel: "¡ESPERA! Déjame revisarlo primero"
 ```
 Sentinel revisa 3 cosas:
 
-1. Base-60 Score (Matemática Antigua)
+1. Base-60 Score 
    - PID del proceso mod 60 = residuo
    - Residuos "armónicos" (12, 24, 30) = Seguro
    - Residuos "primos" (7, 11, 13) = Sospechoso
