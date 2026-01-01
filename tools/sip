@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+import argparse
+import zipfile
+import json
+import os
+import shutil
+import hashlib
+import sys
+
+# Mock AI verification for prototype
+def ask_semantic_core(metadata):
+    print("\n🧠 [SemSH] Analyzing Semantic Contract...")
+    print(f"   • Package: {metadata.get('name')} v{metadata.get('version')}")
+    print(f"   • Intent : {metadata.get('description')}")
+    print(f"   • Perms  : {metadata.get('permissions')}")
+    
+    # Simple heuristics for prototype
+    desc = metadata.get('description', '').lower()
+    perms = metadata.get('permissions', [])
+    
+    if "calculator" in desc and "NET_ADMIN" in perms:
+        print("   ❌ ALERT: Semantic Incoherence detected (Calculator asking for Network Admin).")
+        return False
+        
+    print("   ✅ VERDICT: Intent appears coherent.")
+    return True
+
+def install_package(sip_file):
+    print(f"📦 Processing {sip_file}...")
+    
+    if not zipfile.is_zipfile(sip_file):
+        print("❌ Error: Not a valid SIP archive.")
+        return
+
+    try:
+        with zipfile.ZipFile(sip_file, 'r') as z:
+            # 1. Manifest Check
+            if "intent.json" not in z.namelist():
+                print("❌ Error: Missing intent.json semantic manifest.")
+                return
+            
+            manifest_data = z.read("intent.json")
+            meta = json.loads(manifest_data)
+            
+            # 2. Semantic Verification
+            if not ask_semantic_core(meta):
+                print("🔒 BLOCKED: AI Cognitive Veto activated.")
+                return
+                
+            # 3. Installation
+            install_path = f"/opt/sentinel/apps/{meta['name']}"
+            print(f"🚀 Installing to {install_path}...")
+            
+            # Use sudo in real life, here we simulate or use user dir if fail
+            if os.access("/opt/sentinel/apps", os.W_OK):
+                z.extractall(install_path)
+            else:
+                # Fallback for dev environment without sudo
+                local_path = f"./simulated_opt/{meta['name']}"
+                os.makedirs(local_path, exist_ok=True)
+                z.extractall(local_path)
+                print(f"   (Redirected to {local_path} due to permissions)")
+                
+            print(f"✅ Package '{meta['name']}' installed successfully.")
+            
+    except Exception as e:
+        print(f"❌ Installation Error: {e}")
+
+def build_package(source_dir, output_file):
+    if not os.path.exists(os.path.join(source_dir, "intent.json")):
+        print("❌ Error: Source directory must contain intent.json")
+        return
+        
+    print(f"🔨 Building {output_file} from {source_dir}...")
+    with zipfile.ZipFile(output_file, 'w', zipfile.ZIP_DEFLATED) as z:
+        for root, dirs, files in os.walk(source_dir):
+            for file in files:
+                file_path = os.path.join(root, file)
+                arcname = os.path.relpath(file_path, source_dir)
+                z.write(file_path, arcname)
+    print("✅ Build complete.")
+
+def main():
+    parser = argparse.ArgumentParser(description="SIP: Sentinel Installation Protocol")
+    subparsers = parser.add_subparsers(dest="command")
+    
+    # Install
+    p_install = subparsers.add_parser("install", help="Install a .sip package semantics-verified")
+    p_install.add_argument("package", help="Path to .sip file")
+    
+    # Build
+    p_build = subparsers.add_parser("build", help="Create a .sip package")
+    p_build.add_argument("source", help="Source directory")
+    p_build.add_argument("output", help="Output .sip file")
+    
+    args = parser.parse_args()
+    
+    if args.command == "install":
+        install_package(args.package)
+    elif args.command == "build":
+        build_package(args.source, args.output)
+    else:
+        parser.print_help()
+
+if __name__ == "__main__":
+    main()
