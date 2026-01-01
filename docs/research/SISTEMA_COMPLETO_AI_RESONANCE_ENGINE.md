@@ -306,7 +306,7 @@ Speedup Total = 3.38 × 3 = 10.14x (conservador)
 Speedup Total = 3.38 × 5 = 16.9x (optimista)
 ```
 
-### Comparativa vs Estado del Arte
+### Comparativa vs estándar técnico
 
 | Métrica | TCP/IP | QUIC | Datadog | **Sentinel Complete** | **Mejora** |
 |---------|--------|------|---------|----------------------|-----------|

@@ -22,7 +22,7 @@ Workflow = Documento estructurado con:
 ├─ Integraciones necesarias (servicios)
 └─ Lógica de decisión (if/switch)
 
-= PERFECTO para RAG/RIG
+= validado para RAG/RIG
 ```
 
 **3. Training Data para ML**

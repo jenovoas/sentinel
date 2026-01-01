@@ -353,7 +353,7 @@ impl TruthGuardian {
 
 ### **Valor Agregado**:
 - **Patent Claims**: +2 claims adicionales (viral prediction + campaign detection)
-- **Competitive Moat**: Imposible de copiar rápido (requiere 1M+ samples)
+- **Competitive Moat**: no factible de copiar rápido (requiere 1M+ samples)
 - **Revenue**: +$50K-100K/año por cliente enterprise (prevención proactiva)
 
 ---
@@ -425,7 +425,7 @@ impl TruthGuardian {
 1. ✅ **Nadie lo tiene** (competencia solo verifica, no predice)
 2. ✅ **Altamente patentable** (+2 claims adicionales)
 3. ✅ **ROI masivo** (80% detección pre-viral)
-4. ✅ **Imposible de copiar rápido** (requiere 1M+ samples + ML expertise)
+4. ✅ **no factible de copiar rápido** (requiere 1M+ samples + ML expertise)
 
 **Recomendación**: 
 - POC sin Layer 6 (semanas 1-2)

@@ -77,7 +77,7 @@ Sistema ⇄ Observador ⇄ Sistema
 │  • Ejecución y Reflejos                             │
 │  • Velocidad: Rápido (<10ns)                        │
 │  • Inteligencia: Cero (determinístico)              │
-│  • Fortaleza: Imposible de engañar                  │
+│  • Fortaleza: no factible de engañar                  │
 │  • Rol: Reflejo espinal                             │
 └─────────────────────────────────────────────────────┘
 ```
@@ -97,7 +97,7 @@ Sistema ⇄ Observador ⇄ Sistema
 - **Ejemplo**: Detecta patrón sospechoso en logs → Alerta a Gamma y Beta
 
 **Guardian Beta (eBPF)**:
-- **Fortaleza**: Velocidad extrema, imposible de engañar, determinístico
+- **Fortaleza**: Velocidad extrema, no factible de engañar, determinístico
 - **Debilidad**: Ciego (solo sigue reglas), sin contexto
 - **Función crítica**: Enforcement inmediato de decisiones
 - **Ejemplo**: Recibe orden de bloquear → Bloquea en <10ns sin preguntar

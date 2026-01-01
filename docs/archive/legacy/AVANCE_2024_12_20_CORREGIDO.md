@@ -54,7 +54,7 @@ Sistema de monitoreo mutuo entre componentes:
 
 **Ventajas**:
 - Detección de compromiso de cualquier componente
-- Imposible deshabilitar todos simultáneamente
+- no factible deshabilitar todos simultáneamente
 - Audit trail de mutual surveillance
 
 **Diferenciador**: Mutual surveillance a nivel kernel + application (no encontrado en prior art search)
@@ -113,7 +113,7 @@ Zero-trust architecture para servicios internos:
 - **Performance**: +2ms vs +10ms de API pública (estimado, requiere testing)
 - **Seguridad**: Elimina API keys en tránsito
 - **Exposición**: Zero endpoints públicos para comunicación interna
-- **MITM**: Imposible sin certificado válido
+- **MITM**: no factible sin certificado válido
 
 **Nota**: mTLS es tecnología estándar (Datadog y Splunk también lo usan). Diferenciador es la **arquitectura zero-trust completa**, no solo la tecnología.
 

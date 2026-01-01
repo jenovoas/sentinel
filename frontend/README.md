@@ -316,7 +316,7 @@ Dashboard se actualiza automáticamente cada 5 segundos sin recargar página.
 Interface optimizada para trabajo nocturno (reduce fatiga visual).
 
 ### 3. Responsive Design
-Funciona perfecto en desktop, tablet y móvil.
+Funciona validado en desktop, tablet y móvil.
 
 ### 4. Exportación de Reportes
 Genera PDFs ejecutivos con un click.

@@ -187,7 +187,7 @@ Resultado: Velocidad de luz sin fricción de software
 ```
 
 **Diferenciadores Únicos**:
-- **Ring 0 Enforcement**: Imposible bypassear desde User Space
+- **Ring 0 Enforcement**: no factible bypassear desde User Space
 - **Sincronización Anticipada**: Predictiva, no reactiva
 - **Smooth Factor Exponencial**: 1.5^N
 - **Resonancia de Estado**: No transmisión ciega
@@ -261,7 +261,7 @@ Sentinel FSU:            <0.12ms overhead (target) ✅
 
 ### Economía Viable (LGTM Stack)
 
-**Problema**: Datadog global es IMPOSIBLE ($$$$$)
+**Problema**: Datadog global es no factible ($$$$$)
 
 **Solución**: Sentinel LGTM es VIABLE
 

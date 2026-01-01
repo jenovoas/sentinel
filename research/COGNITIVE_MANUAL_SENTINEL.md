@@ -77,7 +77,7 @@ Gracias al archivo `.github/copilot-instructions.md`, la IA adoptará su modo de
 3.  **¿Qué es el Flujo Perpetuo?** Una optimización matemática que impide que los buffers de datos colapsen.
 4.  **¿Materia Oscura?** Sí, usamos el ruido térmico del sistema como un sensor para señales cósmicas.
 5.  **¿Qué es un Axión?** Una partícula hipotética que podría ser la "materia oscura" que sostiene las galaxias.
-6.  **¿10.2-Sigma?** Una medida de confianza estadística tan alta que es virtualmente imposible que sea un error.
+6.  **¿10.2-Sigma?** Una medida de confianza estadística tan alta que es virtualmente no factible que sea un error.
 7.  **¿AIOpsDoom?** El riesgo de que una IA tome decisiones basadas en datos falsos; Sentinel la protege.
 8.  **¿Plimpton 322?** Una tablilla babilónica que contiene la trigonometría exacta necesaria para estabilizar levitación.
 9.  **¿Base 60?** Una base numérica superior a la Base 10 para computar sin errores de redondeo infinitos.

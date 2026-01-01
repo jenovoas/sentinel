@@ -22,7 +22,7 @@
 2. Archivo contenía: invalid memory pointer
 3. Falcon corre en KERNEL LEVEL (máximos privilegios)
 4. Bug disparó: Kernel panic → BSOD
-5. Auto-restart infinito: Imposible reparar remotamente
+5. Auto-restart infinito: no factible reparar remotamente
 6. Resultado: 8.5M máquinas en loop infinito
 
 **IMPLICACIÓN PARA SENTINEL:**

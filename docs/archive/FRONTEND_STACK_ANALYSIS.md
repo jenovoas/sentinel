@@ -44,7 +44,7 @@
 - ⚠️ Debugging más difícil (WASM)
 - ⚠️ Bundle size inicial mayor
 
-**Use Cases Perfectos**:
+**Use Cases validados**:
 - Procesamiento de telemetría en tiempo real
 - Cálculos de anomalías (AIOpsDoom detection)
 - Operaciones criptográficas (HMAC, signatures)

@@ -21,18 +21,18 @@
 
 ## 📋 LAS 3 CORRECCIONES CRÍTICAS
 
-### ⚠️ CORRECCIÓN #1: Lenguaje Legal ("Matemáticamente Imposible")
+### ⚠️ CORRECCIÓN #1: Lenguaje Legal ("Matemáticamente no factible")
 
 **PROBLEMA IDENTIFICADO:**
 
 ```
 ❌ ANTES (Riesgoso):
 "Probabilidad de fallo: 10^-17"
-"Matemáticamente imposible de comprometer"
+"Matemáticamente no factible de comprometer"
 
 RIESGO LEGAL:
 Si un rootkit compromete el kernel y deshabilita los Guardians,
-la afirmación de "imposible" te expone a lawsuit por false advertising.
+la afirmación de "no factible" te expone a lawsuit por false advertising.
 ```
 
 **CORRECCIÓN APLICADA:**
@@ -43,7 +43,7 @@ la afirmación de "imposible" te expone a lawsuit por false advertising.
 ">99.99% efectividad demostrada"
 
 LENGUAJE CORRECTO:
-- "Estadísticamente improbable" (no "imposible")
+- "Estadísticamente improbable" (no "no factible")
 - "Bajo condiciones de integridad del kernel" (scope limitado)
 - Evita garantías absolutas que no puedes defender legalmente
 ```
@@ -221,8 +221,8 @@ RECOMENDACIÓN:
 
 ### Validaciones Legales
 
-- [x] **Lenguaje Suavizado:** "Inmunidad estadística" (no "imposible")
-- [x] **Scope Limitado:** "Bajo integridad de kernel" (no absoluto)
+- [x] **Lenguaje Suavizado:** "Inmunidad estadística" (no "no factible")
+- [x] **Scope Limitado:** "Bajo integridad de kernel" (no verificado)
 - [x] **Claims Diferenciados:** Claim 1 vs WAF, Claim 3 sin prior art
 - [x] **Priorización Clara:** Claim 3 > Claim 2 > Claim 1
 
@@ -243,7 +243,7 @@ RECOMENDACIÓN:
 Valoración: $153M (conservadora)
 ├─ Base: Arquitectura técnica
 ├─ Claims: Implícitos
-└─ Riesgo: Legal liability por lenguaje absoluto
+└─ Riesgo: Legal liability por lenguaje verificado
 ```
 
 ### Después de Validación Externa

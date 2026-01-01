@@ -49,7 +49,7 @@ Diciembre 2025
 
 ---
 
-## SLIDE 2: The Problem - El Dilema Imposible
+## SLIDE 2: The Problem - El Dilema no factible
 
 ### Visual
 - Diagrama de dos caminos divergentes
@@ -59,7 +59,7 @@ Diciembre 2025
 
 ### Texto
 ```
-Los Equipos de Seguridad Enfrentan un Dilema Imposible
+Los Equipos de Seguridad Enfrentan un Dilema no factible
 
 OPCIÓN A: Seguro pero Lento
 ├─ Splunk, Datadog, Palo Alto
@@ -129,7 +129,7 @@ Sentinel Cortex™: El Primer Organismo Vivo de Seguridad
           └───────────────────────┘
            Se vigilan mutuamente
            Se auto-regeneran
-           Imposible de engañar
+           no factible de engañar
 
 99% automático | 0% destructivo | 100% confiable
 ```
@@ -158,7 +158,7 @@ PASO 1: Sanitización (Claim 1)
 PASO 2: Multi-Factor Decision (Claim 2)
 ├─ Correlaciona 5+ señales independientes
 ├─ Confidence scoring dinámico
-└─ Imposible engañar con un solo log
+└─ no factible engañar con un solo log
 
 PASO 3: Dos Nervios + Auto-Regeneración (Claim 3)
 ├─ Guardian-Alpha: Vigila intrusiones
@@ -182,7 +182,7 @@ Resultado: Velocidad de IA + Seguridad de humano
 
 ### Texto
 ```
-Posicionamiento Único: Imposible de Copiar
+Posicionamiento Único: no factible de Copiar
 
                     Sentinel   Datadog  Splunk  Palo Alto  Tines
                     Cortex™
@@ -220,7 +220,7 @@ CLAIM 1: Telemetry Sanitization
 CLAIM 2: Decision Engine Multi-Factor
 ├─ 5+ señales correlacionadas
 ├─ Confidence scoring dinámico
-└─ Imposible engañar
+└─ no factible engañar
 
 CLAIM 3: Dos Nervios + Auto-Regeneración
 ├─ Independientes y vigilantes
@@ -642,7 +642,7 @@ CHANNELS
 ## 📝 SCRIPT COMPLETO DE PRESENTACIÓN (15 MIN)
 
 ### Minuto 1-2: Problema
-"Hola, soy Jaime Novoa, fundador de Sentinel Cortex. Déjenme empezar con una pregunta: ¿Cuántos aquí tienen equipos de seguridad? [pausa] Perfecto. Ahora, ¿cuántos de esos equipos pueden automatizar sus respuestas a incidentes? [pocas manos] Exacto. El problema es este: los equipos de seguridad enfrentan un dilema imposible. Opción A: usar sistemas tradicionales como Splunk o Datadog. Son seguros, pero lentos. Un incidente puede tardar horas en resolverse. Opción B: usar IA directa como OpenAI. Es rápida, pero peligrosa. Un solo log malicioso puede ejecutar comandos destructivos. Hasta ahora, no existía una Opción C."
+"Hola, soy Jaime Novoa, fundador de Sentinel Cortex. Déjenme empezar con una pregunta: ¿Cuántos aquí tienen equipos de seguridad? [pausa] validado. Ahora, ¿cuántos de esos equipos pueden automatizar sus respuestas a incidentes? [pocas manos] Exacto. El problema es este: los equipos de seguridad enfrentan un dilema no factible. Opción A: usar sistemas tradicionales como Splunk o Datadog. Son seguros, pero lentos. Un incidente puede tardar horas en resolverse. Opción B: usar IA directa como OpenAI. Es rápida, pero peligrosa. Un solo log malicioso puede ejecutar comandos destructivos. Hasta ahora, no existía una Opción C."
 
 ### Minuto 3-5: Solución
 "Aquí está la Opción C: Sentinel Cortex. No es un software, es un organismo vivo de seguridad. [mostrar diagrama] Tiene tres componentes. Primero, un cerebro central llamado Cortex que toma decisiones inteligentes usando multi-factor analysis. Segundo, Guardian-Alpha, un policía que vigila intrusiones 24/7. Tercero, Guardian-Beta, otro policía que vigila integridad. Lo brillante es que estos dos policías se vigilan mutuamente. Si un atacante compromete uno, el otro lo detecta. Y si algo se corrompe, el sistema se auto-regenera. Resultado: 99% de incidentes resueltos automáticamente, 0% de acciones destructivas, 100% confiable."
@@ -693,7 +693,7 @@ CHANNELS
 ### Preparación
 - [ ] Slides visuales creadas (Canva/Google Slides)
 - [ ] Presentación practicada (grabada en video)
-- [ ] Timing perfecto (15 min exactos)
+- [ ] Timing validado (15 min exactos)
 - [ ] Transiciones memorizadas
 - [ ] Demo preparada (ambiente limpio)
 - [ ] Backup plan (video si falla demo)

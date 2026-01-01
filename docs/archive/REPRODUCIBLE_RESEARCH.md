@@ -63,7 +63,7 @@ cat app/core/adaptive_buffers.py
 |---------|---------------|-------------------|
 | **Código fuente** | ❌ No disponible | ✅ GitHub público |
 | **Benchmarks** | ⚠️ Simulados | ✅ Reales, reproducibles |
-| **Validación** | ❌ Imposible | ✅ 5 minutos |
+| **Validación** | ❌ no factible | ✅ 5 minutos |
 | **Auditoría** | ❌ Caja negra | ✅ Código abierto |
 | **Adopción** | ❌ 0 usuarios | ✅ Casos reales |
 | **Tiempo validar** | ❌ Meses/años | ✅ 5 minutos |

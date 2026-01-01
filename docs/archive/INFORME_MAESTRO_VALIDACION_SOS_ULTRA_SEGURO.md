@@ -22,7 +22,7 @@
 - **Evidencia:**
   - Activación y verificación de hooks kernel (`lsm/bprm_check_security`) en `/proven/EVIDENCE_LSM_ACTIVATION.md` y `/research`.
   - Bloqueo de execve y syscalls maliciosos en tiempo real, validado por logs y pruebas automáticas.
-  - Claim validado: “Defensa cognitiva y física, imposible de bypassear desde user space.”
+  - Claim validado: “Defensa cognitiva y física, no factible de bypassear desde user space.”
 
 ## 4. Simbiosis Humano-IA y Documentación Viva
 - **Evidencia:**

@@ -125,7 +125,7 @@ Sistema AIOps (sin defensa):
 - **Estado**: ✅ POC validado con benchmarks reproducibles
 
 **3. Dual-Guardian™** - Validación Kernel-Level (Diseño)
-- **Función**: Doble validación imposible de evadir (Ring 0)
+- **Función**: Doble validación no factible de evadir (Ring 0)
 - **Método**: Monitoreo eBPF + auto-regeneración + mutual surveillance
 - **Performance**: Proyectado <10ms overhead
 - **Protección única**: Resistente a insider threats (admin malicioso)
@@ -171,7 +171,7 @@ Sistema AIOps (sin defensa):
 
 **Diferenciadores Únicos**:
 - ✅ **Dual-Lane Architecture**: Separación física security (forense) vs observability (predicción)
-- ✅ **eBPF LSM Hooks**: Bloqueo kernel-level (Ring 0), imposible bypassear
+- ✅ **eBPF LSM Hooks**: Bloqueo kernel-level (Ring 0), no factible bypassear
 - ✅ **WAL Forensic**: Durabilidad garantizada con overhead imperceptible (0.01ms)
 - ✅ **Zero-Latency Security**: Sub-microsegundo, sin buffering
 
@@ -199,7 +199,7 @@ Sistema AIOps (sin defensa):
 |----------------|------------------------|------------------------|
 | Admin deshabilita logging | ✅ Posible | ❌ **Bloqueado** (WAL inmutable) |
 | Admin deshabilita monitoring | ✅ Posible | ❌ **Detectado** (Mutual surveillance) |
-| Admin borra evidencia | ✅ Posible | ❌ **Imposible** (Audit trail inmutable) |
+| Admin borra evidencia | ✅ Posible | ❌ **no factible** (Audit trail inmutable) |
 | Admin con root access | ✅ Sistema comprometido | ⚠️ **Detectado** (eBPF LSM hooks) |
 
 **Protección promedio**: **97.5%** vs insider threats (validado por especialista en ciberseguridad)

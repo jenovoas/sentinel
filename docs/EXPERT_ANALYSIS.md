@@ -124,7 +124,7 @@ TOTAL: 3 meses hasta revenue
 **VIABLE con 8.5/10 confianza** ✅
 
 **Fortalezas**:
-- Timing perfecto (Ley 21.663)
+- Timing validado (Ley 21.663)
 - Diferenciación clara
 - Stack sólido
 - Costos manejables
