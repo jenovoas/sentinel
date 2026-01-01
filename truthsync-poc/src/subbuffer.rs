@@ -1,4 +1,4 @@
-use crate::buffer::{SharedBuffer, MessageType};
+use crate::buffer::{SharedBuffer, message_type};
 use crate::cache::PredictiveCache;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
@@ -66,12 +66,12 @@ impl SubBufferManager {
         }
         
         // Cache miss - predict likelihood
-        let likelihood = self.cache.predict_claims(text);
+        let _likelihood = self.cache.predict_claims(text);
         
         // Write to input buffer
         let buffer_idx = self.current_input;
         self.input_buffers[buffer_idx].write(
-            MessageType::PROCESS_TEXT,
+            message_type::PROCESS_TEXT,
             text.as_bytes(),
         )?;
         
@@ -93,14 +93,14 @@ impl SubBufferManager {
     }
     
     /// Write cached result to output buffer
-    fn write_output_cached(&mut self, key: u64, claims: &[String]) -> Result<(), String> {
+    fn write_output_cached(&mut self, _key: u64, claims: &[String]) -> Result<(), String> {
         let buffer_idx = self.current_output;
         
         // Serialize claims (simple format for POC)
         let data = claims.join("\n");
         
         self.output_buffers[buffer_idx].write(
-            MessageType::GET_RESULTS,
+            message_type::GET_RESULTS,
             data.as_bytes(),
         )?;
         
