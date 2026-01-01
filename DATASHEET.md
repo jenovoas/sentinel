@@ -57,6 +57,16 @@ Traditional OS security validates **who** executes commands. Sentinel validates 
 - **Test Size**: N=500 iterations
 - **Load**: CPU stress + I/O stress
 
+### TTE Measurement Methodology
+Time-To-Enforcement (TTE) is measured by instrumenting the eBPF LSM hook at the `bprm_check_security` attachment point:
+
+1. **Entry Timestamp**: Captured via `bpf_ktime_get_ns()` when LSM hook is invoked
+2. **Decision Point**: Timestamp recorded after policy evaluation (allow/deny)
+3. **Delta Calculation**: TTE = Decision - Entry (in nanoseconds, converted to microseconds)
+4. **Aggregation**: Mean and P95 calculated over N=500 executions of `/bin/true`
+
+This follows the methodology established in eBPF performance analysis literature (e.g., Cilium's latency benchmarks, BCC performance studies).
+
 ### Results (Post x86_64 Optimization)
 
 | Metric | Idle | Under Load (Avg) | Load (P95) | Target | Status |
@@ -233,13 +243,34 @@ sdocker safe-restart db  # Validated restart
 
 ## Academic Foundation
 
-This work builds upon:
-- eBPF security research (Cilium, Falco)
-- LSM frameworks (SELinux, AppArmor)
-- AI-driven system administration (recent LLM-ops research)
-- Low-latency kernel optimization (RT-Linux principles)
+This work builds upon and extends research in several domains:
 
-**Benchmark Methodology**: Follows standards from kernel performance papers (USENIX, SOSP)
+### Runtime Security with eBPF
+- **Cilium** (Isovalent): Network security and observability using eBPF
+- **Falco** (Sysdig): Runtime threat detection via eBPF syscall monitoring
+- **Tetragon** (Isovalent): eBPF-based security observability and enforcement
+
+### Systematic Analysis of Kernel Security Performance
+- **LSM Frameworks**: SELinux, AppArmor performance characteristics
+- **eBPF Overhead Studies**: BCC project benchmarks, kernel tracing latency analysis
+- **Real-Time Linux**: RT-PREEMPT principles applied to security enforcement
+
+### AI-Driven System Administration
+- **LLM-Ops**: Recent research on large language models for DevOps automation
+- **Intent-Based Security**: Semantic analysis of system commands
+- **Behavior-Based Detection**: Correlating system state with security events
+
+### Low-Latency Kernel Optimization
+- **Hugepage Optimization**: TLB miss reduction in high-performance systems
+- **CPU Affinity**: Core isolation for latency-sensitive workloads
+- **Hardware Acceleration**: AES-NI and SIMD utilization in security contexts
+
+**Benchmark Methodology**: Follows standards from USENIX Security, SOSP, and OSDI publications on kernel security performance evaluation.
+
+**Novel Contributions**:
+- Integration of AI semantic analysis with kernel-level enforcement
+- Sub-10μs security decision latency under production load
+- Unified observability framework (semantic vectors + system metrics)
 
 ---
 
