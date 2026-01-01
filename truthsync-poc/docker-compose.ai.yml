@@ -1,0 +1,25 @@
+services:
+  sentinel-ai:
+    image: ollama/ollama:latest
+    container_name: sentinel-local-ai
+    volumes:
+      - ollama_data:/root/.ollama
+    # Aislamiento de CPU: Cores 4 a 7 para Inferencia
+    cpuset: "4-7"
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
+    networks:
+      - truthsync-network
+
+volumes:
+  ollama_data:
+
+
+networks:
+  truthsync-network:
+    external: true
