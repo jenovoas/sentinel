@@ -4,6 +4,21 @@ set -e
 echo "🔮 Sentinel Cortex™ - Phase 6: Quantum-AI Integration Demo"
 echo "=========================================================="
 
+# 0. Kernel Version Validation (Anti-Hallucination)
+KERNEL_VERSION=$(uname -r | cut -d. -f1-2)
+EEVDF_MIN_VERSION="6.6"
+
+echo "🐧 Kernel version: $KERNEL_VERSION"
+
+# Compare versions (sort -V handles version numbers correctly)
+if [ "$(printf '%s\n' "$EEVDF_MIN_VERSION" "$KERNEL_VERSION" | sort -V | head -n1)" = "$EEVDF_MIN_VERSION" ]; then
+    echo "✅ EEVDF scheduler available (kernel >= 6.6)"
+else
+    echo "⚠️  WARNING: EEVDF requires kernel >= 6.6, you have $KERNEL_VERSION"
+    echo "   System will use CFS (Completely Fair Scheduler)"
+    echo "   Performance may differ from documented benchmarks"
+fi
+
 # 1. Check Root
 if [ "$EUID" -ne 0 ]; then 
   echo "❌ Please run as root (sudo)."
