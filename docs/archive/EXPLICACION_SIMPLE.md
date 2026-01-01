@@ -105,7 +105,7 @@ Imagina que tu computadora es como un **cuerpo humano**.
 - Ver que viene una ola grande
 - Preparar una tabla de surf más grande
 - ANTES de que llegue la ola
-- Resultado: Surfeas perfecto, sin caerte
+- Resultado: Surfeas validado, sin caerte
 
 ---
 

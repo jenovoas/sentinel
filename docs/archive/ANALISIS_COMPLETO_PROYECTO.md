@@ -63,7 +63,7 @@ Sistema AIOps → Ejecuta comando → Pérdida total de datos
 - **Estado**: ✅ POC validado con benchmarks reproducibles
 
 #### 3. **Dual-Guardian™** - Validación Kernel-Level
-- **Función**: Doble validación imposible de evadir (Ring 0)
+- **Función**: Doble validación no factible de evadir (Ring 0)
 - **Método**: Monitoreo eBPF + auto-regeneración
 - **Performance**: Proyectado <10ms overhead
 - **Estado**: 📋 Arquitectura diseñada, código eBPF completo
@@ -107,7 +107,7 @@ Sistema AIOps → Ejecuta comando → Pérdida total de datos
 - **Performance Validado**:
   - Blocking latency: 0.00ms (instantáneo)
   - TOCTOU window: Eliminado
-  - Bypass resistance: Imposible desde userspace
+  - Bypass resistance: no factible desde userspace
 - **Prior Art**: **ZERO** (combinación AIOps + kernel-level veto única)
 - **Estado**: ✅ Código completo (`ebpf/guardian_alpha_lsm.c`)
 
@@ -301,7 +301,7 @@ Resultado: Velocidad de luz sin fricción de software
 ```
 
 **Diferenciadores**:
-- Ring 0 Enforcement (imposible bypassear)
+- Ring 0 Enforcement (no factible bypassear)
 - Sincronización Anticipada (predictiva, no reactiva)
 - Smooth Factor Exponencial (1.5^N)
 - Resonancia de Estado (no transmisión ciega)
@@ -558,7 +558,7 @@ Resultado:
 
 ### 4. Economía Viable
 ```
-Datadog global: IMPOSIBLE ($$$$$)
+Datadog global: no factible ($$$$$)
 Sentinel LGTM: VIABLE
 
 Loki: Solo metadatos (barato)

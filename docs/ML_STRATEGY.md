@@ -127,7 +127,7 @@ Ejemplos:
   - Zero-day behavior analysis (autoencoders)
 
 Ventaja:
-  - Estado del arte
+  - estándar técnico
   - Diferenciador real
   - Exportable a LATAM
 ```
@@ -239,7 +239,7 @@ Lección: Simple funciona, ML es complemento
 Fase 1: ITIL + reglas (funciona día 1)
 Fase 2: UEBA + anomalies (mejora detección)
 Fase 3: ML supervisado (aprende del banco)
-Fase 4: ML adaptativo (estado del arte)
+Fase 4: ML adaptativo (estándar técnico)
 
 Lección: Gradual reduce riesgo, acelera valor
 ```

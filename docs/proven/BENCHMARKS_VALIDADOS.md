@@ -193,7 +193,7 @@ Mean: 0.0010ms
 > 
 > **Código abierto, benchmarks reproducibles en GitHub.**"
 
-**Resultado**: Imposible no creerlo, datos hablan por sí mismos
+**Resultado**: no factible no creerlo, datos hablan por sí mismos
 
 ---
 

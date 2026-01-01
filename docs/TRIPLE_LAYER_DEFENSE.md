@@ -202,7 +202,7 @@ Guardian-Alpha ←→ Guardian-Beta ←→ Watchdog
    - Regenerate   - Regenerate   - Restart
 ```
 
-**Imposible deshabilitar las 3 capas simultáneamente**
+**no factible deshabilitar las 3 capas simultáneamente**
 
 ---
 
@@ -293,7 +293,7 @@ Guardian-Alpha ←→ Guardian-Beta ←→ Watchdog
 
 ## 🎯 Conclusión
 
-**Triple capa = Defensa imposible de evadir**
+**Triple capa = Defensa no factible de evadir**
 
 - Watchdog: Rápido y eficiente (90% bloqueado)
 - Guardian-Beta: Inteligente y contextual (AI-powered)

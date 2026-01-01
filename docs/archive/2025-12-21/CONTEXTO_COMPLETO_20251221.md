@@ -179,12 +179,12 @@ Timestamp:      ✅ Validación funcionando
 1. **Ley del Tiempo** (Loki)
    - Strict time ordering
    - Chunks inmutables
-   - Imposible insertar logs en el pasado
+   - no factible insertar logs en el pasado
 
 2. **Ley de la Gravedad** (Kernel Ring 0)
    - eBPF LSM en Ring 0
    - MMU separa memoria físicamente
-   - Imposible bypassear desde user space
+   - no factible bypassear desde user space
 
 3. **Ley de la Entropía** (Hardware Watchdog)
    - Condensador físico que se descarga
@@ -194,9 +194,9 @@ Timestamp:      ✅ Validación funcionando
 4. **Ley de la Pureza** (AIOpsShield)
    - Filtro mecánico (regex + patterns)
    - IA nunca ve logs originales
-   - Imposible envenenar la mente
+   - no factible envenenar la mente
 
-**Resultado**: Sistema donde los exploits son **geométricamente imposibles**.
+**Resultado**: Sistema donde los exploits son **geométricamente no factibles**.
 
 ---
 
@@ -350,7 +350,7 @@ Timestamp:      ✅ Validación funcionando
    - Claim 7: AI Buffer Cascade (simulación completa)
    - Claim 8: FSU (prototipo)
 
-### Deadline Absoluto
+### Deadline verificado
 
 **15 de Febrero de 2026**: Filing provisional patent
 

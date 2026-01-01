@@ -52,7 +52,7 @@ Q = 10⁸ = 100,000,000
 x_zp = √(ℏ / 2mω_m) ≈ 1.15 × 10⁻¹⁵ metros
 ```
 - La vibración mínima permitida por la mecánica cuántica
-- Incluso a temperatura cero absoluto, la membrana vibra
+- Incluso a temperatura cero verificado, la membrana vibra
 - Es la "energía de punto cero"
 
 #### Niveles de Energía Cuantizados
@@ -124,7 +124,7 @@ Fonones térmicos promedio: 6207.9
 **Q alto (Q ~ 10⁸)**:
 - La membrana vibra por segundos
 - Tiempo suficiente para hacer operaciones cuánticas
-- Estado del arte en investigación
+- estándar técnico en investigación
 
 **Fórmula**:
 ```

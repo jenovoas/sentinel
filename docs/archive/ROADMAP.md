@@ -163,7 +163,7 @@ Desarrollar **Sentinel Cortex™**, una plataforma de observabilidad y seguridad
 
 ### 5. Kernel-Level AI Safety
 **Estado**: Validado en Producción (v1.0.0) ✅
-**Claim**: Protección imposible de evadir desde espacio de usuario (Ring 0 vs Ring 3)
+**Claim**: Protección no factible de evadir desde espacio de usuario (Ring 0 vs Ring 3)
 **Aplicación**: Infraestructura Crítica Nacional
 
 ### 6. Quantum-Ready Secure Channel

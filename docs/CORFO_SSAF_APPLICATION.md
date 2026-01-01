@@ -38,9 +38,9 @@
 
 ### Problema que Resuelve
 
-**El Dilema Imposible de la Seguridad Automatizada:**
+**El Dilema no factible de la Seguridad Automatizada:**
 
-Los equipos de seguridad enfrentan una elección imposible:
+Los equipos de seguridad enfrentan una elección no factible:
 - **Opción A:** Sistemas tradicionales (Splunk, Datadog) - Seguros pero lentos, incidentes sin resolver por horas
 - **Opción B:** IA directa (OpenAI, Claude) - Rápida pero peligrosa, vulnerable a AIOpsDoom (CVSS 9.1)
 
@@ -86,7 +86,7 @@ Sistema de seguridad cognitiva con tres capas de inteligencia:
 
 2. **Motor de Decisión Multi-Factor**
    - Correlación Bayesiana de 5+ fuentes
-   - Imposible de engañar con un solo log malicioso
+   - no factible de engañar con un solo log malicioso
    - Confidence scoring dinámico
 
 3. **Arquitectura Dual-Guardian** ⭐ (Más valioso)

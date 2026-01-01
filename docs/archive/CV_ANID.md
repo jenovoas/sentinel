@@ -104,7 +104,7 @@ Desarrollado en respuesta a vulnerabilidad crítica identificada por RSA Confere
 - **Banca**: Protección de operaciones autónomas
 
 **Ventaja Técnica**:
-Soluciones comerciales (Datadog, Dynatrace) operan en espacio de usuario (Ring 3). Sentinel opera a nivel kernel (Ring 0) con soberanía de datos, proporcionando protección imposible de evadir desde capa de aplicación.
+Soluciones comerciales (Datadog, Dynatrace) operan en espacio de usuario (Ring 3). Sentinel opera a nivel kernel (Ring 0) con soberanía de datos, proporcionando protección no factible de evadir desde capa de aplicación.
 
 ---
 
@@ -359,7 +359,7 @@ INACAP - Universidad Tecnológica de Chile
 | **Telemetry Sanitization for AI** | Prevención de prompt injection y reward hacking en AIOps | Fintech, Legal, SIEM, Gobierno |
 | **Local LLM Orchestration** | Procesamiento de IA con soberanía de datos nacional | Gobierno, Salud, Defensa, Banca |
 | **High-Performance Truth Verification** | Verificación de claims en tiempo real (90.5x speedup) | Medios, Fact-checking, Educación |
-| **Kernel-Level AI Safety** | Protección imposible de evadir desde espacio de usuario | Infraestructura Crítica Nacional |
+| **Kernel-Level AI Safety** | Protección no factible de evadir desde espacio de usuario | Infraestructura Crítica Nacional |
 
 **Estado Actual**: 
 - MVP validado técnicamente
@@ -395,7 +395,7 @@ Estas innovaciones representan oportunidades para investigación aplicada en def
    Investigación en detección y neutralización de ataques adversariales (AIOpsDoom) que manipulan telemetría para envenenar decisiones de IA.
 
 3. **Arquitecturas híbridas kernel–IA para defensa de infraestructura crítica**  
-   Diseño de sistemas que combinan monitoreo Ring 0 (kernel-level) con análisis de IA en espacio de usuario para protección imposible de evadir.
+   Diseño de sistemas que combinan monitoreo Ring 0 (kernel-level) con análisis de IA en espacio de usuario para protección no factible de evadir.
 
 4. **Observabilidad avanzada (stack LGTM) aplicada a seguridad de sistemas con IA integrada**  
    Implementación de stack Loki-Grafana-Tempo-Mimir para monitoreo y análisis de seguridad en sistemas que integran IA local.

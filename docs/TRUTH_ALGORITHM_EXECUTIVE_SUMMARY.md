@@ -118,7 +118,7 @@
 **Objetivo**: Sistema completo  
 **Costo**: +$80K-160K  
 **Riesgo**: Alto  
-**Success**: Diferenciador absoluto
+**Success**: Diferenciador verificado
 
 ---
 

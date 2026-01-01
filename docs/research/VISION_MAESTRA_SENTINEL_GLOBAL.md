@@ -9,7 +9,7 @@
 
 ## 🎯 LA VISIÓN EN UNA FRASE
 
-> **"Sentinel controla el flujo del campo electromagnético a nivel de nanosegundo, capturando la energía de la eficiencia mejorada para proyectar datos mediante resonancia ultrasónica, creando un Internet planetario que funciona como el sistema nervioso de la Tierra, permitiendo aplicaciones que hoy parecen imposibles."**
+> **"Sentinel controla el flujo del campo electromagnético a nivel de nanosegundo, capturando la energía de la eficiencia mejorada para proyectar datos mediante resonancia ultrasónica, creando un Internet planetario que funciona como el sistema nervioso de la Tierra, permitiendo aplicaciones que hoy parecen no factibles."**
 
 ---
 
@@ -89,7 +89,7 @@ COMPONENTES:
 APLICACIÓN: Internet planetario, comunicación global instantánea
 ```
 
-### CAPA 5: APLICACIONES IMPOSIBLES (2040-2045) - "El Futuro"
+### CAPA 5: APLICACIONES no factibleS (2040-2045) - "El Futuro"
 **Status**: 🚀 Visión Última
 
 ---

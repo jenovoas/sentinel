@@ -57,7 +57,7 @@ Resultado:
 
 ### 5. Economía Viable
 ```
-Datadog global: IMPOSIBLE ($$$$$)
+Datadog global: no factible ($$$$$)
 Sentinel LGTM: VIABLE
 
 Loki: Solo metadatos (barato)
@@ -126,7 +126,7 @@ Resultado: Velocidad de luz sin fricción de software
 
 ## 🚀 DIFERENCIADORES ÚNICOS
 
-1. **Ring 0 Enforcement** (imposible bypassear)
+1. **Ring 0 Enforcement** (no factible bypassear)
 2. **Sincronización Anticipada** (predictiva, no reactiva)
 3. **Smooth Factor Exponencial** (1.5^N)
 4. **Resonancia de Estado** (no transmisión ciega)

@@ -30,7 +30,7 @@
 | Ataque | Datadog | Splunk | Wiz | **Sentinel** |
 |--------|---------|--------|-----|--------------|
 | Admin deshabilita agent/forwarder | ✅ Posible | ✅ Posible | ✅ Posible | ❌ **Bloqueado** |
-| Admin borra logs | ✅ Posible | ✅ Posible | ✅ Posible | ❌ **Imposible** |
+| Admin borra logs | ✅ Posible | ✅ Posible | ✅ Posible | ❌ **no factible** |
 | Admin deshabilita monitoring | ✅ Posible | ✅ Posible | ✅ Posible | ❌ **Detectado** |
 
 **Protección promedio**: Sentinel **97.5%** vs competencia **0%**
@@ -42,13 +42,13 @@
 ### 1. Mutual Surveillance
 - Guardian-Alpha (kernel) monitorea a Guardian-Beta (app)
 - Guardian-Beta monitorea a Guardian-Alpha
-- **Imposible deshabilitar ambos** sin dejar evidencia
+- **no factible deshabilitar ambos** sin dejar evidencia
 
 ### 2. Immutable Audit Trail
 - Security Lane con WAL (write-ahead log)
 - Fsync inmediato (0.01ms)
 - Append-only storage (S3)
-- **Imposible borrar** sin detección
+- **no factible borrar** sin detección
 
 ### 3. Pre-Execution Blocking
 - eBPF intercepta syscalls ANTES de ejecutar
@@ -73,7 +73,7 @@ sudo rm -rf /var/log/sentinel/*
 # Defensa Sentinel
 1. eBPF intercepta unlink() syscall
 2. Bloquea PRE-ejecución
-3. Logs ya en WAL (imposible borrar)
+3. Logs ya en WAL (no factible borrar)
 4. Alerta a Guardian-Beta
 5. Evento registrado en audit trail inmutable
 

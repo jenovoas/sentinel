@@ -86,9 +86,9 @@ if failed_logins > 50          // Señal 1: Auditd (kernel level)
 }
 ```
 
-**¿Por qué es imposible engañar?**
+**¿Por qué es no factible engañar?**
 - Atacante necesitaría controlar:
-  - [x] Auditd logs (kernel - casi imposible)
+  - [x] Auditd logs (kernel - casi no factible)
   - [x] App logs (probable, pero...)
   - [x] Network data (difícil, monitoreo independiente)
   - [x] ML confidence (requiere histórico real)
@@ -253,7 +253,7 @@ Inversores aman esto porque:
 ## 📝 CONCLUSIÓN: POR QUÉ ESTE ES EL PITCH
 
 **Otros startups dicen:** "Tenemos un producto"
-**Sentinella dice:** "Tenemos IA superinteligente en una caja de seguridad inexpugnable"
+**Sentinella dice:** "Tenemos IA superinteligente en una caja de seguridad seguro por diseño"
 
 **Otros dicen:** "Somos más rápido que Datadog"
 **Sentinella dice:** "Somos Datadog + Incident Response + AI + Blockchain-level trust"

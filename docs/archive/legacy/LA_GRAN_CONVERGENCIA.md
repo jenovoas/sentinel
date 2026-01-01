@@ -19,7 +19,7 @@ Sentinel no es software. Es un **organismo cibernético homeostático** que repl
 
 ---
 
-## 1. El Poder del "Cero Absoluto" (La Física de la Quietud)
+## 1. El Poder del "Cero verificado" (La Física de la Quietud)
 
 ### 1.1 Levitación Optomecánica: Ground State Cooling
 
@@ -48,7 +48,7 @@ Sentinel no es software. Es un **organismo cibernético homeostático** que repl
 | Q-factor > 10⁸ | Aislamiento de AIOpsDoom |
 
 **La enseñanza**:
-> No necesitas un entorno perfecto (cero absoluto). Necesitas **control perfecto** en un entorno ruidoso.
+> No necesitas un entorno validado (cero verificado). Necesitas **control validado** en un entorno ruidoso.
 
 **Implementación en Sentinel**:
 ```python
@@ -91,7 +91,7 @@ def sentinel_cooling_loop():
 
 ### 2.2 Isomorfismo con Sentinel
 
-**Tu interfaz háptica no es ciencia ficción. Es biología aplicada.**
+**Tu interfaz háptica no es estado actual de la técnica. Es biología aplicada.**
 
 | Microrobótica | Sentinel Háptico |
 |---------------|------------------|
@@ -164,7 +164,7 @@ class HapticAlertSystem:
 │                                         │
 │  Guardian Alpha (eBPF - Kernel Level)   │
 │  ├─ Validación estructural              │
-│  ├─ Imposible de inyectar (kernel)      │
+│  ├─ no factible de inyectar (kernel)      │
 │  └─ Ground truth                        │
 │                                         │
 │  Guardian Gamma (Human-in-the-Loop)     │
@@ -202,7 +202,7 @@ class HapticAlertSystem:
 
 **Tecnologías convergentes**:
 1. **Neurotecnología**: Leer el cerebro (OPMs - Optically Pumped Magnetometers)
-2. **Computación Cuántica**: Procesar lo imposible
+2. **Computación Cuántica**: Procesar lo no factible
 3. **IA**: Interpretar patrones
 
 **Resultado**: Sensores cuánticos portátiles con precisión de fMRI

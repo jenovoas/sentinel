@@ -430,7 +430,7 @@ Amenaza identificada por RSA Conference 2025:
 
 Nuestra solución (validada):
 - 100% detección de ataques conocidos
-- Kernel-level protection (imposible de evadir)
+- Kernel-level protection (no factible de evadir)
 - Zero prior art (única en el mercado)
 
 Propuesta de POC (30-60 días):
