@@ -123,8 +123,11 @@ fn show_status(json_output: bool) -> Result<()> {
     sys.refresh_all();
     
     let relay_active = is_process_running(&sys, "sentinel_relay");
-    let pulse_active = is_process_running(&sys, "kernel_pulse"); // simplistic match
-    let bpf_active = Path::new(BPF_FS).exists();
+    let pulse_active = is_process_running(&sys, "kernel_pulse");
+    
+    // Improved eBPF detection using bpftool (works without sudo)
+    let bpf_active = check_bpf_loaded();
+    
     let shm_size = fs::metadata(SHM_PATH).map(|m| m.len()).unwrap_or(0);
 
     if json_output {
@@ -149,23 +152,88 @@ fn show_status(json_output: bool) -> Result<()> {
     Ok(())
 }
 
-fn apply_tuning(profile: Option<&str>) -> Result<()> {
-    println!("{}", "⚡ Applying x86_64 Optimizations...".bold().cyan());
-    
-    // 1. CPU Governor -> Performance
-    // Requires root
-    if unsafe { libc::geteuid() } == 0 {
-         // Naive implementation iterating cores
-         // In real sctl, we'd list /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
-         println!("   🔸 Setting CPU Governor to 'performance'...");
-         // Simulate command
-         // Command::new("cpupower").args(["frequency-set", "-g", "performance"]).output().ok();
-         println!("   ✅ CPU Affinity Optimized.");
-    } else {
-         println!("   ⚠️  Root required for CPU tuning.");
+fn check_bpf_loaded() -> bool {
+    // Try bpftool first (works without sudo for listing)
+    if let Ok(output) = Command::new("bpftool")
+        .args(["prog", "list"])
+        .output() {
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        if stdout.contains("sentinel") || stdout.contains("quantum_ai") {
+            return true;
+        }
     }
     
-    println!("   ✅ Optimization Complete.");
+    // Fallback: check if BPF filesystem has our program (requires sudo)
+    Path::new(BPF_FS).exists()
+}
+
+fn apply_tuning(_profile: Option<&str>) -> Result<()> {
+    println!("{}", "⚡ Applying x86_64 Optimizations...".bold().cyan());
+    
+    // Check root
+    if unsafe { libc::geteuid() } != 0 {
+        println!("   ⚠️  Root required for system tuning.");
+        return Ok(());
+    }
+    
+    // 1. CPU Governor -> Performance
+    println!("   🔸 Setting CPU Governor to 'performance'...");
+    let cpu_count = std::thread::available_parallelism()
+        .map(|n| n.get())
+        .unwrap_or(1);
+    
+    for cpu in 0..cpu_count {
+        let governor_path = format!("/sys/devices/system/cpu/cpu{}/cpufreq/scaling_governor", cpu);
+        if Path::new(&governor_path).exists() {
+            fs::write(&governor_path, "performance").ok();
+        }
+    }
+    println!("   ✅ CPU Governor: performance");
+    
+    // 2. Hugepages (2MB pages for relay)
+    println!("   🔸 Configuring Hugepages (2MB)...");
+    // Reserve 10 hugepages (20MB total for relay + eBPF maps)
+    fs::write("/proc/sys/vm/nr_hugepages", "10").ok();
+    
+    let hugepages = fs::read_to_string("/proc/sys/vm/nr_hugepages")
+        .unwrap_or_default()
+        .trim()
+        .to_string();
+    println!("   ✅ Hugepages allocated: {}", hugepages);
+    
+    // 3. CPU Affinity for Relay (pin to core 0)
+    println!("   🔸 Setting CPU affinity for sentinel_relay...");
+    // Find relay PID
+    let mut sys = System::new_all();
+    sys.refresh_all();
+    
+    for (pid, process) in sys.processes() {
+        if process.name().contains("sentinel_relay") {
+            // Use taskset to pin to core 0
+            Command::new("taskset")
+                .args(["-cp", "0", &pid.to_string()])
+                .output()
+                .ok();
+            println!("   ✅ Relay pinned to CPU 0 (PID: {})", pid);
+            break;
+        }
+    }
+    
+    // 4. Disable CPU frequency scaling (keep max freq)
+    println!("   🔸 Disabling CPU frequency scaling...");
+    for cpu in 0..cpu_count {
+        let min_freq_path = format!("/sys/devices/system/cpu/cpu{}/cpufreq/scaling_min_freq", cpu);
+        let max_freq_path = format!("/sys/devices/system/cpu/cpu{}/cpufreq/scaling_max_freq", cpu);
+        
+        if let Ok(max_freq) = fs::read_to_string(&max_freq_path) {
+            fs::write(&min_freq_path, max_freq.trim()).ok();
+        }
+    }
+    println!("   ✅ CPU locked to max frequency");
+    
+    println!("\n{}", "✅ x86_64 Optimization Complete".bold().green());
+    println!("   System is now tuned for minimum latency.");
+    
     Ok(())
 }
 
