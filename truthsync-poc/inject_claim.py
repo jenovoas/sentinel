@@ -3,7 +3,7 @@ import mmap
 import os
 import time
 
-SHM_PATH = "/tmp/truthsync_shm"
+SHM_PATH = "/var/run/sentinel/truthsync_shm"
 MAGIC = 0xDEADBEEF
 MSG_PROCESS_TEXT = 0x01
 

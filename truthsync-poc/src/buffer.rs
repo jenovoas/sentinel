@@ -30,7 +30,7 @@ pub struct SharedBuffer {
 
 impl SharedBuffer {
     pub fn create(name: &str, size: usize) -> Result<Self, String> {
-        let shm_path = format!("/tmp/{}", name);
+        let shm_path = format!("/var/run/sentinel/{}", name);
         let file = OpenOptions::new()
             .read(true)
             .write(true)
@@ -50,7 +50,7 @@ impl SharedBuffer {
     }
     
     pub fn open(name: &str) -> Result<Self, String> {
-        let shm_path = format!("/tmp/{}", name);
+        let shm_path = format!("/var/run/sentinel/{}", name);
         let file = OpenOptions::new()
             .read(true)
             .write(true)
