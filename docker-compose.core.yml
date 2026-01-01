@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # 🗄️ DATABASE CORE (Consolidado)
+  postgres:
+    container_name: sentinel-database
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=sentinel
+      - POSTGRES_PASSWORD=sentinel_secret_password
+      - POSTGRES_DB=sentinel_master
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U sentinel" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ⚡ CACHE & SHM BRIDGE
+  redis:
+    container_name: sentinel-cache
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  # 🔍 SEARCH ENGINE (Sovereign)
+  searxng:
+    container_name: sentinel-search
+    image: searxng/searxng:latest
+    volumes:
+      - ./searxng/settings.yml:/etc/searxng/settings.yml:ro
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      - SEARXNG_SECRET=sentinel_search_super_secret_key
+
+  # 📊 MONITORING (Minimal)
+  prometheus:
+    container_name: sentinel-monitor
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+
+volumes:
+  pgdata:
