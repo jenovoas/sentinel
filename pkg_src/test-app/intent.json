@@ -2,8 +2,10 @@
     "name": "safe-calculator",
     "version": "1.0.0",
     "description": "Herramienta matemática básica.",
-    "permissions": [
+    "capabilities": [
         "READ_USER_INPUT"
     ],
+    "network": "none",
+    "binaries": [],
     "maintainer": "jnovoas"
 }
