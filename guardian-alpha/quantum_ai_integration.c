@@ -388,9 +388,24 @@ int BPF_PROG(quantum_bprm_check, struct linux_binprm *bprm, int ret) {
       threat_score = 100;
 
     bpf_ringbuf_discard(qf, 0);
+  } else {
+    // FAIL-CLOSED: If AI relay is offline, block suspicious executions
+    // but allow known safe paths to avoid total lockout
+    if (semantic_boost > 20) {
+      bpf_printk("FAIL-CLOSED: AI Offline. Blocking suspicious execution: %s\n",
+                 filename);
+      return -EPERM;
+    }
   }
 
-  // 6. Make decision
+  // 6. Whitelist Criptográfica (Factual/Hardcoded)
+  // Prevent blocking critical system components even if AI is offline
+  __u32 h = str_hash(filename);
+  if (h == 208945902 || h == 94250352) { // sudo or init
+    return 0;                            // Absolute ALLOW
+  }
+
+  // 7. Make decision
   __u8 action = make_decision(threat_score);
 
   // Debug: Always log the decision for demo purposes

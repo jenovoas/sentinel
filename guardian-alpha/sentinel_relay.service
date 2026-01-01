@@ -11,6 +11,7 @@ StandardOutput=append:/var/log/sentinel_relay.log
 StandardError=append:/var/log/sentinel_relay.err
 CPUQuota=10%
 MemoryMax=100M
+WatchdogSec=30s
 
 [Install]
 WantedBy=multi-user.target
