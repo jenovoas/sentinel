@@ -64,9 +64,13 @@ struct threat_vector {
 };
 
 struct threat_decision {
-  __u32 score; // 0-100
+  __u32 pid;
+  __u32 ppid;
   __u8 action; // 0=ALLOW, 1=MONITOR, 2=BLOCK
+  __u8 _pad[3];
+  __u32 score; // 0-100
   __u64 timestamp;
+  char filename[64];
 };
 
 /* ============================================================================
@@ -396,9 +400,13 @@ int BPF_PROG(quantum_bprm_check, struct linux_binprm *bprm, int ret) {
   struct threat_decision *decision =
       bpf_ringbuf_reserve(&decision_ringbuf, sizeof(*decision), 0);
   if (decision) {
+    decision->pid = current_pid;
+    decision->ppid = parent_pid_ptr ? *parent_pid_ptr : 0;
     decision->score = threat_score;
     decision->action = action;
     decision->timestamp = bpf_ktime_get_ns();
+    bpf_probe_read_kernel_str(decision->filename, sizeof(decision->filename),
+                              bprm->filename);
     bpf_ringbuf_submit(decision, 0);
   }
 
