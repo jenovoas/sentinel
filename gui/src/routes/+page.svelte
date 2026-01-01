@@ -17,11 +17,18 @@
   onMount(() => {
     const interval = setInterval(async () => {
       try {
-        // Read "The Truth" from Rust Backend (SHM)
-        const state = (await invoke("get_system_vector")) as any;
-        entropy = state.entropy;
-        coherence = state.coherence;
-        tte = state.tte_us;
+        // @ts-ignore
+        if (typeof window !== "undefined" && window.__TAURI_IPC__) {
+          // Read "The Truth" from Rust Backend (SHM)
+          const state = (await invoke("get_system_vector")) as any;
+          entropy = state.entropy;
+          coherence = state.coherence;
+          tte = state.tte_us;
+        } else {
+          // Browser Fallback (Mock for UI testing)
+          entropy = 0.1 + Math.random() * 0.05;
+          if (Math.random() > 0.9) tte = 3.2 + Math.random() * 0.1;
+        }
       } catch (e) {
         console.error("Link Error:", e);
       }
@@ -41,9 +48,19 @@
           ...messages,
           { type: "system", text: "[IA] Processing vector..." },
         ];
-        const response = (await invoke("execute_semantic_command", {
-          prompt: cmd,
-        })) as string;
+
+        let response;
+        // @ts-ignore
+        if (typeof window !== "undefined" && window.__TAURI_IPC__) {
+          response = (await invoke("execute_semantic_command", {
+            prompt: cmd,
+          })) as string;
+        } else {
+          // Browser Mock Response
+          await new Promise((r) => setTimeout(r, 800));
+          response = `[BROWSER_MOCK] Identity confirmed. Intent '${cmd}' logged. (Run in Tauri for Real Execution)`;
+        }
+
         messages = [...messages, { type: "ai", text: response }];
       } catch (err) {
         messages = [...messages, { type: "system", text: `Error: ${err}` }];
