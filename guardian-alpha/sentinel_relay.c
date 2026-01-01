@@ -66,7 +66,36 @@ static int handle_event(void *ctx, void *data, size_t data_sz) {
   return 0;
 }
 
-int main() {
+// Mock validation for Semantic Shell
+int validate_cmd(char *cmd) {
+  // In a real scenario, this would check SHM or call an internal policy engine
+  // For now, we simulate a check
+  // If cmd contains "rm -rf /", block it.
+  if (strstr(cmd, "rm -rf /") != NULL)
+    return -1;
+  return 0; // Approved
+}
+
+int main(int argc, char **argv) {
+  // Check for semantic validation flag
+  if (argc > 1 && strcmp(argv[1], "--semantic-validate") == 0) {
+    if (argc < 3) {
+      fprintf(stderr, "Usage: %s --semantic-validate <cmd>\n", argv[0]);
+      return 1;
+    }
+    if (validate_cmd(argv[2]) == 0) {
+      // Print nothing or simple success? Python script expects return code 0
+      // and stdout Python script: "Sentinel APPROVED: {cmd}" logic is inside
+      // python. Python script checks returncode == 0. If return code 0, python
+      // prints "APPROVED".
+      return 0;
+    } else {
+      fprintf(stderr, "Semantic Policy Violation\n");
+      return 1;
+    }
+    return 0;
+  }
+
   struct ring_buffer *rb = NULL;
   int map_fd;
 
