@@ -1,5 +1,5 @@
 use rustc_hash::FxHashMap;
-use std::time::{Duration, Instant};
+use std::time::{Instant};
 use aho_corasick::AhoCorasick;
 
 /// Predictive cache for claim extraction results
@@ -12,7 +12,6 @@ pub struct PredictiveCache {
     
     // Configuration
     max_entries: usize,
-    ttl: Duration,
 }
 
 /// Cached result with metadata
@@ -29,21 +28,14 @@ pub struct ClaimPredictor {
     // Fast pattern matcher (Aho-Corasick)
     factual_matcher: AhoCorasick,
     opinion_matcher: AhoCorasick,
-    
-    // Pattern frequency tracking
-    pattern_freq: FxHashMap<String, u32>,
-    
-    // Prediction model
-    prediction_threshold: f32,
 }
 
 impl PredictiveCache {
-    pub fn new(max_entries: usize, ttl_secs: u64) -> Self {
+    pub fn new(max_entries: usize, _ttl_secs: u64) -> Self {
         Self {
             cache: FxHashMap::default(),
             predictor: ClaimPredictor::new(),
             max_entries,
-            ttl: Duration::from_secs(ttl_secs),
         }
     }
     
@@ -132,8 +124,6 @@ impl ClaimPredictor {
         Self {
             factual_matcher: AhoCorasick::new(factual_patterns).unwrap(),
             opinion_matcher: AhoCorasick::new(opinion_patterns).unwrap(),
-            pattern_freq: FxHashMap::default(),
-            prediction_threshold: 0.6,
         }
     }
     
