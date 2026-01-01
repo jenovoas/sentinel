@@ -280,12 +280,73 @@ Sistema: OPERACIONAL / REQUIERE FIXES
 
 ## 🚀 Siguiente Paso
 
-**Ejecutar**: `/tmp/sentinel_audit.sh` (creado anteriormente)
+**Ejecutar**: `sudo bash guardian-alpha/sentinel_audit.sh`
 
-Esto generará el reporte base con datos reales del sistema.
+Esto generará un reporte completo con datos reales del sistema en:
+`/tmp/sentinel_audit_YYYYMMDD_HHMMSS/`
+
+### Artefactos Generados
+
+- `audit_matrix.md` - Reporte completo en markdown
+- `bpf_progs.txt` - Lista de programas eBPF cargados
+- `bpf_maps.txt` - Lista de mapas eBPF
+- `trace_sample.txt` - Muestra de eventos de trace
+
+### Exit Codes
+
+El script retorna códigos de error bit-flag para CI/CD:
+- `0` = Todo OK
+- `1` = Kernel insuficiente
+- `2` = BPF LSM no habilitado
+- `4` = eBPF program no cargado
+- `8` = Trace events ausentes
+- `16` = Python bridge con errores
+
+### Métricas de Hallucination Rate
+
+El script también genera métricas automáticas de hallucination rate por fuente:
+- Kernel facts
+- Observability
+- Security terms
+- Scheduler params
+
+---
+
+## 🤖 Automatización Implementada
+
+### 1. Matriz de Validación Automática
+
+El script genera automáticamente la matriz de validación con datos empíricos:
+
+```bash
+| Componente | Claim | Real | Match | Acción |
+|------------|-------|------|-------|--------|
+| Kernel | 6.1+ | 6.12.57 | ✅ | OK |
+| EEVDF scheduler | Available 6.6+ | Active | ✅ | OK |
+| eBPF prog | Loaded | ID=199 | ✅ | Verify |
+```
+
+### 2. Umbrales Numéricos Definidos
+
+| Métrica | Umbral | Validación |
+|---------|--------|------------|
+| Ingestion lag | < 5s | Automática |
+| Uptime cache TTL | 100ms ± 20ms | Code review |
+| Trace event rate | > 0/min | Automática |
+| Kernel version | >= 6.1 | Automática |
+
+### 3. Safeguards Anti-Alucinación
+
+- ✅ CVE database checks (AIOpsDoom, etc.)
+- ✅ Scheduler parameter validation (PLACE_LAG, etc.)
+- ✅ Kernel version verification con web citations
+- ✅ eBPF program/map validation
+- ✅ Trace event validation
 
 ---
 
 **Mantenido por**: Sentinel Cortex™ Team  
 **Propósito**: Garantizar precisión técnica absoluta  
 **Metodología**: Datos empíricos > Claims de IA
+
+**Última actualización**: 2026-01-01 - Automatización completa implementada

@@ -160,17 +160,25 @@ ControlMaster
 **File**: `guardian-alpha/run_demo.sh`
 
 ```bash
-KERNEL_VERSION=$(uname -r | cut -d. -f1-2)
-EEVDF_MIN_VERSION="6.6"
-
-if [ "$(printf '%s\n' "$EEVDF_MIN_VERSION" "$KERNEL_VERSION" | sort -V | head -n1)" = "$EEVDF_MIN_VERSION" ]; then
-    echo "✅ EEVDF scheduler available"
-else
-    echo "⚠️ WARNING: EEVDF requires kernel >= 6.6"
-fi
+check_kernel_eevdf() {
+    local major=$1
+    local minor=$2
+    
+    # EEVDF available in 6.6+ [web:kernelnewbies.org/Linux_6.6]
+    if [[ $major -ge 6 ]] && [[ $minor -ge 6 ]]; then
+        echo "✅ EEVDF scheduler: Supported (kernel >= 6.6) [web:kernelnewbies.org/Linux_6.6]"
+        return 0
+    elif [[ $major -ge 6 ]] && [[ $minor -ge 1 ]]; then
+        echo "⚠️  EEVDF scheduler: Not available (requires >= 6.6, using CFS)"
+        return 1
+    else
+        echo "❌ ERROR: Kernel $kernel_full is below minimum requirement (6.1+)"
+        return 2
+    fi
+}
 ```
 
-**Purpose**: Prevent configuration of non-existent scheduler features
+**Purpose**: Prevent configuration of non-existent scheduler features with proper web citations
 
 ---
 
@@ -201,7 +209,40 @@ class IngestionLagMonitor:
 
 ---
 
-### 3. Documentation of Non-Existent Concepts
+### 3. Automated Audit Script
+
+**File**: `guardian-alpha/sentinel_audit.sh`
+
+**Features**:
+- ✅ Validates all system claims against empirical evidence
+- ✅ Generates timestamped audit reports with artifacts
+- ✅ Tracks hallucination rate by source category
+- ✅ Standardized exit codes for CI/CD integration
+- ✅ Automated validation matrix generation
+- ✅ CVE database checks for fabricated attack names
+- ✅ Scheduler parameter validation against kernel source
+
+**Usage**:
+```bash
+sudo bash guardian-alpha/sentinel_audit.sh
+# Generates: /tmp/sentinel_audit_YYYYMMDD_HHMMSS/
+#   - audit_matrix.md (full report)
+#   - bpf_progs.txt (eBPF programs)
+#   - bpf_maps.txt (eBPF maps)
+#   - trace_sample.txt (trace events)
+```
+
+**Exit codes** (bit flags):
+- `0` = All checks passed
+- `1` = Kernel version insufficient
+- `2` = BPF LSM not enabled
+- `4` = eBPF program not loaded
+- `8` = Trace events not found
+- `16` = Python bridge errors
+
+---
+
+### 4. Documentation of Non-Existent Concepts
 
 **File**: `guardian-alpha/RESEARCH_PAPER.md` (to be added)
 
@@ -212,25 +253,79 @@ This section documents claims we explicitly **reject** as unverified:
 
 - ❌ "AIOpsDoom attack" - No evidence in security literature
 - ❌ "PLACE_LAG scheduler" - Not a real Linux scheduler parameter
-- ❌ Kernel 6.12 stable - Does not exist as of Dec 2024
 ```
 
 **Purpose**: Prevent propagation of AI-generated misinformation
 
 ---
 
+## 📊 Hallucination Rate Metrics
+
+### Current Status (2026-01-01)
+
+| Fuente | Claims | Hallucinaciones | Tasa | Status |
+|--------|--------|-----------------|------|--------|
+| Kernel facts | 6 | 0 | 0% | ✅ |
+| Observability | 4 | 0 | 0% | ✅ |
+| Security terms | 1 | 1 | 100% | ⚠️ |
+| Scheduler params | 2 | 1 | 50% | ⚠️ |
+
+**Total**: 13 claims, 2 hallucinations (15.4%)
+
+### Hallucination Breakdown
+
+**Security Terms** (1/1 = 100%):
+- ❌ "AIOpsDoom attack" - Completely fabricated, 0 results in CVE/arXiv/Scholar
+
+**Scheduler Params** (1/2 = 50%):
+- ❌ "PLACE_LAG" - Does not exist in kernel source
+- ✅ "EEVDF scheduler" - Verified in kernel 6.6+ [web:kernelnewbies.org/Linux_6.6]
+
+**Kernel Facts** (0/6 = 0%):
+- ✅ All kernel version claims verified against `uname -r`
+- ✅ BPF LSM status verified against `/sys/kernel/security/lsm`
+- ✅ eBPF program status verified via `bpftool`
+
+**Observability** (0/4 = 0%):
+- ✅ Trace format claims verified against ftrace documentation
+- ✅ Ingestion lag calculation verified as standard practice
+- ✅ Uptime caching implemented and tested
+
+---
+
+## 🎯 Validation Thresholds
+
+### Defined Limits (Automated Checks)
+
+| Métrica | Umbral | Tolerancia | Validación |
+|---------|--------|------------|------------|
+| Ingestion lag | < 5s | N/A | Automated in audit |
+| Uptime cache TTL | 100ms | ±20ms | Code review |
+| Trace event rate | > 0/min | N/A | Automated in audit |
+| Kernel version | >= 6.1 | N/A | Automated in run_demo.sh |
+| EEVDF availability | >= 6.6 | N/A | Automated in run_demo.sh |
+
+### Validation Methodology
+
+1. **System Truth** (`uname`, `bpftool`, `/proc/*`) = **GROUND TRUTH**
+2. **Official Documentation** (kernel.org, man pages) = **VERIFICATION**
+3. **Source Code** (Linux kernel, libbpf) = **IMPLEMENTATION REFERENCE**
+4. **AI Claims** = **HYPOTHESIS** (must be validated)
+
+---
+
 ## 📊 Statistics
 
-**Total claims analyzed**: 12  
-**Verified as correct**: 8 (67%)  
-**Detected as hallucinations**: 3 (25%)  
+**Total claims analyzed**: 13  
+**Verified as correct**: 11 (85%)  
+**Detected as hallucinations**: 2 (15%)  
 **AI errors (self-corrections)**: 1 (8%)  
 **Optimization suggestions**: 1 (8%)  
 
 **Hallucination types**:
-- ~~Version errors: 1 (kernel 6.12)~~ **[CORRECTED - AI was wrong]**
 - Fabricated terms: 2 (AIOpsDoom, PLACE_LAG)
-- Inverted facts: 1 (ControlMaster)
+- ~~Inverted facts: 1 (ControlMaster)~~ **[REMOVED - was correct]**
+- ~~Version errors: 1 (kernel 6.12)~~ **[CORRECTED - AI was wrong]**
 
 **AI errors**:
 - Kernel 6.12 "doesn't exist" - **WRONG**, it does exist (released Nov 2024)
@@ -370,6 +465,13 @@ Before accepting any AI-generated technical claim:
 ---
 
 ## 📝 Update Log
+
+**2026-01-01**: Automated audit system implementation
+- Created `sentinel_audit.sh` with hallucination rate tracking
+- Implemented automated validation matrix generation
+- Added standardized exit codes for CI/CD
+- Enhanced `run_demo.sh` with EEVDF validation
+- Documented hallucination metrics (15.4% rate)
 
 **2025-12-31**: Initial validation of HA/observability claims  
 - Detected 4 hallucinations
