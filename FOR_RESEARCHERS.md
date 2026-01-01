@@ -106,6 +106,11 @@ ollama run llama3.2:3b "Test"
 Response: [AI-generated text]
 Performance: ~208 tokens/s (prompt), ~23 tokens/s (generation)
 ```
+### Claim 7: Digital Hippocampus & Semantic Memory
+**Evidence**: SemSH v0.6.0 with ChromaDB Integration.
+- **Proof**: Run `oracle "¿qué ataques hemos tenido?"`.
+- **Result**: The system performs a vector search on local logs, synthesizes a narrative, and provides timestamps/risk scores without external API calls.
+- **Location**: `/home/jnovoas/sentinel/db/chroma`
 
 ✅ **VALIDATED**: AI model operational and responsive
 
