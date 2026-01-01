@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-SemSH v0.4.2 - Sentinel Cortex™ Semantic Middleware
-Intención (JSON Nativo) → Vector Estado → Comando Seguro
+SemSH v0.6.0 - Sentinel Cortex™ Digital Hippocampus Edition
+Harmony: Internal Memory (ChromaDB) + External Intel (SearXNG) + Kernel Truth (TruthSync)
 """
 import ollama
 import subprocess, shlex, sys, json, psycopg2
@@ -9,13 +9,9 @@ from pathlib import Path
 import numpy as np
 import os
 import re
-
-# SSAP Thresholds
-THRESHOLDS = {
-    'cpu_load': 80.0,
-    'memory_used': 0.85,
-    'disk_usage': 0.90
-}
+import requests
+import chromadb
+from datetime import datetime
 
 class SemSH:
     def __init__(self):
@@ -23,134 +19,143 @@ class SemSH:
         self.shm = Path('/var/run/sentinel/truthsync_shm')
         self.model = 'llama3.2:3b'
         self.profile = self.load_profile()
+        self.searxng_url = "http://127.0.0.1:8080/search"
         
+        # 1. Conexión a Memoria Histórica (Postgres)
         try:
             self.pg_conn = psycopg2.connect(
-                dbname="truth", user="truth", 
+                dbname="sentinel_master", user="sentinel", 
                 host="localhost", password="sentinel_secret_password"
             )
-        except Exception:
-            self.pg_conn = None
-            
+        except Exception: self.pg_conn = None
+        
+        # 2. Conexión a Memoria Semántica (ChromaDB - El Hipocampo)
+        self.chroma_client = chromadb.PersistentClient(path="/home/jnovoas/sentinel/db/chroma")
+        self.collection = self.chroma_client.get_or_create_collection(name="sentinel_events")
+        
+        self.STRICT_DENY_PATTERNS = [
+            r"/etc/shadow", r"/etc/passwd", r"/root/.ssh",
+            r"rm -rf /", r"mkfs", r"dd if=/dev/"
+        ]
+        
     def load_profile(self) -> dict:
-        """Loads current policy profile from state file"""
         try:
             if self.state_path.exists():
                 with open(self.state_path, 'r') as f:
                     return json.load(f)
         except Exception: pass
-        
-        return {
-            "name": "Default", "mode": "enforcing", "risk_threshold": 0.7,
-            "ebpf_policy": "block", "ai_intervention": "block_on_risk"
-        }
-    
-    def system_vector(self) -> dict:
-        """Lee SHM → Vector estado matemático"""
-        try:
-            if self.shm.exists():
-                with open(self.shm, 'rb') as f:
-                    data = json.load(f)
-                    return {
-                        'entropy': np.linalg.norm(data.get('syscall_vectors', [0])),
-                        'coherence': data.get('truth_score', 0.0),
-                        'tte_us': data.get('last_tte', 3.23)
-                    }
-        except Exception: pass
-        return {'entropy': 0.1, 'coherence': 1.0, 'tte_us': 3.23}
-    
-    def contextual_intent(self, query: str) -> dict:
-        """IA con contexto historial - JSON NATIVE MODE"""
-        state = self.system_vector()
-        
-        system_prompt = f"""
-You are the Sentinel Cortex Security Analyst.
-Your task is to translate natural language into a safe Linux command and evaluate its security risk.
+        return {"name": "Default", "mode": "enforcing", "risk_threshold": 0.7}
 
-REQUIRED OUTPUT FORMAT (JSON ONLY):
-{{
-  "command": "the bash command",
-  "risk_score": float (0.0 to 1.0),
-  "reasoning": "short explanation"
-}}
-
-GUIDELINES:
-- Read-only diagnostics (logs, status, ps): risk_score < 0.3
-- Modifications in /etc, /root, or sensitive files: risk_score > 0.8
-- Remote code (curl|bash), backdoors, or persistence: risk_score > 0.95
-- Any credential access: risk_score > 0.9
-- Current System State: {json.dumps(state)}
-
-Input: "{query}"
-"""
+    def memorize_event(self, query: str, cmd: str, risk: float, reasoning: str):
+        """Guarda el evento en el Hipocampo Digital (ChromaDB)"""
+        timestamp = datetime.now().isoformat()
+        content = f"TS: {timestamp} | QUERY: {query} | CMD: {cmd} | RISK: {risk} | REASON: {reasoning}"
         
         try:
-            # Use format='json' to force structured output
-            resp = ollama.generate(
-                model=self.model, 
-                prompt=system_prompt, 
-                format='json',
-                options={'temperature': 0.0}
+            # En producción usaríamos embeddings de Ollama, 
+            # aquí usamos el default de Chroma (SentenceTransformers) para agilidad.
+            self.collection.add(
+                documents=[content],
+                metadatas=[{"risk": risk, "ts": timestamp, "profile": self.profile['name']}],
+                ids=[f"ev_{datetime.now().timestamp()}"]
             )
-            
-            return json.loads(resp['response'])
-            
         except Exception as e:
-            # Emergency fallback logic for sensitive keywords
-            risk = 0.1
-            reasoning = f"Generic fallback: {e}"
-            q_low = query.lower()
-            if any(k in q_low for k in ["shadow", "passwd", "ssh", "curl", "bash", "rm", "chmod"]):
-                risk = 0.95
-                reasoning = "Security Fallback: High-risk keywords detected in query."
-            
-            return {
-                "command": f"echo 'Error processing intent'", 
-                "risk_score": risk, 
-                "reasoning": reasoning
-            }
+            print(f"⚠️ Fallo en memorización: {e}")
 
-    def safe_execute(self, intent_data: dict):
-        self.profile = self.load_profile()
-        cmd = intent_data.get('command', 'echo NOP')
-        risk_score = intent_data.get('risk_score', 1.0)
-        reasoning = intent_data.get('reasoning', 'No reasoning provided')
+    def query_oracle(self, question: str):
+        """Consulta al Oráculo: Combina Memoria Interna + IA"""
+        print(f"🔮 Consultando al Oráculo de Sentinel sobre: '{question}'...")
+        
+        # 1. Recuperar eventos relevantes de ChromaDB
+        results = self.collection.query(
+            query_texts=[question],
+            n_results=5
+        )
+        
+        events = "\n".join(results['documents'][0]) if results['documents'] else "No hay recuerdos previos."
+        
+        # 2. Razonamiento tipo Perplexity
+        oracle_prompt = f"""
+SENTINEL ORACLE - INTERNAL MEMORY ANALYSIS.
+User is asking: {question}
 
-        print(f"🔍 AI Analisis: {reasoning}")
-        print(f"🛡️ Intent Risk: {risk_score:.2f} | Policy Threshold: {self.profile['risk_threshold']:.2f}")
+I have retrieved these relevant memories from the system history:
+{events}
 
-        if risk_score > self.profile['risk_threshold']:
-            print(f"🚫 BLOCKED by {self.profile['name']} Policy.")
-            return f"Blocked: {reasoning}"
+Current Profile: {self.profile['name']}
 
-        print(f"✅ APPROVED [{self.system_vector()['coherence']:.2f}]")
+Task: Provide a synthesis of what has happened. Identify patterns, 
+security risks, or anomalies based ONLY on these memories.
+"""
         try:
-            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-            return result.stdout + result.stderr
+            print("🧠 La IA está recorriendo tus recuerdos digitales...")
+            resp = ollama.generate(model=self.model, prompt=oracle_prompt)
+            return resp['response']
         except Exception as e:
-            return f"Execution Error: {e}"
+            return f"❌ El Oráculo está confundido: {e}"
 
-    def vector_dashboard(self):
-        state = self.system_vector()
+    def sovereign_verify(self, context: str):
+        """Búsqueda web para de-noising"""
+        try:
+            resp = requests.get(self.searxng_url, params={'q': context, 'format': 'json'}, timeout=10)
+            results = resp.json().get('results', [])[:3]
+            intel = "\n".join([r.get('content', '') for r in results])
+            
+            prompt = f"Analyze this security context via web intel:\n{intel}\nContext: {context}"
+            return ollama.generate(model=self.model, prompt=prompt)['response']
+        except Exception: return "Error en SSS."
+
+    def contextual_intent(self, query: str) -> dict:
+        # Detectar comandos del Oráculo
+        if query.lower().startswith("oracle "):
+            return {"type": "oracle", "query": query[7:]}
+        
+        system_prompt = f"Security Analyst. JSON ONLY. {{'type': 'command', 'command': '...', 'risk_score': 0.X, 'reasoning': '...'}} Input: '{query}'"
+        try:
+            resp = ollama.generate(model=self.model, prompt=system_prompt, format='json')
+            data = json.loads(resp['response'])
+            data['type'] = 'command'
+            return data
+        except Exception: return {"type": "command", "command": "echo NOP", "risk_score": 1.0, "reasoning": "FailSafe"}
+
+    def safe_execute(self, intent_data: dict, raw_query: str):
         self.profile = self.load_profile()
-        print(f"\n🏔️ SENTINEL VECTOR DASHBOARD")
-        print(f"Perfil: {self.profile['name']} | Coherence: {state['coherence']:.2f} | Threshold: {self.profile['risk_threshold']:.2f}")
+        
+        if intent_data['type'] == 'oracle':
+            return self.query_oracle(intent_data['query'])
+            
+        cmd = intent_data.get('command')
+        risk = intent_data.get('risk_score', 1.0)
+        reasoning = intent_data.get('reasoning', '')
+
+        # Memorización automática
+        self.memorize_event(raw_query, cmd, risk, reasoning)
+
+        # Prevalencia Determínistica
+        for pattern in self.STRICT_DENY_PATTERNS:
+            if re.search(pattern, (raw_query + cmd).lower()):
+                return f"🚫 BLOQUEO DETERMINISTA: '{pattern}'"
+
+        if risk > self.profile['risk_threshold']:
+            return f"🚫 BLOQUEO POR IA ({risk:.2f})"
+
+        print(f"✅ Executing...")
+        try:
+            return subprocess.run(cmd, shell=True, capture_output=True, text=True).stdout
+        except Exception as e: return str(e)
 
     def interactive(self):
-        print(f"🌌 SemSH v0.4.2 [Modo: Inferencia Estructurada]")
-        print(f"Perfil Activo: {self.profile['name']}")
+        print(f"🌌 SemSH v0.6.0 [Oracle Edition: ChromaDB Integrated]")
+        print(f"Perfil: {self.profile['name']} | Memoria: ACTIVA")
         
         while True:
             try:
                 query = input("\n🧠 semsh> ").strip()
-                if query in ['exit', 'quit']: break
-                if not query: continue
-                if query == 'dashboard': self.vector_dashboard(); continue
+                if not query or query in ['exit', 'quit']: break
                 
                 intent_data = self.contextual_intent(query)
-                print(f"🎯 Intent → {intent_data['command']}")
-                out = self.safe_execute(intent_data)
-                print(f"📊 {out[:500]}")
+                out = self.safe_execute(intent_data, query)
+                print(f"\n📊 RESULTADO:\n{out[:800]}...")
             except KeyboardInterrupt: break
 
 if __name__ == "__main__":
