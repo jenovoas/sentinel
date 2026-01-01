@@ -1,0 +1,13 @@
+[Unit]
+Description=Sentinel Cognitive Watchdog
+After=network.target
+
+[Service]
+ExecStart=/home/jnovoas/sentinel/tools/cognitive_watchdog.sh
+Restart=always
+User=jnovoas
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/jnovoas/.Xauthority
+
+[Install]
+WantedBy=default.target
