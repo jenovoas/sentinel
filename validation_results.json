@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-01-01 15:06:03",
+  "system": "Linux darch 6.12.57+deb13-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.57-1 (2025-11-05) x86_64 GNU/Linux",
+  "results": {
+    "kernel_version": true,
+    "ebpf_lsm": true,
+    "ollama_running": true,
+    "ollama_model": true,
+    "postgres": true,
+    "sentinel_status": true,
+    "bpf_maps": true,
+    "resource_usage": true,
+    "ai_inference": true
+  },
+  "summary": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0,
+    "percentage": 100.0
+  }
+}
