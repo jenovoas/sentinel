@@ -36,6 +36,12 @@ async fn main() {
         cache: RwLock::new(PredictiveCache::new(100_000, 3600)),
     });
 
+    // Spawn SHM Background Listener
+    let shm_state = state.clone();
+    std::thread::spawn(move || {
+        shm_listener(shm_state);
+    });
+
     // Build router
     let app = Router::new()
         .route("/health", get(health_handler))
@@ -45,7 +51,40 @@ async fn main() {
     // Run server
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8001").await.unwrap();
     println!("🚀 [TruthSync Edge] Rust server running on http://0.0.0.0:8001");
+    println!("📡 Real-Mode: SHM Listener ACTIVE");
     axum::serve(listener, app).await.unwrap();
+}
+
+fn shm_listener(state: Arc<AppState>) {
+    use truthsync_core::buffer::{SharedBuffer, MessageType};
+    use std::time::Duration;
+    
+    let mut buffer = match SharedBuffer::open("truthsync_shm") {
+        Ok(b) => b,
+        Err(_) => {
+            println!("⚠️ truthsync_shm not found, creating baseline...");
+            SharedBuffer::create("truthsync_shm", 2 * 1024 * 1024).expect("Failed to create SHM")
+        }
+    };
+
+    loop {
+        if let Ok((msg_type, data)) = buffer.consume() {
+            if msg_type == MessageType::PROCESS_TEXT {
+                let text = String::from_utf8_lossy(&data);
+                let start = Instant::now();
+                
+                // Process claims
+                let claims = state.extractor.extract(&text);
+                let duration = start.elapsed();
+                
+                if !claims.is_empty() {
+                    println!("🧠 [SHM] Processed {} claims in {}μs", claims.len(), duration.as_micros());
+                }
+            }
+        }
+        // Poll every 100 microseconds
+        std::thread::sleep(Duration::from_micros(100));
+    }
 }
 
 async fn health_handler() -> &'static str {
