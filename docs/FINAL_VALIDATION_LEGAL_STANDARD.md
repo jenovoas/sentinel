@@ -138,10 +138,10 @@ IMPACTO: Credibilidad de aplicabilidad industrial
 
 ### Tarea 1: Diagrama de Secuencia "Home Run" (Claim 3)
 
-**Objetivo:** Contrastar Estado del Arte vs Tu Invención
+**Objetivo:** Contrastar estándar técnico vs Tu Invención
 
 ```
-ESTADO DEL ARTE (Auditd):
+estándar técnico (Auditd):
 1. Aplicación ejecuta: rm -rf /data
 2. Kernel ejecuta syscall
 3. Datos BORRADOS

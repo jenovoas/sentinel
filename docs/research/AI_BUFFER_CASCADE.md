@@ -138,7 +138,7 @@ Buffer 2 (Regional):
 Buffer 3 (Core):
   Input:  10,000 ev/s (ultra-smooth)
   IA:     Buffer size = 12 eventos (mínimo)
-  Output: 10,000 ev/s (perfecto)
+  Output: 10,000 ev/s (validado)
 ```
 
 **Aceleración**:
@@ -283,7 +283,7 @@ Buffer 2: IA decide 600 eventos (flujo ya smooth)
 Buffer 3: IA decide 12 eventos (flujo ultra-smooth)
   → Latencia: 0.001s
   → Throughput: 10,000 ev/s
-  → Smooth factor: 1.0x (ya perfecto)
+  → Smooth factor: 1.0x (ya validado)
 
 Total: 0.24s latencia vs 2s
 Speedup: 8.3x en latencia

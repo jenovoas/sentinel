@@ -98,7 +98,7 @@ acciones maliciosas ANTES de ejecución"
 **Performance Validado**:
 - Blocking latency: 0.00ms (instantáneo)
 - TOCTOU window: Eliminado
-- Bypass resistance: Imposible desde userspace
+- Bypass resistance: no factible desde userspace
 
 **IP Value**: $8-15M  
 **Licensing Potential**: $50-100M  

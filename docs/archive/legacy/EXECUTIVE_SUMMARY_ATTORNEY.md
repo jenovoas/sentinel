@@ -71,7 +71,7 @@
 **Performance**:
 - Blocking latency: 0.00ms (sub-microsecond, instantáneo)
 - TOCTOU window: Eliminado
-- Bypass resistance: Imposible desde userspace
+- Bypass resistance: no factible desde userspace
 
 **Prior Art**: **ZERO** - Ningún patent combina AIOps + kernel-level veto
 

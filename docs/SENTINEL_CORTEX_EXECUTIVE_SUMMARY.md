@@ -7,9 +7,9 @@
 
 ---
 
-## 🎯 El Problema: El Dilema Imposible de la Automatización
+## 🎯 El Problema: El Dilema no factible de la Automatización
 
-**Los equipos de seguridad enfrentan una elección imposible:**
+**Los equipos de seguridad enfrentan una elección no factible:**
 
 ```
 Opción A: Sistemas "Seguros" pero Lentos
@@ -51,7 +51,7 @@ NO EXISTE OPCIÓN C... HASTA AHORA
           └───────────────────────┘
            Se vigilan mutuamente
            Se auto-regeneran
-           Imposible de engañar
+           no factible de engañar
 ```
 
 ### **Tres Capas de Inteligencia:**
@@ -109,14 +109,14 @@ NO EXISTE OPCIÓN C... HASTA AHORA
 *"Cerebro que correlaciona inteligentemente"*
 - 5+ señales independientes correlacionadas
 - Confidence scoring dinámico (Bayesian)
-- Imposible engañar con un solo log
+- no factible engañar con un solo log
 
 ### **CLAIM 3: Dos Nervios Independientes + Auto-Regeneración**
 *"Organismo que se vigila a sí mismo y se autocura"*
 - Guardian-Alpha y Guardian-Beta independientes
 - Modo sombra (shadow mode)
 - Auto-regeneración automática
-- Sistema imposible de corromper simultáneamente
+- Sistema no factible de corromper simultáneamente
 
 **Valoración adicional por IP:** $10-20M  
 **Timeline:** Provisional patent Feb 2026
@@ -156,7 +156,7 @@ Revenue Potential: $500M (long-term)
 ```
 Base (SaaS Backup):              $50M  (5x Year 2 ARR @ $10M)
 + Cortex Automation:             +$15M (unique decision engine)
-+ Dos Nervios vigilantes:        +$20M (imposible de engañar)
++ Dos Nervios vigilantes:        +$20M (no factible de engañar)
 + Regeneración automática:       +$15M (resilience moat)
 + IP defensiva (3 claims):       +$10-20M (licensing potential)
 ────────────────────────────────────────────────────────────
@@ -293,7 +293,7 @@ TOTAL Post-Seed Valuation:       $110-130M
 
 *Solución: Sentinel Cortex. Un organismo de seguridad vivo con un cerebro inteligente (Cortex) que piensa, dos policías independientes (Nervios A & B) que se vigilan mutuamente, y capacidad de auto-regenerarse cuando es atacado.*
 
-*Resultado: 99% de incidentes automáticos, 0% de acciones malas, sistema imposible de hackear.*
+*Resultado: 99% de incidentes automáticos, 0% de acciones malas, sistema no factible de hackear.*
 
 *Precio: 1/10 de Datadog. Mercado: 1M de PYMES en Latam. Valuación: $100M en Year 2.*
 
