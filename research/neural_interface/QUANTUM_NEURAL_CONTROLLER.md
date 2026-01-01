@@ -13,7 +13,7 @@
 
 ```
 Biological Core (Brain)
-    ↕ Quantum Sensor (OPM/NV-diamond)
+    ↕ Quantum Sensor (OPM/NV-OPERATIONAL)
 Bone Transducer (Titanium implant)
     ↕ Piezoelectric Interface
 Quantum Controller (OptomechanicalCooling)

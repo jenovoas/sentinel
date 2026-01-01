@@ -294,10 +294,10 @@ FLUJO DE SANITIZACIÓN DE TELEMETRÍA
 RESULTADO: LLM nunca ve prompt malicioso
 ```
 
-**Diagrama C: Contraste Estado del Arte vs Invención**
+**Diagrama C: Contraste estándar técnico vs Invención**
 
 ```
-ESTADO DEL ARTE (Auditd - Post-Fact)
+estándar técnico (Auditd - Post-Fact)
 ═══════════════════════════════════════
 
 1. Aplicación ejecuta: rm -rf /data
@@ -353,7 +353,7 @@ DIFERENCIA CLAVE:
 
 - [ ] Diagrama A: Flujo Control Negativo (Claim 3)
 - [ ] Diagrama B: Flujo AIOpsShield (Claim 1)
-- [ ] Diagrama C: Contraste Estado del Arte vs Invención
+- [ ] Diagrama C: Contraste estándar técnico vs Invención
 
 ### Attorney Selection (Esta Semana)
 

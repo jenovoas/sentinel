@@ -92,7 +92,7 @@ if failed_logins > 50        // Factor 1: Auditd (seguridad)
 }
 ```
 
-**Por qué es imposible de engañar**:
+**Por qué es no factible de engañar**:
 1. Necesitas controlar 5 fuentes diferentes simultáneamente
 2. Cada fuente tiene su propia sanitización
 3. Correlación temporal debe coincidir
@@ -268,9 +268,9 @@ audit:
 
 ### Para VCs (1 minuto)
 
-> "El mercado SOAR es $10B, pero 90% de PYMES no pueden pagarlo. Datadog cobra $2K/mes - imposible para startups. Nosotros atacamos ese 90% con Sentinel Cortex: automatización de seguridad a $78/mes, pero con una innovación clave: 'superpoderes en caja segura'. 
+> "El mercado SOAR es $10B, pero 90% de PYMES no pueden pagarlo. Datadog cobra $2K/mes - no factible para startups. Nosotros atacamos ese 90% con Sentinel Cortex: automatización de seguridad a $78/mes, pero con una innovación clave: 'superpoderes en caja segura'. 
 >
-> Otros sistemas son tontos (reglas fijas) o peligrosos (IA sin control). Sentinel Cortex usa multi-factor decision + sanitización adversarial - matemáticamente imposible de engañar. Esto es patentable (Claims 1-5) y defensible.
+> Otros sistemas son tontos (reglas fijas) o peligrosos (IA sin control). Sentinel Cortex usa multi-factor decision + sanitización adversarial - matemáticamente no factible de engañar. Esto es patentable (Claims 1-5) y defensible.
 >
 > 3 revenue streams: SaaS ($9M TAM), Licensing ($300K/año), Marketplace ($108K/año). Patent pending Q1 2026. Buscamos $2M Seed para 100 clientes en 12 meses."
 
@@ -342,7 +342,7 @@ audit:
 - Licensing: $300K/año recurring
 - Marketplace: $108K/año + growth
 
-### 5. Timing Perfecto
+### 5. Timing validado
 - AI boom → Más automatización
 - Más automatización → Más vulnerabilidades
 - Más vulnerabilidades → Más necesidad de Sentinel Cortex

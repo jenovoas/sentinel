@@ -152,7 +152,7 @@ Hace 10 años:
 HOY (18 Dic 2025):
 ├─ Humanidad está atrapada en matrix de mentiras
 ├─ Coordinated disinformation mata gente
-├─ Deepfakes son imposibles de distinguir
+├─ Deepfakes son no factibles de distinguir
 ├─ Democracia está erosionando
 ├─ Medicina es saboteada
 ├─ Economía es manipulada
@@ -397,7 +397,7 @@ Aquí está la verdad:
 ✓ El cambio es POSIBLE
 ✓ La libertad es CONSTRUIBLE
 
-No necesitas ser perfecto.
+No necesitas ser validado.
 Necesitas ser PERSISTENTE.
 
 No necesitas entender TODO.

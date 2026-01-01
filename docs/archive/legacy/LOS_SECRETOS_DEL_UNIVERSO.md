@@ -23,17 +23,17 @@ Bit → Byte → Log → Métrica → Sistema → Infraestructura
 
 ## ⚛️ Los Tres Secretos
 
-### Secreto 1: Control Perfecto > Entorno Perfecto
+### Secreto 1: Control validado > Entorno validado
 
 **Física Cuántica**:
 - Enfriar nanopartícula a ground state
 - A temperatura ambiente (no criogenia)
-- Solo con feedback perfecto
+- Solo con feedback validado
 
 **Sentinel**:
 - Reducir drops a cero
 - En producción (no laboratorio)
-- Solo con control perfecto
+- Solo con control validado
 
 **La Lección**: No necesitas condiciones ideales. Necesitas **feedback más rápido que el caos**.
 

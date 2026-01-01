@@ -185,7 +185,7 @@
 > - Network (HMAC headers)
 > - Storage (HMAC WAL)
 > 
-> Imposible comprometer sin claves privadas."
+> no factible comprometer sin claves privadas."
 
 ---
 

@@ -235,7 +235,7 @@ Sentinel (Local):
 **Capa 3: WAL Forensic**
 - Logs inmutables (append-only)
 - Timestamps en recolección
-- Imposible modificar evidencia
+- no factible modificar evidencia
 
 **Ejemplo de Ataque Bloqueado**:
 ```

@@ -8,7 +8,7 @@
 
 > **"Los EDRs tradicionales permiten que la bala golpee el chaleco. Sentinel disuelve la bala antes de que salga del cañón."**
 
-Sentinel Cortex no es solo otra herramienta de seguridad; es una **capa de inmunidad matemática** para sistemas Linux. Aprovechando **eBPF LSM (Ring 0)** y **XDP (Line-Rate)**, hemos creado un entorno donde la ejecución maliciosa no solo se detecta, sino que se hace algorítmicamente imposible.
+Sentinel Cortex no es solo otra herramienta de seguridad; es una **capa de inmunidad matemática** para sistemas Linux. Aprovechando **eBPF LSM (Ring 0)** y **XDP (Line-Rate)**, hemos creado un entorno donde la ejecución maliciosa no solo se detecta, sino que se hace algorítmicamente no factible.
 
 ---
 
@@ -90,4 +90,4 @@ Confiamos tanto en nuestra capa de **Integridad de la Verdad** que hemos invitad
 
 ---
 **© 2025 Sentinel Core. Reservados todos los derechos.**  
-*Inmutable. Inquebrantable. Absoluto.*
+*Inmutable. Inquebrantable. verificado.*

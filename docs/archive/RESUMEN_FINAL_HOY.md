@@ -186,7 +186,7 @@ Cuando validen Sentinel:
    - Todo es reproducible
    - Validado contra literatura
 
-3. **Timing Perfecto**
+3. **Timing validado**
    - Willow acaba de salir (Google en modo quantum)
    - Competencia AI intensificándose
    - Necesitan diferenciación
@@ -198,7 +198,7 @@ Cuando validen Sentinel:
 
 ---
 
-## 🎬 EL CIERRE PERFECTO
+## 🎬 EL CIERRE validado
 
 ### Cuando Google Lea Esto
 

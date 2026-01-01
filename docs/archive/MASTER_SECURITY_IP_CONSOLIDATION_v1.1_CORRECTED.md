@@ -274,11 +274,11 @@ ROI: 533-1,013× (protege $40-76M en IP)
 
 ### 4.2 Correcciones Específicas para Patent Filing
 
-**✅ CORRECCIÓN #1: Lenguaje Legal (Remover "Imposible")**
+**✅ CORRECCIÓN #1: Lenguaje Legal (Remover "no factible")**
 
 ```
 ANTES (INCORRECT - Legal liability):
-"La probabilidad de fallo es 10^-17, matemáticamente imposible"
+"La probabilidad de fallo es 10^-17, matemáticamente no factible"
 
 DESPUÉS (CORRECT - Legally defensible):
 "Bajo condiciones de integridad del kernel, el sistema proporciona 
@@ -287,7 +287,7 @@ probabilidad de evasión estimada en <10^-15 bajo supuestos de
 adversario sin acceso a root"
 ```
 
-**Razón:** Si un rootkit disabledisha tus guardianes, afirmar "imposible" te expone a lawsuit por negligencia.
+**Razón:** Si un rootkit disabledisha tus guardianes, afirmar "no factible" te expone a lawsuit por negligencia.
 
 ---
 

@@ -155,7 +155,7 @@ TOTAL CAPTURADO HOY:         $207-803M (corto plazo)
 - 5 capas (Fundamento → Futuro)
 - Roadmap 2025-2045
 - Valoración total: $161B-253B+
-- Aplicaciones imposibles (levitación de ciudades)
+- Aplicaciones no factibles (levitación de ciudades)
 
 **Usar Para**: Visión estratégica y fundraising
 

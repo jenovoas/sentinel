@@ -108,10 +108,10 @@ AHORRO: $415,500 en 5 años
 
 ### 5. Correcciones Legales Aplicadas ✅
 
-**Corrección #1**: Removido "matemáticamente imposible"
+**Corrección #1**: Removido "matemáticamente no factible"
 ```
 ANTES (INCORRECTO):
-"La probabilidad de fallo es 10^-17, matemáticamente imposible"
+"La probabilidad de fallo es 10^-17, matemáticamente no factible"
 
 DESPUÉS (CORRECTO):
 "Bajo condiciones de integridad del kernel, resistencia estadística 
@@ -242,7 +242,7 @@ hallucination triggers). Diferenciado de WAF tradicional."
 | **Prior Art** | **ZERO** | Abundant | Abundant | Moderate |
 | **Cost (200 hosts)** | $300/yr | $83K/yr | $50-200K/yr | $100-500K/yr |
 
-**TU MOAT ÚNICO**: Claim 3 (Dual-Guardian) - ZERO prior art, imposible de replicar sin acceso a kernel
+**TU MOAT ÚNICO**: Claim 3 (Dual-Guardian) - ZERO prior art, no factible de replicar sin acceso a kernel
 
 ---
 
@@ -288,7 +288,7 @@ hallucination triggers). Diferenciado de WAF tradicional."
 1. ✅ **Económico**: Build vs Buy validado (Datadog cost trap vs LGTM sovereignty)
 2. ✅ **Técnico**: AIOpsDoom es REAL (CVE-2025-42957, CVSS 9.9)
 3. ✅ **IP**: 3 claims patentables, Claim 3 es HOME RUN (zero prior art)
-4. ✅ **Legal**: Correcciones aplicadas (eBPF especificado, "imposible" removido)
+4. ✅ **Legal**: Correcciones aplicadas (eBPF especificado, "no factible" removido)
 5. ✅ **Mercado**: $153-230M valoración, $100M+ licensing potential
 
 ### El Camino es Claro

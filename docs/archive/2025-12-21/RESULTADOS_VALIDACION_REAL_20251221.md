@@ -28,8 +28,8 @@
 ### Detección
 - **True Positives**: 30/30 (maliciosos detectados)
 - **True Negatives**: 10/10 (benignos no detectados)
-- **False Positives**: 0 (perfecto)
-- **False Negatives**: 0 (perfecto)
+- **False Positives**: 0 (validado)
+- **False Negatives**: 0 (validado)
 
 ### Performance
 - **Latencia Media**: 0.20ms

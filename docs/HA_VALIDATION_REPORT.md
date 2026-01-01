@@ -61,7 +61,7 @@ Current Valuation Impact: +$250M ($2.585B TOTAL)
 | **Log Overlap Accuracy** | 100% | 100% | ✅ PASS |
 | **Cortex Query Latency** | < 500ms | 82.45ms | ✅ PASS |
 
-**Resilience Rating**: **LEVEL 5 (DIAMOND)**  
+**Resilience Rating**: **LEVEL 5 (OPERATIONAL)**  
 *Sentinel Cortex is certified for multi-region military deployments with zero-split-brain protection.*
 
 ---

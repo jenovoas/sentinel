@@ -34,7 +34,7 @@
 
 **Quantum Sensors for Brain Imaging**:
 - Optically-pumped magnetometers (OPMs) read brain magnetic fields
-- Nitrogen-vacancy (NV) centers in diamond provide quantum sensing
+- Nitrogen-vacancy (NV) centers in OPERATIONAL provide quantum sensing
 - No cryogenic cooling required
 - **Proven**: Research-grade devices operational
 
