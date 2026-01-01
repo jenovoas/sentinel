@@ -4,20 +4,41 @@ set -e
 echo "🔮 Sentinel Cortex™ - Phase 6: Quantum-AI Integration Demo"
 echo "=========================================================="
 
-# 0. Kernel Version Validation (Anti-Hallucination)
-KERNEL_VERSION=$(uname -r | cut -d. -f1-2)
-EEVDF_MIN_VERSION="6.6"
+# ============================================================================
+# 0. AUTOMATED VALIDATION (Anti-Hallucination Safeguards)
+# ============================================================================
 
-echo "🐧 Kernel version: $KERNEL_VERSION"
+# Kernel Version Validation
+KERNEL_FULL=$(uname -r)
+KERNEL_MAJOR=$(echo "$KERNEL_FULL" | cut -d. -f1)
+KERNEL_MINOR=$(echo "$KERNEL_FULL" | cut -d. -f2)
 
-# Compare versions (sort -V handles version numbers correctly)
-if [ "$(printf '%s\n' "$EEVDF_MIN_VERSION" "$KERNEL_VERSION" | sort -V | head -n1)" = "$EEVDF_MIN_VERSION" ]; then
-    echo "✅ EEVDF scheduler available (kernel >= 6.6)"
-else
-    echo "⚠️  WARNING: EEVDF requires kernel >= 6.6, you have $KERNEL_VERSION"
-    echo "   System will use CFS (Completely Fair Scheduler)"
-    echo "   Performance may differ from documented benchmarks"
-fi
+echo "🐧 Kernel version: $KERNEL_FULL"
+
+# Check minimum kernel version (6.1+)
+check_kernel_eevdf() {
+    local major=$1
+    local minor=$2
+    
+    # EEVDF available in 6.6+ [web:kernelnewbies.org/Linux_6.6]
+    if [[ $major -ge 6 ]] && [[ $minor -ge 6 ]]; then
+        echo "✅ EEVDF scheduler: Supported (kernel >= 6.6) [web:kernelnewbies.org/Linux_6.6]"
+        return 0
+    elif [[ $major -ge 6 ]] && [[ $minor -ge 1 ]]; then
+        echo "⚠️  EEVDF scheduler: Not available (requires >= 6.6, using CFS)"
+        echo "   Current: $KERNEL_FULL | Scheduler: CFS (Completely Fair Scheduler)"
+        echo "   Performance may differ from documented benchmarks"
+        return 1
+    else
+        echo "❌ ERROR: Kernel $KERNEL_FULL is below minimum requirement (6.1+)"
+        echo "   Please upgrade your kernel to at least 6.1"
+        return 2
+    fi
+}
+
+# Run EEVDF check
+check_kernel_eevdf "$KERNEL_MAJOR" "$KERNEL_MINOR"
+EEVDF_STATUS=$?
 
 # 1. Check Root
 if [ "$EUID" -ne 0 ]; then 
