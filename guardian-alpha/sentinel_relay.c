@@ -27,7 +27,7 @@ struct message_header {
   unsigned int length;
 };
 
-#define SHM_PATH "/tmp/truthsync_shm"
+#define SHM_PATH "/var/run/sentinel/truthsync_shm"
 #define CONTROL_SIZE 64
 #define MAGIC 0xDEADBEEF
 #define MSG_PROCESS_TEXT 0x01
