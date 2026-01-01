@@ -61,35 +61,19 @@ rm -f /sys/fs/bpf/quantum_ai
 
 # 2.5 Compile eBPF (Ensure latest changes used)
 echo "🔨 Compiling eBPF Program..."
-clang -g -O2 -target bpf -I/usr/include/x86_64-linux-gnu -c guardian-alpha/quantum_ai_integration.c -o guardian-alpha/quantum_ai_integration.o
+clang -g -O2 -target bpf -I/usr/include/x86_64-linux-gnu -c "$(dirname "$0")/quantum_ai_integration.c" -o "$(dirname "$0")/quantum_ai_integration.o"
 
 # 3. Load BPF Program (and Auto-Attach)
 echo "🧠 Loading eBPF Cognitive Kernel..."
-# autoattach will create the LSM link. 
-# Note: For persistent attachment in production, we'd pin the link, 
-# but for this demo, the focus is on the active session.
-# We accept that if this shell exits, the link might conceptually disappear 
-# if not pinned, but usually pinned programs stay loaded. 
-# However, the LINK might disappear. 
-# Let's try attempting to pin the link if possible, but standard bpftool load 
-# doesn't easily pin links.
-# For a demo, 'autoattach' often works if the program stays resident.
-bpftool prog load guardian-alpha/quantum_ai_integration.o /sys/fs/bpf/quantum_ai type lsm autoattach
+bpftool prog load "$(dirname "$0")/quantum_ai_integration.o" /sys/fs/bpf/quantum_ai type lsm autoattach
 
 # 4. Attach to LSM Hooks (Handled by autoattach)
 echo "🔗 LSM Hooks Attached via Link."
 
-# 5. Initialize Maps (Dummy/Default for demo)
-# (Skipped for now, defaults to medium threat in code)
-
-echo "✅ Cognitive Kernel Active."
-echo ""
-echo "🔊 Starting Quantum-BCI Bridge (Audio Feedback)..."
-echo "   (Press Ctrl+C to stop)"
-
 # 6. Run Bridge
 # Use the project's virtual environment where dependencies are installed
 VENV_PYTHON="/home/jnovoas/sentinel/.venv/bin/python3"
+[[ ! -f "$VENV_PYTHON" ]] && VENV_PYTHON="python3"
 
 echo "🐍 Using Python: $VENV_PYTHON"
-$VENV_PYTHON guardian-alpha/quantum_bci_bridge.py
+$VENV_PYTHON "$(dirname "$0")/quantum_bci_bridge.py"
