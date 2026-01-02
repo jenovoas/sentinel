@@ -34,10 +34,16 @@ export function Navigation() {
     // Navigation items with routes
     const navItems: NavItem[] = [
         {
-            label: "Dashboard",
+            label: "Home",
+            href: "/",
+            icon: "🏠",
+            description: "Landing Page",
+        },
+        {
+            label: "Secure Workspace",
             href: "/dashboard",
             icon: "📊",
-            description: "Executive overview",
+            description: "Browser & Wallet",
         },
         {
             label: "Dash Op",
@@ -86,6 +92,18 @@ export function Navigation() {
             href: "/analytics",
             icon: "📉",
             description: "Historical data",
+        },
+        {
+            label: "Databases",
+            href: "/db",
+            icon: "🗄️",
+            description: "Instance management",
+        },
+        {
+            label: "Reports",
+            href: "/reports",
+            icon: "📄",
+            description: "System documentation",
         },
     ];
 
