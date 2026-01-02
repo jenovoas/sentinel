@@ -11,7 +11,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Navigation } from "@/components/Navigation";
+import { CognitiveNavBar } from "@/components/CognitiveNavBar";
+import { CommandPalette } from "@/components/CommandPalette";
+import { AICopilot } from "@/components/ai-copilot/AICopilot";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,11 +30,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* Global Navigation Sidebar */}
-        <Navigation />
+        <CommandPalette />
+        {/* Global Top Navigation */}
+        <CognitiveNavBar />
 
         {/* Page Content */}
         <main>{children}</main>
+
+        {/* AI Copilot - Global AI Assistant */}
+        <AICopilot />
       </body>
     </html>
   );

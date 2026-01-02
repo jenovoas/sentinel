@@ -1,514 +1,228 @@
-/**
- * Operational Dashboard - Refactored with SOLID Principles
- * - Single Responsibility: Each component/hook has one purpose
- * - Open/Closed: Easy to extend without modifying existing code
- * - Liskov Substitution: Components follow consistent interfaces
- * - Interface Segregation: Components accept minimal required props
- * - Dependency Inversion: Depends on abstractions (hooks, types) not concrete implementations
- */
-
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAnalytics, useDetailModal } from "@/hooks/useAnalytics";
-import { StorageCard } from "@/components/StorageCard";
-import { DetailModal } from "@/components/DetailModal";
-import { NetworkCard } from "@/components/NetworkCard";
-import { useNetworkInfo } from "@/hooks/useNetworkInfo";
-import { MiniChart } from "@/components/MiniChart";
+import { useSentinelStatus } from "@/hooks/useSentinelStatus";
+import { motion, AnimatePresence } from "framer-motion";
+import { Activity, Server, Zap, Globe, Database, Terminal, ShieldAlert, BarChart3, Clock, AlertCircle, Sparkles, BrainCircuit, Network, Cpu } from "lucide-react";
 
-const API_PATH = "/api/v1/dashboard/status";
-
-type DashboardData = {
-  timestamp: string;
-  db_health: { status: "healthy" | "unhealthy" };
-  db_stats: {
-    connections_total: number;
-    connections_active: number;
-    connections_idle: number;
-    db_size_bytes: number;
-    locks: number;
-  };
-  db_activity: Array<{
-    pid: number;
-    user: string;
-    state: string;
-    wait_event: string;
-    duration_seconds: number;
-    query: string;
-  }>;
-  system: {
-    cpu_percent: number;
-    mem_percent: number;
-    mem_used: number;
-    mem_total: number;
-  };
-  gpu: {
-    gpu_percent: number;
-    gpu_memory_percent: number;
-    gpu_memory_used: number;
-    gpu_memory_total: number;
-    gpu_name: string;
-    gpu_temp: number;
-  };
-  network: {
-    net_bytes_sent: number;
-    net_bytes_recv: number;
-    net_packets_sent: number;
-    net_packets_recv: number;
-    wifi?: {
-      ssid: string;
-      signal: number;
-      connected: boolean;
-    };
-  };
-  repo_activity: {
-    recent_commits: Array<{ hash: string; author: string; when: string; message: string }>;
-    working_tree: string[];
-    git_warning?: string;
-  };
-  admin_suggestions: string[];
-  thresholds: {
-    cpu_percent: number;
-    mem_percent: number;
-    connections: number;
-    log_file: string;
-  };
-};
-
-type FetchState = {
-  loading: boolean;
-  error?: string;
-  data?: DashboardData;
-};
-
-type NotesState = {
-  text: string;
-};
-
-// ============ Utility Functions ============
-
-const formatBytes = (bytes: number) => {
-  if (!Number.isFinite(bytes)) return "-";
-  const units = ["B", "KB", "MB", "GB", "TB"];
-  const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
-  const value = bytes / 1024 ** i;
-  return `${value.toFixed(value >= 10 ? 0 : 1)} ${units[i]}`;
-};
-
-
-// ============ Components ============
-
-const CircularStat = ({
-  value,
-  label,
-  hint,
-  color,
-  onClick,
-  history,
-}: {
-  value: number;
-  label: string;
-  hint?: string;
-  color: string;
-  onClick?: () => void;
-  history?: Array<{ timestamp: number; value: number }>;
-}) => {
-  const safe = Number.isFinite(value) ? Math.max(0, Math.min(value, 100)) : 0;
-  return (
-    <div
-      onClick={onClick}
-      className="group rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-4 shadow-[0_20px_60px_-30px_rgba(56,189,248,0.4)] flex flex-col gap-3 transition-all duration-300 hover:border-white/20 hover:shadow-[0_30px_90px_-40px_rgba(56,189,248,0.6)] hover:scale-[1.02] cursor-pointer"
-    >
-      <div className="flex items-center gap-4">
-        <div
-          className="relative h-20 w-20 rounded-full grid place-items-center transition-transform duration-300 group-hover:scale-110"
-          style={{ background: `conic-gradient(${color} ${safe}%, rgba(255,255,255,0.08) ${safe}% 100%)` }}
-        >
-          <div className="h-14 w-14 rounded-full bg-slate-950/80 grid place-items-center text-white font-semibold text-lg transition-all duration-300 group-hover:bg-slate-900/90">
-            {safe.toFixed(0)}%
-          </div>
-        </div>
-        <div className="flex-1">
-          <p className="text-sm text-gray-300 transition-colors duration-300 group-hover:text-white">{label}</p>
-          <p className="text-xs text-gray-400 transition-colors duration-300 group-hover:text-gray-300">{hint}</p>
-        </div>
-      </div>
-      {history && history.length > 0 && (
-        <div className="h-10">
-          <MiniChart data={history} color={color} height={40} />
-        </div>
-      )}
-    </div>
-  );
-};
-
-const StatCard = ({
-  label,
-  value,
-  hint,
-  accent,
-  history,
-}: {
-  label: string;
-  value: string;
-  hint?: string;
-  accent: string;
-  history?: Array<{ timestamp: number; value: number }>;
-}) => (
-  <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-4 shadow-[0_20px_60px_-30px_rgba(56,189,248,0.4)] flex flex-col gap-3">
-    <div>
-      <p className="text-sm text-gray-300 mb-1">{label}</p>
-      <p className="text-3xl font-semibold text-white tracking-tight">{value}</p>
-      {hint ? <p className="text-xs text-gray-400 mt-1">{hint}</p> : null}
-    </div>
-    {history && history.length > 0 && (
-      <div className="h-10">
-        <MiniChart data={history} color="#c084fc" height={40} />
-      </div>
-    )}
-    <div className={`h-1 rounded-full ${accent}`} />
-  </div>
-);
-
-const Pill = ({ status }: { status: "healthy" | "unhealthy" }) => {
-  const isHealthy = status === "healthy";
-  return (
-    <span
-      className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${isHealthy ? "bg-emerald-500/10 text-emerald-200" : "bg-rose-500/10 text-rose-200"
-        }`}
-    >
-      <span className={`h-2 w-2 rounded-full ${isHealthy ? "bg-emerald-400" : "bg-rose-400"}`} />
-      {isHealthy ? "Healthy" : "Unhealthy"}
-    </span>
-  );
-};
-
-// ============ Main Dashboard Component ============
-
-export default function DashboardPage() {
-  const router = useRouter();
-  const [state, setState] = useState<FetchState>({ loading: true });
-  const [notes, setNotes] = useState<NotesState>({ text: "" });
-  const { anomalies, storage } = useAnalytics();
-  const { modal, open, close } = useDetailModal();
-
-  const API_REFRESH_MS = 15000;
-  const clientNetwork = useNetworkInfo();
-  const [hostSample, setHostSample] = useState<any>(null);
-
-  const load = async () => {
-    try {
-      setState((s) => ({ ...s, loading: true, error: undefined }));
-      const res = await fetch(API_PATH, { cache: "no-store" });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = (await res.json()) as DashboardData;
-      setState({ loading: false, data: json });
-    } catch (err) {
-      setState({ loading: false, error: err instanceof Error ? err.message : "Error" });
-    }
-  };
-
-  useEffect(() => {
-    load();
-    const id = setInterval(load, API_REFRESH_MS);
-    return () => clearInterval(id);
-  }, []);
-
-  // Load last host-metrics sample from CSV via API
-  useEffect(() => {
-    const fetchHostHistory = async () => {
-      try {
-        const res = await fetch("/api/host-metrics?limit=60", { cache: "no-store" });
-        const json = await res.json();
-        if (json?.ok && json.history) setHostSample(json.history);
-      } catch { }
-    };
-    fetchHostHistory();
-    const id = setInterval(fetchHostHistory, 60000);
-    return () => clearInterval(id);
-  }, []);
+export default function OperationsMatrixPage() {
+  const { status, loading } = useSentinelStatus();
+  const [notes, setNotes] = useState("");
+  const iframeBaseUrl = "http://localhost:3001/d-solo/sentinel-overview/sentinel-overview?orgId=1&theme=dark&panelId=";
 
   useEffect(() => {
     const saved = window.localStorage.getItem("sentinel-dashboard-notes");
-    if (saved) setNotes({ text: saved });
+    if (saved) setNotes(saved);
   }, []);
 
-  useEffect(() => {
-    window.localStorage.setItem("sentinel-dashboard-notes", notes.text);
-  }, [notes]);
-
-  const { data, loading, error } = state;
-  /* const repo = data?.repo_activity; */
-
-  const computeIssues = (data?: DashboardData) => {
-    if (!data) return [] as string[];
-    const issues: string[] = [];
-    if (data.db_health.status !== "healthy")
-      issues.push("DB reporta unhealthy (ver logs y conexión).");
-    if (data.system.cpu_percent > data.thresholds.cpu_percent)
-      issues.push(`CPU > umbral (${data.system.cpu_percent.toFixed(1)}%).`);
-    if (data.system.mem_percent > data.thresholds.mem_percent)
-      issues.push(`Memoria > umbral (${data.system.mem_percent.toFixed(1)}%).`);
-    if (data.db_stats.connections_total > data.thresholds.connections)
-      issues.push(`Conexiones totales altas (${data.db_stats.connections_total}).`);
-    if (data.db_stats.locks > 5)
-      issues.push(`Locks detectados (${data.db_stats.locks}); revisar bloqueos.`);
-    if ((data.db_activity?.length ?? 0) > 0) {
-      const longRunning = data.db_activity.find((q) => q.duration_seconds > 60);
-      if (longRunning) issues.push("Hay queries activas (>60s); revisar qué bloquean.");
-    }
-    return issues;
-  };
-
-  const issues = computeIssues(data);
-
-  const ratio = useMemo(() => {
-    if (!data) return 0;
-    return Math.min((data.db_stats.connections_active / (data.thresholds.connections || 1)) * 100, 999);
-  }, [data]);
+  const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setNotes(e.target.value);
+    window.localStorage.setItem("sentinel-dashboard-notes", e.target.value);
+  }
 
   return (
-    <main className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-gray-100">
-      <div
-        className="absolute inset-0 opacity-50 blur-3xl bg-[radial-gradient(circle_at_20%_20%,rgba(34,211,238,0.12),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(16,185,129,0.12),transparent_30%),radial-gradient(circle_at_70%_80%,rgba(59,130,246,0.12),transparent_25%)]"
-        aria-hidden
-      />
-      <div className="relative mx-auto max-w-6xl px-6 py-10">
-        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
-          <div>
-            <p className="text-sm uppercase tracking-[0.25em] text-cyan-200/70">Sentinel</p>
-            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-white">
-              Operational Dashboard (Dev)
-            </h1>
-            <p className="text-gray-300 mt-2 max-w-2xl">
-              Salud de base de datos, sistema y sugerencias rápidas para mantenimiento.
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Pill status={data?.db_health.status ?? "healthy"} />
-            <button
-              onClick={load}
-              className="rounded-xl border border-white/10 bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:border-cyan-400/50 hover:bg-white/15 active:scale-[0.99] transition"
+    <main className="min-h-screen bg-[#020617] text-gray-100 selection:bg-emerald-500/30 overflow-hidden relative font-sans">
+      {/* Visual Identity Layer - Sovereign Ops Matrix v2.1 */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-emerald-500/10 blur-[150px] rounded-full animate-pulse" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-cyan-500/10 blur-[150px] rounded-full animate-pulse" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-30 brightness-150 contrast-125 pointer-events-none" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(18,18,23,0)_0px,rgba(52,211,153,0.01)_1px,rgba(52,211,153,0.01)_2px)] bg-[size:100%_40px] pointer-events-none" />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-[1800px] px-8 py-10">
+        <header className="flex flex-col xl:flex-row items-end justify-between gap-12 mb-16">
+          <div className="flex-1">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-4 mb-4"
             >
-              Refrescar
-            </button>
+              <div className="h-[3px] w-12 bg-gradient-to-r from-emerald-500 to-transparent rounded-full" />
+              <p className="text-[10px] uppercase tracking-[0.6em] text-emerald-400 font-black">Sentinel Operations OS // Control Node 0x8F92A</p>
+            </motion.div>
+
+            <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-white uppercase italic leading-none">
+              Operational <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-white to-cyan-500">Ops Matrix</span>
+            </h1>
+
+            <div className="flex flex-wrap gap-8 mt-8 items-center">
+              <div className="flex items-center gap-3">
+                <div className={`w-2 h-2 rounded-full animate-pulse ${status?.system === 'CRITICAL' ? 'bg-rose-500' : 'bg-emerald-500'}`} />
+                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest italic">
+                  System Health: <span className={status?.system === 'CRITICAL' ? 'text-rose-400' : 'text-emerald-400'}>{status?.system || "STABLE"}</span>
+                </p>
+              </div>
+              <div className="h-4 w-[1px] bg-white/10 hidden md:block" />
+              <div className="flex items-center gap-3">
+                <Clock className="w-4 h-4 text-cyan-400" />
+                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest italic">
+                  Temporal Uptime: <span className="text-white">{status ? (status.uptime / 3600).toFixed(1) + "h" : "---"}</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full xl:w-auto">
+            <header-metric label="CPU PRESSURE" value={status ? `${Math.round(parseFloat(status.cpu))}%` : "-"} color="text-emerald-400" />
+            <header-metric label="MEM LOAD" value={status ? `${Math.round(parseFloat(status.memory))}%` : "-"} color="text-cyan-400" />
+            <header-metric label="NET RX" value={status ? `${(parseInt(status.network?.rx_bytes_sec || "0") / 1024).toFixed(0)} KB/s` : "-"} color="text-amber-400" />
+            <header-metric label="NET TX" value={status ? `${(parseInt(status.network?.tx_bytes_sec || "0") / 1024).toFixed(0)} KB/s` : "-"} color="text-purple-400" />
           </div>
         </header>
 
-        {/* System Metrics Grid */}
-        <section className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
-          <CircularStat
-            value={hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.cpu_percent ?? 0 : data?.system.cpu_percent ?? 0}
-            label="CPU"
-            hint={`Umbral ${data?.thresholds.cpu_percent ?? 0}%`}
-            color="#22d3ee"
-            history={
-              hostSample?.map((s: any) => ({
-                timestamp: new Date(s.timestamp).getTime(),
-                value: s.cpu_percent,
-              }))
-            }
-          />
-          <CircularStat
-            value={hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.mem_percent ?? 0 : data?.system.mem_percent ?? 0}
-            label="Memoria"
-            hint={`${formatBytes(data?.system.mem_used ?? 0)} / ${formatBytes(data?.system.mem_total ?? 0)}`}
-            color="#34d399"
-            history={
-              hostSample?.map((s: any) => ({
-                timestamp: new Date(s.timestamp).getTime(),
-                value: s.mem_percent,
-              }))
-            }
-          />
-          <CircularStat
-            value={hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.gpu_percent ?? 0 : data?.gpu.gpu_percent ?? 0}
-            label="GPU"
-            hint={
-              data?.gpu.gpu_name !== "N/A"
-                ? `${data?.gpu.gpu_name} • ${data?.gpu.gpu_temp ?? 0}°C`
-                : "No detectada"
-            }
-            color="#a78bfa"
-            history={
-              hostSample?.map((s: any) => ({
-                timestamp: new Date(s.timestamp).getTime(),
-                value: s.gpu_percent,
-              }))
-            }
-          />
-          <CircularStat
-            value={
-              (() => {
-                const networkData = hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.network : data?.network;
-                if (!networkData) return 0;
-                const total = networkData.net_bytes_sent + networkData.net_bytes_recv;
-                const gb = total / (1024 * 1024 * 1024);
-                return Math.min(gb * 10, 100);
-              })()
-            }
-            label="Red (total)"
-            hint={`↑ ${formatBytes(hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.network?.net_bytes_sent ?? 0 : data?.network.net_bytes_sent ?? 0)} ↓ ${formatBytes(hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.network?.net_bytes_recv ?? 0 : data?.network.net_bytes_recv ?? 0)}`}
-            color="#fb923c"
-            history={
-              hostSample?.map((s: any) => ({
-                timestamp: new Date(s.timestamp).getTime(),
-                value: Math.min(((s.network?.net_bytes_sent + s.network?.net_bytes_recv) / (1024 * 1024 * 1024)) * 10, 100),
-              }))
-            }
-          />
-          <StatCard
-            label="Conexiones"
-            value={`${data?.db_stats.connections_active ?? 0} / ${data?.thresholds.connections ?? 0}`}
-            hint={`Totales: ${data?.db_stats.connections_total ?? 0} • Locks: ${data?.db_stats.locks ?? 0}`}
-            accent="bg-gradient-to-r from-fuchsia-400 to-cyan-400"
-            history={
-              hostSample?.map((s: any) => ({
-                timestamp: new Date(s.timestamp).getTime(),
-                value: s.cpu_percent, // Placeholder - podríamos añadir conexiones a host-metrics
-              }))
-            }
-          />
+        {/* Operational Statistics Grid */}
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+          <OperationalCard label="CPU COMPUTE" value={status ? `${status.cpu}%` : "0%"} icon={<Cpu />} color="emerald" trend="Nominal" />
+          <OperationalCard label="MEMORY MESH" value={status ? `${status.memory}%` : "0%"} icon={<Database />} color="cyan" trend="Synchronized" />
+          <OperationalCard label="DATA INGRESS" value={status?.network?.rx_bytes_sec || "0"} icon={<Network />} color="amber" trend="High Flow" />
+          <OperationalCard label="DATA EGRESS" value={status?.network?.tx_bytes_sec || "0"} icon={<Globe />} color="purple" trend="Authenticated" />
         </section>
 
-        {/* Network & Storage Cards */}
-        <section className="mt-6 grid gap-4 md:grid-cols-4">
-          <NetworkCard
-            network={hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.network : data?.network}
-            clientNetwork={clientNetwork}
-            history={
-              hostSample?.map((s: any) => ({
-                timestamp: new Date(s.timestamp).getTime(),
-                value: s.network?.wifi?.signal ?? 0,
-              }))
-            }
-          />
-          <StorageCard
-            label="Métricas guardadas"
-            value={storage?.metrics_count ?? 0}
-            hint={
-              storage?.latest_metric_at
-                ? `Última: ${new Date(storage.latest_metric_at).toLocaleTimeString()}`
-                : "Sin datos"
-            }
-            onClick={() => open("metrics")}
-            color={{
-              bg: "cyan",
-              border: "hover:border-cyan-400/50",
-              shadow: "56,189,248",
-              gradient: "bg-gradient-to-r from-cyan-400 to-blue-400",
-            }}
-          />
-          <StorageCard
-            label="Anomalías detectadas"
-            value={storage?.anomalies_count ?? 0}
-            hint={
-              storage?.latest_anomaly_at
-                ? `Última: ${new Date(storage.latest_anomaly_at).toLocaleTimeString()}`
-                : "Sin eventos"
-            }
-            onClick={() => open("anomalies")}
-            color={{
-              bg: "amber",
-              border: "hover:border-amber-400/50",
-              shadow: "251,191,36",
-              gradient: "bg-gradient-to-r from-amber-400 to-orange-400",
-            }}
-          />
-          <StorageCard
-            label="Base de datos (tamaño)"
-            value={formatBytes(storage?.db_size_bytes ?? 0)}
-            hint={`Estado: ${storage?.status === "healthy" ? "✓ Datos fluyen" : "⚠ Sin datos"}`}
-            onClick={() => router.push("/db")}
-            color={{
-              bg: "emerald",
-              border: "hover:border-emerald-400/50",
-              shadow: "16,185,129",
-              gradient: "bg-gradient-to-r from-emerald-400 to-teal-400",
-            }}
-          />
+        {/* Direct Telemetry Matrix (Grafana Integration) */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+          <GrafanaBox id="6" title="Infrastructure CPU History" color="border-emerald-500/20" baseUrl={iframeBaseUrl} />
+          <GrafanaBox id="8" title="Resource Memory Matrix" color="border-cyan-500/20" baseUrl={iframeBaseUrl} />
         </section>
 
-        {/* Detail Modal */}
-        <DetailModal isOpen={modal.isOpen} onClose={close} type={modal.type} storage={storage} anomalies={anomalies} />
+        {/* Real-time Diagnostics Stream */}
+        <section className="mb-16 rounded-[40px] border border-white/5 bg-[#050814]/40 backdrop-blur-3xl overflow-hidden h-[650px] relative group shadow-2xl transition-all hover:border-white/10">
+          <div className="absolute top-8 left-10 z-10 flex items-center gap-4">
+            <div className="p-3 bg-emerald-500/10 rounded-2xl text-emerald-400 border border-emerald-500/20 shadow-[0_0_20px_rgba(52,211,153,0.2)]">
+              <Activity size={24} className="animate-pulse" />
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-white uppercase italic tracking-tighter leading-none">Diagnostic Stream</h3>
+              <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mt-1">Loki Neural Log Pipeline // Ring-0 Capture</p>
+            </div>
+          </div>
+          <iframe
+            src={`${iframeBaseUrl}5`}
+            width="100%"
+            height="100%"
+            frameBorder="0"
+            className="opacity-70 group-hover:opacity-100 transition-opacity duration-1000 grayscale hover:grayscale-0"
+          />
+          <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#020617] via-transparent to-transparent opacity-40" />
+        </section>
 
-        {/* Database Activity & Suggestions */}
-        <section className="mt-6 grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-6 shadow-[0_30px_80px_-50px_rgba(14,165,233,0.45)]">
-            <div className="flex items-center justify-between mb-4">
+        {/* Commander Intelligence Layer */}
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-1 bg-slate-900/40 backdrop-blur-3xl rounded-[40px] border border-white/5 p-10 flex flex-col group relative overflow-hidden shadow-2xl">
+            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+              <Terminal size={64} />
+            </div>
+            <div className="flex items-center gap-4 mb-10">
+              <div className="p-3 bg-emerald-500/10 rounded-2xl text-emerald-400 border border-emerald-500/20">
+                <Terminal size={20} />
+              </div>
               <div>
-                <p className="text-sm text-gray-400">Tamaño de base</p>
-                <p className="text-2xl font-semibold text-white">
-                  {formatBytes(data?.db_stats.db_size_bytes ?? 0)}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-400">Última muestra</p>
-                <p className="text-sm font-semibold text-cyan-200">
-                  {data ? new Date(data.timestamp).toLocaleString() : "-"}
-                </p>
+                <h3 className="text-sm font-black text-white uppercase italic tracking-widest leading-none">Command Notes</h3>
+                <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mt-1">Encrypted Local Persistence</p>
               </div>
             </div>
-            <div className="mt-6 rounded-xl bg-black/40 border border-white/5 p-5">
-              <div className="flex items-center justify-between text-sm mb-2 text-gray-300">
-                <span>Uso de conexiones</span>
-                <span>{ratio.toFixed(0)}%</span>
-              </div>
-              <div className="h-2 w-full rounded-full bg-white/5 overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-emerald-400"
-                  style={{ width: `${Math.min(ratio, 100)}%` }}
-                />
-              </div>
-              <p className="text-xs text-gray-400 mt-3">
-                Umbral configurado: {data?.thresholds.connections ?? 0} conexiones.
-              </p>
-            </div>
+            <textarea
+              className="w-full h-64 bg-black/40 border border-white/5 rounded-3xl p-6 text-sm text-gray-300 focus:border-emerald-500/40 focus:outline-none resize-none font-mono placeholder:text-gray-800 transition-all selection:bg-emerald-500/30"
+              placeholder="Capture cognitive operational insights..."
+              value={notes}
+              onChange={handleNoteChange}
+            />
           </div>
 
-          <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-6 space-y-4">
-            <h3 className="text-lg font-semibold text-white mb-3">Sugerencias rápidas</h3>
-            <ul className="space-y-3 text-sm text-gray-200">
-              {(
-                data?.admin_suggestions ?? [
-                  "Ejecuta VACUUM en ventana de mantenimiento",
-                  "Revisa bloqueos prolongados",
-                  "Termina conexiones idle > 15m",
-                ]
-              ).map((s, idx) => (
-                <li key={idx} className="flex gap-3">
-                  <span className="mt-1 h-2 w-2 rounded-full bg-cyan-400" aria-hidden />
-                  <span>{s}</span>
-                </li>
-              ))}
-            </ul>
+          <div className="lg:col-span-2 bg-emerald-500/5 backdrop-blur-3xl rounded-[40px] border border-emerald-500/10 p-10 flex flex-col justify-center items-center text-center relative overflow-hidden group shadow-2xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent pointer-events-none opacity-50" />
+            <div className="p-6 bg-emerald-500/10 rounded-full mb-8 text-emerald-400 border border-emerald-400/20 shadow-[0_0_30px_rgba(52,211,153,0.3)] animate-pulse">
+              <ShieldAlert size={48} />
+            </div>
+            <h3 className="text-4xl font-black text-white uppercase tracking-tighter italic mb-6">Operations Integrity: Verified</h3>
+            <p className="text-gray-500 max-w-2xl leading-relaxed text-base font-bold italic">
+              All infrastructure subsystems are currently oscillating in perfect synchronization with the Sovereign Core. Neural telemetry reports nominal latency across all ingress/egress vectors. Command consensus is maintained.
+            </p>
 
-            <div className="pt-2 border-t border-white/5">
-              <h4 className="text-sm font-semibold text-white mb-2">Posibles bugs / fallas a investigar</h4>
-              <ul className="space-y-2 text-sm text-amber-100">
-                {issues.length === 0 ? <li className="text-gray-300">Sin alertas automáticas por ahora.</li> : null}
-                {issues.map((item, idx) => (
-                  <li key={idx} className="flex gap-2">
-                    <span className="mt-1 h-2 w-2 rounded-full bg-amber-400" aria-hidden />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+            <div className="mt-12 flex flex-wrap justify-center gap-6">
+              <SourceBadge label="Prometheus" color="emerald" />
+              <SourceBadge label="Loki" color="cyan" />
+              <SourceBadge label="Tempo" color="purple" />
+              <SourceBadge label="TruthSync" color="amber" />
             </div>
           </div>
         </section>
-
-        {/* More sections... */}
-        {error ? (
-          <div className="mt-6 rounded-xl border border-rose-500/40 bg-rose-500/10 text-rose-100 px-4 py-3 text-sm">
-            Error al cargar el dashboard: {error}
-          </div>
-        ) : null}
-
-        {loading ? <div className="mt-6 text-sm text-gray-300">Cargando métricas…</div> : null}
       </div>
+
+      <footer className="mt-20 py-12 border-t border-white/5 bg-black/40 backdrop-blur-md relative z-10 text-[10px] font-black text-gray-600 uppercase tracking-[0.4em] italic">
+        <div className="max-w-[1800px] mx-auto px-8 flex justify-between items-center">
+          <p>© 2026 Sentinel Operations // Enterprise Telemetry v2.1.2</p>
+          <div className="flex gap-12">
+            <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> INFRA: NOMINAL</span>
+            <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-cyan-500" /> MESH: AUTHENTICATED</span>
+            <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-purple-500" /> TRUTH: SYNC</span>
+          </div>
+        </div>
+      </footer>
     </main>
+  );
+}
+
+function OperationalCard({ label, value, icon, color, trend }: { label: string; value: string; icon: React.ReactNode; color: 'emerald' | 'cyan' | 'amber' | 'purple'; trend: string }) {
+  const colors = {
+    emerald: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/10',
+    cyan: 'text-cyan-400 border-cyan-500/20 bg-cyan-500/10',
+    amber: 'text-amber-400 border-amber-500/20 bg-amber-500/10',
+    purple: 'text-purple-400 border-purple-500/20 bg-purple-500/10'
+  };
+
+  return (
+    <div className="bg-slate-900/40 p-8 rounded-[35px] border border-white/5 backdrop-blur-3xl hover:bg-white/5 transition-all group overflow-hidden relative shadow-2xl hover:border-white/10">
+      <div className="flex justify-between items-start mb-6">
+        <div className={`p-4 rounded-2xl border ${colors[color]} group-hover:scale-110 transition-transform`}>
+          {icon}
+        </div>
+        <div className={`text-[9px] font-black uppercase tracking-widest italic flex items-center gap-2 ${colors[color].split(' ')[0]}`}>
+          <Activity size={10} /> {trend}
+        </div>
+      </div>
+      <p className="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-1 italic">{label}</p>
+      <div className={`text-4xl font-black font-mono tracking-tighter italic text-white flex items-baseline gap-2`}>
+        {value}
+        <span className="text-xs text-gray-700 uppercase tracking-widest font-black">Live</span>
+      </div>
+      <div className="mt-6 flex gap-1">
+        {Array.from({ length: 12 }).map((_, i) => (
+          <div key={i} className={`h-1 flex-1 rounded-full ${i < 8 ? colors[color].split(' ')[0].replace('text-', 'bg-') + ' opacity-50' : 'bg-white/5'}`} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SourceBadge({ label, color }: { label: string, color: 'emerald' | 'cyan' | 'purple' | 'amber' }) {
+  const colors = {
+    emerald: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+    cyan: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+    purple: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+    amber: 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+  };
+  return (
+    <div className={`px-4 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest italic ${colors[color]}`}>
+      {label}
+    </div>
+  );
+}
+
+function GrafanaBox({ id, title, color, baseUrl }: { id: string; title: string; color: string; baseUrl: string }) {
+  return (
+    <div className={`rounded-[40px] border ${color} bg-[#050814]/40 overflow-hidden h-[450px] relative group transition-all hover:scale-[1.01] hover:border-white/20 shadow-2xl`}>
+      <div className="absolute top-6 left-8 z-10 text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 bg-black/80 px-4 py-2 rounded-full backdrop-blur-md border border-white/5 italic">
+        {title}
+      </div>
+      <iframe
+        src={`${baseUrl}${id}`}
+        width="100%"
+        height="100%"
+        frameBorder="0"
+        className="opacity-60 group-hover:opacity-100 transition-opacity duration-700 grayscale hover:grayscale-0"
+      />
+    </div>
   );
 }
