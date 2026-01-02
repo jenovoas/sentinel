@@ -22,7 +22,7 @@ import asyncpg
 import redis.asyncio as redis
 import httpx
 
-router = APIRouter()
+router = APIRouter(prefix="/api/v1")
 
 # Global state for role management
 app_role = "standby"  # "primary" or "standby"
