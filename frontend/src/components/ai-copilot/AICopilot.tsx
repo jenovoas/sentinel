@@ -200,8 +200,8 @@ export function AICopilot() {
                                         <div
                                             key={idx}
                                             className={`p-3 rounded-xl text-sm ${msg.role === "user"
-                                                    ? "bg-purple-500/10 border border-purple-500/30 ml-6"
-                                                    : "bg-cyan-500/10 border border-cyan-500/30 mr-6"
+                                                ? "bg-purple-500/10 border border-purple-500/30 ml-6"
+                                                : "bg-cyan-500/10 border border-cyan-500/30 mr-6"
                                                 }`}
                                         >
                                             <div className={`text-[10px] font-black uppercase mb-1 ${msg.role === "user" ? "text-purple-400" : "text-cyan-400"
@@ -491,16 +491,43 @@ function generateRecommendations(pathname: string, trustMetrics: TrustMetrics): 
 }
 
 async function getAIResponse(message: string, pathname: string, trustMetrics: TrustMetrics): Promise<string> {
-    if (message.toLowerCase().includes("trust") || message.toLowerCase().includes("confianza")) {
-        return `Your current trust score is ${Math.round(trustMetrics.overall)}%. ${trustMetrics.overall >= 90
-            ? "The system is operating within safe parameters."
-            : "I recommend verifying AI outputs manually until trust score improves."
-            }`;
-    }
+    try {
+        const response = await fetch("/api/v1/ai/query", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                query: message,
+                context: {
+                    pathname,
+                    trustScore: trustMetrics.overall,
+                    dataSupport: trustMetrics.dataSupport,
+                    base60Valid: trustMetrics.base60Valid,
+                    hallucinationRate: trustMetrics.hallucinationRate,
+                },
+            }),
+        });
 
-    if (message.toLowerCase().includes("help") || message.toLowerCase().includes("ayuda")) {
-        return `I can help you with: System status, Navigation guidance, Security recommendations, AI output verification. What would you like to know?`;
-    }
+        if (!response.ok) {
+            throw new Error(`API returned ${response.status}`);
+        }
 
-    return `Analyzing: "${message}". Based on your location (${pathname}) and trust score (${Math.round(trustMetrics.overall)}%), I recommend checking the AI Trust Dashboard for detailed metrics.`;
+        const data = await response.json();
+        return data.response || "I'm having trouble processing that request.";
+    } catch (error) {
+        console.error("AI response error:", error);
+
+        // Fallback to simple responses if backend is unavailable
+        if (message.toLowerCase().includes("trust") || message.toLowerCase().includes("confianza")) {
+            return `Your current trust score is ${Math.round(trustMetrics.overall)}%. ${trustMetrics.overall >= 90
+                    ? "The system is operating within safe parameters."
+                    : "I recommend verifying AI outputs manually until trust score improves."
+                }`;
+        }
+
+        if (message.toLowerCase().includes("help") || message.toLowerCase().includes("ayuda")) {
+            return `I can help you with: System status, Navigation guidance, Security recommendations, AI output verification. What would you like to know?`;
+        }
+
+        return `I'm currently offline. Please check that the AI backend is running.`;
+    }
 }
