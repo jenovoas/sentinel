@@ -5,7 +5,7 @@ Aggregates Crypto + Manual Assets for Unified Dashboard
 import logging
 from sqlalchemy.orm import Session
 from database import Asset
-from crypto_service import CryptoService
+from crypto_wallet import CryptoWallet
 from typing import Dict, List, Optional
 from datetime import datetime
 
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class FinanceService:
     def __init__(self, db: Session):
         self.db = db
-        self.crypto_service = CryptoService()
+        self.crypto_service = CryptoWallet()
         self.user_id = "test-user" # Placeholder for auth
 
     async def get_dashboard_summary(self) -> Dict:
