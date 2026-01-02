@@ -2,7 +2,8 @@
 Sentinel Vault POC - FastAPI Backend
 REST API para password manager + crypto wallets
 """
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, Depends, Form
+from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
@@ -11,6 +12,7 @@ import os
 from encryption import VaultEncryption
 from ollama_analysis import PasswordAnalyzer
 from crypto_wallet import CryptoWallet
+from database import get_db
 
 
 # FastAPI app
@@ -700,6 +702,31 @@ async def delete_asset(asset_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 # ============================================================================
+# Endpoints - AI Cortex
+# ============================================================================
+
+class AIQuery(BaseModel):
+    message: str
+
+@app.post("/api/v1/ai/query")
+async def ai_query(request: AIQuery):
+    """Generic AI Chat Query"""
+    try:
+        from ollama_analysis import ContextualBrain
+        
+        brain = ContextualBrain()
+        result = await brain.query(request.message)
+        
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/v1/ai/health")
+async def ai_health():
+    """Check AI service health"""
+    return {"enabled": True, "model": "phi3:mini"}
+
+# ============================================================================
 # Endpoints - Terminal
 # ============================================================================
 
@@ -728,6 +755,13 @@ async def health_check():
         "service": "Sentinel Vault POC",
         "version": "0.1.0"
     }
+
+
+@app.get("/watchdog/status")
+async def get_watchdog_status():
+    """Get watchdog and system health status"""
+    from watchdog_api import get_watchdog_status as get_status
+    return await get_status()
 
 
 @app.get("/")

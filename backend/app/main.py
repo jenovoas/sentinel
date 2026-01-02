@@ -35,7 +35,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from app.config import get_settings, get_allowed_origins
 from app.logging_config import setup_logging
 from app.database import init_db, close_db, check_db_connection
-from app.routers import health, users, tenants, dashboard, analytics, ai, auth, backup, failsafe, incidents, gamma, cortex, metrics_summary, websocket
+from app.routers import health, users, tenants, dashboard, analytics, ai, auth, backup, failsafe, incidents, gamma, cortex, metrics_summary, websocket, truthsync
 from app.api import workflows
 from app.shutdown import setup_signal_handlers  # Graceful shutdown
 
@@ -239,6 +239,7 @@ app.include_router(workflows.router)  # Workflow Recommendations
 app.include_router(gamma.router)  # Guardian Gamma (HITL)
 app.include_router(metrics_summary.router)  # Metrics Summary for GUI
 app.include_router(websocket.router)  # Real-time Battlefield UI
+app.include_router(truthsync.router)  # Truth verification service
 
 
 # ============================================================================

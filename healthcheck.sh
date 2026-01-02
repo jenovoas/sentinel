@@ -66,13 +66,13 @@ echo ""
 echo "4️⃣  System Health"
 echo "----------------"
 HEALTH=$(curl -s http://localhost:8000/api/v1/health 2>/dev/null)
-DB_HEALTH=$(echo $HEALTH | jq -r '.database' 2>/dev/null || echo "unknown")
-REDIS_HEALTH=$(echo $HEALTH | jq -r '.redis' 2>/dev/null || echo "unknown")
-CELERY_HEALTH=$(echo $HEALTH | jq -r '.celery' 2>/dev/null || echo "unknown")
+DB_STATUS=$(echo $HEALTH | jq -r '.components.database.status' 2>/dev/null || echo "unknown")
+REDIS_STATUS=$(echo $HEALTH | jq -r '.components.redis.status' 2>/dev/null || echo "unknown")
+OLLAMA_STATUS=$(echo $HEALTH | jq -r '.components.ollama.status' 2>/dev/null || echo "unknown")
 
-[ "$DB_HEALTH" = "true" ] && echo -e "${GREEN}✅${NC} Database: OK" || echo -e "${RED}❌${NC} Database: FAILED"
-[ "$REDIS_HEALTH" = "true" ] && echo -e "${GREEN}✅${NC} Redis: OK" || echo -e "${RED}❌${NC} Redis: FAILED"
-[ "$CELERY_HEALTH" = "true" ] && echo -e "${GREEN}✅${NC} Celery: OK" || echo -e "${RED}❌${NC} Celery: FAILED"
+[ "$DB_STATUS" = "healthy" ] && echo -e "${GREEN}✅${NC} Database: OK" || echo -e "${RED}❌${NC} Database: FAILED ($DB_STATUS)"
+[ "$REDIS_STATUS" = "healthy" ] && echo -e "${GREEN}✅${NC} Redis: OK" || echo -e "${RED}❌${NC} Redis: FAILED ($REDIS_STATUS)"
+[ "$OLLAMA_STATUS" = "healthy" ] && echo -e "${GREEN}✅${NC} Ollama AI: OK" || echo -e "${YELLOW}⚠️${NC}  Ollama AI: DISABLED ($OLLAMA_STATUS)"
 echo ""
 
 echo "5️⃣  Dashboard Metrics"

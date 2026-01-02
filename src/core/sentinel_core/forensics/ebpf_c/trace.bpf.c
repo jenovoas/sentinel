@@ -22,10 +22,26 @@ struct {
   __uint(value_size, sizeof(u8));
 } freeze_commands SEC(".maps");
 
+struct {
+  __uint(type, BPF_MAP_TYPE_HASH);
+  __uint(max_entries, 64);
+  __uint(key_size, sizeof(u32));
+  __uint(value_size, sizeof(u8));
+} whitelist_uids SEC(".maps");
+
 SEC("tracepoint/syscalls/sys_exit_execve")
 int trace_exit_execve(struct trace_event_raw_sys_exit *ctx) {
   if (ctx->ret != 0)
     return 0; // Ignore failed execve calls
+
+  u64 uid_gid = bpf_get_current_uid_gid();
+  u32 uid = (u32)uid_gid;
+
+  // Check if UID is in whitelist
+  u8 *is_whitelisted = bpf_map_lookup_elem(&whitelist_uids, &uid);
+  if (is_whitelisted) {
+    return 0; // Never block whitelisted users
+  }
 
   u32 pid = bpf_get_current_pid_tgid() >> 32;
 

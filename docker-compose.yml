@@ -1,0 +1,215 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: sentinel-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-sentinel_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-2wA4KgRinuKNgcOrA839ZRC2R1ycNtC4}
+      POSTGRES_DB: ${POSTGRES_DB:-sentinel_db}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - sentinel-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sentinel_user}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: sentinel-redis
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - sentinel-net
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sentinel-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-sentinel_user}:sentinel_password@postgres:5432/${POSTGRES_DB:-sentinel_db}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - sentinel-net
+
+  # Celery Worker
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.worker
+    container_name: sentinel-worker
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-sentinel_user}:sentinel_password@postgres:5432/${POSTGRES_DB:-sentinel_db}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - sentinel-net
+
+  # Celery Beat
+  celery_beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.beat
+    container_name: sentinel-beat
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-sentinel_user}:sentinel_password@postgres:5432/${POSTGRES_DB:-sentinel_db}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - sentinel-net
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sentinel-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    networks:
+      - sentinel-net
+
+  # nginx
+  nginx:
+    image: nginx:stable-alpine
+    container_name: sentinel-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infrastructure/docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infrastructure/docker/nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - sentinel-net
+
+  # Observability Stack
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: sentinel-prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    networks:
+      - sentinel-net
+
+  loki:
+    image: grafana/loki:latest
+    container_name: sentinel-loki
+    networks:
+      - sentinel-net
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: sentinel-promtail
+    networks:
+      - sentinel-net
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: sentinel-node-exporter
+    networks:
+      - sentinel-net
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: sentinel-postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER:-sentinel_user}:sentinel_password@postgres:5432/${POSTGRES_DB:-sentinel_db}?sslmode=disable"
+    networks:
+      - sentinel-net
+
+  redis-exporter:
+    image: oliver006/redis_exporter
+    container_name: sentinel-redis-exporter
+    environment:
+      - REDIS_ADDR=redis://redis:6379
+    networks:
+      - sentinel-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: sentinel-grafana
+    ports:
+      - "3001:3000"
+    networks:
+      - sentinel-net
+
+  # Ollama (Local AI)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: sentinel-ollama
+    #ports:
+    #  - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - sentinel-net
+
+  # n8n Automation
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: sentinel-n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_USER:-admin}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - sentinel-net
+
+networks:
+  sentinel-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  ollama_data:
+  n8n_data:
