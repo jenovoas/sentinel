@@ -18,7 +18,7 @@ class BrowseMode(Enum):
     GHOST = "ghost"         # Nym Mixnet (Metadata Protection)
     DEEP = "deep"           # I2P (Decentralized / Internal)
 
-from .truthsync_service import TruthSyncService
+from truthsync_service import TruthSyncService
 import asyncio
 
 class BrowserService:
@@ -131,6 +131,15 @@ class BrowserService:
         """Sanitize HTML and extract clear text for AI analysis"""
         soup = BeautifulSoup(html_content, 'html.parser')
         
+        # Rewrite links and images to be absolute
+        from urllib.parse import urljoin
+        for tag in soup.find_all(['a', 'link'], href=True):
+            tag['href'] = urljoin(base_url, tag['href'])
+            if tag.name == 'a': # Only for anchor tags
+                tag['target'] = '_blank'
+        for tag in soup.find_all(['img', 'script', 'iframe'], src=True):
+            tag['src'] = urljoin(base_url, tag['src'])
+            
         # Security: Remove active executable content
         for tag in soup(['script', 'iframe', 'object', 'embed', 'applet', 'noscript', 'meta']):
             tag.decompose()

@@ -43,7 +43,7 @@ class TruthSyncService:
         """
         
         try:
-            async with httpx.AsyncClient(timeout=15.0) as client:
+            async with httpx.AsyncClient(timeout=60.0) as client:
                 response = await client.post(
                     self.ollama_url,
                     json={

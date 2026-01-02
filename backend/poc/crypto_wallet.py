@@ -142,6 +142,18 @@ class CryptoWallet:
         
         return encoded
 
+    async def get_wallet_status(self, user_id: str) -> dict:
+        """Get wallet balances (mocked for now)"""
+        # TODO: Implement real balance check using Web3/APIs
+        # For POC, returns mocked data
+        return {
+            "wallets": {
+                "bitcoin": {"balance": 0.05, "balance_usd": 2200.00},
+                "ethereum": {"balance": 1.2, "balance_usd": 2800.00},
+                "polygon": {"balance": 150.0, "balance_usd": 120.00},
+                "solana": {"balance": 12.5, "balance_usd": 1250.00}
+            }
+        }
 
 if __name__ == "__main__":
     print("🪙 Sentinel Vault - Crypto Wallet POC\n")

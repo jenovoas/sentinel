@@ -133,6 +133,25 @@ services:
     networks:
       - sentinel-net
 
+  # Prometheus - Metrics Collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: sentinel-prometheus
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./configuration/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - sentinel-net
+    depends_on:
+      - node-exporter
+
   # Loki - Log Aggregation
   loki:
     image: grafana/loki:latest
@@ -142,7 +161,7 @@ services:
       - "7946:7946"
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
-      - ./configs/loki-config.yaml:/etc/loki/local-config.yaml
+      - ./configuration/loki-config.yaml:/etc/loki/local-config.yaml
     networks:
       - sentinel-net
 
@@ -152,10 +171,31 @@ services:
     container_name: sentinel-promtail
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./configs/promtail-config.yaml:/etc/promtail/config.yaml
+      - ./configuration/promtail-config.yaml:/etc/promtail/config.yaml
     command: -config.file=/etc/promtail/config.yaml
     depends_on:
       - loki
+    networks:
+      - sentinel-net
+
+  # Grafana - Visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: sentinel-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=sentinel_secure
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+    depends_on:
+      - loki
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./configuration/grafana/provisioning:/etc/grafana/provisioning
+      - ./configuration/grafana/dashboards:/var/lib/grafana/dashboards
     networks:
       - sentinel-net
 
@@ -167,5 +207,7 @@ volumes:
   postgres_data:
   redis_data:
   vault_data:
+  grafana_data:
+  prometheus_data:
 
 
