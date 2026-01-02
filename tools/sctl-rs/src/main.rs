@@ -141,7 +141,9 @@ fn show_status(json_output: bool) -> Result<()> {
             "semantic_vectors": {
                 "entropy": vectors.0,
                 "coherence": vectors.1,
-                "tte_us": vectors.2
+                "tte_us": vectors.2,
+                "truth_score": vectors.3,
+                "confidence": vectors.4
             }
         });
         println!("{}", status);
@@ -159,35 +161,40 @@ fn show_status(json_output: bool) -> Result<()> {
             println!("      Entropy    : {:.4}", vectors.0);
             println!("      Coherence  : {:.4}", vectors.1);
             println!("      TTE        : {:.2} μs", vectors.2);
+            println!("      Truth Score: {:.2}", vectors.3);
+            println!("      Confidence : {}", match vectors.4 as u32 {
+                3 => "HIGH".green().bold(),
+                2 => "MEDIUM".yellow(),
+                1 => "LOW".red(),
+                _ => "NONE".white(),
+            });
         }
     }
     
     Ok(())
 }
 
-fn read_semantic_vectors() -> (f64, f64, f64) {
-    // Read first 32 bytes from SHM (entropy, coherence, tte, timestamp)
-    // Structure: [f64 entropy | f64 coherence | f64 tte_us | u64 timestamp]
-    
     match fs::File::open(SHM_PATH) {
         Ok(mut file) => {
             use std::io::Read;
-            let mut buffer = [0u8; 32];
+            let mut buffer = [0u8; 48]; // Updated to 48 bytes (5 f64 + 1 u64)
             
             if file.read_exact(&mut buffer).is_ok() {
                 // Parse as little-endian f64s
                 let entropy = f64::from_le_bytes(buffer[0..8].try_into().unwrap_or([0; 8]));
                 let coherence = f64::from_le_bytes(buffer[8..16].try_into().unwrap_or([0; 8]));
                 let tte = f64::from_le_bytes(buffer[16..24].try_into().unwrap_or([0; 8]));
+                let truth = f64::from_le_bytes(buffer[24..32].try_into().unwrap_or([0; 8]));
+                let confidence = f64::from_le_bytes(buffer[32..40].try_into().unwrap_or([0; 8]));
                 
-                return (entropy, coherence, tte);
+                return (entropy, coherence, tte, truth, confidence);
             }
         }
         Err(_) => {}
     }
     
     // Return zeros if SHM not available
-    (0.0, 0.0, 0.0)
+    (0.0, 0.0, 0.0, 0.0, 0.0)
 }
 
 fn check_bpf_loaded() -> bool {

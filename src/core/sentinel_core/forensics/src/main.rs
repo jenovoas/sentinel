@@ -72,8 +72,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .route("/ws", get(ws_handler))
             .layer(CorsLayer::permissive())
             .with_state(tx_cloned);
-        let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
-        println!("📡 Dashboard WebSocket Server running on port 8080");
+        let listener = tokio::net::TcpListener::bind("0.0.0.0:8082").await.unwrap();
+        println!("📡 Dashboard WebSocket Server running on port 8082");
         axum::serve(listener, app).await.unwrap();
     });
 
@@ -134,6 +134,28 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 6. Map Manager Loop
     // Use an alias to bypass the borrow checker for initialization of multiple asynchronous tasks
     let bpf_alias: &'static mut Ebpf = unsafe { &mut *(bpf as *mut Ebpf) };
+    
+    // 6.b Load UID Whitelist (Done first to release borrow)
+    {
+        if let Some(mut whitelist_map) = bpf_alias.map_mut("whitelist_uids").and_then(|m| HashMap::<_, u32, u8>::try_from(m).ok()) {
+            let whitelist_file = "/home/jnovoas/sentinel/config/ebpf_whitelist.txt";
+            if let Ok(content) = std::fs::read_to_string(whitelist_file) {
+                println!("🛡️ [WHITELIST] Loading UIDs from {}...", whitelist_file);
+                for line in content.lines() {
+                    let part = line.split('#').next().unwrap_or("").trim();
+                    if let Ok(uid) = part.parse::<u32>() {
+                        println!("✅ [WHITELIST] Protecting UID: {}", uid);
+                        let _ = whitelist_map.insert(uid, 1, 0);
+                    }
+                }
+            } else {
+                println!("⚠️ [WHITELIST] Config file not found, using defaults (0, 1000)");
+                let _ = whitelist_map.insert(0, 1, 0);
+                let _ = whitelist_map.insert(1000, 1, 0);
+            }
+        }
+    }
+
     let mut freeze_map: HashMap<&mut MapData, u32, u8> = HashMap::try_from(bpf_alias.map_mut("freeze_commands").unwrap())?;
     
     tokio::spawn(async move {

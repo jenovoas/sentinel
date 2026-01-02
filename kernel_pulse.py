@@ -50,9 +50,13 @@ def run_pulse():
                 if (int(elapsed * 10) % 20) == 0: # Random blip
                     tte = 3.85
                 
-                # Pack data: 3 doubles (8 bytes each) + 1 unsigned long long (8 bytes)
-                # Structure: [entropy | coherence | tte | timestamp]
-                packed_data = struct.pack("dddQ", entropy, coherence, tte, int(now * 1000))
+                # Simulate Truth Score (Random high value for demo)
+                truth_score = 0.88 + (math.sin(elapsed * 0.5) * 0.05)
+                confidence = 3.0 # 3.0 = High
+
+                # Pack data: 5 doubles (8 bytes each) + 1 unsigned long long (8 bytes)
+                # Structure: [entropy | coherence | tte | truth_score | confidence | timestamp]
+                packed_data = struct.pack("dddddQ", entropy, coherence, tte, truth_score, confidence, int(now * 1000))
                 
                 # Write to beginning of SHM (Control Area)
                 mm.seek(0)

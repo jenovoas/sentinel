@@ -8,6 +8,50 @@ import asyncio
 import time
 
 
+
+class ContextualBrain:
+    """General purpose AI Brain for Cortex"""
+    
+    def __init__(self, ollama_url: str = "http://localhost:11434"):
+        self.ollama_url = f"{ollama_url}/api/generate"
+        self.system_prompt = """You are Sentinel Cortex, an advanced AI security system. 
+        Your persona is professional, concise, and technical. 
+        You monitor system integrity, network threats, and operational metrics.
+        Always stay in character. Do not mention you are an AI language model.
+        If asked about status, assume all systems are operational unless told otherwise.
+        """
+
+    async def query(self, prompt: str) -> dict:
+        """Query the AI with a prompt"""
+        full_prompt = f"{self.system_prompt}\n\nUSER: {prompt}\nCORTEX:"
+        
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.post(
+                    self.ollama_url,
+                    json={
+                        "model": "phi3:mini",  # Using phi3:mini as it is fast and capable
+                        "prompt": full_prompt,
+                        "stream": False,
+                        "options": {
+                            "temperature": 0.7,
+                            "num_predict": 150
+                        }
+                    }
+                )
+                
+                result = response.json()
+                return {
+                    "response": result.get("response", "Analysis complete. No data returned."),
+                    "model": result.get("model", "unknown")
+                }
+        except Exception as e:
+            return {
+                "response": f"Connection to Neural Engine failed: {str(e)}",
+                "error": True
+            }
+
+
 class PasswordAnalyzer:
     """Análisis de passwords con Ollama (phi3:mini)"""
     
