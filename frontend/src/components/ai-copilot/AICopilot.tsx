@@ -131,10 +131,10 @@ export function AICopilot() {
                                 </div>
                                 <div>
                                     <h1 className="text-2xl font-black text-white uppercase tracking-tighter italic">
-                                        Sentinel AI Copilot
+                                        Sentinel IA
                                     </h1>
                                     <p className="text-[10px] text-gray-500 uppercase tracking-wider">
-                                        Cognitive Assistant • Canvas Mode
+                                        Asistente Cognitivo • Modo Canvas
                                     </p>
                                 </div>
                             </div>
@@ -276,7 +276,7 @@ export function AICopilot() {
                                     Sentinel AI
                                 </h3>
                                 <p className="text-[9px] text-gray-500 uppercase tracking-wider">
-                                    Copilot
+                                    Asistente Cognitivo
                                 </p>
                             </div>
                         </div>
@@ -519,8 +519,8 @@ async function getAIResponse(message: string, pathname: string, trustMetrics: Tr
         // Fallback to simple responses if backend is unavailable
         if (message.toLowerCase().includes("trust") || message.toLowerCase().includes("confianza")) {
             return `Your current trust score is ${Math.round(trustMetrics.overall)}%. ${trustMetrics.overall >= 90
-                    ? "The system is operating within safe parameters."
-                    : "I recommend verifying AI outputs manually until trust score improves."
+                ? "The system is operating within safe parameters."
+                : "I recommend verifying AI outputs manually until trust score improves."
                 }`;
         }
 
