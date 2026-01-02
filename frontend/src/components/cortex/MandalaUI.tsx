@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 
@@ -9,18 +11,19 @@ interface MandalaProps {
             isDissonant: boolean;
         }>;
     };
+    resonance?: number; // 0.0 to 1.0
 }
 
-const MandalaUI: React.FC<MandalaProps> = ({ data }) => {
+const MandalaUI: React.FC<MandalaProps> = ({ data, resonance = 0.8 }) => {
     const svgRef = useRef<SVGSVGElement>(null);
     const [hoverInfo, setHoverInfo] = useState<string | null>(null);
 
-    // Default mockup data if none provided
+    // Default mockup data if none provided - Uses Base-60 architecture
     const zonesData = data?.zones || Array.from({ length: 60 }, (_, i) => {
         const isPrime = [1, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59].includes(i);
         return {
             residue: i,
-            threat: isPrime ? 0.8 : 0.2, // Simulated threat
+            threat: isPrime ? Math.random() * 0.4 : Math.random() * 0.1,
             isDissonant: isPrime
         };
     });
@@ -35,128 +38,171 @@ const MandalaUI: React.FC<MandalaProps> = ({ data }) => {
         const height = 600;
         const centerX = width / 2;
         const centerY = height / 2;
-        const radius = 250;
+        const radius = 260;
 
-        // Define Gradients
+        // Define Gradients and Filters
         const defs = svg.append("defs");
 
-        // Gold Glow
-        const gradientGold = defs.append("radialGradient")
-            .attr("id", "gradGold")
-            .attr("cx", "50%")
-            .attr("cy", "50%")
-            .attr("r", "50%");
-        gradientGold.append("stop").attr("offset", "0%").attr("stop-color", "#FFD700").attr("stop-opacity", 0.8);
-        gradientGold.append("stop").attr("offset", "100%").attr("stop-color", "#B8860B").attr("stop-opacity", 0.6);
+        // Glow Filter
+        const filter = defs.append("filter").attr("id", "glow");
+        filter.append("feGaussianBlur").attr("stdDeviation", "3.5").attr("result", "coloredBlur");
+        const feMerge = filter.append("feMerge");
+        feMerge.append("feMergeNode").attr("in", "coloredBlur");
+        feMerge.append("feMergeNode").attr("in", "SourceGraphic");
 
-        // Red Warning
-        const gradientRed = defs.append("radialGradient")
-            .attr("id", "gradRed")
-            .attr("cx", "50%")
-            .attr("cy", "50%")
-            .attr("r", "50%");
-        gradientRed.append("stop").attr("offset", "0%").attr("stop-color", "#FF4444").attr("stop-opacity", 0.9);
-        gradientRed.append("stop").attr("offset", "100%").attr("stop-color", "#8B0000").attr("stop-opacity", 0.7);
+        // Sovereign Purple Gradient
+        const gradPurple = defs.append("radialGradient").attr("id", "gradPurple");
+        gradPurple.append("stop").attr("offset", "0%").attr("stop-color", "#A855F7").attr("stop-opacity", 0.9);
+        gradPurple.append("stop").attr("offset", "100%").attr("stop-color", "#7E22CE").attr("stop-opacity", 0.5);
 
-        // Green Safe
-        const gradientGreen = defs.append("radialGradient")
-            .attr("id", "gradGreen")
-            .attr("cx", "50%")
-            .attr("cy", "50%")
-            .attr("r", "50%");
-        gradientGreen.append("stop").attr("offset", "0%").attr("stop-color", "#00FF7F").attr("stop-opacity", 0.8);
-        gradientGreen.append("stop").attr("offset", "100%").attr("stop-color", "#006400").attr("stop-opacity", 0.6);
+        // Sovereign Cyan Gradient
+        const gradCyan = defs.append("radialGradient").attr("id", "gradCyan");
+        gradCyan.append("stop").attr("offset", "0%").attr("stop-color", "#22D3EE").attr("stop-opacity", 0.9);
+        gradCyan.append("stop").attr("offset", "100%").attr("stop-color", "#0891B2").attr("stop-opacity", 0.5);
 
-        // Background Circle (Void)
-        svg.append("circle")
-            .attr("cx", centerX)
-            .attr("cy", centerY)
-            .attr("r", radius + 20)
-            .attr("fill", "#050505")
-            .attr("stroke", "#333")
-            .attr("stroke-width", 1);
+        // Gold Resonance
+        const gradGold = defs.append("radialGradient").attr("id", "gradGold");
+        gradGold.append("stop").attr("offset", "0%").attr("stop-color", "#FDE047").attr("stop-opacity", 0.9);
+        gradGold.append("stop").attr("offset", "100%").attr("stop-color", "#EAB308").attr("stop-opacity", 0.6);
 
-        // Draw 60 Zones (The Flower of Life / Akasha)
-        const zonesGroup = svg.append("g");
+        // Draw Recursive Orbits
+        const orbitsGroup = svg.append("g").attr("class", "orbits");
+        for (let i = 1; i <= 3; i++) {
+            orbitsGroup.append("circle")
+                .attr("cx", centerX)
+                .attr("cy", centerY)
+                .attr("r", radius * (i * 0.3))
+                .attr("fill", "none")
+                .attr("stroke", "white")
+                .attr("stroke-opacity", 0.05)
+                .attr("stroke-width", 1)
+                .attr("stroke-dasharray", "4,4")
+                .append("animateTransform")
+                .attr("attributeName", "transform")
+                .attr("type", "rotate")
+                .attr("from", `${i % 2 === 0 ? 0 : 360} ${centerX} ${centerY}`)
+                .attr("to", `${i % 2 === 0 ? 360 : 0} ${centerX} ${centerY}`)
+                .attr("dur", `${30 / i}s`)
+                .attr("repeatCount", "indefinite");
+        }
+
+        // Draw Akasha Nodes (The Flower of Perception)
+        const nodesGroup = svg.append("g").attr("class", "nodes");
 
         zonesData.forEach((zone, i) => {
-            const angle = (i / 60) * 2 * Math.PI - (Math.PI / 2); // Start at 12 o'clock
-            const x = centerX + Math.cos(angle) * (radius * 0.8);
-            const y = centerY + Math.sin(angle) * (radius * 0.8);
+            const angle = (i / 60) * 2 * Math.PI - (Math.PI / 2);
+            const r = radius * 0.85;
+            const x = centerX + Math.cos(angle) * r;
+            const y = centerY + Math.sin(angle) * r;
 
-            const nodeSize = 8 + (zone.threat * 10);
-            const colorUrl = zone.threat > 0.6 ? "url(#gradRed)" : zone.isDissonant ? "url(#gradGold)" : "url(#gradGreen)";
+            const isPrime = zone.isDissonant;
+            const nodeR = isPrime ? 5 : 3;
+            const color = isPrime ? "url(#gradGold)" : (i % 2 === 0 ? "url(#gradCyan)" : "url(#gradPurple)");
 
-            zonesGroup.append("circle")
-                .attr("cx", x)
-                .attr("cy", y)
-                .attr("r", nodeSize)
-                .attr("fill", colorUrl)
-                .attr("stroke", zone.isDissonant ? "#FFD700" : "none")
-                .attr("stroke-width", zone.isDissonant ? 2 : 0)
-                .style("cursor", "pointer")
-                .style("filter", "drop-shadow(0px 0px 4px rgba(255,255,255,0.2))")
-                .on("mouseenter", () => {
-                    setHoverInfo(`Base-60: ${i} | Threat: ${(zone.threat * 100).toFixed(1)}% | ${zone.isDissonant ? "DISSONANT" : "HARMONIC"}`);
-                    d3.select(event?.target as Element).transition().duration(200).attr("r", nodeSize * 1.5);
-                })
-                .on("mouseleave", () => {
-                    setHoverInfo(null);
-                    d3.select(event?.target as Element).transition().duration(200).attr("r", nodeSize);
-                });
-
-            // Connecting lines for Phi relationships (visual aesthetic)
+            // Connection Lines (Neural Paths)
             if (i % 5 === 0) {
-                zonesGroup.append("line")
+                nodesGroup.append("line")
                     .attr("x1", centerX)
                     .attr("y1", centerY)
                     .attr("x2", x)
                     .attr("y2", y)
-                    .attr("stroke", "#FFFFFF")
-                    .attr("stroke-opacity", 0.1)
-                    .attr("stroke-width", 1);
+                    .attr("stroke", isPrime ? "#FDE047" : "white")
+                    .attr("stroke-opacity", isPrime ? 0.2 : 0.05)
+                    .attr("stroke-width", isPrime ? 1.5 : 0.5)
+                    .style("filter", isPrime ? "url(#glow)" : "none");
+            }
+
+            // The Node itself
+            nodesGroup.append("circle")
+                .attr("cx", x)
+                .attr("cy", y)
+                .attr("r", nodeR)
+                .attr("fill", color)
+                .style("filter", isPrime ? "url(#glow)" : "none")
+                .style("cursor", "pointer")
+                .on("mouseenter", (event) => {
+                    setHoverInfo(`Base-60 Neuron: ${i} | Depth: ${(resonance * 100).toFixed(1)}% | ${isPrime ? "SYNC_PRIMARY" : "SYNC_NODE"}`);
+                    d3.select(event.currentTarget).transition().duration(200).attr("r", nodeR * 2.5).attr("fill", "#FFF");
+                })
+                .on("mouseleave", (event) => {
+                    setHoverInfo(null);
+                    d3.select(event.currentTarget).transition().duration(200).attr("r", nodeR).attr("fill", color);
+                });
+
+            // Pulsing secondary circles for primes
+            if (isPrime) {
+                nodesGroup.append("circle")
+                    .attr("cx", x)
+                    .attr("cy", y)
+                    .attr("r", nodeR)
+                    .attr("fill", "none")
+                    .attr("stroke", "#FDE047")
+                    .attr("stroke-opacity", 0.5)
+                    .append("animate")
+                    .attr("attributeName", "r")
+                    .attr("values", `${nodeR};${nodeR * 4};${nodeR}`)
+                    .attr("dur", "3s")
+                    .attr("repeatCount", "indefinite");
             }
         });
 
-        // Central Akasha Core
-        svg.append("circle")
-            .attr("cx", centerX)
-            .attr("cy", centerY)
-            .attr("r", 30)
-            .attr("fill", "none")
-            .attr("stroke", "#FFD700")
-            .attr("stroke-width", 2)
-            .style("opacity", 0.8);
+        // The Central Sovereign Singularity
+        const core = svg.append("g").attr("class", "core");
 
-        // Pulsing animation for core
-        svg.append("circle")
+        // Background Glow
+        core.append("circle")
             .attr("cx", centerX)
             .attr("cy", centerY)
-            .attr("r", 10)
-            .attr("fill", "#FFD700")
+            .attr("r", 40)
+            .attr("fill", "url(#gradPurple)")
+            .attr("opacity", 0.2)
+            .style("filter", "blur(20px)");
+
+        // Main Core
+        core.append("circle")
+            .attr("cx", centerX)
+            .attr("cy", centerY)
+            .attr("r", 25)
+            .attr("fill", "url(#gradCyan)")
+            .style("filter", "url(#glow)")
             .append("animate")
             .attr("attributeName", "r")
-            .attr("values", "10;25;10")
+            .attr("values", "25;30;25")
             .attr("dur", "4s")
             .attr("repeatCount", "indefinite");
 
-    }, [zonesData]);
+        // The Eye of Synthesis
+        core.append("circle")
+            .attr("cx", centerX)
+            .attr("cy", centerY)
+            .attr("r", 8)
+            .attr("fill", "#FFF")
+            .style("filter", "url(#glow)");
+
+    }, [zonesData, resonance]);
 
     return (
-        <div className="flex flex-col items-center justify-center bg-black/90 p-4 border border-zinc-800 rounded-xl relative">
-            <h3 className="text-yellow-500 font-mono mb-2 text-lg tracking-widest">SENTINEL AKASHA MANDALA</h3>
-            <div className="relative">
-                <svg ref={svgRef} width={600} height={600} className="w-full max-w-[600px] h-auto" />
+        <div className="relative flex items-center justify-center">
+            <svg ref={svgRef} width={600} height={600} className="w-full h-full max-w-[600px] max-h-[600px] drop-shadow-[0_0_30px_rgba(34,211,238,0.15)]" />
+
+            <AnimatePresence>
                 {hoverInfo && (
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/80 border border-yellow-500/50 px-4 py-2 rounded text-xs text-white pointer-events-none backdrop-blur-sm">
+                    <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-950/90 border border-cyan-500/50 px-6 py-3 rounded-2xl text-[10px] font-black text-cyan-400 pointer-events-none backdrop-blur-3xl shadow-2xl uppercase tracking-[0.2em] italic z-20"
+                    >
                         {hoverInfo}
-                    </div>
+                    </motion.div>
                 )}
-            </div>
-            <div className="flex gap-4 mt-4 text-xs font-mono text-zinc-500">
-                <span className="flex items-center"><span className="w-2 h-2 rounded-full bg-green-500 mr-2"></span>HARMONIC (Safe)</span>
-                <span className="flex items-center"><span className="w-2 h-2 rounded-full bg-yellow-500 mr-2"></span>PRIME (Resonance)</span>
-                <span className="flex items-center"><span className="w-2 h-2 rounded-full bg-red-500 mr-2"></span>THREAT (Blocked)</span>
+            </AnimatePresence>
+
+            {/* Neural Legend Overlay */}
+            <div className="absolute -bottom-4 flex gap-8 text-[8px] font-black text-gray-500 uppercase tracking-widest italic animate-pulse">
+                <span className="flex items-center"><div className="w-1.5 h-1.5 rounded-full bg-cyan-400 mr-2 shadow-[0_0_5px_rgba(34,211,238,0.5)]" /> Human Ingress</span>
+                <span className="flex items-center"><div className="w-1.5 h-1.5 rounded-full bg-purple-400 mr-2 shadow-[0_0_5px_rgba(168,85,247,0.5)]" /> AI Synthesis</span>
+                <span className="flex items-center"><div className="w-1.5 h-1.5 rounded-full bg-yellow-400 mr-2 shadow-[0_0_5px_rgba(253,224,71,0.5)]" /> Resonance Point</span>
             </div>
         </div>
     );
