@@ -37,7 +37,7 @@ export default function RootLayout({
         {/* Page Content */}
         <main>{children}</main>
 
-        {/* AI Copilot - Global AI Assistant */}
+        {/* Sentinel IA - Asistente Cognitivo Global */}
         <AICopilot />
       </body>
     </html>
