@@ -37,12 +37,12 @@ export class SoulSensor {
   /**
    * Inicia el ritual con verificación criptográfica en servidor (Rust)
    */
-  async iniciarRitual(): Promise<SoulSignature> {
+  async iniciarRitual(userId: string = "jnovoas"): Promise<SoulSignature> {
     try {
-      console.log("🌌 Iniciando protocolo Soul Hash v2 (Zero Trust)...");
+      console.log(`🌌 Iniciando protocolo Soul Hash v2 (Zero Trust) para: ${userId}...`);
 
       // 1. Solicitar Desafío al Cortex (Challenge-Response)
-      const challenge = await this.solicitarDesafio("jnovoas");
+      const challenge = await this.solicitarDesafio(userId);
       console.log("🛡️ Desafío recibido:", challenge.nonce);
 
       // 2. Captura de datos de Vida (rPPG Raw)
