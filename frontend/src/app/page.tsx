@@ -1,18 +1,18 @@
 "use client";
 
-import { Activity, ShieldCheck, Zap, Globe, Database, Clock, Lock, BarChart3, Brain, Terminal, Server, ShieldAlert, Sparkles, BrainCircuit, Network, Fingerprint, Cpu } from "lucide-react";
+import { Activity, Zap, Database, Lock, BarChart3, Brain, Terminal, ShieldAlert, Sparkles, BrainCircuit, Network, Cpu } from "lucide-react";
 import { useSentinelStatus } from "@/hooks/useSentinelStatus";
 import { SovereignSearchInput } from "@/components/SovereignSearchInput";
 import { CognitiveProjection } from "@/components/sentinel/CognitiveProjection";
 import { ResonanceRateCard } from "@/components/sentinel/ResonanceRateCard";
 import { GoldTruthFeed } from "@/components/sentinel/GoldTruthFeed";
 import { OracleConsole } from "@/components/sentinel/OracleConsole";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useState } from "react";
 import { SoulGate } from "@/components/security/SoulGate";
 
 export default function LandingPage() {
-  const { status, loading } = useSentinelStatus();
+  const { status } = useSentinelStatus();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const iframeBaseUrl = "http://localhost:3001/d-solo/sentinel-overview/sentinel-overview?orgId=1&theme=dark&panelId=";
 
@@ -52,7 +52,7 @@ export default function LandingPage() {
               <p className="text-[10px] uppercase tracking-[0.6em] text-cyan-400 font-black">Sentinel Sovereign OS // Cognitive Intelligence v2.1.0</p>
             </motion.div>
 
-            <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-white uppercase italic leading-none select-none">
+            <h1 className="text-3xl md:text-5xl font-black tracking-tighter text-white uppercase italic leading-none select-none">
               Command <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-purple-500">Tower</span> Matrix
             </h1>
 

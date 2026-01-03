@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Fingerprint, Activity, Mic } from 'lucide-react';
+import { Shield, Activity, Mic } from 'lucide-react';
 import { soulSensor, SoulSignature } from '@/lib/security/alma_signature';
 
 interface SoulGateProps {
