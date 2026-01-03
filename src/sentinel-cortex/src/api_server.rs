@@ -14,17 +14,20 @@ use tower_http::cors::CorsLayer;
 struct AppState {
     verifier: Mutex<SoulVerifier>,
     monitor: SystemMonitor,
+    history: Mutex<Vec<ProofOfLife>>,
 }
 
 pub async fn start_api_server() {
     let state = Arc::new(AppState {
         verifier: Mutex::new(SoulVerifier::new()),
         monitor: SystemMonitor::new(),
+        history: Mutex::new(Vec::new()),
     });
 
     let app = Router::new()
         .route("/api/v1/soul/challenge", post(generate_challenge))
         .route("/api/v1/soul/verify", post(verify_soul))
+        .route("/api/v1/soul/history", get(get_soul_history))
         .route("/api/v1/system/status", get(get_system_status))
         .layer(CorsLayer::permissive()) // Permitir frontend local
         .with_state(state);
@@ -35,6 +38,15 @@ pub async fn start_api_server() {
 }
 
 // Handlers
+async fn get_soul_history(
+    State(state): State<Arc<AppState>>,
+) -> Json<Vec<ProofOfLife>> {
+    let history = state.history.lock().await;
+    // Return last 50 records
+    let result = history.iter().rev().take(50).cloned().collect();
+    Json(result)
+}
+
 async fn get_system_status(
     State(state): State<Arc<AppState>>,
 ) -> Json<SystemMetrics> {
@@ -57,11 +69,17 @@ async fn verify_soul(
     let verifier = state.verifier.lock().await;
     
     match verifier.verify_proof_of_life(&payload.rppg_signal, &payload.challenge) {
-        Ok(proof) => Json(VerifyResponse {
-            success: true,
-            message: "Alma Verificada".to_string(),
-            proof: Some(proof),
-        }),
+        Ok(proof) => {
+            // Persist proof to history
+            let mut history = state.history.lock().await;
+            history.push(proof.clone());
+            
+            Json(VerifyResponse {
+                success: true,
+                message: "Alma Verificada".to_string(),
+                proof: Some(proof),
+            })
+        },
         Err(e) => Json(VerifyResponse {
             success: false,
             message: format!("Rechazo de Resonancia: {:?}", e),
