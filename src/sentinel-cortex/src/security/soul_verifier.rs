@@ -18,6 +18,7 @@ pub struct ProofOfLife {
     pub chaos_entropy: f64,       // 1.2-3.8 (no periódico)
     pub response_correlation: f64, // >0.7 (responde luz)
     pub soul_hash: String,
+    pub timestamp: i64,
 }
 
 #[derive(Debug)]
@@ -84,6 +85,7 @@ impl SoulVerifier {
                 chaos_entropy: entropy,
                 response_correlation: light_response,
                 soul_hash: soul_hash,
+                timestamp: now,
             })
         } else {
              Err(SoulError::NoLivingSoul)
