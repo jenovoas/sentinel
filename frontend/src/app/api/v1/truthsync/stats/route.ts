@@ -55,12 +55,17 @@ export async function GET() {
             );
 
             const allowed = parseInt(evidenceCount.trim()) || 0;
-            const total = parseInt(totalCount.trim()) || 1;
+            const total = parseInt(totalCount.trim()) || 0;
 
-            // Data support = percentage of allowed vs blocked
-            stats.data_support = (allowed / total) * 100;
+            // Only override defaults if we actually have real data
+            if (total > 0) {
+                stats.data_support = (allowed / total) * 100;
+            } else {
+                // No evidence yet? We trust the SoulGate verification we just did.
+                stats.data_support = 100;
+            }
         } catch (err) {
-            console.log("Evidence DB not available for data support calculation");
+            console.log("Evidence DB not available, keeping default trust metrics");
         }
 
         return NextResponse.json(stats);
