@@ -8,10 +8,26 @@ import { ResonanceRateCard } from "@/components/sentinel/ResonanceRateCard";
 import { GoldTruthFeed } from "@/components/sentinel/GoldTruthFeed";
 import { OracleConsole } from "@/components/sentinel/OracleConsole";
 import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { SoulGate } from "@/components/security/SoulGate";
 
 export default function LandingPage() {
   const { status, loading } = useSentinelStatus();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const iframeBaseUrl = "http://localhost:3001/d-solo/sentinel-overview/sentinel-overview?orgId=1&theme=dark&panelId=";
+
+  if (!isAuthenticated) {
+    return (
+      <main className="min-h-screen bg-[#020617] flex items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none" />
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-cyan-500/5 blur-[180px] rounded-full animate-pulse pointer-events-none" />
+
+        <div className="relative z-10 w-full">
+          <SoulGate onAuthenticationComplete={() => setIsAuthenticated(true)} />
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#020617] text-gray-100 selection:bg-cyan-500/30 relative overflow-hidden font-sans">
