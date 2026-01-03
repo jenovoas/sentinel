@@ -62,7 +62,10 @@ export const SoulGate: React.FC<SoulGateProps> = ({ onAuthenticationComplete }) 
             // Intentar primero el ritual sagrado con sensores reales
             let result;
             try {
-                result = await soulSensor.iniciarRitual();
+                // In a real scenario, face recognition would tell us WHO is trying to auth.
+                // For now, we simulate that the camera sees "jnovoas" (Sovereign).
+                // If we want to test rejection, we could pass "stranger".
+                result = await soulSensor.iniciarRitual("jnovoas");
             } catch (sensorError) {
                 console.warn("⚠️ Sensores no disponibles, iniciando simulación cuántica...", sensorError);
                 // Fallback: Simulación si la cámara/micrófono "no quieren" al usuario
