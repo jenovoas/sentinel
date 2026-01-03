@@ -12,6 +12,20 @@ pub struct AlmaChallenge {
     pub user_id: String,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+pub enum SoulRole {
+    Sovereign,
+    Monitored,
+    Guest,
+    Unauthorized,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct SoulIdentity {
+    pub name: String,
+    pub role: SoulRole,
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct ProofOfLife {
     pub lyapunov_exp: f64,        // 0.1-2.5 (humano vivo)
@@ -19,6 +33,7 @@ pub struct ProofOfLife {
     pub response_correlation: f64, // >0.7 (responde luz)
     pub soul_hash: String,
     pub timestamp: i64,
+    pub identity: Option<SoulIdentity>,
 }
 
 #[derive(Debug)]
@@ -27,18 +42,50 @@ pub enum SoulError {
     NoLivingSoul,
     UnknownSoul(String),
     InsufficientSignal,
+    UnauthorizedIdentity,
 }
 
 pub struct SoulVerifier {
-    registered_souls: HashMap<String, String>, // Hash -> UserID
+    registered_souls: HashMap<String, SoulIdentity>, // UserID/Hash -> Identity
     challenge_seq: Vec<u8>,
 }
 
 impl SoulVerifier {
     pub fn new() -> Self {
+        let mut souls = HashMap::new();
+        
+        // --- FAMILY REGISTRY (Simulated Hashes for MVP) ---
+        // In production, keys would be the SHA3-512 Hash of their biological signature.
+        // For now, we map UserID -> Identity to demonstrate RBAC logic.
+        
+        souls.insert("jnovoas".to_string(), SoulIdentity {
+            name: "JNovoaS (Operator)".to_string(),
+            role: SoulRole::Sovereign,
+        });
+        
+         souls.insert("madre".to_string(), SoulIdentity {
+            name: "Madre (Matriarch)".to_string(),
+            role: SoulRole::Monitored,
+        });
+
+        souls.insert("cristian".to_string(), SoulIdentity {
+            name: "Cristian (Strategist)".to_string(),
+            role: SoulRole::Monitored,
+        });
+
+        souls.insert("diego".to_string(), SoulIdentity {
+            name: "Diego (Guardian)".to_string(),
+            role: SoulRole::Monitored,
+        });
+        
+         souls.insert("madelin".to_string(), SoulIdentity {
+            name: "Madelin (Sensitive)".to_string(),
+            role: SoulRole::Monitored,
+        });
+
         Self {
-            registered_souls: HashMap::new(),
-            challenge_seq: vec![255, 0, 255], // Rojo-Azul-Rojo (Simplificado)
+            registered_souls: souls,
+            challenge_seq: vec![255, 0, 255], 
         }
     }
 
@@ -78,18 +125,29 @@ impl SoulVerifier {
         // d) Hash biológico SHA3-512
         let soul_hash = self.compute_soul_hash(rppg_signal, &challenge.nonce.to_le_bytes());
         
-        // e) Verificar umbrales de vida (Ajustado para permitir simulaciones por ahora)
-        if lyapunov > 0.05 && entropy > 0.5 {
-             Ok(ProofOfLife {
-                lyapunov_exp: lyapunov,
-                chaos_entropy: entropy,
-                response_correlation: light_response,
-                soul_hash: soul_hash,
-                timestamp: now,
-            })
-        } else {
-             Err(SoulError::NoLivingSoul)
+        // e) Verificar umbrales de vida primero
+        if lyapunov <= 0.05 || entropy <= 0.5 {
+             return Err(SoulError::NoLivingSoul);
         }
+        
+        // f) Identificación y Control de Acceso (RBAC)
+        // En el futuro: buscar soul_hash en registered_souls.
+        // Ahora: usar user_id del challenge para simular el lookup.
+        let identity = self.registered_souls.get(&challenge.user_id).cloned();
+        
+        // Si no está registrado o no es familia -> Rechazar (o Guest si implementáramos eso)
+        if identity.is_none() {
+             return Err(SoulError::UnauthorizedIdentity);
+        }
+
+        Ok(ProofOfLife {
+            lyapunov_exp: lyapunov,
+            chaos_entropy: entropy,
+            response_correlation: light_response,
+            soul_hash: soul_hash,
+            timestamp: now,
+            identity,
+        })
     }
 
     fn calculate_lyapunov_exponent(&self, signal: &[f32]) -> f64 {
@@ -149,7 +207,8 @@ mod tests {
     #[test]
     fn test_valid_human_signal() {
         let verifier = SoulVerifier::new();
-        let user_id = "test_subject_01";
+        // Use a registered user to pass RBAC
+        let user_id = "jnovoas"; 
         let challenge = verifier.generate_challenge(user_id);
 
         // Generar una señal "viva" (Seno + Ruido controlado)
@@ -160,10 +219,12 @@ mod tests {
 
         let result = verifier.verify_proof_of_life(&signal, &challenge);
         
-        assert!(result.is_ok(), "La señal humana simulada debería ser aceptada");
+        assert!(result.is_ok(), "La señal humana simulada debería ser aceptada para usuario registrado");
         let proof = result.unwrap();
-        println!("✅ Human Validated: Lyapunov={:.4}, Entropy={:.4}", proof.lyapunov_exp, proof.chaos_entropy);
+        println!("✅ Human Validated: Lyapunov={:.4}, Identity={:?}", proof.lyapunov_exp, proof.identity);
+        
         assert!(proof.lyapunov_exp > 0.05);
+        assert_eq!(proof.identity.unwrap().role, SoulRole::Sovereign);
     }
 
     #[test]
