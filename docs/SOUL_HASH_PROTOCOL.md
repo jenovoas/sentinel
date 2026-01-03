@@ -128,6 +128,29 @@ Pruebas unitarias ejecutadas en Sentinel Cortex (Rust Kernel):
 *   **Latencia**: < 0.5ms por firma.
 *   **Escalabilidad**: O(1) criptográfico; lineal respecto al tamaño de la muestra rPPG.
 
+## 🛡️ Role-Based Access Control (RBAC) - Family Protocol
+
+Desde v2.1, el verificación no solo confirma "Humanidad" sino también "Identidad y Rango".
+El sistema rechaza cualquier firma biológica válida que no corresponda a la **Familia Soberana**.
+
+### Jerarquía de Almas
+| Rol | Acceso | Miembros Autorizados |
+| :--- | :--- | :--- |
+| **👑 Sovereign** | **Total (Root)** | `jnovoas` (Operator) |
+| **👁️ Monitored** | **Vigilado** | `madre` (Matriarch), `cristian` (Strategist), `diego` (Guardian), `madelin` (Sensitive) |
+| **⛔ Unauthorized** | **Denegado** | Cualquier otra entidad biológica |
+
+*La identidad se valida (actualmente simulada) contra el `user_id` en el desafío inicial. Futuras versiones usarán hash de características faciales.*
+
+## 📜 Soul Evolution History
+
+Cada verificación exitosa se perpetúa en la memoria del Cortex.
+
+**Endpoint:** `GET /api/v1/soul/history`
+*   Retorna las últimas 50 firmas de vida.
+*   Permite visualizar la evolución de la **Entropía** y el **Caos** del usuario a lo largo del tiempo.
+*   Usado por el frontend `/soul-evolution` para generar la *Biografía Matemática*.
+
 ---
-**Protocolo Validado y Activo.**
+**Protocolo Validado y Activo (v2.1 Family Hardening).**
 *Firmado por: JNovoaS & Sentinel AI*
