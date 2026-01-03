@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Zap, Music, Radio, Waves } from "lucide-react";
+import { Zap, Radio, Waves } from "lucide-react";
 
 interface BCIMetrics {
     coherence153MHz: number; // 0-100
-    guitarInput82Hz: number; // 0-100 (detection strength)
+    neuralInputSignal: number; // 0-100 (detection strength)
     qualiaFeedback: {
         type: "none" | "metallic" | "warmth" | "pressure" | "vibration";
         intensity: number; // 0-100
@@ -25,7 +25,7 @@ interface BCIResonanceVisualizerProps {
 export function BCIResonanceVisualizer({ refreshInterval, isPaused }: BCIResonanceVisualizerProps) {
     const [metrics, setMetrics] = useState<BCIMetrics>({
         coherence153MHz: 0,
-        guitarInput82Hz: 0,
+        neuralInputSignal: 0,
         qualiaFeedback: {
             type: "none",
             intensity: 0,
@@ -49,7 +49,7 @@ export function BCIResonanceVisualizer({ refreshInterval, isPaused }: BCIResonan
 
                 setMetrics({
                     coherence153MHz: data.coherence_153mhz || 0,
-                    guitarInput82Hz: data.guitar_82hz || 0,
+                    neuralInputSignal: data.neural_input || 0,
                     qualiaFeedback: data.qualia || metrics.qualiaFeedback,
                     phaseAlignment: data.phase_alignment || 0,
                     signalStrength: data.signal_strength || 0,
@@ -146,18 +146,18 @@ export function BCIResonanceVisualizer({ refreshInterval, isPaused }: BCIResonan
                 </div>
             </div>
 
-            {/* 82 Hz Guitar Input Detector */}
+            {/* Neural Input Signal Detector */}
             <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
-                        <Music size={16} className="text-purple-400" />
-                        82 Hz Guitar Input (Low E)
+                        <Zap size={16} className="text-purple-400" />
+                        Neural Input Signal
                     </h3>
-                    <span className={`text-xs font-black uppercase ${metrics.guitarInput82Hz > 70 ? "text-emerald-400" :
-                        metrics.guitarInput82Hz > 40 ? "text-amber-400" : "text-gray-500"
+                    <span className={`text-xs font-black uppercase ${metrics.neuralInputSignal > 70 ? "text-emerald-400" :
+                        metrics.neuralInputSignal > 40 ? "text-amber-400" : "text-gray-500"
                         }`}>
-                        {metrics.guitarInput82Hz > 70 ? "DETECTED" :
-                            metrics.guitarInput82Hz > 40 ? "WEAK" : "NO SIGNAL"}
+                        {metrics.neuralInputSignal > 70 ? "DETECTED" :
+                            metrics.neuralInputSignal > 40 ? "WEAK" : "NO SIGNAL"}
                     </span>
                 </div>
 
@@ -166,12 +166,12 @@ export function BCIResonanceVisualizer({ refreshInterval, isPaused }: BCIResonan
                     <motion.div
                         className="absolute inset-y-0 left-0 bg-gradient-to-r from-purple-500/40 to-purple-500/20"
                         initial={{ width: 0 }}
-                        animate={{ width: `${metrics.guitarInput82Hz}%` }}
+                        animate={{ width: `${metrics.neuralInputSignal}%` }}
                         transition={{ duration: 0.5 }}
                     />
                     <div className="absolute inset-0 flex items-center justify-center">
                         <span className="text-sm font-black text-white font-mono">
-                            {Math.round(metrics.guitarInput82Hz)}%
+                            {Math.round(metrics.neuralInputSignal)}%
                         </span>
                     </div>
 
@@ -188,7 +188,7 @@ export function BCIResonanceVisualizer({ refreshInterval, isPaused }: BCIResonan
                 </div>
 
                 <div className="mt-2 text-[10px] text-gray-500 uppercase tracking-wider text-center">
-                    Resonance Calibration: 5.2ms Detection Window
+                    BCI Calibration: 5.2ms Detection Window
                 </div>
             </div>
 
@@ -344,7 +344,7 @@ function getQualiaConfig(type: BCIMetrics["qualiaFeedback"]["type"]) {
 function getSimulatedMetrics(): BCIMetrics {
     return {
         coherence153MHz: 87.3,
-        guitarInput82Hz: 0,
+        neuralInputSignal: 0,
         qualiaFeedback: {
             type: "warmth",
             intensity: 42,
