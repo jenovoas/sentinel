@@ -2,7 +2,10 @@ mod models;
 mod collectors;
 mod engine;
 mod actions;
+pub mod security;
+mod api_server;
 
+use crate::actions::QuantumPulseEmitter;
 use collectors::PrometheusCollector;
 use engine::PatternDetector;
 use actions::N8NClient;
@@ -22,16 +25,47 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .unwrap_or_else(|_| "http://prometheus:9090".to_string());
     let n8n_url = std::env::var("N8N_URL")
         .unwrap_or_else(|_| "http://n8n-security:5678".to_string());
+    let redis_url = std::env::var("REDIS_URL")
+        .unwrap_or_else(|_| "redis://redis:6379".to_string());
     
     tracing::info!("🧠 Neural Guard Decision Engine starting...");
     tracing::info!("📊 Prometheus URL: {}", prometheus_url);
     tracing::info!("🔗 N8N URL: {}", n8n_url);
+    tracing::info!("⚡ EventBus URL: {}", redis_url);
+    tracing::info!("⚡ EventBus URL: {}", redis_url); // Keep this logging line
     
     // Initialize components
     let prometheus = PrometheusCollector::new(prometheus_url);
     let detector = PatternDetector::new();
     let n8n = N8NClient::new(n8n_url);
     
+    // --- QUANTUM PULSE EMITTER ---
+    let quantum_emitter: Option<QuantumPulseEmitter> = match std::env::var("REDIS_URL") {
+        Ok(url) => {
+            // The previous logging line for EventBus URL is kept above.
+            // tracing::info!("⚡ EventBus URL: {}", url); // This line is redundant if redis_url is logged above
+            match QuantumPulseEmitter::new(&url) {
+                Ok(emitter) => {
+                    tracing::info!("✅ Quantum Pulse Emitter connected");
+                    Some(emitter)
+                },
+                Err(e) => {
+                    tracing::error!("❌ Failed to connect Quantum Pulse: {}", e);
+                    None
+                }
+            }
+        },
+        Err(_) => {
+            tracing::warn!("⚠️ REDIS_URL not set. Quantum Pulse disabled.");
+            None
+        }
+    };
+
+    // --- SOUL VERIFIER API ---
+    tokio::spawn(async {
+        api_server::start_api_server().await;
+    });
+
     tracing::info!("✅ Neural Guard started successfully");
     
     // Main loop: collect → detect → act
@@ -47,6 +81,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 
                 // Detect patterns
                 let patterns = detector.detect(&events);
+
+                // --- QUANTUM PULSE EMISSION ---
+                if let Some(emitter) = &quantum_emitter {
+                    // Disonancia = Raw event count (Background noise)
+                    // Axiones = Detected patterns (Meaningful signal)
+                    let disonancia = events.len() as f64;
+                    let axiones = patterns.len() as u32;
+
+                    if let Err(e) = emitter.emit_signal(disonancia, axiones).await {
+                        tracing::error!("⚡ Failed to emit quantum signal: {}", e);
+                    }
+                }
+                // ------------------------------
                 
                 if !patterns.is_empty() {
                     tracing::warn!("🚨 Detected {} patterns", patterns.len());
@@ -81,3 +128,4 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         tokio::time::sleep(Duration::from_secs(30)).await;
     }
 }
+
