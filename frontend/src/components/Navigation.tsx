@@ -105,6 +105,13 @@ export function Navigation() {
             icon: "📄",
             description: "System documentation",
         },
+        {
+            label: "Soul Evolution",
+            href: "/soul-evolution",
+            icon: "🧬",
+            badge: "Identity",
+            description: "Bio-Rhythm History",
+        },
     ];
 
     // Check if current route is active
