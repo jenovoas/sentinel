@@ -3,6 +3,7 @@ mod collectors;
 mod engine;
 mod actions;
 pub mod security;
+pub mod monitoring;
 mod api_server;
 
 use crate::actions::QuantumPulseEmitter;

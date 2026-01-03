@@ -1,27 +1,31 @@
 use axum::{
     extract::{State, Json},
     response::IntoResponse,
-    routing::post,
+    routing::{post, get},
     Router,
 };
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use crate::security::soul_verifier::{SoulVerifier, ProofOfLife, AlmaChallenge};
+use crate::monitoring::{SystemMonitor, SystemMetrics};
 use tower_http::cors::CorsLayer;
 
 // Estado compartido de la aplicación
 struct AppState {
     verifier: Mutex<SoulVerifier>,
+    monitor: SystemMonitor,
 }
 
 pub async fn start_api_server() {
     let state = Arc::new(AppState {
         verifier: Mutex::new(SoulVerifier::new()),
+        monitor: SystemMonitor::new(),
     });
 
     let app = Router::new()
         .route("/api/v1/soul/challenge", post(generate_challenge))
         .route("/api/v1/soul/verify", post(verify_soul))
+        .route("/api/v1/system/status", get(get_system_status))
         .layer(CorsLayer::permissive()) // Permitir frontend local
         .with_state(state);
 
@@ -31,6 +35,12 @@ pub async fn start_api_server() {
 }
 
 // Handlers
+async fn get_system_status(
+    State(state): State<Arc<AppState>>,
+) -> Json<SystemMetrics> {
+    Json(state.monitor.get_metrics())
+}
+
 async fn generate_challenge(
     State(state): State<Arc<AppState>>,
     Json(payload): Json<ChallengeRequest>,
