@@ -1,9 +1,9 @@
 # MATRIZ DE TRAZABILIDAD AUTOMÁTICA - SENTINEL CORTEX
-Ultima actualización: 2026-01-02 00:00:01
+Ultima actualización: 2026-01-03 00:00:01
 
 | Requisito | Implementación | Métrica | Estado |
 | :--- | :--- | :--- | :--- |
-| **Intercepción Pre-Ejecución** | Hook eBPF LSM `bprm_check_security` | TTE: 3.40 μs | ✅ Verificado |
+| **Intercepción Pre-Ejecución** | Hook eBPF LSM `bprm_check_security` | TTE: 3.17 μs | ✅ Verificado |
 | **Aislamiento de Recursos** | Cgroups v2 (CPUQuota=10%) | Estabilidad Stress Test | ✅ Verificado |
 | **Plano de Datos** | BPF Ringbuffer + C Relay | Latencia Relay: 4.1 μs | ✅ Verificado |
 | **Backend de Verificación** | Rust Engine + SHM Zerocopy | Procesamiento: 5 μs | ✅ Verificado |
