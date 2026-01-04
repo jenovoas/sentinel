@@ -56,11 +56,12 @@ export const AIChat: React.FC = () => {
         setIsThinking(true);
 
         try {
-            const res = await fetch("/api/v1/ai/query", {
+            const res = await fetch("/api/ai/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     prompt: userMessage,
+                    model: "llama3.2:3b",
                     max_tokens: 150,
                     temperature: 0.4
                 })
@@ -139,8 +140,8 @@ export const AIChat: React.FC = () => {
                             className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
                         >
                             <div className={`group relative max-w-[85%] rounded-[24px] p-5 shadow-xl transition-all ${msg.role === 'user'
-                                    ? 'bg-gradient-to-br from-cyan-600/20 to-blue-600/10 border border-cyan-500/20 text-blue-50'
-                                    : 'bg-slate-900/60 border border-white/5 text-emerald-50 backdrop-blur-md'
+                                ? 'bg-gradient-to-br from-cyan-600/20 to-blue-600/10 border border-cyan-500/20 text-blue-50'
+                                : 'bg-slate-900/60 border border-white/5 text-emerald-50 backdrop-blur-md'
                                 }`}>
 
                                 <div className="flex items-center gap-2 mb-2 opacity-40 text-[9px] font-black uppercase tracking-widest italic">
@@ -212,8 +213,8 @@ export const AIChat: React.FC = () => {
                             onClick={handleSend}
                             disabled={isThinking || !input.trim()}
                             className={`p-2 rounded-xl transition-all ${isThinking || !input.trim()
-                                    ? 'opacity-20 cursor-not-allowed'
-                                    : 'bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 hover:scale-110 border border-cyan-500/20'
+                                ? 'opacity-20 cursor-not-allowed'
+                                : 'bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 hover:scale-110 border border-cyan-500/20'
                                 }`}
                         >
                             <Zap size={18} />

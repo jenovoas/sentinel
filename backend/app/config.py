@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     # ============================================================================
     database_url: str = os.getenv(
         "DATABASE_URL", 
-        "postgresql+asyncpg://sentinel_user:sentinel_password@localhost:5432/sentinel_db"
+        "postgresql+asyncpg://sentinel:sentinel_trust@localhost:5432/sentinel_core"
     )
     """PostgreSQL connection string for the application database."""
     

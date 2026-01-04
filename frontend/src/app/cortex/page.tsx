@@ -15,15 +15,10 @@ export default function CortexDashboard() {
     const [cognitiveSync, setCognitiveSync] = useState(94.2);
     const [activeLinks, setActiveLinks] = useState(1);
 
+    // Simulation removed for Sovereign Truth
+    // Real telemetry will be hydrated via TruthSync hooks
     useEffect(() => {
-        const interval = setInterval(() => {
-            setKills(prev => prev + Math.floor(Math.random() * 5));
-            setCognitiveSync(prev => {
-                const next = prev + (Math.random() * 0.2 - 0.1);
-                return Math.min(100, Math.max(90, next));
-            });
-        }, 2000);
-        return () => clearInterval(interval);
+        // Future: Subscribe to real-time websocket events for threat mitigation
     }, []);
 
     return (

@@ -111,12 +111,17 @@ export default function DevOpsPage() {
         setTerminalInput("");
 
         try {
+            const role = localStorage.getItem('sentinel_soul_role') || 'Unauthorized';
+            const userId = localStorage.getItem('sentinel_soul_id') || 'unknown';
+
             const response = await fetch("http://localhost:8000/api/v1/terminal/exec", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     command,
-                    shell: selectedShell
+                    shell: selectedShell,
+                    user_id: userId,
+                    role: role
                 })
             });
 
@@ -503,8 +508,8 @@ function TabButton({ active, onClick, icon, label }: { active: boolean; onClick:
         <button
             onClick={onClick}
             className={`px-6 py-4 rounded-2xl font-black uppercase tracking-wider text-sm transition-all flex items-center gap-3 ${active
-                    ? "bg-gradient-to-r from-emerald-500 to-cyan-500 text-white shadow-2xl shadow-emerald-500/50"
-                    : "bg-slate-900/40 text-gray-400 hover:text-white border border-white/5"
+                ? "bg-gradient-to-r from-emerald-500 to-cyan-500 text-white shadow-2xl shadow-emerald-500/50"
+                : "bg-slate-900/40 text-gray-400 hover:text-white border border-white/5"
                 }`}
         >
             {icon}
@@ -518,8 +523,8 @@ function ShellButton({ active, onClick, label }: { active: boolean; onClick: () 
         <button
             onClick={onClick}
             className={`px-4 py-2 rounded-xl font-black uppercase tracking-wider text-xs transition-all ${active
-                    ? "bg-emerald-500 text-white"
-                    : "bg-slate-900/40 text-gray-400 hover:text-white border border-white/5"
+                ? "bg-emerald-500 text-white"
+                : "bg-slate-900/40 text-gray-400 hover:text-white border border-white/5"
                 }`}
         >
             {label}

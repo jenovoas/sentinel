@@ -4,7 +4,7 @@ import { Shield, Activity, Mic } from 'lucide-react';
 import { soulSensor, SoulSignature } from '@/lib/security/alma_signature';
 
 interface SoulGateProps {
-    onAuthenticationComplete?: () => void;
+    onAuthenticationComplete?: (signature: SoulSignature) => void;
 }
 
 export const SoulGate: React.FC<SoulGateProps> = ({ onAuthenticationComplete }) => {
@@ -92,7 +92,7 @@ export const SoulGate: React.FC<SoulGateProps> = ({ onAuthenticationComplete }) 
             // Notify success after a brief pause
             if (onAuthenticationComplete) {
                 setTimeout(() => {
-                    onAuthenticationComplete();
+                    onAuthenticationComplete(result);
                 }, 2000);
             }
 
