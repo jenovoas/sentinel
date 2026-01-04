@@ -1,4 +1,4 @@
-# 🚀 VALIDACIÓN DE MERCADO - WORKFLOW NEURAL BASE
+#  VALIDACIÓN DE MERCADO - WORKFLOW NEURAL BASE
 
 **Market Size**: $1.8B (2025) → $5.0B (2035)  
 **CAGR**: 10.9%  
@@ -47,7 +47,7 @@ Costo: $50K/año (no consultor)
 
 ---
 
-## 🎯 PITCH ACTUALIZADO
+##  PITCH ACTUALIZADO
 
 **Antes**:
 > "80% menos alertas, 30 días gratis"
@@ -63,7 +63,7 @@ Costo: $50K/año (no consultor)
 
 ---
 
-## 🚀 POC ESTA SEMANA
+##  POC ESTA SEMANA
 
 ### Sábado (4-6h)
 - [x] Workflow indexer ✅ HECHO
@@ -88,7 +88,7 @@ Costo: $50K/año (no consultor)
 **Screen 2**: Incident (Phishing email)  
 **Screen 3**: AI Suggestions
 ```
-🧠 AI Suggested Playbooks:
+ AI Suggested Playbooks:
 
 1. ✅ Phishing Email Triage + Response
    Match: 94% | Used: 347 times | Avg: 4 min
@@ -120,7 +120,7 @@ Costo: $50K/año (no consultor)
 
 ---
 
-## 🎯 PRÓXIMOS PASOS
+##  PRÓXIMOS PASOS
 
 **Esta semana**: POC funcional  
 **Próxima semana**: Outreach con demo  

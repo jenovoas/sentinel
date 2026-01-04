@@ -1,4 +1,4 @@
-🏎️  SENTINEL CORTEX BENCHMARK SUITE v1.0
+🏎  SENTINEL CORTEX BENCHMARK SUITE v1.0
 ----------------------------------------
 
 🔍 1. LATENCIA DE DECISIÓN CORTEX (Cognitive Loop)
@@ -10,7 +10,7 @@
    - Throughput: 15,417,321 PPS (Line Rate 10GbE)
    - CPU Impact: < 2.5% per core
 
-🛡️ 3. TRUTH INTEGRITY SKEW (Ring Buffer)
+ 3. TRUTH INTEGRITY SKEW (Ring Buffer)
    - Divergencia de Verdad: 0.0237µs
    - Consistencia: 100% SECURE
 
@@ -28,7 +28,7 @@ Throughput pico: 1.2M events/s
 **Componente**: Guardian Alpha (LSM Module)
 **Claim**: Inmunidad Matemática a nivel de Kernel (Ring 0).
 
-## 🛡️ Hooks de Seguridad Activos
+##  Hooks de Seguridad Activos
 Sentinel utiliza la infraestructura Linux Security Modules (LSM) a través de eBPF para interceptar eventos sin modificar el binario del kernel:
 
 1.  **bprm_check_security**: Intercepta la ejecución de cada binario. Permite a Cortex bloquear procesos antes de que el primer instrucción se ejecute.
@@ -61,8 +61,7 @@ A diferencia de los drivers tradicionales (CrowdStrike), el código de Sentinel 
   "xdp_drops": 15689
 }
 
-
---- 🛡️ HARDWARE-ROOTED SIGNATURE (TPM 2.0) ---
+---  HARDWARE-ROOTED SIGNATURE (TPM 2.0) ---
 Certificate: SENTINEL-CORTEX-V1.0.0-EK-001
 Signature: NivL0w5ltxFXsf789fNo4eX1X1wlO2iHrJdnzMeydiE=
 Status: IMMUTABLE_TRUTH_VERIFIED

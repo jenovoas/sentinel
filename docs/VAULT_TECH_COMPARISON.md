@@ -54,8 +54,8 @@ pub fn encrypt_data(key: &[u8], data: &[u8]) -> Result<Vec<u8>, Error> {
 - ✅ **Tamaño**: Binario pequeño (~2MB)
 
 **Cons**:
-- ⚠️ Requiere compilar Rust
-- ⚠️ Curva de aprendizaje
+- ⚠ Requiere compilar Rust
+- ⚠ Curva de aprendizaje
 
 **Benchmark**:
 ```
@@ -111,8 +111,8 @@ def encrypt_data(key: bytes, data: bytes) -> bytes:
 | KDF | Time (100k iterations) | Memory | GPU Resistance | Recomendación |
 |-----|------------------------|--------|----------------|---------------|
 | **Argon2id** | 250ms | 64MB | ⭐⭐⭐⭐⭐ | ✅ MEJOR |
-| **PBKDF2** | 180ms | <1MB | ⭐⭐ | ⚠️ Débil vs GPU |
-| **bcrypt** | 200ms | <1MB | ⭐⭐⭐ | ⚠️ Limitado a 72 chars |
+| **PBKDF2** | 180ms | <1MB | ⭐⭐ | ⚠ Débil vs GPU |
+| **bcrypt** | 200ms | <1MB | ⭐⭐⭐ | ⚠ Limitado a 72 chars |
 | **scrypt** | 220ms | 32MB | ⭐⭐⭐⭐ | ✅ Bueno |
 
 ### **Argon2id Implementation** ⭐
@@ -145,7 +145,7 @@ def derive_key(password: str, salt: bytes) -> bytes:
 
 ---
 
-## 🗄️ Database
+## 🗄 Database
 
 ### **Opción 1: PostgreSQL + pgcrypto ⭐ RECOMENDADO**
 
@@ -176,7 +176,7 @@ FROM vault_items;
 - ✅ Ya lo usas en Sentinel
 
 **Cons**:
-- ⚠️ Más pesado que SQLite
+- ⚠ Más pesado que SQLite
 
 **Performance**:
 ```
@@ -210,7 +210,7 @@ conn.execute("PRAGMA cipher = 'aes-256-cbc'")
 
 ---
 
-## ⛓️ Blockchain para Audit Trail
+## ⛓ Blockchain para Audit Trail
 
 ### **Comparativa de Chains**
 
@@ -276,7 +276,7 @@ wallet = Wallet.create('MyWallet')
 - ✅ Async support
 
 **Cons**:
-- ⚠️ Más lento que Rust
+- ⚠ Más lento que Rust
 
 ---
 
@@ -408,7 +408,7 @@ Hardware Wallets:
 
 ---
 
-## 🚀 Performance Estimado
+##  Performance Estimado
 
 ### **Operaciones Típicas**
 

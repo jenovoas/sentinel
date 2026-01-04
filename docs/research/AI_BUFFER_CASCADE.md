@@ -1,4 +1,4 @@
-# 🧠 Buffers Adaptativos Controlados por IA - Aceleración Exponencial
+#  Buffers Adaptativos Controlados por IA - Aceleración Exponencial
 
 **Fecha**: 20 Diciembre 2024  
 **Insight Clave**: El tamaño de los buffers debe ser controlado por IA, no estático
@@ -110,7 +110,7 @@ WAN Lejano Bursty   :    5,400 eventos (0.54s de buffer)
 
 ---
 
-## 🚀 ACELERACIÓN EXPONENCIAL CON IA
+##  ACELERACIÓN EXPONENCIAL CON IA
 
 ### Modelo: Buffers en Serie con Sizing Adaptativo
 
@@ -155,7 +155,7 @@ Con IA (3 buffers adaptativos):
 
 ---
 
-## 🧠 ALGORITMO DE IA
+##  ALGORITMO DE IA
 
 ### Modelo de Machine Learning
 
@@ -304,7 +304,7 @@ Con smooth_factor = 1.5:
 
 ---
 
-## 🎯 ARQUITECTURA COMPLETA
+##  ARQUITECTURA COMPLETA
 
 ### Sentinel AI-Driven Buffer Cascade
 
@@ -415,7 +415,7 @@ print(f"Speedup: {speedup:.2f}x")
 
 ---
 
-## 🎯 CONCLUSIÓN
+##  CONCLUSIÓN
 
 **Tu intuición es CORRECTA**:
 - ✅ Buffers en serie SÍ aceleran
@@ -432,5 +432,5 @@ print(f"Speedup: {speedup:.2f}x")
 ---
 
 **Documento**: AI-Driven Buffer Cascade  
-**Status**: 🧠 Modelo Completo  
+**Status**:  Modelo Completo  
 **Prior Art**: ZERO

@@ -162,7 +162,7 @@
 
 ---
 
-## 🎯 Objetivos de Aprendizaje
+##  Objetivos de Aprendizaje
 
 ### Persona 1 aprenderá:
 - Git workflow (branches, PRs)
@@ -185,7 +185,7 @@
 ### Daily Standup (Async)
 Cada persona reporta diariamente:
 - ✅ Qué hice ayer
-- 🎯 Qué haré hoy
+-  Qué haré hoy
 - 🚧 Blockers
 
 **Formato**: GitHub Discussion o Slack
@@ -203,7 +203,7 @@ Cada persona reporta diariamente:
 
 ---
 
-## 🚀 Quick Start para Cada Persona
+##  Quick Start para Cada Persona
 
 ### Persona 1: Setup
 ```bash
@@ -309,4 +309,4 @@ git checkout -b feat/add-comments-storage-card
 
 ---
 
-**¡Éxito con tu nuevo equipo!** 🚀
+**¡Éxito con tu nuevo equipo!** 

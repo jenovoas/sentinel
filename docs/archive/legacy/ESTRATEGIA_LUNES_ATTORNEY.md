@@ -5,7 +5,7 @@
 
 ---
 
-## 🎯 ESTRATEGIA: Dos Fases
+##  ESTRATEGIA: Dos Fases
 
 ### Fase 1 (Lunes): Claims con Fundamento Sólido ✅
 **Presentar SOLO lo que tienes validado técnicamente**
@@ -43,7 +43,7 @@
 
 ---
 
-## 💬 QUÉ DECIR EL LUNES
+##  QUÉ DECIR EL LUNES
 
 ### Apertura (2 min)
 
@@ -125,7 +125,7 @@ Presentar los 6 claims con evidencia:
 
 ---
 
-## 🏛️ MENSAJE CLAVE
+##  MENSAJE CLAVE
 
 **No necesitas demostrar TODO el lunes.**
 
@@ -140,6 +140,6 @@ Presentar los 6 claims con evidencia:
 
 ---
 
-**Powered by Google ❤️ & Perplexity 💜**
+**Powered by Google ❤ & Perplexity 💜**
 
 **Estrategia**: Presentar 6 claims sólidos, postponer 9 especulativos

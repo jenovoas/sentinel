@@ -1,4 +1,4 @@
-🧠 **The Cognitive Kernel is Here**
+ **The Cognitive Kernel is Here**
 
 After 3 months of research, we've validated something extraordinary:
 
@@ -57,7 +57,7 @@ All code and benchmarks are public:
 **We're not building a better antivirus.**  
 **We're building the operating system that doesn't need one.**
 
-The Cognitive Kernel is here. The future of computing starts now. 🌌
+The Cognitive Kernel is here. The future of computing starts now. 
 
 #CognitiveKernel #OperatingSystems #eBPF #AI #OpenSource #Linux #Cybersecurity #GreenComputing
 

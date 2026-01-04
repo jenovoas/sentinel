@@ -95,13 +95,13 @@
 **Seguridad**:
 - iframe sandbox ✅
 - CSP ✅
-- Limited capabilities ⚠️
+- Limited capabilities ⚠
 
 **Tiempo de desarrollo**: 2-3 días
 
 ---
 
-## 🎯 Recomendación
+##  Recomendación
 
 ### **Para MVP/POC**: Embedded Browser (iframe)
 - Rápido de implementar (2-3 días)
@@ -136,7 +136,7 @@
 
 ---
 
-## 🚀 Decisión Recomendada
+##  Decisión Recomendada
 
 **Para AHORA**: Embedded Browser (iframe)
 - ✅ Rápido

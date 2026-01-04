@@ -7,7 +7,7 @@
 
 ---
 
-## 🎯 YOUR LEARNING PATH (Optimized from Phase 1)
+##  YOUR LEARNING PATH (Optimized from Phase 1)
 
 ### **What You Already Know** ✅
 
@@ -681,7 +681,7 @@ fn echo(text: &str) { /* print text */ }
 
 ---
 
-## 🎯 FINAL TIMELINE
+##  FINAL TIMELINE
 
 **Month 1-2**: Rust fundamentals  
 **Month 3**: x86_64 architecture  
@@ -696,4 +696,4 @@ fn echo(text: &str) { /* print text */ }
 
 ---
 
-**Status**: 100% feasible, custom from day 1, optimized for cognitive kernel 🦀🧠
+**Status**: 100% feasible, custom from day 1, optimized for cognitive kernel 🦀

@@ -8,7 +8,7 @@
 
 ---
 
-## 1️⃣ INFORMACIÓN DE LA EMPRESA
+## 1⃣ INFORMACIÓN DE LA EMPRESA
 
 ### Datos Generales
 - **Nombre Comercial:** Sentinel Cortex
@@ -34,7 +34,7 @@
 
 ---
 
-## 2️⃣ DESCRIPCIÓN DEL PROYECTO
+## 2⃣ DESCRIPCIÓN DEL PROYECTO
 
 ### Problema que Resuelve
 
@@ -57,7 +57,7 @@ Los equipos de seguridad enfrentan una elección no factible:
 Sistema de seguridad cognitiva con tres capas de inteligencia:
 
 ```
-🧠 CORTEX (Cerebro Central)
+ CORTEX (Cerebro Central)
 ├─ Motor de decisión multi-factor
 ├─ Correlación de 5+ señales independientes
 └─ Scoring de confianza dinámico
@@ -106,7 +106,7 @@ Sistema de seguridad cognitiva con tres capas de inteligencia:
 
 ---
 
-## 3️⃣ MODELO DE NEGOCIO
+## 3⃣ MODELO DE NEGOCIO
 
 ### Canvas de Modelo de Negocio
 
@@ -218,7 +218,7 @@ TOTAL:                       $25M CLP
 
 ---
 
-## 4️⃣ MERCADO Y COMPETENCIA
+## 4⃣ MERCADO Y COMPETENCIA
 
 ### Tamaño de Mercado
 
@@ -284,7 +284,7 @@ TOTAL:                       $25M CLP
 
 ---
 
-## 5️⃣ PLAN DE TRABAJO (12 MESES)
+## 5⃣ PLAN DE TRABAJO (12 MESES)
 
 ### Trimestre 1 (Meses 1-3): Desarrollo Core
 
@@ -364,7 +364,7 @@ TOTAL:                       $25M CLP
 
 ---
 
-## 6️⃣ INDICADORES DE ÉXITO (KPIs)
+## 6⃣ INDICADORES DE ÉXITO (KPIs)
 
 ### Métricas de Producto
 
@@ -402,7 +402,7 @@ TOTAL:                       $25M CLP
 
 ---
 
-## 7️⃣ RIESGOS Y MITIGACIÓN
+## 7⃣ RIESGOS Y MITIGACIÓN
 
 ### Riesgos Técnicos
 
@@ -442,7 +442,7 @@ TOTAL:                       $25M CLP
 
 ---
 
-## 8️⃣ IMPACTO ESPERADO
+## 8⃣ IMPACTO ESPERADO
 
 ### Impacto Económico
 
@@ -472,7 +472,7 @@ TOTAL:                       $25M CLP
 
 ---
 
-## 9️⃣ ANEXOS
+## 9⃣ ANEXOS
 
 ### Anexo A: Equipo Técnico
 
@@ -510,7 +510,7 @@ TOTAL:                       $25M CLP
 
 ---
 
-## 🎯 RESUMEN EJECUTIVO
+##  RESUMEN EJECUTIVO
 
 **Problema:** Sistemas AIOps vulnerables a AIOpsDoom (CVSS 9.1), costosos ($180K/año), sin opción segura y asequible.
 

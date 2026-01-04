@@ -4,7 +4,7 @@
 
 ---
 
-## 🎯 Core Features (Implemented ✅)
+##  Core Features (Implemented ✅)
 
 1. ✅ **Password Manager** (encryption ready)
 2. ✅ **Crypto Wallet** (4 chains: BTC, ETH, MATIC, SOL)
@@ -13,7 +13,7 @@
 
 ---
 
-## 🚀 New Features (Roadmap)
+##  New Features (Roadmap)
 
 ### **1. Secure Document Vault** 📄
 
@@ -22,7 +22,7 @@
 **Features**:
 - 📄 **Document storage**: PDFs, images, text files
 - 🔐 **Encryption**: AES-256-GCM (same as passwords)
-- 🏷️ **Categories**: ID documents, contracts, receipts, medical, legal
+- 🏷 **Categories**: ID documents, contracts, receipts, medical, legal
 - 🔍 **Search**: Full-text search (encrypted)
 - 📎 **Attachments**: Link documents to passwords/wallets
 - 📊 **File types**:
@@ -71,7 +71,7 @@ class SecureDocument:
 **Features**:
 - 🔒 **Isolated environment**: Separate from main browser
 - 🚫 **No extensions**: Zero attack surface
-- 🛡️ **Anti-phishing**: URL verification, SSL pinning
+-  **Anti-phishing**: URL verification, SSL pinning
 - 🔐 **Hardware wallet integration**: Ledger/Trezor
 - 📊 **Transaction preview**: Show exact amounts before signing
 - 🚨 **Malicious site detection**: Blacklist + AI analysis
@@ -112,7 +112,7 @@ Option 3: Tor Browser (maximum privacy)
 **Purpose**: Terminal integrada ultra-segura para developers/crypto users
 
 **Features**:
-- 🖥️ **GPU-accelerated**: Kitty-like performance
+- 🖥 **GPU-accelerated**: Kitty-like performance
 - 🔀 **Multiplexing**: tmux-style sessions/windows
 - 🔐 **Encrypted sessions**: All I/O encrypted
 - 🔑 **SSH key management**: Store SSH keys in vault
@@ -120,7 +120,7 @@ Option 3: Tor Browser (maximum privacy)
 - 🎨 **Themes**: Customizable (Dracula, Nord, etc.)
 - 🔍 **Search**: Full-text search in scrollback
 - 📋 **Smart clipboard**: Secure copy/paste
-- 🚀 **Fast**: Hardware acceleration (GPU)
+-  **Fast**: Hardware acceleration (GPU)
 
 **Security Features**:
 - **Sandboxed**: Isolated from main system
@@ -194,8 +194,8 @@ Option 3: Native (platform-specific)
 
 **Features**:
 - 📝 **Markdown support**: Rich text, code blocks
-- 🔗 **Bidirectional links**: `[[Note Name]]`
-- 🗂️ **Folders/tags**: Organize notes
+-  **Bidirectional links**: `[[Note Name]]`
+- 🗂 **Folders/tags**: Organize notes
 - 🔍 **Full-text search**: Encrypted search
 - 📊 **Graph view**: Visualize connections
 - 🔐 **End-to-end encryption**: Zero-knowledge
@@ -242,7 +242,7 @@ interface Note {
 
 ---
 
-## 🏗️ Architecture
+## 🏗 Architecture
 
 ### **Unified Platform**:
 ```
@@ -291,14 +291,14 @@ Sentinel Vault
 |---------|----------|----------------|
 | Notes | ✅ | ✅ |
 | Linking | ✅ | ✅ |
-| Encryption | ⚠️ (plugin) | ✅ (native) |
+| Encryption | ⚠ (plugin) | ✅ (native) |
 | Passwords | ❌ | ✅ |
 | Crypto | ❌ | ✅ |
 | **Score** | 2/5 | **5/5** |
 
 ---
 
-## 🎯 Implementation Roadmap
+##  Implementation Roadmap
 
 ### **Phase 1: Document Vault** (Week 1-2)
 - [ ] Database schema (documents table)
@@ -366,7 +366,7 @@ Sentinel Vault
 
 ---
 
-## 🎯 Target Markets
+##  Target Markets
 
 ### **1. Crypto Traders**:
 - Need: Secure wallet + trading journal (notes) + tax docs
@@ -385,7 +385,7 @@ Sentinel Vault
 
 ---
 
-## 🚀 Unique Selling Points
+##  Unique Selling Points
 
 1. ✅ **All-in-one**: Passwords + Crypto + Docs + Notes + Browser
 2. ✅ **Zero-knowledge**: Everything encrypted (E2EE)

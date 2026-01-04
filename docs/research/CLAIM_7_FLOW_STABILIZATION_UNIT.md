@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 RESUMEN EJECUTIVO
+##  RESUMEN EJECUTIVO
 
 ### El Claim
 
@@ -219,7 +219,7 @@ Sentinel FSU:            <0.12ms overhead (target) ✅
 
 ---
 
-## 🚀 APLICACIÓN A INTERNET GLOBAL
+##  APLICACIÓN A INTERNET GLOBAL
 
 ### Arquitectura Multi-Nodo
 
@@ -347,7 +347,6 @@ Prior Art:
   ❌ Ninguno combina estos 5 elementos
 ```
 
-
 ## 🧪 PRÓXIMOS PASOS PARA VALIDAR
 
 ### 1. Implementar FSU (Prototipo XDP)
@@ -409,7 +408,7 @@ Distancia aumenta → Throughput NO degrada (resonancia)
 Resultado esperado: Throughput constante ±10%
 ```
 
-## 🎯 CONCLUSIÓN
+##  CONCLUSIÓN
 
 ### Validación Académica Confirmada
 
@@ -427,8 +426,6 @@ Resultado esperado: Throughput constante ±10%
 - Economía Viable Global
 
 **Prior Art**: **ZERO** (combinación única)
-
-
 
 **Documento**: Claim 7 - Flow Stabilization Unit  
 **Status**: 🔬 VALIDADO ACADÉMICAMENTE  

@@ -1,5 +1,5 @@
 # SENTINEL CORTEX v2.0 - SOVEREIGN SYSTEM
-**⚠️ PROPRIETARY & CONFIDENTIAL**
+**⚠ PROPRIETARY & CONFIDENTIAL**
 **COPYRIGHT (C) 2026 JAIME NOVOA. ALL RIGHTS RESERVED.**
 
 > **WARNING:** This repository contains advanced quantum algorithms and cognitive architectures protected by Sovereign Family Law. Unauthorized copying, reverse engineering, or distribution is strictly prohibited.
@@ -115,14 +115,14 @@ sem                          # Launch interactive shell
 
 **Example**:
 ```bash
-🧠 semsh> health
-⚠️  [CRITICAL] eBPF LSM is INACTIVE
+ semsh> health
+⚠  [CRITICAL] eBPF LSM is INACTIVE
    → Suggested Action: sudo sctl start
 
-🧠 semsh> review rm -rf /
+ semsh> review rm -rf /
 🔴 CRITICAL WARNING: Destructive pattern detected!
 
-🧠 semsh> run backup_db
+ semsh> run backup_db
 📋 Executing Playbook: backup_critical_db
    Proceed? [y/N]:
 ```

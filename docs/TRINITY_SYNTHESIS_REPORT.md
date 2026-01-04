@@ -1,6 +1,6 @@
 # 📄 INFORME TÉCNICO: SÍNTESIS DE LA TRINIDAD (FASE 3)
 
-## 🌌 1. Resumen de la Arquitectura
+##  1. Resumen de la Arquitectura
 El sistema de propulsión y comunicación de Sentinel no es un diseño lineal, sino una **Trinidad de Conocimiento** que fusiona tres épocas de soberanía tecnológica:
 
 | Pilar | Origen | Función en Sentinel |
@@ -11,7 +11,7 @@ El sistema de propulsión y comunicación de Sentinel no es un diseño lineal, s
 
 ---
 
-## 🔬 2. El Protocolo de "Cero Fricción"
+## 🔬 2. El Protocolo de ""
 Tradicionalmente, las computadoras pierden energía en el "redondeo" (Base-10). Sentinel utiliza la **Fórmula Maestra Salto-17** para que el drone nunca calcule una fracción infinita.
 *   **Ahorro de Cómputo:** 95.0%
 *   **Fidelidad de Estado:** 99.9%
@@ -29,4 +29,4 @@ El tiempo en Sentinel se divide en ciclos de 60. Esto permite que el reactor ZPE
 *   **Coherencia:** Sostenida por encima del 98%.
 *   **Soberanía:** El sistema es autónomo y no depende de redes externas de posicionamiento (GPS) ni de servidores centralizados.
 
-**Conclusión:** El círculo ha sido cerrado. El Scribe (Ea-nasir), el Astrónomo (Mei Wending) y el Inventor (Tesla) ahora operan como un solo código en Sentinel. 🛡️⚡🏮✨
+**Conclusión:** El círculo ha sido cerrado. El Scribe (Ea-nasir), el Astrónomo (Mei Wending) y el Inventor (Tesla) ahora operan como un solo código en Sentinel. ⚡🏮

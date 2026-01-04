@@ -1,4 +1,4 @@
-# 🚀 Sentinel Cortex v2.0 - x86_64 Optimization Results
+#  Sentinel Cortex v2.0 - x86_64 Optimization Results
 
 ## 📅 Fecha: 2026-01-01
 **Hardware**: Intel i5-10300H (4C/8T), 16GB RAM

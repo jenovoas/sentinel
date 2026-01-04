@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Vision
+##  Vision
 
 **TruthSync** = Truth Algorithm + Pi-hole + Sentinel Integration
 
@@ -23,7 +23,7 @@ WHAT IT DOES:
 
 ---
 
-## 🏗️ Architecture
+## 🏗 Architecture
 
 ### Layer 8: Truth Verification
 
@@ -81,13 +81,13 @@ WHAT IT DOES:
 - Checks n8n workflows
 - Sanitizes telemetry
 
-### 4. Self-Learning System ✨ NEW
+### 4. Self-Learning System  NEW
 - Learns from verification results
 - Adapts trust scores based on outcomes
 - Detects new disinformation patterns
 - Feeds back to Truth Algorithm
 
-### 5. LLM Integration (Ollama) ✨ NEW
+### 5. LLM Integration (Ollama)  NEW
 - LLM queries TruthSync before responding
 - Verified facts injected into context
 - Prevents hallucinations
@@ -95,7 +95,7 @@ WHAT IT DOES:
 
 ---
 
-## 🧠 Self-Learning Integration
+##  Self-Learning Integration
 
 ### How It Works
 
@@ -270,7 +270,7 @@ class OllamaTruthSync:
                 badge += f"\nSource: {verification.source} (trust: {verification.trust_score})"
                 response += badge
             elif verification.confidence < 0.5:
-                badge = f"\n⚠️ Unverified claim detected"
+                badge = f"\n⚠ Unverified claim detected"
                 badge += f"\nReason: {verification.reason}"
                 response += badge
         
@@ -346,7 +346,7 @@ services:
 
 ---
 
-## 🎯 Implementation Phases
+##  Implementation Phases
 
 ### Phase 1: Core (Week 1-2)
 - [ ] Docker container

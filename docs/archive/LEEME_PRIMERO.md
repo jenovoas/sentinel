@@ -4,7 +4,7 @@
 
 ---
 
-## 🎯 DOCUMENTOS ESENCIALES (Lee solo estos)
+##  DOCUMENTOS ESENCIALES (Lee solo estos)
 
 ### 1. DOCUMENTACION_MAESTRA_VALIDACION.md ⭐ **EMPIEZA AQUÍ**
 **Qué contiene**: Resumen completo de TODO lo validado hoy
@@ -42,7 +42,7 @@
 
 ---
 
-## 🗑️ PUEDES IGNORAR (Documentos intermedios)
+## 🗑 PUEDES IGNORAR (Documentos intermedios)
 
 - ANALISIS_GENERAL_REAL_2025_12_21.md (superado por DOCUMENTACION_MAESTRA)
 - VICTORIA_TECNICA_LEGAL_20251221.md (resumen, ya en DOCUMENTACION_MAESTRA)

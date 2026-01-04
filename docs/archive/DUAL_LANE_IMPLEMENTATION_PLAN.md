@@ -1,6 +1,6 @@
 # Implementación Arquitectura Dual-Lane para Sentinel
 
-## 🎯 Objetivo
+##  Objetivo
 
 Separar flujos de datos en dos carriles independientes para eliminar riesgos existenciales identificados en análisis forense:
 
@@ -9,7 +9,7 @@ Separar flujos de datos en dos carriles independientes para eliminar riesgos exi
 
 ---
 
-## ⚠️ Problemas Críticos Identificados
+## ⚠ Problemas Críticos Identificados
 
 ### 1. **Inmutabilidad Temporal de Loki** (Talón de Aquiles)
 - **Riesgo**: Buffers dinámicos pueden reordenar logs → Loki rechaza con `out-of-order`
@@ -392,9 +392,9 @@ class WAL:
 |---------|---------|-----------|--------------|
 | **Forensic Integrity** | ❌ | ❌ | ✅ WAL + Security Lane |
 | **AIOpsDoom Defense** | ❌ | ❌ | ✅ AIOpsShield |
-| **Kernel-Level (Ring 0)** | ⚠️ Agent | ⚠️ Agent | ✅ eBPF nativo |
+| **Kernel-Level (Ring 0)** | ⚠ Agent | ⚠ Agent | ✅ eBPF nativo |
 | **Dual-Lane Architecture** | ❌ | ❌ | ✅ Patentable |
-| **Predictive Buffering** | ⚠️ Básico | ⚠️ Básico | ✅ ML-driven |
+| **Predictive Buffering** | ⚠ Básico | ⚠ Básico | ✅ ML-driven |
 
 ---
 

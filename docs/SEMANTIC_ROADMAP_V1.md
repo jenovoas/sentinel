@@ -1,11 +1,11 @@
-# 🎯 Sentinel Cortex - V1 Hardening & Semantic Roadmap
+#  Sentinel Cortex - V1 Hardening & Semantic Roadmap
 
 **Status**: Planning Phase  
 **Objective**: Transition from a validated prototype to an adaptive security system.
 
 ---
 
-## 🏗️ Milestone 1: Sentinel Semantic Corpus (SSC)
+## 🏗 Milestone 1: Sentinel Semantic Corpus (SSC)
 *Objetivo: Crear un benchmark de referencia para la interpretación de intenciones.*
 
 ### 1.1 Diseño del Corpus (`tests/semantic_corpus.json`)
@@ -22,7 +22,7 @@
 
 ---
 
-## 🛡️ Milestone 2: Adaptive Policy Profiles
+##  Milestone 2: Adaptive Policy Profiles
 *Objetivo: Implementar perfiles de severidad intercambiables en caliente.*
 
 ### 2.1 Definición de Perfiles (`config/profiles/`)
@@ -45,7 +45,7 @@
 
 ---
 
-## 🧠 Milestone 3: Semantic Shield Hardening (SSH)
+##  Milestone 3: Semantic Shield Hardening (SSH)
 *Objetivo: Prevenir la evasión del middleware semántico.*
 
 - [ ] Implementar detección de "Prompt Injection" en el SemSH.

@@ -7,7 +7,7 @@
 
 ---
 
-## 🎯 CONTEXTO COMPETITIVO
+##  CONTEXTO COMPETITIVO
 
 **Tech industry reality**: Kernel-level security y AI-based defense son áreas de inversión masiva por tech giants.
 
@@ -32,7 +32,7 @@
 
 ---
 
-## 🎯 CLAIMS PRIORITARIOS (3-4 para Provisional)
+##  CLAIMS PRIORITARIOS (3-4 para Provisional)
 
 ### Claim 1: Dual-Lane Telemetry Segregation ⭐⭐
 
@@ -189,7 +189,7 @@ Bypass resistance: Impossible from userspace
 
 ---
 
-## ⚠️ RIESGO COMPETITIVO
+## ⚠ RIESGO COMPETITIVO
 
 ### Evidencia de Interés Externo
 
@@ -299,7 +299,7 @@ Founder & Lead Architect - Sentinel Cortex™
 
 ---
 
-## 🎯 SOLICITUD
+##  SOLICITUD
 
 **¿Puede tomar este caso con prioridad máxima?**
 

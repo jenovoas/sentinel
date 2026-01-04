@@ -76,7 +76,7 @@ Beta Guardian cognitive processing and decision-making architecture.
 
 ---
 
-## 🔗 Cross-References
+##  Cross-References
 
 ### By Topic
 
@@ -124,7 +124,7 @@ Beta Guardian cognitive processing and decision-making architecture.
 
 ---
 
-## 🎯 Quick Navigation
+##  Quick Navigation
 
 - **[← Main Documentation](../README.md)**
 - **[Research →](../research/README.md)**

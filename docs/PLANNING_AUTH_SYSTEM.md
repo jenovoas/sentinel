@@ -7,7 +7,7 @@
 
 ---
 
-## 🎯 Objetivo
+##  Objetivo
 
 Crear un sistema de autenticación que sea:
 - ✅ **Más seguro** que passwords tradicionales
@@ -118,7 +118,7 @@ Crear un sistema de autenticación que sea:
 
 ---
 
-## 🚀 Roadmap Tentativo
+##  Roadmap Tentativo
 
 ### Fase 1: Investigación (2-4 semanas)
 - [ ] Benchmarking de soluciones
@@ -166,7 +166,7 @@ Crear un sistema de autenticación que sea:
 
 ---
 
-## 🔗 Referencias
+##  Referencias
 
 ### Standards
 - [WebAuthn Spec](https://www.w3.org/TR/webauthn/)

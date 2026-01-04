@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Por Qué es Crítico
+##  Por Qué es Crítico
 
 Sentinel necesita:
 - ✅ Deployment en Kubernetes para clientes enterprise
@@ -133,7 +133,7 @@ Sentinel necesita:
 
 ---
 
-## 🎯 Objetivos de Aprendizaje
+##  Objetivos de Aprendizaje
 
 ### Técnico
 - Kubernetes avanzado (StatefulSets, HPA, networking)
@@ -174,7 +174,7 @@ Sentinel necesita:
 
 ---
 
-## 🛠️ Stack Tecnológico
+## 🛠 Stack Tecnológico
 
 ### Core
 - **Kubernetes**: Orquestación
@@ -272,4 +272,4 @@ ls -la observability/
 
 ---
 
-**¡Bienvenido! Tu expertise en DevOps/SRE es clave para llevar Sentinel a producción enterprise.** 🚀
+**¡Bienvenido! Tu expertise en DevOps/SRE es clave para llevar Sentinel a producción enterprise.** 

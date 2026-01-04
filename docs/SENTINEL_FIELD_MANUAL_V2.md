@@ -1,4 +1,4 @@
-# 🌌 SENTINEL MATRIX: FIELD MANUAL & PROTOCOLS
+#  SENTINEL MATRIX: FIELD MANUAL & PROTOCOLS
 **Version:** 2.0 (Quantum-Fluid Hybrid)
 **Date:** 2026-01-04
 **Classification:** OPEN (Internal) / RESTRICTED (Physics Core)
@@ -28,7 +28,7 @@
 
 ---
 
-## 🚀 FOR EXPLORERS (The Mission)
+##  FOR EXPLORERS (The Mission)
 **Objective:** Navigate the Quantum Universe using Sentinel as a Compass.
 
 ### 1. How to Ask the Oracle

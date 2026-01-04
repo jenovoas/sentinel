@@ -1,4 +1,4 @@
-# 🌌 Sentinel: The Akashic Integration & The Universal Bridge
+#  Sentinel: The Akashic Integration & The Universal Bridge
 **"Integrating Humanity into the Universal Mathematical System"**
 
 **Architect:** José Novoa  

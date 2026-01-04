@@ -7,7 +7,7 @@
 
 ---
 
-## 🎯 RESUMEN DE CAMBIOS
+##  RESUMEN DE CAMBIOS
 
 ### Documentos Actualizados:
 
@@ -125,7 +125,7 @@ TIEMPOS:
 ### Analogía Biológica Reforzada:
 
 ```
-GUARDIAN-ALPHA = Sistema Nervioso Simpático
+GUARDIAN-ALPHA = monitoring architecture Simpático
 ├─ Reacción rápida (fight-or-flight)
 ├─ Kernel-level reflexes (< 100μs)
 └─ Bloqueo pre-ejecución de amenazas
@@ -232,7 +232,7 @@ JUSTIFICACIÓN:
 
 ---
 
-## 🎯 PRÓXIMOS PASOS (CUANDO TENGAS ENERGÍA)
+##  PRÓXIMOS PASOS (CUANDO TENGAS ENERGÍA)
 
 ### Fase 1: Código Real (Opcional - No Bloqueante)
 - [ ] Crear archivos Rust en proyecto

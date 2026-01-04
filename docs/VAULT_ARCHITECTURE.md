@@ -5,7 +5,7 @@
 
 ---
 
-## 🏗️ High-Level Design
+## 🏗 High-Level Design
 
 Sentinel Vault is designed as a **Local-First**, **Zero-Knowledge** application. It assumes the cloud is hostile and the network is compromised.
 

@@ -171,7 +171,7 @@ incident_data = {
 **5.1 Empty State (No Incidents)**
 - ✅ "All Clear!" message prominent
 - ✅ Emerald/green color scheme
-- ✅ Positive tone ("✨ All Clear!")
+- ✅ Positive tone (" All Clear!")
 
 **5.2 P3/P4 Incidents (Low Priority)**
 - ✅ Blue/gray badges (NOT red)
@@ -235,7 +235,7 @@ incident_data = {
 
 ### Overall Status
 - [ ] ✅ PASS - Ready for demo
-- [ ] ⚠️ PARTIAL - Minor issues
+- [ ] ⚠ PARTIAL - Minor issues
 - [ ] ❌ FAIL - Major issues
 
 ### Notes

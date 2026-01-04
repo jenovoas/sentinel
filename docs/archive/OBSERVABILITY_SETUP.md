@@ -8,7 +8,7 @@ http://localhost:3001/d/slo-monitoring
 
 ---
 
-## 🎯 PARTE C: SLOs & Error Budget - COMPLETADO
+##  PARTE C: SLOs & Error Budget - COMPLETADO
 
 ### Qué se configuró
 
@@ -127,7 +127,7 @@ observability/
 
 ---
 
-## 🔗 Links Útiles
+##  Links Útiles
 
 | Servicio | URL | Usuario | Password |
 |----------|-----|---------|----------|
@@ -141,7 +141,7 @@ observability/
 
 ---
 
-## ⚠️ Notas Importantes
+## ⚠ Notas Importantes
 
 - **Autenticación Google**: No requerida. Usando Slack webhooks en su lugar.
 - **Email**: Usa SMTP. Local: mailhog (puerto 1025). Production: configura tu servidor.

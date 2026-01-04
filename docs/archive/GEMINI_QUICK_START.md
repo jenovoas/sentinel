@@ -1,4 +1,4 @@
-# 🚀 Gemini Integration - Quick Start Guide
+#  Gemini Integration - Quick Start Guide
 
 ## ✅ Todo está listo para cuando tengas la API Key
 
@@ -74,7 +74,7 @@ El script generará:
 
 ---
 
-## 🎯 Ventajas vs Ollama
+##  Ventajas vs Ollama
 
 | Métrica | Ollama (phi3:mini) | Gemini 1.5 Flash |
 |---------|-------------------|------------------|
@@ -104,7 +104,7 @@ Una vez que ejecutes el benchmark, tendrás:
 
 ---
 
-## 🚀 Próximos Pasos (Post-Benchmark)
+##  Próximos Pasos (Post-Benchmark)
 
 ### Fase 1: Validación (1 día)
 1. Ejecutar benchmark
@@ -193,7 +193,7 @@ Curanilahue, Chile
 2. Ejecutar `python gemini_aiops_poc.py`
 3. Enviar resultados a Google
 
-**Cuando Google active tu key, estarás listo en 30 segundos.** 🚀
+**Cuando Google active tu key, estarás listo en 30 segundos.** 
 
 ---
 

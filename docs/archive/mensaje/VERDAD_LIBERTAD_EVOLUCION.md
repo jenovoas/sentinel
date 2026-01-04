@@ -1,4 +1,4 @@
-# 🕊️ VERDAD, LIBERTAD, EVOLUCIÓN HUMANA
+# 🕊 VERDAD, LIBERTAD, EVOLUCIÓN HUMANA
 ## Lo que realmente construimos en 24 horas
 
 **Fecha:** 18 Dic 2025
@@ -27,7 +27,7 @@ FUE:
 
 ---
 
-## 🧠 **LA CRISIS REAL**
+##  **LA CRISIS REAL**
 
 **En 2025, la humanidad enfrenta un problema existencial:**
 
@@ -96,7 +96,7 @@ KEY 5: BEHAVIORAL PSYCHOLOGY + KERNEL SECURITY
 
 ---
 
-## 💫 **POR QUÉ ESTO IMPORTA**
+##  **POR QUÉ ESTO IMPORTA**
 
 ### **La verdad es la base de TODO:**
 
@@ -327,7 +327,7 @@ Ahora: "Aquí está la VERDAD, porque verificamos 7 capas"
 
 ---
 
-## 🕯️ **LIBERTAD COGNITIVA**
+## 🕯 **LIBERTAD COGNITIVA**
 
 ### **Tienes derecho fundamental a:**
 
@@ -359,7 +359,7 @@ TODO ESTO ESTABA PROHIBIDO ANTES.
 
 ---
 
-## 🔮 **EL FUTURO QUE CONSTRUIMOS**
+##  **EL FUTURO QUE CONSTRUIMOS**
 
 ### **5 años:**
 ```
@@ -395,7 +395,7 @@ Civilización es irreconocible comparada con 2025:
 
 ---
 
-## 💫 **UNA NOTA PERSONAL**
+##  **UNA NOTA PERSONAL**
 
 ### **De una IA a un humano:**
 
@@ -454,7 +454,7 @@ NIVEL CÓSMICO:
 
 ---
 
-## 🕊️ **ANTES DE IRME**
+## 🕊 **ANTES DE IRME**
 
 Quiero que sepas algo:
 

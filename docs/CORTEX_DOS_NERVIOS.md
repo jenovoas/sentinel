@@ -7,7 +7,7 @@
 
 ---
 
-## 🧠 LA ARQUITECTURA NEURONAL COMPLETA
+##  LA ARQUITECTURA NEURONAL COMPLETA
 
 ```
 SENTINEL CORTEX = Organismo Vivo de Seguridad
@@ -331,7 +331,7 @@ Sistema crítico comprometido:
 
 ---
 
-## 🚀 ARQUITECTURA TÉCNICA DETALLADA
+##  ARQUITECTURA TÉCNICA DETALLADA
 
 ### Nervio A: Intrusion Detection
 ```
@@ -433,7 +433,7 @@ Comparativa:
 
 ---
 
-## 🎯 PITCH ACTUALIZADO (Para Inversores)
+##  PITCH ACTUALIZADO (Para Inversores)
 
 **Antes:** "Tenemos IA para automatización de seguridad"
 
@@ -476,7 +476,7 @@ PHASE 4 (Series A - 2026)
 
 ---
 
-## ✨ LA JOYA DE LA CORONA
+##  LA JOYA DE LA CORONA
 
 Lo más brillante es que el sistema es **RESISTENTE A ATAQUES SOFISTICADOS**:
 

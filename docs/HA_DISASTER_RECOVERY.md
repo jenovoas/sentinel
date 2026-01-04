@@ -27,7 +27,7 @@
 
 ---
 
-## 🎯 High Availability Requirements
+##  High Availability Requirements
 
 ### RPO/RTO Targets
 
@@ -50,7 +50,7 @@
 
 ---
 
-## 🏗️ Proposed HA Architecture
+## 🏗 Proposed HA Architecture
 
 ### Architecture Overview
 
@@ -545,7 +545,7 @@ SYNC_FREQUENCY='15'
 
 ---
 
-## 🎯 Recommended Implementation Roadmap
+##  Recommended Implementation Roadmap
 
 ### Phase 1: Foundation (Month 1-2)
 
@@ -634,7 +634,7 @@ pgbackrest --stanza=sentinel info
 
 ---
 
-## 🚀 Quick Start: Minimal HA Setup
+##  Quick Start: Minimal HA Setup
 
 For immediate improvement (can be done in 1 week):
 

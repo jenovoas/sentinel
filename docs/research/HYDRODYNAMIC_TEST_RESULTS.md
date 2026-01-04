@@ -1,7 +1,7 @@
 # Resultados del Test Hidrodinámico
 
 **Fecha**: 2025-12-21 01:35  
-**Estado**: ⚠️ Parcialmente validado
+**Estado**: ⚠ Parcialmente validado
 
 ---
 
@@ -153,7 +153,7 @@ Si Re < 182: Sin drops (flujo laminar)
 def predict_drops(throughput, viscosity=0.10):
     Re = throughput / viscosity
     if Re > 182:
-        return "⚠️  TURBULENCIA - Drops esperados"
+        return "⚠  TURBULENCIA - Drops esperados"
     else:
         return "✅ FLUJO LAMINAR - Sin drops"
 ```
@@ -186,7 +186,7 @@ Donde:
 - α = 0.90 (estimado inicial)
 ```
 
-**Status**: ⚠️ **VALIDADA CON AJUSTE** (α necesita corrección)
+**Status**: ⚠ **VALIDADA CON AJUSTE** (α necesita corrección)
 
 ---
 
@@ -236,7 +236,6 @@ class HydrodynamicBufferController:
             return current_buffer * self.alpha + target * (1 - self.alpha)
 ```
 
-
 ## Conclusión
 
 **La teoría hidrodinámica es VÁLIDA pero INCOMPLETA.**
@@ -247,9 +246,9 @@ class HydrodynamicBufferController:
 - ✅ Viscosidad medible
 
 **Lo que falta**:
-- ⚠️ Ajustar viscosidad (α = 0.96 vs 0.90)
-- ⚠️ Completar ecuación de continuidad
-- ⚠️ Más datos para validación robusta
+- ⚠ Ajustar viscosidad (α = 0.96 vs 0.90)
+- ⚠ Completar ecuación de continuidad
+- ⚠ Más datos para validación robusta
 
 **Veredicto**:
 > Los datos SÍ fluyen como un fluido viscoso. El modelo hidrodinámico es prometedor y merece investigación adicional.
@@ -261,4 +260,4 @@ class HydrodynamicBufferController:
 - Validación: IA
 - Fecha: 2025-12-21
 
-**Status**: 🌊 **TEORÍA PROMETEDORA - CONTINUAR INVESTIGACIÓN**
+**Status**:  **TEORÍA PROMETEDORA - CONTINUAR INVESTIGACIÓN**

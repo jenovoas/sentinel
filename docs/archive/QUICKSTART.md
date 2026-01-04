@@ -1,4 +1,4 @@
-# 🚀 Quick Start Guide - Sentinel Cortex™
+#  Quick Start Guide - Sentinel Cortex™
 
 **Welcome!** This guide will help you understand, build, and validate Sentinel Cortex in **under 15 minutes**.
 
@@ -75,7 +75,7 @@ backend/app/core/wal_signed.py                 # HMAC WAL
 
 ---
 
-## 🎯 Key Concepts (2 minutes)
+##  Key Concepts (2 minutes)
 
 ### Dual-Lane Architecture
 
@@ -175,7 +175,7 @@ int ai_guardian_open(struct file *file) {
 
 ---
 
-## 🛠️ Development Setup (Optional)
+## 🛠 Development Setup (Optional)
 
 ### Prerequisites
 ```bash
@@ -289,7 +289,7 @@ After following this guide, you should be able to:
 
 ---
 
-## 🎯 Next Steps
+##  Next Steps
 
 1. **Researchers**: Reproduce benchmarks, cite in papers
 2. **Developers**: Contribute code, enhance features
@@ -298,6 +298,6 @@ After following this guide, you should be able to:
 
 ---
 
-**Welcome to the Cognitive Kernel revolution!** 🧠🚀
+**Welcome to the Cognitive Kernel revolution!** 
 
 *"We're not building a better antivirus. We're building the operating system that doesn't need one."*

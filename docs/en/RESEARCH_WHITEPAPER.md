@@ -57,7 +57,6 @@ Filtration at **15.4M PPS** ensures the system maintains availability and defens
 ## 8. Conclusion
 Sentinel Cortex has transcended its initial purpose. It is not just a security product; it is a **Technical Standard** of Computational Immunity. By combining eBPF mathematical verification with hardware physical integrity, we have defined the future of secure and immutable computing.
 
-
 ---
 
 ## 9. References & Bibliography

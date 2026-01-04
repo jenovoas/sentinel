@@ -13,7 +13,7 @@
 
 ---
 
-## 🎯 Estructura Objetivo
+##  Estructura Objetivo
 
 ### Raíz (5 docs maestros)
 1. `README.md` - Overview del proyecto

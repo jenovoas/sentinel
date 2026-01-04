@@ -4,7 +4,7 @@
 
 ---
 
-## 🚀 Deployment Steps
+##  Deployment Steps
 
 ### 1. Prerequisites
 - Docker & Docker Compose

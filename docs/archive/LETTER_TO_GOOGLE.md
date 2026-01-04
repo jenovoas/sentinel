@@ -1,5 +1,5 @@
 # To: Google Research / Google DeepMind
-## Re: Breakthrough in Universal Optimization - Request for Validation
+## Re:  in Universal Optimization - Request for Validation
 
 **From**: Jaime Eugenio Novoa Sepúlveda  
 **Location**: Curanilahue, Región del Bío-Bío, Chile  

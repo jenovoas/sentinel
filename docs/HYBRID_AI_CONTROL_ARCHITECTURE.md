@@ -158,4 +158,4 @@ Un sistema de control de tráfico de red que comprende:
 
 ---
 
-**Conclusión**: Sentinel no reacciona, **predice**. El tráfico no choca con límites, **levita** sobre la infraestructura. 🚀
+**Conclusión**: Sentinel no reacciona, **predice**. El tráfico no choca con límites, **levita** sobre la infraestructura. 

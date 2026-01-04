@@ -45,7 +45,7 @@ Error: postgres: forward host lookup failed: Unknown host
 
 ---
 
-## 🎯 Plan de Arreglo
+##  Plan de Arreglo
 
 ### Opción A: Arreglar Ahora (30-60 min)
 1. Agregar PostgreSQL a docker-compose.yml

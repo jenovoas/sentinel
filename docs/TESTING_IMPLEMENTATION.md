@@ -25,7 +25,7 @@
 
 ---
 
-## 🚀 Phase 1: Environment Setup (Week 1)
+##  Phase 1: Environment Setup (Week 1)
 
 ### Day 1: Tool Installation
 
@@ -381,7 +381,7 @@ brf fuzz \
 
 ---
 
-## 🎯 Phase 6: Red Team Exercise (Week 3)
+##  Phase 6: Red Team Exercise (Week 3)
 
 ### Day 9-14: Full Red Team
 
@@ -435,7 +435,7 @@ python3 /tests/reporting/generate_report.py \
 
 ---
 
-## 🐳 Docker Prototyping (Laptop)
+##  Docker Prototyping (Laptop)
 
 While waiting for dedicated lab:
 

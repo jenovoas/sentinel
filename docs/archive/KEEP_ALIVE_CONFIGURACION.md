@@ -5,7 +5,7 @@
 
 ---
 
-## 🎯 ¿Qué es keep_alive?
+##  ¿Qué es keep_alive?
 
 **keep_alive** controla cuánto tiempo Ollama mantiene un modelo en RAM después de usarlo.
 
@@ -15,9 +15,9 @@
 |-------|----------------|-----------------|
 | **`-1`** | **PERMANENTE** (nunca descarga) | ✅ **Producción, benchmarks** |
 | `0` | Descarga inmediatamente | ❌ Desarrollo (ahorra RAM) |
-| `5m` | Mantiene 5 minutos | ⚠️ Testing ocasional |
-| `1h` | Mantiene 1 hora | ⚠️ Sesiones largas |
-| `24h` | Mantiene 24 horas | ⚠️ Uso diario |
+| `5m` | Mantiene 5 minutos | ⚠ Testing ocasional |
+| `1h` | Mantiene 1 hora | ⚠ Sesiones largas |
+| `24h` | Mantiene 24 horas | ⚠ Uso diario |
 
 ---
 
@@ -33,8 +33,8 @@
 - ✅ Ideal para producción
 
 **Desventajas**:
-- ⚠️ Usa RAM constantemente (~1.3 GB)
-- ⚠️ Solo se libera reiniciando Ollama
+- ⚠ Usa RAM constantemente (~1.3 GB)
+- ⚠ Solo se libera reiniciando Ollama
 
 ### Cuándo usar -1
 
@@ -233,7 +233,7 @@ sudo systemctl restart ollama
 
 ---
 
-## 🚀 WORKFLOW RECOMENDADO
+##  WORKFLOW RECOMENDADO
 
 ### Para Benchmarks
 
@@ -272,11 +272,11 @@ echo "curl http://localhost:11434/api/generate -d '{\"model\": \"llama3.2:1b\", 
 - ✅ Ideal para producción
 
 **Costo**:
-- ⚠️ 1.3 GB VRAM permanente
-- ⚠️ Solo se libera reiniciando
+- ⚠ 1.3 GB VRAM permanente
+- ⚠ Solo se libera reiniciando
 
 **Próxima Acción**: Ejecutar `./scripts/ollama_keep_alive.sh` y re-ejecutar benchmark
 
 ---
 
-**¿Configuramos keep_alive permanente ahora?** 🚀
+**¿Configuramos keep_alive permanente ahora?** 

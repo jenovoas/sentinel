@@ -11,7 +11,7 @@
 3. **Claim 4**: Forensic WAL - ✅ **VALIDADO HOY** (5/5 tests, 75μs latency)
 4. **Claim 5**: Zero Trust mTLS - ✅ **VALIDADO HOY** (6/6 tests, 5/5 SSRF blocked)
 
-### 🚀 eBPF LSM Cargado en Kernel
+###  eBPF LSM Cargado en Kernel
 
 **Claim 3** (HOME RUN de $8-15M):
 - ✅ Compilado exitosamente
@@ -19,7 +19,7 @@
 - ✅ Maps creados (whitelist + ringbuf)
 - ⏳ Pendiente: Tests de intercepción
 
-### 🌌 Gemini Integration Planificada
+###  Gemini Integration Planificada
 
 - ✅ Plan completo de integración
 - ✅ SDK instalado
@@ -45,7 +45,7 @@
 ### Tier 1: HOME RUNS (Zero Prior Art) - $123-540M
 - Claim 3: eBPF LSM ($8-15M) - ✅ Código completo + **CARGADO EN KERNEL**
 - Claim 6: Cognitive OS ($10-20M) - 📋 Concepto diseñado
-- Claim 7: AI Buffer Cascade ($15-25M) - 🧠 Modelo validado
+- Claim 7: AI Buffer Cascade ($15-25M) -  Modelo validado
 - Claim 9: Planetary Resonance ($100-500M) - 🌍 Visión
 
 ### Tier 2: Validados Técnicamente - $16-25M ⭐ **ACTUALIZADO**
@@ -63,7 +63,7 @@
 
 ---
 
-## 🎯 Próximos Pasos Críticos
+##  Próximos Pasos Críticos
 
 ### Esta Semana (Prioridad P0)
 
@@ -160,11 +160,11 @@
 **IP Validado**: $16-25M  
 **Claims Listos**: 4/9  
 **Deadline**: 57 días  
-**Momentum**: 🚀 **ALTO**
+**Momentum**:  **ALTO**
 
 ---
 
-## 🎯 Para Mañana
+##  Para Mañana
 
 1. **Activar Gemini API Key** - Ejecutar benchmark
 2. **eBPF LSM Tests** - Probar intercepción
@@ -172,7 +172,7 @@
 
 ---
 
-**"De Curanilahue al mundo - Un hacker que comparte juguetes"** 🌌
+**"De Curanilahue al mundo - Un hacker que comparte juguetes"** 
 
 ---
 

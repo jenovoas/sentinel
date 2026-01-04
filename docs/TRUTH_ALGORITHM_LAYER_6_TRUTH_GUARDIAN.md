@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Por Qué Layer 6 es Tu Ventaja Definitiva
+##  Por Qué Layer 6 es Tu Ventaja Definitiva
 
 ### **Competencia actual**:
 - ❌ Solo verifican claims individuales
@@ -24,7 +24,7 @@
 
 ---
 
-## 🏗️ Arquitectura Actualizada: 6 Capas
+## 🏗 Arquitectura Actualizada: 6 Capas
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -60,7 +60,7 @@
 
 ---
 
-## 🎯 Funcionalidad Layer 6: Truth Guardian
+##  Funcionalidad Layer 6: Truth Guardian
 
 ### **1. Predicción de Viralidad** 🔥
 
@@ -89,7 +89,7 @@
 
 ---
 
-### **2. Detección de Campañas Coordinadas** 🕸️
+### **2. Detección de Campañas Coordinadas** 🕸
 
 **Qué detecta**:
 - ✅ Múltiples cuentas posting same claim (same hour)
@@ -158,7 +158,7 @@ Tema: Crypto
 
 ---
 
-### **4. Adversarial Prediction** 🛡️
+### **4. Adversarial Prediction** 
 
 **Pregunta**: "¿Este claim está diseñado para evadir detección?"
 
@@ -184,7 +184,7 @@ Claim: Posted on "python-official.com" (not python.org)
 
 ---
 
-## 🛡️ Arquitectura Técnica Layer 6
+##  Arquitectura Técnica Layer 6
 
 ### **Rust Implementation**:
 
@@ -298,7 +298,7 @@ impl TruthGuardian {
 
 ---
 
-## 🚀 Integración con Buffer (Flujo Completo)
+##  Integración con Buffer (Flujo Completo)
 
 ```
 1. INPUT → BUFFER (<200ms)
@@ -321,7 +321,7 @@ impl TruthGuardian {
 
 ---
 
-## ⚔️ Diferenciación vs Competencia (Layer 6)
+## ⚔ Diferenciación vs Competencia (Layer 6)
 
 | Competidor | Viral Predict | Campaign Detect | Source Metrics | Evasion Detect |
 |------------|---------------|-----------------|----------------|----------------|
@@ -358,7 +358,7 @@ impl TruthGuardian {
 
 ---
 
-## 🎯 Prioridad Inmediata
+##  Prioridad Inmediata
 
 ### **Para POC (Semanas 1-2)**:
 ❌ **NO incluir Layer 6** (demasiado complejo)
@@ -432,4 +432,4 @@ impl TruthGuardian {
 - Agregar Layer 6 básico (semanas 3-6)
 - Layer 6 completo (mes 2-3)
 
-**Cuando estés listo, dime qué opción quieres (A, B, o C).** 🚀
+**Cuando estés listo, dime qué opción quieres (A, B, o C).** 

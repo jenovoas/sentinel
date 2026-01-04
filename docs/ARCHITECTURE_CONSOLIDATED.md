@@ -1,4 +1,4 @@
-# 🏗️ Architecture Decisions - Consolidated
+# 🏗 Architecture Decisions - Consolidated
 
 ## Dual-Lane Architecture ✅
 - **Security Lane**: Zero buffering, WAL, <10ms

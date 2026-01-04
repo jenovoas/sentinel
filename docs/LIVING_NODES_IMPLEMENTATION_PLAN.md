@@ -304,4 +304,4 @@ xl create -c sentinel_node.xl
 
 ---
 
-**Ready to proceed?** 🚀🧬
+**Ready to proceed?** 🧬

@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Análisis de Archivos Pesados
+##  Análisis de Archivos Pesados
 
 ### Archivos Identificados (>10KB)
 

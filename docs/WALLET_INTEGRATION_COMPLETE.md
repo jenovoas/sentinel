@@ -4,7 +4,7 @@
 
 ---
 
-## 🎯 What We Built
+##  What We Built
 
 Complete crypto wallet solution with:
 - ✅ **4 blockchains**: Bitcoin, Ethereum, Polygon, Solana
@@ -17,7 +17,7 @@ Complete crypto wallet solution with:
 
 ---
 
-## 🚀 How to Run
+##  How to Run
 
 ### **Backend**:
 ```bash
@@ -101,7 +101,7 @@ GET /crypto/portfolio
 
 ### **1. Wallet Generation**
 - Click "Generate New Wallet"
-- ⚠️ **Save seed phrase** (shown only once)
+- ⚠ **Save seed phrase** (shown only once)
 - See all 4 wallets with addresses
 - Real-time balances in native currency + USD
 
@@ -205,7 +205,7 @@ python test_api.py
 
 ---
 
-## 🎯 Next Steps
+##  Next Steps
 
 ### **Short-term** (This Week):
 1. [ ] Add password vault (encryption)

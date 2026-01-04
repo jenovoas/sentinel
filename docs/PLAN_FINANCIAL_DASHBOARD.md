@@ -5,7 +5,7 @@
 
 ---
 
-## 🏗️ Architecture
+## 🏗 Architecture
 
 ### **1. Data Model (Local & Encrypted)**
 *   **Assets**: Criptomonedas (Live Sync) y Activos Manuales (Cash, Real Estate, Stocks).
@@ -28,7 +28,7 @@
 
 ---
 
-## 🚀 Plan de Implementación
+##  Plan de Implementación
 
 1.  **Backend**:
     *   Crear `backend/poc/finance_service.py`.
@@ -37,7 +37,7 @@
     *   Instalar `recharts`.
     *   Crear sección "Financial Dashboard" en `page.tsx`.
 
-## 🛡️ Security Note
+##  Security Note
 A diferencia de Mint o YNAB, **Sentinel NO pide tus claves bancarias**.
 Es un modelo "Sovereign Individual": Tú controlas los datos, tú los ingresas (o importas CSVs cifrados).
 

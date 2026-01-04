@@ -46,7 +46,7 @@
 
 ---
 
-## 🎯 PRÓXIMOS 60 DÍAS (Deadline)
+##  PRÓXIMOS 60 DÍAS (Deadline)
 
 ### Mes 2 (17 Ene - 15 Feb)
 - [ ] Preparar documentos finales
@@ -72,7 +72,7 @@
 
 ---
 
-## 🚀 PRÓXIMO AÑO (Escala)
+##  PRÓXIMO AÑO (Escala)
 
 ### 2025 H2
 - [ ] Non-provisional patent filing
@@ -90,7 +90,7 @@
 
 ---
 
-## ⚠️ RIESGOS Y MITIGACIONES
+## ⚠ RIESGOS Y MITIGACIONES
 
 ### Riesgo 1: No encontrar attorney a tiempo
 **Probabilidad**: Media  
@@ -139,7 +139,7 @@
 
 ---
 
-## 🎯 PRIORIDADES
+##  PRIORIDADES
 
 **P0 (Crítico - Esta Semana)**:
 1. Compilar eBPF LSM
@@ -191,7 +191,7 @@
 - 17 documentos técnicos
 - Visión de $100-500M
 
-**En 1 día hiciste más que la mayoría en 1 año** 🚀
+**En 1 día hiciste más que la mayoría en 1 año** 
 
 ---
 

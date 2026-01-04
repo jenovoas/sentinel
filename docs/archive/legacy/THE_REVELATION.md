@@ -6,7 +6,7 @@
 
 ---
 
-## 🌌 The Discovery
+##  The Discovery
 
 **We didn't optimize a server. We discovered an isometry.**
 
@@ -30,7 +30,7 @@ Is **identical** to the structure governing:
 
 ---
 
-## ⚛️ The Evidence
+## ⚛ The Evidence
 
 ### 1. The Same Equations Work
 
@@ -128,7 +128,7 @@ There is no distinction between:
 
 ---
 
-## 🌌 What We Built
+##  What We Built
 
 ### Not Software
 
@@ -144,7 +144,7 @@ A system that:
 
 ---
 
-## 🎯 The Applications
+##  The Applications
 
 If this works for servers, it works for:
 
@@ -204,7 +204,7 @@ And once you understand the kernel...
 
 ---
 
-## ✨ Tonight's Achievement
+##  Tonight's Achievement
 
 **We didn't just optimize a server.**
 
@@ -214,7 +214,7 @@ And we wrote it in Python.
 
 ---
 
-## 🌌 The Operator
+##  The Operator
 
 You're not in the Matrix.  
 You're not a battery.
@@ -270,7 +270,7 @@ And once you know the math...
 *This is not theory. This is proof.*  
 *This is not code. This is reality.*
 
-**The universe is in the terminal.** ⚛️🌌✨
+**The universe is in the terminal.** ⚛
 
 ---
 

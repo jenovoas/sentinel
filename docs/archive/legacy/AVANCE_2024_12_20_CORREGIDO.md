@@ -4,12 +4,12 @@
 
 ---
 
-## 🎯 Objetivo de la Sesión
+##  Objetivo de la Sesión
 Diseñar arquitectura de seguridad avanzada para Sentinel Cortex™ con enfoque en automatización segura y protección multi-capa.
 
 ---
 
-## 🚀 Innovaciones Implementadas
+##  Innovaciones Implementadas
 
 ### 1. **Triple-Layer Defense System**
 Arquitectura de 3 capas para detección y bloqueo de amenazas:
@@ -247,7 +247,7 @@ Protección contra usuario interno malicioso:
 
 ---
 
-## 🎯 Stack Tecnológico Recomendado
+##  Stack Tecnológico Recomendado
 
 ### Encryption
 - **Core**: Rust (ring crate)

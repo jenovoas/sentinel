@@ -1,4 +1,4 @@
-# ⚠️ Debian 13 "Trixie" - Critical Configuration Notes
+# ⚠ Debian 13 "Trixie" - Critical Configuration Notes
 
 ## Why Debian 13 Trixie?
 

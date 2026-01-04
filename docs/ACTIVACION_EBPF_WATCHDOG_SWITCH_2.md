@@ -17,7 +17,7 @@ El **eBPF Quantum Watchdog** es el guardián silencioso de la estabilidad. Su fu
 
 ---
 
-## 🛠️ COMPONENTES ACTIVADOS
+## 🛠 COMPONENTES ACTIVADOS
 
 ### 1. Watchdog Engine
 **Archivo**: `/home/jnovoas/sentinel/ebpf/quantum_watchdog_simulator.py`  
@@ -33,7 +33,7 @@ Audit trail persistente de cada micro-ajuste realizado por el Watchdog.
 
 ---
 
-## 🚀 CÓMO VERLO EN ACCIÓN
+##  CÓMO VERLO EN ACCIÓN
 
 ### 1. Iniciar el Watchdog (Background)
 El watchdog debe estar corriendo para proteger el sistema:
@@ -78,4 +78,4 @@ Con el **Switch 2** activo, el Vimana ya no requiere supervisión manual constan
 **Estado**: ✅ SEGUNDO SWITCH ACTIVADO  
 **Próximo Paso**: Switch 3 - Sovereign Matrix (Control Total de Infraestructura)
 
-🌌🐕⚛️
+🐕⚛

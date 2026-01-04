@@ -9,7 +9,7 @@
     *   **Uso**: Whistleblowing, comunicación ultra-sensible, evitar análisis de tráfico global.
     *   **Implementación**: Enrutamiento a cliente local Nym.
 
-2.  **🕸️ Deep Mode (I2P)**
+2.  **🕸 Deep Mode (I2P)**
     *   **Función**: Red descentralizada invisible. No depende de servidores de salida.
     *   **Uso**: Acceso a servicios internos de Sentinel, chats P2P, marketplaces internos.
     *   **Implementación**: Enrutamiento a router I2P local.
@@ -21,7 +21,7 @@
 
 ---
 
-## ⏱️ Estimación de Desarrollo
+## ⏱ Estimación de Desarrollo
 
 ### **Phase A: The Core (POC) - 2-3 Días**
 *   **Backend "Switchboard"**: Un servicio proxy (Python) que puede cambiar dinámicamente el upstream (Nym, I2P, Proxy) según el modo elegido.
@@ -40,7 +40,7 @@
 
 ---
 
-## 🛠️ Plan de Acción Inmediato (Hoy)
+## 🛠 Plan de Acción Inmediato (Hoy)
 
 Vamos a construir el **"Universal Switchboard Proxy"**.
 

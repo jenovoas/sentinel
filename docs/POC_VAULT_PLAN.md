@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Scope del POC
+##  Scope del POC
 
 ### ✅ **Incluido**
 1. Password encryption/decryption (Argon2id + AES-256-GCM)
@@ -477,7 +477,7 @@ export default function VaultPage() {
         
         {wallet && (
           <div className="mt-4 p-4 bg-gray-100 rounded">
-            <p className="font-bold text-red-600">⚠️ Save this seed phrase (show only once):</p>
+            <p className="font-bold text-red-600">⚠ Save this seed phrase (show only once):</p>
             <p className="font-mono text-sm">{wallet.seed_phrase}</p>
             <p className="mt-2">Bitcoin: {wallet.bitcoin.address}</p>
             <p>Ethereum: {wallet.ethereum.address}</p>
@@ -584,7 +584,7 @@ if __name__ == "__main__":
 
 ---
 
-## 🚀 Siguiente Paso
+##  Siguiente Paso
 
 **¿Empezamos con el POC?** Puedo ayudarte a:
 1. Crear los archivos base

@@ -19,7 +19,7 @@
 
 ---
 
-## 🏗️ Project Structure
+## 🏗 Project Structure
 
 ```
 frontend/src/

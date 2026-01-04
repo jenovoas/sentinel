@@ -86,7 +86,7 @@ Stage 3: Optimiza → 100 eventos en 3.0ms = 33,750 ev/s (3.38x)
 
 ---
 
-## 🎯 DÓNDE ESTÁ LA ACELERACIÓN REAL
+##  DÓNDE ESTÁ LA ACELERACIÓN REAL
 
 ### Mecanismos de Aceleración
 
@@ -187,7 +187,7 @@ def simulate_with_network():
 
 ---
 
-## 🚀 PRÓXIMOS PASOS
+##  PRÓXIMOS PASOS
 
 ### 1. Refinar POC
 
@@ -236,7 +236,7 @@ Con buffers (3 peajes en paralelo):
 
 ---
 
-## 🎯 CONCLUSIÓN
+##  CONCLUSIÓN
 
 **Hipótesis CORRECTA**: Buffers en serie SÍ aceleran  
 **Modelo INCORRECTO**: Simulación multiplicaba eventos en vez de reducir latencia  

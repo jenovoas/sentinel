@@ -4,7 +4,7 @@
 
 ---
 
-## 🚀 Instalación Rápida
+##  Instalación Rápida
 
 ### Linux (Ubuntu, Debian, CentOS, RHEL)
 
@@ -45,7 +45,7 @@ docker-compose up -d
 
 ---
 
-## 🎯 Características de los Instaladores
+##  Características de los Instaladores
 
 ### ✅ install.sh (Linux)
 - Detección automática de distribución (Ubuntu, Debian, CentOS, RHEL)
@@ -234,6 +234,6 @@ Sentinel despliega **18 servicios** en contenedores Docker:
 
 ---
 
-**¡Disfruta Sentinel!** 🛡️
+**¡Disfruta Sentinel!** 
 
 *Última actualización: Diciembre 2024*

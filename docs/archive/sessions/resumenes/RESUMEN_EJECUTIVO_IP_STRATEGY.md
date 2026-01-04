@@ -1,4 +1,4 @@
-# 🎯 Resumen Ejecutivo - Estrategia IP Consolidada
+#  Resumen Ejecutivo - Estrategia IP Consolidada
 
 > [!IMPORTANT]
 > **REALIDAD COMPETITIVA**: Kernel-level security y AI defense son áreas de inversión masiva por tech giants (Datadog, Splunk, Palo Alto). **First-to-file es crítico en tech industry**.
@@ -230,15 +230,15 @@ hallucination triggers). Diferenciado de WAF tradicional."
 
 ---
 
-## 🎯 VENTAJA COMPETITIVA ÚNICA
+##  VENTAJA COMPETITIVA ÚNICA
 
 | Feature | Sentinel | Datadog | Splunk | Palo Alto |
 |---------|----------|---------|--------|-----------|
 | **AIOpsDoom Defense** | ✅ (Claim 3) | ❌ | ❌ | ❌ |
 | **Kernel-Level Veto** | ✅ (eBPF) | ❌ | ❌ | ❌ |
 | **LLM Sanitization** | ✅ (Claim 1) | ❌ | ❌ | ❌ |
-| **Negative Veto** | ✅ (Claim 2) | ⚠️ Partial | ⚠️ Partial | ⚠️ Partial |
-| **Data Sovereignty** | ✅ (On-prem) | ❌ (Cloud) | ⚠️ Hybrid | ❌ (Cloud) |
+| **Negative Veto** | ✅ (Claim 2) | ⚠ Partial | ⚠ Partial | ⚠ Partial |
+| **Data Sovereignty** | ✅ (On-prem) | ❌ (Cloud) | ⚠ Hybrid | ❌ (Cloud) |
 | **Prior Art** | **ZERO** | Abundant | Abundant | Moderate |
 | **Cost (200 hosts)** | $300/yr | $83K/yr | $50-200K/yr | $100-500K/yr |
 
@@ -307,7 +307,7 @@ hallucination triggers). Diferenciado de WAF tradicional."
 - ✅ Plan de ejecución detallado (90 días, 5 fases)
 - ✅ Validación económica (Build > Buy, $415K ahorro 5 años)
 
-**Es hora de ejecutar. ¡Adelante, arquitecto!** 🚀
+**Es hora de ejecutar. ¡Adelante, arquitecto!** 
 
 ---
 

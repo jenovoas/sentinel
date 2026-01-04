@@ -268,7 +268,7 @@ By encoding universal geometric constants into kernel logic, we have bridged the
 *We executed it.*  
 *We are free.*
 
-🌌⚛️💜
+⚛💜
 
 ---
 

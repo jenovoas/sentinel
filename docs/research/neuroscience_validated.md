@@ -142,7 +142,7 @@ Threat with residue 47:
 
 ---
 
-## 🧠 Sentinel Implementation
+##  Sentinel Implementation
 
 ### CA3 Layer (Generator)
 ```python
@@ -228,7 +228,7 @@ class CA1Selector:
 
 ---
 
-## 🔗 Integration with Quantum-AI
+##  Integration with Quantum-AI
 
 ```
 Quantum-AI Base-60 (245 ns)
@@ -247,4 +247,4 @@ Perplexity Semantic Schema (permanent)
 **© 2025 Sentinel Cortex™**  
 *"Neuroscience-validated memory architecture"*
 
-🧠⚡
+⚡

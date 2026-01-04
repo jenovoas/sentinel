@@ -28,7 +28,7 @@
 ├─────────────────────────────────────────────┤
 │ Embedding generation │   10-50ms │    2%   │
 │ Vector search (Redis)│    <1ms   │   <1%   │
-│ Vector search (pgvec)│  9,810ms  │   77%   │ ⚠️ BOTTLENECK
+│ Vector search (pgvec)│  9,810ms  │   77%   │ ⚠ BOTTLENECK
 │ LLM generation (70B) │ 1,000-2s  │   20%   │
 ├─────────────────────────────────────────────┤
 │ TOTAL (Redis)        │ 1,010-2s  │  100%   │ ✅ VIABLE
@@ -96,7 +96,7 @@ TOTAL: 1,300ms ✅ VIABLE
 4 cycles × 200ms (8B local) = 800ms
 1 cycle × 1,500ms (70B cloud) = 1,500ms
 ─────────────────────────────────
-TOTAL: 2,300ms ⚠️ MARGINAL (excede 2s por 300ms)
+TOTAL: 2,300ms ⚠ MARGINAL (excede 2s por 300ms)
 ```
 
 **Optimización**: Reducir a **3-cycle hybrid**:
@@ -195,11 +195,11 @@ Throttling agresivo bajo carga
 
 **Ranking de Bottlenecks (de mayor a menor impacto)**:
 
-1. **Vector Search (pgvector)**: 9,810ms ⚠️ CRÍTICO
+1. **Vector Search (pgvector)**: 9,810ms ⚠ CRÍTICO
    - **Solución**: Redis caching + pre-warm
    - **Impacto**: -99% latencia (9,810ms → <1ms)
 
-2. **LLM Generation (70B cloud)**: 1,200-3,300ms ⚠️ ALTO
+2. **LLM Generation (70B cloud)**: 1,200-3,300ms ⚠ ALTO
    - **Solución**: Usar 8B local para 80% queries
    - **Impacto**: -85% latencia (1,500ms → 200ms)
 
@@ -381,7 +381,7 @@ P50 (median):
 P95 (5% peor caso):
 - Critical: 220ms ✅
 - Standard: 550ms ✅
-- Deep: 2,200ms ⚠️ (excede por 200ms)
+- Deep: 2,200ms ⚠ (excede por 200ms)
 
 P99 (1% peor caso):
 - Critical: 280ms ❌ (excede por 30ms)
@@ -507,7 +507,7 @@ for provider in providers:
 ✅ **SÍ** - Paper ICLR 2025 lo valida
 
 **¿Qué componente es el bottleneck más probable?**
-⚠️ **Vector search (pgvector)** - Mitigado con Redis
+⚠ **Vector search (pgvector)** - Mitigado con Redis
 
 **¿Cómo escala de 100 → 10,000 queries/día?**
 ✅ **Linealmente** - 1x RTX 4090 soporta 216K queries/día

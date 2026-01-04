@@ -38,7 +38,7 @@
 
 ---
 
-## 🎯 Patrones de Optimización Identificados
+##  Patrones de Optimización Identificados
 
 ### **Patrón 1: Redis como Hub Central**
 
@@ -101,7 +101,7 @@ groups:
           count_over_time({job="backend"} |= "ERROR" [5m]) > 10
         annotations:
           summary: "High error rate with exceptions in logs"
-          # 🔗 Link directo a logs en Grafana
+          #  Link directo a logs en Grafana
           logs: "http://grafana:3000/explore?query={job=\"backend\"}|=\"ERROR\""
 ```
 
@@ -379,7 +379,7 @@ nginx-exporter:
 
 ---
 
-## 🚀 Quick Wins (Implementación Inmediata)
+##  Quick Wins (Implementación Inmediata)
 
 ### **Quick Win 1: Redis Cache Layer** (2 horas)
 ```python
@@ -482,7 +482,7 @@ def example_task():
 
 ---
 
-## 🎯 Roadmap de Implementación
+##  Roadmap de Implementación
 
 ### **Fase 1: Quick Wins** (1 semana)
 - [ ] Redis cache layer
@@ -510,4 +510,4 @@ def example_task():
 
 ---
 
-**Conclusión**: Tienes un stack EXCELENTE. Con estas optimizaciones, puedes 2-3x el performance sin agregar nuevas tecnologías. 🚀
+**Conclusión**: Tienes un stack EXCELENTE. Con estas optimizaciones, puedes 2-3x el performance sin agregar nuevas tecnologías. 

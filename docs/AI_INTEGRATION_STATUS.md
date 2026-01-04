@@ -154,7 +154,7 @@ docker-compose restart backend
 
 ---
 
-## 🎯 Estado Actual
+##  Estado Actual
 
 - ✅ Servicio Ollama agregado a docker-compose
 - ✅ Variables de entorno configuradas

@@ -1,4 +1,4 @@
-# 🏗️ Sentinel Vault - Production Implementation Plan
+# 🏗 Sentinel Vault - Production Implementation Plan
 
 **Objetivo**: Implementar Sentinel Vault como producto production-ready  
 **Timeline**: 4-6 semanas  
@@ -32,7 +32,7 @@
 
 ---
 
-## 🗄️ Database Schema
+## 🗄 Database Schema
 
 ### **Users Table**
 ```sql
@@ -289,7 +289,7 @@ sentinel-vault/
 
 ---
 
-## 🚀 Implementation Phases
+##  Implementation Phases
 
 ### **Phase 1: Backend Core** (Week 1-2)
 - [ ] Setup FastAPI project
@@ -326,7 +326,7 @@ sentinel-vault/
 
 ---
 
-## 🎯 MVP Features (First Release)
+##  MVP Features (First Release)
 
 ### **Must Have**:
 1. ✅ User registration + login

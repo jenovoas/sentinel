@@ -36,7 +36,7 @@
     - 🌐 **Clear**: Direct connection (Sanitized).
     - ⚡ **Velocity**: Custom Proxy / Tor routing.
     - 👻 **Ghost**: Nym Mixnet integration ready.
-    - 🕸️ **Deep**: I2P network integration ready.
+    - 🕸 **Deep**: I2P network integration ready.
 - **Protection**: HTML Sanitization (No JS/Trackers), IP Masking.
 
 ### 7. 💰 Financial Dashboard (Phase 6 - Sovereign)

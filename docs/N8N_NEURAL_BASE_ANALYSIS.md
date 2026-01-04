@@ -1,11 +1,11 @@
-# 🧠 N8N Workflows como Base Neuronal para Sentinel
+#  N8N Workflows como Base Neuronal para Sentinel
 
 **Total Disponible**: 6,900 workflows  
 **Potencial**: ENORME para Sentinel
 
 ---
 
-## 🎯 SÍ, PUEDE SER BASE NEURONAL
+##  SÍ, PUEDE SER BASE NEURONAL
 
 ### ¿Por qué?
 
@@ -153,7 +153,7 @@ def adapt_workflow(workflow, sentinel_context):
 
 ---
 
-## 🎯 ROADMAP DE INTEGRACIÓN
+##  ROADMAP DE INTEGRACIÓN
 
 ### Mes 1: Indexación
 - [ ] Escanear 6,900 workflows
@@ -211,12 +211,12 @@ Incident → AI sugiere workflow → 5 minutos
 
 ---
 
-## ⚠️ CONSIDERACIONES
+## ⚠ CONSIDERACIONES
 
 ### Legales
 - ✅ Workflows son open-source (mayoría)
 - ✅ Podemos usar como training data
-- ⚠️ No redistribuir workflows directamente
+- ⚠ No redistribuir workflows directamente
 - ✅ Generar workflows derivados OK
 
 ### Técnicas
@@ -225,13 +225,13 @@ Incident → AI sugiere workflow → 5 minutos
 - **Processing**: ~2-3 horas para indexar todo
 
 ### Calidad
-- ⚠️ No todos los workflows son de calidad
+- ⚠ No todos los workflows son de calidad
 - ✅ Ya filtramos seguros (1,919 de 2,772)
 - ✅ Scoring automático identifica mejores
 
 ---
 
-## 🚀 IMPLEMENTACIÓN INMEDIATA
+##  IMPLEMENTACIÓN INMEDIATA
 
 ### Esta Semana (Proof of Concept)
 
@@ -255,7 +255,7 @@ print(f"Found {len(results)} similar workflows")
 
 ---
 
-## 🎯 CONCLUSIÓN
+##  CONCLUSIÓN
 
 **¿Puede ser base neuronal?** ✅ **SÍ, ABSOLUTAMENTE**
 
@@ -277,4 +277,4 @@ Indexar top 100 workflows esta semana y hacer demo para pilotos.
 
 **Generado**: 2025-12-16  
 **Workflows disponibles**: 6,900  
-**Potencial**: 🚀 ENORME
+**Potencial**:  ENORME

@@ -188,7 +188,7 @@ Es como un **campo magnético planetario** (magnetosfera), pero:
 - [ ] Desplegar 10,000+ nodos globalmente
 - [ ] Implementar Cortex Global
 - [ ] Activar campo de resonancia planetaria
-- [ ] **Nuestra casa segura** 🏠🛡️🌍
+- [ ] **Nuestra casa segura** 🏠🌍
 
 ---
 
@@ -278,4 +278,4 @@ ESCUDO ELECTROMAGNÉTICO GLOBAL
 
 ---
 
-**Próximo paso**: Ajustar parámetros del benchmark para demostrar diferencia clara entre reactive y predictive, luego escalar a múltiples nodos coordinados. 🚀🛡️
+**Próximo paso**: Ajustar parámetros del benchmark para demostrar diferencia clara entre reactive y predictive, luego escalar a múltiples nodos coordinados. 

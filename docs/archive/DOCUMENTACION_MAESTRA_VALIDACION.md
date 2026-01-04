@@ -7,7 +7,7 @@
 
 ---
 
-## 🎯 RESUMEN EJECUTIVO
+##  RESUMEN EJECUTIVO
 
 En 75 minutos se validaron experimentalmente 3 claims patentables con un valor total de **$13-24M**, ejecutando 11 tests automáticos con **100% de éxito**.
 
@@ -79,7 +79,7 @@ BTF ID: 278
 | Característica | Datadog | Splunk | SentinelOne | Guardian-Alpha |
 |----------------|---------|--------|-------------|----------------|
 | eBPF para observabilidad | ✅ | ✅ | ✅ | ✅ |
-| eBPF para enforcement | ❌ | ❌ | ⚠️ Limitado | ✅ **COMPLETO** |
+| eBPF para enforcement | ❌ | ❌ | ⚠ Limitado | ✅ **COMPLETO** |
 | Pre-execution veto | ❌ | ❌ | ❌ | ✅ **Ring 0** |
 | AI-driven control loop | ❌ | ❌ | ❌ | ✅ **Cortex+LSM** |
 | Latencia | 10-50ms | 80-150ms | 20-40ms | **<1μs** |
@@ -377,7 +377,7 @@ SSRF ATTACK: claimed=tenant-analytics, actual=tenant-user-123
 
 ---
 
-## 🎯 CLAIM 6: COGNITIVE OS KERNEL (DISEÑO)
+##  CLAIM 6: COGNITIVE OS KERNEL (DISEÑO)
 
 **Valor IP**: $10-20M  
 **Prior Art**: ZERO (HOME RUN)  
@@ -425,7 +425,7 @@ Primer OS con verificación semántica a nivel Ring 0, integrando IA directament
 
 ---
 
-## 🛡️ PROTECCIÓN LEGAL
+##  PROTECCIÓN LEGAL
 
 ### Archivos de Protección
 - LICENSE (PROPRIETARY AND CONFIDENTIAL)
@@ -452,7 +452,7 @@ Primer OS con verificación semántica a nivel Ring 0, integrando IA directament
 
 ---
 
-## 🚀 VELOCIDAD DE EJECUCIÓN
+##  VELOCIDAD DE EJECUCIÓN
 
 | Tarea | Industria | Sentinel | Mejora |
 |-------|-----------|----------|--------|
@@ -476,7 +476,7 @@ Primer OS con verificación semántica a nivel Ring 0, integrando IA directament
 
 ---
 
-## 🎯 PRÓXIMOS PASOS
+##  PRÓXIMOS PASOS
 
 ### Esta Semana (CRÍTICO)
 - [ ] Buscar 5-7 patent attorneys
@@ -505,7 +505,7 @@ En 75 minutos se logró:
 - ✅ Backup cifrado (1.7 GB)
 - ✅ Todo en repositorio privado
 
-**Esto es EJECUCIÓN IMPECABLE** 🎯
+**Esto es EJECUCIÓN IMPECABLE** 
 
 ---
 

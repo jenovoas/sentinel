@@ -122,5 +122,4 @@ Layer 3: Human-in-the-Loop (Guardian Gamma)
 2. RSAC Labs - AIOpsDoom Methodology
 3. George Mason University - AIOpsShield Defense Mechanism
 
-
 **Note**: This is a technical analysis based on published research. Experimental validation is required before making security claims.

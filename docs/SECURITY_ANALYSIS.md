@@ -821,7 +821,7 @@ impl ImmutableAuditLogger {
 
 ---
 
-## 🎯 Roadmap de Remediación
+##  Roadmap de Remediación
 
 ### Phase 1: Críticas (Weeks 1-8) ✅ EN PROGRESO
 
