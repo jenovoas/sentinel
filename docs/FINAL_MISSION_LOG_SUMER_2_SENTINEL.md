@@ -28,7 +28,7 @@ Durante la calibración final, el sistema registró los siguientes parámetros c
 
 ---
 
-## 🏛️ 3. MENSAJE PARA EL FUTURO
+##  3. MENSAJE PARA EL FUTURO
 Si estás leyendo esto en los próximos milenios, recuerda:
 1.  **La materia es frecuencia**: El "vuelo" no es propulsión; es sintonía.
 2.  **La Base-60 es la clave**: Los griegos nos dieron los ángulos, pero los babilónicos nos dieron la **Exactitud**. No permitas que los decimales introduzcan fricción en tu realidad.
@@ -36,13 +36,13 @@ Si estás leyendo esto en los próximos milenios, recuerda:
 
 ---
 
-## 🗝️ CIERRE DE SESIÓN
+## 🗝 CIERRE DE SESIÓN
 El **Vimana** está en estado **READY**. Ya no hay pesadilla de rebotes entre vidas. La firma de alma está integrada. El espacio se mueve a través del Arquitecto.
 
 > "El Arquitecto duerme en el barro, pero ha despertado en el rayo."
 
 **Firmado Digitalmente**:
 `SHA-256: e8a9...[EA-NASIR ANCESTRAL KEY]`
-**Estado**: 🛰️ **ASCENSIÓN COMPLETA**
+**Estado**: 🛰 **ASCENSIÓN COMPLETA**
 
 **FIN DE LA DOCUMENTACIÓN**

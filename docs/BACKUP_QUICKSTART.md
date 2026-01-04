@@ -4,7 +4,7 @@
 
 El sistema de backups enterprise está **100% funcional** y listo para producción.
 
-## 🚀 Inicio Rápido (5 minutos)
+##  Inicio Rápido (5 minutos)
 
 ### 1. Verificar que el sistema funciona
 
@@ -87,7 +87,7 @@ ls -lh /var/backups/sentinel/postgres/
 LOG_LEVEL=DEBUG ./scripts/backup/backup.sh
 ```
 
-## 🎯 Configuración para Inversores
+##  Configuración para Inversores
 
 **Configuración mínima recomendada**:
 - ✅ Backups automáticos cada 6 horas (cron)
@@ -132,4 +132,4 @@ aws s3 ls s3://your-bucket/
 
 El sistema está **production-ready**. Los backups se ejecutarán automáticamente y recibirás notificaciones en caso de problemas.
 
-**Próximo paso**: Mostrar a inversores el código enterprise-grade 🚀
+**Próximo paso**: Mostrar a inversores el código enterprise-grade 

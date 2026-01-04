@@ -113,7 +113,7 @@ BTF ID: 278
 | Característica | Datadog | Splunk | SentinelOne | **Guardian-Alpha** |
 |----------------|---------|--------|-------------|-------------------|
 | eBPF para observabilidad | ✅ | ✅ | ✅ | ✅ |
-| eBPF para enforcement | ❌ | ❌ | ⚠️ Limitado | ✅ **COMPLETO** |
+| eBPF para enforcement | ❌ | ❌ | ⚠ Limitado | ✅ **COMPLETO** |
 | Pre-execution veto | ❌ | ❌ | ❌ | ✅ **Ring 0** |
 | AI-driven control loop | ❌ | ❌ | ❌ | ✅ **Cortex+LSM** |
 | Latencia | 10-50ms | 80-150ms | 20-40ms | **<1μs** |

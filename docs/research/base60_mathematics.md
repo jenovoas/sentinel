@@ -238,7 +238,7 @@ Speedup: 1000x vs linear, 10x vs binary
 
 ---
 
-## 🛠️ Implementation
+## 🛠 Implementation
 
 ### Base-60 Zone Indexer
 
@@ -336,4 +336,4 @@ class Base60Indexer:
 **© 2025 Sentinel Cortex™**  
 *"The universe counts in Base-60"*
 
-🔢⚡🌌
+🔢⚡

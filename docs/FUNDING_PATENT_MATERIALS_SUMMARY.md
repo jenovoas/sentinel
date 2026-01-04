@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Lo Que Acabamos de Crear (Últimos 30 minutos)
+##  Lo Que Acabamos de Crear (Últimos 30 minutos)
 
 ### 1. ✅ FUNDING_AND_PATENT_ACTION_PLAN.md
 **Propósito:** Roadmap completo de 7 días + 90 días
@@ -78,7 +78,7 @@
 
 ---
 
-## 🚀 Plan de Acción Inmediato
+##  Plan de Acción Inmediato
 
 ### HOY - Martes 17 Dic (Tarde)
 ```
@@ -189,7 +189,7 @@
 
 ---
 
-## 🎯 Métricas de Éxito
+##  Métricas de Éxito
 
 ### Corto Plazo (Esta Semana)
 - [ ] 5-7 patent attorneys identificados
@@ -204,7 +204,7 @@
 - [ ] Demo video grabado
 
 ### Largo Plazo (90 Días)
-- [ ] Provisional patent filed (antes 15 Feb 2026) 🎯
+- [ ] Provisional patent filed (antes 15 Feb 2026) 
 - [ ] 1+ term sheet recibido
 - [ ] $50K+ comprometido (grants o inversión)
 - [ ] 10 beta customers confirmados
@@ -282,7 +282,7 @@ ATTORNEY SELECT:  14 días (Dic 31, 2025)
 DOCUMENTACIÓN:    95% ✅
 ESTRATEGIA:       90% ✅
 EJECUCIÓN:        70% ⏳ (depende de ti)
-ÉXITO PROBABLE:   85% 🎯
+ÉXITO PROBABLE:   85% 
 ```
 
 ---
@@ -304,12 +304,12 @@ EJECUCIÓN:        70% ⏳ (depende de ti)
 4. **PRÓXIMAS 2 SEMANAS:** Seleccionar attorney + enviar postulaciones
 
 **Deadline crítico:**
-- 🎯 **15 Febrero 2026** (59 días) - Provisional Patent Filing
+-  **15 Febrero 2026** (59 días) - Provisional Patent Filing
 
 **Probabilidad de éxito:**
 - Patentes: 90% (si seleccionas attorney antes 31 Dic)
 - Financiamiento: 85% (con 3+ postulaciones)
-- Overall: 85% 🚀
+- Overall: 85% 
 
 ---
 
@@ -321,7 +321,7 @@ Tienes todos los materiales necesarios. Ahora es momento de acción:
 3. Contactar VCs
 4. Ejecutar el plan
 
-**¡Éxito!** 🎯
+**¡Éxito!** 
 
 ---
 

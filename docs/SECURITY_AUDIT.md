@@ -1,4 +1,4 @@
-# 🛡️ Sentinel Vault - Security Audit Checklist
+#  Sentinel Vault - Security Audit Checklist
 
 **Objective**: Ensure Sentinel Vault is mathematically secure against financial deception and data theft.
 **Version**: 1.0 (Pre-Production)
@@ -21,7 +21,7 @@
 - [ ] **Air Gap**: Confirm frontend receives strictly `Request -> JSON -> HTML String` (No binary execution).
 - [ ] **Leak Protection**: Verify DNS is resolved via the Proxy (Tor/Nym), NOT the local system DNS (DNS Leak Test).
 
-## 🐳 4. Infrastructure & Deployment
+##  4. Infrastructure & Deployment
 - [ ] **Container User**: Ensure Docker containers run as non-root user (USER nextjs / USER python).
 - [ ] **Volume Permissions**: Verify `vault_data` is readable ONLY by the container user.
 - [ ] **Dependency Scan**: Run `pip-audit` or `safety` on `requirements.txt`.

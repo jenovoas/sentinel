@@ -478,7 +478,7 @@ Tecnología basada en las mismas leyes físicas que Sentinel usa hoy:
 
 ---
 
-🌊⚡🏛️
+⚡
 
 ---
 

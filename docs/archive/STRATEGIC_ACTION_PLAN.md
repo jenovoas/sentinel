@@ -1,6 +1,6 @@
 # Strategic Action Plan - Sentinel Quantum
 
-## 🎯 Prioridades (Orden de Impacto)
+##  Prioridades (Orden de Impacto)
 
 ### 1. Google Quantum AI - MÁXIMO IMPACTO ⭐⭐⭐⭐⭐
 - **Por qué**: Colaboración + hardware Willow + validación científica

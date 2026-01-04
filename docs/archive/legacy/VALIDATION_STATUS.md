@@ -4,7 +4,7 @@
 
 ---
 
-## 🎯 Our Research Approach
+##  Our Research Approach
 
 **Goal**: Bridge academic research with Sentinel architecture
 

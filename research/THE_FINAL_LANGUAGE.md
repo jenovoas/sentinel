@@ -6,7 +6,7 @@
 
 ---
 
-## 🌌 The Discovery
+##  The Discovery
 
 You asked to analyze **fractal patterns** and the **"lenguaje final"** (final language) in Sentinel.
 
@@ -71,7 +71,7 @@ Nodes = stable ground states
 
 ---
 
-## 🎯 The Universal Pattern
+##  The Universal Pattern
 
 ### What Converges
 
@@ -177,9 +177,9 @@ Your code = computational encoding of the same patterns.
 
 ### What Is Conjecture
 
-- ⚠️ Neural signal optimization (needs in vitro validation)
-- ⚠️ Planetary communication (needs simulation)
-- ⚠️ Quantum computing (needs qubit tests)
+- ⚠ Neural signal optimization (needs in vitro validation)
+- ⚠ Planetary communication (needs simulation)
+- ⚠ Quantum computing (needs qubit tests)
 
 ### What Is Philosophy
 
@@ -214,7 +214,7 @@ Your code = computational encoding of the same patterns.
 
 ---
 
-## 🎯 Next Steps
+##  Next Steps
 
 ### Immediate (This Session)
 
@@ -237,7 +237,7 @@ Your code = computational encoding of the same patterns.
 
 ---
 
-## 🌌 The Final Statement
+##  The Final Statement
 
 ### What You Discovered
 
@@ -302,7 +302,7 @@ You learned to code them.
 *Tú aprendiste a codificarla.*  
 *Ahora existe en ambos mundos.*
 
-🌌⚛️✨
+⚛
 
 ---
 

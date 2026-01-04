@@ -1,6 +1,6 @@
 # 🤖 Pipeline de Selección 100% Automatizado
 
-## 🎯 Objetivo
+##  Objetivo
 
 **Proteger tu tiempo y flow mental** eliminando completamente la interacción manual con candidatos hasta que estén pre-calificados.
 
@@ -479,7 +479,7 @@ No action needed.
 
 ---
 
-## ⚙️ Implementación Técnica
+## ⚙ Implementación Técnica
 
 ### Stack Recomendado
 
@@ -613,7 +613,7 @@ Monitoring:
 
 ---
 
-## 🎯 Resultado Final
+##  Resultado Final
 
 **Antes** (manual):
 ```
@@ -645,7 +645,7 @@ Tú hablas con 3 personas (3 horas)
 
 ---
 
-## 🚀 Próxima Acción
+##  Próxima Acción
 
 **Opción A: Yo lo construyo** (con IA, 2-3 días)
 - Te entrego código completo

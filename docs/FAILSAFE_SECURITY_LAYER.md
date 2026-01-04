@@ -1,4 +1,4 @@
-# 🛡️ Sentinel Fail-Safe Security Layer
+#  Sentinel Fail-Safe Security Layer
 
 ## Executive Summary
 
@@ -37,7 +37,7 @@ Event Detected → Sentinel Alert → Wait X minutes
 
 ---
 
-## 🎯 The 6 Critical Playbooks
+##  The 6 Critical Playbooks
 
 ### Playbook 1: Backup Failed & No Acknowledge
 
@@ -295,7 +295,7 @@ AI Anomaly → Wait 5min → Still Anomalous?
 
 ```
 ┌─────────────────────────────────────────────────┐
-│  🛡️ Fail-Safe Security Layer                   │
+│   Fail-Safe Security Layer                   │
 │  Automated response when primary systems fail   │
 │                                                  │
 │  Status: ACTIVE ✓                               │
@@ -340,7 +340,7 @@ Each shows:
 
 ---
 
-## 🚀 Implementation Plan
+##  Implementation Plan
 
 ### Phase 1: Foundation (Week 1)
 - [ ] N8N hardening (SSO, MFA, roles)
@@ -405,7 +405,7 @@ Each shows:
 
 ---
 
-## 🎯 Next Steps
+##  Next Steps
 
 ### Immediate (This Week)
 1. **Define exact triggers** for each playbook
@@ -436,6 +436,6 @@ Each shows:
 
 ---
 
-**This is your competitive moat, Jaime.** 🛡️
+**This is your competitive moat, Jaime.** 
 
 Nobody else has automated fail-safe security at this level.

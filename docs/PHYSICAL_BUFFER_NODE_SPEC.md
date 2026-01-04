@@ -375,4 +375,4 @@ PLANETARY SHIELD HARDWARE
 
 ---
 
-**Próximo paso**: Diseñar PCB del prototipo y seleccionar componentes específicos para fabricación. 🚀🔧
+**Próximo paso**: Diseñar PCB del prototipo y seleccionar componentes específicos para fabricación. 🔧

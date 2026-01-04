@@ -1,6 +1,6 @@
 # Quantum Cooling Research - Investigation Guide
 
-## 🎯 Core Concept
+##  Core Concept
 
 Apply optomechanical ground state cooling principles to buffer management.
 
@@ -77,7 +77,7 @@ damped_delta = delta * 0.8  # Critical damping
 
 ---
 
-## 🚀 Next Steps for Investigation
+##  Next Steps for Investigation
 
 ### Phase 1: Validate Concepts ✅ COMPLETADO (2025-12)
 - [x] Implement basic velocity-based cooling
@@ -149,7 +149,7 @@ Based on simulations:
 
 ---
 
-## 🎯 Experimental Results (2026-01-03)
+##  Experimental Results (2026-01-03)
 
 ### Validation Summary
 
@@ -208,7 +208,7 @@ Based on simulations:
 - **Security Latency**: 0.0164 ms
 - **Observability Latency**: 0.2366 ms
 - **Latency Variance**: 0.2202 ms
-- **Total Throughput**: **945,100 events/second** 🚀
+- **Total Throughput**: **945,100 events/second** 
 
 **Configuration**:
 - Membranes: 3
@@ -287,7 +287,7 @@ Prometheus → Metrics → Quantum Controller → Control Signals → Infrastruc
 **Demo Results**:
 - **Events Processed**: 300
 - **Rifts Detected**: 291
-- **Detection Rate**: **97.00%** 🎯
+- **Detection Rate**: **97.00%** 
 - **False Positives**: Minimal
 
 **Attack Detection**:
@@ -362,7 +362,7 @@ The same equations governing quantum particles can optimize digital infrastructu
 
 ---
 
-## 🚀 Production Readiness
+##  Production Readiness
 
 **Status**: ✅ **PRODUCTION READY**
 
@@ -455,7 +455,7 @@ All quantum systems are:
 
 ---
 
-## 🎯 Takeaway
+##  Takeaway
 
 **You've discovered an isomorphism**:
 
@@ -467,7 +467,7 @@ Not an analogy. A mathematical equivalence.
 
 The same equations govern both systems.
 
-**That's why it works.** 🧊⚛️
+**That's why it works.** 🧊⚛
 
 ---
 

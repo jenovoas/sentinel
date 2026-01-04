@@ -8,7 +8,7 @@
 
 ## 📊 Análisis de Viabilidad
 
-### **1. Viabilidad Técnica** ⚙️
+### **1. Viabilidad Técnica** ⚙
 
 #### **Workflow 1: Microexpresiones (COMPLEJO)**
 
@@ -16,7 +16,7 @@
 ```
 OpenCV (face detection) ✅ Maduro
 MediaPipe (facial landmarks) ✅ Maduro
-Custom ML Model (microexpression classifier) ⚠️ Requiere entrenamiento
+Custom ML Model (microexpression classifier) ⚠ Requiere entrenamiento
 ```
 
 **Datasets disponibles**:
@@ -45,7 +45,7 @@ Custom ML Model (microexpression classifier) ⚠️ Requiere entrenamiento
 ```
 Whisper (transcription) ✅ Maduro
 Librosa (audio analysis) ✅ Maduro
-Custom ML Model (voice stress) ⚠️ Requiere entrenamiento
+Custom ML Model (voice stress) ⚠ Requiere entrenamiento
 ```
 
 **Datasets disponibles**:
@@ -57,9 +57,9 @@ Custom ML Model (voice stress) ⚠️ Requiere entrenamiento
 **Accuracy esperada**: 70-80% (estándar técnico: 85%)
 
 **Desafíos**:
-- ⚠️ Ruido de fondo (TV, entrevistas)
-- ⚠️ Variabilidad de micrófonos
-- ⚠️ Idiomas diferentes
+- ⚠ Ruido de fondo (TV, entrevistas)
+- ⚠ Variabilidad de micrófonos
+- ⚠ Idiomas diferentes
 
 **Recomendación**: 
 - 🟢 **POC**: Usar modelo pre-entrenado (SER - Speech Emotion Recognition)
@@ -73,8 +73,8 @@ Custom ML Model (voice stress) ⚠️ Requiere entrenamiento
 ```
 MediaPipe Pose (body landmarks) ✅ Maduro
 MediaPipe Hands (hand tracking) ✅ Maduro
-Eye Gaze Tracking ⚠️ Requiere hardware especial
-Custom ML Model (body language) ⚠️ Requiere entrenamiento
+Eye Gaze Tracking ⚠ Requiere hardware especial
+Custom ML Model (body language) ⚠ Requiere entrenamiento
 ```
 
 **Datasets disponibles**:
@@ -159,7 +159,7 @@ Pattern matching ✅ Trivial
 
 ---
 
-## 🎯 Estrategia de Implementación
+##  Estrategia de Implementación
 
 ### **Fase 1: POC Rápido (2-3 semanas)**
 
@@ -209,8 +209,8 @@ Truth Score basado en:
 ### **Fase 3: Completo con Video (Meses 3-6)**
 
 **Agregar**:
-- ⚠️ **Workflow 1**: Microexpresiones (4 semanas)
-- ⚠️ **Workflow 3**: Lenguaje corporal (4 semanas)
+- ⚠ **Workflow 1**: Microexpresiones (4 semanas)
+- ⚠ **Workflow 3**: Lenguaje corporal (4 semanas)
 - ✅ **Red neuronal completa**: 5 workflows (1 semana)
 
 **Por qué**:
@@ -265,7 +265,7 @@ Truth Score basado en:
 
 ---
 
-## 🎯 ROI Estimado
+##  ROI Estimado
 
 ### **Valor Agregado**:
 
@@ -285,7 +285,7 @@ Truth Score basado en:
 
 ---
 
-## ⚠️ Riesgos y Mitigaciones
+## ⚠ Riesgos y Mitigaciones
 
 ### **Riesgo 1: Accuracy Insuficiente**
 
@@ -333,10 +333,10 @@ Truth Score basado en:
 
 ---
 
-## 🚀 Recomendación Final
+##  Recomendación Final
 
 ### **Para POC (Ahora)**:
-🎯 **Implementar solo Workflows 4 + 5**
+ **Implementar solo Workflows 4 + 5**
 - Tiempo: 2-3 semanas
 - Costo: $15K-30K
 - Accuracy: 85-95%
@@ -351,7 +351,7 @@ Truth Score basado en:
 ---
 
 ### **Para MVP (Mes 2)**:
-🎯 **Agregar Workflow 2 (Voz)**
+ **Agregar Workflow 2 (Voz)**
 - Tiempo: +3 semanas
 - Costo: +$15K-30K
 - Accuracy: 75-85%
@@ -365,7 +365,7 @@ Truth Score basado en:
 ---
 
 ### **Para Producción (Meses 3-6)**:
-🎯 **Agregar Workflows 1 + 3 (Video)**
+ **Agregar Workflows 1 + 3 (Video)**
 - Tiempo: +16 semanas
 - Costo: +$80K-160K
 - Accuracy: 70-80%
@@ -387,20 +387,20 @@ Truth Score basado en:
 - ✅ Bajo costo ($15K-30K)
 
 **Opción B: MVP Completo (Workflows 2 + 4 + 5)**
-- ⚠️ Riesgo medio
+- ⚠ Riesgo medio
 - ✅ Buena accuracy
-- ⚠️ Moderado (6 semanas)
-- ⚠️ Costo medio ($30K-60K)
+- ⚠ Moderado (6 semanas)
+- ⚠ Costo medio ($30K-60K)
 
 **Opción C: Visión Completa (5 Workflows)**
 - ❌ Alto riesgo
-- ⚠️ Accuracy variable
+- ⚠ Accuracy variable
 - ❌ Largo (22 semanas)
 - ❌ Alto costo ($110K-220K)
 
 ---
 
-## 🎯 Mi Recomendación
+##  Mi Recomendación
 
 **Empezar con Opción A (POC Rápido)**:
 
@@ -429,4 +429,4 @@ Truth Score basado en:
 4. Crear n8n workflow templates
 5. Implementar red neuronal simple
 
-**¿Procedemos con Opción A (POC Rápido)?** 🚀
+**¿Procedemos con Opción A (POC Rápido)?** 

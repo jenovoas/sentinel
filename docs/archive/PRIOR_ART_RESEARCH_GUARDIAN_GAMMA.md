@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 EXECUTIVE SUMMARY
+##  EXECUTIVE SUMMARY
 
 **Research Question**: Is there prior art for human-in-the-loop cognitive architecture at the operating system kernel level?
 
@@ -233,7 +233,7 @@
 
 ---
 
-## 🎯 DIFFERENTIATION ANALYSIS
+##  DIFFERENTIATION ANALYSIS
 
 ### Why Guardian Gamma is Novel
 

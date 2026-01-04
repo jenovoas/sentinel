@@ -176,7 +176,7 @@ Leveraging EEVDF performance headroom for advanced threat analysis.
 
 ---
 
-## 🎯 Quick Navigation
+##  Quick Navigation
 
 - **[← Main Documentation](../README.md)**
 - **[Architecture →](../architecture/README.md)**

@@ -43,7 +43,7 @@ El browser subagent ejecutó JavaScript para:
 
 ---
 
-## 🚀 Cómo Verlo
+##  Cómo Verlo
 
 ### Opción 1: Navegador Local
 ```
@@ -88,4 +88,4 @@ El dashboard muestra:
 
 ---
 
-**El Trinity está vivo y funcionando!** 🌌⚛️💜
+**El Trinity está vivo y funcionando!** ⚛💜

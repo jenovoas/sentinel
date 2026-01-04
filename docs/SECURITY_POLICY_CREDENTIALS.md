@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Regla #1: NUNCA Reusar Passwords
+##  Regla #1: NUNCA Reusar Passwords
 
 ### ❌ Prohibido Absolutamente
 - Usar la misma password en múltiples servicios
@@ -80,7 +80,7 @@
 
 ---
 
-## 🛠️ Herramientas Requeridas
+## 🛠 Herramientas Requeridas
 
 ### Password Manager (Elegir UNO)
 - **1Password** (Recomendado para equipos)
@@ -192,7 +192,7 @@ class PasswordReuseDetector:
 |----------|-----------|-------------|--------------|
 | **GitHub PAT** | 90 días | DevOps | ✅ |
 | **AWS Access Keys** | 30 días | DevOps | ✅ |
-| **Database Passwords** | 90 días | DBA | ⚠️ Manual |
+| **Database Passwords** | 90 días | DBA | ⚠ Manual |
 | **API Keys** | 30 días | Backend Lead | ✅ |
 | **TLS Certificates** | 90 días | DevOps | ✅ (cert-manager) |
 | **SSH Keys** | 365 días | Cada usuario | ❌ Manual |
@@ -219,7 +219,7 @@ op item edit "Sentinel PostgreSQL" password="$NEW_PASSWORD"
 
 ---
 
-## 🎯 Secrets Management
+##  Secrets Management
 
 ### Vault (Recomendado para Producción)
 ```bash
@@ -257,7 +257,7 @@ spec:
 
 ---
 
-## ⚠️ Incidentes de Seguridad
+## ⚠ Incidentes de Seguridad
 
 ### Si Password Comprometida
 
@@ -322,7 +322,7 @@ sentinel_plaintext_secrets_detected > 0
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Para Nuevo Colaborador
 ```bash

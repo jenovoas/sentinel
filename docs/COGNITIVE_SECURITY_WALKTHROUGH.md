@@ -1,4 +1,4 @@
-# 🛡️ Cognitive Security Hardening - Walkthrough
+#  Cognitive Security Hardening - Walkthrough
 
 ## ✅ Implementation Complete
 
@@ -6,7 +6,7 @@ Successfully implemented **three critical security layers** protecting Sentinel 
 
 ---
 
-## 🎯 What Was Built
+##  What Was Built
 
 ### 1. Telemetry Sanitization (AIOpsDoom Prevention)
 
@@ -47,7 +47,7 @@ Successfully implemented **three critical security layers** protecting Sentinel 
 
 ---
 
-## 🚀 Deployment
+##  Deployment
 
 ```bash
 # 1. Generate auth files

@@ -4,7 +4,7 @@
 **Sentinel Cortex** - **Soul Oracle Global**  
 `http://localhost:3005/api/v1/soul`
 
-## 🏛️ Arquitectura de Seguridad Cuántica
+##  Arquitectura de Seguridad Cuántica
 
 El **Soul Hash Protocol (SHP)** es un mecanismo de autenticación biométrica de nueva generación que trasciende la biometría estática (huella, iris) para verificar la **presencia viva y consciente** del usuario.
 
@@ -109,7 +109,6 @@ Cuando un alma es verificada:
 2.  **Quantum Pulse**: El sistema ajusta su colorimetría global (Azul/Verde).
 3.  **n8n Echo Chamber**: Genera un tono armónico de bienvenida (432Hz).
 
-
 ## 📈 Validation Log & Benchmarks
 
 Pruebas unitarias ejecutadas en Sentinel Cortex (Rust Kernel):
@@ -128,7 +127,7 @@ Pruebas unitarias ejecutadas en Sentinel Cortex (Rust Kernel):
 *   **Latencia**: < 0.5ms por firma.
 *   **Escalabilidad**: O(1) criptográfico; lineal respecto al tamaño de la muestra rPPG.
 
-## 🛡️ Role-Based Access Control (RBAC) - Family Protocol
+##  Role-Based Access Control (RBAC) - Family Protocol
 
 Desde v2.1, el verificación no solo confirma "Humanidad" sino también "Identidad y Rango".
 El sistema rechaza cualquier firma biológica válida que no corresponda a la **Familia Soberana**.
@@ -137,7 +136,7 @@ El sistema rechaza cualquier firma biológica válida que no corresponda a la **
 | Rol | Acceso | Miembros Autorizados |
 | :--- | :--- | :--- |
 | **👑 Sovereign** | **Total (Root)** | `jnovoas` (Operator) |
-| **👁️ Monitored** | **Vigilado** | `madre`, `cristian`, `diego`, `madelin`, `juan_francisco`, `vicente`, `florencia`, `tomas` |
+| **👁 Monitored** | **Vigilado** | `madre`, `cristian`, `diego`, `madelin`, `juan_francisco`, `vicente`, `florencia`, `tomas` |
 | **⛔ Unauthorized** | **Denegado** | Cualquier otra entidad biológica |
 
 *La identidad se valida (actualmente simulada) contra el `user_id` en el desafío inicial. Futuras versiones usarán hash de características faciales.*

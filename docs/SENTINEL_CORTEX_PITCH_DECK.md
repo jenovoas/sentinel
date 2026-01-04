@@ -1,4 +1,4 @@
-# 🎯 Sentinel Cortex™ - Investor Pitch Deck
+#  Sentinel Cortex™ - Investor Pitch Deck
 **Complete Slide Content + Speaker Notes**
 
 **Versión:** 2.0 - Cortex Edition  
@@ -116,7 +116,7 @@ arriesgar nuestros datos a una IA sin control"
 ```
 Sentinel Cortex™: El Primer Organismo Vivo de Seguridad
 
-                    🧠 CORTEX
+                     CORTEX
                  (Cerebro Central)
               Multi-factor Decision
                       │
@@ -188,7 +188,7 @@ Posicionamiento Único: no factible de Copiar
                     Cortex™
 Auto-vigilancia       ✅        ❌       ❌       ❌        ❌
 Auto-regeneración     ✅        ❌       ❌       ❌        ❌
-IA Segura            ✅        ⚠️       ❌       ❌        ❌
+IA Segura            ✅        ⚠       ❌       ❌        ❌
 Modo Sombra          ✅        ❌       ❌       ❌        ❌
 Sanitización         ✅        ❌       ❌       ❌        ❌
 Costo/mes            $78       $15K     $20K     $25K      $5K
@@ -362,7 +362,7 @@ Momentum Actual + Roadmap de 21 Semanas
 ├─ Data collection (30 días baseline)
 ├─ ML tuning (TP>95%, FP<1%)
 ├─ Validation (80% test coverage)
-└─ Provisional Patent Filing 🎯
+└─ Provisional Patent Filing 
 
 MILESTONES
 Month 6: 10 beta customers, $50K ARR
@@ -464,11 +464,11 @@ Por Qué Ahora: Ventana de Oportunidad Única
 2. MOMENTO DE MERCADO
    📈 Ransomware en máximo histórico (+340% YoY)
    💰 PYMES sin soluciones asequibles
-   🏛️ $50M CORFO disponible para R&D
+    $50M CORFO disponible para R&D
 
 3. VENTANA COMPETITIVA
    🔒 Nadie más tiene arquitectura de Dos Nervios
-   ⏱️ 10 años mínimo para que competencia copie
+   ⏱ 10 años mínimo para que competencia copie
    📋 Patentes defensivas en proceso
 
 "Si no lo hacemos ahora, alguien más lo hará en 2-3 años"
@@ -497,7 +497,7 @@ Que aprende (Confidence adaptation)
 
 Y que cuesta 1/10 de lo que cobran los competidores.
 
-El futuro de la seguridad no es más reglas.
+ no es más reglas.
 Es inteligencia viva, auto-vigilante, auto-curativa.
 
 Sentinel Cortex™
@@ -507,7 +507,7 @@ El Primer Organismo Vivo de Seguridad
 ```
 
 ### Notas del presentador
-"Para cerrar: esto no es un software más. Es un organismo vivo de seguridad. Que piensa con Cortex. Que se vigila a sí mismo con Dos Nervios. Que se cura automáticamente con regeneración. Que aprende con confidence adaptation. Y que cuesta 1/10 de Datadog. El futuro de la seguridad no es más reglas manuales. Es inteligencia viva, auto-vigilante, auto-curativa. Eso es Sentinel Cortex. ¿Preguntas?"
+"Para cerrar: esto no es un software más. Es un organismo vivo de seguridad. Que piensa con Cortex. Que se vigila a sí mismo con Dos Nervios. Que se cura automáticamente con regeneración. Que aprende con confidence adaptation. Y que cuesta 1/10 de Datadog.  no es más reglas manuales. Es inteligencia viva, auto-vigilante, auto-curativa. Eso es Sentinel Cortex. ¿Preguntas?"
 
 ---
 
@@ -657,7 +657,7 @@ CHANNELS
 "Nuestra valoración post-seed es $110-130 millones. Base de SaaS: $50 millones. Cortex automation: +$15 millones. Dos Nervios: +$20 millones. Regeneración: +$15 millones. IP: +$10-20 millones. Comparado con Datadog que tardó 10 años en llegar a $100 millones, nosotros llegamos en Year 1. Crecemos 40x más rápido. [cambiar slide] Tenemos momentum. Weeks 1-4 completadas. Weeks 5-8 en progreso. Milestones claros: Month 6, 10 beta customers. Month 12, 100 customers y patent filed. Month 18, Series A ready."
 
 ### Minuto 14-15: The Ask + Cierre
-"Estamos levantando $12-15 millones en Seed, más $50 millones en co-financiamiento CORFO. Total: $62-65 millones para 24 meses. Valuación pre-money de $110 millones, vendemos 12-14% de equity. [cambiar slide] Para cerrar: esto no es un software más. Es un organismo vivo de seguridad. Que piensa. Que se vigila a sí mismo. Que se cura automáticamente. Que aprende. Y que cuesta 1/10 de Datadog. El futuro de la seguridad no es más reglas manuales. Es inteligencia viva, auto-vigilante, auto-curativa. Eso es Sentinel Cortex. ¿Preguntas?"
+"Estamos levantando $12-15 millones en Seed, más $50 millones en co-financiamiento CORFO. Total: $62-65 millones para 24 meses. Valuación pre-money de $110 millones, vendemos 12-14% de equity. [cambiar slide] Para cerrar: esto no es un software más. Es un organismo vivo de seguridad. Que piensa. Que se vigila a sí mismo. Que se cura automáticamente. Que aprende. Y que cuesta 1/10 de Datadog.  no es más reglas manuales. Es inteligencia viva, auto-vigilante, auto-curativa. Eso es Sentinel Cortex. ¿Preguntas?"
 
 ---
 

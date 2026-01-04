@@ -45,7 +45,7 @@ Validar que el sistema de monitoreo de tráfico de Sentinel puede detectar **pre
 
 | Timestamp | Severity | Throughput | Estado |
 |-----------|----------|------------|--------|
-| 1766274634.81s | 0.60 | 11.98 Mbps | ⚠️ PRECURSOR |
+| 1766274634.81s | 0.60 | 11.98 Mbps | ⚠ PRECURSOR |
 
 ### Timeline del Evento
 
@@ -77,7 +77,7 @@ El algoritmo de detección de precursores identificó correctamente las siguient
    - Incremento de 6.6 ms → 8.51 ms
    - Señal de congestión incipiente
 
-3. **Queue Filling**: ⚠️ (No detectado en este test)
+3. **Queue Filling**: ⚠ (No detectado en este test)
    - Queue depth se mantuvo constante en 100
    - Nota: En tráfico real, la cola también crecería
 
@@ -140,7 +140,7 @@ Con 5 segundos de anticipación, el FSU Controller puede:
 
 ## Conclusión
 
-🎯 **ÉXITO**: El sistema de detección de precursores funciona correctamente.
+ **ÉXITO**: El sistema de detección de precursores funciona correctamente.
 
 Sentinel demostró capacidad de:
 1. ✅ Detectar señales precursoras de bursts

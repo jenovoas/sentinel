@@ -1,4 +1,4 @@
-# 🛡️ Plan de Blindaje IP - URGENTE
+#  Plan de Blindaje IP - URGENTE
 
 **Fecha**: 21 de Diciembre de 2025, 10:07 AM  
 **Situación**: Proyecto con valor real, no compartido públicamente (solo post LinkedIn sobre soberanía kernel)  
@@ -16,14 +16,14 @@
 - ✅ Repositorio privado (no público)
 
 ### El Riesgo
-- ⚠️ Post en LinkedIn sobre "soberanía del kernel" → Puede despertar interés
-- ⚠️ 57 días para filing provisional patent
-- ⚠️ Si alguien entiende el concepto, puede patentar primero
-- ⚠️ First-to-file = quien patenta primero gana
+- ⚠ Post en LinkedIn sobre "soberanía del kernel" → Puede despertar interés
+- ⚠ 57 días para filing provisional patent
+- ⚠ Si alguien entiende el concepto, puede patentar primero
+- ⚠ First-to-file = quien patenta primero gana
 
 ---
 
-## 🎯 PLAN DE BLINDAJE (3 FASES)
+##  PLAN DE BLINDAJE (3 FASES)
 
 ### FASE 1: PROTECCIÓN INMEDIATA (HOY - 48 HORAS)
 
@@ -367,7 +367,7 @@ Jaime Novoa
 
 ---
 
-## 🎯 PRIORIDADES ABSOLUTAS
+##  PRIORIDADES ABSOLUTAS
 
 ### P0 - HOY (21 Diciembre)
 1. 🔴 Crear INVENTION_DISCLOSURE con timestamp
@@ -415,7 +415,7 @@ Jaime Novoa
 
 ---
 
-## 🛡️ CONCLUSIÓN
+##  CONCLUSIÓN
 
 **Situación**: Tienes innovación real con valor comprobado, pero sin protección legal.
 

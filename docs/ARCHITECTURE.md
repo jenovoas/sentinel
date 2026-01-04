@@ -1,4 +1,4 @@
-# 🏗️ Sentinel Cortex™ Technical Whitepaper
+# 🏗 Sentinel Cortex™ Technical Whitepaper
 
 **Version**: 1.0.0 (Initial Release)  
 **Last Updated**: December 30, 2025  
@@ -7,7 +7,7 @@
 
 ---
 
-## 🎯 Executive Summary
+##  Executive Summary
 
 Sentinel Cortex is a **Cognitive Operating System** designed for high-security environments. It bridges the gap between low-level kernel enforcement (eBPF) and high-level AI decision making. Unlike traditional EDRs, Sentinel operates as a PID 1 Supervisor, embedding itself into the OS foundation to provide:
 
@@ -18,7 +18,7 @@ Sentinel Cortex is a **Cognitive Operating System** designed for high-security e
 
 ---
 
-## 🏛️ System Architecture
+##  System Architecture
 
 ```mermaid
 graph TD
@@ -82,7 +82,7 @@ graph TD
 
 ---
 
-## 🛡️ Security Layers
+##  Security Layers
 
 | Layer | Technology | Mechanic | Status |
 |-------|------------|----------|--------|
@@ -94,7 +94,7 @@ graph TD
 
 ---
 
-## 🔮 Roadmap Summary
+##  Roadmap Summary
 
 1.  **Phase 1-6**: Foundation, Web Stack, and basic AI integration. (Completed)
 2.  **Phase 7 (Net-Hunter)**: XDP Firewall implementation. (Completed)

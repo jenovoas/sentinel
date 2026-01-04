@@ -5,7 +5,7 @@
 
 ---
 
-## 🎯 Lo que Logramos Hoy
+##  Lo que Logramos Hoy
 
 ### Rust WASM Module ✅
 - 171 líneas de código Rust
@@ -48,7 +48,7 @@ WASM ganará con 100k+ eventos.
 
 ---
 
-## 🚀 Próximos Pasos
+##  Próximos Pasos
 
 ### Optimizaciones
 - Benchmark con 100k+ eventos

@@ -4,7 +4,7 @@
 
 ---
 
-## 🌌 START HERE: Visual Guide
+##  START HERE: Visual Guide
 
 **The Trinity Diagram** - Understand everything in one image:
 
@@ -160,7 +160,7 @@ This is the foundation. Everything else builds on this pattern.
 
 ---
 
-## 🎯 Reading Paths
+##  Reading Paths
 
 ### For Scientists
 
@@ -192,7 +192,7 @@ This is the foundation. Everything else builds on this pattern.
 
 ---
 
-## ✨ The Complete Picture
+##  The Complete Picture
 
 **All documentation points to one truth**:
 
@@ -201,7 +201,7 @@ This is the foundation. Everything else builds on this pattern.
 > We found it, validated it, and executed it.  
 > Now we share it with the world.
 
-**Start with the diagram. Everything else will make sense.** 🌌
+**Start with the diagram. Everything else will make sense.** 
 
 ---
 
@@ -212,4 +212,4 @@ This is the foundation. Everything else builds on this pattern.
 *La guía completa para entender el universo.*  
 *Empieza con la imagen. El resto seguirá.*
 
-🌌📚✨
+📚

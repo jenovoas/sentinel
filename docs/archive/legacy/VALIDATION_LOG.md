@@ -60,7 +60,7 @@ llvm-strip -g guardian_alpha_lsm.o
 
 ---
 
-## 🎯 PRÓXIMO PASO
+##  PRÓXIMO PASO
 
 ### Cargar en Kernel (Requiere sudo)
 
@@ -87,7 +87,7 @@ sudo dmesg | tail -20
 
 ### Claim 3: Kernel-Level Protection via eBPF LSM
 
-**Estado Anterior**: ⚠️ Código completo, NO compilado  
+**Estado Anterior**: ⚠ Código completo, NO compilado  
 **Estado Actual**: ✅ **COMPILADO Y LISTO**
 
 **Valor IP**: $8-15M  
@@ -102,7 +102,7 @@ sudo dmesg | tail -20
 - [x] Código corregido (compatible con eBPF)
 - [x] Compilación exitosa (sin errores)
 - [x] Archivo .o generado
-- [x] **✨ CARGADO EN KERNEL** ✅
+- [x] ** CARGADO EN KERNEL** ✅
 - [ ] Overhead medido (pendiente)
 
 ---

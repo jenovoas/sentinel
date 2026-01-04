@@ -51,7 +51,7 @@
 
 ---
 
-## 🎯 CURRENT: MVP Deployment (Weeks 1-2)
+##  CURRENT: MVP Deployment (Weeks 1-2)
 
 ### Backend
 - [ ] Fix login endpoint (500 error)
@@ -75,7 +75,7 @@
 
 ---
 
-## 🚀 NEXT: First Pilot (Weeks 3-4)
+##  NEXT: First Pilot (Weeks 3-4)
 
 ### Pre-Pilot
 - [ ] Identify 5 SOC managers (Chile)
@@ -111,7 +111,7 @@
 
 ---
 
-## 🎯 THIS WEEK (Dec 16-22)
+##  THIS WEEK (Dec 16-22)
 
 1. Fix backend auth
 2. Deploy vLLM + Redis

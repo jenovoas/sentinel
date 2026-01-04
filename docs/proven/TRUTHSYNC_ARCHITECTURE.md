@@ -1,4 +1,4 @@
-# 🏗️ TruthSync - Dual-Container Architecture
+# 🏗 TruthSync - Dual-Container Architecture
 
 **Concept**: Separation of Concerns + Predictive Caching  
 **Design**: Heavy Core + Lightweight Edge  
@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Architecture Overview
+##  Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -473,7 +473,7 @@ Learning:
 
 ---
 
-## 🎯 Deployment Strategy
+##  Deployment Strategy
 
 ```yaml
 # Production deployment
@@ -542,4 +542,4 @@ TruthSync Edge (per instance):
 
 ---
 
-**Architecture**: Dual-container = Heavy Core (truth) + Light Edge (speed) = <10ms latency 🚀
+**Architecture**: Dual-container = Heavy Core (truth) + Light Edge (speed) = <10ms latency 

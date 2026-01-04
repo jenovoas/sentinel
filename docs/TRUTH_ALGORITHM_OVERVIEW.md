@@ -25,7 +25,7 @@
 
 ---
 
-## 🎯 BLOQUE 1: Visión y Estrategia
+##  BLOQUE 1: Visión y Estrategia
 
 ### **El Problema**:
 3 mil millones de personas consumen noticias por TV/redes sociales diariamente. No existe un sistema de verificación en tiempo real que sea:
@@ -54,7 +54,7 @@ Truth Algorithm verifica claims automáticamente usando:
 
 ---
 
-## 🏗️ BLOQUE 2: Arquitectura de 5 Capas
+## 🏗 BLOQUE 2: Arquitectura de 5 Capas
 
 ### **Inspiración**: Sentinel Dual-Guardian (defense-in-depth)
 
@@ -91,7 +91,7 @@ Truth Algorithm verifica claims automáticamente usando:
 
 ---
 
-## 🚀 BLOQUE 3: POC Inmediato (1-2 semanas)
+##  BLOQUE 3: POC Inmediato (1-2 semanas)
 
 ### **Objetivo**: Probar concepto core con claims simples
 
@@ -246,7 +246,7 @@ REVALIDATION (días 13-14) ← Production testing
 
 ---
 
-## 🎯 Decisiones Pendientes
+##  Decisiones Pendientes
 
 ### **Antes de empezar POC**:
 1. ❓ ¿Scope realista para 1-2 semanas?
@@ -310,4 +310,4 @@ $460B+ TAM, $50M-200M valor de patent, impacto social masivo.
 - ¿Empezamos a codear?
 - ¿Algún ajuste necesario?
 
-**Cuando estés listo, dime y empezamos con la implementación.** 🚀
+**Cuando estés listo, dime y empezamos con la implementación.** 

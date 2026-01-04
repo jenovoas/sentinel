@@ -219,7 +219,7 @@ Este modo garantiza que, incluso con fallo total del Guardian-Beta, el sistema m
 
 ---
 
-## 🎯 PRÓXIMOS PASOS
+##  PRÓXIMOS PASOS
 
 ### Para el Patent Attorney:
 

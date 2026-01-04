@@ -1,4 +1,4 @@
-# 🎯 Patent Attorney Candidates - AI/ML Specialists
+#  Patent Attorney Candidates - AI/ML Specialists
 
 **Purpose:** Curated list of patent attorneys for Sentinel Cortex™ provisional filing  
 **Target Filing Date:** February 15, 2026  
@@ -48,8 +48,8 @@
 - ✅ Strong prior art search
 
 **Cons:**
-- ⚠️ Expensive (upper range)
-- ⚠️ May be overkill for seed stage
+- ⚠ Expensive (upper range)
+- ⚠ May be overkill for seed stage
 
 **Recommendation:** Contact if budget allows
 
@@ -78,7 +78,7 @@
 - ✅ Reasonable pricing
 
 **Cons:**
-- ⚠️ Less AI/ML than Fish & Richardson
+- ⚠ Less AI/ML than Fish & Richardson
 
 **Recommendation:** ⭐ STRONG CANDIDATE
 
@@ -107,7 +107,7 @@
 - ✅ Fast turnaround
 
 **Cons:**
-- ⚠️ Less cybersecurity focus
+- ⚠ Less cybersecurity focus
 
 **Recommendation:** ⭐ STRONG CANDIDATE
 
@@ -137,7 +137,7 @@
 - ✅ Flexible payment terms
 
 **Cons:**
-- ⚠️ Less specialized in cybersecurity
+- ⚠ Less specialized in cybersecurity
 
 **Recommendation:** ⭐⭐ TOP CHOICE (budget-friendly)
 
@@ -166,7 +166,7 @@
 - ✅ High success rate
 
 **Cons:**
-- ⚠️ Premium pricing
+- ⚠ Premium pricing
 
 **Recommendation:** Contact if raising funding
 
@@ -195,7 +195,7 @@
 - ✅ Startup experience
 
 **Cons:**
-- ⚠️ Less well-known than top-tier
+- ⚠ Less well-known than top-tier
 
 **Recommendation:** ⭐ SOLID CHOICE
 
@@ -225,7 +225,7 @@
 - ✅ Fast turnaround
 
 **Cons:**
-- ⚠️ Smaller AI/ML portfolio
+- ⚠ Smaller AI/ML portfolio
 
 **Recommendation:** ⭐ GOOD FOR BUDGET
 
@@ -254,7 +254,7 @@
 - ✅ Innovation focus
 
 **Cons:**
-- ⚠️ Less cybersecurity experience
+- ⚠ Less cybersecurity experience
 
 **Recommendation:** Start with free consultation
 
@@ -283,7 +283,7 @@
 - ✅ International experience
 
 **Cons:**
-- ⚠️ Premium pricing
+- ⚠ Premium pricing
 
 **Recommendation:** If compliance is priority
 
@@ -311,8 +311,8 @@
 - ✅ Flexible terms
 
 **Cons:**
-- ⚠️ Less resources (no team)
-- ⚠️ Harder to vet quality
+- ⚠ Less resources (no team)
+- ⚠ Harder to vet quality
 
 **Recommendation:** If budget is very tight
 
@@ -356,7 +356,7 @@ jaime@sentinel-cortex.com
 
 ---
 
-## 🎯 Recommended Action Plan
+##  Recommended Action Plan
 
 ### Week 1 (Dec 16-22):
 1. **Send emails to top 5:**
@@ -393,7 +393,7 @@ jaime@sentinel-cortex.com
 1. Final approval
 
 ### Feb 15, 2026:
-1. 🎯 FILE PROVISIONAL PATENT
+1.  FILE PROVISIONAL PATENT
 
 ---
 

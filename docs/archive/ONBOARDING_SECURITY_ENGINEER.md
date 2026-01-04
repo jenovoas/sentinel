@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Por Qué es Crítico
+##  Por Qué es Crítico
 
 Sentinel necesita:
 - ✅ Validación de seguridad de Dual-Guardian (Claim 3)
@@ -174,7 +174,7 @@ Sentinel necesita:
 
 ---
 
-## 🎯 Objetivos de Aprendizaje
+##  Objetivos de Aprendizaje
 
 ### Técnico
 - Threat modeling (STRIDE, PASTA)
@@ -217,7 +217,7 @@ Sentinel necesita:
 
 ---
 
-## 🛠️ Stack Tecnológico
+## 🛠 Stack Tecnológico
 
 ### Security Tools
 - **Burp Suite**: Web pentesting
@@ -297,7 +297,7 @@ Sentinel necesita:
 
 ---
 
-## 🎯 Red Flags a Buscar
+##  Red Flags a Buscar
 
 ### En AIOpsShield
 - [ ] Evasiones por encoding

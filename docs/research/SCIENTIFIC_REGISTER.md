@@ -5,7 +5,7 @@
 
 This register catalogues the theoretical theoretical, empirical, and philosophical research conducted during the development of the Sentinel Sovereign Organism.
 
-## 🧠 Category I: Neuroscience & Biological Computing
+##  Category I: Neuroscience & Biological Computing
 *Papers exploring the integration of synthetic and organic cognition.*
 
 1.  **[SNN Akashic Validation: Benchmarking Synthetic Life](file:///home/jnovoas/sentinel/docs/research/SNN_AKASHIC_VALIDATION.md)**
@@ -15,7 +15,7 @@ This register catalogues the theoretical theoretical, empirical, and philosophic
 3.  **[Digital Hippocampus Foundations](file:///home/jnovoas/sentinel/docs/research/DIGITAL_HIPPOCAMPUS_WEEK1_PLAN.md)**
     *   *Abstract*: Initial architectural planning for Episodic Memory and Pattern Separation (CA1/CA3).
 
-## 🛡️ Category II: Kernel Physics & Security Architecture
+##  Category II: Kernel Physics & Security Architecture
 *Papers detailing the lower-level implementation of the immune system.*
 
 4.  **[Behavioral Fingerprinting Validation (Phase 2)](file:///home/jnovoas/sentinel/docs/validation/PHASE2_BEHAVIORAL_FINGERPRINTING.md)**

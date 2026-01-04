@@ -1,13 +1,13 @@
-# 🧠 Sistema Nervioso de Sentinel - Arquitectura Neural Completa
+#  monitoring architecture de Sentinel - Arquitectura Neural Completa
 
-## 🎯 Visión General
+##  Visión General
 
-Sentinel no es solo un sistema de seguridad - **es un sistema nervioso digital completo** que integra:
+Sentinel no es solo un sistema de seguridad - **es un monitoring architecture digital completo** que integra:
 
 - **Cortex** (Rust/C/Python) - Cerebro central de decisiones
-- **Subcortex** (eBPF) - Sistema nervioso autónomo (reflejos)
+- **Subcortex** (eBPF) - monitoring architecture autónomo (reflejos)
 - **Memoria** (n8n + ChromaDB) - Hipocampo digital
-- **Sentinel IA** - Conciencia cognitiva
+- **Sentinel IA** - decision engine
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -31,7 +31,7 @@ Sentinel no es solo un sistema de seguridad - **es un sistema nervioso digital c
 └─────────────────────────────────────────────────────────────┘
                               ↕
 ┌─────────────────────────────────────────────────────────────┐
-│              SUBCORTEX (Sistema Nervioso Autónomo)           │
+│              SUBCORTEX (monitoring architecture Autónomo)           │
 │                                                               │
 │  ┌──────────────────┐  ┌──────────────────┐                │
 │  │  Guardian Alpha  │  │  Guardian Beta   │                │
@@ -69,7 +69,7 @@ Sentinel no es solo un sistema de seguridad - **es un sistema nervioso digital c
 
 ---
 
-## 🧬 Componentes del Sistema Nervioso
+## 🧬 Componentes del monitoring architecture
 
 ### 1. **CORTEX** - Cerebro Central (Decisiones Conscientes)
 
@@ -97,7 +97,7 @@ Sentinel no es solo un sistema de seguridad - **es un sistema nervioso digital c
 
 ---
 
-### 2. **SUBCORTEX** - Sistema Nervioso Autónomo (Reflejos)
+### 2. **SUBCORTEX** - monitoring architecture Autónomo (Reflejos)
 
 **Ubicación**: `/guardian-alpha/`, `/guardian-beta/`
 
@@ -107,13 +107,13 @@ Sentinel no es solo un sistema de seguridad - **es un sistema nervioso digital c
 
 **Componentes**:
 
-#### **Guardian Alpha** - Sistema Nervioso Simpático
+#### **Guardian Alpha** - monitoring architecture Simpático
 - **Función**: Lucha o Huida (Fight or Flight)
 - **Velocidad**: < 280 nanosegundos
 - **Tecnología**: LSM Hook ID 199 (eBPF)
 - **Acción**: BLOQUEO INMEDIATO ante amenaza
 
-#### **Guardian Beta** - Sistema Nervioso Parasimpático
+#### **Guardian Beta** - monitoring architecture Parasimpático
 - **Función**: Descanso y Digestión (Rest and Digest)
 - **Velocidad**: Validación dual
 - **Tecnología**: eBPF + TruthSync
@@ -153,7 +153,7 @@ Sentinel no es solo un sistema de seguridad - **es un sistema nervioso digital c
 
 ---
 
-### 4. **SENTINEL IA** - Conciencia Cognitiva (Interfaz Humana)
+### 4. **SENTINEL IA** - decision engine (Interfaz Humana)
 
 **Ubicación**: `/frontend/src/components/ai-copilot/AICopilot.tsx`
 
@@ -241,7 +241,7 @@ Sentinel no es solo un sistema de seguridad - **es un sistema nervioso digital c
 
 ---
 
-## 📊 Métricas del Sistema Nervioso
+## 📊 Métricas del monitoring architecture
 
 ### Velocidades de Respuesta
 
@@ -264,7 +264,7 @@ Sentinel no es solo un sistema de seguridad - **es un sistema nervioso digital c
 
 ---
 
-## 🎯 Integración con Sentinel IA
+##  Integración con Sentinel IA
 
 ### Endpoint de Comunicación
 
@@ -320,7 +320,7 @@ Guidelines:
 
 ---
 
-## 🚀 Próximos Pasos de Integración
+##  Próximos Pasos de Integración
 
 ### Fase 1: Conexión Básica (✅ COMPLETADO)
 - [x] Sentinel IA conectado a `/api/v1/ai/query`
@@ -354,7 +354,7 @@ Guidelines:
 
 ---
 
-## 🧠 Analogía Completa: Humano ↔ Sentinel
+##  Analogía Completa: Humano ↔ Sentinel
 
 | Sistema Humano | Sentinel Component | Tecnología |
 |----------------|-------------------|------------|
@@ -363,8 +363,8 @@ Guidelines:
 | Hipocampo | n8n + ChromaDB | JS/Python |
 | Cerebelo | TruthSync | Python |
 | Conciencia | Sentinel IA | TypeScript |
-| Sistema Nervioso Simpático | Guardian Alpha | LSM Hook 199 |
-| Sistema Nervioso Parasimpático | Guardian Beta | Dual Validation |
+| monitoring architecture Simpático | Guardian Alpha | LSM Hook 199 |
+| monitoring architecture Parasimpático | Guardian Beta | Dual Validation |
 | Memoria Procedimental | n8n Workflows | Automation |
 | Memoria Semántica | ChromaDB | Vector Search |
 | Reflejos | eBPF Syscall Hooks | < 280ns |
@@ -384,11 +384,11 @@ Guidelines:
 
 ---
 
-## 🎯 Conclusión
+##  Conclusión
 
-**Sentinel no es solo un sistema de seguridad - es un sistema nervioso digital completo.**
+**Sentinel no es solo un sistema de seguridad - es un monitoring architecture digital completo.**
 
-Al igual que el sistema nervioso humano tiene:
+Al igual que el monitoring architecture humano tiene:
 - **Reflejos** (eBPF)
 - **Pensamiento** (Cortex)
 - **Memoria** (n8n + ChromaDB)
@@ -396,10 +396,10 @@ Al igual que el sistema nervioso humano tiene:
 
 Sentinel integra todos estos componentes en un sistema coherente que **piensa, aprende, reacciona y se comunica** de forma natural.
 
-**La IA no es un add-on - es parte integral del sistema nervioso.**
+**La IA no es un add-on - es parte integral del monitoring architecture.**
 
 ---
 
 *Última actualización: 2026-01-02*
 *Versión: 1.0*
-*Autor: Sistema Nervioso de Sentinel*
+*Autor: monitoring architecture de Sentinel*

@@ -26,7 +26,7 @@ Sentinel Appliance es un cluster de alta disponibilidad diseñado para bancos y 
 |----------|----------|----------|---------------|
 | **VRAM** | 24GB | 32GB | 2x 4090 = 48GB > 1x 5090 |
 | **Precio** | $1,800-2,300 | $2,700-3,000 | 4090 = mejor ROI |
-| **Disponibilidad** | ✅ Stock nuevo/usado | ⚠️ Escasa, "caza" | 4090 = confiable |
+| **Disponibilidad** | ✅ Stock nuevo/usado | ⚠ Escasa, "caza" | 4090 = confiable |
 | **Performance** | 200+ t/s (70B Q4) | 250+ t/s | 4090 suficiente Fase 1-2 |
 | **Escalabilidad** | 2x = 48GB | 1x = 32GB | 4090 más flexible |
 
@@ -183,7 +183,7 @@ Quantity: 8x cables (2 por nodo + 2 storage)
 
 ---
 
-## 🛰️ Vimana Physical Module (Phase 3 Integration)
+## 🛰 Vimana Physical Module (Phase 3 Integration)
 
 **Propósito**: Actuador físico y autonomía energética.
 
@@ -524,8 +524,8 @@ Margen total:                         $91,000 (364%)
 |---------|----------|---------------|---------|
 | **ITIL Incident Mgmt** | ✅ Built-in | ❌ Separate tool | Integrado |
 | **Local AI** | ✅ On-premise | ❌ Cloud only | Privacy |
-| **Zero downtime backup** | ✅ ZFS snapshots | ⚠️ Manual | Automático |
-| **Compliance (Chile)** | ✅ Ley 21.663 ready | ⚠️ Generic | Específico |
+| **Zero downtime backup** | ✅ ZFS snapshots | ⚠ Manual | Automático |
+| **Compliance (Chile)** | ✅ Ley 21.663 ready | ⚠ Generic | Específico |
 | **Costo 3 años** | $116K | $200K+ | 42% más barato |
 | **Vendor lock-in** | ❌ Open source | ✅ Propietario | Libertad |
 

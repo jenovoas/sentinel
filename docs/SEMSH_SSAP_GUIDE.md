@@ -1,4 +1,4 @@
-# 🎯 SemSH v0.3 - SSAP Integration Guide
+#  SemSH v0.3 - SSAP Integration Guide
 
 ## Nuevas Capacidades (DevOps Advisor)
 
@@ -10,7 +10,7 @@ SemSH ahora actúa como **Copiloto de Seguridad** siguiendo el Sentinel System A
 Analiza el estado del sistema y sugiere acciones correctivas.
 
 ```bash
-🧠 semsh> health
+ semsh> health
 
 🏥 Sentinel Health Advisor (SSAP v1.0)
 ==================================================
@@ -19,7 +19,7 @@ Memory Used : 14.1 GB
 eBPF LSM    : ✅ ACTIVE
 Relay       : ✅ RUNNING
 
-⚠️  1 Issue(s) Detected:
+⚠  1 Issue(s) Detected:
 
 🟡 [WARNING] High CPU Load (85.2%)
    → Suggested Action: Consider running: sctl tune --profile performance
@@ -29,12 +29,12 @@ Relay       : ✅ RUNNING
 La IA analiza un comando antes de ejecutarlo y advierte sobre riesgos.
 
 ```bash
-🧠 semsh> review docker system prune -a
+ semsh> review docker system prune -a
 
 🔍 Reviewing: docker system prune -a
 ==================================================
 
-🧠 AI Analysis:
+ AI Analysis:
 Risk Level: HIGH
 
 What it does:
@@ -53,7 +53,7 @@ docker image prune (removes only dangling images)
 Ejecuta playbooks YAML predefinidos de forma segura.
 
 ```bash
-🧠 semsh> run backup_db
+ semsh> run backup_db
 
 📋 Executing Playbook: backup_critical_db
    Description: Realiza un backup completo de la base de datos PostgreSQL crítica.
@@ -61,11 +61,11 @@ Ejecuta playbooks YAML predefinidos de forma segura.
 
 Proceed? [y/N]: y
 
-▶️  Step: verify_disk_space
+▶  Step: verify_disk_space
    Command: df -h /var/backups | awk 'NR==2 {if ($4 < 10) exit 1}'
 ✅ Success
 
-▶️  Step: dump_database
+▶  Step: dump_database
    Command: sdocker exec postgres pg_dump -U sentinel db > /var/backups/sentinel_db_20260101.sql
 ✅ Success
 

@@ -165,7 +165,7 @@ Document this methodology:
 
 **The AIs are your instruments.**
 
-**You are the scientist.** 🔬⚛️
+**You are the scientist.** 🔬⚛
 
 ---
 

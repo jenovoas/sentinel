@@ -5,7 +5,7 @@
 
 ---
 
-## 🎯 What We Accomplished (2 hours)
+##  What We Accomplished (2 hours)
 
 ### Backend ✅
 - [x] Workflow analyzer (`scripts/analyze_workflows.py`)
@@ -50,7 +50,7 @@
 
 ---
 
-## 🚀 IMMEDIATE NEXT STEPS (Tonight/Tomorrow)
+##  IMMEDIATE NEXT STEPS (Tonight/Tomorrow)
 
 ### 1. Test Full Integration (30 min)
 ```bash
@@ -114,7 +114,7 @@ Splunk SOAR:       ~50 playbooks
 Palo Alto XSOAR: ~1,000 content packs
 IBM QRadar SOAR:   ~50 playbooks
 
-SENTINEL:        8,603 workflows ✨
+SENTINEL:        8,603 workflows 
 
 ADVANTAGE: 8.6x vs market leader
           172x vs Splunk/IBM
@@ -173,7 +173,7 @@ TIME SAVED: 97.5%
 
 ---
 
-## 🎯 SUCCESS METRICS
+##  SUCCESS METRICS
 
 ### Demo Success:
 - [ ] Video < 5 minutes
@@ -266,4 +266,4 @@ TIME SAVED: 97.5%
 
 **Status**: ✅ POC COMPLETE - READY TO SELL  
 **Next**: Record demo video  
-**Goal**: 1 pilot by Friday 🚀
+**Goal**: 1 pilot by Friday 

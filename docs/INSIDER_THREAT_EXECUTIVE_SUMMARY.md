@@ -1,4 +1,4 @@
-# 🛡️ Insider Threat Protection - Executive Summary
+#  Insider Threat Protection - Executive Summary
 
 **Fecha**: 20-Dic-2024  
 **Validado por**: Especialista en ciberseguridad  
@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 El Problema
+##  El Problema
 
 **Insider threat** (usuario interno malicioso) es el **mayor riesgo** en ciberseguridad:
 - 60% de brechas de seguridad involucran insiders (Verizon DBIR 2024)
@@ -107,7 +107,7 @@ sudo rmmod guardian_alpha  # Remover módulo eBPF
 4. Guardian-Beta detecta ausencia
 5. Auto-regeneración + alerta SOC
 
-# Resultado: ⚠️ Detectado, ✅ Alerta generada
+# Resultado: ⚠ Detectado, ✅ Alerta generada
 ```
 
 ---
@@ -130,7 +130,7 @@ sudo rmmod guardian_alpha  # Remover módulo eBPF
 
 **Sectores que NECESITAN protección insider**:
 - 🏦 **Banca**: Regulación estricta, datos sensibles
-- 🏛️ **Gobierno**: Secretos de estado, compliance
+-  **Gobierno**: Secretos de estado, compliance
 - 🏥 **Salud**: HIPAA, datos de pacientes
 - 🔬 **Defensa**: Información clasificada
 - ⚡ **Infraestructura Crítica**: Energía, agua, telecomunicaciones
@@ -139,7 +139,7 @@ sudo rmmod guardian_alpha  # Remover módulo eBPF
 
 ---
 
-## 🎯 Mensaje para Stakeholders
+##  Mensaje para Stakeholders
 
 ### Para ANID
 > "Sentinel no solo protege contra ataques externos (AIOpsDoom), sino que es el **único sistema** que protege contra usuarios internos maliciosos mediante arquitectura Dual-Guardian con mutual surveillance a nivel kernel. Esto lo hace crítico para infraestructura nacional (banca, energía, gobierno)."
@@ -158,9 +158,9 @@ sudo rmmod guardian_alpha  # Remover módulo eBPF
 ## 📈 Roadmap de Mejora
 
 ### Gaps Identificados
-1. ⚠️ Admin con acceso físico al servidor
-2. ⚠️ Admin con acceso a K8s control plane
-3. ⚠️ Admin con acceso a cloud provider
+1. ⚠ Admin con acceso físico al servidor
+2. ⚠ Admin con acceso a K8s control plane
+3. ⚠ Admin con acceso a cloud provider
 
 ### Mitigaciones Planificadas
 - [ ] Disk encryption (LUKS) + TPM

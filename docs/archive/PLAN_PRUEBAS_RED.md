@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 OBJETIVO
+##  OBJETIVO
 
 Medir el impacto de la **distancia física** y **pérdidas de señal** en el sistema de buffers adaptativos, validando que la arquitectura mantiene performance bajo condiciones de red adversas.
 

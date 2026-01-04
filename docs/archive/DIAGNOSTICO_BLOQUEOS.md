@@ -17,7 +17,7 @@
 - **Core 3:** 75°C 🔴
 - **PCH (Chipset):** 72°C 🟡
 
-### ⚠️ Problema Crítico CONFIRMADO:
+### ⚠ Problema Crítico CONFIRMADO:
 **Inspección física realizada (2025-12-23):**
 - ✅ Interior de la laptop limpio
 - 🔴 **UN VENTILADOR NO FUNCIONA CORRECTAMENTE**
@@ -66,7 +66,7 @@
 - Herramientas (si no las tienes): $10-20 USD
 - **Total:** $30-75 USD
 
-**⚠️ Riesgos del DIY:**
+**⚠ Riesgos del DIY:**
 - Pérdida de garantía (si aún la tienes)
 - Daño a otros componentes si no tienes experiencia
 - Ventilador incompatible si compras el modelo incorrecto
@@ -112,7 +112,7 @@ Este script:
 
 ---
 
-## 🛠️ Scripts de Ayuda Creados
+## 🛠 Scripts de Ayuda Creados
 
 ### 1. `monitor_system.sh`
 Monitorea en tiempo real:
@@ -162,7 +162,7 @@ Prepara el sistema antes de usar el navegador:
 
 ---
 
-## 🎯 Plan de Acción Recomendado
+##  Plan de Acción Recomendado
 
 ### 🔴 URGENTE (Esta Semana):
 1. 🔧 **REEMPLAZAR EL VENTILADOR DEFECTUOSO**
@@ -170,7 +170,7 @@ Prepara el sistema antes de usar el navegador:
    - Opción B: Comprar ventilador compatible y reemplazar (si tienes experiencia)
 2. 🔧 Mientras tanto, aplicar medidas temporales (ver abajo)
 
-### ⚠️ Medidas Temporales (MIENTRAS ESPERAS EL REEMPLAZO):
+### ⚠ Medidas Temporales (MIENTRAS ESPERAS EL REEMPLAZO):
 1. ✅ **LIMITA EL USO DEL NAVEGADOR** a lo estrictamente necesario
 2. ✅ Ejecuta `./prepare_browser.sh` SIEMPRE antes de usar el navegador
 3. ✅ Usa Firefox en lugar de Chrome
@@ -225,7 +225,7 @@ Estás en **78°C en reposo/uso ligero**, lo cual es ANORMAL y peligroso.
 
 ---
 
-## 🔗 Recursos Adicionales
+##  Recursos Adicionales
 
 ### Comandos Útiles:
 ```bash

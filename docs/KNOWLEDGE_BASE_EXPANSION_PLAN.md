@@ -1,4 +1,4 @@
-# 🎯 POC Completado + Próximos Pasos
+#  POC Completado + Próximos Pasos
 
 ## ✅ POC WORKFLOW RECOMMENDATIONS - COMPLETADO
 
@@ -26,7 +26,7 @@
 
 ---
 
-## 🚀 PRÓXIMO PASO: Knowledge Base de Ciberataques
+##  PRÓXIMO PASO: Knowledge Base de Ciberataques
 
 ### ¿Por qué es FÁCIL agregar?
 
@@ -185,7 +185,7 @@ class CVEIndexer:
 
 ---
 
-## 🎯 Arquitectura Extendida
+##  Arquitectura Extendida
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -212,7 +212,7 @@ class CVEIndexer:
 ├─────────────────────────────────────────────────┤
 │ "Phishing incident detected"                    │
 │                                                 │
-│ 🧠 AI Suggestions:                              │
+│  AI Suggestions:                              │
 │ ├─ Workflows: "Phishing Auto-Triage"           │
 │ ├─ ATT&CK: "T1566.001 Spearphishing"           │
 │ ├─ TI: "APT28 campaign active"                 │
@@ -258,28 +258,28 @@ class CVEIndexer:
 
 ---
 
-## 🚀 Propuesta
+##  Propuesta
 
 ### Opción A: Solo Workflows (ACTUAL)
 - ✅ 8,603 workflows
 - ✅ Demo funcional
-- ⚠️ Sin contexto de amenazas
+- ⚠ Sin contexto de amenazas
 
 ### Opción B: Workflows + MITRE ATT&CK ⭐ RECOMENDADO
 - ✅ 8,603 workflows
 - ✅ 600+ técnicas ATT&CK
 - ✅ Mapeo automático
 - ✅ Contexto de amenazas
-- ⏱️ +4 horas
+- ⏱ +4 horas
 
 ### Opción C: Full Knowledge Base
 - ✅ Workflows + ATT&CK + TI + CVE
 - ✅ Sistema completo
-- ⏱️ +10-12 horas
+- ⏱ +10-12 horas
 
 ---
 
-## 🎯 Mi Recomendación
+##  Mi Recomendación
 
 **Opción B**: Agregar MITRE ATT&CK este fin de semana
 

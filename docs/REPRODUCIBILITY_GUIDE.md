@@ -123,7 +123,7 @@ sudo sctl status
 
 **Expected Output:**
 ```
-🛡️  Sentinel Status Dashboard
+  Sentinel Status Dashboard
    • eBPF LSM      : ACTIVE
    • Sentinel Relay: RUNNING
    • Kernel Pulse  : RUNNING
@@ -198,7 +198,7 @@ sudo /home/jnovoas/sentinel/guardian-alpha/sentinel_relay
 
 **Expected Output:**
 ```
-🚀 Sentinel High-Performance Relay (C Version) Starting...
+ Sentinel High-Performance Relay (C Version) Starting...
 ✅ Relay ACTIVE. Monitoring events...
 DEBUG: Received event size 88
 f4 56 00 00 00 00 00 00 00 00 00 00 0f 00 00 00 

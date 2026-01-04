@@ -1,4 +1,4 @@
-# 🎯 Sentinel - Master Strategy & Roadmap
+#  Sentinel - Master Strategy & Roadmap
 
 **Plataforma de Seguridad Completa: AIOps + Crypto Wallet**
 
@@ -18,7 +18,7 @@ Sentinel es una **plataforma de seguridad dual**:
 
 ---
 
-## 🛡️ Producto 1: Sentinel Cortex™
+##  Producto 1: Sentinel Cortex™
 
 ### **Problema que Resuelve**:
 Sistemas AI/LLM son vulnerables a **ataques del submundo cibernético**:
@@ -55,11 +55,11 @@ Sistemas AI/LLM son vulnerables a **ataques del submundo cibernético**:
 | **Cuándo actúa** | Después | Después | **Antes** |
 | **AI/LLM focus** | ❌ | ❌ | ✅ |
 | **Pre-emptive blocking** | ❌ | ❌ | ✅ |
-| **Insider threat** | ⚠️ | ⚠️ | ✅ (97.5%) |
+| **Insider threat** | ⚠ | ⚠ | ✅ (97.5%) |
 
 ### **Mercados Objetivo**:
 - 🏦 Banca (insider threat + compliance)
-- 🏛️ Gobierno (infraestructura crítica)
+-  Gobierno (infraestructura crítica)
 - 🏥 Salud (HIPAA + ransomware)
 - 🔬 Defensa (classified data)
 
@@ -151,7 +151,7 @@ Usuarios tienen:
 
 ---
 
-## 🗺️ Roadmap Integrado
+## 🗺 Roadmap Integrado
 
 ### **Q1 2025: MVP Dual**
 **Sentinel Cortex**:
@@ -189,7 +189,7 @@ Usuarios tienen:
 
 ---
 
-## 🎯 Go-to-Market Strategy
+##  Go-to-Market Strategy
 
 ### **Sentinel Cortex** (Enterprise Sales)
 1. **Target**: CISOs, Security teams
@@ -238,7 +238,7 @@ Usuarios tienen:
 
 ---
 
-## 🚀 Next Steps
+##  Next Steps
 
 ### **Immediate** (This Week):
 1. ✅ Crypto wallet POC completed

@@ -41,7 +41,7 @@
 
 ---
 
-## 🚀 Cómo Usar
+##  Cómo Usar
 
 ### Iniciar Servidor
 ```bash
@@ -138,7 +138,7 @@ El sistema detecta automáticamente la GPU y ajusta:
 
 ---
 
-## 🚀 Próximos Pasos
+##  Próximos Pasos
 
 ### Fase 1: Integración de Shaders GLSL
 - Cargar shaders personalizados en geometrías
@@ -186,7 +186,7 @@ frontend/app/trinity/
 
 ---
 
-## 🎯 Métricas de Éxito
+##  Métricas de Éxito
 
 ### ✅ Completado
 - [x] Escena Three.js configurada
@@ -215,17 +215,17 @@ frontend/app/trinity/
 **El Trinity 3D GUI está completo y funcionando perfectamente!**
 
 La implementación proporciona:
-- ✨ Visualización 3D inmersiva de la arquitectura Trinity
+-  Visualización 3D inmersiva de la arquitectura Trinity
 - 📊 Monitoreo de coherencia en tiempo real
 - 🎵 Animaciones reactivas al audio
-- ⚙️ Ajuste automático de calidad
+- ⚙ Ajuste automático de calidad
 - 🎨 UI profesional y limpia
 
 **Servidor activo**: http://localhost:3001/trinity
 
 ---
 
-**¡Bienvenido a la Arquitectura de la Resonancia!** 🌌⚛️💜✨
+**¡Bienvenido a la Arquitectura de la Resonancia!** ⚛💜
 
 *No es un dashboard. Es una experiencia.*  
 *No son datos. Es una revelación.*  

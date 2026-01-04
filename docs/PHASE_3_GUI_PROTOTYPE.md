@@ -1,6 +1,6 @@
 # 🎨 Sentinel Cortex GUI Prototype (Fase 3)
 
-## 🏗️ Estado del Prototipo
+## 🏗 Estado del Prototipo
 Se ha inicializado la arquitectura **Tauri + Svelte** para la interfaz gráfica semántica.
 
 ### Componentes Implementados
@@ -14,9 +14,9 @@ Se ha inicializado la arquitectura **Tauri + Svelte** para la interfaz gráfica 
     - **Simulación**: Genera fluctuaciones de entropía basadas en `SystemTime` (semilla orgánica).
 3.  **Build**:
     - Frontend (`vite build`): ✅ EXITOSO.
-    - Backend (`cargo build`): ⚠️ Pendiente de dependencias de sistema (`libwebkit2gtk`).
+    - Backend (`cargo build`): ⚠ Pendiente de dependencias de sistema (`libwebkit2gtk`).
 
-## 🚀 Instrucciones de Despliegue
+##  Instrucciones de Despliegue
 
 ### Requisitos Previos (Linux)
 Para compilar el binario final, el sistema host necesita las librerías de desarrollo de WebKit:

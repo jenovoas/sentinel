@@ -1,10 +1,10 @@
-# 🛡️ INFORME FINAL DE VALIDACIÓN: SENTINEL CORTEX
+#  INFORME FINAL DE VALIDACIÓN: SENTINEL CORTEX
 **Fecha**: 29 Diciembre 2025
 **Estado**: ✅ EXITOSO (Todos los Claims Técnicos Validados)
 
 ---
 
-## 🚀 Resumen Ejecutivo
+##  Resumen Ejecutivo
 
 Esta sesión ha completado la validación técnica de los componentes más críticos de la arquitectura "Cognitive Kernel". Hemos demostrado experimentalmente que es posible unir la inteligencia artificial en userspace con la ejecución segura en kernel-space, logrando capacidades de defensa proactiva sin precedentes.
 
@@ -49,7 +49,7 @@ Todos los documentos han sido actualizados y traducidos:
 
 ---
 
-## 🔮 Próximos Pasos Recomendados
+##  Próximos Pasos Recomendados
 
 1.  **Legal**: Entregar `EXECUTIVE_SUMMARY.md` a los abogados (ya en proceso).
 2.  **Demo**: Grabar el video demo final utilizando el guion validado (delegado).

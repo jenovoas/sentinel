@@ -1,4 +1,4 @@
-# 🚀 Workflow Capacity Analysis - Sentinel Cortex
+#  Workflow Capacity Analysis - Sentinel Cortex
 
 **Fecha**: 2025-12-16  
 **Total Workflows Disponibles**: **8,320** 🤯  
@@ -269,7 +269,7 @@ python scripts/index_workflows.py \
 **Disco**: 197MB workflows vs TBs disponibles = ✅ NO ES PROBLEMA  
 **CPU**: Suficiente para parallel processing = ✅ ÓPTIMO
 
-### 🎯 ESTRATEGIA RECOMENDADA
+###  ESTRATEGIA RECOMENDADA
 
 1. **Verificar** estructura de CyberSecurity workflows
 2. **Indexar Fase 1** (100 workflows, 3 min) → Demo funcional

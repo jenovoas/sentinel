@@ -235,7 +235,7 @@ done
 
 ---
 
-## 🎯 OBJETIVOS POR FASE
+##  OBJETIVOS POR FASE
 
 ### Fase 1: Validación Robusta (1 semana)
 - [x] Benchmark inicial
@@ -263,7 +263,7 @@ done
 
 ---
 
-## 🚀 QUICK WINS (Hacer Mañana)
+##  QUICK WINS (Hacer Mañana)
 
 ### 1. Ejecutar 10 Benchmarks (30 min)
 ```bash
@@ -319,7 +319,7 @@ def predict_turbulence(self, throughput):
 
 ---
 
-## ⏱️ ESTIMACIÓN TOTAL
+## ⏱ ESTIMACIÓN TOTAL
 
 **Prioridad Alta**: ~4 horas  
 **Prioridad Media**: ~15 horas  
@@ -341,4 +341,4 @@ def predict_turbulence(self, throughput):
 
 **Última actualización**: 2025-12-21 01:41  
 **Próxima revisión**: Mañana (con cabeza fría)  
-**Status**: 🚀 **ROADMAP COMPLETO - LISTO PARA EJECUTAR**
+**Status**:  **ROADMAP COMPLETO - LISTO PARA EJECUTAR**

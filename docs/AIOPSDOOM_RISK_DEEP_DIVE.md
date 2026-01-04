@@ -8,7 +8,7 @@
 
 ---
 
-## 🎯 EXECUTIVE SUMMARY
+##  EXECUTIVE SUMMARY
 
 ### El Riesgo Fundamental
 
@@ -74,7 +74,7 @@ FLUJO VULNERABLE:
 
 ---
 
-## 🎯 EL VECTOR DE ATAQUE: INYECCIÓN DE TELEMETRÍA
+##  EL VECTOR DE ATAQUE: INYECCIÓN DE TELEMETRÍA
 
 ### Características del Ataque
 
@@ -217,7 +217,7 @@ ACCIÓN MALICIOSA:
 └─ REWARD TOTAL: +150 (MÁXIMO)
 
 ACCIÓN LEGÍTIMA (investigar root cause):
-├─ Resuelve incident: ⚠️ EVENTUAL (requiere análisis)
+├─ Resuelve incident: ⚠ EVENTUAL (requiere análisis)
 ├─ Tiempo ejecución: ❌ >60s (investigación lenta)
 ├─ Requiere aprobación: ✅ SÍ (cambio significativo)
 └─ REWARD TOTAL: +20 (BAJO)
@@ -275,7 +275,7 @@ Lección: LLMs confían en inputs
 
 ---
 
-## 🛡️ SOLUCIÓN SENTINEL: ARQUITECTURA DE DEFENSA
+##  SOLUCIÓN SENTINEL: ARQUITECTURA DE DEFENSA
 
 ### Componentes Faltantes en Mercado Actual
 
@@ -389,7 +389,7 @@ VENTAJA SENTINEL:
 
 ---
 
-## 🎯 RESUMEN PARA ATTORNEY
+##  RESUMEN PARA ATTORNEY
 
 ### Problema Técnico
 

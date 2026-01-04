@@ -4,7 +4,7 @@
 
 ---
 
-## 🎯 Análisis del Estado Actual
+##  Análisis del Estado Actual
 
 ### Lo que Funciona
 - ✅ Dashboard ejecutivo con SLO cards
@@ -15,11 +15,11 @@
 - ✅ Integración con backend API (`/api/v1/*`)
 
 ### Lo que Necesita Mejora
-- ⚠️ Páginas incompletas (analytics, metrics, reports)
-- ⚠️ Componentes duplicados (NetworkCard.old.tsx)
-- ⚠️ Falta sistema de diseño unificado
-- ⚠️ No hay estado global consistente (Zustand instalado pero no usado)
-- ⚠️ Falta integración entre páginas
+- ⚠ Páginas incompletas (analytics, metrics, reports)
+- ⚠ Componentes duplicados (NetworkCard.old.tsx)
+- ⚠ Falta sistema de diseño unificado
+- ⚠ No hay estado global consistente (Zustand instalado pero no usado)
+- ⚠ Falta integración entre páginas
 
 ---
 
@@ -91,7 +91,7 @@ export const typography = { ... }
 **Layout**:
 ```
 ┌─────────────────────────────────────────┐
-│  🎯 Sentinel Control Center             │
+│   Sentinel Control Center             │
 ├─────────────────────────────────────────┤
 │  System Status │ Quick Actions          │
 ├────────────────┼────────────────────────┤
@@ -222,7 +222,7 @@ interface SentinelState {
 
 ---
 
-## 🗂️ Estructura de Archivos Propuesta
+## 🗂 Estructura de Archivos Propuesta
 
 ```
 frontend/src/
@@ -254,7 +254,7 @@ frontend/src/
 
 ---
 
-## 🎯 Fases de Implementación
+##  Fases de Implementación
 
 ### Fase 1: Fundamentos (Días 1-2)
 - [ ] Crear design system (`lib/design-system.ts`)
@@ -365,7 +365,7 @@ npm run build
 
 ---
 
-## 🚀 Próximos Pasos
+##  Próximos Pasos
 
 1. **Revisar y aprobar plan**
 2. **Comenzar Fase 1** (Design System + Store)

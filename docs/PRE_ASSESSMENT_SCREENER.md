@@ -4,7 +4,7 @@
 
 ---
 
-## 🎯 Purpose
+##  Purpose
 
 Filter out candidates who:
 - ❌ Don't use proper development environments
@@ -219,7 +219,7 @@ Sentinel Team
 
 ---
 
-## 🎯 Expected Results
+##  Expected Results
 
 **Before Pre-Screener**:
 - 100 applicants → 20 phone screens → 5 technical assessments → 1 hire
@@ -305,7 +305,7 @@ This pre-screener tests:
 
 ---
 
-## 🚀 Implementation
+##  Implementation
 
 1. **Add to job posting**: "Before applying, ensure you have Docker, Git, Python, and Node installed."
 

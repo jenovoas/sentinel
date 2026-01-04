@@ -1,4 +1,4 @@
-# 🎯 Sentinel - Technical Assessment for Engineering Candidates
+#  Sentinel - Technical Assessment for Engineering Candidates
 
 **Comprehensive evaluation framework for hiring engineers**
 
@@ -30,7 +30,7 @@ This assessment evaluates candidates across multiple dimensions:
 
 ---
 
-## 🚀 Level 1: Installation Challenge
+##  Level 1: Installation Challenge
 
 **Objective**: Install and run Sentinel successfully
 
@@ -159,7 +159,7 @@ Time limit: 2 hours
 
 ---
 
-## 🏗️ Level 3: Architecture Challenge
+## 🏗 Level 3: Architecture Challenge
 
 **Objective**: Design a scalable, production-ready deployment
 
@@ -250,7 +250,7 @@ Candidate must provide:
 
 **Prerequisites**: Passed Level 3 (or can be done in parallel)
 
-### 🎯 Feature Request
+###  Feature Request
 
 Choose ONE of the following features to implement:
 
@@ -339,7 +339,7 @@ Implement an alert rule engine:
 
 ---
 
-## 🎖️ Overall Assessment
+## 🎖 Overall Assessment
 
 ### Scoring System
 
@@ -500,7 +500,7 @@ Sentinel Team
 
 ---
 
-## 🎯 Quick Reference for Interviewers
+##  Quick Reference for Interviewers
 
 ### Time Investment
 

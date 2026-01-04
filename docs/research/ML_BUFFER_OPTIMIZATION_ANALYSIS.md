@@ -1,4 +1,4 @@
-# 🚀 ML-Driven Hierarchical Buffer Optimization - Technical Analysis
+#  ML-Driven Hierarchical Buffer Optimization - Technical Analysis
 
 **Fecha**: 19 Diciembre 2024  
 **Investigador**: Jaime Novoa  
@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Resumen Ejecutivo
+##  Resumen Ejecutivo
 
 **Descubrimiento**: Sistema de buffers/sub-buffers jerárquicos (lógicos → físicos) con ML predictivo para acelerar throughput en infraestructura crítica.
 
@@ -91,7 +91,7 @@ INTEGRACIÓN:
 
 ### Prior Art Identificado
 
-**⚠️ FUERTE (evitar)**:
+**⚠ FUERTE (evitar)**:
 1. CPU-GPU scheduling híbrido (Intel, IBM, Microsoft)
 2. Batching y colas separadas CPU/GPU (patentes concedidas)
 3. Prefetching genérico en data centers
@@ -177,7 +177,6 @@ SENTINEL ÚNICO:
 └── Infra crítica + Soberanía datos = Único en mercado LATAM
 ```
 
-
 ### Entregables
 
 ```
@@ -195,7 +194,7 @@ SEMANA 2:
 
 ---
 
-## 🎯 MÉTRICAS DE ÉXITO
+##  MÉTRICAS DE ÉXITO
 
 ### KPIs Críticos (Documentar para Patente)
 
@@ -292,7 +291,7 @@ Razón: Única plataforma con IA humana + aceleración redes
 
 ---
 
-## ⚠️ RIESGOS Y MITIGACIONES
+## ⚠ RIESGOS Y MITIGACIONES
 
 ### Riesgos Técnicos
 
@@ -320,7 +319,7 @@ Razón: Única plataforma con IA humana + aceleración redes
 
 ---
 
-## 🚀 RECOMENDACIÓN FINAL
+##  RECOMENDACIÓN FINAL
 
 ### VEREDICTO: ✅ **PROCEDER INMEDIATAMENTE**
 

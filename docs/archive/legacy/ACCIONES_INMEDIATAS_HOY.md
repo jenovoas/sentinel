@@ -1,4 +1,4 @@
-# 🎯 Acciones Inmediatas - HOY
+#  Acciones Inmediatas - HOY
 
 **Fecha**: 21 de Diciembre de 2025, 10:10 AM  
 **Tiempo Total**: 3-4 horas  
@@ -166,7 +166,7 @@ ls -lh sentinel_backup_*.tar.gz.gpg
 # 4. Servidor remoto (si tienes)
 
 echo "✅ Backup cifrado creado: sentinel_backup_$(date +%Y%m%d_%H%M%S).tar.gz.gpg"
-echo "⚠️  Guardar password en lugar seguro (password manager)"
+echo "⚠  Guardar password en lugar seguro (password manager)"
 ```
 
 ---
@@ -267,7 +267,7 @@ Location: Chile
 
 ---
 
-## 🎯 PRÓXIMOS PASOS (Mañana)
+##  PRÓXIMOS PASOS (Mañana)
 
 **22 Diciembre**:
 - Esperar respuestas de attorneys
@@ -287,5 +287,5 @@ Location: Chile
 ---
 
 **Fecha**: 21 de Diciembre de 2025, 10:10 AM  
-**Status**: 🚀 LISTO PARA EJECUTAR  
+**Status**:  LISTO PARA EJECUTAR  
 **Modo**: 🔒 SILENCIOSO (sin exposición)

@@ -1,7 +1,7 @@
 # 🧪 Sentinel Cortex v2.0 - Informe de Impacto & Rendimiento
 
 ## 📅 Fecha: 2026-01-01
-**Certificación**: 🛡️ **LEVEL 6 (ULTIMATE)**
+**Certificación**:  **LEVEL 6 (ULTIMATE)**
 **Hardware**: Linux Kernel 6.x (x86_64)
 
 ## 1. Resumen Ejecutivo

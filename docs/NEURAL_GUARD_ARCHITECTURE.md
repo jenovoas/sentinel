@@ -1,4 +1,4 @@
-# 🧠 Sentinel Sentinel Cortex - Architecture & Implementation Plan
+#  Sentinel Sentinel Cortex - Architecture & Implementation Plan
 
 ## Executive Summary
 
@@ -611,7 +611,7 @@ sqlx::query!(
 | **Investor Appeal** | "SOAR-like capabilities" |
 | **Customer Retention** | Sticky feature |
 
-**ROI**: $250K / $2.1K = **119x** 🚀
+**ROI**: $250K / $2.1K = **119x** 
 
 ---
 
@@ -695,4 +695,4 @@ sqlx::query!(
 
 **Recommendation**: **Build it in Rust** - you have the skills, it's the right tool, and it will be a game-changer for Sentinel.
 
-**This is your moat, Jaime.** 🛡️🚀
+**This is your moat, Jaime.** 

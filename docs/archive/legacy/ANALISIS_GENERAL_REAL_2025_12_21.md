@@ -24,7 +24,7 @@
 
 ---
 
-## 🎯 ANÁLISIS DE COMPONENTES PRINCIPALES
+##  ANÁLISIS DE COMPONENTES PRINCIPALES
 
 ### 1. Sistema de Predicción de Buffers
 
@@ -91,7 +91,7 @@ MEJORA: 67% reducción en drops ✅
 
 ### 4. Protección Kernel-Level (eBPF LSM)
 
-**Estado**: ⚠️ **CÓDIGO COMPLETO, PENDIENTE COMPILACIÓN**
+**Estado**: ⚠ **CÓDIGO COMPLETO, PENDIENTE COMPILACIÓN**
 
 **Diseño**:
 - Hooks eBPF LSM para interceptación de syscalls
@@ -148,7 +148,7 @@ Cache hit rate:  99.9%
    - Diferenciador: Pre-ingestion prevention vs post-fact detection
 
 3. **Kernel-Level Protection (eBPF LSM)** ⭐ - $8-15M
-   - Estado: ⚠️ Código completo, pendiente compilación
+   - Estado: ⚠ Código completo, pendiente compilación
    - Prior Art: **ZERO** (HOME RUN)
    - Diferenciador: Único sistema AIOps con veto a nivel kernel
 
@@ -167,7 +167,7 @@ Cache hit rate:  99.9%
 
 ---
 
-## 🏗️ ARQUITECTURA TÉCNICA
+## 🏗 ARQUITECTURA TÉCNICA
 
 ### Stack Backend
 
@@ -300,9 +300,9 @@ backend/app/services/
 - ✅ Roadmaps y timelines definidos
 
 **Áreas de Mejora**:
-- ⚠️ Exceso de documentación (145+ archivos puede ser abrumador)
-- ⚠️ Necesita consolidación y jerarquización
-- ⚠️ Algunos documentos especulativos mezclados con validados
+- ⚠ Exceso de documentación (145+ archivos puede ser abrumador)
+- ⚠ Necesita consolidación y jerarquización
+- ⚠ Algunos documentos especulativos mezclados con validados
 
 ---
 
@@ -357,7 +357,7 @@ backend/app/services/
    - Technical disclosure document
    - Claims refinement
    - Drawings + implementation examples
-   - **FILE PROVISIONAL PATENT** 🎯
+   - **FILE PROVISIONAL PATENT** 
 
 ---
 
@@ -393,7 +393,7 @@ backend/app/services/
 
 ---
 
-## ⚠️ DEBILIDADES Y RIESGOS
+## ⚠ DEBILIDADES Y RIESGOS
 
 ### 1. Complejidad de la Documentación
 
@@ -427,7 +427,7 @@ backend/app/services/
 
 ---
 
-## 🎯 RECOMENDACIONES ESTRATÉGICAS
+##  RECOMENDACIONES ESTRATÉGICAS
 
 ### Corto Plazo (1 Semana)
 
@@ -502,7 +502,7 @@ backend/app/services/
 - ✅ TruthSync: 90.5x speedup validado
 - ✅ AIOpsShield: <1ms sanitización
 - ✅ Dual-Lane: 2,857x vs Datadog
-- ⚠️ eBPF LSM: Código completo, no compilado
+- ⚠ eBPF LSM: Código completo, no compilado
 - ⏳ Cognitive OS: Concepto diseñado, no implementado
 
 ---
@@ -559,7 +559,7 @@ backend/app/services/
 - 16 servicios backend operativos
 - Benchmarks reproducibles
 
-⚠️ **Áreas Críticas**:
+⚠ **Áreas Críticas**:
 - 57 días para filing provisional patent
 - eBPF LSM no compilado (Claim 3 HOME RUN)
 - Falta validación en producción (TRL 4 → TRL 6)

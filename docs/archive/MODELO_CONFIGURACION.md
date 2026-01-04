@@ -1,4 +1,4 @@
-# 🎯 Configuración de Modelos - Sentinel
+#  Configuración de Modelos - Sentinel
 
 ## ✅ Modelo en Producción
 
@@ -39,9 +39,9 @@
 - TTFB Máximo: 49.4s
 
 **Razón Testing**:
-- ⚠️ 2.7x más lento que llama3.2:1b
-- ⚠️ Alta varianza (6s - 49s)
-- ⚠️ Requiere optimización adicional
+- ⚠ 2.7x más lento que llama3.2:1b
+- ⚠ Alta varianza (6s - 49s)
+- ⚠ Requiere optimización adicional
 
 **Plan de Mejora**:
 1. Probar versión quantizada (phi3:mini-q4_K_M)
@@ -83,7 +83,7 @@ curl -s http://localhost:11434/api/ps
 
 ---
 
-## 🚀 Uso
+##  Uso
 
 ### Código
 ```python
@@ -130,7 +130,7 @@ python benchmark_phi_vs_llama.py
 
 ---
 
-## 🎯 Criterios de Cambio
+##  Criterios de Cambio
 
 ### Cambiar a otro modelo si:
 - Nuevo modelo >30% más rápido

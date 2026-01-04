@@ -28,16 +28,16 @@ This document summarizes the features delivered in the "Sovereign OS" Sprint (De
     - 🌐 **Clear Mode**: Sanitized direct access (Speed).
     - ⚡ **Velocity Mode**: Rotating Proxies / Tor (Anonymity).
     - 👻 **Ghost Mode**: Nym Mixnet (Metadata Resistance).
-    - 🕸️ **Deep Mode**: I2P Access (Censorship Resistance).
+    - 🕸 **Deep Mode**: I2P Access (Censorship Resistance).
 - **Security**: "Virtual Air Gap" - Frontend receives only inert HTML.
 
-### 4. 🧠 Cognitive Sovereignty (Notes & Terminal)
+### 4.  Cognitive Sovereignty (Notes & Terminal)
 - **Secure Notes**: Encrypted Markdown for sensitive thoughts.
 - **Secure Terminal**: Command Palette (`vault help`) for power users.
 
 ---
 
-## 🏗️ Architecture & Deployment
+## 🏗 Architecture & Deployment
 
 ### Dockerized Stack
 We have containerized the entire solution for one-click deployment.
@@ -60,7 +60,7 @@ open http://localhost:8000/docs
 
 ---
 
-## 🛡️ Audit Status
+##  Audit Status
 - **Encryption**: ✅ AES-256-GCM + Argon2id implemented.
 - **Network**: ✅ No unauthorized outbound calls verified.
 - **Hardening**: 🟡 HTTPS & SQLCipher pending (Phase 7).

@@ -5,7 +5,7 @@
 
 ---
 
-## 🛡️ Architecture: The "Tor Shield"
+##  Architecture: The "Tor Shield"
 
 En lugar de un navegador convencional que corre en el cliente (exponiendo al usuario), utilizaremos una arquitectura de **Backend Proxy**.
 
@@ -47,7 +47,7 @@ graph LR
 
 ---
 
-## 🏗️ Implementation Strategy
+## 🏗 Implementation Strategy
 
 ### **Phase 5a: HTTP Proxy over Tor (Backend)**
 Implementaremos un servicio en Python (`browser_service.py`) que:
@@ -63,7 +63,7 @@ Implementaremos un servicio en Python (`browser_service.py`) que:
 
 ---
 
-## ⚠️ Trade-offs
+## ⚠ Trade-offs
 
 1.  **Velocidad**: Tor es intrínsecamente más lento (latencia alta).
     *   *Mitigación*: Caching agresivo y pre-fetching en backend.

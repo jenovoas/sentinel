@@ -1,4 +1,4 @@
-# 🏔️ Sentinel Cortex™: Quantum-AI Kernel Security
+# 🏔 Sentinel Cortex™: Quantum-AI Kernel Security
 
 [![Research: Quantum-AI](https://img.shields.io/badge/Research-Quantum--AI%20Base--60-blue.svg)](docs/research/quantum-ai-paper.md)
 [![Performance: 245ns](https://img.shields.io/badge/Latency-245ns%20avg-success.svg)](docs/quantum-ai/benchmarks.md)
@@ -8,13 +8,13 @@
 
 > **"The first kernel-level security system that thinks in Base-60. 2,040x faster than traditional systems."**
 
-Sentinel Cortex is not just another security tool; it is a **research breakthrough** in cybersecurity mathematics. By leveraging **eBPF LSM (Ring 0)**, **EEVDF scheduling**, and **Base-60 arithmetic**, we have created a threat detection system that operates at **sub-microsecond latency** with **zero floating-point errors**.
+Sentinel Cortex is not just another security tool; it is a **research ** in cybersecurity mathematics. By leveraging **eBPF LSM (Ring 0)**, **EEVDF scheduling**, and **Base-60 arithmetic**, we have created a threat detection system that operates at **sub-microsecond latency** with **zero floating-point errors**.
 
 **Key Innovation**: Using sexagesimal (Base-60) mathematics for threat scoring - the same number system used by ancient Babylonians and encoded in Plimpton 322.
 
 ---
 
-## 🚀 Research Breakthrough: Sub-Microsecond Threat Detection
+##  Research : Sub-Microsecond Threat Detection
 
 We have solved a fundamental problem in cybersecurity: **how to make security decisions faster than attacks can execute**.
 
@@ -64,11 +64,11 @@ All metrics are **independently reproducible**. See [Reproducible Research Guide
 
 Quick links by category:
 
-- **[🏗️ Architecture](docs/architecture/README.md)** - System design, EEVDF, Dual-Guardian, Quantum-AI
+- **[🏗 Architecture](docs/architecture/README.md)** - System design, EEVDF, Dual-Guardian, Quantum-AI
 - **[🔬 Research](docs/research/README.md)** - Papers, Base-60 mathematics, physics-geometry isomorphism
 - **[📖 Guides](docs/guides/README.md)** - Installation, quick start, development, deployment
 - **[✅ Validation](docs/validation/README.md)** - Benchmarks, test results, security audits
-- **[🌌 Quantum-AI](docs/quantum-ai/README.md)** - Base-60 integration, research paper, implementation
+- **[ Quantum-AI](docs/quantum-ai/README.md)** - Base-60 integration, research paper, implementation
 
 ### 🌟 Featured Documentation
 
@@ -78,7 +78,7 @@ Quick links by category:
 
 ---
 
-## 🛠️ Quick Start
+## 🛠 Quick Start
 
 Sentinel is designed to be deployed as a containerized immune system.
 
@@ -96,7 +96,7 @@ docker-compose up -d --build
 
 ---
 
-## 🛡️ Hackathon Challenge: $1,000,000 Bounty
+##  Hackathon Challenge: $1,000,000 Bounty
 
 We are so confident in our **Truth Integrity** layer that we have invited the world to break it.
 

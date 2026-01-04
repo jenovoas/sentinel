@@ -7,7 +7,7 @@
 
 ---
 
-## 🎯 Executive Summary
+##  Executive Summary
 
 **AIOpsShield** is Sentinel's defense layer against AIOpsDoom attacks - a critical vulnerability where attackers inject malicious "hallucinations" into logs to trick AI agents into executing destructive commands.
 
@@ -47,7 +47,7 @@ Attackers inject crafted log entries that appear legitimate but contain hidden i
 
 ---
 
-## 🛡️ Sentinel's Defense Architecture
+##  Sentinel's Defense Architecture
 
 ### Layer 1: Schema Validation (Mathematical)
 **Location**: n8n preprocessing node  
@@ -235,7 +235,7 @@ int BPF_PROG(guardian_file_open, struct file *file) {
 | **Datadog** | ✗ Vulnerable | $15/host/month | ✅ Immune + 90% cheaper |
 | **Splunk** | ✗ Vulnerable | $150/GB/month | ✅ Immune + LGTM stack |
 | **New Relic** | ✗ Vulnerable | $99/user/month | ✅ Immune + local LLM |
-| **Grafana Cloud** | ⚠️ Partial | $8/user/month | ✅ Complete defense |
+| **Grafana Cloud** | ⚠ Partial | $8/user/month | ✅ Complete defense |
 
 ### Revenue Model
 
@@ -276,8 +276,7 @@ int BPF_PROG(guardian_file_open, struct file *file) {
 
 ---
 
-
-## 🎯 Competitive Moat
+##  Competitive Moat
 
 ### Why Sentinel Wins
 

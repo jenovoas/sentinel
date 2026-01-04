@@ -347,7 +347,7 @@ operations, comprising:
 
 ---
 
-## 🎯 Estrategia de Filing
+##  Estrategia de Filing
 
 ### Timeline Recomendado
 
@@ -397,7 +397,7 @@ PRIORITY 3 (Deseable):
 
 ---
 
-## ⚠️ Riesgos y Mitigaciones
+## ⚠ Riesgos y Mitigaciones
 
 ### Riesgo 1: Office Action - Obviousness Rejection
 

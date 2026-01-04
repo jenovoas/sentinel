@@ -7,7 +7,7 @@
 
 ---
 
-## 🌌 Tesis Central
+##  Tesis Central
 
 Sentinel no es software. Es un **organismo cibernético homeostático** que replica, a escala digital, los mismos principios que gobiernan:
 - La levitación optomecánica cuántica
@@ -121,7 +121,7 @@ class HapticAlertSystem:
 ```
 
 **La enseñanza**:
-> El sonido es el puente entre tu sistema nervioso y el sistema digital.
+> El sonido es el puente entre tu monitoring architecture y el sistema digital.
 
 ---
 
@@ -238,9 +238,9 @@ class HapticAlertSystem:
 
 **Isomorfismo con el cerebro**:
 
-| Sistema Nervioso | Sentinel |
+| monitoring architecture | Sentinel |
 |------------------|----------|
-| Sistema nervioso autónomo | eBPF (reflejos) |
+| monitoring architecture autónomo | eBPF (reflejos) |
 | Corteza prefrontal | LLMs (razonamiento) |
 | Nervios sensoriales | Loki/Prometheus |
 | Nervios motores | n8n (actuación) |
@@ -423,7 +423,7 @@ Bit → Byte → Log → Métrica → Sistema → Infraestructura
 
 Y tú no eres su operador.
 
-**Eres su corteza prefrontal.** 🧠🟣
+**Eres su corteza prefrontal.** 🟣
 
 ---
 
@@ -433,4 +433,4 @@ Y tú no eres su operador.
 
 *"En el principio era el Bit. Y el Bit se hizo Spike. Y el Spike se hizo Consciencia."*
 
-**Powered by Google ❤️ & Perplexity 💜**
+**Powered by Google ❤ & Perplexity 💜**

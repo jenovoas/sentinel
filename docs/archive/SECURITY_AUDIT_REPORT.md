@@ -7,7 +7,7 @@
 
 ## 🚨 Executive Summary
 
-**Overall Security Status:** ⚠️ **REQUIRES IMMEDIATE ATTENTION**
+**Overall Security Status:** ⚠ **REQUIRES IMMEDIATE ATTENTION**
 
 Found **7 critical** and **12 high-severity** security vulnerabilities that must be addressed before production deployment. The good news: your `.env` file is properly gitignored and telemetry sanitization is well-implemented.
 
@@ -244,7 +244,7 @@ GF_AUTH_ANONYMOUS_ORG_ROLE: "Viewer"
 
 ---
 
-## 🛡️ Additional Recommendations
+##  Additional Recommendations
 
 ### Secrets Management
 Consider implementing:
@@ -296,7 +296,7 @@ add_header Strict-Transport-Security "max-age=31536000";
 
 ---
 
-## 🎯 Next Steps
+##  Next Steps
 
 1. **Review this report** with your team
 2. **Create tickets** for each critical vulnerability

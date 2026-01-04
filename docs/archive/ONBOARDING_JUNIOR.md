@@ -6,7 +6,7 @@ Sí, hay 913,087 líneas de código y 145+ documentos. Pero no necesitas leerlo 
 
 ---
 
-## 🎯 Empieza Aquí (5 minutos)
+##  Empieza Aquí (5 minutos)
 
 ### Lo Básico
 Sentinel es un sistema de monitoreo con IA que detecta ataques y optimiza rendimiento.
@@ -35,7 +35,7 @@ sentinel/
 
 ---
 
-## 🚀 Setup Rápido (15 minutos)
+##  Setup Rápido (15 minutos)
 
 ```bash
 # 1. Backend
@@ -76,7 +76,7 @@ http://localhost:8000
 
 ---
 
-## 🎯 Tu Primera Tarea (30 minutos)
+##  Tu Primera Tarea (30 minutos)
 
 ### Opción 1: Backend
 ```bash
@@ -176,7 +176,7 @@ Elige UNA cosa:
 
 ---
 
-## 🎯 Tu Objetivo (Primeras 2 Semanas)
+##  Tu Objetivo (Primeras 2 Semanas)
 
 1. ✅ Ejecutar el proyecto localmente
 2. ✅ Entender backend/app/services/
@@ -193,7 +193,7 @@ No necesitas:
 
 ---
 
-## 🚀 Siguiente Paso
+##  Siguiente Paso
 
 **Ahora mismo**:
 ```bash
@@ -209,7 +209,7 @@ python test_dual_lane.py
 
 ---
 
-## 💬 Mensaje Final
+##  Mensaje Final
 
 **No te asustes por el tamaño del proyecto.**
 

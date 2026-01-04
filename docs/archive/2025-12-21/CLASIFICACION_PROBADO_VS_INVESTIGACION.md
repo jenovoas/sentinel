@@ -89,7 +89,7 @@ sentinel/
 
 ---
 
-## 🎯 PLAN DE REORGANIZACIÓN
+##  PLAN DE REORGANIZACIÓN
 
 ### Paso 1: Mover Documentos Teóricos
 ```bash
@@ -151,7 +151,7 @@ See docs/research/ for theoretical work
 
 ---
 
-## 🎯 PRÓXIMA ACCIÓN
+##  PRÓXIMA ACCIÓN
 
 ¿Quieres que ejecute la reorganización ahora?
 

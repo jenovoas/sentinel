@@ -1,4 +1,4 @@
-# 🛡️ Security Engineer - Implementation Roadmap
+#  Security Engineer - Implementation Roadmap
 
 **Guía completa para implementar compliance y seguridad**
 
@@ -31,7 +31,7 @@ Q4 2025: Maintenance
 
 ---
 
-## 🎯 Week-by-Week Plan
+##  Week-by-Week Plan
 
 ### **Week 1: Orientation & Assessment**
 

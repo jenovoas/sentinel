@@ -1,4 +1,4 @@
-# 🎖️ PATENT CLAIMS - Sentinel Cortex™
+# 🎖 PATENT CLAIMS - Sentinel Cortex™
 
 **Inventor**: [Your Name]  
 **Date**: December 19, 2024  
@@ -214,7 +214,7 @@ A computer operating system kernel with integrated semantic verification at Ring
 | **Semantic Firewall** | ❌ | ❌ | ❌ | ✅ **100% Detection** |
 | **Kernel-Level Protection** | ❌ | ❌ | ❌ | ✅ **eBPF LSM** |
 | **Forensic WAL** | ❌ | ❌ | ❌ | ✅ **Replay-Proof** |
-| **Zero Trust Internal** | ⚠️ Partial | ⚠️ Partial | ⚠️ Partial | ✅ **mTLS + Signing** |
+| **Zero Trust Internal** | ⚠ Partial | ⚠ Partial | ⚠ Partial | ✅ **mTLS + Signing** |
 | **Performance** | 10-50ms | 80-150ms | 20-40ms | **0.00-0.21ms** |
 
 ---

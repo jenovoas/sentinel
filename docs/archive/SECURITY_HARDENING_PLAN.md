@@ -6,7 +6,7 @@
 
 ---
 
-## ⚠️ RESUMEN EJECUTIVO
+## ⚠ RESUMEN EJECUTIVO
 
 **Análisis forense identificó 3 vulnerabilidades** que requieren hardening antes de producción:
 
@@ -129,7 +129,7 @@ if record.nonce <= last_nonce:
 
 ---
 
-## 🎯 IMPACTO
+##  IMPACTO
 
 **Antes**: Grado militar (6/6 criterios)  
 **Después**: **Grado militar HARDENED** (resistente a ataques avanzados)

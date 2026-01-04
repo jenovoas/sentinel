@@ -28,7 +28,7 @@ sentinel/
 
 ---
 
-## 🎯 Módulos Independientes (Para Delegar)
+##  Módulos Independientes (Para Delegar)
 
 ### Módulo 1: WASM Performance Layer
 **Responsable**: Developer con Rust
@@ -245,7 +245,7 @@ Cada módulo debe incluir:
 
 ---
 
-## 🎯 Prioridades de Implementación
+##  Prioridades de Implementación
 
 ### Fase 1: Fundamentos (Semana 1)
 1. ✅ WASM Module (AIOpsDoom) - HECHO
@@ -310,7 +310,7 @@ Cada developer debe entregar:
 
 ---
 
-## 🚀 Cómo Empezar (Para Nuevos Developers)
+##  Cómo Empezar (Para Nuevos Developers)
 
 ### 1. Setup
 ```bash

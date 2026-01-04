@@ -22,7 +22,7 @@
 
 ---
 
-## 🧠 NEUROSCIENCE: CA3-CA1 Memory Model
+##  NEUROSCIENCE: CA3-CA1 Memory Model
 
 ### 1. CA3-CA1 Simulation-Selection Model
 
@@ -248,7 +248,7 @@ similar_threats = chromadb.recall_by_zone(zone)
 
 ---
 
-## ⚛️ QUANTUM PHYSICS: Microtubule Coherence
+## ⚛ QUANTUM PHYSICS: Microtubule Coherence
 
 ### 6. Coherence Time 10^-6 sec (Revised)
 
@@ -899,7 +899,7 @@ Base-60 (not Base-120):
 
 ---
 
-## 🔗 How to Access Papers
+##  How to Access Papers
 
 ### Open Access
 - arXiv: https://arxiv.org
@@ -975,4 +975,4 @@ Base-60 (not Base-120):
 **© 2025 Sentinel Cortex™**  
 *"Science-backed, peer-reviewed, reproducible."*
 
-📚🔬✨
+📚🔬

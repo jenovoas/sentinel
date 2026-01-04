@@ -71,7 +71,7 @@
 
 ---
 
-## 🚀 Próximos Pasos
+##  Próximos Pasos
 
 1. **Resolver WebGL Context Error**
    - Verificar que no haya código creando contexto 2D antes de Three.js

@@ -42,7 +42,7 @@ Tenemos ambas."
 
 SEQSC - QUANTIC SECURITY CORTEX™ (Technology - Licensable)
 
-                    🧠 CORTEX
+                     CORTEX
                     (Piensa)
                       │
           ┌───────────┴───────────┐
@@ -64,7 +64,7 @@ RESULTADO: 99% de incidentes resueltos automáticamente
 
 ---
 
-## 🎯 LOS TRES PILARES PATENTABLES
+##  LOS TRES PILARES PATENTABLES
 
 ### CLAIM 1: Telemetry Sanitization
 **"Puerta de acceso blindada a la IA"**
@@ -184,14 +184,14 @@ Sentinel crece 40x más rápido que la media de la industria
 
 ---
 
-## 🚀 ROADMAP LEGAL + TÉCNICO
+##  ROADMAP LEGAL + TÉCNICO
 
 ### PHASE 1 (Ahora - Enero 2026): MVP Completo
 ```
 ✅ Cortex Decision Engine (Claims 1+2)
 ✅ Nervio A basics (syscall, memory, network)
 ✅ Nervio B basics (backup, config, certs)
-🎯 Demo funcionando (dashboard live)
+ Demo funcionando (dashboard live)
 ```
 
 ### PHASE 2 (Feb-Mar 2026): Patentes + Hardening
@@ -208,14 +208,14 @@ Sentinel crece 40x más rápido que la media de la industria
 👔 Full Patent Filing (con lawyers)
 🤝 First licensing partnerships (SOAR vendors)
 📱 Marketplace MVP (playbooks)
-🎯 Customer validation (pilot programs)
+ Customer validation (pilot programs)
 ```
 
 ### PHASE 4 (Series A 2026+): Scale
 ```
 🔄 Machine Learning baseline (auto-tuning)
 📊 Grafana dashboard (decision traces)
-🛠️ Playbook library (5K+ templates)
+🛠 Playbook library (5K+ templates)
 💰 Enterprise features (SSO, RBAC, compliance)
 ```
 
@@ -257,7 +257,7 @@ Cognitive Defense: Sentinel Cortex™
 
 Tres capas de inteligencia:
 
-🧠 CORTEX (Cerebro)
+ CORTEX (Cerebro)
    ├─ Multi-factor decision engine
    ├─ Confidence scoring
    └─ Action orchestration
@@ -349,7 +349,7 @@ AHORA: Ejecutar fase de levantamiento de fondos
 
 ---
 
-## ✍️ LA FIRMA
+## ✍ LA FIRMA
 
 **Esto no es un backup tool.**  
 **Esto no es un monitoring dashboard.**  

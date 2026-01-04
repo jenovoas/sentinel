@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 OBJECTIVES
+##  OBJECTIVES
 
 **Staging environment will allow you to**:
 1. Test all security features in isolation
@@ -17,7 +17,7 @@
 
 ---
 
-## 🏗️ ARCHITECTURE
+## 🏗 ARCHITECTURE
 
 ### Network Isolation
 
@@ -73,7 +73,7 @@
 
 ---
 
-## 🚀 DEPLOYMENT STEPS
+##  DEPLOYMENT STEPS
 
 ### Prerequisites
 
@@ -278,7 +278,7 @@ deny all;
 
 ---
 
-## 🎯 HACKME CHALLENGE PREPARATION
+##  HACKME CHALLENGE PREPARATION
 
 ### Pre-Challenge Checklist
 
@@ -357,7 +357,7 @@ After staging validation:
 2. **Document Lessons Learned** in `STAGING_REPORT.md`
 3. **Prepare HackMe Announcement** with staging results
 4. **Deploy Production** with confidence
-5. **Launch Public Challenge** 🚀
+5. **Launch Public Challenge** 
 
 ---
 

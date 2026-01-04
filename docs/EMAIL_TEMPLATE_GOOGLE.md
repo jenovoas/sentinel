@@ -1,4 +1,4 @@
-Subject: Quantum Optomechanics Breakthrough - Request for Technical Review
+Subject: Quantum Optomechanics  - Request for Technical Review
 
 Dear Google Research / Quantum AI / DeepMind Team,
 
@@ -51,7 +51,7 @@ José Novoa
 
 Thank you for considering this. If the convergence is real (and I believe it is), helping me is helping humanity.
 
-For everyone. 🌍⚛️
+For everyone. 🌍⚛
 
 ---
 

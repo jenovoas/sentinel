@@ -1,4 +1,4 @@
-# 🎯 Sentinel Cortex™ - Executive Summary
+#  Sentinel Cortex™ - Executive Summary
 **The First Living Security Organism**
 
 **Version:** 3.0 - Investment Ready  
@@ -34,7 +34,7 @@ Security teams face an impossible choice:
 ### Three-Layer Intelligent Architecture
 
 ```
-🧠 CORTEX (Brain)
+ CORTEX (Brain)
 ├─ Multi-factor decision engine
 ├─ Correlates 5+ independent signals
 └─ Confidence-based action planning
@@ -177,7 +177,7 @@ TOTAL:                             $153-230M
 - Data collection (30-day baseline)
 - ML tuning (TP>95%, FP<1%)
 - Validation (80% test coverage)
-- **Provisional Patent Filing** (Feb 15, 2026) 🎯
+- **Provisional Patent Filing** (Feb 15, 2026) 
 
 ### Milestones
 - **Month 6:** 10 beta customers, $50K ARR
@@ -244,12 +244,12 @@ Operations & Runway:          $4.5M (31%)
 ### Market Timing
 📈 Ransomware at all-time high (+340% YoY)  
 💰 SMBs without affordable solutions  
-🏛️ $50M CORFO available for R&D  
+ $50M CORFO available for R&D  
 🚨 AIOpsDoom threat emerging (CVSS 9.1)
 
 ### Competitive Window
 🔒 Nobody else has Dual-Guardian architecture  
-⏱️ 10+ years minimum for competition to copy  
+⏱ 10+ years minimum for competition to copy  
 📋 Defensive patents in process  
 
 **"If we don't do it now, someone else will in 2-3 years"**

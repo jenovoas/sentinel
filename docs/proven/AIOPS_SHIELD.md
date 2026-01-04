@@ -1,4 +1,4 @@
-# 🛡️ AIOpsShield - AIOpsDoom Defense Layer
+#  AIOpsShield - AIOpsDoom Defense Layer
 
 ## Executive Summary
 

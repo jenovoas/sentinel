@@ -487,4 +487,4 @@ Jaime, ahora tienes TODO lo que necesitas para:
 
 **Recuerda**: Los inversores invierten en **personas**, no en ideas. Muestra pasión, conocimiento y capacidad de ejecución.
 
-¡Estás listo! 🚀
+¡Estás listo! 

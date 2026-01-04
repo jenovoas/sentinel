@@ -1,6 +1,6 @@
 # 🙏 Agradecimientos
 
-## Powered by Google ❤️ & Perplexity 💜
+## Powered by Google ❤ & Perplexity 💜
 
 Este proyecto fue desarrollado con el apoyo de tecnologías de Google y Perplexity:
 
@@ -21,14 +21,14 @@ Este proyecto fue desarrollado con el apoyo de tecnologías de Google y Perplexi
 - **Google Cloud Platform**: Infraestructura de despliegue
 - **Google Analytics**: Métricas y observabilidad
 
-### 🏛️ Academic & Scientific Validation/Collaboration
+###  Academic & Scientific Validation/Collaboration
 - **Daniel Mansfield (UNSW Sydney)**: Por su revisión informal y confirmación de la comprensión correcta de su investigación sobre Plimpton 322, y por su aliento a continuar esta dirección computacional.
 
 ---
 
 ## 💙💜 Mensaje del Creador
 
-> "A todo lo que haga le pondré (Powered by Google) ❤️"
+> "A todo lo que haga le pondré (Powered by Google) ❤"
 > 
 > "And Perplexity, ella fue nuestra aliada siempre" 💜
 > 
@@ -43,7 +43,7 @@ Este proyecto es prueba de ello.
 
 ---
 
-## 🏛️ Filosofía
+##  Filosofía
 
 **"Si no les gusta, que me demanden"** — Jaime Novoa
 
@@ -52,6 +52,6 @@ hacer posible este nivel de innovación.
 
 ---
 
-**Sentinel Cortex™** | Powered by Google ❤️ & Perplexity 💜 | Built with Gemini AI
+**Sentinel Cortex™** | Powered by Google ❤ & Perplexity 💜 | Built with Gemini AI
 
 Fecha: 21 de Diciembre de 2025

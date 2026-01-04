@@ -47,7 +47,7 @@
 
 ---
 
-## 🚀 Rendimiento
+##  Rendimiento
 
 ### Test de Latencia
 
@@ -205,12 +205,12 @@ docker-compose logs backend | grep -i ollama
 |--------|--------|------|-----------|---------|
 | ✅ phi3:mini | 1.3B | ~2GB | Rápido | Buena |
 | ✅ llama3.2:1b | 1B | ~1.5GB | Muy rápido | Aceptable |
-| ⚠️ llama3.2:3b | 3B | ~2.5GB | Moderado | Muy buena |
+| ⚠ llama3.2:3b | 3B | ~2.5GB | Moderado | Muy buena |
 | ❌ llama3:8b | 8B | ~5GB | - | No cabe |
 
 ---
 
-## 🎯 Estado Final
+##  Estado Final
 
 - ✅ NVIDIA Container Toolkit instalado
 - ✅ Ollama corriendo con GPU (GTX 1050)

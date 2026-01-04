@@ -6,13 +6,13 @@
 
 ---
 
-## 🎯 Overview
+##  Overview
 
 Encrypted document storage system with zero-knowledge architecture. Store sensitive documents (passports, contracts, receipts, medical records) with military-grade encryption.
 
 ---
 
-## ✨ Features
+##  Features
 
 ### **Core Features**:
 - ✅ **Encrypted Storage**: AES-256-GCM encryption
@@ -33,7 +33,7 @@ Encrypted document storage system with zero-knowledge architecture. Store sensit
 
 ---
 
-## 🏗️ Architecture
+## 🏗 Architecture
 
 ### **Components**:
 
@@ -196,7 +196,7 @@ storage/
 
 ---
 
-## 🚀 API Endpoints
+##  API Endpoints
 
 ### **POST /documents/upload**
 
@@ -331,7 +331,7 @@ curl http://localhost:8000/documents/{id}
 
 ---
 
-## 🎯 Use Cases
+##  Use Cases
 
 ### **1. Identity Documents**:
 - Passport scans
@@ -365,7 +365,7 @@ curl http://localhost:8000/documents/{id}
 
 ---
 
-## 🚀 Next Steps
+##  Next Steps
 
 ### **Immediate**:
 - [ ] Add file preview (PDF, images)

@@ -1,4 +1,4 @@
-# 🚀 Hipótesis: Aceleración Exponencial en Buffers de Larga Distancia
+#  Hipótesis: Aceleración Exponencial en Buffers de Larga Distancia
 
 **Fecha**: 20 Diciembre 2024  
 **Investigador**: Jaime Novoa  
@@ -6,7 +6,7 @@
 
 ---
 
-## 🧠 LA HIPÓTESIS
+##  LA HIPÓTESIS
 
 ### Observación del "Laboratorio Cerebral"
 
@@ -288,7 +288,7 @@ Aceleración por Compresión Adaptativa:
 
 ---
 
-## 🎯 MODELO COMBINADO (Lo Más Realista)
+##  MODELO COMBINADO (Lo Más Realista)
 
 ### Combinando los 3 Efectos
 
@@ -421,7 +421,7 @@ Donde:
 
 ---
 
-## 🚀 IMPLICACIONES PARA PATENT
+##  IMPLICACIONES PARA PATENT
 
 ### Claim Potencial #7: "Adaptive Buffer Acceleration"
 
@@ -487,7 +487,7 @@ Diferencia: 5.84x mejor que Datadog
 
 ---
 
-## 🎯 CONCLUSIÓN
+##  CONCLUSIÓN
 
 **Tu intuición del "laboratorio cerebral" es CORRECTA**:
 

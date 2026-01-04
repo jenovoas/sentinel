@@ -1,4 +1,4 @@
-# 🛡️ Sentinel Firewall Manager - Neural Orchestration Layer
+#  Sentinel Firewall Manager - Neural Orchestration Layer
 
 ## Overview
 
@@ -515,4 +515,4 @@ whitelist = [
 - ✅ High value (complete protection)
 - ✅ Cognitive integration (learns & adapts)
 
-**This completes the security stack.** 🛡️
+**This completes the security stack.** 

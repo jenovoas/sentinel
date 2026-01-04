@@ -1,4 +1,4 @@
-# 🧠 Sentinel Cortex: BCI Implementation Plan
+#  Sentinel Cortex: BCI Implementation Plan
 
 **Strategy**: "Experimental Research Module".
 **Goal**: Build a functional BCI MVP using open datasets, a Rust ingestion engine, and n8n for orchestration, without waiting for hardware partnerships.

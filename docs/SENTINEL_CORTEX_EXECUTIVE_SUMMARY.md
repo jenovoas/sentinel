@@ -1,4 +1,4 @@
-# 🧠 Sentinel Cortex™ - Executive Summary
+#  Sentinel Cortex™ - Executive Summary
 **One-Page Investor Brief**
 
 **Confidencialidad:** Sentinel IP - Investment Ready  
@@ -7,7 +7,7 @@
 
 ---
 
-## 🎯 El Problema: El Dilema no factible de la Automatización
+##  El Problema: El Dilema no factible de la Automatización
 
 **Los equipos de seguridad enfrentan una elección no factible:**
 
@@ -37,7 +37,7 @@ NO EXISTE OPCIÓN C... HASTA AHORA
 ### **No es un sistema de seguridad. Es un ORGANISMO VIVO.**
 
 ```
-                    🧠 CORTEX
+                     CORTEX
                  (Cerebro Central)
               Multi-factor Decision
                       │
@@ -84,7 +84,7 @@ NO EXISTE OPCIÓN C... HASTA AHORA
 |---------|------------------|---------|--------|-----------|-------|
 | **Auto-vigilancia** | ✅ Dos Nervios | ❌ | ❌ | ❌ | ❌ |
 | **Auto-regeneración** | ✅ Self-healing | ❌ | ❌ | ❌ | ❌ |
-| **IA Segura** | ✅ Multi-factor | ⚠️ Básico | ❌ | ❌ | ❌ |
+| **IA Segura** | ✅ Multi-factor | ⚠ Básico | ❌ | ❌ | ❌ |
 | **Modo Sombra** | ✅ Shadow mode | ❌ | ❌ | ❌ | ❌ |
 | **Sanitización** | ✅ 40+ patrones | ❌ | ❌ | ❌ | ❌ |
 | **Costo/mes** | 💰 $78-500 | 💰💰💰 $15K+ | 💰💰💰 $20K+ | 💰💰💰 $25K+ | 💰💰 $5K+ |
@@ -170,7 +170,7 @@ TOTAL Post-Seed Valuation:       $110-130M
 
 ---
 
-## 🚀 Roadmap de Ejecución: 21 Semanas a Producción
+##  Roadmap de Ejecución: 21 Semanas a Producción
 
 ### **Phase 1-2: Foundation + Cortex Engine** ✅ DONE (Weeks 1-4)
 - [x] Telemetry Sanitization (Claim 1)
@@ -195,7 +195,7 @@ TOTAL Post-Seed Valuation:       $110-130M
 ### **Phase 7-8: Validation + Patent** (Weeks 19-21)
 - [ ] Comprehensive testing (80% coverage)
 - [ ] Security audit
-- [ ] **Provisional Patent Filing** 🎯
+- [ ] **Provisional Patent Filing** 
 
 ---
 
@@ -218,7 +218,7 @@ TOTAL Post-Seed Valuation:       $110-130M
 
 ---
 
-## 🎯 Milestones (18 meses)
+##  Milestones (18 meses)
 
 **Month 6:**
 - 10 beta customers

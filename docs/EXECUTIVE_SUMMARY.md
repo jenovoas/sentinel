@@ -38,7 +38,7 @@ Ollama: 0.13.5 (llama3.2:3b model)
 ### ✅ All Components Active
 
 ```
-🛡️  Sentinel Status Dashboard
+  Sentinel Status Dashboard
    • eBPF LSM      : ACTIVE
    • Sentinel Relay: RUNNING
    • Kernel Pulse  : RUNNING

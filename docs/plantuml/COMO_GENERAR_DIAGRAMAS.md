@@ -155,7 +155,7 @@ java -jar /tmp/plantuml-1.2024.3.jar -tsvg diagram1_vagus_nerve.puml diagram2_du
 
 ---
 
-## 🎯 PRÓXIMOS PASOS
+##  PRÓXIMOS PASOS
 
 1. **HOY:** Generar PNG usando Opción 1 (online - 5 minutos)
 2. **MAÑANA:** Enviar a patent attorney junto con documentación
