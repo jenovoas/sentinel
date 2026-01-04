@@ -15,6 +15,14 @@ import fcntl
 import struct
 
 import signal
+import sys
+
+# Add quantum directory to path to import TruthSync
+sys.path.append("/home/jnovoas/sentinel/quantum")
+try:
+    from truthsync_verification import truth_sync_verify
+except ImportError:
+    def truth_sync_verify(claim): return {"status": "OFFLINE"}
 
 WATCHDOG_DEVICE = "/dev/watchdog"
 HEARTBEAT_INTERVAL = 10  # seconds

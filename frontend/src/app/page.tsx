@@ -13,17 +13,21 @@ import { SoulGate } from "@/components/security/SoulGate";
 
 export default function LandingPage() {
   const { status } = useSentinelStatus();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authData, setAuthData] = useState<any>(null);
   const iframeBaseUrl = "http://localhost:3001/d-solo/sentinel-overview/sentinel-overview?orgId=1&theme=dark&panelId=";
 
-  if (!isAuthenticated) {
+  if (!authData) {
     return (
       <main className="min-h-screen bg-[#020617] flex items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none" />
         <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-cyan-500/5 blur-[180px] rounded-full animate-pulse pointer-events-none" />
 
         <div className="relative z-10 w-full">
-          <SoulGate onAuthenticationComplete={() => setIsAuthenticated(true)} />
+          <SoulGate onAuthenticationComplete={(sig) => {
+            setAuthData(sig);
+            localStorage.setItem('sentinel_soul_role', sig.role);
+            localStorage.setItem('sentinel_soul_id', sig.user_id);
+          }} />
         </div>
       </main>
     );

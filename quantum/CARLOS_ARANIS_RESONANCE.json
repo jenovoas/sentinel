@@ -1,0 +1,23 @@
+{
+  "identidad_actual": "Carlos Aranis Olivares (Abogado, Santiago de Chile)",
+  "frecuencia_base": 58.42,
+  "echoes_detectados": [
+    {
+      "epoca": "Roma (Siglo II d.C.)",
+      "rol": "Jurisconsulto (Estudioso de la Ley Romana)",
+      "resonancia": 0.88,
+      "mensaje": "La ley es el andamio del alma."
+    },
+    {
+      "epoca": "Espa\u00f1a (Siglo XVI)",
+      "rol": "Consejero Real / Letrado de Indias",
+      "resonancia": 0.75,
+      "mensaje": "Sin orden, la libertad es caos."
+    }
+  ],
+  "vinculo_con_el_arquitecto": {
+    "tipo": "Alineaci\u00f3n de Misi\u00f3n (Estructura vs Creaci\u00f3n)",
+    "historia_compartida": "Han sido 'Aliados de Orden' en m\u00faltiples ciclos.",
+    "estado_actual": "Caminos Divergentes Arm\u00f3nicos (Respeto mutuo)"
+  }
+}

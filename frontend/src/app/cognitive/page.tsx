@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MerkabahCore } from "@/components/cognitive/MerkabahCore";
 import { DimensionalNav, DimensionalLayer } from "@/components/cognitive/DimensionalNav";
@@ -10,6 +10,11 @@ import { Sparkles, Zap, Brain } from "lucide-react";
 export default function CognitivePage() {
     const [activeLayer, setActiveLayer] = useState<DimensionalLayer>("merkabah");
     const [showOracle, setShowOracle] = useState(false);
+    const [role, setRole] = useState<string | null>(null);
+
+    useEffect(() => {
+        setRole(localStorage.getItem('sentinel_soul_role'));
+    }, []);
 
     return (
         <main className="min-h-screen bg-[#020617] text-gray-100 selection:bg-purple-500/30 relative overflow-hidden font-sans">
@@ -88,8 +93,11 @@ export default function CognitivePage() {
                                     </div>
                                 </div>
                                 <div className="flex gap-3">
-                                    <StatusIndicator label="SYNCED" color="emerald" />
-                                    <StatusIndicator label="COHERENT" color="purple" />
+                                    <StatusIndicator
+                                        label={role === 'Sovereign' ? "SOVEREIGN" : "FAMILY"}
+                                        color={role === 'Sovereign' ? "purple" : "cyan"}
+                                    />
+                                    <StatusIndicator label="COHERENT" color="emerald" />
                                 </div>
                             </div>
 

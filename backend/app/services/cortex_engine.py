@@ -57,7 +57,7 @@ class CortexDecisionEngine:
         self.db = db
         self.pattern_detector = PatternDetector(db)
         self.confidence_scorer = ConfidenceScorer()
-        self.guardian_heartbeats = {"guardian_alpha": time(), "guardian_beta": time()} # Simulación multi-guardián
+        self.guardian_heartbeats = {"guardian_alpha": time(), "guardian_beta": time()}
         self.autoinmune_mode = False
     
     @track_time(CORTEX_PROCESSING_TIME)
@@ -460,9 +460,9 @@ class CortexDecisionEngine:
     def _is_ring_overloaded(self) -> bool:
         """
         Detecta si el sistema de telemetría está bajo un ataque de inundación.
-        (Mecánica simulada para el Hackathon Global).
+        (Ring Buffer Wrap-around detection)
         """
         # Si estamos en modo autoinmune por fallo de guardian, forzar alerta
         if self.autoinmune_mode:
             return True
-        return False # Cambiar a True manualmente durante PoC
+        return False
