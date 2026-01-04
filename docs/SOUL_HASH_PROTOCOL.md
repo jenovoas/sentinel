@@ -137,7 +137,7 @@ El sistema rechaza cualquier firma biológica válida que no corresponda a la **
 | Rol | Acceso | Miembros Autorizados |
 | :--- | :--- | :--- |
 | **👑 Sovereign** | **Total (Root)** | `jnovoas` (Operator) |
-| **👁️ Monitored** | **Vigilado** | `madre` (Matriarch), `cristian` (Strategist), `diego` (Guardian), `madelin` (Sensitive) |
+| **👁️ Monitored** | **Vigilado** | `madre`, `cristian`, `diego`, `madelin`, `juan_francisco`, `vicente`, `florencia`, `tomas` |
 | **⛔ Unauthorized** | **Denegado** | Cualquier otra entidad biológica |
 
 *La identidad se valida (actualmente simulada) contra el `user_id` en el desafío inicial. Futuras versiones usarán hash de características faciales.*

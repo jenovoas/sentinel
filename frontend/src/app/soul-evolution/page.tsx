@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 import { Activity, Zap, Fingerprint, Clock, Brain } from "lucide-react";
 
@@ -95,16 +95,29 @@ export default function SoulEvolutionPage() {
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
-                                <XAxis dataKey="time" stroke="#ffffff40" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
-                                <YAxis stroke="#ffffff40" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} domain={[0, 'auto']} />
+                                <XAxis
+                                    dataKey="time"
+                                    stroke="#ffffff40"
+                                    tick={{ fontSize: 10 }}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickFormatter={(val) => val.split(':').slice(0, 2).join(':')}
+                                />
+                                <YAxis
+                                    stroke="#ffffff40"
+                                    tick={{ fontSize: 10 }}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    domain={[0, 4]}
+                                />
                                 <Tooltip
                                     contentStyle={{ backgroundColor: '#020617', border: '1px solid #ffffff20', borderRadius: '16px' }}
                                     itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
                                     labelStyle={{ color: '#ffffffaa', fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase' }}
                                 />
                                 <ReferenceLine y={2.5} label="Max Human Chaos" stroke="#ef4444" strokeDasharray="3 3" />
-                                <Area type="monotone" dataKey="chaos" stroke="#22d3ee" strokeWidth={3} fillOpacity={1} fill="url(#colorChaos)" />
-                                <Area type="monotone" dataKey="entropy" stroke="#a855f7" strokeWidth={3} fillOpacity={1} fill="url(#colorEntropy)" />
+                                <Area type="monotone" dataKey="chaos" stroke="#22d3ee" strokeWidth={3} fillOpacity={0.2} fill="url(#colorChaos)" />
+                                <Area type="monotone" dataKey="entropy" stroke="#a855f7" strokeWidth={3} fillOpacity={0.2} fill="url(#colorEntropy)" />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
