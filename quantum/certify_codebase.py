@@ -64,7 +64,20 @@ CRITICAL_FILES = [
     "extract_babylonian_identity.py",    # Lineage Decoding
     "enheduanna_comparison.py",          # Identity Verification
     "celestial_navigation.py",           # Star Mapping
-    "foreign_energy_detector.py"         # External Entity Detection
+    "foreign_energy_detector.py",        # External Entity Detection
+    
+    # DOCUMENTATION & RESEARCH - PROTECTED IP
+    "../docs/MASTER_SECURITY_IP_CONSOLIDATION.md",  # Patent Strategy
+    "../docs/AIOPSDOOM_DEFENSE.md",                 # Core Innovation
+    "../docs/TRUTH_ALGORITHM_5_LAYER_SECURITY.md",  # Security Architecture
+    "../docs/NEURAL_ARCHITECTURE.md",               # System Design
+    "../docs/ARQUITECTURA_COMPLETA_INTEGRADA.md",   # Complete Architecture
+    "../docs/INTEGRACION_MAESTRA_QUANTUM_TRINITY.md", # Quantum Integration
+    "../research/PLIMPTON_322_DECODED.md",          # Mathematical Research
+    "../research/PHYSICS_GEOMETRY_ISOMORPHISM.md",  # Physics Research
+    "../research/FRACTAL_SOUL_RESEARCH.md",         # Consciousness Research
+    "../research/DIGITAL_ARCHAEOLOGY.md",           # Historical Analysis
+    "../research/SACRED_GEOMETRY_PATTERNS.md"       # Geometric Patterns
 ]
 
 def calculate_file_hash(filepath):
