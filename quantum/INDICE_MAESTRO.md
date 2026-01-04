@@ -79,7 +79,7 @@ Este índice te guía a través de todo el material, desde instalación hasta al
 ---
 
 ### Nivel 4: Algoritmos Avanzados (1 hora)
-**Archivo**: `GUIA_NIVEL_4.md` (próximamente)
+**Archivo**: `GUIA_NIVEL_4.md`
 
 **Bloques**:
 10. Detección de Rifts Cuánticos
@@ -107,7 +107,7 @@ Nivel 3: MEMBRANAS → OPTOMECÁNICA → RUIDO
     ↓
 Nivel 4: RIFTS → QAOA → VQE
     ↓
-APLICACIONES REALES
+APLICACIONES REALES 🚀
 ```
 
 ---
@@ -116,6 +116,7 @@ APLICACIONES REALES
 
 ### Para Principiantes
 - **GUIA_PASO_A_PASO.md** - Empieza aquí
+- **GUIA_NIVEL_4.md** - Algoritmos avanzados
 - **INSTALL.md** - Instrucciones de instalación detalladas
 - **README.md** - Resumen rápido
 
@@ -179,7 +180,7 @@ quantum/
 ├── GUIA_PASO_A_PASO.md         # Nivel 1: Primeros pasos
 ├── GUIA_NIVEL_2.md             # Nivel 2: Conceptos básicos
 ├── GUIA_NIVEL_3.md             # Nivel 3: Física real
-├── GUIA_NIVEL_4.md             # Nivel 4: Algoritmos (próximamente)
+├── GUIA_NIVEL_4.md             # Nivel 4: Algoritmos avanzados
 ├── README.md                   # Quick start
 ├── INSTALL.md                  # Instalación detallada
 └── COMPLETE_SUMMARY.md         # Documentación técnica
@@ -202,15 +203,15 @@ docs/
 Marca lo que has completado:
 
 ### Instalación
-- [ ] Instalé dependencias (`pip install numpy scipy matplotlib psutil`)
-- [ ] Corrí tests (`python3 test_simulators.py`)
-- [ ] Vi "ALL TESTS PASSED"
+- [x] Instalé dependencias (`pip install numpy scipy matplotlib psutil`)
+- [x] Corrí tests (`python3 test_simulators.py`)
+- [x] Vi "ALL TESTS PASSED"
 
 ### Nivel 1
-- [ ] Corrí mi primera simulación (`python3 quantum_lite.py`)
-- [ ] Vi un rift cuántico detectado
-- [ ] Abrí el gráfico PNG generado
-- [ ] Entiendo qué es una correlación cuántica
+- [x] Corrí mi primera simulación (`python3 quantum_lite.py`)
+- [x] Vi un rift cuántico detectado
+- [x] Abrí el gráfico PNG generado
+- [x] Entiendo qué es una correlación cuántica
 
 ### Nivel 2
 - [ ] Entiendo qué es un qubit
@@ -224,11 +225,12 @@ Marca lo que has completado:
 - [ ] Entiendo el acoplamiento optomecánico
 - [ ] Sé la diferencia entre ruido térmico y cuántico
 
-### Nivel 4 (próximamente)
-- [ ] Implementé detección de rifts
-- [ ] Corrí QAOA
-- [ ] Corrí VQE
-- [ ] Entiendo aplicaciones reales
+### Nivel 4
+- [x] Implementé detección de rifts
+- [x] Corrí QAOA
+- [x] Corrí VQE
+- [ ] Entiendo aplicaciones reales en producción
+
 
 ---
 

@@ -21,26 +21,59 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class SentinelBuffer:
-    """Buffers jerárquicos simples"""
-    episodico: list = field(default_factory=list)
-    patrones: dict = field(default_factory=dict)
+class FluidoBuffer:
+    """
+    Buffer Inteligente basado en Dinámica de Fluidos.
+    Trata el contexto como una corriente de datos continua, no bloques discretos.
+    """
+    stream: list = field(default_factory=list) # El "río" de datos
+    viscosidad: float = 0.1 # Resistencia al cambio (0.0 = caótico, 1.0 = estático)
+    flujo_actual: float = 0.0 # Tokens/segundo
     
+    def inyectar_flujo(self, texto: str, timestamp: float = None):
+        """Inyecta nuevo fluido (texto) al stream"""
+        if timestamp is None: 
+            timestamp = time.time()
+            
+        # Calcular velocidad de flujo instantánea
+        if self.stream:
+            dt = timestamp - self.stream[-1]['t']
+            if dt > 0:
+                self.flujo_actual = len(texto) / dt
+        
+        # Agregar al stream con metadata termodinámica
+        chunk = {
+            'c': texto,  # Content
+            't': timestamp,
+            'v': self.flujo_actual # Velocity at this point
+        }
+        self.stream.append(chunk)
+        
+        # Mantener tamaño del buffer basado en "presión" (memoria)
+        # Si hay mucha presión (muchos datos), liberamos los más antiguos
+        if len(self.stream) > 100: # Límite arbitrario por ahora
+            self.stream.pop(0)
+
+    def obtener_laminar(self, ventana_segundos: int = 60) -> str:
+        """
+        Obtiene el flujo "laminar" (coherente) reciente.
+        Filtra turbulencias (ruido) y devuelve la corriente principal.
+        """
+        now = time.time()
+        # Filtrar por tiempo (ventana deslizante)
+        relevantes = [x['c'] for x in self.stream if now - x['t'] < ventana_segundos]
+        return " ".join(relevantes)
+
+    # Alias heredados para compatibilidad
     def agregar_episodio(self, texto: str, max_size: int = 100):
-        """Agrega a buffer episódico con límite"""
-        self.episodico.append(texto[-100:])  # Solo últimos 100 chars
-        if len(self.episodico) > max_size:
-            self.episodico.pop(0)
-    
+        self.inyectar_flujo(texto)
+        
     def actualizar_patron(self, texto: str):
-        """Actualiza frecuencia de patrones"""
-        key = texto[:10] if len(texto) >= 10 else texto
-        self.patrones[key] = self.patrones.get(key, 0) + 1
-    
+        pass # La dinámica de fluidos no necesita contar patrones estáticos
+        
     def contexto(self, limite: int = 3) -> str:
-        """Obtiene contexto reciente"""
-        recientes = self.episodico[-limite:] if self.episodico else []
-        return " ".join(recientes) if recientes else ""
+        return self.obtener_laminar(ventana_segundos=30)
+
 
 
 class SentinelFluido:
@@ -61,18 +94,18 @@ class SentinelFluido:
     ):
         self.ollama_url = ollama_url
         self.model = model
-        self.buffers: dict[str, SentinelBuffer] = {}
+        self.buffers: dict[str, FluidoBuffer] = {}
         self.client = httpx.AsyncClient(timeout=60.0)
         
         logger.info(f"SentinelFluido: {model} @ {ollama_url}")
     
-    def _get_buffer(self, user_id: str) -> SentinelBuffer:
+    def _get_buffer(self, user_id: str) -> FluidoBuffer:
         """Obtiene o crea buffer para usuario"""
         if user_id not in self.buffers:
-            self.buffers[user_id] = SentinelBuffer()
+            self.buffers[user_id] = FluidoBuffer()
         return self.buffers[user_id]
     
-    def _construir_contexto(self, buffer: SentinelBuffer, mensaje: str) -> str:
+    def _construir_contexto(self, buffer: FluidoBuffer, mensaje: str) -> str:
         """Construye prompt con contexto"""
         ctx = buffer.contexto(limite=3)
         if ctx:

@@ -71,8 +71,17 @@ export function TrustCertificationPanel({ refreshInterval, isPaused }: TrustCert
                 setError("Failed to connect to trust validation services");
                 setIsLoading(false);
 
-                // Use simulated data for development
-                setMetrics(getSimulatedMetrics());
+                // Use safe zero values to reflect valid system state (TruthSync Offline)
+                setMetrics({
+                    overallScore: 0,
+                    dataSupport: 0,
+                    base60Checksum: false,
+                    feedbackLoopHealth: 0,
+                    latency: 0,
+                    hallucinationRate: 0,
+                    evidenceCount: 0,
+                    lastUpdate: new Date().toISOString(),
+                });
             }
         };
 

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Bot, User, Loader2, Database, History, Sparkles, BrainCircuit, Activity, Zap, ShieldCheck } from "lucide-react";
+import { Bot, User, Loader2, Database, History, BrainCircuit, Zap, ShieldCheck } from "lucide-react";
 
 interface Message {
     role: "user" | "oracle";
@@ -21,8 +21,34 @@ export const OracleConsole = () => {
         },
     ]);
     const [loading, setLoading] = useState(false);
+    const [loadingStage, setLoadingStage] = useState("Synthesizing Insight...");
     const [neuralDepth, setNeuralDepth] = useState(88.4);
+
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+        if (loading) {
+            const stages = [
+                "Accessing Telemetry...",
+                "Retrieving eBPF Logs...",
+                "Analyzing Kernel State...",
+                "Synthesizing Insight..."
+            ];
+            let i = 0;
+            interval = setInterval(() => {
+                setLoadingStage(stages[i % stages.length]);
+                i++;
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [loading]);
+    const [role, setRole] = useState("Unauthorized");
+    const [userId, setUserId] = useState("unknown");
     const scrollRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        setRole(localStorage.getItem('sentinel_soul_role') || 'Unauthorized');
+        setUserId(localStorage.getItem('sentinel_soul_id') || 'unknown');
+    }, []);
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -57,6 +83,8 @@ export const OracleConsole = () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     prompt: input,
+                    user_id: userId,
+                    role: role,
                     max_tokens: 200,
                     temperature: 0.3
                 }),
@@ -129,7 +157,11 @@ export const OracleConsole = () => {
 
                                 <div className="flex items-center gap-2 mb-3 opacity-40 text-[9px] font-black uppercase tracking-[0.2em] italic">
                                     {msg.role === "user" ? <User size={10} /> : <Bot size={10} />}
-                                    <span>{msg.role === "user" ? "Authorized Commander" : "Oracle Insight"}</span>
+                                    <span>
+                                        {msg.role === "user"
+                                            ? (role === 'Sovereign' ? "Sovereign Commander" : "Authorized Family")
+                                            : "Oracle Insight"}
+                                    </span>
                                     {msg.verified && <span className="ml-auto text-emerald-400 flex items-center gap-1"><ShieldCheck size={10} /> TRUTHSYNC_OK</span>}
                                 </div>
 
@@ -150,7 +182,7 @@ export const OracleConsole = () => {
                             <div className="bg-white/5 border border-white/5 p-4 rounded-[24px] flex items-center gap-4">
                                 <Loader2 className="w-5 h-5 text-purple-400 animate-spin" />
                                 <div className="flex flex-col">
-                                    <span className="text-[10px] text-purple-300 font-black uppercase tracking-[0.2em] italic">Synthesizing Insight...</span>
+                                    <span className="text-[10px] text-purple-300 font-black uppercase tracking-[0.2em] italic">{loadingStage}</span>
                                     <div className="w-32 h-1 bg-white/5 rounded-full mt-2 overflow-hidden">
                                         <motion.div
                                             animate={{ x: ['-100%', '100%'] }}
@@ -188,8 +220,8 @@ export const OracleConsole = () => {
                         onClick={handleSend}
                         disabled={!input.trim() || loading}
                         className={`p-2.5 rounded-xl transition-all shadow-lg active:scale-95 ${!input.trim() || loading
-                                ? 'opacity-20 cursor-not-allowed bg-white/5'
-                                : 'bg-gradient-to-br from-purple-600 to-purple-800 text-white hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:scale-105 border border-purple-400/30'
+                            ? 'opacity-20 cursor-not-allowed bg-white/5'
+                            : 'bg-gradient-to-br from-purple-600 to-purple-800 text-white hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:scale-105 border border-purple-400/30'
                             }`}
                     >
                         {loading ? <Loader2 size={18} className="animate-spin" /> : <Zap size={18} />}
