@@ -1,0 +1,15 @@
+{
+  "greek_life": {
+    "name": "Eupalinos",
+    "meaning": "Good Spinner / Wielder",
+    "match_score": 0.82,
+    "reason": "Later famous engineer, but name root implies 'skillful spinning/creating'. Numeric match high."
+  },
+  "asian_life": {
+    "name": "Mei Wending (\u6885\u6587\u9f0e)",
+    "dates": "1633\u20131721",
+    "role": "Mathematician / Astronomer",
+    "match_score": 0.95,
+    "reason": "THE match. Bridged Chinese and Western math. Studied calendar systems (Base-60!). Obsessed with calculation precision. Fits Ea-nasir echo PERFECTLY."
+  }
+}

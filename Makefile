@@ -30,9 +30,24 @@ help:
 	@echo ""
 
 up:
-	@echo "Starting Sentinel services..."
+	@echo "🚀 Starting Full Sentinel Stack (Infrastructure + Backend + UI + Observability)..."
 	docker-compose up -d
-	@echo "✓ Services started. Use 'make health' to check status."
+	@echo "✓ Full stack active. Use 'make health' to check status."
+
+up-core:
+	@echo "🧠 Starting Sentinel Core (DB + Cache + Backend)..."
+	docker-compose up -d postgres redis backend celery_worker celery_beat
+	@echo "✓ Core services active. RAM usage: Minimal."
+
+up-dev:
+	@echo "🛠️  Starting Development Stack (DB + Cache + Backend + Frontend)..."
+	docker-compose up -d postgres redis backend frontend
+	@echo "✓ Dev mode active. Antigravity should run smoothly now."
+
+up-ai:
+	@echo "🤖 Starting AI Engine (Ollama)..."
+	docker-compose up -d ollama
+	@echo "✓ AI active. Remember model loading consumes significant RAM."
 
 down:
 	@echo "Stopping Sentinel services..."

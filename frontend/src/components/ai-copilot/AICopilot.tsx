@@ -492,18 +492,25 @@ function generateRecommendations(pathname: string, trustMetrics: TrustMetrics): 
 
 async function getAIResponse(message: string, pathname: string, trustMetrics: TrustMetrics): Promise<string> {
     try {
-        const response = await fetch("/api/v1/ai/query", {
+        // Construct context-aware prompt
+        const contextPrompt = `
+Context State:
+- Path: ${pathname}
+- Trust Score: ${Math.round(trustMetrics.overall)}%
+- Data Support: ${Math.round(trustMetrics.dataSupport)}%
+- Base-60 Valid: ${trustMetrics.base60Valid}
+
+User Query: ${message}
+
+Act as Sentinel AI, the guardian of this system. Be concise, technical, and helpful.`;
+
+        const response = await fetch("/api/ai/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                query: message,
-                context: {
-                    pathname,
-                    trustScore: trustMetrics.overall,
-                    dataSupport: trustMetrics.dataSupport,
-                    base60Valid: trustMetrics.base60Valid,
-                    hallucinationRate: trustMetrics.hallucinationRate,
-                },
+                prompt: contextPrompt,
+                model: "llama3.2:3b",
+                stream: false
             }),
         });
 

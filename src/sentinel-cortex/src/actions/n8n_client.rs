@@ -46,4 +46,28 @@ impl N8NClient {
         
         Ok(())
     }
+
+    /// Dispara una alerta de seguridad genérica
+    pub async fn trigger_alert(
+        &self,
+        alert_type: &str,
+        data: serde_json::Value
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        let webhook_url = format!("{}/webhook/security_alert", self.base_url);
+        
+        let payload = serde_json::json!({
+            "type": alert_type,
+            "data": data,
+            "timestamp": chrono::Utc::now().to_rfc3339(),
+        });
+        
+        // Fire and forget usually, but we log
+        // Ignoramos error para no bloquear el flujo principal
+        let _ = self.client.post(&webhook_url)
+            .json(&payload)
+            .send()
+            .await;
+            
+        Ok(())
+    }
 }

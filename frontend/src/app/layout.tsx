@@ -1,19 +1,10 @@
-/**
- * Root Layout - Applies to all pages
- * 
- * This layout wraps all pages and provides:
- * - Global navigation sidebar
- * - Consistent styling
- * - Font configuration
- * - Metadata
- */
-
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { CognitiveNavBar } from "@/components/CognitiveNavBar";
 import { CommandPalette } from "@/components/CommandPalette";
 import { AICopilot } from "@/components/ai-copilot/AICopilot";
+import { Providers } from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,15 +21,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <CommandPalette />
-        {/* Global Top Navigation */}
-        <CognitiveNavBar />
+        <Providers>
+          <CommandPalette />
+          {/* Global Top Navigation */}
+          <CognitiveNavBar />
 
-        {/* Page Content */}
-        <main>{children}</main>
+          {/* Page Content */}
+          <main>{children}</main>
 
-        {/* Sentinel IA - Asistente Cognitivo Global */}
-        <AICopilot />
+          {/* Sentinel IA - Asistente Cognitivo Global */}
+          <AICopilot />
+        </Providers>
       </body>
     </html>
   );

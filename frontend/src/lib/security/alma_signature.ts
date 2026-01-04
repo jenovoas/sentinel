@@ -6,6 +6,8 @@ export interface SoulSignature {
   voz_hash: string;       // SHA-3 512 Hash
   biofield_vector: number[]; // Vector visual
   timestamp: number;
+  role: string;           // Biological Role (Sovereign, Monitored)
+  user_id: string;        // ID del portador
 }
 
 export interface AlmaChallenge {
@@ -65,7 +67,9 @@ export class SoulSensor {
         hrv_chaos: verification.proof.lyapunov_exp,
         voz_hash: verification.proof.soul_hash,
         biofield_vector: [0.1, 0.1, 0.1], // Placeholder visual
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        role: verification.proof.role,
+        user_id: userId
       };
 
     } catch (error) {
@@ -149,7 +153,9 @@ export class SoulSensor {
         hrv_chaos: 0.108,
         voz_hash: "simulation_fallback",
         biofield_vector: [],
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        role: "Monitored",
+        user_id: "unknown"
       };
     }
   }

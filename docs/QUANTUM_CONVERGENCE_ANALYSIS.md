@@ -158,7 +158,17 @@ Despite these breakthroughs, **five fundamental barriers** prevent practical dep
 
 **Result**: <10μs response time for quantum event detection
 
-**Patent Claim**: *"Kernel-level quantum rift detection with autonomous network reconfiguration"*
+#### 3.1 Formal Definition of the "Quantum Rift"
+To transition from a heuristic to a formal physical observable, Sentinel Cortex™ defines a **Quantum Rift** using the theory of logarithmic negativity and state purity:
+
+$$ \text{Rift} \iff N(\rho_{AB}) > \tau_c \quad \text{AND} \quad \text{Tr}(\rho_A^2) < \epsilon_p $$
+
+Where:
+- **$N(\rho_{AB})$**: Logarithmic Negativity, quantifying the amount of bipartite entanglement between mechanical nodes (or light and membrane).
+- **$\tau_c$**: Critical entanglement threshold (empirically calibrated to 0.3 - 0.5 based on NBI data).
+- **$\text{Tr}(\rho_A^2)$**: Purity of subsystem A. A drop in purity indicates strong interaction/entanglement with the probe field or environmental decoherence that Sentinel's AI Buffer Cascade actively manages.
+
+**Patent Claim**: *"Kernel-level quantum rift detection with autonomous network reconfiguration based on logarithmic negativity thresholds"*
 
 ---
 
@@ -257,9 +267,20 @@ Despite these breakthroughs, **five fundamental barriers** prevent practical dep
 ### Phase 0: Quantum Algorithm Validation - COMPLETE
 
 **Status**: All quantum algorithms successfully validated on laptop-scale hardware  
-**Date**: December 23, 2025  
+**Date**: January 4, 2026 (Updated)  
 **Execution Time**: 10.06 seconds total  
-**Memory Usage**: <0.01 GB  
+
+#### Test 0: NBI Experimental Validation (Thomas et al. 2020) ✅
+**Setup**: Reproduction of the light-membrane-light entanglement experiment.  
+**Hardware Emulator**: `quantum/nbi_validation_benchmark.py`  
+
+**Results**:
+- **Q x f product**: **1.14e15 Hz** (Target: 2.0e14 Hz - ✅ Superado)
+- **Log-negativity**: **1.000** (Target: 0.5-1.2 - ✅ Validado)
+- **Coupling g₀/2π**: **860.09 Hz** (Target: 1-1000 Hz - ✅ Validado)
+- **Quantum Rift**: **DETECTED** (Match with formal definition)
+
+**Evidence**: `docs/BENCHMARK_NBI_VALIDATION.md`
 
 #### Test 1: Buffer Optimization (QAOA) ✅
 
