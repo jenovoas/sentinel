@@ -113,7 +113,7 @@ Guardian Gamma (Human)        → Validation + Intuition (HITL)
 | Feature | Datadog | Splunk | SentinelOne | Sentinel Cortex™ |
 |---------|---------|--------|-------------|------------------|
 | eBPF observability | ✅ | ✅ | ✅ | ✅ |
-| eBPF enforcement | ❌ | ❌ | ⚠️ Limited | ✅ **Ring 0** |
+| eBPF enforcement | ❌ | ❌ | ⚠ Limited | ✅ **Ring 0** |
 | Pre-execution veto | ❌ | ❌ | ❌ | ✅ **eBPF LSM** |
 | AI-driven decisions | ❌ | ❌ | ❌ | ✅ **<100μs** |
 | HITL validation | ❌ | ❌ | ❌ | ✅ **Guardian Gamma** |

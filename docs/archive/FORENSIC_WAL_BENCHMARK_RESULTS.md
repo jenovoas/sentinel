@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 EXECUTIVE SUMMARY
+##  EXECUTIVE SUMMARY
 
 **Forensic WAL achieves sub-100μs latency** with full cryptographic protection:
 
@@ -125,7 +125,7 @@ Overhead:
 
 ---
 
-## 🎯 COMPONENT BREAKDOWN
+##  COMPONENT BREAKDOWN
 
 | Component | Overhead | % of Total |
 |-----------|----------|------------|
@@ -145,9 +145,9 @@ Overhead:
 
 | Solution | Write Latency | HMAC | Replay Protection | Timestamp Validation |
 |----------|---------------|------|-------------------|---------------------|
-| **PostgreSQL WAL** | ~100-500μs | ❌ | ❌ | ⚠️ Basic |
-| **MySQL binlog** | ~200-800μs | ❌ | ❌ | ⚠️ Basic |
-| **Blockchain Audit** | ~1-5ms | ✅ | ✅ | ⚠️ Basic |
+| **PostgreSQL WAL** | ~100-500μs | ❌ | ❌ | ⚠ Basic |
+| **MySQL binlog** | ~200-800μs | ❌ | ❌ | ⚠ Basic |
+| **Blockchain Audit** | ~1-5ms | ✅ | ✅ | ⚠ Basic |
 | **Sentinel Forensic WAL** | **75μs** | ✅ SHA-256 | ✅ Nonce-based | ✅ Multi-rule |
 
 **Key Differentiators**:
@@ -162,7 +162,7 @@ Datadog/Splunk/New Relic (5-80ms) include network latency and are not comparable
 
 ---
 
-## 🚀 SCALABILITY ANALYSIS
+##  SCALABILITY ANALYSIS
 
 ### Throughput Projection
 
@@ -230,7 +230,7 @@ Security Features:
 
 ---
 
-## 🎯 NEXT STEPS
+##  NEXT STEPS
 
 ### For Provisional Patent
 

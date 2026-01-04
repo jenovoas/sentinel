@@ -45,7 +45,7 @@
 
 ---
 
-## 🎯 Próxima Sesión (Mañana)
+##  Próxima Sesión (Mañana)
 
 1. eBPF LSM testing
 2. Gemini benchmarks (si activan)

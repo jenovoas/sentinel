@@ -160,6 +160,5 @@ Status: Ready for provisional patent filing.
 
 ---
 
-
 **Last updated**: 21 December 2025  
 **Status**: Ready for attorney review

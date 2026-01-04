@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Visión
+##  Visión
 
 **Password manager integrado en Sentinel** con:
 - ✅ Cifrado end-to-end (AES-256-GCM)
@@ -20,7 +20,7 @@
 
 ---
 
-## 🏗️ Arquitectura
+## 🏗 Arquitectura
 
 ### **Componentes**
 
@@ -297,7 +297,7 @@ async def detect_anomalous_access(user_id: int, context: dict):
       "name": "Alert User",
       "type": "n8n-nodes-base.sendEmail",
       "parameters": {
-        "subject": "⚠️ Password found in data breach!",
+        "subject": "⚠ Password found in data breach!",
         "text": "Your password for {{$json.service}} was found in a breach. Please reset immediately."
       }
     }
@@ -471,7 +471,7 @@ CREATE TABLE vault_master_keys (
 
 ---
 
-## 🚀 Roadmap de Implementación
+##  Roadmap de Implementación
 
 ### **Fase 1: Core Vault** (2-3 semanas)
 - [ ] Backend API (FastAPI)
@@ -536,12 +536,12 @@ CREATE TABLE vault_master_keys (
 
 ---
 
-## 🎯 Diferenciadores vs Competencia
+##  Diferenciadores vs Competencia
 
 | Feature | 1Password | Bitwarden | **Sentinel Vault** |
 |---------|-----------|-----------|---------------------|
 | **AI Password Audit** | ❌ | ❌ | ✅ Ollama |
-| **Auto-Rotation** | ⚠️ Manual | ⚠️ Manual | ✅ n8n automated |
+| **Auto-Rotation** | ⚠ Manual | ⚠ Manual | ✅ n8n automated |
 | **Anomaly Detection** | ❌ | ❌ | ✅ AI-powered |
 | **Zero-Knowledge** | ✅ | ✅ | ✅ |
 | **Self-Hosted** | ❌ | ✅ | ✅ |

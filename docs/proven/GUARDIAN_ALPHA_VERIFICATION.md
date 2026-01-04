@@ -42,7 +42,6 @@ SHA256: 832520428977f5316ef4dd911107da8a05b645bea92f580e3e77c9aa5da3373a
 - ✅ Correct LSM hook
 - ✅ Verifiable hash
 
-
 ## For Patent Purposes
 
 **What we have**:
@@ -50,8 +49,6 @@ SHA256: 832520428977f5316ef4dd911107da8a05b645bea92f580e3e77c9aa5da3373a
 - ✅ Compiled binary
 - ✅ Verifiable hash
 - ✅ Technical documentation
-
-
 
 The code is complete and compilable. That's sufficient evidence.
 
@@ -111,7 +108,7 @@ To actually load this in kernel, you need:
 Guardian Alpha is **code complete and verified**.
 
 **Patent status**: ✅ Ready  
-**Production status**: ⚠️ Needs deployment testing
+**Production status**: ⚠ Needs deployment testing
 
 The fact that we cannot load it to kernel right now does not affect patent validity. The code exists, compiles, and is documented.
 

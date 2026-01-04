@@ -5,7 +5,7 @@
 
 ---
 
-## 🎯 PLAN DE VALIDACIÓN
+##  PLAN DE VALIDACIÓN
 
 Vamos a ejecutar cada test y documentar resultados REALES.
 
@@ -86,7 +86,7 @@ file guardian_alpha_lsm.o
 
 ---
 
-## 🎯 PRÓXIMA ACCIÓN
+##  PRÓXIMA ACCIÓN
 
 **Ejecutar Test 1**: AIOpsDoom Defense
 

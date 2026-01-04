@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Claim Validado
+##  Claim Validado
 
 ### **Versión Final Aprobada**:
 > "Sentinel Vault integra gestión de passwords y crypto wallets,
@@ -142,7 +142,7 @@ Year 3 (Scale):
 
 ---
 
-## 🎯 Target Customers Validados
+##  Target Customers Validados
 
 ### **Segmento 1: Crypto Developers**
 - Necesitan: Passwords (GitHub, AWS) + Wallets (BTC, ETH)
@@ -179,7 +179,7 @@ Year 3 (Scale):
 
 ---
 
-## 🚀 Para CORFO / Investors
+##  Para CORFO / Investors
 
 ### **Claim Aprobado**:
 > "Sentinel Vault integra gestión de passwords y crypto wallets,

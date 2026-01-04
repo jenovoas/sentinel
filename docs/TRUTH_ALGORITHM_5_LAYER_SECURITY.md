@@ -1,4 +1,4 @@
-# 🛡️ Truth Algorithm - 7-Layer Security Architecture
+#  Truth Algorithm - 7-Layer Security Architecture
 ## *Defense-in-Depth for Truth Verification with AI Prediction & Behavioral Analysis*
 
 **Inspired by**: Sentinel Cortex Dual-Guardian Architecture  
@@ -7,7 +7,7 @@
 
 ---
 
-## 🏗️ The 7-Layer Security Model
+## 🏗 The 7-Layer Security Model
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -203,7 +203,7 @@ impl EvidenceGuardian {
 
 ---
 
-## ⚖️ Layer 3: Trust Guardian (Source Reputation)
+## ⚖ Layer 3: Trust Guardian (Source Reputation)
 
 ### **Purpose**: Weight evidence by source trustworthiness
 
@@ -416,7 +416,7 @@ impl CampaignDetector {
 
 ---
 
-## 🧠 Layer 7: Neural Workflow Network (Behavioral Guardian)
+##  Layer 7: Neural Workflow Network (Behavioral Guardian)
 
 ### **Purpose**: Detect deception through multimodal behavioral analysis using n8n workflows
 
@@ -740,7 +740,6 @@ class PsychologyParser:
         
         return f"{category}_generic"
 
-
 class N8nWorkflowGenerator:
     """Generate n8n workflows from deception patterns"""
     
@@ -924,7 +923,6 @@ return {
         """Generate node connections"""
         # Simplified - would need full connection logic
         return {}
-
 
 # USAGE EXAMPLE
 if __name__ == "__main__":
@@ -1162,10 +1160,10 @@ INPUT: Live TV stream + claim "Unemployment is at historic lows"
     ↓
 ┌─────────────────────────────────────────┐
 │ LAYER 3: Trust Guardian                │
-│ ⚖️ BLS.gov: Trust 0.98 (official)      │
-│ ⚖️ Fed Reserve: Trust 0.95 (official)  │
-│ ⚖️ Economist: Trust 0.80 (expert)      │
-│ ⚖️ Historical DB: Trust 0.90 (data)    │
+│ ⚖ BLS.gov: Trust 0.98 (official)      │
+│ ⚖ Fed Reserve: Trust 0.95 (official)  │
+│ ⚖ Economist: Trust 0.80 (expert)      │
+│ ⚖ Historical DB: Trust 0.90 (data)    │
 └─────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────┐
@@ -1173,7 +1171,7 @@ INPUT: Live TV stream + claim "Unemployment is at historic lows"
 │ 📊 Weighted confirmation: 7.8          │
 │ 📊 Weighted contradiction: 0.9         │
 │ 📊 Confidence: 89% PARTIALLY VERIFIED  │
-│ ⚠️ Note: "Near" vs "At" distinction    │
+│ ⚠ Note: "Near" vs "At" distinction    │
 └─────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────┐
@@ -1187,23 +1185,23 @@ INPUT: Live TV stream + claim "Unemployment is at historic lows"
     ↓
 ┌─────────────────────────────────────────┐
 │ LAYER 7: Neural Workflow (Behavioral)  │
-│ 🧠 Microexpressions:                   │
+│  Microexpressions:                   │
 │    - Eye aversion: 0.4s (2 instances)  │
 │    - Lip compression: detected         │
 │    - Stress score: 0.65                │
-│ 🧠 Voice analysis:                     │
+│  Voice analysis:                     │
 │    - Fillers: 6/min (elevated)         │
 │    - Pauses: 2.3s avg (high)           │
 │    - Stress score: 0.70                │
-│ 🧠 Body language:                      │
+│  Body language:                      │
 │    - Hand-to-face: 4x/min              │
 │    - Posture: defensive                │
 │    - Stress score: 0.60                │
-│ 🧠 Linguistic:                         │
+│  Linguistic:                         │
 │    - Repetitions: 3 (reinforcing)      │
 │    - Simplified syntax: detected       │
 │    - Stress score: 0.55                │
-│ 🧠 Behavioral verdict: 0.62 SUSPICIOUS │
+│  Behavioral verdict: 0.62 SUSPICIOUS │
 │    (Baseline deviation: +0.35)         │
 └─────────────────────────────────────────┘
     ↓
@@ -1225,7 +1223,7 @@ INPUT: Live TV stream + claim "Unemployment is at historic lows"
 │ ✅ Expert consensus: MISLEADING        │
 └─────────────────────────────────────────┘
     ↓
-OUTPUT: ⚠️ MISLEADING (75% confidence)
+OUTPUT: ⚠ MISLEADING (75% confidence)
 Correction: "Unemployment is NEAR historic lows (3.7% vs 2.5% record)"
 Behavioral: Stress signals detected (eye aversion, fillers, defensive posture)
 Sources: [BLS.gov, Federal Reserve, Historical Data]
@@ -1234,7 +1232,7 @@ Expert review: 3/3 experts confirm misleading framing
 
 ---
 
-## 🛡️ Defense-in-Depth Benefits (7-Layer)
+##  Defense-in-Depth Benefits (7-Layer)
 
 ### **Why 7 Layers?**
 
@@ -1304,5 +1302,5 @@ Each layer watches the others. No single point of failure. Defense-in-depth for 
 
 ---
 
-**This is the security architecture the world needs.** 🛡️
+**This is the security architecture the world needs.** 
 

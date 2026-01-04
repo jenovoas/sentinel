@@ -1,4 +1,4 @@
-# 🧠 Cognitive Operating System Kernel - Final Architecture
+#  Cognitive Operating System Kernel - Final Architecture
 
 **Claim 6**: First OS with Semantic Verification at Ring 0  
 **Claim 7**: Human-in-the-Loop Cognitive Architecture (Guardian Gamma)  
@@ -7,9 +7,9 @@
 
 ---
 
-## 🎯 VISIÓN
+##  VISIÓN
 
-Un sistema operativo que **piensa** antes de ejecutar, con IA integrada directamente en el kernel y el humano como componente activo del sistema nervioso digital.
+Un sistema operativo que **piensa** antes de ejecutar, con IA integrada directamente en el kernel y el humano como componente activo del monitoring architecture digital.
 
 **No es automatización que reemplaza al humano.**  
 **Es un exoesqueleto cognitivo que amplifica la capacidad humana.**
@@ -47,9 +47,9 @@ Sistema ⇄ Observador ⇄ Sistema
 
 ---
 
-## 🏗️ ARQUITECTURA: 3 GUARDIANES
+## 🏗 ARQUITECTURA: 3 GUARDIANES
 
-### Los Tres Guardianes del Sistema Nervioso Digital
+### Los Tres Guardianes del monitoring architecture Digital
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -122,7 +122,7 @@ Sistema ⇄ Observador ⇄ Sistema
 │              KERNEL SPACE (Ring 0)                          │
 │                                                             │
 │  ┌──────────────────────────────────────────────────────┐  │
-│  │    COGNITIVE LAYER (Sistema Nervioso Digital)       │  │
+│  │    COGNITIVE LAYER (monitoring architecture Digital)       │  │
 │  │                                                      │  │
 │  │  ┌────────────────────────────────────────────────┐ │  │
 │  │  │  FASE 1: REFLEJO ESPINAL (eBPF XDP)           │ │  │
@@ -387,7 +387,7 @@ if system_performance < baseline:
 
 ---
 
-## 🎯 CASOS DE USO
+##  CASOS DE USO
 
 ### Caso 1: Ejecución de Malware
 
@@ -609,7 +609,7 @@ if signal.type == BURST_INCOMING:
 
 ---
 
-## 🎯 PRÓXIMOS PASOS
+##  PRÓXIMOS PASOS
 
 ### Inmediato
 - [x] Diseño de arquitectura

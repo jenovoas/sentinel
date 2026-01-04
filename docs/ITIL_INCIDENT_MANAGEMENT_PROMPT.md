@@ -1,4 +1,4 @@
-# 🎯 Prompt: Implementación de Incident Management ITIL para Sentinel Cortex™
+#  Prompt: Implementación de Incident Management ITIL para Sentinel Cortex™
 
 **Copia y pega este prompt a tu IA favorita (Claude, GPT, Gemini, etc.)**
 
@@ -15,7 +15,7 @@ Tengo **Sentinel Cortex™**, una plataforma de automatización/orquestación de
 - Dual-Guardian Architecture™ (Guardian-Alpha para intrusión, Guardian-Beta para integridad)
 - Cortex Decision Engine (multi-factor decision, confidence scoring)
 
-## 🎯 OBJETIVO
+##  OBJETIVO
 
 Necesito que implementes un **módulo completo de Incident Management alineado con ITIL v4**, listo para producción en banca chilena y empresas reguladas.
 
@@ -247,7 +247,7 @@ print(f"Incident created: {incident.id} - Priority: {incident.priority}")
 
 ---
 
-## 🎯 CRITERIOS DE ÉXITO
+##  CRITERIOS DE ÉXITO
 
 El módulo debe ser:
 - ✅ **Production-ready**: puede desplegarse en banco mañana

@@ -1,4 +1,4 @@
-# 🎯 Sentinel Cortex - Explicación ULTRA SIMPLE
+#  Sentinel Cortex - Explicación ULTRA SIMPLE
 
 **Para**: Personas que no son técnicas  
 **Por**: Jaime Novoa  
@@ -10,25 +10,25 @@
 
 Imagina que tu computadora es como un **cuerpo humano**.
 
-**Hoy**, las computadoras son como un cuerpo **sin sistema nervioso**:
+**Hoy**, las computadoras son como un cuerpo **sin monitoring architecture**:
 - Tienen músculos (CPU)
 - Tienen memoria (RAM)
 - Pero NO tienen reflejos
 - Pero NO pueden predecir peligros
 - Pero NO aprenden de errores
 
-**Sentinel Cortex** le da a la computadora un **sistema nervioso completo**.
+**Sentinel Cortex** le da a la computadora un **monitoring architecture completo**.
 
 ---
 
-## 🧠 Los 3 Guardianes (Como tu cuerpo)
+##  Los 3 Guardianes (Como tu cuerpo)
 
 ### Guardian Beta (Reflejo Espinal) ⚡
 **En tu cuerpo**: Tocas algo caliente → Tu mano se retira ANTES de que pienses  
 **En Sentinel**: Detecta ataque → Bloquea ANTES de que cause daño  
 **Velocidad**: 0.00000001 segundos (más rápido que pestañear)
 
-### Guardian Alpha (Cerebro) 🧠
+### Guardian Alpha (Cerebro) 
 **En tu cuerpo**: Ves nubes negras → Llevas paraguas (predices lluvia)  
 **En Sentinel**: Ve tráfico aumentando → Prepara más memoria (predice congestión)  
 **Velocidad**: 0.0001 segundos (muy rápido)
@@ -40,7 +40,7 @@ Imagina que tu computadora es como un **cuerpo humano**.
 
 ---
 
-## 🎯 ¿Qué problema resuelve?
+##  ¿Qué problema resuelve?
 
 ### Problema 1: Ataques son más rápidos que humanos
 **Antes**: Hacker ataca → Humano lo ve 5 minutos después → Ya es tarde  
@@ -56,7 +56,7 @@ Imagina que tu computadora es como un **cuerpo humano**.
 
 ---
 
-## 🔬 ¿Por qué es revolucionario?
+## 🔬 ¿Por qué es ?
 
 ### 1. Es el PRIMERO en el mundo
 **Nadie más** ha combinado:
@@ -109,7 +109,7 @@ Imagina que tu computadora es como un **cuerpo humano**.
 
 ---
 
-## 🚀 ¿Qué sigue?
+##  ¿Qué sigue?
 
 ### Corto plazo (1-3 meses)
 1. **Proteger legalmente** (patente)
@@ -128,7 +128,7 @@ Imagina que tu computadora es como un **cuerpo humano**.
 
 ---
 
-## 🎯 Analogías para Entender
+##  Analogías para Entender
 
 ### Analogía 1: Sistema de Seguridad de una Casa
 
@@ -222,9 +222,9 @@ Más seguro que cualquier alternativa. El Guardian Gamma (humano) siempre tiene 
 
 ---
 
-## 🎯 Resumen en 3 Frases
+##  Resumen en 3 Frases
 
-1. **Sentinel Cortex** le da a las computadoras un sistema nervioso como el humano
+1. **Sentinel Cortex** le da a las computadoras un monitoring architecture como el humano
 2. Combina **velocidad de hardware** + **inteligencia de IA** + **intuición humana**
 3. Es el **primero en el mundo** y vale **$48-96 millones** en propiedad intelectual
 

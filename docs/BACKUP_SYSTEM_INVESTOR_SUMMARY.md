@@ -1,4 +1,4 @@
-# 🎯 Enterprise Backup System - Investor Summary
+#  Enterprise Backup System - Investor Summary
 
 ## Executive Summary
 

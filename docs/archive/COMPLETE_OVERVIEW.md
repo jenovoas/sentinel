@@ -145,9 +145,7 @@ Sentinel Cortex is a monitoring and security system with 5 validated technical i
 - Claim 7: AI Buffer Cascade (math model, no experiment)
 - Claim 8: Flow Stabilization Unit (architecture, no hardware)
 
-
 **Location**: `docs/research/`
-
 
 ---
 
@@ -293,8 +291,6 @@ Theoretical work (claims 6-9) that isn't validated yet. Good ideas, but not read
 - ✅ 5 validated patent claims
 - ✅ Docker integration working
 - ✅ Technical evidence documented
-
-
 
 ---
 

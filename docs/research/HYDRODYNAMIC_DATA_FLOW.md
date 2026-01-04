@@ -374,4 +374,4 @@ Donde k = 1 - α = 0.10
 - Validación: Pendiente
 
 **Fecha**: 2025-12-21  
-**Status**: 🌊 **TEORÍA HIDRODINÁMICA EN PRUEBA**
+**Status**:  **TEORÍA HIDRODINÁMICA EN PRUEBA**

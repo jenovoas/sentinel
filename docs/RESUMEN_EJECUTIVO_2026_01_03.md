@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Objetivos Cumplidos
+##  Objetivos Cumplidos
 
 ### ✅ 1. Validación de Casos de Uso Cuánticos (00:55)
 
@@ -88,7 +88,7 @@ Bursts                                          Respuesta Amenazas
 #### Resultados del Demo
 - **Eventos Procesados**: 300
 - **Rifts Detectados**: 291
-- **Tasa de Detección**: **97.00%** 🎯
+- **Tasa de Detección**: **97.00%** 
 - **Falsos Positivos**: Mínimos
 
 #### Detección de Ataque Coordinado
@@ -184,7 +184,7 @@ Las mismas ecuaciones que gobiernan partículas cuánticas pueden optimizar infr
 
 ---
 
-## 🚀 Impacto en Sentinel
+##  Impacto en Sentinel
 
 ### Capacidades Nuevas
 
@@ -206,7 +206,7 @@ Las mismas ecuaciones que gobiernan partículas cuánticas pueden optimizar infr
 ### Arquitectura Mejorada
 
 **Antes**: Sistema de seguridad tradicional  
-**Ahora**: Sistema nervioso digital con sensores cuánticos
+**Ahora**: monitoring architecture digital con sensores cuánticos
 
 ```
 Sensores (eBPF, Prometheus)

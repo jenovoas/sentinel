@@ -7,7 +7,7 @@
 
 ---
 
-## 🎯 EXECUTIVE SUMMARY
+##  EXECUTIVE SUMMARY
 
 ### Lo Que Este Código Demuestra
 
@@ -299,7 +299,7 @@ Strength: 90/100
 
 ---
 
-## 🚀 IMPLEMENTATION ROADMAP
+##  IMPLEMENTATION ROADMAP
 
 ### Phase 1: MVP (Current)
 - [x] Guardian-Beta heartbeat monitoring
@@ -345,7 +345,7 @@ Strength: 90/100
 
 ---
 
-## 🎯 CONCLUSIÓN
+##  CONCLUSIÓN
 
 ### Veredicto Técnico
 
@@ -364,13 +364,13 @@ CLAIM 3 STRENGTH: 90/100 (+30 vs design-only)
 ### Próxima Acción
 
 ```
-🎯 ESTA SEMANA:
+ ESTA SEMANA:
 1. Compilar y probar el código (verificar que funciona)
 2. Grabar demo de auto-regeneration (matar Alpha, ver Beta recuperarlo)
 3. Incluir en materiales para patent attorney
 4. Añadir a UML diagrams como "implementation reference"
 
-🎯 TIMELINE: 2-3 días para validación completa
+ TIMELINE: 2-3 días para validación completa
 ```
 
 ---

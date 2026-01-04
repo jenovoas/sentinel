@@ -16,12 +16,12 @@
 
 ---
 
-## ⚠️ IMMEDIATE RECOMMENDATIONS
+## ⚠ IMMEDIATE RECOMMENDATIONS
 
 ### DO NOT USE (Without Manual Review)
 - ❌ All 13 CRITICAL workflows
 - ❌ All 1,508 HIGH workflows  
-- ⚠️ 26 MEDIUM workflows
+- ⚠ 26 MEDIUM workflows
 
 ### SAFE TO EVALUATE (1,225 LOW)
 - ✅ No hardcoded credentials
@@ -30,7 +30,7 @@
 
 ---
 
-## 🎯 Sentinel Integration Strategy
+##  Sentinel Integration Strategy
 
 **Phase 1**: Manual review of 1,225 LOW-risk workflows
 **Phase 2**: Adapt (remove credentials, validate URLs)

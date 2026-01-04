@@ -1,4 +1,4 @@
-# 🛡️ Cognitive Security Hardening - Implementation Summary
+#  Cognitive Security Hardening - Implementation Summary
 
 ## ✅ Implementation Complete
 
@@ -6,7 +6,7 @@ All three critical security layers have been implemented to protect Sentinel's c
 
 ---
 
-## 🎯 What Was Implemented
+##  What Was Implemented
 
 ### 1. Telemetry Sanitization Layer (AIOpsDoom Prevention)
 
@@ -76,7 +76,7 @@ All three critical security layers have been implemented to protect Sentinel's c
 
 ---
 
-## 🚀 Deployment Instructions
+##  Deployment Instructions
 
 ### Step 1: Generate Authentication Files
 

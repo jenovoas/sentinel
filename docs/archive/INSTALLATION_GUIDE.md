@@ -1,4 +1,4 @@
-# 🚀 Sentinel - Guía de Instalación Completa
+#  Sentinel - Guía de Instalación Completa
 
 **Guía paso a paso para instalar Sentinel en cualquier entorno**
 
@@ -135,19 +135,19 @@ nano .env  # o usa vim, vi, o tu editor preferido
 ```bash
 # PostgreSQL
 POSTGRES_USER=sentinel_user
-POSTGRES_PASSWORD=TU_PASSWORD_SEGURO_AQUI  # ⚠️ CAMBIAR
+POSTGRES_PASSWORD=TU_PASSWORD_SEGURO_AQUI  # ⚠ CAMBIAR
 POSTGRES_DB=sentinel_db
 
 # Backend
-SECRET_KEY=tu-clave-secreta-minimo-32-caracteres-cambiar-en-produccion  # ⚠️ CAMBIAR
+SECRET_KEY=tu-clave-secreta-minimo-32-caracteres-cambiar-en-produccion  # ⚠ CAMBIAR
 
 # Grafana
 GRAFANA_USER=admin
-GRAFANA_PASSWORD=TU_PASSWORD_GRAFANA  # ⚠️ CAMBIAR
+GRAFANA_PASSWORD=TU_PASSWORD_GRAFANA  # ⚠ CAMBIAR
 
 # n8n
 N8N_USER=admin
-N8N_PASSWORD=TU_PASSWORD_N8N  # ⚠️ CAMBIAR
+N8N_PASSWORD=TU_PASSWORD_N8N  # ⚠ CAMBIAR
 ```
 
 ### Paso 4: Iniciar Sentinel
@@ -240,7 +240,7 @@ nano .env
 
 ```bash
 # ============================================================================
-# SEGURIDAD (⚠️ CAMBIAR EN PRODUCCIÓN)
+# SEGURIDAD (⚠ CAMBIAR EN PRODUCCIÓN)
 # ============================================================================
 POSTGRES_PASSWORD=<PASSWORD_SEGURO>
 SECRET_KEY=<GENERAR_CON_COMANDO_ANTERIOR>
@@ -487,7 +487,7 @@ Una vez instalado, puedes acceder a:
 
 ### Credenciales por Defecto
 
-> ⚠️ **IMPORTANTE**: Cambiar todas las contraseñas en producción
+> ⚠ **IMPORTANTE**: Cambiar todas las contraseñas en producción
 
 ```bash
 # Grafana
@@ -523,7 +523,7 @@ Database: sentinel_db
 
 ---
 
-## ⚙️ Configuración Avanzada
+## ⚙ Configuración Avanzada
 
 ### Alta Disponibilidad (HA)
 
@@ -828,7 +828,7 @@ make restart           # Reiniciar servicios
 make logs              # Ver logs
 make health            # Verificar salud
 make db-backup         # Backup de base de datos
-make clean             # Limpiar todo (⚠️ elimina datos)
+make clean             # Limpiar todo (⚠ elimina datos)
 ```
 
 ### Soporte
@@ -854,4 +854,4 @@ Sentinel está instalado y corriendo. Ahora puedes:
 
 **¿Problemas?** Consulta la sección [Solución de Problemas](#-solución-de-problemas) o abre un issue en GitHub.
 
-**¡Disfruta Sentinel!** 🛡️
+**¡Disfruta Sentinel!** 

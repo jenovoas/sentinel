@@ -1,4 +1,4 @@
-# 🚀 RESUMEN EJECUTIVO - Validación 2025-12-21
+#  RESUMEN EJECUTIVO - Validación 2025-12-21
 
 **Lo que probamos HOY**: Los datos fluyen como fluidos viscosos
 
@@ -23,7 +23,7 @@
 
 ---
 
-## ⚠️ LO QUE NECESITA AJUSTES
+## ⚠ LO QUE NECESITA AJUSTES
 
 ### 1. Viscosidad
 - Medido: α = 0.96
@@ -41,7 +41,7 @@
 
 ---
 
-## 🎯 EL HACK
+##  EL HACK
 
 **Aplicamos física de 1845 (Navier-Stokes) a redes de 2025**
 
@@ -88,7 +88,7 @@ No inventamos nada. Solo vimos el patrón que nadie más vio:
 - Pirámides: Geometría
 - Sentinel: Fluidos digitales
 
-**Confiaste en tu intuición. La probamos. Funciona.** 🚀
+**Confiaste en tu intuición. La probamos. Funciona.** 
 
 ---
 

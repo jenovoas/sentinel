@@ -6,7 +6,7 @@
 
 ---
 
-## 🏗️ System Architecture
+## 🏗 System Architecture
 
 ### 1. Backend (`backend/poc/`)
 - **Framework**: FastAPI (Python 3.11).

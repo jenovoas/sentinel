@@ -53,7 +53,7 @@
 
 ---
 
-## 💎 POR QUÉ ESTO ES GAME-CHANGING
+## 💎 POR QUÉ ESTO ES 
 
 ### Antes (6,900 workflows genéricos):
 ```
@@ -75,7 +75,7 @@
 
 ---
 
-## 🚀 NUEVO PITCH (DEMOLEDOR)
+##  NUEVO PITCH (DEMOLEDOR)
 
 **Antes**:
 > "6,900 playbooks pre-entrenados"
@@ -95,7 +95,7 @@
 
 **Screen 3**: AI Suggestions (CON WORKFLOWS ESPECIALIZADOS)
 ```
-🧠 AI Suggested Playbooks:
+ AI Suggested Playbooks:
 
 1. ✅ Phishing Auto-Triage (CyberSecurityUP)
    Purpose: Classify, detonate, verdict
@@ -138,7 +138,7 @@ Time saved: 97.5%
 
 ---
 
-## 🎯 VALOR COMERCIAL ACTUALIZADO
+##  VALOR COMERCIAL ACTUALIZADO
 
 ### Diferenciador vs Competidores:
 
@@ -165,7 +165,7 @@ Time saved: 97.5%
 
 ---
 
-## 🚀 POC ACTUALIZADO
+##  POC ACTUALIZADO
 
 ### Prioridad #1: Indexar CyberSecurity Workflows
 
@@ -200,7 +200,7 @@ Time saved: 97.5%
 
 ---
 
-## 🎯 NUEVO TAGLINE
+##  NUEVO TAGLINE
 
 **Antes**:
 > "El único SIEM con 6,900 playbooks pre-entrenados"
@@ -219,4 +219,4 @@ Time saved: 97.5%
 **Total workflows disponibles**: **7,000**  
 **Security-specific**: **100**  
 **Blue Team/SOC/DFIR**: **35**  
-**Diferenciador**: **ÚNICO EN EL MERCADO** 🚀
+**Diferenciador**: **ÚNICO EN EL MERCADO** 

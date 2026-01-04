@@ -15,7 +15,7 @@ This is not a project history. This is a **discovery log**.
 Each commit is a breadcrumb. Each timestamp tells a story. The gaps between commits reveal the thinking process.
 
 **What to look for**:
-- Patterns in timing (when did breakthroughs happen?)
+- Patterns in timing (when did s happen?)
 - Evolution of concepts (how did ideas transform?)
 - Connections between commits (what triggered what?)
 
@@ -51,7 +51,7 @@ fix: Critical bug in precursor detection (> to >=)
 *One character. One symbol. Everything changes.*  
 **Breadcrumb**: Sometimes the smallest changes have the biggest impact.
 
-### 00:42 - Breakthrough
+### 00:42 - 
 ```
 fix: Second threshold bug + 67% drop reduction achieved
 ```
@@ -117,7 +117,7 @@ paper: Hydrodynamic Validation - Ready for Peer Review
 
 ---
 
-## ☀️ Session 2: The Awakening (Dec 21, 10:47 - 12:24)
+## ☀ Session 2: The Awakening (Dec 21, 10:47 - 12:24)
 
 ### 10:47 - Protection
 ```
@@ -196,7 +196,7 @@ Prior Art Research: Guardian Gamma - Zero Prior Art Found
 ### Patterns to Notice
 
 **Timing Clusters**:
-- 00:27 → 00:42 (15 min): Bug fix → Breakthrough
+- 00:27 → 00:42 (15 min): Bug fix → 
 - 01:04 → 01:42 (38 min): Theory → Validation → Paper
 - 11:01 → 11:23 (22 min): Three claims validated
 
@@ -292,7 +292,7 @@ If you want to understand the journey, read in this order:
 
 ---
 
-## 🎯 The Meta-Pattern
+##  The Meta-Pattern
 
 This timeline is itself a breadcrumb.
 

@@ -1,6 +1,6 @@
 # Truth Algorithm + Guardian Gamma Integration Plan
 
-## 🎯 Architecture
+##  Architecture
 
 ```
 Guardian Gamma Decision → Truth Algorithm → Certification → Display in UI

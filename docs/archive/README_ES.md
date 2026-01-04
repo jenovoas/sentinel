@@ -1,4 +1,4 @@
-# 🏔️ Sentinel Cortex™: El Sistema Inmune para tu Kernel (v1.0.0)
+# 🏔 Sentinel Cortex™: El Sistema Inmune para tu Kernel (v1.0.0)
 
 [![Release: v1.0.0](https://img.shields.io/badge/Release-v1.0.0--INITIAL__LAUNCH-blue.svg)](docs/es/HACKATHON_LAUNCH_STATUS.md)
 [![Valuation: $1.335B](https://img.shields.io/badge/IP%20Valuation-%241.335B-success.svg)](docs/es/EXECUTIVE_SUMMARY.md)
@@ -12,7 +12,7 @@ Sentinel Cortex no es solo otra herramienta de seguridad; es una **capa de inmun
 
 ---
 
-## 🚀 La Tesis Sentinel: < 1.25µs o No Existe
+##  La Tesis Sentinel: < 1.25µs o No Existe
 
 Hemos resuelto el "Problema del Agente Principal" en ciberseguridad. En lugar de confiar en un agente externo (CrowdStrike/SentinelOne) que se ejecuta como un proceso pesado en espacio de usuario o un driver inestable, Sentinel se convierte en parte del ciclo biológico del kernel.
 
@@ -51,7 +51,7 @@ Hemos elevado este proyecto de una herramienta a un **Estándar de Investigació
 
 ---
 
-## 🛠️ Inicio Rápido
+## 🛠 Inicio Rápido
 
 Sentinel está diseñado para desplegarse como un sistema inmune contenerizado.
 
@@ -69,7 +69,7 @@ docker-compose up -d --build
 
 ---
 
-## 🛡️ Desafío Hackathon: $1,000,000 Bounty
+##  Desafío Hackathon: $1,000,000 Bounty
 
 Confiamos tanto en nuestra capa de **Integridad de la Verdad** que hemos invitado al mundo a romperla.
 

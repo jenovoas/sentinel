@@ -1,4 +1,4 @@
-# 🎯 Plan de Integración - Buffers Dinámicos
+#  Plan de Integración - Buffers Dinámicos
 
 **Fecha**: 19 Diciembre 2024  
 **Objetivo**: Integrar buffers dinámicos en toda la arquitectura HA
@@ -84,7 +84,7 @@ python sentinel_global_benchmark.py
 
 ---
 
-## 🚀 COMANDOS RÁPIDOS
+##  COMANDOS RÁPIDOS
 
 ### Integración Completa
 
@@ -101,7 +101,7 @@ open buffer_comparison_graphs.png
 
 # 4. Commit cambios
 git add -A
-git commit -m "🚀 Buffers dinámicos integrados en toda la arquitectura HA"
+git commit -m " Buffers dinámicos integrados en toda la arquitectura HA"
 git push
 ```
 
@@ -147,7 +147,7 @@ git push
 
 ---
 
-## 🎯 ESTADO ACTUAL
+##  ESTADO ACTUAL
 
 **Implementado**: ✅ Sistema completo de buffers dinámicos  
 **Pendiente**: Ejecutar benchmark y documentar resultados  
@@ -155,4 +155,4 @@ git push
 
 ---
 
-**El benchmark está corriendo ahora. ¿Quieres que esperemos los resultados o prefieres hacer el commit de lo implementado?** 🚀
+**El benchmark está corriendo ahora. ¿Quieres que esperemos los resultados o prefieres hacer el commit de lo implementado?** 

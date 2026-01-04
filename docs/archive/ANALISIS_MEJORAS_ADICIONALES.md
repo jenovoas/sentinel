@@ -13,14 +13,14 @@
 | Métrica | Sin keep_alive | Con keep_alive | Mejora | Observación |
 |---------|----------------|----------------|--------|-------------|
 | **E2E p50** | 6,520ms | 7,244ms | **-11%** ❌ | Empeoró ligeramente |
-| **LLM TTFB p50** | 1,230ms | 1,213ms | **+1.4%** ⚠️ | Mejora marginal |
+| **LLM TTFB p50** | 1,230ms | 1,213ms | **+1.4%** ⚠ | Mejora marginal |
 | **Mejor caso E2E** | 639ms | 591ms | **+7.5%** ✅ | Mejor caso mejoró |
 | **Mejor caso TTFB** | 507ms | 571ms | **-13%** ❌ | Empeoró |
 | **CPU** | 14.1% | 18.7% | **-33%** ❌ | Peor eficiencia |
 
 ### Conclusión
 
-**keep_alive NO resolvió el problema principal** ⚠️
+**keep_alive NO resolvió el problema principal** ⚠
 
 La varianza sigue siendo alta:
 - E2E: 591ms (mejor) vs 12,376ms (peor) = **20.9x diferencia**
@@ -78,7 +78,7 @@ SOLUCIÓN:
     └── num_thread: 4 (optimizar para CPU)
 ```
 
-**Hipótesis 4: Código Python Overhead** ⚠️ MENOS PROBABLE
+**Hipótesis 4: Código Python Overhead** ⚠ MENOS PROBABLE
 
 ```
 EVIDENCIA:
@@ -95,7 +95,7 @@ SOLUCIÓN:
 
 ---
 
-## 🎯 PLAN DE MEJORAS (Ordenado por Impacto)
+##  PLAN DE MEJORAS (Ordenado por Impacto)
 
 ### 1. Probar Modelo Más Pequeño (ALTO IMPACTO)
 
@@ -182,7 +182,7 @@ python -m cProfile -o profile.stats sentinel_global_benchmark.py
 
 ---
 
-## 🚀 RECOMENDACIÓN INMEDIATA
+##  RECOMENDACIÓN INMEDIATA
 
 ### Prueba Rápida (5 minutos)
 
@@ -254,7 +254,7 @@ cd backend && python sentinel_global_benchmark.py
 
 ---
 
-## 🎯 OBJETIVOS ALCANZABLES
+##  OBJETIVOS ALCANZABLES
 
 ### Con Optimizaciones de Software (Sin Costo)
 
@@ -303,7 +303,7 @@ Speedup total: 20-50x ✅ (supera objetivo)
 
 **Resultados Actuales**:
 - ✅ keep_alive configurado
-- ⚠️ Mejora marginal (1.4%)
+- ⚠ Mejora marginal (1.4%)
 - ❌ Objetivo no alcanzado
 
 **Problema Identificado**:
@@ -320,4 +320,4 @@ Speedup total: 20-50x ✅ (supera objetivo)
 
 ---
 
-**¿Probamos el modelo más pequeño ahora?** 🚀
+**¿Probamos el modelo más pequeño ahora?** 

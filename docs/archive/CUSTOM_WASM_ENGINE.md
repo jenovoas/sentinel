@@ -4,7 +4,7 @@
 
 ---
 
-## 🚀 Más Allá de Leptos: Custom Rust WASM Engine
+##  Más Allá de Leptos: Custom Rust WASM Engine
 
 ### El Problema con TODOS los Frameworks
 
@@ -335,7 +335,7 @@ pub fn worker_process_chunk(data: JsValue) -> JsValue {
 
 ---
 
-## 🎯 Optimizaciones Avanzadas
+##  Optimizaciones Avanzadas
 
 ### 1. Compile-Time Optimizations
 
@@ -412,7 +412,7 @@ Bundle Size (gzipped)
 
 ---
 
-## 🚀 Roadmap de Implementación
+##  Roadmap de Implementación
 
 ### Fase 1: Proof of Concept (Día 1-2)
 - [ ] Setup custom WASM project

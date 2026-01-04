@@ -1,6 +1,6 @@
 # Sentinel Optimized - Implementación Real
 
-## 🎯 Objetivo
+##  Objetivo
 
 Implementación funcional del sistema de buffers ML optimizado, adaptado para tu hardware actual (GTX 1050, 3GB VRAM).
 
@@ -21,7 +21,7 @@ Implementación funcional del sistema de buffers ML optimizado, adaptado para tu
 - ✅ Exportación CSV para patente
 - ✅ Métricas automáticas
 
-## 🚀 Ejecución Inmediata
+##  Ejecución Inmediata
 
 ### Prerequisitos
 
@@ -61,7 +61,7 @@ python benchmark_sentinel_real.py
 ### Exportadas
 - `sentinel_benchmark_results.csv`: Todas las métricas por request
 
-## 🎯 Targets (Latencia Humana)
+##  Targets (Latencia Humana)
 
 | Métrica | Target | Evidencia Científica |
 |---------|--------|---------------------|
@@ -108,7 +108,7 @@ ESTIMACIÓN CONSERVADORA:
 ├── TTFB: 300-500ms (Ollama + phi3:mini)
 ├── Token-rate: 150-250ms (streaming)
 ├── Cumple target token-rate: ✅ Probable
-└── Cumple target TTFB: ⚠️ Límite
+└── Cumple target TTFB: ⚠ Límite
 
 OPTIMIZACIÓN FUTURA (con mejor HW):
 ├── TTFB: 131ms (vLLM + Llama-3.2-3B)
@@ -131,7 +131,7 @@ OPTIMIZACIÓN FUTURA (con mejor HW):
    - Beneficio: Mejor calidad respuestas
    - Latencia: Similar (overhead mínimo)
 
-## 🎯 Próximos Pasos
+##  Próximos Pasos
 
 ### Inmediato (HOY)
 1. ✅ Ejecutar benchmark
@@ -170,14 +170,14 @@ OPTIMIZACIÓN FUTURA (con mejor HW):
 ### Claims Pendientes (Requieren mejor HW)
 
 **Claim 4**: SPIRe + MTAD optimización
-- ⚠️ Requiere vLLM (más VRAM)
-- ⚠️ Estimado 5.3x speedup
-- ⚠️ Validable con GPU upgrade
+- ⚠ Requiere vLLM (más VRAM)
+- ⚠ Estimado 5.3x speedup
+- ⚠ Validable con GPU upgrade
 
 **Claim 5**: eBPF physical buffers
-- ⚠️ Requiere implementación eBPF
-- ⚠️ Estimado 50% red throughput
-- ⚠️ Validable con NIC 10G
+- ⚠ Requiere implementación eBPF
+- ⚠ Estimado 50% red throughput
+- ⚠ Validable con NIC 10G
 
 ## 🔍 Troubleshooting
 

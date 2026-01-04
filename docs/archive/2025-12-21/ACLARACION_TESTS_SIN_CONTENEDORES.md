@@ -1,10 +1,10 @@
-# ⚠️ ACLARACIÓN IMPORTANTE - Tests Sin Contenedores
+# ⚠ ACLARACIÓN IMPORTANTE - Tests Sin Contenedores
 
 **Fecha**: 21 de Diciembre de 2025, 19:18
 
 ---
 
-## 🎯 Lo Que Acabamos de Probar
+##  Lo Que Acabamos de Probar
 
 Los tests que ejecutamos son **tests unitarios** que NO requieren:
 - ❌ PostgreSQL
@@ -55,7 +55,7 @@ Los tests que ejecutamos son **tests unitarios** que NO requieren:
 
 ---
 
-## 🎯 Niveles de Validación
+##  Niveles de Validación
 
 ### Nivel 1: Unit Tests ✅ (LO QUE HICIMOS)
 ```
@@ -91,7 +91,7 @@ Infraestructura real → Usuarios reales → Datos reales
 3. **Tests unitarios pasan** (100%)
 4. **Performance medida** (latencias reales)
 
-### ⚠️ Lo Que NO Podemos Afirmar
+### ⚠ Lo Que NO Podemos Afirmar
 1. ❌ "Sistema completo funciona en producción"
 2. ❌ "Integración end-to-end validada"
 3. ❌ "Escalabilidad probada"
@@ -106,7 +106,7 @@ Infraestructura real → Usuarios reales → Datos reales
 
 ---
 
-## 🎯 Próximos Pasos (Opcional)
+##  Próximos Pasos (Opcional)
 
 ### Si Quieres Probar Integración Completa
 ```bash
@@ -140,9 +140,9 @@ Los unit tests son suficientes para demostrar "reduction to practice".
 - ✅ Performance medida (latencias)
 
 **Lo que NO probamos es OPCIONAL**:
-- ⚠️ Integración completa (nice to have)
-- ⚠️ Sistema end-to-end (nice to have)
-- ⚠️ Producción (no necesario para patent)
+- ⚠ Integración completa (nice to have)
+- ⚠ Sistema end-to-end (nice to have)
+- ⚠ Producción (no necesario para patent)
 
 **Para el patent**: **Tenemos suficiente evidencia** ✅
 

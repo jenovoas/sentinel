@@ -1,6 +1,6 @@
 # 📊 Benchmarks & Performance - Consolidated (Operational Baseline)
 
-## ⚖️ Kernel-Level Security (Data Plane)
+## ⚖ Kernel-Level Security (Data Plane)
 Mediciones obtenidas mediante ganchos LSM eBPF en el fast-path del kernel.
 
 | Métrica | Target (Militar) | Medido (Sentinel) | Estado |
@@ -10,7 +10,7 @@ Mediciones obtenidas mediante ganchos LSM eBPF en el fast-path del kernel.
 | **Overhead de CPU (Relay)** | < 1.0% | **0.1%** | ✅ PASS |
 | **Throughput de Eventos** | > 100K /s | **15.4M PPS** | ✅ PASS |
 
-## 🧠 Semantic Verification (Control Plane)
+##  Semantic Verification (Control Plane)
 Validación asíncrona mediante TruthSync Core (Rust) e Inferencia Local (Llama 3.2).
 
 - **Procesamiento de SHM (Rust)**: 5.0 μs (promedio).

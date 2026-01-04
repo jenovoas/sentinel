@@ -1,4 +1,4 @@
-# 🚀 Workflow Recommendation POC - Walkthrough
+#  Workflow Recommendation POC - Walkthrough
 
 **Date**: 2025-12-16  
 **Status**: ✅ COMPLETED  

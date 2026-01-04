@@ -11,14 +11,14 @@ Sentinel Cortex provides a low-latency security enforcement layer for Linux syst
 
 ---
 
-## 🛠️ Key Components
+## 🛠 Key Components
 
-### 🛡️ Kernel-Level Security (Guardian Alpha)
+###  Kernel-Level Security (Guardian Alpha)
 Real-time security enforcement implementing a policy-driven layer at Ring 0 via eBPF LSM.
 - [**Interception Logic**](../ebpf/README.md)
 - [**C Relay Implementation**](../guardian-alpha/sentinel_relay.c)
 
-### 🧠 Semantic Analysis (Control Plane)
+###  Semantic Analysis (Control Plane)
 Contextual evaluation of security events using local LLM inference (Ollama/Llama 3.2:3b).
 - [**Logic Engine Documentation**](../truthsync-poc/README.md)
 

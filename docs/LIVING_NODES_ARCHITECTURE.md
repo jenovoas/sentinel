@@ -462,4 +462,4 @@ Organismo planetario (Sentinel Global)
 
 ---
 
-**Próximo paso**: Diseñar la simulación de enjambre en n8n para validar el comportamiento emergente de 100 nodos autónomos. 🚀
+**Próximo paso**: Diseñar la simulación de enjambre en n8n para validar el comportamiento emergente de 100 nodos autónomos. 

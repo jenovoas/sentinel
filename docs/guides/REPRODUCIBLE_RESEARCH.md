@@ -12,7 +12,7 @@ This guide enables researchers to **independently validate** all claims made in 
 
 ---
 
-## 🎯 What You Can Reproduce
+##  What You Can Reproduce
 
 ### ✅ Validated Claims
 
@@ -59,7 +59,7 @@ Storage: SSD with 50 GB+ free
 | Platform | Kernel | Status | Notes |
 |----------|--------|--------|-------|
 | **Debian 13 (Trixie)** | 6.12.57 | ✅ Validated | Our test environment |
-| **Ubuntu 24.04** | 6.8+ | ⚠️ Partial | No EEVDF (use 6.12+) |
+| **Ubuntu 24.04** | 6.8+ | ⚠ Partial | No EEVDF (use 6.12+) |
 | **Arch Linux** | 6.12+ | ✅ Expected | Not tested |
 | **Fedora 40+** | 6.12+ | ✅ Expected | Not tested |
 
@@ -117,7 +117,7 @@ bpftrace --version
 
 ---
 
-## 🚀 Step-by-Step Reproduction
+##  Step-by-Step Reproduction
 
 ### Phase 1: Repository Setup (5 minutes)
 
@@ -449,7 +449,7 @@ See [CONTRIBUTING.md](../guides/CONTRIBUTING.md) for details.
 
 ---
 
-## 🎯 Quick Navigation
+##  Quick Navigation
 
 - **[← Main Documentation](../README.md)**
 - **[Architecture →](../architecture/README.md)**
@@ -462,4 +462,4 @@ See [CONTRIBUTING.md](../guides/CONTRIBUTING.md) for details.
 **© 2025 Sentinel Cortex™**  
 *Open for independent validation. Reproducible by design.*
 
-🔬🌌⚛️
+🔬⚛

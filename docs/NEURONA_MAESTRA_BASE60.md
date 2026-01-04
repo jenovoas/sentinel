@@ -1,4 +1,4 @@
-# 🧠 Arquitectura de la Neurona Maestra: Sincronía de Fase y Base-60
+#  Arquitectura de la Neurona Maestra: Sincronía de Fase y Base-60
 
 > **Estado**: Implementado / Activo
 > **Fecha**: 2026-01-03
@@ -6,7 +6,7 @@
 
 ---
 
-## 🌌 Cambio de Paradigma: De Reacción a Percepción
+##  Cambio de Paradigma: De Reacción a Percepción
 
 Tradicionalmente, los sistemas de seguridad (SIEM/SOAR) operan bajo un modelo de **Reacción**:
 1. Ocurre un evento.
@@ -98,7 +98,7 @@ Durante las pruebas de campo (2026-01-03), logramos interceptar el latido del si
 ```text
 INFO sentinel_cortex: ✅ Quantum Pulse Emitter connected
 DEBUG sentinel_cortex: 🔄 Iteration 1 - Collecting events...
-TRACE sentinel_cortex: 🌌 Quantum Pulse Emitted: d=0.0000 a=0
+TRACE sentinel_cortex:  Quantum Pulse Emitted: d=0.0000 a=0
 ```
 
 **Intercepción en el Bus:**
@@ -110,7 +110,7 @@ sentinel:quantum:pulse
 
 ---
 
-## 🔮 Implicaciones Futuras
+##  Implicaciones Futuras
 
 1.  **Detección de "Silencios"**: Un atacante que borre logs causará una `disonancia` inusualmente baja (vacío), alterando el `vector_fase` y alertando a la Neurona Maestra por "ausencia de señal", algo que los SIEM tradicionales ignoran.
 2.  **Resonancia**: Podemos ajustar el intervalo de muestreo para que coincida con sub-armónicos de 60 (cada 6s, 12s, 30s) para mayor precisión temporal.

@@ -1,4 +1,4 @@
-# 🚀 Plan de Acción: Financiamiento + Tramitación de Patentes
+#  Plan de Acción: Financiamiento + Tramitación de Patentes
 **Sentinel Cortex™ - Funding & Patent Filing Roadmap**
 
 **Fecha:** 17 Diciembre 2025  
@@ -7,7 +7,7 @@
 
 ---
 
-## 🎯 RESUMEN EJECUTIVO
+##  RESUMEN EJECUTIVO
 
 ### Estado Actual
 - ✅ **MVP Funcional**: Cortex + Sanitización implementados
@@ -117,7 +117,7 @@ ENERO 2026 (Semanas 1-4)
 FEBRERO 2026 (Semanas 1-2)
 ├─ Final review cycles
 ├─ Submission prep
-└─ 🎯 DEADLINE: 15 FEB 2026 - FILE PROVISIONAL PATENT
+└─  DEADLINE: 15 FEB 2026 - FILE PROVISIONAL PATENT
 
 DICIEMBRE 2026
 └─ Full patent filing (12 meses después)
@@ -218,7 +218,7 @@ DICIEMBRE 2026
 
 ---
 
-## 🎯 PLAN DE EJECUCIÓN (Próximos 7 Días)
+##  PLAN DE EJECUCIÓN (Próximos 7 Días)
 
 ### HOY - Martes 17 Dic
 - [x] Revisar contexto completo ✅
@@ -326,7 +326,7 @@ TOTAL:                         $42,000 - $87,000 USD
 ### Patentes
 - [ ] Patent attorney seleccionado (antes 31 Dic 2025)
 - [ ] Technical disclosure document completo (antes 15 Ene 2026)
-- [ ] Provisional patent filed (antes 15 Feb 2026) 🎯
+- [ ] Provisional patent filed (antes 15 Feb 2026) 
 - [ ] Full patent filed (antes Dic 2026)
 
 ### Documentación

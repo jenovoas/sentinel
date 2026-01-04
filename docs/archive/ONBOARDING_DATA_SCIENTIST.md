@@ -128,7 +128,7 @@
 
 ---
 
-## 🎯 Objetivos de Aprendizaje
+##  Objetivos de Aprendizaje
 
 ### Técnico
 - Python ML stack (scikit-learn, pandas, numpy)
@@ -168,7 +168,7 @@
 
 ---
 
-## 🛠️ Stack Tecnológico
+## 🛠 Stack Tecnológico
 
 ### Core ML
 - **scikit-learn**: Isolation Forest, clustering
@@ -257,4 +257,4 @@ jupyter notebook
 
 ---
 
-**¡Bienvenido al equipo! Tu expertise en ML es clave para hacer Sentinel más inteligente.** 🚀
+**¡Bienvenido al equipo! Tu expertise en ML es clave para hacer Sentinel más inteligente.** 

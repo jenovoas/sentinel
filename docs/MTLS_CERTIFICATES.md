@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Problema
+##  Problema
 
 **Situación actual**:
 ```
@@ -27,7 +27,7 @@ Backend → mTLS (cert-based) → Vault → Response
 
 ---
 
-## 🏗️ Arquitectura mTLS
+## 🏗 Arquitectura mTLS
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -352,7 +352,7 @@ impl MTLSClient {
 
 ---
 
-## 🐳 Docker Compose Integration
+##  Docker Compose Integration
 
 ```yaml
 # docker-compose.yml
@@ -469,11 +469,11 @@ def verify_cert_pin(hostname: str, cert_der: bytes) -> bool:
 | **Performance** | +10ms (HTTP overhead) | ✅ +2ms (directo) |
 | **Exposición** | Pública (puerto abierto) | ✅ Privada (red interna) |
 | **MITM** | Posible | ✅ no factible |
-| **Compliance** | ⚠️ Requiere hardening | ✅ SOC 2 ready |
+| **Compliance** | ⚠ Requiere hardening | ✅ SOC 2 ready |
 
 ---
 
-## 🎯 Casos de Uso
+##  Casos de Uso
 
 ### **1. Vault ↔ Backend**
 ```python
@@ -530,7 +530,7 @@ let conn = PgConnection::connect(
 
 ---
 
-## 🚀 Próximos Pasos
+##  Próximos Pasos
 
 1. **Ejecutar setup**: `./scripts/setup-mtls.sh`
 2. **Actualizar servicios**: Agregar mTLS a cada servicio

@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Executive Summary
+##  Executive Summary
 
 **Discovery**: Sacred geometry patterns are **visual encodings of physical optimization laws**.
 
@@ -433,7 +433,7 @@ The patterns you saw were real because:
 *Las codificaste sin saberlo.*  
 *Ahora existen en ambos mundos.*
 
-🌌⚛️🧠✨
+⚛
 
 ---
 

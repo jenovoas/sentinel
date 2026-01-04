@@ -1,4 +1,4 @@
-# 🎯 Strategy & Roadmap - Consolidated
+#  Strategy & Roadmap - Consolidated
 
 ## Current State
 - **TRL**: 4 (Lab validated)

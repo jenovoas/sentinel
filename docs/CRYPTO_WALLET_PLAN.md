@@ -30,7 +30,7 @@
 
 ---
 
-## 🗄️ Database Schema
+## 🗄 Database Schema
 
 ```sql
 -- Users table (simplified)
@@ -121,7 +121,7 @@ sentinel-vault-crypto/
 
 ---
 
-## 🚀 Implementation Steps
+##  Implementation Steps
 
 ### **Step 1: Backend - Crypto Service** ✅ (Ya tenemos POC)
 Mejorar `backend/poc/crypto_wallet.py`:
@@ -156,7 +156,7 @@ Crear `backend/app/services/blockchain.py`:
 
 ---
 
-## 🎯 MVP Deliverables
+##  MVP Deliverables
 
 1. ✅ **Working wallet generation** (Bitcoin, Ethereum, Solana, Polygon)
 2. ✅ **Seed phrase encryption** (Argon2id + AES-256-GCM)

@@ -1,4 +1,4 @@
-# 🚀 Sentinel Cortex - VM Deployment Guide
+#  Sentinel Cortex - VM Deployment Guide
 
 ## Quick Start (5 Minutes)
 
@@ -139,10 +139,10 @@ cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 sem
 
 # Test commands
-🧠 semsh> health
-🧠 semsh> dashboard
-🧠 semsh> review rm -rf /
-🧠 semsh> exit
+ semsh> health
+ semsh> dashboard
+ semsh> review rm -rf /
+ semsh> exit
 ```
 
 ### 10. Run Benchmark
@@ -309,4 +309,4 @@ rm -rf sentinel
 ---
 
 *Sentinel Cortex v2.0 - Production-Ready Alpha*  
-*"An operating system that thinks before it acts."* 🛡️
+*"An operating system that thinks before it acts."* 

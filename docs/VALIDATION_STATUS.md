@@ -269,7 +269,7 @@ MEJORA: 67% reducción en drops
 
 ---
 
-## 🎯 PRÓXIMOS PASOS VALIDABLES
+##  PRÓXIMOS PASOS VALIDABLES
 
 ### Corto Plazo (1 semana):
 
@@ -342,7 +342,7 @@ MEJORA: 67% reducción en drops
 
 ### 6. Teoría Hidrodinámica
 
-**Estado**: ⚠️ **PARCIALMENTE VALIDADA**
+**Estado**: ⚠ **PARCIALMENTE VALIDADA**
 
 **Evidencia**:
 - Archivo: `tests/test_hydrodynamic_theory.py`
@@ -360,13 +360,13 @@ MEJORA: 67% reducción en drops
 **Conclusión**: 
 - ✅ Los datos SÍ se comportan como fluidos
 - ✅ Reynolds number es predictor válido
-- ⚠️ Modelo necesita ajustes en viscosidad y conservación
+- ⚠ Modelo necesita ajustes en viscosidad y conservación
 
 ---
 
 ### 7. Patrón de Control de Buffer
 
-**Estado**: ⚠️ **PARCIALMENTE VALIDADO**
+**Estado**: ⚠ **PARCIALMENTE VALIDADO**
 
 **Evidencia**:
 - Archivo: `tests/test_control_pattern.py`

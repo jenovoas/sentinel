@@ -30,4 +30,4 @@
 4. **Siguiente Gran Hito**:
    - **Claim 7**: AI Adaptive Buffers (Planificación).
 
-¡Buen descanso! El sistema está seguro. 🛡️
+¡Buen descanso! El sistema está seguro. 

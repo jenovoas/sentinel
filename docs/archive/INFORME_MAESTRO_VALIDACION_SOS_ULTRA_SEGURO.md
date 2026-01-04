@@ -1,4 +1,4 @@
-# 🏛️ INFORME MAESTRO DE VALIDACIÓN
+#  INFORME MAESTRO DE VALIDACIÓN
 
 **Sentinel Cortex™ - Certificación S.O. Ultra Seguro**
 **Fecha:** 30 de diciembre de 2025
@@ -16,7 +16,7 @@
 - **Evidencia:**
   - Algoritmos y benchmarks en `/proven` y `/research` que usan terminales exactos en Base 60 (Plimpton 322).
   - Eliminación de errores de redondeo en cálculos críticos (latencias, frecuencias, buffers).
-  - Claim validado: “Cero fricción matemática, resultados reproducibles y auditables.”
+  - Claim validado: “ matemática, resultados reproducibles y auditables.”
 
 ## 3. Seguridad Kernel: eBPF LSM en Ring 0
 - **Evidencia:**

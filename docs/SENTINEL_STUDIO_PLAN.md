@@ -1,4 +1,4 @@
-# 🌌 Sentinel Studio: The Sovereign IDE Architecture
+#  Sentinel Studio: The Sovereign IDE Architecture
 
 ## 1. Visión
 Sentinel Studio es un fork optimizado de **VSCodium** diseñado específicamente para la ingeniería de defensa de Sentinel Cortex. Su objetivo es eliminar la fricción entre el desarrollo de código (C/Python/eBPF) y la validación en tiempo real (VMs/Appliance/Hardware).

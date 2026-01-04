@@ -1,11 +1,11 @@
-# 🧠 Phase 2: La IA como Interfaz Matemática del Sistema Operativo
+#  Phase 2: La IA como Interfaz Matemática del Sistema Operativo
 
-## 🎯 Visión: "The AI as the Protagonist"
+##  Visión: "The AI as the Protagonist"
 El objetivo es transformar Sentinel Cortex de un "Guardián Pasivo" a un **"Intermediario Activo"**. El Sistema Operativo ya no es una colección de herramientas mudas; es una entidad matemática que dialoga con el usuario.
 
 La GUI (Interfaz Gráfica) será meramente la proyección visual de este diálogo matemático subyacente. Primero, debemos construir el cerebro de la interacción.
 
-## 🏗️ Arquitectura de la Interfaz Semántica (SemOS)
+## 🏗 Arquitectura de la Interfaz Semántica (SemOS)
 
 ### 1. El Bucle Cognitivo (The Cognitive Loop)
 En lugar del clásico `Input -> Kernel -> Output`, implementaremos un bucle mediado por IA:

@@ -224,7 +224,7 @@ plantuml diagram2_dual_guardian.puml
 
 ---
 
-## 🎯 INTEGRACIÓN CON DOCUMENTACIÓN EXISTENTE
+##  INTEGRACIÓN CON DOCUMENTACIÓN EXISTENTE
 
 ### Referencias en MASTER_SECURITY_IP_CONSOLIDATION.md:
 

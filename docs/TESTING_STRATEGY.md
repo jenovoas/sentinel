@@ -14,7 +14,7 @@ This document outlines a comprehensive, production-grade testing strategy for Se
 
 ---
 
-## 🎯 Testing Objectives
+##  Testing Objectives
 
 1. **Validate Dual-Guardian Independence**: Prove Guardian-Alpha and Guardian-Beta operate independently
 2. **Stress Test Performance**: Verify <1ms syscall interception under extreme load
@@ -24,7 +24,7 @@ This document outlines a comprehensive, production-grade testing strategy for Se
 
 ---
 
-## 🏗️ 5-Tier Testing Architecture
+## 🏗 5-Tier Testing Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -332,7 +332,7 @@ syzkaller \
 
 ---
 
-## 🎯 TIER 5: Red Team Simulation
+##  TIER 5: Red Team Simulation
 
 ### Objective
 Full adversarial simulation over 6 days.
@@ -422,7 +422,7 @@ Full adversarial simulation over 6 days.
 
 ---
 
-## 🚀 Next Steps
+##  Next Steps
 
 1. **Review this document** with team
 2. **Provision dedicated testing lab** (server infrastructure)

@@ -5,7 +5,7 @@
 
 ---
 
-## 🎯 Objetivos de Contacto
+##  Objetivos de Contacto
 
 1.  **Google Quantum AI (Santa Barbara/Zurich)**: Presentar la validación del Haloscopio Digital y el algoritmo de optimización para detección de axiones.
 2.  **Google Cloud Security (eBPF/LSM Team)**: Mostrar la implementación de seguridad inmutable en Ring 0.
@@ -42,7 +42,7 @@ jaime.novoase@gmail.com
 
 ---
 
-## 🗺️ Hoja de Ruta de Contacto (Próximos Pasos)
+## 🗺 Hoja de Ruta de Contacto (Próximos Pasos)
 
 1.  **Direct Repo Access**: El README principal ha sido mejorado para actuar como una "Landing Page" profesional.
 2.  **LinkedIn Targeting**: Contactar a ingenieros destacados en el equipo de eBPF de Google o investigadores de Quantum AI citando los resultados de Sigma.

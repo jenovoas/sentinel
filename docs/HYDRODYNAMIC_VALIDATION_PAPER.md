@@ -229,7 +229,7 @@ Re_c = (279.63 + 85.09) / 2 = 182.36
 Error = 6.6%
 ```
 
-**Conclusion**: ⚠️ Viscosity higher than expected (α = 0.96 vs 0.90)
+**Conclusion**: ⚠ Viscosity higher than expected (α = 0.96 vs 0.90)
 
 ---
 
@@ -323,7 +323,7 @@ All results were independently verified using raw data:
 
 **Verification 4: Viscosity**
 - ✅ α = 0.9596 (measured)
-- ⚠️ Differs from expected (0.90) by 6.6%
+- ⚠ Differs from expected (0.90) by 6.6%
 
 **Overall**: 4/4 validations passed
 

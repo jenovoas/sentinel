@@ -162,4 +162,4 @@ npm run dev
 
 ---
 
-**Ready to build?** 🚀
+**Ready to build?** 

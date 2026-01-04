@@ -74,7 +74,7 @@ Redis: <1ms ✅ OBLIGATORIO
 |---------|--------|----------|
 | Precio | $150K+ | $50K ✅ |
 | Source verification | ❌ | ✅ |
-| Chile compliance | ⚠️ | ✅ |
+| Chile compliance | ⚠ | ✅ |
 | Time-to-value | 6-12m | 1-2m ✅ |
 
 **Ventaja**: Precio, compliance, UX, velocidad  
@@ -138,7 +138,7 @@ TOTAL: 3 meses hasta revenue
 
 ## 9. RECOMENDACIÓN FINAL
 
-**EJECUTA MVP EN 2 MESES** 🚀
+**EJECUTA MVP EN 2 MESES** 
 
 **Prioridades**:
 1. vLLM + Redis + Source Verification

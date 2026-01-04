@@ -4,7 +4,7 @@
 
 ---
 
-## 🎯 Features de Crypto
+##  Features de Crypto
 
 ### **1. Multi-Chain Wallet Management**
 
@@ -91,7 +91,7 @@ class CryptoVault:
 
 ---
 
-## 🔗 Blockchain Audit Trail
+##  Blockchain Audit Trail
 
 ### **Immutable History con Smart Contract**
 
@@ -587,7 +587,7 @@ CREATE TABLE blockchain_audit_log (
 
 ---
 
-## 🚀 Monetización Crypto
+##  Monetización Crypto
 
 ### **Premium Features**
 

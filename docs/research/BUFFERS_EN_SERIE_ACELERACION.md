@@ -5,7 +5,7 @@
 
 ---
 
-## 🧠 LA HIPÓTESIS REAL
+##  LA HIPÓTESIS REAL
 
 ### Concepto: Buffers en Cascada
 
@@ -69,7 +69,7 @@ Aceleración Exponencial - Buffers en Serie:
 10 buffers: Speedup    57.67x, Throughput    5,766,504 ev/s
 ```
 
-**¡ESTO ES EXPONENCIAL!** 🚀
+**¡ESTO ES EXPONENCIAL!** 
 
 ---
 
@@ -148,7 +148,7 @@ Buffers Geográficos (cada 2,000 km):
  20000 km: 10 buffers, Latency ↓ 89.3%, Speedup  37.01x
 ```
 
-**¡37x SPEEDUP A 20,000 KM!** 🚀🚀🚀
+**¡37x SPEEDUP A 20,000 KM!** 
 
 ---
 
@@ -219,11 +219,11 @@ Modelo Relay Race (aceleración 1.3x por stage):
 10 buffers: Final speed  13.79x, Total throughput    55.40x
 ```
 
-**¡55x THROUGHPUT CON 10 BUFFERS!** 🚀🚀🚀
+**¡55x THROUGHPUT CON 10 BUFFERS!** 
 
 ---
 
-## 🎯 ARQUITECTURA PROPUESTA
+##  ARQUITECTURA PROPUESTA
 
 ### Diseño: Sentinel Buffer Cascade
 
@@ -330,7 +330,7 @@ Espaciado Óptimo de Buffers:
 
 ---
 
-## 🚀 VALIDACIÓN EMPÍRICA
+##  VALIDACIÓN EMPÍRICA
 
 ### Experimento Propuesto
 

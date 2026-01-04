@@ -1,6 +1,6 @@
 # 🔍 Guía de Activación: Google Custom Search API
 
-## 🎯 Objetivo
+##  Objetivo
 
 Activar la integración real con **Google Custom Search API** en el Truth Algorithm para verificación de claims con fuentes reales.
 
@@ -14,15 +14,15 @@ Activar la integración real con **Google Custom Search API** en el Truth Algori
 - Logging de auditoría
 - Manejo de errores
 
-⚠️ **Pendiente**:
+⚠ **Pendiente**:
 - Implementar llamada real a Google API
 - Configurar credenciales
 
 ---
 
-## 🚀 Paso a Paso: Activación
+##  Paso a Paso: Activación
 
-### 1️⃣ Obtener Google API Key
+### 1⃣ Obtener Google API Key
 
 1. Ve a [Google Cloud Console](https://console.cloud.google.com)
 2. Crea un proyecto nuevo o selecciona uno existente
@@ -35,7 +35,7 @@ Activar la integración real con **Google Custom Search API** en el Truth Algori
    - Create Credentials → API Key
    - Copia tu API Key
 
-### 2️⃣ Crear Custom Search Engine
+### 2⃣ Crear Custom Search Engine
 
 1. Ve a [Programmable Search Engine](https://programmablesearchengine.google.com/)
 2. Click en "Add" o "Create"
@@ -46,7 +46,7 @@ Activar la integración real con **Google Custom Search API** en el Truth Algori
 4. Click "Create"
 5. Copia el **Search engine ID** (CX)
 
-### 3️⃣ Configurar Variables de Entorno
+### 3⃣ Configurar Variables de Entorno
 
 ```bash
 # Navegar al directorio
@@ -69,13 +69,13 @@ GOOGLE_SEARCH_CX=017643...tu_cx_aqui
 REDIS_URL=redis://localhost:6379
 ```
 
-### 4️⃣ Instalar Dependencias
+### 4⃣ Instalar Dependencias
 
 ```bash
 pip install google-api-python-client
 ```
 
-### 5️⃣ Implementar Llamada Real
+### 5⃣ Implementar Llamada Real
 
 Edita [`source_search.py`](file:///home/jnovoas/sentinel/truth_algorithm/source_search.py) líneas 237-254:
 
@@ -145,7 +145,7 @@ def _calculate_confidence(self, source_type: str, item: dict) -> float:
     return base_confidence.get(source_type, 0.50)
 ```
 
-### 6️⃣ Probar la Integración
+### 6⃣ Probar la Integración
 
 ```bash
 cd /home/jnovoas/sentinel/truth_algorithm
@@ -263,12 +263,12 @@ DEMO - SOURCE SEARCH ENGINE (MODO SEGURO)
 📊 Test 1: Búsqueda normal
 ✅ Resultados simulados
 
-🛡️  Test 2: Validación de seguridad
+  Test 2: Validación de seguridad
 ✅ BLOQUEADO: Test; rm -rf /...
 ✅ BLOQUEADO: Test' OR '1'='1...
 ✅ BLOQUEADO: Test<script>alert('xss')...
 
-⏱️  Test 3: Rate limiting
+⏱  Test 3: Rate limiting
 ✅ Rate limit funcionando: 10 requests/minuto
 
 💾 Log guardado en: search_log.json
@@ -284,7 +284,7 @@ DEMO - SOURCE SEARCH ENGINE (MODO SEGURO)
 
 ---
 
-## 🎯 Próximos Pasos
+##  Próximos Pasos
 
 1. [ ] Obtener credenciales de Google
 2. [ ] Configurar `.env`
@@ -312,6 +312,6 @@ DEMO - SOURCE SEARCH ENGINE (MODO SEGURO)
 
 ---
 
-**Powered by Google ❤️ & Perplexity 💜**
+**Powered by Google ❤ & Perplexity 💜**
 
 *Última actualización: 21 de Diciembre de 2025*

@@ -1,4 +1,4 @@
-# 🧠 Mapa Mental Simple - Sentinel
+#  Mapa Mental Simple - Sentinel
 
 **Fecha**: 21 de Diciembre de 2025  
 **Propósito**: Capturar lo que está en tu cabeza vs lo que está documentado
@@ -35,7 +35,7 @@
 - **Archivo**: `ebpf/guardian_alpha_lsm.c`
 - **Qué hace**: Bloquea syscalls maliciosos en kernel
 - **Resultado**: Código completo
-- **Estado**: ⚠️ NO COMPILADO (falta probar)
+- **Estado**: ⚠ NO COMPILADO (falta probar)
 
 ---
 
@@ -91,7 +91,7 @@ Ejemplo:
 
 ---
 
-## 🎯 PRIORIZACIÓN SIMPLE
+##  PRIORIZACIÓN SIMPLE
 
 ### Lo que DEBES demostrar (para patent)
 
@@ -148,14 +148,14 @@ Ejemplo:
 ✅ AIOpsDoom defense (100% accuracy)
 ✅ TruthSync (90.5x speedup)
 ✅ Dual-Lane (2,857x vs Datadog)
-⚠️ eBPF LSM (código completo, falta compilar)
+⚠ eBPF LSM (código completo, falta compilar)
 ```
 
 ### En el PATENT (lo que proteges AHORA)
 ```
 Claim 1: Dual-Lane ✅
 Claim 2: AIOpsDoom ✅
-Claim 3: eBPF LSM ⚠️ (falta validar)
+Claim 3: eBPF LSM ⚠ (falta validar)
 Claim 4: WAL ✅
 Claim 5: mTLS ✅
 Claim 6: Cognitive OS 💭 (visión futura)
@@ -186,7 +186,7 @@ Claim 6: Cognitive OS 💭 (visión futura)
 
 ---
 
-## 🎯 TU PRÓXIMA ACCIÓN (AHORA)
+##  TU PRÓXIMA ACCIÓN (AHORA)
 
 ### Opción A: Validar eBPF LSM (2 horas)
 ```bash
@@ -209,7 +209,7 @@ cd /home/jnovoas/sentinel
 
 ---
 
-## 🧠 REGLA DE ORO
+##  REGLA DE ORO
 
 **No necesitas demostrar TODO lo que está en tu cabeza.**
 
@@ -232,5 +232,5 @@ Solo necesitas:
 ---
 
 **Fecha**: 21 de Diciembre de 2025, 10:13 AM  
-**Status**: 🧠 MODO SIMPLE ACTIVADO  
+**Status**:  MODO SIMPLE ACTIVADO  
 **Siguiente**: Tú decides (A, B, o C)

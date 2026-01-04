@@ -7,7 +7,7 @@
 
 ---
 
-## 🎯 Resumen Ejecutivo
+##  Resumen Ejecutivo
 
 **Estado Actual del Testing:**
 - ✅ **Claim 1 (Telemetry Sanitization):** 100% testeado (40+ test cases)
@@ -290,7 +290,7 @@ pytest backend/tests/test_backup_api.py -v
 
 ---
 
-## 🛠️ Stack Tecnológico de Testing
+## 🛠 Stack Tecnológico de Testing
 
 ### Frameworks Actuales
 ```python
@@ -346,7 +346,7 @@ locust==2.20.0             # Load testing
 
 ---
 
-## 🎯 Métricas de Éxito
+##  Métricas de Éxito
 
 ### Coverage Targets
 - **Overall:** 80%+ (actualmente ~35%)
@@ -399,7 +399,7 @@ pytest backend/tests/ --benchmark-only
 
 ---
 
-## 🚀 Primeros Pasos (Primera Semana)
+##  Primeros Pasos (Primera Semana)
 
 ### Día 1: Setup
 - [ ] Clonar repo y setup environment

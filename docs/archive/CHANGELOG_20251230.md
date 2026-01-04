@@ -1,4 +1,4 @@
-# 🚀 Sentinel Cortex - Changelog
+#  Sentinel Cortex - Changelog
 
 ## [Unreleased] - 2025-12-30
 
@@ -16,7 +16,7 @@
   - Moved all sensitive data from docker-compose to environment variables
   - Created backup of original .env file
 
-### ✨ Added
+###  Added
 - **Frontend**
   - Switched from Sentinel Vault POC to Executive Dashboard as default frontend
   - Backed up Trinity GUI to `app-trinity-backup/`
@@ -35,7 +35,7 @@
 - Removed problematic WASM modules (`wasm-test`, `wasm-loader.ts`)
 - Fixed frontend build failures due to missing dependencies
 
-### 🏗️ Infrastructure
+### 🏗 Infrastructure
 - **Stack Status**: All 5 services running successfully
   - PostgreSQL: Healthy on port 5432
   - Redis: Healthy on port 6379

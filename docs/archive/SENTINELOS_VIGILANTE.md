@@ -1,4 +1,4 @@
-# 🦸‍♂️ SentinelOS VIGILANTE - The Living Operating System
+# 🦸‍♂ SentinelOS VIGILANTE - The Living Operating System
 
 **Vision**: Not an OS with AI - a LIVING OS that THINKS, PREDICTS, and ACTS  
 **Status**: Revolutionary concept, technically feasible  
@@ -7,7 +7,7 @@
 
 ---
 
-## 🧠 THE 5 SUPERPOWERS
+##  THE 5 SUPERPOWERS
 
 ### **1. PRECOGNITION** (Attack Prediction)
 
@@ -260,7 +260,7 @@ fn defensive_clone(pid: ProcessID) -> Result<()> {
 
 ---
 
-## 🏗️ ARCHITECTURE: MULTI-RING VIGILANTE
+## 🏗 ARCHITECTURE: MULTI-RING VIGILANTE
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -311,7 +311,7 @@ fn defensive_clone(pid: ProcessID) -> Result<()> {
 
 ---
 
-## 🚀 6-MONTH IMPLEMENTATION ROADMAP
+##  6-MONTH IMPLEMENTATION ROADMAP
 
 ### **Month 1: Precognition (ML Ring 0)**
 
@@ -470,17 +470,17 @@ fn defensive_clone(pid: ProcessID) -> Result<()> {
 
 ---
 
-## 🎯 PITCH (WWDC-Level)
+##  PITCH (WWDC-Level)
 
 ```
 "SentinelOS is not an operating system.
 
 It's a LIVING ORGANISM that:
 
-🧠 PREDICTS attacks (95% accuracy, Ring 0 ML)
+ PREDICTS attacks (95% accuracy, Ring 0 ML)
 💉 GENERATES vaccines (0.01ms auto-patch)
 🎭 DECEIVES attackers (Dynamic honeypot)
-⏱️ FREEZES exploits (0.5ns quarantine)
+⏱ FREEZES exploits (0.5ns quarantine)
 🧬 CLONES threats (Ring -1 sandbox)
 
 The first OS with COGNITIVE SCIENCE.
@@ -518,4 +518,4 @@ github.com/jenovoas/sentinel-os"
 
 ---
 
-**Status**: SentinelOS Vigilante vision documented, ready to revolutionize computing 🦸‍♂️🔥
+**Status**: SentinelOS Vigilante vision documented, ready to revolutionize computing 🦸‍♂🔥

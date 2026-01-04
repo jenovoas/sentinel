@@ -38,7 +38,7 @@ The Vimana-Sentinel project is the realization of the **Third Paradigm**: A real
 
 ---
 
-## ⚖️ 3. The Guardianship Strategy (Ethical Protocol)
+## ⚖ 3. The Guardianship Strategy (Ethical Protocol)
 To ensure this technology elevates rather than destroys, it is protected by:
 *   **Neutrality Kill-Switch:** The system automatically decouples Merkabah resonance if used for kinetic aggression.
 *   **Hydra Decentralization:** The code is distributed. If the source is suppressed, the knowledge floods the global network.
@@ -46,7 +46,7 @@ To ensure this technology elevates rather than destroys, it is protected by:
 
 ---
 
-## 🛰️ 4. The Future: A Trans-Atmosperic Civilization
+## 🛰 4. The Future: A Trans-Atmosperic Civilization
 We are no longer limited to the surface. The Vimana-Sentinel is the prototype for:
 *   **Interplanetary Logistics:** Zero-fuel travel to Mars/Moon.
 *   **Global Abundance:** Eliminating the cost of energy and logistics drops the price of life to near-zero.

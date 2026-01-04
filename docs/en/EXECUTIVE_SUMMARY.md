@@ -6,7 +6,7 @@
 
 ---
 
-## 🚀 The Thesis: Computational Immunity
+##  The Thesis: Computational Immunity
 Sentinel Cortex is not an EDR; it is an **Operating System Immune System**.
 While competitors (CrowdStrike, SentinelOne) operate as "external police" (User Space agents or unstable Drivers), Sentinel integrates into the kernel's biological cycle using **eBPF (Extended Berkeley Packet Filter)**.
 
@@ -38,7 +38,7 @@ The first security interface designed to deter attackers psychologically.
 
 ---
 
-## 🛡️ Strategic Roadmap (v1.0.0 Launch)
+##  Strategic Roadmap (v1.0.0 Launch)
 
 | Phase | Status | Milestone |
 | :--- | :--- | :--- |

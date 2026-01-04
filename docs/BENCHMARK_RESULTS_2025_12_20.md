@@ -43,7 +43,7 @@
    - Throughput medido en tiempo real
    - Datos exportados a JSON
 
-### ⚠️ Lo que necesita AJUSTE:
+### ⚠ Lo que necesita AJUSTE:
 
 1. **Fórmula de Predicción**
    - Actual: `predicted_burst / 10`
@@ -114,10 +114,9 @@ Podemos cuantificar exactamente el impacto de cada cambio.
 
 **El sistema FUNCIONA.** La arquitectura es correcta. Solo necesita calibración.
 
-
 **Próximo hito**: LSTM entrenado con datos reales.
 
 ---
 
 **Autor**: Sentinel Cortex™ Team  
-**Status**: 🎯 **CONCEPTO VALIDADO - REQUIERE TUNING**
+**Status**:  **CONCEPTO VALIDADO - REQUIERE TUNING**

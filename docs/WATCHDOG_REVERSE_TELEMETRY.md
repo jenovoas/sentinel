@@ -2,13 +2,13 @@
 
 **Fecha**: 20-Dic-2024  
 **Objetivo**: Sistema de detección y bloqueo automático de peticiones sospechosas  
-**Integración**: Sentinel# 🛡️ Watchdog + Pre-emptive Threat Detection
+**Integración**: Sentinel#  Watchdog + Pre-emptive Threat Detection
 
 **Defensa contra técnicas de hacking del submundo cibernético**
 
 ---
 
-## 🎯 El Problema: Ataques Reales que Nadie Detecta a Tiempo
+##  El Problema: Ataques Reales que Nadie Detecta a Tiempo
 
 ### **Técnicas de Hacking Comunes**:
 
@@ -75,7 +75,7 @@ POST /logs
 
 ---
 
-## ⚔️ Solución: Watchdog + Pre-emptive Detection
+## ⚔ Solución: Watchdog + Pre-emptive Detection
 
 ### **Concepto: Detección ANTES del Ataque**
 
@@ -95,7 +95,7 @@ Hacker → Reconnaissance → DETECCIÓN → BLOQUEO
 
 ---
 
-## 🏗️ Arquitectura
+## 🏗 Arquitectura
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -626,7 +626,7 @@ Tiempo promedio de bloqueo: 5ms
 
 ---
 
-## 🎯 Integración con Dual-Guardian
+##  Integración con Dual-Guardian
 
 ```python
 # backend/app/services/dual_guardian_watchdog.py

@@ -20,7 +20,7 @@ Usuario → AIOpsShield → Buffers → Ollama → TruthSync → Respuesta
          (sanitiza)    (contexto) (genera) (verifica)
 ```
 
-## ⚠️ Limitaciones Identificadas
+## ⚠ Limitaciones Identificadas
 
 ### 1. Ollama Performance
 **Problema**: TTFB ~45 segundos (inaceptable)
@@ -37,7 +37,7 @@ Usuario → AIOpsShield → Buffers → Ollama → TruthSync → Respuesta
 **Causa**: Ollama API no expone métricas granulares
 **Solución**: Implementar medición custom
 
-## 🎯 Próximos Pasos Recomendados
+##  Próximos Pasos Recomendados
 
 ### Opción A: Optimizar Ollama (Corto Plazo)
 ```bash
@@ -71,7 +71,7 @@ curl http://localhost:11434/api/generate -d '{
 **Fase 1 (HOY)**:
 1. ✅ Buffers funcionando (validado)
 2. ✅ Arquitectura completa (validado)
-3. ⚠️ Optimizar Ollama config
+3. ⚠ Optimizar Ollama config
 4. 📊 Documentar baseline
 
 **Fase 2 (1-2 semanas)**:
@@ -101,20 +101,20 @@ curl http://localhost:11434/api/generate -d '{
 | **Buffers** | ✅ Funcional | ✅ | ✅ |
 | **Integración** | ✅ Completa | ✅ | ✅ |
 | **TTFB** | ~45s | <200ms | ❌ (Ollama) |
-| **Token-rate** | Streaming | <250ms | ⚠️ (medir) |
+| **Token-rate** | Streaming | <250ms | ⚠ (medir) |
 | **Arquitectura** | ✅ Completa | ✅ | ✅ |
 
-## 🚀 Conclusión
+##  Conclusión
 
 **Lo importante**:
 1. ✅ Sistema funciona end-to-end
 2. ✅ Buffers implementados y validados
 3. ✅ Arquitectura completa y extensible
-4. ⚠️ Ollama es el cuello de botella (conocido)
+4. ⚠ Ollama es el cuello de botella (conocido)
 
 **Próximo paso**: 
 - Optimizar Ollama config (corto plazo)
 - O migrar a vLLM (mejor performance)
 - O explorar tus nuevas ideas
 
-**¿Qué prefieres hacer ahora?** 🎯
+**¿Qué prefieres hacer ahora?** 

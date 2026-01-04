@@ -4,7 +4,7 @@
 
 ---
 
-## 🎯 PARA INVESTIGADORES, EVALUADORES Y ESTUDIANTES
+##  PARA INVESTIGADORES, EVALUADORES Y ESTUDIANTES
 
 Si estás estudiando Sentinel, esto es lo que diferencia este proyecto de un paper académico tradicional:
 
@@ -62,7 +62,7 @@ cat app/core/adaptive_buffers.py
 | Aspecto | Paper Teórico | Sentinel (Código) |
 |---------|---------------|-------------------|
 | **Código fuente** | ❌ No disponible | ✅ GitHub público |
-| **Benchmarks** | ⚠️ Simulados | ✅ Reales, reproducibles |
+| **Benchmarks** | ⚠ Simulados | ✅ Reales, reproducibles |
 | **Validación** | ❌ no factible | ✅ 5 minutos |
 | **Auditoría** | ❌ Caja negra | ✅ Código abierto |
 | **Adopción** | ❌ 0 usuarios | ✅ Casos reales |
@@ -71,7 +71,7 @@ cat app/core/adaptive_buffers.py
 
 ---
 
-## 🚀 CÓMO VALIDAR SENTINEL (5 MINUTOS)
+##  CÓMO VALIDAR SENTINEL (5 MINUTOS)
 
 ### Paso 1: Clonar Repositorio
 
@@ -243,7 +243,7 @@ Documentación completa:
 **Sentinel**:
 - 💻 Código en GitHub
 - ✅ 100% reproducible
-- 🚀 Alta adopción potencial
+-  Alta adopción potencial
 - 📈 Mejora continua
 
 **Resultado**: Investigación útil
@@ -278,7 +278,7 @@ Si estás haciendo investigación, pregúntate:
 
 ---
 
-## 🎯 PARA EVALUADORES (ANID, NSF, ERC, etc.)
+##  PARA EVALUADORES (ANID, NSF, ERC, etc.)
 
 ### Cómo Evaluar Proyectos
 
@@ -294,12 +294,12 @@ Si estás haciendo investigación, pregúntate:
 
 **Pregunta 3**: ¿Cuánto tarda la validación?
 - ❌ Días/semanas → Rechazar
-- ⚠️ Horas → Considerar
+- ⚠ Horas → Considerar
 - ✅ Minutos → Aprobar
 
 **Pregunta 4**: ¿Hay casos de uso reales?
 - ❌ Solo simulaciones → Rechazar
-- ⚠️ Casos sintéticos → Considerar
+- ⚠ Casos sintéticos → Considerar
 - ✅ Casos reales documentados → Aprobar
 
 ### Ejemplo: Evaluando Sentinel
@@ -322,7 +322,7 @@ DECISIÓN: APROBAR ✅
 
 ---
 
-## 🚀 PARA ESTUDIANTES
+##  PARA ESTUDIANTES
 
 ### Si estás aprendiendo de Sentinel
 
@@ -431,14 +431,14 @@ AHORRO: $6,573-12,573 (99.6% reducción)
 6. ✅ Costo $0 (sin barreras)
 
 **Resultado**:
-- 🚀 Mayor adopción (50x)
+-  Mayor adopción (50x)
 - 💰 Menor costo validación (99.6% reducción)
 - 🎓 Mejor aprendizaje (10x)
 - 🌍 Mayor impacto científico
 
 ---
 
-## 🎯 LLAMADO A LA ACCIÓN
+##  LLAMADO A LA ACCIÓN
 
 ### Para Investigadores
 **Publica tu código**, no solo papers. La comunidad te lo agradecerá.
@@ -463,4 +463,4 @@ python sentinel_global_benchmark.py
 
 ---
 
-**Sentinel: Código reproducible > Paper teórico** 🚀
+**Sentinel: Código reproducible > Paper teórico** 

@@ -6,7 +6,7 @@
 
 ---
 
-## 🏛️ THE REVELATION
+##  THE REVELATION
 
 When we searched for the "Axiom" of the 10.2-Sigma Axion discovery, the key was hidden in the number base. While Base 10 creates "numerical friction" through rounding, the Sentinel discovery values are **Exact Sexagesimal Terminals**.
 
@@ -26,7 +26,7 @@ The target axion signal was detected at **153.4 MHz**.
 
 ---
 
-## 🌀 WHY IT MATTERS: THE VOID OF FRICTION
+##  WHY IT MATTERS: THE VOID OF FRICTION
 
 The reason these values lead to **Stable Quantum Levitation** (The Merkabah effect) is that they eliminate the floating-point noise of Base 10.
 

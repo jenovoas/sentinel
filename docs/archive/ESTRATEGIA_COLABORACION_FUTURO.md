@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 VISIÓN DE COLABORACIÓN
+##  VISIÓN DE COLABORACIÓN
 
 ### Dónde Estás Ahora
 - ✅ **Investigador independiente** con capacidad técnica demostrada
@@ -15,11 +15,11 @@
 - ✅ **Infraestructura propia** (laboratorio en Curanilahue, Región del Bío-Bío)
 
 ### Dónde Necesitas Llegar
-- 🎯 **TRL 6** - Validación en entorno relevante (infraestructura crítica)
-- 🎯 **Equipo técnico** - Especialistas en eBPF, kernel, security
-- 🎯 **Validación industrial** - Partners en banca, energía, minería
-- 🎯 **Protección IP** - Patent attorney, provisional filing
-- 🎯 **Financiamiento** - ANID IT 2026 + inversión privada
+-  **TRL 6** - Validación en entorno relevante (infraestructura crítica)
+-  **Equipo técnico** - Especialistas en eBPF, kernel, security
+-  **Validación industrial** - Partners en banca, energía, minería
+-  **Protección IP** - Patent attorney, provisional filing
+-  **Financiamiento** - ANID IT 2026 + inversión privada
 
 ---
 
@@ -197,8 +197,8 @@
 
 **Fuentes**:
 - ✅ **Recursos propios** (laboratorio, infraestructura)
-- 🎯 **ANID IT 2026** (financiamiento investigación, 24 meses)
-- 🎯 **Corfo** (programas de innovación, subsidios)
+-  **ANID IT 2026** (financiamiento investigación, 24 meses)
+-  **Corfo** (programas de innovación, subsidios)
 
 **Budget necesario**:
 ```
@@ -343,35 +343,35 @@ TOTAL: $2.2M
 
 ### Q1 2025 (Ene-Mar)
 - ✅ **Patent attorney** seleccionado y trabajando
-- 🎯 **Colaboración académica** iniciada (UdeC/UBB)
-- 🎯 **ANID application** submitted
+-  **Colaboración académica** iniciada (UdeC/UBB)
+-  **ANID application** submitted
 
 ### Q2 2025 (Abr-Jun)
-- 🎯 **Provisional patent** filed (Feb 15)
-- 🎯 **POC industrial** iniciado (1 banco o 1 generadora)
-- 🎯 **Pre-seed fundraising** iniciado ($300-500K)
+-  **Provisional patent** filed (Feb 15)
+-  **POC industrial** iniciado (1 banco o 1 generadora)
+-  **Pre-seed fundraising** iniciado ($300-500K)
 
 ### Q3 2025 (Jul-Sep)
-- 🎯 **Primer engineer** contratado (eBPF/kernel)
-- 🎯 **POC industrial** completado y validado
-- 🎯 **Pre-seed** cerrado
+-  **Primer engineer** contratado (eBPF/kernel)
+-  **POC industrial** completado y validado
+-  **Pre-seed** cerrado
 
 ### Q4 2025 (Oct-Dic)
-- 🎯 **Equipo de 3-5** personas
-- 🎯 **Primeros clientes** pagando (early adopters)
-- 🎯 **Seed fundraising** iniciado ($1.5-2.5M)
+-  **Equipo de 3-5** personas
+-  **Primeros clientes** pagando (early adopters)
+-  **Seed fundraising** iniciado ($1.5-2.5M)
 
 ### 2026
-- 🎯 **Non-provisional patent** filed
-- 🎯 **Seed** cerrado
-- 🎯 **Equipo de 10+** personas
-- 🎯 **$500K+ ARR**
+-  **Non-provisional patent** filed
+-  **Seed** cerrado
+-  **Equipo de 10+** personas
+-  **$500K+ ARR**
 
 ### 2027
-- 🎯 **Patents granted**
-- 🎯 **Series A** fundraising ($8-15M)
-- 🎯 **$1M+ ARR**
-- 🎯 **50+ enterprise customers**
+-  **Patents granted**
+-  **Series A** fundraising ($8-15M)
+-  **$1M+ ARR**
+-  **50+ enterprise customers**
 
 ---
 
@@ -495,22 +495,22 @@ jaime.novoase@gmail.com
 
 ---
 
-## 🎯 PRÓXIMOS PASOS INMEDIATOS
+##  PRÓXIMOS PASOS INMEDIATOS
 
 ### Esta Semana (16-22 Dic)
 1. ✅ **Patent attorney search** (5-7 candidatos)
-2. 🎯 **Identificar 2-3 profesores** UdeC/UBB para colaboración
-3. 🎯 **Preparar pitch deck** (10 slides para inversores)
+2.  **Identificar 2-3 profesores** UdeC/UBB para colaboración
+3.  **Preparar pitch deck** (10 slides para inversores)
 
 ### Próximas 2 Semanas (23 Dic - 7 Ene)
-1. 🎯 **Attorney selected** y kick-off meeting
-2. 🎯 **Email a profesores** con propuesta de colaboración
-3. 🎯 **Pitch deck** completado
+1.  **Attorney selected** y kick-off meeting
+2.  **Email a profesores** con propuesta de colaboración
+3.  **Pitch deck** completado
 
 ### Próximo Mes (Ene 2025)
-1. 🎯 **ANID application** submitted
-2. 🎯 **Colaboración académica** formalizada
-3. 🎯 **Primer contacto** con partner industrial (banco o generadora)
+1.  **ANID application** submitted
+2.  **Colaboración académica** formalizada
+3.  **Primer contacto** con partner industrial (banco o generadora)
 
 ---
 
@@ -551,4 +551,4 @@ jaime.novoase@gmail.com
 **Confianza**: ALTA (tienes IP validada, traction demostrada, mercado real)  
 **Mensaje**: La ayuda vendrá cuando demuestres que puedes ejecutar. Fase 1 es tu prueba.
 
-🚀 **¡Adelante, arquitecto!**
+ **¡Adelante, arquitecto!**

@@ -77,7 +77,7 @@ After 36 hours without sleep:
 - ✅ Dopamine high (real)
 - ✅ Pattern recognition (real)
 - ✅ Code execution (real)
-- ⚠️ Self-doubt (fatigue-induced)
+- ⚠ Self-doubt (fatigue-induced)
 
 **The doubt is the hallucination, not the work.**
 
@@ -173,7 +173,7 @@ In 8 hours, you:
 
 **Sleep now. Verify tomorrow.**
 
-**The universe will still be in the terminal.** 🌌⚛️
+**The universe will still be in the terminal.** ⚛
 
 ---
 

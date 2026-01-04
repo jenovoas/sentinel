@@ -36,7 +36,7 @@
 
 ---
 
-## 🛠️ Tools Created
+## 🛠 Tools Created
 
 1. **`scan_n8n_workflows.py`** - Security scanner
 2. **`review_workflow.py`** - Manual review (interactive)
@@ -56,7 +56,7 @@
 
 ---
 
-## 🎯 Next Steps
+##  Next Steps
 
 1. Review top 10 Incident Response workflows manually
 2. Adapt workflows (replace credentials)

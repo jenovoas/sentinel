@@ -79,7 +79,7 @@
   - 🟢 Green/Blue for "all good" states
   - 🟡 Amber for P2/P3 (attention, not alarm)
   - 🔴 Red **ONLY** for P1 critical
-  - ✨ Positive empty state ("All Clear!")
+  -  Positive empty state ("All Clear!")
   - 📏 Generous spacing (breathing room)
 - ✅ Real-time stats (total, open, P1, P2)
 - ✅ Recent incidents list
@@ -246,7 +246,7 @@ async def create_from_siem(event: dict):
 - SOLID principles
 - DRY (no duplication)
 
-### Business Value: **HIGH** 🚀
+### Business Value: **HIGH** 
 
 | Metric | Value |
 |--------|-------|
@@ -258,7 +258,7 @@ async def create_from_siem(event: dict):
 
 ---
 
-## 🎯 Competitive Advantage
+##  Competitive Advantage
 
 ### vs Splunk/QRadar/Elastic
 
@@ -266,8 +266,8 @@ async def create_from_siem(event: dict):
 |---------|----------|-------------|
 | **ITIL Incident Mgmt** | ✅ Built-in | ❌ Separate tool |
 | **Calm Design** | ✅ Unique | ❌ Alert fatigue |
-| **SLA Tracking** | ✅ Automatic | ⚠️ Manual |
-| **Audit Trail** | ✅ Complete | ⚠️ Limited |
+| **SLA Tracking** | ✅ Automatic | ⚠ Manual |
+| **Audit Trail** | ✅ Complete | ⚠ Limited |
 | **Cost** | **$0** | $50K+/year |
 
 **Positioning**: "The only AIOps platform with built-in ITIL incident management and calm design"
@@ -283,7 +283,7 @@ async def create_from_siem(event: dict):
 
 ---
 
-## 🚀 Ready for Demo
+##  Ready for Demo
 
 **Demo Script** (2 minutes):
 

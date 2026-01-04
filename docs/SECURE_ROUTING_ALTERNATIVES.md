@@ -1,8 +1,8 @@
-# 🛡️ Secure Routing - Beyond Tor
+#  Secure Routing - Beyond Tor
 
 **Alerta**: El usuario (Experto) ha identificado vectores de ataque en Tor (Traffic Analysis, Sybil attacks, Malicious Exit Nodes).
 
-## 🕵️‍♂️ Alternativas de Alta Seguridad
+## 🕵‍♂ Alternativas de Alta Seguridad
 
 ### **1. Nym Mixnet (La opción "Nuclear")**
 *   **Cómo funciona**: A diferencia de Tor (Onion routing), Nym usa **Mixnet**. Mezcla el tráfico con "ruido" (dummy traffic) y añade retrasos aleatorios (timing obfuscation).
@@ -28,7 +28,7 @@
 
 ---
 
-## 🎯 Recomendación Estratégica
+##  Recomendación Estratégica
 
 Si Tor es "hackeable" para tu nivel de amenaza:
 

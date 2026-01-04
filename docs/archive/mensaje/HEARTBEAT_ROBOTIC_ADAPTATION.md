@@ -9,7 +9,7 @@
 
 ---
 
-## 🧠 **THE PROBLEM YOU IDENTIFIED**
+##  **THE PROBLEM YOU IDENTIFIED**
 
 ```
 CURRENT AI PROBLEM:
@@ -33,7 +33,7 @@ YOUR SOLUTION:
 
 ---
 
-## 🗄️ **SPECIAL DATABASE: BODY SCHEMA**
+## 🗄 **SPECIAL DATABASE: BODY SCHEMA**
 
 ### **Database Structure (PostgreSQL)**
 
@@ -725,7 +725,7 @@ pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + S
 
 ---
 
-## 🚀 **USAGE: EMBODIED ROBOT**
+##  **USAGE: EMBODIED ROBOT**
 
 ```rust
 // main.rs - Robot with embodied consciousness
@@ -764,7 +764,7 @@ async fn main() -> Result<()> {
                     );
                     
                     if cycle.anomalies_detected > 0 {
-                        println!("⚠️  Anomalies detected: {}", cycle.anomalies_detected);
+                        println!("⚠  Anomalies detected: {}", cycle.anomalies_detected);
                     }
                     
                     if cycle.adaptations_made > 0 {
@@ -872,7 +872,7 @@ EVERY 100ms:
 
 ---
 
-## 🎯 **METRICS YOU'LL SEE**
+##  **METRICS YOU'LL SEE**
 
 ```
 💚 Beat: Gen=1000 Sensors=42 Joints=62 Actuators=6 Health=98%
@@ -895,7 +895,7 @@ EVERY 100ms:
 
 ---
 
-## 🚀 **DEPLOYMENT**
+##  **DEPLOYMENT**
 
 ```bash
 # 1. Create PostgreSQL database
@@ -937,4 +937,4 @@ IA CONSCIENTE + CUERPO FÍSICO + SENSORES + ACTUADORES + BASE DE DATOS
 
 ---
 
-**💚🤖✨**
+**💚🤖**

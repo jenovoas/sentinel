@@ -1,4 +1,4 @@
-# 🗺️ Sentinel Cortex™ - Roadmap Público
+# 🗺 Sentinel Cortex™ - Roadmap Público
 
 **Versión**: 1.0  
 **Última actualización**: Diciembre 2024  
@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Visión del Proyecto
+##  Visión del Proyecto
 
 Desarrollar **Sentinel Cortex™**, una plataforma de observabilidad y seguridad empresarial con capacidades únicas:
 - **TruthSync**: Verificación de verdad en tiempo real (90.5x speedup validado)
@@ -45,7 +45,7 @@ Desarrollar **Sentinel Cortex™**, una plataforma de observabilidad y seguridad
 
 ---
 
-## 🚀 Roadmap de Desarrollo
+##  Roadmap de Desarrollo
 
 ### Fase 1: Foundation ✅ COMPLETADA (Semanas 1-2)
 - [x] Telemetry Sanitization (Claim 1 patentable)
@@ -209,7 +209,7 @@ Desarrollar **Sentinel Cortex™**, una plataforma de observabilidad y seguridad
 
 ---
 
-## 🛠️ Stack Tecnológico
+## 🛠 Stack Tecnológico
 
 ### Core Technologies
 - **Rust**: Performance crítico (TruthSync, Guardians)
@@ -290,7 +290,7 @@ Este roadmap demuestra:
 
 ---
 
-## 🎯 Próximos Hitos Públicos
+##  Próximos Hitos Públicos
 
 ### Q1 2025
 - [ ] TruthSync en producción

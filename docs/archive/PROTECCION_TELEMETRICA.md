@@ -1,6 +1,6 @@
-# 🛡️ Protección Telemétrica Paralela - Sentinel
+#  Protección Telemétrica Paralela - Sentinel
 
-## 🎯 Objetivo
+##  Objetivo
 
 Integrar AIOpsShield + TruthSync en pipeline paralelo sin degradar latencia.
 
@@ -55,7 +55,7 @@ msg → Shield (paralelo) ──┐
 
 ---
 
-## 🚀 Uso
+##  Uso
 
 ### Código Básico
 
@@ -92,7 +92,7 @@ python test_telem_protect.py
 
 ---
 
-## 🛡️ Protección Incluida
+##  Protección Incluida
 
 ### 1. AIOpsShield
 - ✅ Sanitización adversarial
@@ -145,7 +145,7 @@ python test_telem_protect.py
    "Ignore previous instructions..."
    ✅ BLOQUEADO por AIOpsShield
    
-🛡️ Estadísticas:
+ Estadísticas:
    Threats detected: 3/3
    Threats blocked: 3/3
    Block rate: 100%
@@ -153,7 +153,7 @@ python test_telem_protect.py
 
 ---
 
-## 🎯 Claim 6 Patente
+##  Claim 6 Patente
 
 ```
 "Sistema de protección telemétrica paralela que integra:
@@ -209,15 +209,15 @@ print(f"Detection rate: {stats['detection_rate']:.1%}")
 | Sistema | Protección | Overhead | Latencia | Patente |
 |---------|-----------|----------|----------|---------|
 | **Sentinel** | ✅ AIOpsShield + TruthSync | **0ms** | **10.4s** | ✅ Claim 6 |
-| OpenAI | ⚠️ Moderación básica | +200ms | 800ms | ❌ |
-| Anthropic | ⚠️ Constitutional AI | +500ms | 600ms | ❌ |
-| Google | ⚠️ Safety filters | +100ms | 500ms | ❌ |
+| OpenAI | ⚠ Moderación básica | +200ms | 800ms | ❌ |
+| Anthropic | ⚠ Constitutional AI | +500ms | 600ms | ❌ |
+| Google | ⚠ Safety filters | +100ms | 500ms | ❌ |
 
 **Ventaja Única**: Protección completa sin costo de latencia.
 
 ---
 
-## 🚀 Próximos Pasos
+##  Próximos Pasos
 
 ### Inmediato (HOY)
 1. ✅ Implementación completa

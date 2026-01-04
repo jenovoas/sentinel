@@ -70,7 +70,7 @@ SENTINEL GLOBAL con Buffers Dinámicos:
 
 ---
 
-## 🎯 APLICACIONES REALES DOCUMENTADAS
+##  APLICACIONES REALES DOCUMENTADAS
 
 ### Caso 1: Banco Nacional (Chile)
 ```
@@ -107,7 +107,7 @@ Resultado:
 
 ---
 
-## 🚀 PRÓXIMOS PASOS
+##  PRÓXIMOS PASOS
 
 ### Inmediato (Hoy)
 1. ⏳ Esperar resultados benchmark (en ejecución)
@@ -135,10 +135,10 @@ Resultado:
 
 | Característica | Sentinel | TCP/IP | DPDK | RDMA | Kafka |
 |----------------|----------|--------|------|------|-------|
-| **Adaptabilidad** | ✅ Auto | ❌ Manual | ⚠️ Config | ❌ HW | ⚠️ Config |
+| **Adaptabilidad** | ✅ Auto | ❌ Manual | ⚠ Config | ❌ HW | ⚠ Config |
 | **Latencia** | <100ms | 100-500ms | 10-50ms | 1-10ms | 50-200ms |
 | **Costo** | Bajo | Bajo | Alto | Muy Alto | Medio |
-| **Multi-capa** | ✅ Sí | ❌ No | ❌ No | ❌ No | ⚠️ Limitado |
+| **Multi-capa** | ✅ Sí | ❌ No | ❌ No | ❌ No | ⚠ Limitado |
 
 **Diferenciador Clave**: Primera solución con buffers adaptativos automáticos aplicables a múltiples capas (LLM, DB, Cache, Network).
 
@@ -208,4 +208,4 @@ MERCADO HABILITADO: $500B+ (2025-2030)
 
 ---
 
-**Mientras esperamos el benchmark, ¿hay algo específico que quieras revisar o ajustar en la documentación?** 🚀
+**Mientras esperamos el benchmark, ¿hay algo específico que quieras revisar o ajustar en la documentación?** 

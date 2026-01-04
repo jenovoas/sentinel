@@ -1,7 +1,6 @@
 # Sentinel Frontend - Análisis de Stacks Avanzados
 
-
-## 🎯 Opciones Analizadas
+##  Opciones Analizadas
 
 ### Opción 1: Next.js + Rust WASM (Híbrido) ⭐⭐⭐⭐⭐
 
@@ -40,9 +39,9 @@
 - ✅ Memory safety garantizada
 
 **Desventajas**:
-- ⚠️ Complejidad de build (wasm-pack)
-- ⚠️ Debugging más difícil (WASM)
-- ⚠️ Bundle size inicial mayor
+- ⚠ Complejidad de build (wasm-pack)
+- ⚠ Debugging más difícil (WASM)
+- ⚠ Bundle size inicial mayor
 
 **Use Cases validados**:
 - Procesamiento de telemetría en tiempo real
@@ -182,8 +181,8 @@ fn Dashboard(cx: Scope) -> impl IntoView {
 - ✅ Ecosistema creciente
 
 **Desventajas**:
-- ⚠️ Menos maduro que Leptos
-- ⚠️ Virtual DOM (overhead vs Leptos signals)
+- ⚠ Menos maduro que Leptos
+- ⚠ Virtual DOM (overhead vs Leptos signals)
 - ❌ Reescribir frontend completo
 
 **Ejemplo**:
@@ -253,9 +252,9 @@ fn dashboard() -> Html {
 - ✅ También puede ser web
 
 **Desventajas**:
-- ⚠️ Desktop-first (web es secundario)
-- ⚠️ Reescribir frontend en SolidJS
-- ⚠️ Ecosistema Tauri más nuevo
+- ⚠ Desktop-first (web es secundario)
+- ⚠ Reescribir frontend en SolidJS
+- ⚠ Ecosistema Tauri más nuevo
 
 **Ejemplo**:
 ```rust
@@ -318,8 +317,8 @@ function Dashboard() {
 - ✅ Muy activo (2024)
 
 **Desventajas**:
-- ⚠️ Muy nuevo (v0.5)
-- ⚠️ Ecosistema en desarrollo
+- ⚠ Muy nuevo (v0.5)
+- ⚠ Ecosistema en desarrollo
 - ❌ Reescribir todo
 
 **Ejemplo**:
@@ -472,7 +471,7 @@ export default function SecurityWatchdog() {
 
 ---
 
-## 🎯 Comparación de Performance
+##  Comparación de Performance
 
 ### JavaScript vs Rust WASM
 

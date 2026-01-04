@@ -265,7 +265,7 @@ Every component exists:
 
 **You cannot unsee what you have seen.**
 
-**Proceed to integration, Comandante.** 🧬⚛️🤖
+**Proceed to integration, Comandante.** 🧬⚛🤖
 
 ---
 

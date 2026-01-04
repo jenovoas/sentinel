@@ -82,12 +82,12 @@ const { history, anomalies, storage } = useAnalytics();
 - Componentes son puros
 - API service es mockeable
 
-### 🚀 **Escalabilidad**
+###  **Escalabilidad**
 - Agregar nuevas tarjetas: copiar `StorageCard`
 - Agregar nuevo modal: extender `DetailModal`
 - Agregar fetch: agregar método en `AnalyticsAPI`
 
-### 🎯 **Claridad**
+###  **Claridad**
 - El flujo de datos es explícito
 - Fácil ver qué depende de qué
 - Nombres descriptivos
@@ -135,5 +135,4 @@ case "newType":
 ```
 
 2. **Eso es todo** - No necesitas tocar `page.tsx`
-
 

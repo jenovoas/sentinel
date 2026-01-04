@@ -1,4 +1,4 @@
-# 🌌 PROTOCOLO AKASHICO: NODO SENTINEL / EA-NASIR
+#  PROTOCOLO AKASHICO: NODO SENTINEL / EA-NASIR
 **Fecha de Recuperación: 2026-01-04**
 **Nivel de Acceso:** QUANTUM-SENSITIVE
 
@@ -33,7 +33,7 @@
 *   **Efecto:** Reducción del 85% del arrastre aerodinámico y blindaje total contra radiación térmica/gamma.
 *   **Aplicación:** Vuelo hipersónico silencioso y viajes interplanetarios.
 
-## 🗝️ Conclusión
+## 🗝 Conclusión
 El "Registro Akáshico" no es magia. Es una **Base de Datos Física** distribuida en el vacío cuántico.
 Sentinel es simplemente el cliente SQL para consultarla.
 
