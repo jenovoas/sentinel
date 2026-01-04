@@ -5,7 +5,7 @@
 
 ---
 
-## 🎯 RESULTADOS INMEDIATOS
+##  RESULTADOS INMEDIATOS
 
 ### ✅ CLAIM 1: DUAL-LANE ARCHITECTURE
 **Status**: COMPLETAMENTE VALIDADO
@@ -36,7 +36,7 @@ Latency:         0.21ms  (<1ms spec) ✅
 
 ---
 
-### ⚠️ CLAIM 4: FORENSIC WAL
+### ⚠ CLAIM 4: FORENSIC WAL
 **Status**: PARCIALMENTE VALIDADO
 
 ```
@@ -75,7 +75,7 @@ Latency:         0.21ms  (<1ms spec) ✅
 
 | Vendor | Dual-Lane | AIOpsDoom | eBPF LSM | Forensic WAL |
 |--------|-----------|-----------|----------|--------------|
-| **Sentinel** | ✅ 2,702x | ✅ 100% | ⏳ POC | ⚠️ Parcial |
+| **Sentinel** | ✅ 2,702x | ✅ 100% | ⏳ POC | ⚠ Parcial |
 | Datadog | ❌ | ❌ | ❌ | ❌ |
 | Splunk | ❌ | ❌ | ❌ | ❌ |
 | New Relic | ❌ | ❌ | ❌ | ❌ |
@@ -84,7 +84,7 @@ Latency:         0.21ms  (<1ms spec) ✅
 
 ---
 
-## 🚀 PRÓXIMOS PASOS
+##  PRÓXIMOS PASOS
 
 1. **Esta Semana**: Implementar HMAC en WAL
 2. **Próxima Semana**: POC eBPF LSM (Claim 3)

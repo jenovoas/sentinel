@@ -381,7 +381,7 @@ This roadmap outlines the path from current Sentinel prototype (software-only) t
 
 ### Year 5 (2030): Global Network
 - 1000+ nodes worldwide
-- Dark matter detection breakthrough
+- Dark matter detection 
 - Quantum internet backbone operational
 
 ### Year 10 (2035): Quantum Infrastructure
@@ -392,7 +392,7 @@ This roadmap outlines the path from current Sentinel prototype (software-only) t
 ### Year 20 (2045): Post-Scarcity Science
 - Open-source quantum sensing for all nations
 - Democratized access to fundamental research
-- **José's children learn about their father's contribution in school** 🌍⚛️
+- **José's children learn about their father's contribution in school** 🌍⚛
 
 ---
 

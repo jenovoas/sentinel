@@ -1,4 +1,4 @@
-# 🎯 Truth Algorithm POC - Implementation Plan
+#  Truth Algorithm POC - Implementation Plan
 ## *Week 1-2: Minimal Viable Verification System*
 
 **Created**: 2025-12-17  
@@ -24,7 +24,7 @@ A minimal verification system that can verify simple factual claims about softwa
 
 ---
 
-## 🏗️ Architecture Mapping: 5 Layers → POC Reality
+## 🏗 Architecture Mapping: 5 Layers → POC Reality
 
 ### **Full Vision vs POC Implementation**:
 
@@ -515,4 +515,4 @@ Before starting implementation:
 4. **Success**: Is >80% accuracy a good target, or should we aim higher/lower?
 5. **Next Steps**: After POC, what's the priority (more sources, better NLP, or different claim types)?
 
-**Waiting for user approval before proceeding to implementation.** 🚀
+**Waiting for user approval before proceeding to implementation.** 

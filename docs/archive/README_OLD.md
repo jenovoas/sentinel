@@ -1,4 +1,4 @@
-# 🛡️ Sentinel - Enterprise Observability & Security Platform
+#  Sentinel - Enterprise Observability & Security Platform
 
 **AI-Powered Infrastructure Monitoring with Kernel-Level Security**
 
@@ -11,7 +11,7 @@
 
 ---
 
-## 🎯 Executive Summary
+##  Executive Summary
 
 Sentinel is an **enterprise-grade observability and security platform** that combines traditional infrastructure monitoring with **kernel-level security detection** and **AI-powered insights**.
 
@@ -22,7 +22,7 @@ Sentinel is an **enterprise-grade observability and security platform** that com
 | **Kernel-Level Security** | ✅ Built-in | ❌ Requires APM Security | ❌ No | ❌ No |
 | **Local AI (Privacy-First)** | ✅ Included | ❌ Cloud-only | ❌ Cloud-only | ❌ No AI |
 | **High Availability** | ✅ Native | ✅ Enterprise | ✅ Enterprise | ✅ Managed |
-| **Self-Hosted** | ✅ Yes | ⚠️ Limited | ⚠️ Limited | ❌ Cloud-only |
+| **Self-Hosted** | ✅ Yes | ⚠ Limited | ⚠ Limited | ❌ Cloud-only |
 | **Data Sovereignty** | ✅ Complete | ❌ Cloud-based | ❌ Cloud-based | ❌ Cloud-based |
 
 ### Strategic Applications
@@ -35,7 +35,7 @@ Sentinel is an **enterprise-grade observability and security platform** that com
 
 ---
 
-## 🚀 Product Overview
+##  Product Overview
 
 ### What is Sentinel?
 
@@ -65,7 +65,7 @@ Sentinel is a **complete observability and security platform** that provides:
    - Alert routing
    - Custom integrations
 
-5. **🛡️ High Availability**
+5. ** High Availability**
    - PostgreSQL HA (Patroni + etcd + HAProxy)
    - Redis HA (Sentinel)
    - Application HA (health checks + graceful shutdown)
@@ -115,7 +115,7 @@ Sentinel is a **complete observability and security platform** that provides:
 
 ---
 
-## 🏗️ Architecture
+## 🏗 Architecture
 
 ### High-Level Overview
 
@@ -251,7 +251,7 @@ Sentinel is a **complete observability and security platform** that provides:
 
 | Feature | Sentinel | Datadog APM Security | Wiz | CrowdStrike |
 |---------|----------|----------------------|-----|-------------|
-| **Kernel-Level Monitoring** | ✅ Native | ⚠️ Agent-based | ⚠️ Agent-based | ✅ EDR |
+| **Kernel-Level Monitoring** | ✅ Native | ⚠ Agent-based | ⚠ Agent-based | ✅ EDR |
 | **AI Threat Analysis** | ✅ Local | ✅ Cloud | ✅ Cloud | ✅ Cloud |
 | **Privacy** | ✅ On-prem | ❌ Cloud | ❌ Cloud | ❌ Cloud |
 | **Cost** | **Included** | +$15/host/mo | $20-40/host/mo | $8-15/host/mo |
@@ -315,7 +315,7 @@ Sentinel is a **complete observability and security platform** that provides:
 
 ---
 
-## 🛡️ High Availability
+##  High Availability
 
 ### Enterprise-Grade Reliability
 
@@ -559,7 +559,7 @@ Sentinel is a **complete observability and security platform** that provides:
 
 ---
 
-## 🚀 Go-to-Market Strategy
+##  Go-to-Market Strategy
 
 ### Phase 1: Product-Led Growth (Months 1-6)
 
@@ -687,7 +687,7 @@ Sentinel is a **complete observability and security platform** that provides:
 
 ---
 
-**Built with ❤️ for DevOps teams who deserve better tools**
+**Built with ❤ for DevOps teams who deserve better tools**
 
 *Last Updated: December 2025*
 
@@ -706,12 +706,12 @@ Sentinel Cortex™ is available in two editions:
 - ✅ User authentication
 
 ### Enterprise Edition (Private Repo - Commercial License)
-- 🛡️ **AIOpsDoom Defense** (Patent Pending)
+-  **AIOpsDoom Defense** (Patent Pending)
   - Advanced telemetry sanitization (100+ patterns)
   - Multi-modal correlation engine
   - Bayesian confidence scoring
   
-- 🧠 **Dual-Guardian Architecture** (Patent Pending)
+-  **Dual-Guardian Architecture** (Patent Pending)
   - Guardian-Alpha™: Intrusion detection (eBPF)
   - Guardian-Beta™: Integrity assurance
   - Mutual surveillance & auto-regeneration
@@ -724,7 +724,7 @@ Sentinel Cortex™ is available in two editions:
 
 ---
 
-## 🎯 Roadmap
+##  Roadmap
 
 See [ROADMAP.md](docs/ROADMAP.md) for detailed development timeline.
 

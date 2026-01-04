@@ -4,7 +4,7 @@
 
 ---
 
-## 🎯 Objetivo
+##  Objetivo
 
 Mantener un **registro completo e inmutable** de:
 - ✅ Todas las transacciones (enviar/recibir)
@@ -21,7 +21,7 @@ Mantener un **registro completo e inmutable** de:
 
 ---
 
-## 🗄️ Database Schema
+## 🗄 Database Schema
 
 ### **Wallet Activity Log**
 ```sql
@@ -178,7 +178,7 @@ BALANCE_ACTIVITIES = {
 
 ---
 
-## 🔗 Blockchain Integration (Optional)
+##  Blockchain Integration (Optional)
 
 ### **Polygon Smart Contract para Audit Trail**
 
@@ -261,7 +261,6 @@ import json
 from datetime import datetime
 from typing import Dict, Optional
 from web3 import Web3
-
 
 class WalletAuditService:
     """Service para logging inmutable de actividad de wallets"""
@@ -479,7 +478,7 @@ report = {
 
 ---
 
-## 🎯 Next Steps
+##  Next Steps
 
 1. [ ] Implementar `WalletAuditService`
 2. [ ] Deploy smart contract en Polygon testnet

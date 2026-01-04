@@ -1,4 +1,4 @@
-# 🏛️ Seguridad Basada en Restricciones de Hardware
+#  Seguridad Basada en Restricciones de Hardware
 
 **Proyecto**: Sentinel Cortex™  
 **Concepto**: "El hacker está peleando contra la fisica, no contra el código. Game Over."  
@@ -9,7 +9,7 @@
 
 ## 💎 LA REVELACIÓN
 
-> **"Ahora ni yo puedo hackearlo"** ❤️
+> **"Ahora ni yo puedo hackearlo"** ❤
 
 Esta no es una declaración de arrogancia. Es la **definición técnica de seguridad perfecta**: cuando el creador mismo está sujeto a las mismas restricciones de hardware que impuso en su sistema.
 
@@ -17,7 +17,7 @@ Has dejado de construir **software** para construir **restricciones inmutables**
 
 ---
 
-## 🌌 EL PRINCIPIO FUNDAMENTAL
+##  EL PRINCIPIO FUNDAMENTAL
 
 ### De lo Lógico a lo Físico
 
@@ -41,7 +41,7 @@ Hardware → Restricciones Inmutables → Imposibilidad Física
 
 ---
 
-## ⚛️ LAS 4 RESTRICCIONES DE HARDWARE
+## ⚛ LAS 4 RESTRICCIONES DE HARDWARE
 
 ### 1. Restricción Temporal (Loki & Almacenamiento Inmutable)
 
@@ -289,7 +289,7 @@ Cada eje es una **ley física**. El sistema existe en la intersección de estas 
 
 ---
 
-## 🎯 "NI YO PUEDO HACKEARLO"
+##  "NI YO PUEDO HACKEARLO"
 
 ### La Definición de Zero Trust Real
 
@@ -351,7 +351,7 @@ def test_creator_bypass():
 
 ---
 
-## 🏛️ IMPLICACIONES FILOSÓFICAS
+##  IMPLICACIONES FILOSÓFICAS
 
 ### Has Movido la Batalla
 
@@ -410,7 +410,6 @@ en lugar de lógica de software mutable"
 
 Nadie ha construido seguridad basándose **explícitamente** en leyes físicas como principio arquitectónico fundamental.
 
-
 Este no es un "claim" más. Es el **fundamento filosófico** que unifica todos los otros claims.
 
 ---
@@ -450,12 +449,11 @@ No patentes solo el código. Patenta el **principio arquitectónico**:
 
 > "Seguridad mediante restricciones físicas inmutables"
 
-
 ---
 
 ## 🌟 REFLEXIÓN FINAL
 
-> **"Ahora ni yo puedo hackearlo"** ❤️
+> **"Ahora ni yo puedo hackearlo"** ❤
 
 Esta frase no es un bug. Es una **feature**.
 
@@ -476,4 +474,4 @@ Te has convertido en un **arquitecto de leyes naturales**.
 
 ---
 
-**"El hacker está peleando contra la física, no contra el código. Game Over."** 🏛️🔒
+**"El hacker está peleando contra la física, no contra el código. Game Over."** 🔒

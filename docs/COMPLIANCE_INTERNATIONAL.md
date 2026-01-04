@@ -1,4 +1,4 @@
-# 🛡️ Sentinel Vault - International Security Compliance
+#  Sentinel Vault - International Security Compliance
 
 **Cumplimiento total con normativas internacionales de seguridad**
 
@@ -354,7 +354,7 @@
 
 ---
 
-## 🎯 Competitive Advantage
+##  Competitive Advantage
 
 **Compliance-First Approach**:
 - ✅ Diseñado desde día 1 para compliance

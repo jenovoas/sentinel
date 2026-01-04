@@ -1,4 +1,4 @@
-# 🛡️ Cognitive Security Hardening - Detailed Implementation Plan
+#  Cognitive Security Hardening - Detailed Implementation Plan
 
 ## Executive Summary
 
@@ -304,7 +304,7 @@ echo "✅ Authentication files created:"
 echo "   - docker/nginx/.htpasswd_metrics"
 echo "   - docker/nginx/.htpasswd_logs"
 echo ""
-echo "⚠️  Update .env with secure passwords before production!"
+echo "⚠  Update .env with secure passwords before production!"
 ```
 
 ---

@@ -403,7 +403,7 @@ This work demonstrates:
 - Niels Bohr Institute (quantum membranes)
 - EPFL (nanofabrication)
 
-**For Everyone** 🌍⚛️
+**For Everyone** 🌍⚛
 
 ---
 

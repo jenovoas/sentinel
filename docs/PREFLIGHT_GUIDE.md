@@ -48,13 +48,13 @@ sudo ./tools/sentinel_preflight.sh --json
 ## Example Output
 
 ```
-🛡️  Sentinel Cortex Pre-flight Check
+  Sentinel Cortex Pre-flight Check
 ====================================
 
 ✅ Root Privileges: Running as root
 ✅ Kernel Version: 6.12.57+deb13-amd64 (>= 6.1 required)
 ✅ bpftool: Installed
-⚠️  eBPF LSM Support: LSM support unclear, may need CONFIG_BPF_LSM=y
+⚠  eBPF LSM Support: LSM support unclear, may need CONFIG_BPF_LSM=y
 ✅ Clang Compiler: Debian clang version 19.1.7
 ✅ Python 3: Python 3.13.5
 ✅ Rust/Cargo: cargo 1.70.0
@@ -162,7 +162,7 @@ sudo apt install postgresql
 5. **Verify Operation**
    ```bash
    sem
-   🧠 semsh> health
+    semsh> health
    ```
 
 ## Exit Codes

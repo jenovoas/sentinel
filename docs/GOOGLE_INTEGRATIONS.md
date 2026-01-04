@@ -15,7 +15,7 @@ Todo el proyecto fue desarrollado en colaboración con **Gemini AI** (Google):
 - **Documentación**: Generación de documentación técnica
 - **Código**: Desarrollo asistido de todo el codebase
 
-> "A todo lo que haga le pondré (Powered by Google) ❤️"  
+> "A todo lo que haga le pondré (Powered by Google) ❤"  
 > — Jaime Novoa, Creador de Sentinel Cortex™
 
 ---
@@ -91,13 +91,13 @@ GOOGLE_CSE_ID=your_custom_search_engine_id_here
 - Soporta múltiples providers (Google, DuckDuckGo, Mock)
 - **Recomendación**: Usar DuckDuckGo para búsquedas reales sin API key
 
-> ⚠️ **ADVERTENCIA DE COSTOS**: Google Custom Search API puede generar cargos inesperados si no se configuran límites estrictos. Se recomienda usar alternativas gratuitas como DuckDuckGo para desarrollo y testing.
+> ⚠ **ADVERTENCIA DE COSTOS**: Google Custom Search API puede generar cargos inesperados si no se configuran límites estrictos. Se recomienda usar alternativas gratuitas como DuckDuckGo para desarrollo y testing.
 
 ---
 
 ## 3. � Alternativas Gratuitas (Recomendado)
 
-### ⚠️ Problema con Google API
+### ⚠ Problema con Google API
 
 Google Custom Search API puede generar **cargos inesperados** si no se configuran límites estrictos. Muchos desarrolladores han reportado cargos sorpresa.
 
@@ -125,16 +125,16 @@ def search_duckduckgo(claim: str, max_results: int = 10):
 - ✅ **Privacidad respetada**
 
 **Desventajas**:
-- ⚠️ Menos resultados que Google
-- ⚠️ Menos personalización
+- ⚠ Menos resultados que Google
+- ⚠ Menos personalización
 
-### 🎯 Recomendación
+###  Recomendación
 
 Para el Truth Algorithm, usar **DuckDuckGo** como provider principal y mantener Google como opción para casos específicos con límites estrictos.
 
 ---
 
-## 4. �🏗️ Google Cloud Platform (Planificado)
+## 4. �🏗 Google Cloud Platform (Planificado)
 
 ### Servicios Identificados
 
@@ -259,12 +259,12 @@ Resultados: 3
   3. [news] News coverage: La tasa de desempleo en EE.UU...
      Confidence: 75.0%
 
-🛡️  Test 2: Validación de seguridad
+  Test 2: Validación de seguridad
 ✅ BLOQUEADO: Test; rm -rf /...
 ✅ BLOQUEADO: Test' OR '1'='1...
 ✅ BLOQUEADO: Test<script>alert('xss')...
 
-⏱️  Test 3: Rate limiting
+⏱  Test 3: Rate limiting
 ✅ Rate limit funcionando: Rate limit excedido: 10 requests/minuto
 
 💾 Guardando log de búsquedas...
@@ -293,7 +293,7 @@ DEMO COMPLETADO - SISTEMA SEGURO ✅
 
 ---
 
-## 9. 🚀 Próximos Pasos
+## 9.  Próximos Pasos
 
 ### Para Activar Google Search API
 
@@ -352,6 +352,6 @@ Sentinel Cortex™ reconoce abiertamente las herramientas que utiliza. Google me
 
 ---
 
-**Sentinel Cortex™** | Powered by Google ❤️ & Perplexity 💜 | Built with Gemini AI
+**Sentinel Cortex™** | Powered by Google ❤ & Perplexity 💜 | Built with Gemini AI
 
 *Última actualización: 21 de Diciembre de 2025*

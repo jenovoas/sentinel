@@ -287,4 +287,4 @@ Un sistema de mitigación predictiva de ráfagas de tráfico que comprende:
 
 ---
 
-**Próximo Paso**: ¿Empezamos con el Traffic Monitor y el generador de tráfico bursty? 🚀
+**Próximo Paso**: ¿Empezamos con el Traffic Monitor y el generador de tráfico bursty? 

@@ -1,4 +1,4 @@
-# 🎯 Workflow Recommendation POC - Summary
+#  Workflow Recommendation POC - Summary
 
 **Date**: 2025-12-16  
 **Status**: ✅ COMPLETED  
@@ -53,7 +53,7 @@
 
 ---
 
-## 🚀 Next Steps
+##  Next Steps
 
 ### Immediate (This Weekend)
 1. Test API endpoint with backend running

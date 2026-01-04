@@ -321,9 +321,9 @@
 - ✅ Proven founder execution (MVP in 6 months)
 
 **Risks**:
-- ⚠️ Competitive market (Datadog, New Relic)
-- ⚠️ Sales cycle uncertainty
-- ⚠️ Team scaling challenges
+- ⚠ Competitive market (Datadog, New Relic)
+- ⚠ Sales cycle uncertainty
+- ⚠ Team scaling challenges
 
 **Mitigation**:
 - Differentiation: Self-hosted + AI + Privacy

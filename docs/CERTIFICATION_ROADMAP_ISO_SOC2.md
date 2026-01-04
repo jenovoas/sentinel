@@ -1,6 +1,6 @@
 # 🔐 Plan de Certificaciones ISO 27001 & SOC 2 para Sentinel
 
-## 🎯 Por Qué Es Crítico
+##  Por Qué Es Crítico
 
 ### Target Market: Banca y Gobierno
 
@@ -152,7 +152,7 @@ Payback: 1-2 meses
 
 ---
 
-## 🎯 Estrategia de Financiamiento
+##  Estrategia de Financiamiento
 
 ### Opción 1: CORFO (Recomendado)
 
@@ -244,7 +244,6 @@ Después del piloto, contrato de $150K/año."
 
 ---
 
-
 ## 🏆 Ventajas Competitivas Post-Certificación
 
 ### Vs Competidores Sin Certificaciones
@@ -313,7 +312,7 @@ ISO 27001 + SOC 2, diseñada para banca y gobierno.
 
 ---
 
-## 🚀 Mensaje para Inversionistas/CORFO
+##  Mensaje para Inversionistas/CORFO
 
 ```
 "Sentinel está en proceso de certificación ISO 27001 y SOC 2.

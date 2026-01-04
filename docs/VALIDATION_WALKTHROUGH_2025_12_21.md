@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Lo que Validamos
+##  Lo que Validamos
 
 ### Hipótesis Principal
 > Los datos fluyen como un fluido viscoso y pueden ser controlados usando ecuaciones de dinámica de fluidos (Navier-Stokes, Reynolds, etc.)
@@ -39,7 +39,7 @@ Avg Latency (ms)               8.21           8.20        0.1%
 
 ---
 
-## 🌊 Test 1: Teoría Hidrodinámica
+##  Test 1: Teoría Hidrodinámica
 
 ### Comando Ejecutado
 ```bash
@@ -102,7 +102,7 @@ Correlación entre ∂B/∂t y (Q_in - Q_out): -0.0350
 
 ---
 
-## 🎯 Test 2: Patrón de Control
+##  Test 2: Patrón de Control
 
 ### Comando Ejecutado
 ```bash
@@ -163,7 +163,7 @@ Precisión:       42.24%
 3. **Comportamiento asimétrico** - Airbag digital confirmado (35x)
 4. **Ecuación de control** - Perfecta para casos estáticos
 
-### ⚠️ Lo que necesita AJUSTES
+### ⚠ Lo que necesita AJUSTES
 1. **Viscosidad** - α real es 0.96, no 0.90
 2. **Conservación** - Ecuación simplificada es insuficiente
 3. **Control dinámico** - Necesita modelo no-lineal

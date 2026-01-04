@@ -100,7 +100,7 @@ TOTAL CONSERVADOR:                              $153M
 
 ---
 
-## 🚀 Valoración Agresiva: $230M
+##  Valoración Agresiva: $230M
 
 ### Desglose por Componente
 
@@ -250,7 +250,7 @@ Nota: Licensing crece pero SaaS domina (95% en Year 5)
 
 ---
 
-## 🎯 Validación con Datos de Mercado
+##  Validación con Datos de Mercado
 
 ### Mercado AIOps 2025
 
@@ -287,7 +287,7 @@ SOM (5 años, 15% penetration):     $500M
 
 ---
 
-## 🛡️ Premium por Seguridad Validado
+##  Premium por Seguridad Validado
 
 ### CVE Evidence
 
@@ -397,7 +397,7 @@ TOTAL INCREMENTO: +$32M (conservador)
 
 ---
 
-## 🎯 Recomendaciones para Inversores
+##  Recomendaciones para Inversores
 
 ### Valoración Recomendada por Escenario
 

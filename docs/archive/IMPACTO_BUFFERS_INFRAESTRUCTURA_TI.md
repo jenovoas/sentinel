@@ -5,7 +5,7 @@
 
 ---
 
-## 🎯 APLICACIONES EN INFRAESTRUCTURA TI MODERNA
+##  APLICACIONES EN INFRAESTRUCTURA TI MODERNA
 
 ### 1. Data Centers y Cloud Computing
 
@@ -147,9 +147,9 @@ IMPACTO:
 |------------|-------------|----------|------------|---------------|-------|
 | **Sentinel (Buffers Dinámicos)** | Adaptativo | **\u003c100ms** | **3-5x** | ✅ Automático | Bajo |
 | TCP/IP Stack (Linux) | Fijo | 100-500ms | 1x | ❌ Manual | Bajo |
-| DPDK (Intel) | Fijo | 10-50ms | 2-3x | ⚠️ Configuración | Alto |
+| DPDK (Intel) | Fijo | 10-50ms | 2-3x | ⚠ Configuración | Alto |
 | RDMA (InfiniBand) | Fijo | 1-10ms | 5-10x | ❌ Hardware | Muy Alto |
-| Kafka (Streaming) | Semi-adaptativo | 50-200ms | 2-4x | ⚠️ Configuración | Medio |
+| Kafka (Streaming) | Semi-adaptativo | 50-200ms | 2-4x | ⚠ Configuración | Medio |
 | Redis (Cache) | Fijo | 1-5ms | 10x | ❌ Manual | Bajo |
 
 **Ventaja Competitiva de Sentinel**:
@@ -276,7 +276,7 @@ MERCADO HABILITADO: $500B+ (2025-2030)
 
 ---
 
-## 🎯 CONCLUSIÓN
+##  CONCLUSIÓN
 
 **Buffers Dinámicos = Innovación Fundamental**
 
@@ -303,4 +303,4 @@ MERCADO HABILITADO: $500B+ (2025-2030)
 
 ---
 
-**¿Ejecutamos el benchmark ahora para generar los datos y gráficos?** 🚀
+**¿Ejecutamos el benchmark ahora para generar los datos y gráficos?** 

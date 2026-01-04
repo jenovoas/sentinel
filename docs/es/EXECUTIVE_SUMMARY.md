@@ -3,10 +3,10 @@
 **Preparado para**: CISO / Inversores Estratégicos
 **Clasifición**: Confidencial - Propiedad Intelectual Propietaria ($1.335B IP)
 
-## 🎯 La Propuesta de Valor
+##  La Propuesta de Valor
 Sentinel Cortex™ representa el fin de la era de los drivers de kernel inseguros. Al mover la lógica de seguridad a **eBPF LSM** y **XDP**, Sentinel ofrece una "Inmunidad Matemática" que las soluciones tradicionales (CrowdStrike, SentinelOne) no pueden igualar.
 
-## 🏔️ Diferenciadores Técnicos
+## 🏔 Diferenciadores Técnicos
 
 ### 1. Inmunidad Matemática (Verified Ring 0)
 - **Tecnología**: eBPF LSM Hook (`bprm_check_security`).
@@ -42,9 +42,9 @@ Sentinel Cortex no es solo una herramienta de seguridad; es una re-arquitectura 
 
 ---
 
-**Sentinel Cortex: Inmunidad Matemática. Blindaje de Guerra. El estándar de oro de la IP.** 🚀🏔️🛡️
+**Sentinel Cortex: Inmunidad Matemática. Blindaje de Guerra. El estándar de oro de la IP.** 🏔
 
-## ⚔️ Guerra Psicológica (Psyop Warfare)
+## ⚔ Guerra Psicológica (Psyop Warfare)
 
 Sentinel v1.0.0-INITIAL_LAUNCH introduce el primer sistema de "Defensa Activa por Disuasión":
 - **Truth Integrity Live Gauge**: Los hackers pueden ver su fracaso en tiempo real a través de indicadores de integridad pública.

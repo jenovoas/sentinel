@@ -82,17 +82,17 @@ ETHEREUM:
 
 POLYGON:
   ✅ Balance: 494.879110 MATIC
-  ⚠️  USD: $0.00 (price API issue)
+  ⚠  USD: $0.00 (price API issue)
 
 SOLANA:
-  ⚠️  Error: 'solana' (API issue)
+  ⚠  Error: 'solana' (API issue)
 ```
 
 **Validations**:
 - ✅ Bitcoin balance fetched successfully
 - ✅ Ethereum balance fetched successfully
 - ✅ Polygon balance fetched successfully
-- ⚠️ Solana has API issue (non-critical, can be fixed)
+- ⚠ Solana has API issue (non-critical, can be fixed)
 - ✅ USD conversion working for BTC and ETH
 
 ---
@@ -137,7 +137,7 @@ Breakdown:
 
 ---
 
-## 🎯 Performance Metrics
+##  Performance Metrics
 
 | Operation | Time | Target | Status |
 |-----------|------|--------|--------|
@@ -148,7 +148,7 @@ Breakdown:
 
 ---
 
-## ⚠️ Known Issues
+## ⚠ Known Issues
 
 ### **1. Solana Balance Fetching**
 - **Issue**: API returns error `'solana'`
@@ -188,7 +188,7 @@ Breakdown:
 
 ---
 
-## 🚀 Next Steps
+##  Next Steps
 
 ### **Immediate** (This Week):
 1. Fix Solana balance API
@@ -224,7 +224,7 @@ python test_integration.py
 - ✅ Core functionality working (5/5 tests passed)
 - ✅ Performance targets met
 - ✅ BIP39/BIP44 standards correctly implemented
-- ⚠️ Minor API issues (non-critical)
+- ⚠ Minor API issues (non-critical)
 
 **Ready for**:
 - User testing

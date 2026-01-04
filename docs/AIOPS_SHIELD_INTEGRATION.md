@@ -1,7 +1,7 @@
 # AIOpsShield - n8n Integration Guide
 # Mission Critical Deployment
 
-## 🎯 Objective
+##  Objective
 
 Integrate AIOpsShield into n8n workflow to create bulletproof telemetry sanitization before LLM processing.
 
@@ -366,8 +366,7 @@ if sanitized['security_flag'] == 'BLOCKED':
 
 ---
 
-
-## 🎯 Success Criteria
+##  Success Criteria
 
 **Week 1**:
 - ✅ Zero AIOpsDoom attacks successful

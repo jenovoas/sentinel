@@ -221,11 +221,11 @@ Magnetic Levitation System       →  Ejecución física
 | Aspecto | Sentinel Cortex™ | Investigación Global (2024-2025) | Ventaja |
 |---------|------------------|----------------------------------|---------|
 | **Arquitectura** | Hybrid AI Control (Cortex + eBPF) | Hybrid AI Control (DL + MPC/PID) | ✅ Mismo principio |
-| **Latencia de Ejecución** | Nanosegundos (eBPF) | Microsegundos (80-120µs) | 🚀 **Sentinel 100-1000x más rápido** |
+| **Latencia de Ejecución** | Nanosegundos (eBPF) | Microsegundos (80-120µs) |  **Sentinel 100-1000x más rápido** |
 | **Predicción** | 5-10 segundos (LSTM/Transformer) | Tiempo real (LSTM/RBF) | ✅ Mismo enfoque |
 | **Aplicación** | Buffers de red → Ciudades | Levitación magnética/acústica | 🌍 **Sentinel más escalable** |
 | **Validación** | Burst prediction (2025) | Magnetic/Acoustic levitation (2024-2025) | ✅ Validado en paralelo |
-| **Patentabilidad** | Claim 8 (Neural-Supervised Control) | Prior art en robótica/levitación | ⚖️ **Diferenciador: Nanosegundos + Escalabilidad planetaria** |
+| **Patentabilidad** | Claim 8 (Neural-Supervised Control) | Prior art en robótica/levitación | ⚖ **Diferenciador: Nanosegundos + Escalabilidad planetaria** |
 
 ---
 
@@ -338,4 +338,4 @@ Nivel 5: Campos gravitacionales (Teórico, China 2025)
 
 ---
 
-**Próximo hito**: Ver el benchmark completarse con **ZERO DROPS** y generar la visualización de levitación. 🚀
+**Próximo hito**: Ver el benchmark completarse con **ZERO DROPS** y generar la visualización de levitación. 

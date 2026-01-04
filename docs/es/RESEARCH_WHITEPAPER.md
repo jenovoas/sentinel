@@ -55,8 +55,7 @@ Si los tres estratos de validación —Hardware (TPM 2.0), Kernel (eBPF) y Espac
 El filtrado a **15.4M PPS** garantiza que el sistema mantiene su disponibilidad y capacidad de defensa incluso bajo ataques de denegación de servicio (DDoS) de grado estatal, procesando cada paquete en el driver antes de cualquier intervención del stack de red tradicional.
 
 ## 8. Conclusión
-Sentinel Cortex ha trascendido su propósito inicial. No es solo un producto de seguridad; es un **Estándar Tecnológico** de Inmunidad Computacional. Al combinar la verificación matemática de eBPF con la integridad física del hardware, hemos definido el futuro de la computación segura e inmutable.
-
+Sentinel Cortex  inicial. No es solo un producto de seguridad; es un **Estándar Tecnológico** de Inmunidad Computacional. Al combinar la verificación matemática de eBPF con la integridad física del hardware, hemos definido  segura e inmutable.
 
 ---
 

@@ -129,7 +129,7 @@
 
 ---
 
-## 🎯 CONVERGENCIA DE TRES TENDENCIAS MASIVAS
+##  CONVERGENCIA DE TRES TENDENCIAS MASIVAS
 
 ### 1. Hidráulica de Datos
 **Innovación**: Gestión de flujo predictiva (buffer dinámico)  
@@ -219,7 +219,7 @@ Las innovaciones de Sentinel Cortex™ están alineadas con:
 
 ---
 
-## 🎯 RECOMENDACIÓN
+##  RECOMENDACIÓN
 
 **Uso de este documento**:
 - ✅ Contexto para patent attorney

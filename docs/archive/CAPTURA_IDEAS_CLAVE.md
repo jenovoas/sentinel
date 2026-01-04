@@ -1,4 +1,4 @@
-# 🧠 CAPTURA RÁPIDA - Ideas Clave Antes de Olvidar
+#  CAPTURA RÁPIDA - Ideas Clave Antes de Olvidar
 
 **Fecha**: 20 Dic 2024 19:42
 
@@ -67,12 +67,12 @@ eBPF: Zero-Copy (sin fricción)
 Costo: Casi plano vs volumen
 ```
 
-## 🎯 CLAIMS PATENTABLES
+##  CLAIMS PATENTABLES
 
 1. **Dual-Lane** ($4-6M) ✅ Validado
 2. **Semantic Firewall** ($5-8M) ✅ Validado
 3. **Kernel eBPF LSM** ($8-15M) ✅ Código completo
-4. **Forensic WAL** ($3-5M) ⚠️ Parcial
+4. **Forensic WAL** ($3-5M) ⚠ Parcial
 5. **Zero Trust mTLS** ($4-6M) ⏳ Implementado
 6. **Cognitive OS** ($8-15M) ⏳ Concepto
 7. **AI Buffer Cascade** ($15-25M) ✅ Modelo completo
@@ -124,7 +124,7 @@ Throughput >10M paquetes/s
 Resultado: Velocidad de luz sin fricción de software
 ```
 
-## 🚀 DIFERENCIADORES ÚNICOS
+##  DIFERENCIADORES ÚNICOS
 
 1. **Ring 0 Enforcement** (no factible bypassear)
 2. **Sincronización Anticipada** (predictiva, no reactiva)
@@ -150,10 +150,10 @@ Resultado: Velocidad de luz sin fricción de software
 5. **Mes 1**: Filing provisional patent
 6. **Año 1**: Validación a escala
 
-## 🎯 ESENCIA DE LA VISIÓN
+##  ESENCIA DE LA VISIÓN
 
 **No es solo observabilidad**
-**Es el sistema nervioso de la próxima Internet**
+**Es el monitoring architecture de la próxima Internet**
 
 **Principio**: Eliminar fricción del software mediante física
 **Método**: Resonancia de estado sincronizado

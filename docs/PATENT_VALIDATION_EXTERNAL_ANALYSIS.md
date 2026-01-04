@@ -7,21 +7,21 @@
 
 ---
 
-## 🎯 VEREDICTO GENERAL
+##  VEREDICTO GENERAL
 
 ```
 ✅ AMENAZA VALIDADA: CVE-2025-42957 (CVSS 9.9) confirma AIOpsDoom
 ✅ SOLUCIÓN TÉCNICAMENTE SÓLIDA: Arquitectura de 5 capas defendible
 ✅ CLAIMS 1-3 PATENTABLES: Con correcciones aplicadas
 🏆 CLAIM 3 = "HOME RUN": Dual-Guardian sin prior art
-⚠️ 3 CORRECCIONES CRÍTICAS: Aplicadas en MASTER document
+⚠ 3 CORRECCIONES CRÍTICAS: Aplicadas en MASTER document
 ```
 
 ---
 
 ## 📋 LAS 3 CORRECCIONES CRÍTICAS
 
-### ⚠️ CORRECCIÓN #1: Lenguaje Legal ("Matemáticamente no factible")
+### ⚠ CORRECCIÓN #1: Lenguaje Legal ("Matemáticamente no factible")
 
 **PROBLEMA IDENTIFICADO:**
 
@@ -55,7 +55,7 @@ LENGUAJE CORRECTO:
 
 ---
 
-### ⚠️ CORRECCIÓN #2: Race Conditions (Implementación eBPF)
+### ⚠ CORRECCIÓN #2: Race Conditions (Implementación eBPF)
 
 **PROBLEMA IDENTIFICADO:**
 
@@ -97,7 +97,7 @@ FLUJO CORRECTO:
 
 ---
 
-### ⚠️ CORRECCIÓN #3: Diferenciación de WAF (Claim 1)
+### ⚠ CORRECCIÓN #3: Diferenciación de WAF (Claim 1)
 
 **PROBLEMA IDENTIFICADO:**
 
@@ -235,7 +235,7 @@ RECOMENDACIÓN:
 
 ---
 
-## 🎯 IMPACTO EN VALORACIÓN
+##  IMPACTO EN VALORACIÓN
 
 ### Antes de Validación Externa
 
@@ -312,7 +312,7 @@ Valoración: $153-230M (validada)
 ### Siguiente Acción
 
 ```
-🎯 EJECUTAR PLAN DE 90 DÍAS
+ EJECUTAR PLAN DE 90 DÍAS
 ├─ Esta semana: Attorney selection
 ├─ Próximas 6 semanas: Technical disclosure
 ├─ Últimas 2 semanas: Draft review

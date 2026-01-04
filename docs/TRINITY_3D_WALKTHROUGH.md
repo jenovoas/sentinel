@@ -76,7 +76,7 @@ Navigate to: **http://localhost:3001/trinity**
 
 ---
 
-## 🚀 Next Steps
+##  Next Steps
 
 1. **Integrate GLSL Shaders** - Load custom shaders into geometries
 2. **Enhanced Audio** - Frequency-based visualizations
@@ -103,6 +103,6 @@ frontend/app/trinity/
 
 ---
 
-**Ready to experience the Trinity!** 🌌⚛️💜
+**Ready to experience the Trinity!** ⚛💜
 
 Navigate to `http://localhost:3001/trinity`

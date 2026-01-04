@@ -1,4 +1,4 @@
-# 🏗️ Contexto Arquitectónico Completo - Sentinel Cortex™
+# 🏗 Contexto Arquitectónico Completo - Sentinel Cortex™
 
 **Fecha**: 20 Diciembre 2024  
 **Propósito**: Documentación consolidada de toda la arquitectura del proyecto  
@@ -22,7 +22,7 @@
 
 ---
 
-## 🎯 VISIÓN GENERAL DEL PROYECTO {#visión-general}
+##  VISIÓN GENERAL DEL PROYECTO {#visión-general}
 
 ### El Problema: AIOpsDoom
 
@@ -53,7 +53,7 @@ Sistema AIOps → Ejecuta comando → Pérdida total de datos
 
 ---
 
-## 🏛️ ARQUITECTURA DE ALTO NIVEL {#arquitectura-alto-nivel}
+##  ARQUITECTURA DE ALTO NIVEL {#arquitectura-alto-nivel}
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -447,7 +447,7 @@ class AnalyticsAPI {
 
 ---
 
-## 🚀 TRUTHSYNC ARCHITECTURE {#truthsync-architecture}
+##  TRUTHSYNC ARCHITECTURE {#truthsync-architecture}
 
 ### Dual-Container Design
 
@@ -534,7 +534,7 @@ Cache hit rate:  99.9%
 │  ├─ Encrypted storage (AES-256-GCM)             │
 │  └─ Auto-healing triggers                       │
 │                                                  │
-│  🧠 Cortex Decision Engine (Rust)               │
+│   Cortex Decision Engine (Rust)               │
 │  ├─ Multi-factor correlation (5+ sources)       │
 │  ├─ Confidence scoring (Bayesian)               │
 │  ├─ Action orchestration (N8N)                  │
@@ -702,7 +702,7 @@ services:
 
 ---
 
-## 🛠️ STACK TECNOLÓGICO {#stack-tecnológico}
+## 🛠 STACK TECNOLÓGICO {#stack-tecnológico}
 
 ### Backend
 
@@ -920,7 +920,7 @@ spec:
 
 ---
 
-## 🎯 PRÓXIMOS PASOS
+##  PRÓXIMOS PASOS
 
 ### Inmediato (Próximos 60 días)
 

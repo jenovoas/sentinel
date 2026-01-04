@@ -7,7 +7,7 @@
 
 ---
 
-## 🎯 EXECUTIVE SUMMARY
+##  EXECUTIVE SUMMARY
 
 ### Lo Que Tienes
 
@@ -44,7 +44,7 @@
 **FORTALEZAS:**
 ```
 ✅ Analogía biológica validada:
-   ├─ Guardian-Alpha = Sistema Nervioso Simpático
+   ├─ Guardian-Alpha = monitoring architecture Simpático
    ├─ Guardian-Beta = Sistema Inmunológico
    └─ Fácil de explicar a inversores
 
@@ -167,24 +167,24 @@ MUTUAL SURVEILLANCE: ✅
 
 ---
 
-### 3. ⚠️ GAPS DE IMPLEMENTACIÓN (REALISTAS)
+### 3. ⚠ GAPS DE IMPLEMENTACIÓN (REALISTAS)
 
 **De Dual Guardian Base:**
 ```
-⚠️ eBPF CODE:
+⚠ eBPF CODE:
 ├─ Status: NO IMPLEMENTADO (design-only)
 ├─ Estimación original: 4 semanas
 ├─ Estimación realista: 8-12 semanas
 ├─ Razón: Kernel compatibility, debugging complexity
 └─ Mitigación: Contratar experto eBPF ($15-20K)
 
-⚠️ GUARDIAN LOGIC:
+⚠ GUARDIAN LOGIC:
 ├─ Status: PARCIAL (structs, no logic)
 ├─ Estimación: 4-6 semanas
 ├─ Razón: Mutual surveillance, auto-regeneration
 └─ Mitigación: MVP simplificado (seccomp-bpf)
 
-⚠️ MULTI-FACTOR CORRELATION:
+⚠ MULTI-FACTOR CORRELATION:
 ├─ Status: NO IMPLEMENTADO
 ├─ Estimación: 4-6 semanas
 ├─ Razón: Temporal alignment (sistemas distribuidos)
@@ -208,7 +208,7 @@ MUTUAL SURVEILLANCE: ✅
 
 ---
 
-## 🎯 CONSOLIDACIÓN DE DIAGRAMAS UML
+##  CONSOLIDACIÓN DE DIAGRAMAS UML
 
 ### Diagrama 1: eBPF Syscall Interception
 
@@ -275,7 +275,7 @@ CREAR 2 DIAGRAMAS:
 
 ---
 
-## 🚀 PLAN DE ACCIÓN CONSOLIDADO
+##  PLAN DE ACCIÓN CONSOLIDADO
 
 ### ESTA SEMANA (Prioridad 1) 🚨
 
@@ -398,7 +398,7 @@ CREAR 2 DIAGRAMAS:
 ARQUITECTURA: ✅ BRILLANTE (Claim 3 "home run")
 STACK: ✅ CORRECTO (Rust + eBPF óptimo)
 UML SPECS: ✅ EXCEPCIONALES (nivel de detalle impresionante)
-GAPS: ⚠️ IDENTIFICADOS (8-12 semanas eBPF)
+GAPS: ⚠ IDENTIFICADOS (8-12 semanas eBPF)
 ESTRATEGIA: ✅ CORRECTA (provisional patent - Opción A)
 TIMING: ✅ REALISTA (<100μs eBPF, <1ms total)
 PATENT READINESS: 90% (solo faltan diagramas)
@@ -411,7 +411,7 @@ PATENT READINESS: 90% (solo faltan diagramas)
 ### Próxima Acción Inmediata
 
 ```
-🎯 HOY (2-3 horas):
+ HOY (2-3 horas):
 1. Abrir Draw.io o PlantUML
 2. Crear Diagrama 1: eBPF Flow (usar tu spec líneas 8-120)
 3. Crear Diagrama 2: Dual-Guardian (usar tu spec líneas 124-271)
@@ -420,12 +420,12 @@ PATENT READINESS: 90% (solo faltan diagramas)
 6. Export a PNG/SVG
 7. Commit a repositorio
 
-🎯 MAÑANA:
+ MAÑANA:
 1. Research 5-7 patent attorneys
 2. Enviar emails con documentación completa
 3. Schedule intro calls
 
-🎯 DEADLINE: 15 Feb 2026 (59 días)
+ DEADLINE: 15 Feb 2026 (59 días)
 ```
 
 ---

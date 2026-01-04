@@ -1,4 +1,4 @@
-# 🎯 RESPUESTAS CLAVE - Test de Levitación
+#  RESPUESTAS CLAVE - Test de Levitación
 
 **Fecha**: 20 Diciembre 2024  
 **Contexto**: Análisis de macro-datos y evolución del sistema
@@ -70,7 +70,6 @@ Pipeline de Defensa:
 
 ---
 
-
 ### El Bucle Cerrado (Closed-Loop Response)
 
 **Concepto**: Sistema auto-reparable que detecta, decide y actúa sin intervención humana.
@@ -116,7 +115,7 @@ Pipeline de Defensa:
 │     ├─ Sistema aprende de resultado                         │
 │     ├─ Actualiza modelos ML                                 │
 │     ├─ Mejora detección futura                              │
-│     └─ VUELVE A PASO 1 (ciclo continuo) ♻️                 │
+│     └─ VUELVE A PASO 1 (ciclo continuo) ♻                 │
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -167,7 +166,7 @@ RESULTADO: Ataque bloqueado en 3ms, sistema seguro ✅
 | **Ingesta** | 1M+ logs/segundo | 100K logs/segundo | **10x más rápido** |
 | **Costo/GB** | $0.023/GB | $0.50-1.50/GB | **20-65x más barato** |
 | **Escalabilidad** | Petabytes fácil | Terabytes difícil | **1000x mejor** |
-| **Latencia Query** | 100-500ms | 10-50ms | ⚠️ Elasticsearch gana |
+| **Latencia Query** | 100-500ms | 10-50ms | ⚠ Elasticsearch gana |
 | **Complejidad** | Baja (stateless) | Alta (stateful) | ✅ Loki más simple |
 
 ### Ventajas Específicas de Loki
@@ -302,7 +301,7 @@ Resultado:
 
 ---
 
-## 🎯 CONCLUSIÓN
+##  CONCLUSIÓN
 
 ### Las 3 Respuestas Clave
 
@@ -331,7 +330,7 @@ Resultado:
   ✅ IA NO se corrompe
   ✅ Vemos la verdad
   ✅ Costo mínimo
-  ✅ LEVITACIÓN EXITOSA 🏙️⚡
+  ✅ LEVITACIÓN EXITOSA 🏙⚡
 ```
 
 ---

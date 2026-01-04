@@ -18,7 +18,6 @@
 | 02:04 | 1.87 | 0.01MB | 0 | active |
 | 02:04 | 1.68 | 0.01MB | 0 | active |
 
-
 ## Final Observations
 - **Average Load**: 1.94
 - **Peak SHM Usage**: 0.01MB

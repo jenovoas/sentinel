@@ -95,7 +95,7 @@ He creado READMEs prácticos para cada módulo principal de Sentinel, diseñados
 
 ---
 
-## 🎯 Actualización de Evaluación de Candidatos
+##  Actualización de Evaluación de Candidatos
 
 ### Agregado a `ELITE_TECHNICAL_ASSESSMENT.md` ✅
 

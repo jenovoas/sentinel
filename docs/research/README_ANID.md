@@ -13,7 +13,7 @@
 
 Sentinel is not just an app; it is a **Sovereign Overlay OS** designed to reclaim control over your digital life. It consists of two powerful pillars:
 
-### 🛡️ **1. Sentinel Cortex™ (Server Defense & Research)**
+###  **1. Sentinel Cortex™ (Server Defense & Research)**
 *Protects your infrastructure and extends human capability.*
 - **AIOpsShield**: Defends AI systems from adversarial injection.
 - **TruthSync**: Verifies information at neural speeds (90.5x speedup).
@@ -34,7 +34,7 @@ Sentinel is not just an app; it is a **Sovereign Overlay OS** designed to reclai
 
 Sentinel Vault integrates 7 critical privacy tools into one unified interface, eliminating the need for fragmented SaaS subscriptions.
 
-### 🛡️ **3. Market Alignment**
+###  **3. Market Alignment**
 
 Sentinel Vault occupies a unique "Blue Ocean" by integrating capabilities that are traditionally fragmented.
 
@@ -43,14 +43,14 @@ Sentinel Vault occupies a unique "Blue Ocean" by integrating capabilities that a
 | **Core Focus** | Passwords | Hardware Wallet | ETH Wallet | **Sovereign OS** |
 | **Market Cap** | ~$500M | ~$1.5B | ~$7B | **Blue Ocean ($1B+)** |
 | **Identity** | ✅ Best UX | ❌ None | ❌ None | **✅ Argon2id + AI Analysis** |
-| **Crypto** | ❌ None | ✅ Multi-chain | ⚠️ ETH-centric | **✅ Unified (BTC/ETH/SOL)** |
+| **Crypto** | ❌ None | ✅ Multi-chain | ⚠ ETH-centric | **✅ Unified (BTC/ETH/SOL)** |
 | **Privacy** | ❌ Cloud-based | ✅ Hardware | ❌ RPC leaks | **✅ Triad (Tor/I2P/Nym)** |
 | **Smart Defense** | ❌ None | ❌ None | ❌ None | **✅ TruthSync (AI Verification)** |
 | **Audit Trail** | ❌ Opaque | ✅ On-chain | ✅ On-chain | **✅ Local + Blockchain** |
 
 > *"Sentinel Vault eliminates the friction of managing three separate apps (Identity, Wallet, Browser) by unifying them into a single, sovereign interface."*
 
-### 🚀 Key Capabilities (V1.0)
+###  Key Capabilities (V1.0)
 
 #### 1. 🔐 Identity & Secrets
 - **Zero-Knowledge Architecture**: Your master password never leaves your device.
@@ -65,21 +65,20 @@ Sentinel Vault occupies a unique "Blue Ocean" by integrating capabilities that a
     - 🌐 **Clear**: Sanitized direct connection.
     - ⚡ **Velocity**: Rotating Proxies.
     - 👻 **Ghost**: Nym Mixnet (Timing obfuscation).
-    - 🕸️ **Deep**: I2P Hidden Services.
+    - 🕸 **Deep**: I2P Hidden Services.
 - **Virtual Air Gap**: Frontend receives only sanitized HTML, no executable JS.
 
 #### 4. 📄 Docs & Notes
 - **Encrypted Vault**: Store sensitive PDFs/Images with AES-256.
 - **Secure Notes**: Markdown editor with link detection and tagging.
 
-#### 5. 🧠 TruthSync Cognitive Engine (bonus)
+#### 5.  TruthSync Cognitive Engine (bonus)
 - **Real-time Verification**: Analyzes browser content for misinformation using local AI (Phi-3).
 - **Cognitive Defense**: Visual "Trust Badges" (Verified/Misinformation) directly in the reader view.
 
 ---
 
-
-## 🎯 Problema de Investigación
+##  Problema de Investigación
 
 ### AIOpsDoom: Amenaza Emergente Identificada por RSA Conference 2025
 
@@ -189,7 +188,7 @@ Sistema AIOps (sin defensa):
 
 ---
 
-## 🛡️ Protección contra Insider Threats
+##  Protección contra Insider Threats
 
 **Diferenciador Único**: Sentinel protege no solo contra atacantes externos (AIOpsDoom), sino también contra **usuarios internos maliciosos**.
 
@@ -200,7 +199,7 @@ Sistema AIOps (sin defensa):
 | Admin deshabilita logging | ✅ Posible | ❌ **Bloqueado** (WAL inmutable) |
 | Admin deshabilita monitoring | ✅ Posible | ❌ **Detectado** (Mutual surveillance) |
 | Admin borra evidencia | ✅ Posible | ❌ **no factible** (Audit trail inmutable) |
-| Admin con root access | ✅ Sistema comprometido | ⚠️ **Detectado** (eBPF LSM hooks) |
+| Admin con root access | ✅ Sistema comprometido | ⚠ **Detectado** (eBPF LSM hooks) |
 
 **Protección promedio**: **97.5%** vs insider threats (validado por especialista en ciberseguridad)
 
@@ -218,12 +217,11 @@ Sistema AIOps (sin defensa):
 - ✅ Stack completo: Desplegado en laboratorio propio
 - ✅ Documentación: Completa y publicada en GitHub
 
-
 ### Próxima Fase de Investigación (24 meses)
 
 ---
 
-## 🏗️ Arquitectura del Prototipo
+## 🏗 Arquitectura del Prototipo
 ```
 ┌─────────────────────────────────────────────────────────┐
 │              SENTINEL CORTEX™ - ARQUITECTURA             │
@@ -337,7 +335,7 @@ sentinel/
 
 ---
 
-## 🚀 Instalación y Validación
+##  Instalación y Validación
 
 ### Requisitos
 
@@ -439,7 +437,6 @@ open http://localhost:3001
 - Datos sintéticos generados (100K+ eventos)
 - Datasets públicos (DARPA IDS, NSL-KDD, CICIDS2017)
 - Telemetría de sistemas de testing propios
-
 
 **Colaboraciones Buscadas**:
 - Universidades de la Región del Bío-Bío (UdeC, UBB, UCSC)
@@ -571,7 +568,7 @@ open http://localhost:3001
 
 | Feature | Sentinel | Datadog APM Security | Wiz | CrowdStrike |
 |---------|----------|----------------------|-----|-------------|
-| **Kernel-Level Monitoring** | ✅ Native | ⚠️ Agent-based | ⚠️ Agent-based | ✅ EDR |
+| **Kernel-Level Monitoring** | ✅ Native | ⚠ Agent-based | ⚠ Agent-based | ✅ EDR |
 | **AI Threat Analysis** | ✅ Local | ✅ Cloud | ✅ Cloud | ✅ Cloud |
 | **Privacy** | ✅ On-prem | ❌ Cloud | ❌ Cloud | ❌ Cloud |
 | **Data Sovereignty** | ✅ Complete | ❌ Limited | ❌ Limited | ❌ Limited |
@@ -595,7 +592,7 @@ open http://localhost:3001
 | **Privacy** | ✅ 100% local | ❌ Cloud-based |
 | **Data Sovereignty** | ✅ Complete | ❌ None |
 | **Latency** | <1s (GPU) | 2-5s |
-| **Customization** | ✅ Full | ⚠️ Limited |
+| **Customization** | ✅ Full | ⚠ Limited |
 | **Offline** | ✅ Works | ❌ Requires internet |
 
 ### Use Cases
@@ -645,7 +642,7 @@ open http://localhost:3001
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Quick Start
 
@@ -707,7 +704,7 @@ Proprietary - See [LICENSE](LICENSE) for details.
 
 ---
 
-## 🔗 Links
+##  Links
 
 - **GitHub**: [github.com/jenovoas/sentinel](https://github.com/jenovoas/sentinel)
 - **Documentation**: [Full technical documentation](docs/)
@@ -715,4 +712,4 @@ Proprietary - See [LICENSE](LICENSE) for details.
 
 ---
 
-**Built with ❤️ for critical infrastructure protection**
+**Built with ❤ for critical infrastructure protection**

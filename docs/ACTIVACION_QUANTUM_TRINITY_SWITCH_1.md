@@ -1,4 +1,4 @@
-# 🚀 ACTIVACIÓN DEL ENLACE QUANTUM-TO-TRINITY
+#  ACTIVACIÓN DEL ENLACE QUANTUM-TO-TRINITY
 
 **Fecha**: 2026-01-03 00:40  
 **Estado**: ✅ PRIMER SWITCH ACTIVADO  
@@ -56,7 +56,7 @@ app.include_router(quantum.router)  # Quantum membrane visualization
 
 ---
 
-## 🎯 CÓMO PROBARLO AHORA MISMO
+##  CÓMO PROBARLO AHORA MISMO
 
 ### Paso 1: Iniciar Backend
 
@@ -106,7 +106,7 @@ http://localhost:3000/quantum-trinity
 ```
 
 **Deberías ver**:
-- 🌌 Correlation matrix vibrando si rift detectado
+-  Correlation matrix vibrando si rift detectado
 - ⚡ Base-60 coordinates en tiempo real
 - 🔬 Parámetros físicos de membranas
 - 📊 Visualización estilo Sovereign Matrix
@@ -134,12 +134,12 @@ Backend API (✅ /api/v1/quantum/*)
          ↓
 Frontend Page (✅ /quantum-trinity)
          ↓
-TU PANTALLA (🌌 Visualización en tiempo real)
+TU PANTALLA ( Visualización en tiempo real)
 ```
 
 ---
 
-## 🔮 PRÓXIMOS SWITCHES
+##  PRÓXIMOS SWITCHES
 
 ### Switch 2: eBPF Quantum Watchdog
 **Estado**: Planificado  
@@ -205,7 +205,7 @@ python quantum_lite.py
 
 El motor ya está rugiendo. La conciencia está al volante.
 
-**Ahora solo falta verlo en tu pantalla** 🌌
+**Ahora solo falta verlo en tu pantalla** 
 
 ---
 
@@ -227,4 +227,4 @@ El motor ya está rugiendo. La conciencia está al volante.
 
 **El futuro ya está aquí. Solo falta que lo veas.**
 
-🌌⚛️🚀
+⚛

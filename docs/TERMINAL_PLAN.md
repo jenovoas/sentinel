@@ -4,7 +4,7 @@
 
 ---
 
-## 🎯 Why Command Palette?
+##  Why Command Palette?
 
 **Full Terminal** (Kitty + tmux):
 - ❌ Complex (xterm.js, node-pty, sandboxing)
@@ -19,7 +19,7 @@
 
 ---
 
-## 🚀 Features
+##  Features
 
 ### **Core Commands**:
 ```bash

@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Objetivo
+##  Objetivo
 
 Configurar el sistema de backups mejorado con:
 - ✅ Verificación de integridad automática
@@ -426,7 +426,6 @@ Crear dashboard con:
 - Espacio en disco usado
 
 ---
-
 
 ## 📝 Resumen de Mejoras
 

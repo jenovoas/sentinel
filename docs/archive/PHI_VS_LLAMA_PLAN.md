@@ -1,6 +1,6 @@
 # 🔬 Comparación phi3 vs llama3 - Plan de Pruebas
 
-## 🎯 Objetivo
+##  Objetivo
 
 Comparar latencias de diferentes modelos pequeños para encontrar el más rápido en GTX 1050 (3GB VRAM).
 
@@ -33,8 +33,8 @@ Comparar latencias de diferentes modelos pequeños para encontrar el más rápid
 - ✅ Menos swapping CPU/GPU
 
 **Desventajas**:
-- ⚠️ Menor calidad de respuestas
-- ⚠️ Menos conocimiento
+- ⚠ Menor calidad de respuestas
+- ⚠ Menos conocimiento
 
 **TTFB Esperado**: 1-2s (mejor que phi3)
 
@@ -45,13 +45,13 @@ Comparar latencias de diferentes modelos pequeños para encontrar el más rápid
 - ✅ Ya probado (baseline conocido)
 
 **Desventajas**:
-- ⚠️ Más grande (2.2GB)
-- ⚠️ Más parámetros = más lento
-- ⚠️ Más swapping en 3GB VRAM
+- ⚠ Más grande (2.2GB)
+- ⚠ Más parámetros = más lento
+- ⚠ Más swapping en 3GB VRAM
 
 **TTFB Esperado**: 3-5s (baseline actual con keep_alive)
 
-## 🎯 Criterios de Decisión
+##  Criterios de Decisión
 
 ### Si llama3.2:1b es >30% más rápido
 → **Usar llama3.2:1b** (velocidad > calidad)
@@ -100,7 +100,7 @@ phi3:mini: 5-7s TTFB
 Ganador: llama3.2:1b (30% más rápido)
 ```
 
-## 🚀 Próximos Pasos
+##  Próximos Pasos
 
 1. ✅ Descargar llama3.2:1b
 2. ⏳ Ejecutar benchmark comparativo

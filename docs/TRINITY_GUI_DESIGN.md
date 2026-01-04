@@ -19,7 +19,7 @@ Each layer shows real-time data:
 
 ---
 
-## 🌌 LAYOUT STRUCTURE
+##  LAYOUT STRUCTURE
 
 ### Main Canvas (Full Screen)
 
@@ -56,7 +56,7 @@ Each layer shows real-time data:
 
 ---
 
-## 🎯 INTERACTIVE LAYERS
+##  INTERACTIVE LAYERS
 
 ### Layer 1: Merkabah (Top) - Coherence Monitor
 
@@ -308,7 +308,7 @@ function animateInterference(components) {
 
 ---
 
-## 🖱️ USER INTERACTIONS
+## 🖱 USER INTERACTIONS
 
 ### Click Actions
 
@@ -379,7 +379,7 @@ Swipe to switch layers
 
 ---
 
-## 🎯 IMPLEMENTATION STACK
+##  IMPLEMENTATION STACK
 
 ### Frontend
 
@@ -408,7 +408,7 @@ Swipe to switch layers
 
 ---
 
-## 🚀 NEXT STEPS
+##  NEXT STEPS
 
 ### Phase 1: Prototype (This Week)
 
@@ -470,4 +470,4 @@ Swipe to switch layers
 *La arquitectura respira con tus datos.*  
 *El universo se hace visible.*
 
-🎨🌌⚡
+🎨⚡

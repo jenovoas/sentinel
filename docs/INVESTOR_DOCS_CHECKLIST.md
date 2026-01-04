@@ -4,7 +4,7 @@
 
 ---
 
-## 🎯 ESTADO ACTUAL
+##  ESTADO ACTUAL
 
 ### ✅ DOCUMENTOS ACTUALIZADOS (Con Sentinel Cortex + QSC)
 
@@ -51,7 +51,7 @@
 
 ---
 
-### ⚠️ DOCUMENTOS DESACTUALIZADOS (Sin Sentinel Cortex + QSC)
+### ⚠ DOCUMENTOS DESACTUALIZADOS (Sin Sentinel Cortex + QSC)
 
 8. **EXECUTIVE_SUMMARY.md** ❌
    - **Problema:** Menciona solo "observability + security"
@@ -65,15 +65,15 @@
    - **Valoración desactualizada:** Menciona $10M pre-money (debería ser $110M+)
    - **Acción:** REESCRIBIR COMPLETO
 
-10. **INVESTOR_CONCEPTS_GUIDE.md** ⚠️
+10. **INVESTOR_CONCEPTS_GUIDE.md** ⚠
     - **Estado:** No revisado aún
     - **Acción:** REVISAR
 
-11. **BACKUP_SYSTEM_INVESTOR_SUMMARY.md** ⚠️
+11. **BACKUP_SYSTEM_INVESTOR_SUMMARY.md** ⚠
     - **Estado:** Probablemente desactualizado
     - **Acción:** REVISAR
 
-12. **CANVA_PITCH_DECK_GUIDE.md** ⚠️
+12. **CANVA_PITCH_DECK_GUIDE.md** ⚠
     - **Estado:** No revisado aún
     - **Acción:** REVISAR
 
@@ -99,7 +99,7 @@
     - Valoración de IP
     - **Acción:** CREAR
 
-16. **FINANCIAL_MODEL_UPDATED.md** ⚠️
+16. **FINANCIAL_MODEL_UPDATED.md** ⚠
     - Modelo financiero actualizado
     - Revenue streams (SaaS + Licensing)
     - **Acción:** REVISAR/ACTUALIZAR
@@ -164,7 +164,7 @@ Los equipos de seguridad enfrentan un dilema no factible:
 
 ## La Solución
 Sentinel Cortex™ - El primer organismo vivo de seguridad:
-- 🧠 Cortex: Cerebro inteligente (multi-factor decision)
+-  Cortex: Cerebro inteligente (multi-factor decision)
 - 🚨 Guardian-Alpha: Policía de intrusiones (shadow mode)
 - 🔒 Guardian-Beta: Policía de integridad (auto-healing)
 
@@ -195,7 +195,7 @@ Sentinel Cortex™ - El primer organismo vivo de seguridad:
 
 ---
 
-## 🎯 CHECKLIST DE VALIDACIÓN
+##  CHECKLIST DE VALIDACIÓN
 
 Antes de enviar a inversores, verificar:
 
@@ -221,7 +221,7 @@ Antes de enviar a inversores, verificar:
 
 ### Esta Semana
 1. Crear PATENT_STRATEGY_SUMMARY.md
-2. Revisar todos los docs marcados con ⚠️
+2. Revisar todos los docs marcados con ⚠
 3. Validar consistencia de mensajes
 
 ### Próxima Semana

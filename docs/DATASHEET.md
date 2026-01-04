@@ -1,4 +1,4 @@
-# 🛡️ Sentinel Cortex v2.0 - Executive Datasheet
+#  Sentinel Cortex v2.0 - Executive Datasheet
 
 ## System Overview
 
@@ -101,15 +101,15 @@ AI:   ls -l /etc  # Safe interpretation
 
 **3. Health Monitoring**
 ```bash
-🧠 semsh> health
-⚠️  [WARNING] High CPU Load (85.2%)
+ semsh> health
+⚠  [WARNING] High CPU Load (85.2%)
    → Suggested Action: sctl tune --profile performance
 ```
 
 **4. Command Review**
 ```bash
-🧠 semsh> review docker system prune -a
-🧠 AI Analysis: Risk Level: HIGH
+ semsh> review docker system prune -a
+ AI Analysis: Risk Level: HIGH
    Safer alternative: docker image prune
 ```
 
@@ -174,7 +174,7 @@ sdocker safe-restart db  # Validated restart
 
 ### Playbook System
 ```bash
-🧠 semsh> run backup_db
+ semsh> run backup_db
 📋 Executing Playbook: backup_critical_db
    Proceed? [y/N]: y
 ✅ Playbook completed successfully.

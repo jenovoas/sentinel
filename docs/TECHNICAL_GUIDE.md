@@ -1,4 +1,4 @@
-# 🧠 Sentinel Cortex™ - Guía Técnica Completa
+#  Sentinel Cortex™ - Guía Técnica Completa
 **Documentación para Desarrolladores**
 
 **Última actualización:** Diciembre 2025  
@@ -21,13 +21,13 @@
 
 ---
 
-## 🎯 Introducción
+##  Introducción
 
 ### ¿Qué es Sentinel Cortex™?
 
 Sentinel Cortex™ es el **primer organismo vivo de seguridad** - un sistema de seguridad cognitiva auto-regenerativo que combina:
 
-- 🧠 **Cortex Engine**: Cerebro central con decision engine multi-factor
+-  **Cortex Engine**: Cerebro central con decision engine multi-factor
 - 🚨 **Guardian-Alpha™**: Policía de intrusiones (syscall, memory, network)
 - 🔒 **Guardian-Beta™**: Policía de integridad (backup, config, certs)
 
@@ -52,7 +52,7 @@ Logs → Sanitization → Multi-Factor Correlation → Auto-Action → Auto-Heal
 
 ---
 
-## 🏗️ Arquitectura General
+## 🏗 Arquitectura General
 
 ### Vista de Alto Nivel
 
@@ -567,7 +567,7 @@ sentinel/
 
 ---
 
-## 🚀 Guía de Desarrollo
+##  Guía de Desarrollo
 
 ### Setup Inicial
 
@@ -819,7 +819,7 @@ spec:
 
 ---
 
-## 🎯 Roadmap de Desarrollo
+##  Roadmap de Desarrollo
 
 ### ✅ Completado (Weeks 1-4)
 

@@ -17,7 +17,7 @@
 
 ---
 
-## 🏗️ Architecture Overview
+## 🏗 Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -44,7 +44,7 @@
 │  ├─ Encrypted storage (AES-256-GCM)             │
 │  └─ Auto-healing triggers                       │
 │                                                  │
-│  🧠 Cortex Decision Engine (Rust)               │
+│   Cortex Decision Engine (Rust)               │
 │  ├─ Multi-factor correlation (5+ sources)       │
 │  ├─ Confidence scoring (Bayesian)               │
 │  ├─ Action orchestration (N8N)                  │
@@ -308,7 +308,7 @@ impl GuardianBeta {
 
 ---
 
-## 🧠 Cortex Decision Engine
+##  Cortex Decision Engine
 
 ### Multi-Factor Correlation
 ```rust
@@ -408,7 +408,7 @@ class QuanticMLBaseline:
 
 ---
 
-## 🎯 Deployment Architecture
+##  Deployment Architecture
 
 ```yaml
 # Docker Compose
@@ -507,7 +507,7 @@ impl QuanticKeyManager {
 
 ---
 
-## 🚀 Roadmap
+##  Roadmap
 
 ### Phase 1 (Weeks 1-4): Core QSC
 - [x] Guardian-Alpha basics (syscall monitoring)

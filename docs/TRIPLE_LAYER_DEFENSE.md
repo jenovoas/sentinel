@@ -1,10 +1,10 @@
-# 🛡️ Triple-Layer Defense: Watchdog + Guardian-Alpha + Guardian-Beta
+#  Triple-Layer Defense: Watchdog + Guardian-Alpha + Guardian-Beta
 
 **Integración completa de las 3 capas de seguridad**
 
 ---
 
-## 🏗️ Arquitectura de 3 Capas
+## 🏗 Arquitectura de 3 Capas
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -88,7 +88,7 @@
 
 ---
 
-## 🎯 Responsabilidades por Capa
+##  Responsabilidades por Capa
 
 ### **Layer 1: Watchdog** (Application-Level)
 **Ubicación**: FastAPI middleware  
@@ -189,7 +189,7 @@ async def process_request(request: Request):
 
 ---
 
-## 🛡️ Mutual Surveillance
+##  Mutual Surveillance
 
 ```
 Guardian-Alpha ←→ Guardian-Beta ←→ Watchdog
@@ -206,7 +206,7 @@ Guardian-Alpha ←→ Guardian-Beta ←→ Watchdog
 
 ---
 
-## 🚀 Ventajas de la Triple Capa
+##  Ventajas de la Triple Capa
 
 ### **1. Defense in Depth**
 - Si Watchdog falla → Guardian-Beta detecta
@@ -291,7 +291,7 @@ Guardian-Alpha ←→ Guardian-Beta ←→ Watchdog
 
 ---
 
-## 🎯 Conclusión
+##  Conclusión
 
 **Triple capa = Defensa no factible de evadir**
 

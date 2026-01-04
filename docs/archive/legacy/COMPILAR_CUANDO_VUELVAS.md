@@ -1,4 +1,4 @@
-# 🚀 Guía Rápida: Compilar eBPF LSM
+#  Guía Rápida: Compilar eBPF LSM
 
 **Cuando vuelvas de la batería, ejecuta esto:**
 
@@ -44,7 +44,7 @@ Si ves el archivo .o, ¡compiló exitosamente! ✅
 
 ---
 
-## 🎯 SIGUIENTE PASO (Después de compilar)
+##  SIGUIENTE PASO (Después de compilar)
 
 ### Cargar en kernel (requiere sudo)
 ```bash
@@ -59,7 +59,7 @@ sudo bpftool prog list | grep guardian
 
 ---
 
-## ⚠️ Si Hay Errores
+## ⚠ Si Hay Errores
 
 ### Error: "clang: command not found"
 **Solución**: Ejecuta `sudo pacman -S clang`
@@ -86,10 +86,10 @@ Después de compilar, deberías ver:
 
 ---
 
-**Cuando vuelvas, ejecuta**: `./compilar_ebpf.sh` y listo! 🚀
+**Cuando vuelvas, ejecuta**: `./compilar_ebpf.sh` y listo! 
 
 ---
 
 **Fecha**: 21 de Diciembre de 2025, 10:15 AM  
-**Status**: ⏸️ Esperando que vuelvas de la batería  
+**Status**: ⏸ Esperando que vuelvas de la batería  
 **Siguiente**: Ejecutar compilar_ebpf.sh

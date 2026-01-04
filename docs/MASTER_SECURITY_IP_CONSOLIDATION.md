@@ -8,7 +8,7 @@
 
 ---
 
-## 🎯 RESUMEN EJECUTIVO (VERSIÓN PULIDA - 60 SEGUNDOS)
+##  RESUMEN EJECUTIVO (VERSIÓN PULIDA - 60 SEGUNDOS)
 
 Sentinel Cortex™ convierte un problema nuevo y crítico de la IA en una ventaja estratégica protegida por patente: los sistemas AIOps actuales confían ciegamente en la telemetría que ingieren, lo que abre la puerta a ataques de inyección de logs como **AIOpsDoom (CVSS 9.1)**, ya observados en el mundo real en vulnerabilidades como **CVE-2025-42957** sobre SAP S/4HANA explotada in-the-wild.
 
@@ -18,7 +18,7 @@ Esta arquitectura da lugar a **tres familias de claims patentables sin arte prev
 
 ---
 
-## 🎯 RESUMEN EJECUTIVO (VERSIÓN DETALLADA - REFERENCIA)
+##  RESUMEN EJECUTIVO (VERSIÓN DETALLADA - REFERENCIA)
 
 ### La Oportunidad
 
@@ -133,7 +133,7 @@ CAPA 5: CONTEXT-AWARE EXECUTION
 
 ### 2.2 Diferenciador Clave: eBPF vs Auditd
 
-**⚠️ CORRECCIÓN CRÍTICA:**
+**⚠ CORRECCIÓN CRÍTICA:**
 
 ```
 ANTES (Vulnerable a Race Conditions):
@@ -303,7 +303,7 @@ DEBE especificar:
 4. **Auto-Regeneration Protocol (Patent-Critical)**
    ```
    Trigger condition: (now - last_heartbeat) > 5 seconds
- ## 🎯 RESUMEN EJECUTIVO (60 SEGUNDOS)
+ ##  RESUMEN EJECUTIVO (60 SEGUNDOS)
 
 Sentinel Cortex™ convierte un problema nuevo y crítico de la IA en una ventaja estratégica protegida por patente: los sistemas AIOps actuales confían ciegamente en la telemetría que ingieren, lo que abre la puerta a ataques de inyección de logs como AIOpsDoom (CVSS 9.1), ya observados en el mundo real en vulnerabilidades como CVE-2025-42957 sobre SAP S/4HANA explotada in-the-wild.
 
@@ -313,7 +313,7 @@ Esta arquitectura da lugar a tres familias de claims patentables sin arte previo
 
 ---
 
-## 🎯 RESUMEN EJECUTIVO (VERSIÓN ANTERIOR - DETALLADA):
+##  RESUMEN EJECUTIVO (VERSIÓN ANTERIOR - DETALLADA):
 > 
 > (a) A first guardian component (Guardian-Alpha) operating in kernel space maintains a shared atomic timestamp reference updated during each event processing cycle;
 > 
@@ -352,7 +352,7 @@ Esta arquitectura da lugar a tres familias de claims patentables sin arte previo
 
 El sistema Sentinel Cortex opera como un **organismo vivo** donde:
 
-1. **Guardian-Alpha = Sistema Nervioso Simpático**
+1. **Guardian-Alpha = monitoring architecture Simpático**
    - Reacción rápida (fight-or-flight)
    - Kernel-level reflexes (< 100μs)
    - Bloqueo pre-ejecución de amenazas
@@ -706,7 +706,7 @@ Claim 3 vs Prior Art:
 
 ---
 
-## 🎯 LEGAL & IMPLEMENTATION GUARDRAILS
+##  LEGAL & IMPLEMENTATION GUARDRAILS
 
 ### Legal Language Corrections
 

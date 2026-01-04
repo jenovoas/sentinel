@@ -10,7 +10,7 @@ Este documento contiene los patrones críticos que debes revisar en Sentinel ant
 
 ---
 
-## 🛡️ 1. High Availability (HA) Debugging
+##  1. High Availability (HA) Debugging
 
 ### Patrones a Verificar
 
@@ -107,7 +107,7 @@ ab -n 1000 -c 10 http://localhost:8000/health
 
 ---
 
-## 🗄️ 2. PostgreSQL Query Optimization
+## 🗄 2. PostgreSQL Query Optimization
 
 ### Patrones a Verificar
 
@@ -614,7 +614,7 @@ echo "✅ Deployed to $ENV successfully"
 
 ---
 
-## 🚀 Comandos Rápidos de Auditoría
+##  Comandos Rápidos de Auditoría
 
 ```bash
 # Verificar todo de una vez

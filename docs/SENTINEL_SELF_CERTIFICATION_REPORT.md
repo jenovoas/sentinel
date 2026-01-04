@@ -71,5 +71,5 @@ ERROR: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read t
 
 ---
 
-# 🏛️ CONCLUSIÓN GLOBAL DEL AUDITOR AI
+#  CONCLUSIÓN GLOBAL DEL AUDITOR AI
 ERROR: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=60)

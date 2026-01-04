@@ -7,7 +7,7 @@
 
 ---
 
-## 🎯 Resumen Ejecutivo
+##  Resumen Ejecutivo
 
 **Objetivo:** Proteger la arquitectura única de Sentinel Cortex™ con 3-5 claims patentables que generen:
 - Moat defensivo de 10+ años
@@ -314,7 +314,7 @@ IP representa: 8-15% del valor total
 
 ---
 
-## 🛡️ Estrategia Defensiva
+##  Estrategia Defensiva
 
 ### **Protección Multi-Capa**
 
@@ -381,7 +381,7 @@ Enterprise License:
 
 ---
 
-## ⚠️ Riesgos y Mitigación
+## ⚠ Riesgos y Mitigación
 
 ### **Riesgo 1: Patent Rejection**
 - **Probabilidad:** Baja (claims únicos)

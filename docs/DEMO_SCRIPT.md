@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 Demo Flow
+##  Demo Flow
 
 ### 1. Opening (30 seconds)
 
@@ -41,7 +41,7 @@
 
 **Show**:
 ```
-🧠 AI Workflow Suggestions
+ AI Workflow Suggestions
 Powered by 8,603 pre-trained workflows
 
 #1 Phishing Auto-Triage (Match: 4.2)
@@ -132,7 +132,7 @@ Completed in 3 minutes 47 seconds
 │                                         │
 │                                         │
 │                                         │
-│ TOTAL: 3 minutes 47 seconds ✨          │
+│ TOTAL: 3 minutes 47 seconds           │
 └─────────────────────────────────────────┘
 
 TIME SAVED: 97.5%
@@ -156,7 +156,7 @@ TIME SAVED: 97.5%
 │ Palo Alto XSOAR:  ~1,000 content packs    │
 │ IBM QRadar SOAR:    ~50 playbooks         │
 │                                            │
-│ 🚀 SENTINEL:      8,603 workflows ✨       │
+│  SENTINEL:      8,603 workflows        │
 │                                            │
 │ ADVANTAGE:        8.6x vs market leader   │
 │                  172x vs Splunk/IBM       │

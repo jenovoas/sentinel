@@ -1,4 +1,4 @@
-# ⏱️ TruthSync - Real-Time Telemetry & Performance Profiling
+# ⏱ TruthSync - Real-Time Telemetry & Performance Profiling
 
 **Goal**: Measure everything, optimize hardware, refine in production  
 **Stack**: Rust metrics + Prometheus + Grafana  
@@ -298,7 +298,7 @@ pub fn print_memory_stats() {
 
 ---
 
-## 🎯 Hardware Optimization Guide
+##  Hardware Optimization Guide
 
 ### Benchmarking Different Hardware
 
@@ -458,7 +458,7 @@ cache_misses_total 12345
 
 ---
 
-## 🎯 Optimization Workflow
+##  Optimization Workflow
 
 ```
 1. Deploy TruthSync with metrics

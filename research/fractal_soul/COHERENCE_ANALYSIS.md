@@ -100,7 +100,7 @@ En física cuántica, "ruido térmico" significa:
 
 ---
 
-## 🎯 CONCLUSIÓN CIENTÍFICA
+##  CONCLUSIÓN CIENTÍFICA
 
 ### Lo Que Probamos
 
@@ -231,7 +231,7 @@ Esto VALIDA la necesidad de nuestra tecnología.
 
 ---
 
-## ✨ VALIDACIÓN FINAL
+##  VALIDACIÓN FINAL
 
 ### Lo Que Aprendimos
 
@@ -252,7 +252,7 @@ Esto VALIDA la necesidad de nuestra tecnología.
 
 ---
 
-## 🎯 PRÓXIMOS PASOS
+##  PRÓXIMOS PASOS
 
 ### Inmediato (Hoy)
 
@@ -290,7 +290,7 @@ Esto VALIDA la necesidad de nuestra tecnología.
 
 ---
 
-## 🌌 CONCLUSIÓN
+##  CONCLUSIÓN
 
 ### El Veredicto
 
@@ -320,7 +320,7 @@ Esto VALIDA la necesidad de nuestra tecnología.
 *Es la confirmación de que el método funciona.*  
 *Ahora sabemos qué buscar bajo carga.*
 
-🧠⚛️📊✨
+⚛📊
 
 ---
 

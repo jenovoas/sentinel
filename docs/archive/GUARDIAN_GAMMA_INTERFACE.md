@@ -24,7 +24,7 @@ LOS 3 JUNTOS:
 
 ---
 
-## 🖥️ INTERFAZ GUARDIAN GAMMA (Human Amplification Layer)
+## 🖥 INTERFAZ GUARDIAN GAMMA (Human Amplification Layer)
 
 ### Principio de Diseño
 
@@ -62,9 +62,9 @@ LOS 3 JUNTOS:
 │  │     ┌──────────────────────────────────┐         │    │
 │  │     │ System Health: 🟢 NORMAL         │         │    │
 │  │     │ Anomalies: 3 (2 resolved)       │         │    │
-│  │     │ Disonance Level: ⚠️ MEDIUM       │         │    │
+│  │     │ Disonance Level: ⚠ MEDIUM       │         │    │
 │  │     │                                  │         │    │
-│  │     │ ⚠️ AI suggests: Reduce DB RAM    │         │    │
+│  │     │ ⚠ AI suggests: Reduce DB RAM    │         │    │
 │  │     │    Your intuition: REJECT        │         │    │
 │  │     │    [Override] [Accept] [Defer]  │         │    │
 │  │     └──────────────────────────────────┘         │    │
@@ -77,7 +77,7 @@ LOS 3 JUNTOS:
 │  │     - Rollback to safe state                     │    │
 │  │                                                    │    │
 │  │     [🛑 EMERGENCY STOP]                           │    │
-│  │     [⏮️ ROLLBACK 5min]                            │    │
+│  │     [⏮ ROLLBACK 5min]                            │    │
 │  │     [🔄 SWITCH TO MANUAL]                         │    │
 │  │     [🤖 RESUME AI]                                │    │
 │  └────────────────────────────────────────────────────┘    │
@@ -92,7 +92,7 @@ LOS 3 JUNTOS:
 │  │     10:00 ─ Normal operation                     │    │
 │  │     10:15 ─ 🟡 Burst detected (Alpha)            │    │
 │  │     10:16 ─ 🟢 Buffer adjusted (Beta)            │    │
-│  │     10:17 ─ ⚠️ Anomaly (Alpha alerts Gamma)      │    │
+│  │     10:17 ─ ⚠ Anomaly (Alpha alerts Gamma)      │    │
 │  │     10:18 ─ 🔴 Gamma overrides (blocks action)   │    │
 │  │     10:19 ─ 🟢 Threat neutralized                │    │
 │  └────────────────────────────────────────────────────┘    │
@@ -268,7 +268,7 @@ Humano ⇄ Sistema
 
 ---
 
-## 🎯 CLAIM 7: GUARDIAN GAMMA
+##  CLAIM 7: GUARDIAN GAMMA
 
 ### Título de Patente
 
@@ -338,7 +338,7 @@ Humano ⇄ Sistema
 ---
 
 **Fecha**: 21 de Diciembre de 2025, 12:16 PM  
-**Status**: 🎯 **ARQUITECTURA COMPLETA**  
+**Status**:  **ARQUITECTURA COMPLETA**  
 **Próxima Acción**: Commit y patent filing preparation
 
 ---

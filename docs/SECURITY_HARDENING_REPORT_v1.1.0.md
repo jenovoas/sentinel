@@ -1,4 +1,4 @@
-# 🛡️ SECURITY HARDENING REPORT v1.1.0
+#  SECURITY HARDENING REPORT v1.1.0
 
 **Fecha:** 2026-01-01
 **Estado:** SROP DIAMOND (Hardened)
@@ -23,7 +23,7 @@ Este reporte documenta las acciones correctivas aplicadas tras la auditoría de 
   - Propiedad forzada al usuario de servicio.
   - **Estado:** ✅ Mitigado.
 
-### 👁️ Amenaza 3: Resiliencia del Relay (Reliability)
+### 👁 Amenaza 3: Resiliencia del Relay (Reliability)
 - **Riesgo:** El proceso `sentinel_relay` es un punto único de fallo (SPOF) en el espacio de usuario.
 - **Solución Aplicada (Systemd Watchdog):**
   - Activación de `WatchdogSec=30s` en `sentinel_relay.service`.
@@ -36,7 +36,7 @@ Este reporte documenta las acciones correctivas aplicadas tras la auditoría de 
 | :--- | :--- | :--- |
 | **Kernel Hook** | `lsm/bprm_check_security` | 🔒 Enforcing |
 | **Relay Path** | `/var/run/sentinel` | 🔒 Secure |
-| **Fallback** | Fail-Closed + Whitelist | 🛡️ Active |
+| **Fallback** | Fail-Closed + Whitelist |  Active |
 | **Watchdog** | 30s Interval | 💓 Heartbeat OK |
 
 ## 3. Conclusión del Auditor

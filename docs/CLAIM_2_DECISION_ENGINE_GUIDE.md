@@ -1,4 +1,4 @@
-# 🧠 Sentinel Cortex - Claim 2: Decision Engine (Semanas 3-4)
+#  Sentinel Cortex - Claim 2: Decision Engine (Semanas 3-4)
 
 ## ¿Qué es el Decision Engine?
 
@@ -19,7 +19,7 @@ Large data transfer (Network)
 
 ---
 
-## 🎯 Objetivo de estas 2 semanas
+##  Objetivo de estas 2 semanas
 
 Crear un sistema Rust que:
 - ✅ Reciba eventos de diferentes fuentes
@@ -497,8 +497,6 @@ impl N8NClient {
 }
 ```
 
-
-
 ---
 
 ### Día 10-11: Main loop (orquestación)
@@ -531,7 +529,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let detector = PatternDetector::new();
     let n8n = N8NClient::new(n8n_url);
     
-    tracing::info!("🧠 Sentinel Cortex Decision Engine started");
+    tracing::info!(" Sentinel Cortex Decision Engine started");
     
     // Main loop: collect → detect → act
     loop {
@@ -647,7 +645,7 @@ CMD ["neural-guard"]
 
 ---
 
-## 🎯 Resultado Final
+##  Resultado Final
 
 Al terminar estas 2 semanas tendrás:
 

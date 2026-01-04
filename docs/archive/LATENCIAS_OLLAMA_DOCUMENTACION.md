@@ -14,7 +14,7 @@
 |---------|-------|-------------|
 | **TTFB Promedio** | **21,470ms** (~21.5s) | ❌ Muy alto |
 | **TTFB Mediana** | **14,908ms** (~15s) | ❌ Muy alto |
-| **TTFB Mínimo** | **3,627ms** (~3.6s) | ⚠️ Aceptable (modelo en RAM) |
+| **TTFB Mínimo** | **3,627ms** (~3.6s) | ⚠ Aceptable (modelo en RAM) |
 | **TTFB Máximo** | **49,874ms** (~50s) | ❌ Inaceptable |
 | **Requests** | 5 | - |
 
@@ -81,7 +81,7 @@ curl http://localhost:11434/api/generate -d '{
 
 ---
 
-## 🎯 TARGETS POST-OPTIMIZACIÓN
+##  TARGETS POST-OPTIMIZACIÓN
 
 | Métrica | Baseline | Target | Mejora |
 |---------|----------|--------|--------|
@@ -141,7 +141,7 @@ Estado: ✅ Cumple targets
 ```
 TTFB: 3000-5000ms
 Mejora: 75%+ vs baseline
-Estado: ⚠️ Mejor que baseline pero no ideal
+Estado: ⚠ Mejor que baseline pero no ideal
 ```
 
 ---
@@ -197,7 +197,7 @@ RTX 3060 12GB (~$300)
 
 ---
 
-## 🚀 PRÓXIMOS PASOS
+##  PRÓXIMOS PASOS
 
 1. **HOY**: Ejecutar optimización y validar
 2. **Esta semana**: Documentar resultados reales

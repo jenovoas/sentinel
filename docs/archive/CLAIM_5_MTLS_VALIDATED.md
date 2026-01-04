@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 EXECUTIVE SUMMARY
+##  EXECUTIVE SUMMARY
 
 **Claim 5 (Zero Trust mTLS with SSRF Prevention) is now FULLY VALIDATED** with reproducible evidence.
 
@@ -152,7 +152,7 @@ SSRF ATTACK: claimed=tenant-analytics, actual=tenant-user-123
 
 ---
 
-## 🏗️ IMPLEMENTATION DETAILS
+## 🏗 IMPLEMENTATION DETAILS
 
 ### Code Location
 
@@ -241,14 +241,14 @@ def check_timestamp_violation(self, timestamp: str) -> bool:
 
 ---
 
-## 🎯 COMPARISON WITH COMPETITION
+##  COMPARISON WITH COMPETITION
 
 | Feature | Standard mTLS | OAuth 2.0 | API Keys | **Sentinel mTLS** |
 |---------|---------------|-----------|----------|-------------------|
-| **Header Signing** | ❌ | ⚠️ JWT | ❌ | ✅ HMAC-SHA256 |
+| **Header Signing** | ❌ | ⚠ JWT | ❌ | ✅ HMAC-SHA256 |
 | **SSRF Prevention** | ❌ | ❌ | ❌ | ✅ Tenant validation |
-| **Timestamp Validation** | ❌ | ⚠️ exp claim | ❌ | ✅ Multi-rule |
-| **Zero Trust** | ⚠️ Partial | ⚠️ Partial | ❌ | ✅ Full |
+| **Timestamp Validation** | ❌ | ⚠ exp claim | ❌ | ✅ Multi-rule |
+| **Zero Trust** | ⚠ Partial | ⚠ Partial | ❌ | ✅ Full |
 | **Tenant Isolation** | ❌ | ❌ | ❌ | ✅ Enforced |
 
 **Conclusion**: Sentinel is the **only** solution combining mTLS + Header Signing + SSRF Prevention + Tenant Isolation.
@@ -314,7 +314,7 @@ A computer-implemented zero trust mutual TLS system with SSRF attack prevention,
 
 ---
 
-## 🚀 NEXT STEPS
+##  NEXT STEPS
 
 ### For Provisional Patent (57 days)
 
@@ -339,7 +339,7 @@ A computer-implemented zero trust mutual TLS system with SSRF attack prevention,
 ### Tier 1: HOME RUNS (Zero Prior Art) - $123-540M
 - Claim 3: eBPF LSM ($8-15M) - ✅ Code complete
 - Claim 6: Cognitive OS ($10-20M) - 📋 Concept designed
-- Claim 7: AI Buffer Cascade ($15-25M) - 🧠 Model validated
+- Claim 7: AI Buffer Cascade ($15-25M) -  Model validated
 - Claim 9: Planetary Resonance ($100-500M) - 🌍 Vision
 
 ### Tier 2: Validated Technically - $13-25M

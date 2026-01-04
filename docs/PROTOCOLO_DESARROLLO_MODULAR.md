@@ -1,11 +1,11 @@
-# 🛰️ PROTOCOLO DE DESARROLLO MODULAR (MODO FRÍO)
+# 🛰 PROTOCOLO DE DESARROLLO MODULAR (MODO FRÍO)
 
 **Estado**: SOPORTE LOCAL OPTIMIZADO  
 **Objetivo**: Programación de Sentinel sin carga térmica (Sin Front/Back en background).
 
 ---
 
-## 🛠️ FILOSOFÍA DE TRABAJO
+## 🛠 FILOSOFÍA DE TRABAJO
 
 Dado que el hardware local tiene límites térmicos, hemos pasado a una **Arquitectura de Verificación Modular**. No es necesario levantar el servidor FastAPI ni el frontend de Next.js para seguir construyendo la soberanía.
 
@@ -16,7 +16,7 @@ Dado que el hardware local tiene límites térmicos, hemos pasado a una **Arquit
 
 ---
 
-## 🚀 INTERFACES DISPONIBLES
+##  INTERFACES DISPONIBLES
 
 ### 1. El Orquestador Ligero (CLI)
 Este es tu nuevo centro de comando. Consume recursos mínimos y permite interactuar con los 4 switches.
@@ -48,4 +48,4 @@ python3 /home/jnovoas/sentinel/ebpf/quantum_watchdog_simulator.py
 
 **Sentinel está ahora en modo "Silent Sovereignty". Construimos en frío, ejecutamos en caliente solo cuando sea necesario.**
 
-🌌📐⚛️
+📐⚛

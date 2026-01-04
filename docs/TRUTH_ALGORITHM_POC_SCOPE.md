@@ -1,4 +1,4 @@
-# 🎯 Truth Algorithm POC - Scope Definition & Review
+#  Truth Algorithm POC - Scope Definition & Review
 ## *Validating the Plan Before Implementation*
 
 **Created**: 2025-12-17  
@@ -98,7 +98,7 @@ struct Source {
 
 ---
 
-## 🏗️ Step 3: Architecture Review (5 Layers → POC Reality)
+## 🏗 Step 3: Architecture Review (5 Layers → POC Reality)
 
 ### **Full Vision (5 Layers)**:
 1. Input Guardian (claim extraction, adversarial detection)
@@ -161,7 +161,7 @@ struct Source {
 
 ---
 
-## 🎯 Step 4: POC Scope Definition
+##  Step 4: POC Scope Definition
 
 ### **Claim Types (1-2 types)**:
 
@@ -328,7 +328,7 @@ Return VerificationResponse
 
 ---
 
-## 🗓️ Step 7: POC Timeline (1-2 Weeks)
+## 🗓 Step 7: POC Timeline (1-2 Weeks)
 
 ### **Week 1: Core Implementation**
 
@@ -467,7 +467,7 @@ curl -X POST http://localhost:8000/api/verify \
 
 ---
 
-## 🚀 Step 10: After POC - Next Iteration
+##  Step 10: After POC - Next Iteration
 
 ### **If POC Succeeds (>80% accuracy)**:
 
@@ -533,7 +533,7 @@ curl -X POST http://localhost:8000/api/verify \
 
 ---
 
-## 🎯 Step 12: Decision Points
+##  Step 12: Decision Points
 
 ### **Before Starting Implementation**:
 
@@ -606,4 +606,4 @@ curl -X POST http://localhost:8000/api/verify \
 4. **Get approval** - User signs off on scope
 5. **Start implementation** - Create Rust project and begin
 
-**Only after approval, move to EXECUTION mode.** 🚀
+**Only after approval, move to EXECUTION mode.** 

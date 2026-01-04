@@ -4,7 +4,7 @@
 
 ---
 
-## 🎯 Research Scope
+##  Research Scope
 
 **Our Goal**: Bridge current academic research with Sentinel architecture
 

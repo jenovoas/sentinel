@@ -87,7 +87,7 @@ Status: ✅ READY FOR DEPLOYMENT
 ```bash
 $ sudo sctl status
 
-🛡️  Sentinel Status Dashboard
+  Sentinel Status Dashboard
    • eBPF LSM      : ACTIVE
    • Sentinel Relay: RUNNING
    • Kernel Pulse  : RUNNING
@@ -191,7 +191,7 @@ RAM Usage: 2.14 MB
 $ sudo /home/jnovoas/sentinel/guardian-alpha/sentinel_relay
 
 Output (sample):
-🚀 Sentinel High-Performance Relay (C Version) Starting...
+ Sentinel High-Performance Relay (C Version) Starting...
 ✅ Relay ACTIVE. Monitoring events...
 DEBUG: Received event size 88
 f4 56 00 00 00 00 00 00 00 00 00 00 0f 00 00 00 

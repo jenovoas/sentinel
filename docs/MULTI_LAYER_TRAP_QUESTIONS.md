@@ -1,4 +1,4 @@
-# 🎯 Preguntas Técnicas Trampa - Multi-Layer Bugs
+#  Preguntas Técnicas Trampa - Multi-Layer Bugs
 
 ## Filosofía
 
@@ -520,7 +520,7 @@ async def startup():
 
 ---
 
-## 🎯 Uso en Assessment
+##  Uso en Assessment
 
 ### Challenge 6 Actualizado
 

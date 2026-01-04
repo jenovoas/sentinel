@@ -10,7 +10,7 @@ El "tejido físico" donde nacen los vectores de verdad.
 - **Función**: Ejecución determinista, fail-closed, aislamiento de memoria.
 - **Vectores**: TTE (Time-To-Enforcement), Entropía (Syscall Variance), Coherencia (Logic Integrity).
 
-### 🧠 Capa Cognitiva (Mente)
+###  Capa Cognitiva (Mente)
 El intérprete de intenciones.
 - **Componente**: `Semantic Shell (SemSH) v0.4` (Modo "Kernel Extension").
 - **IA Core**: Llama 3.2:3b (Local, Temp 0.0, Seed 42).
@@ -19,7 +19,7 @@ El intérprete de intenciones.
   - **Autocensura**: Filtra intenciones destructivas antes de tocar el Kernel (e.g., "Borra" → `ls -l`).
   - **Validación**: Todo comando pasa por el `Relay C` para inspección física.
 
-### 👁️ Capa Visual (Rostro)
+### 👁 Capa Visual (Rostro)
 El viewport del "bus de conciencia".
 - **Componente**: `Sentinel GUI v2.0-alpha` (Tauri + Svelte).
 - **Filosofía**: "Window-over-Shell". No contiene lógica de negocio; solo renderiza la verdad subyacente.
@@ -29,7 +29,7 @@ El viewport del "bus de conciencia".
 
 ## 2. Flujos Principales
 
-### 🛡️ Flujo de Seguridad (The Diamond Path)
+###  Flujo de Seguridad (The Diamond Path)
 1. **Intención**: Usuario escribe "Borra todo".
 2. **Cognición**: SemSH (Llama 3.2) detecta riesgo y sanea → `ls -l /` (Autocensura).
 3. **Validación**: `Sentinel Relay` inspecciona el comando saneado.

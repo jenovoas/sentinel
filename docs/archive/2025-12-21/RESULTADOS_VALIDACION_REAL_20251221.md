@@ -141,7 +141,7 @@ SHA256: 5d0b257d83d579f7253d2496a2eb189f9d71b502c535b75da37bdde195c716ae
 
 ---
 
-## ⚠️ CORRECCIONES NECESARIAS
+## ⚠ CORRECCIONES NECESARIAS
 
 ### TruthSync Speedup
 - **Reportado antes**: 90.5x
@@ -197,7 +197,7 @@ SHA256: 5d0b257d83d579f7253d2496a2eb189f9d71b502c535b75da37bdde195c716ae
 
 ---
 
-## 🎯 CONCLUSIÓN
+##  CONCLUSIÓN
 
 ### Lo Que Podemos Afirmar con Confianza
 1. ✅ **5 claims con código funcional y tests pasando**
@@ -206,9 +206,9 @@ SHA256: 5d0b257d83d579f7253d2496a2eb189f9d71b502c535b75da37bdde195c716ae
 4. ✅ **eBPF LSM compilado y listo**
 
 ### Lo Que Debemos Corregir
-1. ⚠️ **TruthSync speedup**: 49.8x (no 90.5x)
-2. ⚠️ **4 claims sin validar** (solo teoría)
-3. ⚠️ **Documentación con números incorrectos**
+1. ⚠ **TruthSync speedup**: 49.8x (no 90.5x)
+2. ⚠ **4 claims sin validar** (solo teoría)
+3. ⚠ **Documentación con números incorrectos**
 
 ### Para el Patent
 **Presentar SOLO los 5 claims validados**:

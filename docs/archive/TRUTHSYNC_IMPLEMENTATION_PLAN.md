@@ -1,4 +1,4 @@
-# 🎯 TruthSync Implementation Plan
+#  TruthSync Implementation Plan
 
 ## Overview
 Integrate TruthSync into Sentinel with dual-container architecture, Rust core, and Dual-Guardian protection.

@@ -35,7 +35,7 @@
 
 ### For AI (Me)
 - ⚡ **10x faster** context loading (23 lines vs 200+)
-- 🎯 **Clear structure** - know exactly where to look
+-  **Clear structure** - know exactly where to look
 - 📊 **No redundancy** - each topic in one place
 
 ### For You
@@ -45,8 +45,8 @@
 
 ### For Collaborators
 - 📖 **Clear entry points** - consolidated docs
-- 🗺️ **Better onboarding** - organized by topic
-- 🔗 **Easy references** - links to detailed docs
+- 🗺 **Better onboarding** - organized by topic
+-  **Easy references** - links to detailed docs
 
 ---
 

@@ -103,7 +103,7 @@ Para tu GTX 1050 con 3GB VRAM, **SÍ vale la pena** instalar el toolkit:
 
 - ✅ `phi3:mini` (1.3B) - validado, usa ~2GB VRAM
 - ✅ `llama3.2:1b` (1B) - Muy rápido, usa ~1.5GB VRAM
-- ⚠️ `llama3.2:3b` (3B) - Justo en el límite, puede funcionar
+- ⚠ `llama3.2:3b` (3B) - Justo en el límite, puede funcionar
 - ❌ `llama3:8b` (8B) - Demasiado grande, no cabrá
 
 ## Próximos Pasos

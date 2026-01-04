@@ -1,4 +1,4 @@
-# 🧠 Psychology-to-n8n Pipeline
+#  Psychology-to-n8n Pipeline
 ## *Automated Extraction of Behavioral Patterns → n8n Workflows*
 
 **Fecha**: 2025-12-17  
@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 El Concepto
+##  El Concepto
 
 ### **Pipeline Completo**:
 
@@ -448,7 +448,7 @@ for pattern in patterns:
 
 ---
 
-## 🚀 Pipeline Completo Automatizado
+##  Pipeline Completo Automatizado
 
 ```python
 # psychology_to_n8n/main.py
@@ -546,8 +546,8 @@ if __name__ == "__main__":
     # Estadísticas finales
     db = PatternDatabase()
     total_patterns = len(db.get_all_patterns())
-    print(f"\n🎯 Total de patrones en DB: {total_patterns}")
-    print(f"🎯 Total de workflows generados: {total_patterns}")
+    print(f"\n Total de patrones en DB: {total_patterns}")
+    print(f" Total de workflows generados: {total_patterns}")
 ```
 
 ---
@@ -569,7 +569,7 @@ if __name__ == "__main__":
 
 ---
 
-## 🎯 Integración con Truth Algorithm
+##  Integración con Truth Algorithm
 
 ```python
 # Cargar workflows en n8n
@@ -614,7 +614,7 @@ n8n.upload_all_workflows("n8n_workflows")
 
 ---
 
-## 🚀 Próximos Pasos
+##  Próximos Pasos
 
 1. **Implementar pipeline** (2-3 días)
 2. **Procesar 3-5 libros clave** (1 día)
@@ -622,4 +622,4 @@ n8n.upload_all_workflows("n8n_workflows")
 4. **Integrar con Truth Algorithm** (1 día)
 5. **Testing con videos reales** (1 semana)
 
-**¿Quieres que implemente el pipeline completo?** 🎯
+**¿Quieres que implemente el pipeline completo?** 

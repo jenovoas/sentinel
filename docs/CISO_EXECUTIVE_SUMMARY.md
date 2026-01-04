@@ -1,4 +1,4 @@
-# 🛡️ Sentinel Cortex: Executive Technical Summary
+#  Sentinel Cortex: Executive Technical Summary
 **Classification:** SENTINEL INTERNAL // INVESTOR GRADE
 **Date:** 2025-12-30
 **Version:** v1.0.0-READY

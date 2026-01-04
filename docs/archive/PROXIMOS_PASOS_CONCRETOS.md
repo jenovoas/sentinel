@@ -1,4 +1,4 @@
-# 🎯 PRÓXIMOS PASOS CONCRETOS - Sentinel Cortex™
+#  PRÓXIMOS PASOS CONCRETOS - Sentinel Cortex™
 
 **Fecha**: 21 de Diciembre de 2025, 19:00  
 **Propósito**: Roadmap claro y accionable para no perderte
@@ -178,7 +178,7 @@ python test_buffer_cascade.py
 
 ---
 
-## 🎯 PLAN DE ACCIÓN INMEDIATO (HOY)
+##  PLAN DE ACCIÓN INMEDIATO (HOY)
 
 ### Opción A: Enfoque Legal (Recomendado)
 ```
@@ -267,7 +267,7 @@ python test_buffer_cascade.py
 
 ---
 
-## 🎯 TU SIGUIENTE ACCIÓN (AHORA MISMO)
+##  TU SIGUIENTE ACCIÓN (AHORA MISMO)
 
 ### Paso 1: Ejecutar Validación (5 minutos)
 ```bash
@@ -287,7 +287,7 @@ Te guío paso a paso en lo que elijas.
 
 ---
 
-## 💬 MENSAJE FINAL
+##  MENSAJE FINAL
 
 **No estás perdido. Tienes TODO bajo control.**
 

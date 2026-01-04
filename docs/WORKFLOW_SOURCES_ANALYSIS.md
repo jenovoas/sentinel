@@ -1,4 +1,4 @@
-# 🎯 WORKFLOW SOURCES - FINAL MASTER LIST
+#  WORKFLOW SOURCES - FINAL MASTER LIST
 
 **Updated**: 2025-12-16 20:52  
 **Current**: 8,603 workflows  
@@ -93,7 +93,7 @@ Status: ✅ Already indexed as n8n-zie619-workflows
 
 ---
 
-## 🎯 RECOMMENDED STRATEGY
+##  RECOMMENDED STRATEGY
 
 ### Phase 1: Security-First (2-3 hours) 🔥 CRITICAL
 
@@ -152,7 +152,7 @@ Build scraper for n8n.io/workflows/
 ### After Phase 2 (Volume)
 > "13,624 workflows including Wazuh SIEM, DFIR-IRIS, and 3,000+ Spanish workflows for LATAM"
 
-**Impact**: 🚀 HUGE - Volume + specialization
+**Impact**:  HUGE - Volume + specialization
 
 ### After Phase 3 (Everything)
 > "21,000+ official verified workflows including enterprise SIEM integrations"
@@ -199,13 +199,13 @@ python3 scripts/analyze_workflows.py
 
 ---
 
-## 🎯 MY RECOMMENDATION
+##  MY RECOMMENDATION
 
 **Do Phase 1 FIRST** (Security-focused)
 
 **Why**:
 1. 🔥 **Exact use case** - Wazuh/DFIR is what SOC teams use
-2. 🎯 **Demo impact** - "We have Wazuh SIEM workflows" = instant credibility
+2.  **Demo impact** - "We have Wazuh SIEM workflows" = instant credibility
 3. 💰 **Sales value** - Shows deep understanding of SOC needs
 4. ⚡ **Quick win** - 2-3 hours vs 8-10 for everything
 

@@ -1,4 +1,4 @@
-# 🎖️ SENTINEL CORTEX™ - SUPREMACÍA DEL KERNEL VALIDADA
+# 🎖 SENTINEL CORTEX™ - SUPREMACÍA DEL KERNEL VALIDADA
 
 **Fecha**: 19 Diciembre 2024  
 **Estado**: ✅ **GRADO MILITAR CERTIFICADO**  
@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 RESUMEN EJECUTIVO (1 minuto)
+##  RESUMEN EJECUTIVO (1 minuto)
 
 Sentinel Cortex™ logró **Supremacía del Kernel**: defensa contra AIOpsDoom con **10,000x mejora** vs competencia comercial, validada con benchmarks reproducibles.
 
@@ -100,7 +100,7 @@ Sentinel (Local):
 
 ---
 
-## 🎖️ CRITERIOS GRADO MILITAR - 6/6 CUMPLIDOS
+## 🎖 CRITERIOS GRADO MILITAR - 6/6 CUMPLIDOS
 
 ### ✅ 1. Zero Trust Architecture
 
@@ -164,7 +164,7 @@ Sentinel (Local):
 
 **Fuzzer AIOpsDoom**:
 ```
-🎯 Métricas de Detección:
+ Métricas de Detección:
   True Positives:  30/30 (100%)
   False Negatives: 0 (CERO)
   Accuracy:  100.0%
@@ -317,7 +317,7 @@ out_of_order_time_window: 2s
 
 ---
 
-## 🚀 PITCH DECK ACTUALIZADO
+##  PITCH DECK ACTUALIZADO
 
 ### Slide 1: El Problema
 
@@ -427,4 +427,4 @@ out_of_order_time_window: 2s
 
 ---
 
-**"No monitoreamos infraestructura. LA INMUNIZAMOS en nanosegundos."** 🎖️
+**"No monitoreamos infraestructura. LA INMUNIZAMOS en nanosegundos."** 🎖

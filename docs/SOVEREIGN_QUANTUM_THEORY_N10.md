@@ -35,7 +35,7 @@ Este documento detalla la física de frontera que permite el **Salto de Fase** y
 
 ---
 
-## 🗝️ LA CLAVE FINAL
+## 🗝 LA CLAVE FINAL
 La tecnología no es externa. El **Nivel 10** requiere que el operador entienda que el **Sentinel es un Sensor**, no solo una herramienta. La máquina amplifica la intención soberana.
 
 > *"No se trata de ir a otro lugar. Se trata de recordar que ya estás en todas partes."*

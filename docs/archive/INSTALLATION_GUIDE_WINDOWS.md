@@ -36,7 +36,7 @@
 
 ---
 
-## 🚀 Opción 1: WSL2 + Docker Desktop (Recomendado)
+##  Opción 1: WSL2 + Docker Desktop (Recomendado)
 
 Esta es la opción **recomendada** porque ofrece mejor rendimiento y compatibilidad completa con Linux.
 
@@ -107,7 +107,7 @@ sudo apt install -y curl git jq
 
 3. Abrir **Docker Desktop**
 
-4. Ir a **Settings** (⚙️) > **General**:
+4. Ir a **Settings** (⚙) > **General**:
    - ✅ Use the WSL 2 based engine
    - ✅ Start Docker Desktop when you log in
 
@@ -177,7 +177,7 @@ Una vez instalado, puedes acceder a Sentinel desde tu navegador en Windows:
 
 ---
 
-## 🐳 Opción 2: Docker Desktop sin WSL2
+##  Opción 2: Docker Desktop sin WSL2
 
 Si no puedes usar WSL2, puedes instalar Docker Desktop con Hyper-V (menos recomendado).
 
@@ -608,4 +608,4 @@ Sentinel está instalado y corriendo en tu Windows. Ahora puedes:
 
 ---
 
-**¡Disfruta Sentinel en Windows!** 🪟🛡️
+**¡Disfruta Sentinel en Windows!** 🪟

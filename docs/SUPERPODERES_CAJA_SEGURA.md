@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 El Dilema que Todos Enfrentan
+##  El Dilema que Todos Enfrentan
 
 ### Speed vs Security
 
@@ -35,7 +35,7 @@ Alerta → Humano revisa → Acción
 
 ---
 
-## ✨ La Solución: Superpoderes en Caja Segura
+##  La Solución: Superpoderes en Caja Segura
 
 ### Sentinel Cortex = Opción C (Rápido + Seguro)
 
@@ -137,10 +137,10 @@ audit:
 | Característica | Sentinel Cortex | Splunk SOAR | Datadog | Palo Alto XSOAR | Tines |
 |----------------|--------------|-------------|---------|-----------------|-------|
 | **Sanitización Adversarial** | ✅ Sí (40+ patrones) | ❌ No | ❌ No | ❌ No | ❌ No |
-| **Multi-Factor Decision** | ✅ Sí (5 factores) | ⚠️ Reglas estáticas | ⚠️ Alertas simples | ⚠️ Reglas complejas | ❌ No |
-| **Caja Segura (Permisos)** | ✅ Granular | ⚠️ Básico | ❌ No | ⚠️ Básico | ⚠️ Básico |
-| **Velocidad de Respuesta** | ✅ <30s | ⚠️ 1-5min | ❌ Manual (horas) | ⚠️ 1-5min | ⚠️ 1-5min |
-| **Costo Anual** | ✅ $936-$78K | ❌ $50K-200K | ❌ $100K+ | ❌ $100K-500K | ⚠️ $10K-50K |
+| **Multi-Factor Decision** | ✅ Sí (5 factores) | ⚠ Reglas estáticas | ⚠ Alertas simples | ⚠ Reglas complejas | ❌ No |
+| **Caja Segura (Permisos)** | ✅ Granular | ⚠ Básico | ❌ No | ⚠ Básico | ⚠ Básico |
+| **Velocidad de Respuesta** | ✅ <30s | ⚠ 1-5min | ❌ Manual (horas) | ⚠ 1-5min | ⚠ 1-5min |
+| **Costo Anual** | ✅ $936-$78K | ❌ $50K-200K | ❌ $100K+ | ❌ $100K-500K | ⚠ $10K-50K |
 | **Patentable** | ✅ Sí (Claims 1-5) | ❌ No | ❌ No | ❌ No | ❌ No |
 | **Open Source** | ✅ Sí | ❌ No | ❌ No | ❌ No | ❌ No |
 
@@ -188,7 +188,7 @@ audit:
 
 ---
 
-## 🎯 Total Addressable Market
+##  Total Addressable Market
 
 ### Latam (Inicial)
 - **PYMES**: 50,000 empresas × $78/mes = $46.8M ARR
@@ -201,7 +201,7 @@ audit:
 
 ---
 
-## 🛡️ Defensibilidad (Moat)
+##  Defensibilidad (Moat)
 
 ### 1. Patente (IP Legal)
 - **Claims 1-5**: Sanitización + Multi-factor + Dual orchestration + Honeypots + Firewall
@@ -290,14 +290,14 @@ audit:
 
 ---
 
-## 🚀 Roadmap de Ejecución
+##  Roadmap de Ejecución
 
 ### Q1 2026 (Semanas 1-12)
 - ✅ Claim 1: Telemetry Sanitization (DONE)
 - 🚧 Claim 2: Decision Engine (Week 3-4)
 - ⏳ Claim 3: Dual Orchestration (Week 5-6)
 - ⏳ Patent Documentation (Week 7)
-- ⏳ **Provisional Patent Filing** (Week 8) 🎯
+- ⏳ **Provisional Patent Filing** (Week 8) 
 
 ### Q2 2026 (Semanas 13-24)
 - Claim 4: Dynamic Honeypots
@@ -371,7 +371,7 @@ audit:
 
 ---
 
-## 🎯 Conclusión
+##  Conclusión
 
 **"Superpoderes en Caja Segura"** no es solo un tagline - es la arquitectura fundamental que hace a Sentinel:
 

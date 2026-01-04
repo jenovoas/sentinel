@@ -5,7 +5,7 @@
 
 ---
 
-## 🎖️ Achievement Unlocked: Sovereign OS
+## 🎖 Achievement Unlocked: Sovereign OS
 
 We have successfully engineered a comprehensive **Personal Sovereignty System**.
 Key metrics of this release:
@@ -20,7 +20,7 @@ Key metrics of this release:
 - [x] **Verification**: `run_tests.sh` + `docs/TESTING_GUIDE.md`.
 - [x] **Documentation**: `README.md` + `docs/VAULT_ARCHITECTURE.md`.
 
-## 🔮 Future Roadmap (V2.0)
+##  Future Roadmap (V2.0)
 - **TruthSync Core**: Real-time verification engine (Rust).
 - **Mobile Sync**: Encrypted P2P sync to Android/iOS.
 - **Hardware Integration**: YubiKey / Hardware Wallet support.

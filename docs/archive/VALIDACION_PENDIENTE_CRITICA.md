@@ -5,7 +5,7 @@
 
 ---
 
-## 🎯 LO QUE YA ESTÁ VALIDADO
+##  LO QUE YA ESTÁ VALIDADO
 
 ### 1. Predicción de Bursts ✅
 - **Evidencia**: `tests/benchmark_levitation.py`
@@ -92,7 +92,7 @@ sudo perf stat -e cycles,instructions \
 
 **Estado Actual**:
 - ✅ Código implementado (`backend/app/core/wal.py`)
-- ⚠️ NO validado con ataque real
+- ⚠ NO validado con ataque real
 
 **Qué Probar**:
 ```python
@@ -153,7 +153,7 @@ def test_timestamp_manipulation():
 
 **Estado Actual**:
 - ✅ Código implementado (`docker/nginx/nginx.conf`)
-- ⚠️ NO validado con ataque real
+- ⚠ NO validado con ataque real
 
 **Qué Probar**:
 ```python
@@ -234,7 +234,7 @@ def test_valid_signature():
 
 ---
 
-## 🎯 PLAN DE EJECUCIÓN
+##  PLAN DE EJECUCIÓN
 
 ### Día 1 (21 Diciembre - HOY)
 **Tiempo**: 2-3 horas
@@ -352,15 +352,15 @@ def test_valid_signature():
 - ✅ Claim 5 (mTLS): **FUERTE** - 100% prevención probada
 
 ### Sin Validación
-- ⚠️ Claim 3 (eBPF LSM): **DÉBIL** - Solo código, sin prueba
-- ⚠️ Claim 4 (WAL): **MEDIO** - Implementado pero no probado
-- ⚠️ Claim 5 (mTLS): **MEDIO** - Implementado pero no probado
+- ⚠ Claim 3 (eBPF LSM): **DÉBIL** - Solo código, sin prueba
+- ⚠ Claim 4 (WAL): **MEDIO** - Implementado pero no probado
+- ⚠ Claim 5 (mTLS): **MEDIO** - Implementado pero no probado
 
 **Diferencia en Valoración**: $10-15M (con validación completa)
 
 ---
 
-## 🎯 CONCLUSIÓN
+##  CONCLUSIÓN
 
 **Falta Validar**: 3 claims críticos (3, 4, 5)  
 **Tiempo Requerido**: 6-8 horas total  

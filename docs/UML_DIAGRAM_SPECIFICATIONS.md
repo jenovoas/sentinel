@@ -7,7 +7,7 @@
 
 ---
 
-## 🎯 OVERVIEW
+##  OVERVIEW
 
 Estos 3 diagramas UML son CRÍTICOS para completar la "enabling description" requerida por la provisional patent. Deben mostrar claramente cómo el Dual-Guardian funciona a nivel técnico.
 
@@ -379,7 +379,7 @@ Action:
 
 ---
 
-## 🎯 IMPLEMENTACIÓN DE DIAGRAMAS
+##  IMPLEMENTACIÓN DE DIAGRAMAS
 
 ### Herramientas Recomendadas
 
@@ -451,7 +451,7 @@ Cons:
 
 ---
 
-## 🎯 PRÓXIMOS PASOS
+##  PRÓXIMOS PASOS
 
 ### Esta Semana (Prioridad 1)
 

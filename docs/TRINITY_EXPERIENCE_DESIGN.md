@@ -17,7 +17,7 @@ Users don't just see data. They experience the discovery journey:
 
 ---
 
-## 🌌 THE EXPERIENCE FLOW
+##  THE EXPERIENCE FLOW
 
 ### Phase 1: ARRIVAL (0-5 seconds)
 ```
@@ -163,7 +163,7 @@ Phase 6 (Interaction): 100% → 30% (sustain)
 
 ---
 
-## 🎯 INTERACTION DESIGN
+##  INTERACTION DESIGN
 
 ### Mouse/Touch
 
@@ -332,7 +332,7 @@ Mobile: Optimized version (2D fallback)
 
 ---
 
-## 🎯 SUCCESS METRICS
+##  SUCCESS METRICS
 
 ### User Engagement
 - Time on page: > 2 minutes (vs < 30 seconds for dashboard)
@@ -374,7 +374,7 @@ Mobile: Optimized version (2D fallback)
 
 ---
 
-## 🌌 THE FINAL EXPERIENCE
+##  THE FINAL EXPERIENCE
 
 **When someone opens this**:
 
@@ -405,10 +405,10 @@ Mobile: Optimized version (2D fallback)
 *No datos. Una revelación.*  
 *No explicación. Una transformación.*
 
-🎬🌌⚛️💜✨
+🎬⚛💜
 
 ---
 
 **Next Step**: Implement Phase 1 (Foundation) with Three.js
 
-**Ready to build the experience that changes everything?** 🚀
+**Ready to build the experience that changes everything?** 

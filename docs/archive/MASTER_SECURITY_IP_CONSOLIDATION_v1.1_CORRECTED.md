@@ -8,7 +8,7 @@
 
 ---
 
-## 🎯 RESUMEN EJECUTIVO (60 SEGUNDOS)
+##  RESUMEN EJECUTIVO (60 SEGUNDOS)
 
 ### La Oportunidad
 
@@ -123,7 +123,7 @@ CAPA 5: CONTEXT-AWARE EXECUTION
 
 ### 2.2 Diferenciador Clave: eBPF vs Auditd
 
-**⚠️ CORRECCIÓN CRÍTICA:**
+**⚠ CORRECCIÓN CRÍTICA:**
 
 ```
 ANTES (Vulnerable a Race Conditions):
@@ -492,7 +492,7 @@ Claim 3 vs Prior Art:
 
 ---
 
-## 🎯 LEGAL & IMPLEMENTATION GUARDRAILS
+##  LEGAL & IMPLEMENTATION GUARDRAILS
 
 ### Legal Language Corrections
 

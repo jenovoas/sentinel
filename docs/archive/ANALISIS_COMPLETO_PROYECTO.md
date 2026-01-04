@@ -33,7 +33,7 @@
 
 ---
 
-## 🎯 PROBLEMA Y SOLUCIÓN
+##  PROBLEMA Y SOLUCIÓN
 
 ### El Problema: AIOpsDoom
 
@@ -146,7 +146,7 @@ Sistema AIOps → Ejecuta comando → Pérdida total de datos
 
 ---
 
-## 🏗️ ARQUITECTURA TÉCNICA COMPLETA
+## 🏗 ARQUITECTURA TÉCNICA COMPLETA
 
 ### Stack Tecnológico
 
@@ -251,7 +251,7 @@ frontend/src/
 
 ---
 
-## 🚀 INNOVACIONES CLAVE
+##  INNOVACIONES CLAVE
 
 ### 1. AI-Driven Buffer Cascade (Claim 7 potencial)
 
@@ -380,7 +380,7 @@ Cache hit rate:  99.9%
 
 ---
 
-## 🎯 ESTRATEGIA DE EJECUCIÓN
+##  ESTRATEGIA DE EJECUCIÓN
 
 ### Timeline Crítico
 
@@ -451,8 +451,8 @@ ROI: 125-296× (protege $32-58M en IP)
 - ✅ Throughput: >100K logs/sec
 
 ### Claim 3: Kernel eBPF LSM
-- ⚠️ POC funcional (file_open hook) - **PENDIENTE COMPILAR**
-- ⚠️ Interceptación confirmada - **PENDIENTE VALIDAR**
+- ⚠ POC funcional (file_open hook) - **PENDIENTE COMPILAR**
+- ⚠ Interceptación confirmada - **PENDIENTE VALIDAR**
 - ✅ Overhead: <1ms (proyectado)
 - ✅ Viabilidad técnica: demostrada
 
@@ -643,8 +643,8 @@ Costo: Casi plano vs volumen
 - ✅ False Positive Rate: <1% (0% logrado)
 - ✅ Latency: <10ms p99 (0.21ms logrado)
 - ✅ Throughput: >10K events/sec (1.54M logrado)
-- ⚠️ Uptime: >99.9% (pendiente validar en producción)
-- ⚠️ Test coverage: >80% (pendiente medir)
+- ⚠ Uptime: >99.9% (pendiente validar en producción)
+- ⚠ Test coverage: >80% (pendiente medir)
 
 ### Validación Actual
 - ✅ TruthSync: 90.5x speedup validado
@@ -655,7 +655,7 @@ Costo: Casi plano vs volumen
 
 ---
 
-## 🎯 CONCLUSIÓN
+##  CONCLUSIÓN
 
 ### Fortalezas del Proyecto
 

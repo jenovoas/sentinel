@@ -52,7 +52,7 @@ SOM (Serviceable Obtainable):       $500M (5 años)
 
 ---
 
-## 🛡️ Validación: AIOpsDoom es Vulnerabilidad REAL
+##  Validación: AIOpsDoom es Vulnerabilidad REAL
 
 ### CVE-2025-42957: SAP S/4HANA (CVSS 9.9)
 
@@ -98,7 +98,7 @@ Patch: Available (SAP Security Note 3456789)
 | **Payload** | Malicious log entries | Malicious log entries |
 | **Impact** | Code execution | Code execution |
 | **CVSS** | 9.9 | 9.1 |
-| **Explotado** | ✅ Confirmado | ⚠️ Demostrado en lab |
+| **Explotado** | ✅ Confirmado | ⚠ Demostrado en lab |
 
 **Conclusión:** AIOpsDoom NO es teórico - **ya fue explotado en producción** en sistemas similares.
 
@@ -343,17 +343,17 @@ TOTAL AGRESIVO:                      $233M
 
 ---
 
-## 🎯 Validación de Diferenciación Competitiva
+##  Validación de Diferenciación Competitiva
 
 ### Análisis de Competidores - Vulnerabilidad AIOpsDoom
 
 | Competidor | Sanitización | Multi-Factor | Guardians | HITL | AIOpsDoom Status |
 |------------|--------------|--------------|-----------|------|------------------|
-| **Datadog** | ❌ Ninguna | ⚠️ Básico | ❌ No | ❌ No | 🔴 VULNERABLE |
+| **Datadog** | ❌ Ninguna | ⚠ Básico | ❌ No | ❌ No | 🔴 VULNERABLE |
 | **Splunk** | ❌ Ninguna | ❌ No | ❌ No | ❌ No | 🔴 VULNERABLE |
 | **New Relic** | ❌ Ninguna | ❌ No | ❌ No | ❌ No | 🔴 VULNERABLE |
 | **Grafana** | ❌ Ninguna | ❌ No | ❌ No | ❌ No | 🔴 VULNERABLE |
-| **Tines** | ⚠️ Básico | ❌ No | ❌ No | ⚠️ Manual | 🟠 PARCIAL |
+| **Tines** | ⚠ Básico | ❌ No | ❌ No | ⚠ Manual | 🟠 PARCIAL |
 | **Sentinel Cortex™** | ✅ 40+ patterns | ✅ 5+ signals | ✅ Dual | ✅ Auto | 🟢 INMUNE |
 
 **Conclusión:** Sentinel Cortex™ es el **ÚNICO** sistema AIOps inmune a AIOpsDoom.

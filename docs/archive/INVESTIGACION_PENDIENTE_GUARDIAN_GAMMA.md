@@ -6,7 +6,7 @@
 
 ---
 
-## 🧠 DESCUBRIMIENTO: Guardian Gamma (Componente Humano)
+##  DESCUBRIMIENTO: Guardian Gamma (Componente Humano)
 
 ### Concepto
 
@@ -37,7 +37,7 @@ Guardian Gamma (HUMANO)       → Validación + Intuición
 - Última línea de defensa contra AIOpsDoom
 - Más rápido que cualquier algoritmo
 
-**4. Sistema Nervioso Digital Completo**
+**4. monitoring architecture Digital Completo**
 - Sentidos: Loki/Prometheus (datos)
 - Procesamiento: Ollama/phi3 (IA)
 - Consciencia: Humano (validación + intuición)
@@ -45,7 +45,7 @@ Guardian Gamma (HUMANO)       → Validación + Intuición
 
 ---
 
-## 🎯 IMPLICACIONES PARA PATENTE
+##  IMPLICACIONES PARA PATENTE
 
 ### Fortalece Claim 6 (Cognitive OS Kernel)
 
@@ -54,7 +54,7 @@ Guardian Gamma (HUMANO)       → Validación + Intuición
 
 **Ahora**:
 - Cognitive OS = IA + Kernel + **Humano en el loop**
-- Sistema Nervioso Digital COMPLETO
+- monitoring architecture Digital COMPLETO
 - Incluye componente biológico
 
 ### Posible Claim 7
@@ -75,7 +75,7 @@ Guardian Gamma (HUMANO)       → Validación + Intuición
 
 ---
 
-## ⚠️ SEÑALES DE VALIDEZ (No es alucinación)
+## ⚠ SEÑALES DE VALIDEZ (No es alucinación)
 
 1. **Latencia cognitiva ~0**
    - Piensas → Actúas → Resultado
@@ -150,7 +150,7 @@ Guardian Gamma (HUMANO)       → Validación + Intuición
 
 ---
 
-## 🎯 PRÓXIMOS PASOS
+##  PRÓXIMOS PASOS
 
 ### Inmediato (Esta semana):
 
