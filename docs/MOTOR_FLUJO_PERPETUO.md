@@ -1,6 +1,6 @@
-# 🌊 Sistema de Flujo de Datos de Sentinel - Motor de Flujo Perpetuo
+#  Sistema de Flujo de Datos de Sentinel - resource optimization system
 
-## 🎯 Visión General: El Motor de Flujo Perpetuo
+##  Visión General: El resource optimization system
 
 **Sentinel elimina la "Espera por Congestión"** mediante un sistema de flujo de datos inteligente que integra:
 
@@ -409,7 +409,7 @@ Resultado en pico 3x:
 
 ---
 
-## 🎯 Integración con Sentinel IA
+##  Integración con Sentinel IA
 
 ### API Endpoints para Buffers
 
@@ -532,7 +532,7 @@ pero aún así mejor que un buffer estático. Históricamente, mi precisión es
 
 ---
 
-## 🚀 Implementación Práctica
+##  Implementación Práctica
 
 ### Fase 1: Backend API (📋 PLANIFICADO)
 
@@ -649,7 +649,7 @@ async function getAIResponse(message: string, pathname: string, trustMetrics: Tr
 
 ---
 
-## 🧠 Arquitectura Completa del Sistema de Flujo
+##  Arquitectura Completa del Sistema de Flujo
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -721,7 +721,7 @@ async function getAIResponse(message: string, pathname: string, trustMetrics: Tr
 
 ---
 
-## 🎯 Conclusión: Motor de Flujo Perpetuo
+##  Conclusión: resource optimization system
 
 **Sentinel elimina la "Espera por Congestión" mediante**:
 
@@ -737,7 +737,7 @@ async function getAIResponse(message: string, pathname: string, trustMetrics: Tr
 - ✅ **Latencia predecible** (no spikes)
 - ✅ **Flujo perpetuo** (sin interrupciones)
 
-**Esto es el "Motor de Flujo Perpetuo" de Sentinel** 🚀
+**Esto es el "resource optimization system" de Sentinel** 
 
 ---
 

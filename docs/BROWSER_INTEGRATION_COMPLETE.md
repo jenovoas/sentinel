@@ -4,7 +4,7 @@
 
 ---
 
-## 🎯 Implementation Summary
+##  Implementation Summary
 
 We have successfully integrated the **Secure Browser** into the Sentinel Dashboard. This feature allows users to browse the web anonymously using different privacy modes (Tor, Nym, I2P) directly from the "Secure Workspace" section.
 
@@ -26,7 +26,7 @@ We have successfully integrated the **Secure Browser** into the Sentinel Dashboa
 
 ---
 
-## 🚀 How to Use
+##  How to Use
 
 1.  **Start the Backend**:
     ```bash
@@ -51,7 +51,7 @@ We have successfully integrated the **Secure Browser** into the Sentinel Dashboa
 
 ---
 
-## ⚠️ Requirements for Anonymity Modes
+## ⚠ Requirements for Anonymity Modes
 
 For the advanced modes to work, you must have the respective services running locally:
 

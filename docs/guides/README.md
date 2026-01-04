@@ -10,7 +10,7 @@ Step-by-step guides for installing, using, and extending Sentinel Cortex™.
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### For Researchers
 
@@ -161,7 +161,7 @@ Deploy Quantum-AI Base-60 integration.
 
 ---
 
-## 🔗 Quick Reference
+##  Quick Reference
 
 ### By Audience
 
@@ -206,7 +206,7 @@ Deploy Quantum-AI Base-60 integration.
 
 ---
 
-## 🎯 Quick Navigation
+##  Quick Navigation
 
 - **[← Main Documentation](../README.md)**
 - **[Architecture →](../architecture/README.md)**

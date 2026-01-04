@@ -1,4 +1,4 @@
-# 🎯 Consolidación IP Strategy - 6 Claims Patentables Completos
+#  Consolidación IP Strategy - 6 Claims Patentables Completos
 
 **Fecha**: 20 Diciembre 2024  
 **Deadline Crítico**: 15 Febrero 2026 (57 días)  
@@ -250,7 +250,7 @@ TOTAL IP PORTFOLIO: $32-58M
 - ✅ **Claim 2**: Semantic Firewall (AIOpsDoom defense)
 - ✅ **Claim 3**: Kernel eBPF (HOME RUN, zero prior art)
 - ✅ **Claim 4**: Forensic WAL (complementa Claim 1)
-- ⚠️ **Claim 5**: Zero Trust mTLS (opcional, si budget permite)
+- ⚠ **Claim 5**: Zero Trust mTLS (opcional, si budget permite)
 - ⏳ **Claim 6**: Cognitive OS (dejar para non-provisional o patent separado)
 
 **Razón**: Claims 1-4 son implementados y validados. Claim 6 es visión futura.
@@ -289,7 +289,7 @@ ROI: 125-296× (protege $32-58M en IP)
 
 ---
 
-## 🎯 PRIOR ART ANALYSIS CONSOLIDADO
+##  PRIOR ART ANALYSIS CONSOLIDADO
 
 ### Claim 1: Dual-Lane Telemetry
 - **Prior Art Found**: Ninguno combinando dual-lane + differential policies
@@ -311,7 +311,7 @@ ROI: 125-296× (protege $32-58M en IP)
 
 ### Claim 5: Zero Trust mTLS
 - **Prior Art Found**: Abundante (mTLS común)
-- **Differentiation**: ⚠️ MODERADA (header signing es novel)
+- **Differentiation**: ⚠ MODERADA (header signing es novel)
 
 ### Claim 6: Cognitive OS ⭐
 - **Prior Art Found**: **ZERO** (primer OS con semantic verification at Ring 0)
@@ -319,7 +319,7 @@ ROI: 125-296× (protege $32-58M en IP)
 
 ---
 
-## 🎖️ VENTAJA COMPETITIVA ÚNICA
+## 🎖 VENTAJA COMPETITIVA ÚNICA
 
 | Feature | Sentinel (6 Claims) | Datadog | Splunk | Palo Alto |
 |---------|---------------------|---------|--------|-----------|
@@ -327,7 +327,7 @@ ROI: 125-296× (protege $32-58M en IP)
 | **AIOpsDoom Defense** | ✅ Claim 2 | ❌ | ❌ | ❌ |
 | **Kernel-Level Veto** | ✅ Claim 3 | ❌ | ❌ | ❌ |
 | **Forensic WAL** | ✅ Claim 4 | ❌ | ❌ | ❌ |
-| **Zero Trust Internal** | ✅ Claim 5 | ⚠️ Partial | ⚠️ Partial | ⚠️ Partial |
+| **Zero Trust Internal** | ✅ Claim 5 | ⚠ Partial | ⚠ Partial | ⚠ Partial |
 | **Cognitive OS Kernel** | ✅ Claim 6 | ❌ | ❌ | ❌ |
 | **Prior Art** | **2 HOME RUNS** | Abundant | Abundant | Moderate |
 | **IP Value** | **$32-58M** | N/A | N/A | N/A |
@@ -374,7 +374,7 @@ ROI: 125-296× (protege $32-58M en IP)
 - **ROI**: 235-428× (protege $32-58M en IP)
 - **Riesgo**: Bajo (todos los claims tienen evidencia técnica)
 
-**Es hora de ejecutar con TODA tu IP protegida. ¡Adelante, arquitecto!** 🚀
+**Es hora de ejecutar con TODA tu IP protegida. ¡Adelante, arquitecto!** 
 
 ---
 

@@ -8,7 +8,7 @@
 
 ---
 
-## 🎯 Executive Summary
+##  Executive Summary
 
 **Invention:** Dual-Guardian Architecture for Autonomous Security Monitoring with Auto-Regeneration
 
@@ -219,7 +219,7 @@ JANUARY 2026 (Weeks 1-4)
 FEBRUARY 2026 (Weeks 1-2)
 ├─ Final review & revisions
 ├─ USPTO submission preparation
-└─ 🎯 DEADLINE: FEB 15, 2026 - FILE PROVISIONAL PATENT
+└─  DEADLINE: FEB 15, 2026 - FILE PROVISIONAL PATENT
 
 DECEMBER 2026 (12 months later)
 └─ Full patent filing (non-provisional)
@@ -270,7 +270,7 @@ TOTAL (18 months):          $32,000 - $65,000
 
 ---
 
-## 🎯 Attorney Selection Criteria
+##  Attorney Selection Criteria
 
 ### Required Expertise
 1. **Security Patents:** Experience with cybersecurity/infosec patents
@@ -308,7 +308,7 @@ TOTAL (18 months):          $32,000 - $65,000
 ### February 2026
 1. **Review Cycles:** Final revisions
 2. **USPTO Submission:** Provisional patent filed
-3. **🎯 DEADLINE:** Feb 15, 2026
+3. ** DEADLINE:** Feb 15, 2026
 
 ---
 

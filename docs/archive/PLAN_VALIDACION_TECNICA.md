@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 OBJETIVOS
+##  OBJETIVOS
 
 1. **Validar performance claims** con benchmarks reproducibles
 2. **Probar efectividad** de defensa AIOpsDoom
@@ -89,7 +89,7 @@ python benchmark_dual_lane.py --test obs-lane --iterations 10000
 
 ---
 
-## 🛡️ VALIDACIÓN CLAIM 2: SEMANTIC FIREWALL (AIOPSDOOM)
+##  VALIDACIÓN CLAIM 2: SEMANTIC FIREWALL (AIOPSDOOM)
 
 ### Objetivo
 Probar 100% efectividad contra 40+ patrones de ataque adversarial.
@@ -343,7 +343,7 @@ openssl x509 -in certs/server.crt -noout -dates
 
 ---
 
-## 🧠 VALIDACIÓN CLAIM 6: COGNITIVE OS (FEASIBILITY)
+##  VALIDACIÓN CLAIM 6: COGNITIVE OS (FEASIBILITY)
 
 ### Objetivo
 Análisis de viabilidad técnica (no implementación completa).
@@ -447,7 +447,7 @@ memory = analysis.total_memory()
 
 ---
 
-## 🎯 CRITERIOS DE ÉXITO
+##  CRITERIOS DE ÉXITO
 
 ### Claim 1: Dual-Lane
 - ✅ Routing: <0.01ms (2,857x vs Datadog)
@@ -520,7 +520,7 @@ memory = analysis.total_memory()
 
 ---
 
-## 🚀 COMANDOS DE EJECUCIÓN RÁPIDA
+##  COMANDOS DE EJECUCIÓN RÁPIDA
 
 ```bash
 # Ejecutar TODAS las validaciones

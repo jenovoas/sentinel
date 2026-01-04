@@ -7,7 +7,7 @@
 
 ## 📊 RESUMEN EJECUTIVO
 
-### Viabilidad General: **VIABLE CON CONDICIONES** ✅⚠️
+### Viabilidad General: **VIABLE CON CONDICIONES** ✅⚠
 
 **Componentes viables**:
 - ✅ Dual-container (probado en industria)
@@ -15,13 +15,13 @@
 - ✅ Dual-Guardian (ya existe en Sentinel)
 
 **Componentes a validar**:
-- ⚠️ 1000x speedup (necesita benchmark)
-- ⚠️ <100μs latency (muy agresivo)
-- ⚠️ Cache predictivo effectiveness
+- ⚠ 1000x speedup (necesita benchmark)
+- ⚠ <100μs latency (muy agresivo)
+- ⚠ Cache predictivo effectiveness
 
 ---
 
-## 🎯 ANÁLISIS POR COMPONENTE
+##  ANÁLISIS POR COMPONENTE
 
 ### 1. Rust Neural Core
 **Claim**: 1000x más rápido  
@@ -90,7 +90,7 @@ Solo si POC exitoso
 
 ---
 
-## ⚠️ RIESGOS
+## ⚠ RIESGOS
 
 1. **Performance Claims Inflados** (60% prob)
    - Mitigación: POC temprano, targets relajados
@@ -110,7 +110,7 @@ Solo si POC exitoso
 
 ---
 
-## 🎯 RECOMENDACIONES
+##  RECOMENDACIONES
 
 1. **Empezar con POC** - Validar antes de invertir
 2. **Targets Realistas** - Relajar claims agresivos

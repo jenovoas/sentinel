@@ -189,7 +189,7 @@ Ubicación: `/home/jnovoas/.gemini/antigravity/brain/.../`
 │  AI Local     │    ✅    │   ❌    │    ❌     │
 │  HA Native    │    ✅    │   💰    │    ❌     │
 │  Cost/host    │    $8    │   $31   │    $0*    │
-│  Privacy      │    ✅    │   ❌    │    ⚠️     │
+│  Privacy      │    ✅    │   ❌    │    ⚠     │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -307,6 +307,6 @@ Una vez tengas el deck listo:
 2. Grabarte en video
 3. Pedir feedback a 2-3 personas
 4. Iterar
-5. ¡Pitch a inversores! 🚀
+5. ¡Pitch a inversores! 
 
 **¡Éxito Jaime!**

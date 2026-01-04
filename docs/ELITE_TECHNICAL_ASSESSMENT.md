@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 What We're Looking For
+##  What We're Looking For
 
 ### Must-Have Skills (Non-Negotiable)
 
@@ -36,11 +36,11 @@
 
 ### Personality Traits
 
-- 🚀 **Self-starter**: Figures things out independently
+-  **Self-starter**: Figures things out independently
 - ⚡ **Fast learner**: Picks up new tech in days, not months
 - 🔍 **Detail-oriented**: Catches bugs before they ship
-- 💬 **Clear communicator**: Writes docs, asks smart questions
-- 🎯 **Results-driven**: Ships features, not excuses
+-  **Clear communicator**: Writes docs, asks smart questions
+-  **Results-driven**: Ships features, not excuses
 
 ---
 
@@ -462,7 +462,7 @@ async def create_user(
 
 ---
 
-## 🎖️ Scoring & Decision
+## 🎖 Scoring & Decision
 
 ### Overall Score Calculation
 
@@ -550,7 +550,7 @@ Interested? Reply and we'll send you the challenges.
 
 ---
 
-## 🎯 Quick Candidate Filter (5-Minute Phone Screen)
+##  Quick Candidate Filter (5-Minute Phone Screen)
 
 Before sending the assessment, ask these 5 questions:
 
@@ -702,7 +702,7 @@ Elite engineers want to work on hard problems. Sell:
 
 ---
 
-## 🚀 Next Steps
+##  Next Steps
 
 1. **Use this assessment** for all engineering candidates
 2. **Track results** to calibrate difficulty

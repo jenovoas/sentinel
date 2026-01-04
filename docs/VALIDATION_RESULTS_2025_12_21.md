@@ -13,14 +13,14 @@
 2. **Comportamiento asimétrico tipo "airbag"** - Ratio 35.28x
 3. **Predicciones manuales del patrón de control** - 100% dentro de tolerancia
 
-### ⚠️ PARCIALMENTE VALIDADO
+### ⚠ PARCIALMENTE VALIDADO
 1. **Viscosidad del sistema** - α = 0.96 (esperado 0.90, error 5.95%)
 2. **Ecuación de conservación** - Correlación débil (-0.035)
 3. **Patrón de control con datos reales** - 42.24% precisión (esperado \u003e95%)
 
 ---
 
-## 🌊 TEST 1: TEORÍA HIDRODINÁMICA
+##  TEST 1: TEORÍA HIDRODINÁMICA
 
 ### Hipótesis
 Los datos fluyen como un fluido viscoso y pueden ser controlados usando ecuaciones de dinámica de fluidos.
@@ -91,7 +91,7 @@ Correlación entre ∂B/∂t y (Q_in - Q_out): -0.0350
 
 ---
 
-## 🎯 TEST 2: PATRÓN DE CONTROL
+##  TEST 2: PATRÓN DE CONTROL
 
 ### Ecuación Validada
 ```
@@ -163,9 +163,9 @@ Avg Throughput (Mbps)         10.29           9.30          -
 4. ✅ **Comportamiento asimétrico** - Airbag digital confirmado (35x)
 
 ### Lo que necesita REFINAMIENTO:
-1. ⚠️ **Modelo de viscosidad** - Ajustar α de 0.90 → 0.96
-2. ⚠️ **Ecuación de conservación** - Incluir drops y capacidad real
-3. ⚠️ **Patrón de control** - Desarrollar modelo no-lineal con estado
+1. ⚠ **Modelo de viscosidad** - Ajustar α de 0.90 → 0.96
+2. ⚠ **Ecuación de conservación** - Incluir drops y capacidad real
+3. ⚠ **Patrón de control** - Desarrollar modelo no-lineal con estado
 
 ### Lo que es TEORÍA (no validado):
 1. 💭 **Aplicación directa de CFD** - Computational Fluid Dynamics

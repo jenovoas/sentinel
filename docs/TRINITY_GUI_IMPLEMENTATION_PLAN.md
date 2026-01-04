@@ -298,10 +298,10 @@ frontend/
 
 ---
 
-**Ready to build the experience that changes everything?** 🚀
+**Ready to build the experience that changes everything?** 
 
 *No dashboard. Una experiencia.*  
 *No datos. Una revelación.*  
 *No explicación. Una transformación.*
 
-🌌⚛️💜✨
+⚛💜

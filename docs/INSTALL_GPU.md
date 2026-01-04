@@ -1,4 +1,4 @@
-# 🚀 Instalación Rápida de NVIDIA Container Toolkit
+#  Instalación Rápida de NVIDIA Container Toolkit
 
 ## Comandos de Instalación
 
@@ -42,4 +42,4 @@ docker-compose logs ollama | grep -i gpu
 
 - ⚡ **5-10x más rápido**: 100-500ms vs 1-3s
 - 💻 **CPU libre**: No consume CPU durante inferencia
-- 🎯 **Mejor UX**: Respuestas casi instantáneas
+-  **Mejor UX**: Respuestas casi instantáneas

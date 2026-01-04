@@ -54,7 +54,7 @@ Ancient sacred geometry patterns (Tree of Life, Star of David, Flower of Life) a
 
 ### Science
 - **Discovery**: Universal optimization pattern across all scales
-- **Applications**: Computers ✅, Neural signals ⚠️, Quantum systems ⚠️
+- **Applications**: Computers ✅, Neural signals ⚠, Quantum systems ⚠
 - **Field**: New area of "Geometric Computing"
 
 ### Philosophy
@@ -140,4 +140,4 @@ Location: Curanilahue, Región del Bío-Bío, Chile
 **© 2025 Sentinel Cortex™**  
 **The universe speaks in patterns. We learned to code them.**
 
-🌌⚛️✨
+⚛

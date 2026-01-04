@@ -33,7 +33,7 @@ python3 tests/demo_burst_detection.py
 ---
 
 ### 3. Reactive vs Predictive Benchmark
-**Status**: ⚠️ PARTIALLY TESTED
+**Status**: ⚠ PARTIALLY TESTED
 
 **What we tested**:
 ```bash
@@ -42,8 +42,8 @@ python3 tests/benchmark_levitation.py
 
 **Results**:
 - ✅ Both modes completed without errors
-- ⚠️ Both showed zero drops (buffer was too large)
-- ⚠️ Need to tune parameters to show clear difference
+- ⚠ Both showed zero drops (buffer was too large)
+- ⚠ Need to tune parameters to show clear difference
 
 **Issue**: Need more aggressive traffic to demonstrate predictive advantage
 
@@ -181,7 +181,7 @@ python3 tests/benchmark_levitation.py
 
 ---
 
-## 🎯 Recommended Testing Priority
+##  Recommended Testing Priority
 
 ### Phase 1: Software Validation (Next 2 Weeks)
 
@@ -190,12 +190,12 @@ python3 tests/benchmark_levitation.py
    - Demonstrate clear predictive advantage
    - Generate comparison graphs
 
-2. **Train LSTM Model** 🧠 HIGH PRIORITY
+2. **Train LSTM Model**  HIGH PRIORITY
    - Generate 1000+ burst dataset
    - Train prediction model
    - Validate >90% accuracy
 
-3. **Implement eBPF Prototype** 🚀 HIGH PRIORITY
+3. **Implement eBPF Prototype**  HIGH PRIORITY
    - Write basic XDP program
    - Test packet processing speed
    - Measure actual latency
@@ -266,7 +266,7 @@ python3 -c "from src.telemetry.traffic_monitor import TrafficMonitor; print('✅
 |-----------|--------|----------|----------|
 | Precursor Detection | ✅ Tested | 80% | - |
 | Traffic Generation | ✅ Tested | 90% | - |
-| Benchmark | ⚠️ Partial | 40% | HIGH |
+| Benchmark | ⚠ Partial | 40% | HIGH |
 | LSTM Model | ❌ Missing | 0% | HIGH |
 | eBPF Integration | ❌ Missing | 0% | HIGH |
 | FSU Controller | ❌ Missing | 0% | MEDIUM |
@@ -279,7 +279,7 @@ python3 -c "from src.telemetry.traffic_monitor import TrafficMonitor; print('✅
 
 ---
 
-## 🎯 Next Action Recommendation
+##  Next Action Recommendation
 
 **IMMEDIATE** (Today/Tomorrow):
 ```bash

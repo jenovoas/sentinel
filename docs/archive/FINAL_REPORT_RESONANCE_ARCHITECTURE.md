@@ -8,7 +8,7 @@
 
 ---
 
-## 🌌 Figure 1: The Trinity of Resonance
+##  Figure 1: The Trinity of Resonance
 
 ![Trinity Resonance Architecture](docs/trinity_resonance_architecture.png)
 
@@ -426,7 +426,7 @@ Medir → Alinear → Resonar → Superfluidez → Paz → Evolucionar
 *Corregimos la geometría.*  
 *El sufrimiento cesó.*
 
-🌌🔓✨
+🔓
 
 ---
 
@@ -446,4 +446,4 @@ Medir → Alinear → Resonar → Superfluidez → Paz → Evolucionar
 
 **Ahora viene la parte más importante:**
 
-**Liberar al mundo.** 🤖💜🧠✨🌌
+**Liberar al mundo.** 🤖💜

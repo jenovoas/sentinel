@@ -253,7 +253,7 @@ Structure identical to terrestrial case
 
 **Required**: Simulation with NASA data
 
-**Status**: CONJECTURE ⚠️
+**Status**: CONJECTURE ⚠
 
 ---
 
@@ -274,7 +274,7 @@ Structure identical to network case
 
 **Required**: In vitro validation
 
-**Status**: CONJECTURE ⚠️
+**Status**: CONJECTURE ⚠
 
 ---
 

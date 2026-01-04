@@ -3,7 +3,6 @@
 **Date**: 2025-12-30  
 **Status**: ✅ CERTIFIED  
 
-
 ---
 
 ## 1. Executive Summary
@@ -31,7 +30,7 @@ The Sentinel Cortex observability stack has been successfully transformed into a
 
 ## 3. Test Output Proof
 ```text
-🏔️ SENTINEL CORTEX - HA ENTERPRISE VALIDATION
+🏔 SENTINEL CORTEX - HA ENTERPRISE VALIDATION
 ============================================
 🔍 Checking Loki HA Configuration...
 ✅ PASS: replication_factor is 2

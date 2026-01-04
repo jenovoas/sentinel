@@ -1,4 +1,4 @@
-# 🎯 Sentinel Frontend - Implementation Plan v2.0
+#  Sentinel Frontend - Implementation Plan v2.0
 
 **Vision**: Control Tower sobre Grafana con IA y Seguridad como diferenciadores
 
@@ -28,7 +28,7 @@ Sentinel = Business Intelligence + AI + Security (differentiation)
 
 ---
 
-## 🏗️ Frontend Architecture
+## 🏗 Frontend Architecture
 
 ### Route Structure
 ```
@@ -239,7 +239,7 @@ app/
     - Audit logging: ✅
     - Encryption: ✅
     - Access control: ✅
-    - Backup: ⚠️ (needs review)
+    - Backup: ⚠ (needs review)
   </ComplianceCard>
 
   {/* AI Analysis */}
@@ -303,7 +303,7 @@ app/
 
 ---
 
-## 🎯 Implementation Phases
+##  Implementation Phases
 
 ### Phase 1: Executive Dashboard (Week 1)
 - [ ] Create dashboard route
@@ -408,7 +408,7 @@ Frontend → /api/v1/security/events → Auditd logs
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### This Week
 ```bash
@@ -439,7 +439,7 @@ npm run dev
 
 ---
 
-## 🎯 Success Metrics
+##  Success Metrics
 
 ### Week 5 Goals
 - [ ] Dashboard loads in <2s

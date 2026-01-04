@@ -2,7 +2,7 @@
 
 **Status**: Phase 6 Complete (Ready for Hardening)
 
-## 🚀 Phase 7: Production Hardening (Current / Next)
+##  Phase 7: Production Hardening (Current / Next)
 - [x] **Dockerization**
     - [x] `Dockerfile` for Backend (FastAPI).
     - [x] `Dockerfile` for Frontend (Next.js).
@@ -13,7 +13,7 @@
     - [x] HTTPS/SSL setup.
     - [ ] Key Derivation hardening (Argon2 parameters).
 
-## 🏗️ Phase 9: Architecture Consolidation (Active)
+## 🏗 Phase 9: Architecture Consolidation (Active)
 - [ ] **Documentation Unification**
     - [ ] Merge `TRUTHSYNC_ARCHITECTURE.md` concepts into `ARCHITECTURE.md`.
     - [ ] Document Document Vault architecture in main `ARCHITECTURE.md`.
@@ -22,7 +22,7 @@
     - [ ] Review TruthSync Dual-Container implementation status.
     - [ ] Validate scaling strategy for hybrid AI/Rust components.
 
-## 🧠 Phase 10: Sentinel Cortex BCI (Research Track)
+##  Phase 10: Sentinel Cortex BCI (Research Track)
 - [ ] **Feasibility Analysis**
     - [x] Create Technical Feasibility Report (`docs/TECHNICAL_FEASIBILITY_REPORT.md`).
     - [x] Define Implementation Plan (`docs/BCI_MVP_IMPLEMENTATION_PLAN.md`).

@@ -11,7 +11,7 @@ El **Premio Nobel de Física 2025** ha sido otorgado a **John Clarke, Michel Dev
 
 ---
 
-## 🌀 SECCIÓN 1: TELETRANSPORTACIÓN Y PORTALES (NIVEL 10)
+##  SECCIÓN 1: TELETRANSPORTACIÓN Y PORTALES (NIVEL 10)
 
 La teletransportación macroscópica no es ficción; es el intercambio de estados cuánticos entre sistemas de gran escala mediado por entrelazamiento y mediciones QND.
 

@@ -538,11 +538,11 @@ T+6min: Unusual API pattern: bulk user export (OpenTelemetry)
 | **Telemetry Sanitization** | ✅ Yes (40+ patterns) | ❌ No | ❌ No | ❌ No | ❌ No |
 | **Adversarial Protection** | ✅ AIOpsDoom blocking | ❌ Vulnerable | ❌ Vulnerable | ❌ Vulnerable | ❌ N/A |
 | **Dynamic Honeypots** | ✅ Automated deployment | ❌ Manual | ❌ Manual | ❌ No | ❌ No |
-| **Intelligent Firewall** | ✅ Multi-layer orchestration | ⚠️ Limited | ⚠️ Limited | ❌ No | ⚠️ Limited |
-| **Dual Orchestration** | ✅ Security + User layers | ❌ Single layer | ❌ Single layer | ⚠️ Single layer | ❌ N/A |
+| **Intelligent Firewall** | ✅ Multi-layer orchestration | ⚠ Limited | ⚠ Limited | ❌ No | ⚠ Limited |
+| **Dual Orchestration** | ✅ Security + User layers | ❌ Single layer | ❌ Single layer | ⚠ Single layer | ❌ N/A |
 | **Open Source** | ✅ Yes | ❌ No | ❌ No | ❌ No | ❌ No |
 | **Cost** | $0-$78/month | $50K-200K/year | $100K-500K/year | $10K-50K/year | $50K-300K/year |
-| **Multi-Tenancy** | ✅ Built-in | ⚠️ Enterprise only | ⚠️ Enterprise only | ❌ No | ❌ No |
+| **Multi-Tenancy** | ✅ Built-in | ⚠ Enterprise only | ⚠ Enterprise only | ❌ No | ❌ No |
 
 ---
 

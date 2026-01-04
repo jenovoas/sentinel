@@ -6,7 +6,7 @@
 
 ---
 
-## ⚠️ HALLAZGOS IMPORTANTES
+## ⚠ HALLAZGOS IMPORTANTES
 
 ### Resultados Medidos (Con Carga Alta)
 
@@ -26,7 +26,7 @@
 
 **Factores Identificados**:
 
-1. **Máquina Sobrecargada** ⚠️
+1. **Máquina Sobrecargada** ⚠
    ```
    Procesos concurrentes:
    ├── Antigravity (AI asistente): Alto CPU
@@ -47,7 +47,7 @@
        # → Overhead ~50-100ms
    ```
 
-3. **Hardware Limitado** 🖥️
+3. **Hardware Limitado** 🖥
    ```
    GTX 1050 (3GB VRAM):
    ├── GPU antigua (2016)
@@ -56,7 +56,7 @@
    └── Performance: ~5x más lento que GPUs modernas
    ```
 
-4. **Configuración Subóptima** ⚙️
+4. **Configuración Subóptima** ⚙
    ```python
    # V2 usa parámetros más grandes para queries largos:
    "num_ctx": 4096,  # vs V1: 2048
@@ -99,7 +99,7 @@
 
 ---
 
-## 🎯 RECOMENDACIONES
+##  RECOMENDACIONES
 
 ### Para Validación Real
 
@@ -222,11 +222,11 @@ Benchmark en servidor dedicado:
 - ✅ Enfatizar **diseño y arquitectura**
 - ✅ Mostrar **código reproducible**
 - ✅ Documentar **casos de uso reales**
-- ⚠️ Explicar **limitaciones de benchmarks locales**
+- ⚠ Explicar **limitaciones de benchmarks locales**
 
 ---
 
-## 🚀 PRÓXIMOS PASOS
+##  PRÓXIMOS PASOS
 
 ### Inmediato
 1. [ ] Optimizar detección de flujo (reducir overhead)
@@ -258,4 +258,4 @@ Benchmark en servidor dedicado:
 
 ---
 
-**Honestidad > Resultados inflados** 🎯
+**Honestidad > Resultados inflados** 

@@ -1,4 +1,4 @@
-# 🛡️ "HACK ME IF YOU CAN" - Vulnerability Analysis & Mitigations
+#  "HACK ME IF YOU CAN" - Vulnerability Analysis & Mitigations
 
 **Challenge Status**: ✅ READY FOR PUBLIC LAUNCH  
 **Confidence Level**: 98% (Military-Grade Hardened)  
@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 EXECUTIVE SUMMARY
+##  EXECUTIVE SUMMARY
 
 **Can Sentinel survive a public "Hack Me" challenge?**
 
@@ -22,7 +22,7 @@
 
 ## 🔍 DEEP VULNERABILITY ANALYSIS
 
-### 1. ⚠️ CARDINALITY BOMB (High-Volume DoS)
+### 1. ⚠ CARDINALITY BOMB (High-Volume DoS)
 
 **Attack Vector**:
 ```python
@@ -68,7 +68,7 @@ limit_req zone=api_limit burst=20 nodelay;
 
 ---
 
-### 2. ⚠️ AIOPSDOOM SEMANTIC EVASION (Adversarial Reward Hacking)
+### 2. ⚠ AIOPSDOOM SEMANTIC EVASION (Adversarial Reward Hacking)
 
 **Attack Vector**:
 ```
@@ -119,7 +119,7 @@ static int __init sentinel_init(void) {
 
 ---
 
-### 3. ⚠️ N8N REMOTE CODE EXECUTION (CVE-2025-65964)
+### 3. ⚠ N8N REMOTE CODE EXECUTION (CVE-2025-65964)
 
 **Attack Vector**:
 ```javascript
@@ -170,7 +170,7 @@ networks:
 
 ---
 
-### 4. ⚠️ LOKI OUT-OF-ORDER REJECTION (Timestamp DoS)
+### 4. ⚠ LOKI OUT-OF-ORDER REJECTION (Timestamp DoS)
 
 **Attack Vector**:
 ```python
@@ -217,7 +217,7 @@ async def flush_buffer(self, lane: DataLane):
 
 ---
 
-## 🛡️ DEFENSE IN DEPTH - 5 LAYERS
+##  DEFENSE IN DEPTH - 5 LAYERS
 
 | Layer | Technology | Blocks | Doesn't Block |
 |-------|-----------|--------|---------------|
@@ -268,7 +268,7 @@ async def flush_buffer(self, lane: DataLane):
 
 ---
 
-## 🎯 BUG BOUNTY PROGRAM
+##  BUG BOUNTY PROGRAM
 
 ### Scope
 
@@ -317,7 +317,7 @@ async def flush_buffer(self, lane: DataLane):
 
 ---
 
-## 🚀 READINESS CHECKLIST
+##  READINESS CHECKLIST
 
 - [x] Cardinality limits configured (Mimir/Loki)
 - [x] AIOpsDoom fuzzer validated (100% detection)
@@ -334,7 +334,7 @@ async def flush_buffer(self, lane: DataLane):
 
 ---
 
-## 🎖️ CONFIDENCE ASSESSMENT
+## 🎖 CONFIDENCE ASSESSMENT
 
 ### Why 98% (Not 100%)
 
@@ -361,7 +361,7 @@ async def flush_buffer(self, lane: DataLane):
 ## 📢 PUBLIC ANNOUNCEMENT (DRAFT)
 
 ```markdown
-# 🛡️ HACK ME IF YOU CAN - $10K Bug Bounty
+#  HACK ME IF YOU CAN - $10K Bug Bounty
 
 Sentinel Cortex™ is launching a public security challenge.
 
@@ -416,4 +416,4 @@ Find a way to:
 
 ---
 
-**Status**: Ready for public challenge 🚀
+**Status**: Ready for public challenge 

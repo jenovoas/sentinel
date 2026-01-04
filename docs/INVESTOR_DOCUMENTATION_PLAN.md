@@ -20,7 +20,7 @@ Ya tienes excelente documentación para inversionistas:
    - Resumen ejecutivo
    - Algo técnico aún
 
-### El Problema 🎯
+### El Problema 
 
 **Para Ingenieros**: La documentación actual es perfecta. Tienen `INSTALLATION_GUIDE.md` y `TECHNICAL_AUDIT_CHECKLIST.md`.
 

@@ -5,7 +5,7 @@
 
 ---
 
-## 🖥️ Hardware Actual
+## 🖥 Hardware Actual
 
 ### CPU
 - **Modelo**: Intel Core i5-10300H @ 2.50GHz
@@ -36,7 +36,7 @@
 
 ---
 
-## 🎯 Capacidades con Este Hardware
+##  Capacidades con Este Hardware
 
 ### ✅ Lo que PODEMOS hacer:
 
@@ -109,7 +109,7 @@ sudo pacman -S bpf clang llvm
 
 ---
 
-## 🛤️ Roadmap Basado en Hardware Actual
+## 🛤 Roadmap Basado en Hardware Actual
 
 ### Fase 1: Software Proof-of-Concept (HOY + MAÑANA)
 
@@ -220,7 +220,7 @@ sudo pacman -S bpf clang llvm
 
 ---
 
-## 🎯 Plan de Acción INMEDIATO
+##  Plan de Acción INMEDIATO
 
 ### Paso 1: Instalar Dependencias (5 min)
 ```bash
@@ -247,7 +247,7 @@ python3 tests/train_lstm_basic.py
 
 **Hardware actual es SUFICIENTE para demostrar el concepto.**
 
-**No necesitamos SBN-1 físico para probar que la idea funciona.** 🚀
+**No necesitamos SBN-1 físico para probar que la idea funciona.** 
 
 ---
 

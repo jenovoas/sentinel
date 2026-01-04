@@ -1,4 +1,4 @@
-# 🛡️ TruthSync + Sentinel - Dual-Guardian Integration
+#  TruthSync + Sentinel - Dual-Guardian Integration
 
 **Goal**: All services verified through TruthSync + Guardian protection  
 **Architecture**: Service Mesh + Dual-Guardian Auto-Regeneration  
@@ -6,7 +6,7 @@
 
 ---
 
-## 🏗️ Complete Architecture
+## 🏗 Complete Architecture
 
 ```
 SENTINEL ECOSYSTEM:
@@ -34,7 +34,7 @@ User Services (Frontend, Backend, Cortex, n8n)
 
 ---
 
-## 🔗 Service Integration
+##  Service Integration
 
 ### Frontend → TruthSync
 ```typescript
@@ -83,7 +83,7 @@ async def generate_response(query):
 
 ---
 
-## 🛡️ Dual-Guardian Protection
+##  Dual-Guardian Protection
 
 ```yaml
 services:
@@ -179,4 +179,4 @@ Result: <30s full recovery
 
 ---
 
-**Result**: Unbreakable truth verification 🛡️
+**Result**: Unbreakable truth verification 

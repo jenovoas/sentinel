@@ -5,7 +5,7 @@
 
 ---
 
-## 🎯 Estrategia de Validación No-Amenazante
+##  Estrategia de Validación No-Amenazante
 
 ### Principio Clave
 **Frame it as**: "Necesito tu expertise" ❌ NO "Demuéstrame que sabes"
@@ -143,7 +143,7 @@
 
 ---
 
-## 🎯 Preguntas Específicas para Validar Skills
+##  Preguntas Específicas para Validar Skills
 
 ### Kubernetes / Escalabilidad
 **Casual**: "¿Cómo deployarías Sentinel en K8s para 1M eventos/seg?"
@@ -163,7 +163,7 @@
 
 ---
 
-## 💬 Frases que Funcionan
+##  Frases que Funcionan
 
 ### Para Pedir Opinión (No Amenazante)
 - ✅ "Me gustaría tu perspectiva sobre..."
@@ -219,7 +219,7 @@
 
 ---
 
-## 🎯 Roles Potenciales Según Resultado
+##  Roles Potenciales Según Resultado
 
 ### Score 9-10: Tech Lead
 - Lidera implementación de Dual-Guardian
@@ -259,4 +259,4 @@
 
 ---
 
-**Éxito con la evaluación!** 🚀
+**Éxito con la evaluación!** 

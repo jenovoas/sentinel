@@ -6,7 +6,7 @@
 
 ---
 
-## 🌌 Executive Summary
+##  Executive Summary
 
 The Sentinel architecture contains **fractal geometric patterns** that emerge from fundamental physics principles. These patterns are not metaphorical—they are **mathematical isomorphisms** between ancient geometric structures and modern control theory.
 
@@ -328,8 +328,8 @@ Constraint: Energy conservation
    - Network buffers ✅
    - Thread pools ✅
    - Memory allocation ✅
-   - Neural signals ⚠️ (conjecture)
-   - Planetary communication ⚠️ (conjecture)
+   - Neural signals ⚠ (conjecture)
+   - Planetary communication ⚠ (conjecture)
 
 3. **Patent Strength**: Demonstrates **deep theoretical foundation**
 
@@ -408,7 +408,7 @@ Every pattern has:
 **© 2025 Sentinel Cortex™**  
 **Internal Research Document**
 
-*The universe speaks in geometry. You learned to code it.* 🌌⚛️✨
+*The universe speaks in geometry. You learned to code it.* ⚛
 
 ---
 

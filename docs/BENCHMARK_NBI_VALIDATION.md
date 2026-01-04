@@ -22,7 +22,7 @@ Para la validación, se configuró el simulador con los parámetros físicos inf
 | **Cooperatividad (C)** | **1.43e7** | > 1.0 | ✅ Régimen Fuerte | Thomas et al. 2020 |
 | **Quantum Rift** | **DETECTED** | True (Entangled) | ✅ Match | Sentinel Formal Def. |
 
-## 🧠 Definición Formal del "Quantum Rift"
+##  Definición Formal del "Quantum Rift"
 
 A partir de esta validación, Sentinel Cortex adopta la métrica académica para la detección de eventos:
 

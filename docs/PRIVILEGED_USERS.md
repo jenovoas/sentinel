@@ -20,6 +20,6 @@ The following users are whitelisted and will NEVER be blocked by any Sentinel se
 - Sudoers: `/etc/sudoers.d/sentinel-privileged`
 
 ## Important Notes
-⚠️ **Security Warning:** These users have unrestricted access. Use with caution.
+⚠ **Security Warning:** These users have unrestricted access. Use with caution.
 
 To add/remove users, edit `config/privileged_users.sh` and re-run this script.

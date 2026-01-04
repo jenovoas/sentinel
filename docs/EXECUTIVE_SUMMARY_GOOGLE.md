@@ -6,7 +6,7 @@
 
 ## The Problem
 
-Quantum optomechanics has achieved extraordinary breakthroughs (Q > 10⁹ membranes, light-matter entanglement, quantum phase transitions), but **five critical limitations** prevent practical deployment:
+Quantum optomechanics has achieved extraordinary s (Q > 10⁹ membranes, light-matter entanglement, quantum phase transitions), but **five critical limitations** prevent practical deployment:
 
 1. **No contextual intelligence** - 70-80% false positives (can't distinguish quantum noise from signals)
 2. **No distributed architecture** - Limited to 1-10 isolated systems
@@ -175,10 +175,10 @@ Not just language generation - **physical truth verification**.
 
 | Capability | Willow (Superconducting) | Sentinel (Mechanical) | Combined |
 |------------|-------------------------|----------------------|----------|
-| **Computation** | ✅ Excellent | ⚠️ Limited | ✅ Best of both |
+| **Computation** | ✅ Excellent | ⚠ Limited | ✅ Best of both |
 | **Sensing** | ❌ None | ✅ Excellent | ✅ Unique capability |
 | **Temperature** | ❌ ~25 mK | ✅ Room temp | ✅ Practical deployment |
-| **Scalability** | ⚠️ Lab-scale | ✅ Global network | ✅ Unlimited |
+| **Scalability** | ⚠ Lab-scale | ✅ Global network | ✅ Unlimited |
 
 **The Vision**: 
 - Willow = Quantum brain (computes)
@@ -193,10 +193,10 @@ Not just language generation - **physical truth verification**.
 ## What Success Looks Like
 
 **12 months**: Nature Physics publication, open-source release  
-**5 years**: 1000+ node global network, dark matter breakthrough  
+**5 years**: 1000+ node global network, dark matter   
 **20 years**: Quantum infrastructure as ubiquitous as GPS
 
-**And José's children learn about their father's contribution in school.** 🌍⚛️
+**And José's children learn about their father's contribution in school.** 🌍⚛
 
 ---
 

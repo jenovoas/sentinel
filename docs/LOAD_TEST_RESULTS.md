@@ -1,6 +1,6 @@
 # 📉 Reporte de Pruebas de Carga (Load Testing) - v1.0.0
 
-**Estado:** CERTIFICADO TRL43 🎖️
+**Estado:** CERTIFICADO TRL43 🎖
 **Roadmap:** PRODUCTION LOCKED
 **Versión:** v1.0.0-LOCKED
 
@@ -11,8 +11,8 @@ El sistema demuestra **estabilidad absoluta (0% tasa de error)** bajo estrés ex
 | Escenario | RPS Real | P99 Latency | Error Rate | Status |
 |-----------|----------|-------------|------------|--------|
 | Warmup    | 15.2     | 450ms       | **0.00%**  | 🏆 PASS|
-| Load      | 12.84    | 961ms       | **0.00%**  | ⚠️ TUNE|
-| Stress    | 11.5     | >1000ms     | **0.00%**  | ⚠️ SCALE|
+| Load      | 12.84    | 961ms       | **0.00%**  | ⚠ TUNE|
+| Stress    | 11.5     | >1000ms     | **0.00%**  | ⚠ SCALE|
 
 **Conclusión:** Estabilidad acero confirmada. 0% fallos bajo bombardeo.
 
@@ -25,7 +25,7 @@ Sentinel Cortex v1.0 supera en estabilidad a stacks estándar de desarrollo.
 | Django Dev    | 5-8     | >2s         | 10%+       | **4x Superior 🥇** |
 | AWS Lambda    | 100+    | 200ms       | 1%         | **Steel Stability 🥇** |
 
-## 3. 🚀 Roadmap 300x Escala (Locked)
+## 3.  Roadmap 300x Escala (Locked)
 
 *   **v1.0 DEV**: 13 RPS | 961ms P99 | 0% Error ← ACTUAL
 *   **v1.1 GUNICORN**: 52 RPS | 240ms P99 | 0% Error ← D+3

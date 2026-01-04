@@ -1,11 +1,11 @@
-# 🌊 Ideas para Explorar (FUTURO)
+#  Ideas para Explorar (FUTURO)
 
 **Fecha**: 2025-12-21  
 **Status**: 💭 IDEAS - No validadas aún
 
 ---
 
-## 🎯 Ahora que Sabemos que los Datos Fluyen como Fluidos...
+##  Ahora que Sabemos que los Datos Fluyen como Fluidos...
 
 ### 1. CFD para Topología de Redes
 **Idea**: Diseñar redes como túneles de viento
@@ -67,7 +67,7 @@ Lo que validamos HOY ya es suficiente:
 - ✅ Reynolds funciona (80%)
 - ✅ Airbag digital (35x)
 
-**Eso solo ya es un hack de la realidad.** 🚀
+**Eso solo ya es un hack de la realidad.** 
 
 Las otras ideas son para cuando estemos listos.
 

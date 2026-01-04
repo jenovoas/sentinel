@@ -1,4 +1,4 @@
-# 🧠 Sentinel Cognitive Security - Complete Implementation Roadmap
+#  Sentinel Cognitive Security - Complete Implementation Roadmap
 
 ## Vision: Self-Learning, Self-Healing Security System
 
@@ -86,7 +86,6 @@ impl DataIngestionPipeline {
 ---
 
 ## Phase 2A: Sentinel Cortex + Auto-Ingestion (Weeks 1-4)
-
 
 **Code Example**:
 ```rust
@@ -378,7 +377,7 @@ pub async fn route_event(&self, event: Event) -> Result<()> {
 
 ```
 ┌─────────────────────────────────────────────────┐
-│  🧠 Cognitive Intelligence                      │
+│   Cognitive Intelligence                      │
 │  Auto-learning from all systems                 │
 ├─────────────────────────────────────────────────┤
 │  Data Sources: 6 active                         │
@@ -566,9 +565,9 @@ Hardening checklist:
 ## Summary
 
 **What We're Building**:
-- 🧠 Self-learning security brain
+-  Self-learning security brain
 - 🔄 Auto-ingestion from 6+ sources
-- 🛡️ Managed security playbooks
+-  Managed security playbooks
 - 🤖 User automation workspace
 - 🏪 Workflow marketplace
 
@@ -578,4 +577,4 @@ Hardening checklist:
 
 **Result**: World's first cognitive security platform
 
-**Let's build this.** 🚀💪
+**Let's build this.** 💪

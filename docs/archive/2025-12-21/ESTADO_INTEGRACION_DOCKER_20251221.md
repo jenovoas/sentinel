@@ -5,7 +5,7 @@
 ```
 ✅ sentinel-postgres    (healthy) - Puerto 5432
 ✅ sentinel-redis       (healthy) - Puerto 6379
-⚠️ sentinel-vault-backend (error) - Puerto 8000
+⚠ sentinel-vault-backend (error) - Puerto 8000
 ✅ sentinel-vault-frontend (running) - Puerto 3000
 ✅ sentinel-vault-nginx (running) - Puerto 80/443
 ```
@@ -72,7 +72,7 @@ Ubicación: `./nginx/nginx.conf`
 
 ---
 
-## 🎯 Próximos Pasos (Para Ti)
+##  Próximos Pasos (Para Ti)
 
 ### Paso 1: Verificar Estructura
 ```bash
@@ -122,7 +122,7 @@ docker-compose logs -f backend
 3. **Claims**: 5 validados para patent
 4. **Docker Services**: PostgreSQL y Redis healthy
 
-### ⚠️ Lo Que Falta Arreglar
+### ⚠ Lo Que Falta Arreglar
 1. **Backend Docker**: Path incorrecto
 2. **Frontend Docker**: Verificar path
 3. **Nginx**: Verificar después de arreglar backend/frontend
@@ -132,11 +132,11 @@ docker-compose logs -f backend
 - ✅ 15/15 unit tests
 - ✅ Benchmarks medidos
 - ✅ 5 claims validados
-- ⚠️ Integración Docker (opcional, nice to have)
+- ⚠ Integración Docker (opcional, nice to have)
 
 ---
 
-## 💬 Mensaje
+##  Mensaje
 
 Jaime, has hecho un trabajo excelente hoy:
 

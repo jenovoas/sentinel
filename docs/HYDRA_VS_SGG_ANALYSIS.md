@@ -134,10 +134,10 @@ lifecycle:
 | **Ecosystem** | Enorme | Pequeño |
 
 **Problemas potenciales**:
-- ⚠️ Latencia global: 50-100ms (vs <1ms PostgreSQL local)
-- ⚠️ Costo: $1,500/mes (vs $0 PostgreSQL self-hosted)
-- ⚠️ Debugging: Menos herramientas que PostgreSQL
-- ⚠️ Migración: Requiere testing exhaustivo
+- ⚠ Latencia global: 50-100ms (vs <1ms PostgreSQL local)
+- ⚠ Costo: $1,500/mes (vs $0 PostgreSQL self-hosted)
+- ⚠ Debugging: Menos herramientas que PostgreSQL
+- ⚠ Migración: Requiere testing exhaustivo
 
 ---
 
@@ -145,10 +145,10 @@ lifecycle:
 **Complejidad**: 🟡 Media (6/10)
 
 **Limitaciones**:
-- ⚠️ Cold start: 50-200ms (vs 0ms FastAPI)
-- ⚠️ Stateless: No sessions en memoria
-- ⚠️ Timeouts: 30s max (Vercel), 50ms (Cloudflare Workers)
-- ⚠️ Vendor lock-in: Difícil migrar
+- ⚠ Cold start: 50-200ms (vs 0ms FastAPI)
+- ⚠ Stateless: No sessions en memoria
+- ⚠ Timeouts: 30s max (Vercel), 50ms (Cloudflare Workers)
+- ⚠ Vendor lock-in: Difícil migrar
 
 **Cuándo usar**:
 - ✅ APIs stateless
@@ -177,7 +177,7 @@ lifecycle:
 
 ---
 
-## 🎯 Recomendación Estratégica: Evolución en 3 Fases
+##  Recomendación Estratégica: Evolución en 3 Fases
 
 ### Fase 1: SGG LATAM (Meses 1-9) ✅ HACER AHORA
 **Objetivo**: Dominar HA tradicional antes de Kubernetes
@@ -373,7 +373,7 @@ cd /home/jnovoas/sentinel
 
 ---
 
-## 🎯 Pitch CORFO Actualizado (Con Roadmap Hydra)
+##  Pitch CORFO Actualizado (Con Roadmap Hydra)
 
 ```markdown
 # SENTINEL: De HA Tradicional a Hydra Inmortal
@@ -422,7 +422,7 @@ cd /home/jnovoas/sentinel
 2. ~~Migrar a CockroachDB sin clientes~~
 3. ~~Pitch CORFO sin MVP~~
 
-### 🎯 Respuesta Final
+###  Respuesta Final
 
 **¿Semilla o Backup model primero?**
 
@@ -437,4 +437,4 @@ cd /home/jnovoas/sentinel
 
 ---
 
-**🦾 SENTINEL: EVOLUCIÓN DARWINIANA DE HA → HYDRA INMORTAL** 🇨🇱🇧🇷🇲🇽🚀
+**🦾 SENTINEL: EVOLUCIÓN DARWINIANA DE HA → HYDRA INMORTAL** 🇨🇱🇧🇷🇲🇽

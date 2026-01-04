@@ -1,6 +1,6 @@
 # Optimización Ollama para Sentinel
 
-## 🎯 Objetivo
+##  Objetivo
 
 Reducir TTFB de ~45s → <2s en GTX 1050 (3GB VRAM)
 
@@ -41,7 +41,7 @@ curl http://localhost:11434/api/generate -d '{
 }'
 ```
 
-## 🚀 Uso
+##  Uso
 
 ### Test Rápido
 
@@ -127,7 +127,7 @@ model: str = "tinyllama"
 - **keep_alive: -1**: Mantiene modelo en memoria indefinidamente
 - **streaming**: Reduce latencia percibida (primer token rápido)
 
-## 🎯 Conclusión
+##  Conclusión
 
 Con esta optimización:
 - ✅ TTFB realista (<2s primera vez, <500ms después)

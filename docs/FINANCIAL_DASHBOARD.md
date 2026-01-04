@@ -4,7 +4,7 @@
 
 ---
 
-## 🎯 Overview
+##  Overview
 
 Dashboard completo para monitorear:
 - 💰 **Crypto portfolio** (multi-chain)
@@ -15,7 +15,7 @@ Dashboard completo para monitorear:
 
 ---
 
-## 🚀 Core Features
+##  Core Features
 
 ### **1. Portfolio Tracking** 📊
 
@@ -153,7 +153,7 @@ chart = create_visualization(data, type='line')
 
 ---
 
-### **4. AI-Powered Recommendations** 🎯
+### **4. AI-Powered Recommendations** 
 
 **Purpose**: Recomendaciones personalizadas basadas en objetivos del usuario
 
@@ -348,7 +348,7 @@ timing_recommendations = [
 
 ---
 
-### **4. Big Data Integration** 🗄️
+### **4. Big Data Integration** 🗄
 
 **Data Sources**:
 - **Blockchain**: Bitcoin, Ethereum, Polygon, Solana (full nodes or APIs)
@@ -683,7 +683,7 @@ def check_rebalancing_needed(portfolio, target_allocation):
 
 ---
 
-## 🎯 Target Markets
+##  Target Markets
 
 ### **1. Crypto Investors**:
 - Need: Track multi-chain portfolio + tax reporting
@@ -707,7 +707,7 @@ def check_rebalancing_needed(portfolio, target_allocation):
 
 ---
 
-## 🚀 Implementation Roadmap
+##  Implementation Roadmap
 
 ### **Phase 1: MVP** (Week 1-4)
 - [ ] Basic portfolio tracking (crypto + stocks)

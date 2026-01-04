@@ -1,4 +1,4 @@
-# 🧠 Truth Algorithm - Layer 7: Neural Workflow Network
+#  Truth Algorithm - Layer 7: Neural Workflow Network
 ## *n8n + Análisis Comportamental + Detección Inconsciente*
 
 **Fecha**: 2025-12-17  
@@ -33,11 +33,11 @@ n8n Workflows → Detectan patrones de verdad/mentira
 
 ---
 
-## 🏗️ Arquitectura: Layer 7 Neural Workflow Network
+## 🏗 Arquitectura: Layer 7 Neural Workflow Network
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ LAYER 7: NEURAL WORKFLOW NETWORK 🧠 NUEVO                   │
+│ LAYER 7: NEURAL WORKFLOW NETWORK  NUEVO                   │
 │ - n8n workflows para análisis multimodal                    │
 │ - Microexpresiones faciales (video)                         │
 │ - Análisis de voz (pitch, pausas, velocidad)                │
@@ -58,7 +58,7 @@ n8n Workflows → Detectan patrones de verdad/mentira
 
 ---
 
-## 🎯 Workflows de Detección (n8n)
+##  Workflows de Detección (n8n)
 
 ### **Workflow 1: Microexpresiones Faciales** 😐→😬
 
@@ -258,7 +258,7 @@ Claim: "I never met with Russian officials" (March 2017)
 
 ---
 
-## 🧠 Red Neuronal: Combina Workflows
+##  Red Neuronal: Combina Workflows
 
 ### **Arquitectura**:
 
@@ -324,9 +324,9 @@ pub fn calculate_truth_score(
 
 ---
 
-## 🎯 Casos de Uso
+##  Casos de Uso
 
-### **1. Análisis de Entrevistas Políticas** 🎙️
+### **1. Análisis de Entrevistas Políticas** 🎙
 
 ```
 Input: Video de entrevista política
@@ -351,7 +351,7 @@ Truth Score: 77/100 🔴 LIKELY DECEPTIVE
 
 ---
 
-### **2. Verificación de Testimonios Judiciales** ⚖️
+### **2. Verificación de Testimonios Judiciales** ⚖
 
 ```
 Input: Video de testimonio bajo juramento
@@ -465,7 +465,7 @@ Deepfake Probability: 89%
 
 ---
 
-## 🚀 Roadmap de Implementación
+##  Roadmap de Implementación
 
 ### **Fase 1: POC (Semanas 1-4)**:
 - ✅ Workflow 4: Lingüístico (más fácil, solo texto)
@@ -505,10 +505,10 @@ Deepfake Probability: 89%
 
 **Layer 7 (Neural Workflow Network)** es tu **diferenciador verificado**:
 
-- 🧠 **Red neuronal de workflows** (como Sentinel, pero para verdad/mentira)
+-  **Red neuronal de workflows** (como Sentinel, pero para verdad/mentira)
 - 😐 **Análisis multimodal** (video + audio + texto + contexto)
-- 🎯 **Detección inconsciente** (microexpresiones, gestos, voz)
+-  **Detección inconsciente** (microexpresiones, gestos, voz)
 - 🤖 **Deepfake detection** (bonus)
 - 🔴 **Nadie lo tiene** (competencia solo analiza texto)
 
-**¿Esto es lo que querías?** 🚀
+**¿Esto es lo que querías?** 

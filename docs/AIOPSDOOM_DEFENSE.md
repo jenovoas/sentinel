@@ -8,7 +8,7 @@
 
 ---
 
-## 🎯 Resumen Ejecutivo
+##  Resumen Ejecutivo
 
 **AIOpsDoom** es una vulnerabilidad crítica (CVSS 9.1) descubierta en RSA Conference 2025 que afecta a sistemas AIOps que usan LLMs para automatización. Sentinel Cortex™ es **inmune** a este ataque gracias a su arquitectura de defensa multi-capa.
 
@@ -169,7 +169,7 @@ CAPA 5: CONTEXT-AWARE EXECUTION
 
 ---
 
-## 🛡️ Implementación Técnica
+##  Implementación Técnica
 
 ### Capa 1: Telemetry Sanitization
 
@@ -622,7 +622,6 @@ assert(guardianResult.approved === true);
 | **Context-Aware** | ❌ No | ✅ Sí |
 | **Bypass Rate** | 🔴 95%+ | 🟢 0% |
 | **CVSS Score** | 🔴 9.1 (CRÍTICA) | 🟢 0.0 (INMUNE) |
-
 
 ### Ventaja Competitiva
 

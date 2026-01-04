@@ -1,4 +1,4 @@
-# 🧠 Workflow Neural Base - POC Implementation
+#  Workflow Neural Base - POC Implementation
 
 **Timeline**: 4 días  
 **Deliverable**: Demo funcional

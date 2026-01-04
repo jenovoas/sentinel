@@ -107,10 +107,10 @@ APPROVAL: AUTOMÁTICO
 
 ### TIER 1 - CAUTION (Requiere confirmación)
 ```
-⚠️ isolate_endpoint
-⚠️ block_ip
-⚠️ quarantine_file
-⚠️ kill_process
+⚠ isolate_endpoint
+⚠ block_ip
+⚠ quarantine_file
+⚠ kill_process
 
 RIESGO: MEDIO
 REVERSIBILIDAD: SÍ

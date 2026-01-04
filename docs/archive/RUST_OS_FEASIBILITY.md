@@ -7,7 +7,7 @@
 
 ---
 
-## 🎯 EXECUTIVE SUMMARY
+##  EXECUTIVE SUMMARY
 
 **Can you build an OS in Rust on top of Sentinel?**
 
@@ -22,7 +22,7 @@
 
 ---
 
-## 🏗️ WHAT YOU ALREADY HAVE (80%)
+## 🏗 WHAT YOU ALREADY HAVE (80%)
 
 ### ✅ 1. Kernel-Level Security (eBPF LSM)
 **Status**: DONE ✅
@@ -366,7 +366,7 @@
 
 ---
 
-## 🚀 RECOMMENDED APPROACH
+##  RECOMMENDED APPROACH
 
 ### Option A: Fork Existing Rust OS (FASTER)
 
@@ -515,8 +515,8 @@ fn syscall_handler(syscall: Syscall) -> Result<()> {
 4. **Months 13-18**: Add userspace + polish
 5. **Months 19-24**: Alpha release
 
-**Result**: First cognitive operating system in history 🧠
+**Result**: First cognitive operating system in history 
 
 ---
 
-**Status**: 100% viable, roadmap defined, ready to start 🚀
+**Status**: 100% viable, roadmap defined, ready to start 

@@ -1,4 +1,4 @@
-# 🎯 EXECUTIVE SUMMARY - SENTINEL CORTEX™
+#  EXECUTIVE SUMMARY - SENTINEL CORTEX™
 **Patent-Ready Executive Summary (60 Seconds)**
 
 **Fecha:** 17 Diciembre 2025 - 04:40 AM  
@@ -13,7 +13,7 @@ Sentinel Cortex™ convierte un problema nuevo y crítico de la IA en una ventaj
 
 ---
 
-## 🛡️ THE SOLUTION (20 segundos)
+##  THE SOLUTION (20 segundos)
 
 Sobre un mercado AIOps de **$11.16B** con adopción del **78% en Fortune 500**, Sentinel Cortex introduce una **arquitectura de defensa en 5 capas** específicamente diseñada para este vector:
 
@@ -33,7 +33,7 @@ Esta arquitectura da lugar a **tres familias de claims patentables sin arte prev
 
 ---
 
-## 🚀 THE PLAN (10 segundos)
+##  THE PLAN (10 segundos)
 
 El plan de los próximos 90 días es claro:
 
@@ -69,7 +69,7 @@ El plan de los próximos 90 días es claro:
 
 ---
 
-## 🎯 UNIQUE POSITIONING
+##  UNIQUE POSITIONING
 
 ### The Only Solution That:
 ✅ Sanitizes telemetry **specifically for LLM consumption** (not generic WAF)  

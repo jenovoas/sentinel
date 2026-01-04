@@ -62,7 +62,7 @@ Prácticas de pipelines confirman:
 
 ---
 
-## 🎯 CLAIM PATENTABLE REFINADO
+##  CLAIM PATENTABLE REFINADO
 
 ### Fraseo Recomendado
 
@@ -154,7 +154,7 @@ Hipótesis:
 
 ---
 
-## 🏗️ INTEGRACIÓN EN SENTINEL
+## 🏗 INTEGRACIÓN EN SENTINEL
 
 ### Lane de Datos (Observability)
 
@@ -434,7 +434,6 @@ def run_experiment(duration_sec=60):
     
     return results
 ```
-
 
 ## ✅ CONCLUSIÓN
 

@@ -6,7 +6,7 @@
 
 ---
 
-## 🧠 The Problem
+##  The Problem
 
 ```
 CURRENT (Pure Python):
@@ -26,7 +26,7 @@ NEEDED (Neuronal Speed):
 
 ---
 
-## 🏗️ Hybrid Architecture
+## 🏗 Hybrid Architecture
 
 ```
 ┌──────────────────────────────────────────┐
@@ -118,7 +118,7 @@ impl TrustScorer {
 
 ---
 
-## 🔗 Python Integration (PyO3)
+##  Python Integration (PyO3)
 
 ```rust
 use pyo3::prelude::*;
@@ -185,7 +185,7 @@ trust = core.score_trust(source)    # <5μs
 
 ---
 
-## 🎯 Implementation
+##  Implementation
 
 ### Phase 1: Core (Week 1-2)
 - [ ] Claim extractor (regex)
@@ -205,7 +205,7 @@ trust = core.score_trust(source)    # <5μs
 
 ---
 
-## 🚀 Results
+##  Results
 
 **Speed**: <100μs per verification  
 **Throughput**: 10,000+ claims/second  

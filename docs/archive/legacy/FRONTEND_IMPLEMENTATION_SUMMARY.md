@@ -169,7 +169,7 @@ interface UnifiedCardProps {
 
 ---
 
-## 🎯 Asignación Sugerida (5 Developers)
+##  Asignación Sugerida (5 Developers)
 
 ### Developer 1 (Rust/WASM) - 1 semana
 - Expandir módulo WASM
@@ -229,7 +229,7 @@ Cada developer debe entregar:
 
 ---
 
-## 🚀 Cómo Empezar (Para Nuevos Developers)
+##  Cómo Empezar (Para Nuevos Developers)
 
 ### 1. Clone y Setup
 ```bash
@@ -302,7 +302,7 @@ Pull request con documentación completa
 
 ---
 
-## 🎯 Timeline Estimado
+##  Timeline Estimado
 
 ```
 Semana 1:

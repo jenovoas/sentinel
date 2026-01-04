@@ -1,4 +1,4 @@
-# 🎯 Stack de Observabilidad Profesional - Implementado
+#  Stack de Observabilidad Profesional - Implementado
 
 ## ✅ Lo que acabamos de implementar
 
@@ -42,7 +42,7 @@ observability/
         └── dashboards/   # Pre-built
 ```
 
-## 🚀 Cómo Usarlo
+##  Cómo Usarlo
 
 ### Iniciar todo:
 ```bash
@@ -93,7 +93,7 @@ observability/
 | ServiceDown | Up=0 por 1min | Critical |
 | HighAPILatency | P95 >1s por 5min | Warning |
 
-## 🎯 Queries Útiles
+##  Queries Útiles
 
 ### PromQL (Métricas)
 
@@ -151,12 +151,12 @@ rate({job="systemd-journal", level="error"}[5m])
 - ✅ Dashboards de analytics siguen funcionando
 
 **Lo nuevo:**
-- ✨ Prometheus scrapes Node Exporter directamente del host
-- ✨ Promtail captura journald en tiempo real
-- ✨ Todo centralizado en Grafana
-- ✨ Alerting automático
-- ✨ Retención inteligente
-- ✨ Queries mucho más rápidas
+-  Prometheus scrapes Node Exporter directamente del host
+-  Promtail captura journald en tiempo real
+-  Todo centralizado en Grafana
+-  Alerting automático
+-  Retención inteligente
+-  Queries mucho más rápidas
 
 ## 📝 Notas Importantes
 

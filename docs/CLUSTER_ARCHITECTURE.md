@@ -342,7 +342,7 @@ Un sistema de procesamiento de tráfico distribuido que comprende:
 
 ---
 
-**Conclusión**: El cluster de buffers predictivos es el siguiente paso natural después de validar el concepto de 1 buffer. Permite escalar horizontalmente manteniendo la "levitación" del tráfico. 🚀
+**Conclusión**: El cluster de buffers predictivos es el siguiente paso natural después de validar el concepto de 1 buffer. Permite escalar horizontalmente manteniendo la "levitación" del tráfico. 
 
 ---
 
