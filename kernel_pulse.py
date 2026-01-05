@@ -7,7 +7,7 @@ import math
 import sys
 
 # Constants
-SHM_PATH = "/var/run/sentinel/truthsync_shm"
+SHM_PATH = "/dev/shm/truthsync_shm"
 SHM_SIZE = 1024 * 1024  # 1MB
 CONTROL_SIZE = 64
 
@@ -61,6 +61,26 @@ def run_pulse():
                 # Write to beginning of SHM (Control Area)
                 mm.seek(0)
                 mm.write(packed_data)
+
+                # 📡 BRIDGE TO REDIS (New addition for TruthSync Integration)
+                try:
+                    import redis
+                    import json
+                    r = redis.Redis(host='localhost', port=6379, db=0)
+                    pulse_data = {
+                        "disonancia": entropy * 100, # Scale to 0-100 for compatibility
+                        "axiones_count": int((1.0 - entropy) * 1000),
+                        "coherence": coherence,
+                        "tte": tte,
+                        "truth_score": truth_score,
+                        "timestamp": now
+                    }
+                    r.publish("sentinel:quantum:pulse", json.dumps(pulse_data))
+                except ImportError:
+                    pass # Redis lib might not be installed in minimal envs
+                except Exception as e:
+                    # Silent fail to avoid spamming logs, pulse is high freq
+                    pass
                 
                 # Sync frequency (60Hz approximate)
                 time.sleep(0.016)

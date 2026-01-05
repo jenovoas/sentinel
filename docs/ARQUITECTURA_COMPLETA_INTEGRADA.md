@@ -7,8 +7,9 @@ Sentinel is a security monitoring system that integrates kernel-level enforcemen
 **Core Components:**
 
 - **Kernel Layer** (Guardian Alpha/Beta - eBPF/LSM)
-- **Decision Engine** (Cortex - Python/Rust)
-- **Verification Layer** (TruthSync - Base-60 checksums)
+- **Decision Engine** (Cortex - Rust implementation with Fluid Logic)
+- **Security Middleware** (AIOpsShield - Semantic Firewall)
+- **Verification Layer** (TruthSync - Base-60/Sexagesimal checksums)
 - **Automation Layer** (n8n workflows)
 - **Network Layer** (XDP packet filtering)
 
@@ -34,10 +35,10 @@ Sentinel is a security monitoring system that integrates kernel-level enforcemen
 │           DECISION ENGINE (Cortex)                           │
 │                                                               │
 │  Pattern Detection & Response:                               │
-│  • Security pattern matching                                 │
-│  • Confidence scoring (0.0-1.0)                             │
-│  • Decision types: allow/block/escalate                     │
-│  • Integration with Guardian Gamma (human-in-loop)          │
+│  • Fluid Logic (Laminar/Turbulent/FlashFlood scales)         │
+│  • AIOpsShield (Semantic Firewall middleware)                │
+│  • Base-60 Pure Confidence Scoring (n/60)                     │
+│  • Confident patterns: Credential Stuffing, Compromise, etc. │
 └─────────────────────────────────────────────────────────────┘
                                ↕
 ┌─────────────────────────────────────────────────────────────┐
@@ -201,32 +202,26 @@ pub fn is_sexagesimal_terminal(value: f64) -> bool {
 ```
 T=0ns: DETECTION (Kernel)
 ├─ Guardian Alpha (eBPF/LSM) intercepts syscall
-├─ Measured latency: 280ns
-├─ eBPF verifier ensures code safety
-└─ Event forwarded to userspace
+├─ Event forwarded to userspace via Redis (quantum_signals)
+└─ Measured latency: 280ns
+
+T=280ns: SEMANTIC SANITIZATION (AIOpsShield)
+├─ Cortex Firewall scans for cognitive injections
+└─ Processed in < 30µs (avg lat: 29.17µs)
 
 T=1.25μs: CONSENSUS VALIDATION
-├─ TPM 2.0 signs event
-├─ eBPF provides kernel timestamp
-├─ Guardian Beta validates (dual check)
-├─ Consensus achieved
-└─ Event stored in evidence database
+├─ Dual Guardian validation (Alpha + Beta)
+└─ Consensus achieved in ~1.25μs
 
 T=5μs: MATHEMATICAL VERIFICATION
 ├─ TruthSync calculates base-60 checksum
-├─ Compares against known-good values
-├─ Cross-references with:
-│   • Prometheus metrics
-│   • Loki logs
-│   • eBPF kernel events
 └─ Validation: PASS
 
-T=10ms: DECISION ENGINE (Cortex)
-├─ Pattern detection runs
-├─ Confidence score calculated: 0.87
+T=10ms: FLUID DECISION ENGINE (Cortex)
+├─ Fluid scaling: Turbulent -> FlashFlood if pressure > 51/60
+├─ Pattern detection (Base-60 Confidence: 57/60)
 ├─ Decision: BLOCK
-├─ n8n workflow triggered for response
-└─ Event logged to database
+└─ n8n workflow triggered
 
 T=20ms: NOTIFICATION
 ├─ WebSocket update to frontend
@@ -323,11 +318,11 @@ Frontend
 | Component | Latency | Measurement Method |
 |-----------|---------|-------------------|
 | Guardian Alpha (eBPF) | 280ns | bpftrace |
+| Semantic Firewall | 29.17µs | Rust Bench (S60) |
+| Fluid Decision (Cortex) | 22.38ns | Rust Bench (S60) |
 | Consensus Validation | 1.25μs | System timestamps |
-| Guardian Beta | 1.69μs | bpftrace |
 | TruthSync Verification | < 5μs | Rust instrumentation |
 | XDP Filtering | < 1μs | XDP stats |
-| Cortex Decision | ~10ms | Application logs |
 | n8n Workflow | ~1s | Workflow execution time |
 
 ### System Capabilities

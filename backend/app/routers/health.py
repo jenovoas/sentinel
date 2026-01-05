@@ -21,6 +21,7 @@ import asyncio
 import asyncpg
 import redis.asyncio as redis
 import httpx
+from time import time
 
 router = APIRouter(prefix="/api/v1")
 
@@ -30,6 +31,60 @@ accept_requests = False  # Whether to serve client requests
 
 # Startup time for uptime calculation
 startup_time = datetime.now()
+
+
+# ============================================================================
+# BIOLOGICAL STATE - QUANTUM HEARTBEAT
+# ============================================================================
+
+# Global biological state updated by Redis pulse
+biological_state = {
+    "pulse": 60,      # Default 60 BPM
+    "synapse": 0.98,  # Default 98% coherence
+    "last_pulse": 0,
+    "axiones": 0,
+    "disonancia": 0.0
+}
+
+async def quantum_pulse_listener():
+    """
+    Escucha el 'Latido Cuántico' en Redis y actualiza el estado biológico.
+    Este proceso corre en background sincronizando la coherencia del sistema.
+    """
+    import os
+    import json
+    import redis.asyncio as redis
+    
+    redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+    channel = "sentinel:quantum:pulse"
+    
+    while True:
+        try:
+            r = redis.from_url(redis_url, decode_responses=True)
+            pubsub = r.pubsub()
+            await pubsub.subscribe(channel)
+            
+            async for message in pubsub.listen():
+                if message["type"] == "message":
+                    try:
+                        data = json.loads(message["data"])
+                        # Actualizar estado biológico
+                        biological_state["disonancia"] = data.get("disonancia", 0.0)
+                        biological_state["axiones"] = data.get("axiones_count", 0)
+                        biological_state["last_pulse"] = time()
+                        
+                        # Cálculo Biológico (Metáfora de Salud Cuántica)
+                        # Pulse = 60 + (disonancia / 10) -> El sistema se acelera con el ruido
+                        biological_state["pulse"] = round(60 + (biological_state["disonancia"] / 10), 1)
+                        
+                        # Synapse = 1.0 - (axiones / 100) -> Axiones (patrones) consumen recursos cognitivos
+                        coherence = 1.0 - (biological_state["axiones"] / 200)
+                        biological_state["synapse"] = max(0.42, round(coherence, 4)) # Nunca baja del límite de base60 (42)
+                        
+                    except Exception as e:
+                        pass
+        except Exception as e:
+            await asyncio.sleep(5) # Reintentar tras fallo de Redis
 
 
 async def check_database() -> Dict[str, Any]:
@@ -248,6 +303,8 @@ async def health_check(response: Response):
     - Role (primary/standby)
     - Uptime
     """
+    import psutil
+    
     # Check all dependencies in parallel
     db_check, redis_check, ollama_check = await asyncio.gather(
         check_database(),
@@ -255,6 +312,11 @@ async def health_check(response: Response):
         check_ollama(),
         return_exceptions=True
     )
+    
+    # System Metrics
+    cpu_usage = psutil.cpu_percent(interval=None)
+    memory = psutil.virtual_memory()
+    memory_usage = memory.percent
     
     # Determine overall health
     # Critical: Database and Redis must be healthy
@@ -270,15 +332,49 @@ async def health_check(response: Response):
     # Calculate uptime
     uptime_seconds = (datetime.now() - startup_time).total_seconds()
     
+    # Add TruthSync check
+    from app.services.truthsync import truthsync_client
+    truthsync_status = await truthsync_client.health_check()
+    
+    # Add Guardian/Security check (Real Process Verification)
+    guardian_active = False
+    try:
+         for proc in psutil.process_iter(['cmdline']):
+             try:
+                 cmd = proc.info.get('cmdline')
+                 if cmd and any('watchdog_service.py' in str(arg) for arg in cmd):
+                     guardian_active = True
+                     break
+             except (psutil.NoSuchProcess, psutil.AccessDenied):
+                 continue
+    except Exception as e:
+         logger.error(f"Error checking watchdog status: {e}")
+         guardian_active = False
+
     health_data = {
         "status": overall_status,
         "timestamp": datetime.now().isoformat(),
         "uptime_seconds": round(uptime_seconds, 2),
+        "cpu_usage": cpu_usage,
+        "memory_usage": memory_usage,
         "role": app_role,
+        "biological": {
+            "pulse": biological_state["pulse"],
+            "synapse": biological_state["synapse"],
+            "last_pulse_delta": round(time() - biological_state["last_pulse"], 2) if biological_state["last_pulse"] > 0 else -1
+        },
         "components": {
             "database": db_check,
             "redis": redis_check,
-            "ollama": ollama_check
+            "ollama": ollama_check,
+            "truthsync": {
+                "status": truthsync_status.get("status", "unknown"),
+                "available": truthsync_status.get("status") == "healthy"
+            },
+            "guardian": {
+                "active": guardian_active,
+                "status": "protected" if guardian_active else "unprotected"
+            }
         }
     }
     

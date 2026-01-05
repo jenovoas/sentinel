@@ -72,13 +72,9 @@
         "**/packer": true,
         "**/temp_initramfs/**": true
     },
-    "antigravity.searchMaxWorkspaceFileCount": 1000,
-    "antigravity.indexing.enabled": false,
-    "antigravity.search.indexing": false,
-    "antigravity.ls.enabled": false,
-    "antigravity.languageServer.enabled": false,
-    "antigravity.suggest.enabled": false,
+    "antigravity.searchMaxWorkspaceFileCount": 5000,
     "search.followSymlinks": false,
-    "git.enabled": false,
-    "git.autorefresh": false
+    "git.enabled": true,
+    "git.autorefresh": true,
+    "git.autofetch": false
 }

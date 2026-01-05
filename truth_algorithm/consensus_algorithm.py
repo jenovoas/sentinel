@@ -6,7 +6,6 @@ Truth Algorithm - Weighted Consensus Algorithm
 Este algoritmo toma múltiples fuentes de información y determina
 la veracidad de un claim mediante consenso ponderado.
 
-Powered by Google ❤️ | Built with Gemini AI
 
 Autor: Jaime Novoa
 Fecha: 21 Diciembre 2025
@@ -95,19 +94,35 @@ class WeightedConsensusAlgorithm:
         self.PARTIAL_THRESHOLD = 0.60
         self.CONTRADICTED_THRESHOLD = 0.40  # Si hay mucha contradicción
         
-    def verify_claim(self, claim: str, sources: List[Source]) -> ConsensusResult:
+    def verify_claim(self, claim: str, sources: List[Source], disonancia: float = 0.0) -> ConsensusResult:
         """
-        Verifica un claim usando consenso ponderado
+        Verifica un claim usando consenso ponderado considerando el 'zumbido' del sistema.
         
         Args:
             claim: El claim a verificar
             sources: Lista de fuentes que evaluaron el claim
+            disonancia: Nivel de ruido/incoherencia del sistema (eBPF metadata)
             
         Returns:
             ConsensusResult con el veredicto y métricas
         """
         start_time = time.perf_counter()
         
+        # VETO POR DISONANCIA: Si el ruido es crítico, no certificar nada.
+        # Ley de Optimización Universal: Maximizar Coherencia.
+        DISONANCIA_VETO_THRESHOLD = 50.0 # Umbral de caos sistémico
+        if disonancia > DISONANCIA_VETO_THRESHOLD:
+            return ConsensusResult(
+                status=VerificationStatus.UNVERIFIED,
+                confidence=0.0,
+                supporting_sources=0,
+                contradicting_sources=0,
+                total_weight_supporting=0.0,
+                total_weight_contradicting=0.0,
+                explanation=f"VETO DE SISTEMA: Disonancia Crítica ({disonancia:.1f}). Coherencia insuficiente para certificar verdad.",
+                processing_time_ms=(time.perf_counter() - start_time) * 1000
+            )
+
         # Caso 1: Sin fuentes
         if not sources:
             return ConsensusResult(
@@ -144,18 +159,22 @@ class WeightedConsensusAlgorithm:
             )
         
         # Calcular ratio de consenso (0.0 - 1.0)
-        # 1.0 = todas las fuentes apoyan
-        # 0.0 = todas las fuentes contradicen
         consensus_ratio = weight_supporting / total_weight
         
-        # Determinar status basado en ratio
-        if consensus_ratio >= self.VERIFIED_THRESHOLD:
+        # APLICAR PENALIZACIÓN POR DISONANCIA (Coherence Penalty)
+        # A mayor ruido, menor confianza en el resultado final, incluso si hay consenso.
+        # La verdad requiere silencio.
+        penalty_factor = max(0.0, disonancia / 100.0)
+        final_confidence = consensus_ratio * (1.0 - penalty_factor)
+        
+        # Determinar status basado en ratio penalizado
+        if final_confidence >= self.VERIFIED_THRESHOLD:
             status = VerificationStatus.VERIFIED
-            explanation = f"{len(supporting)} fuentes confiables confirman este claim."
+            explanation = f"{len(supporting)} fuentes confirman el claim con alta coherencia sistémica."
             
-        elif consensus_ratio >= self.PARTIAL_THRESHOLD:
+        elif final_confidence >= self.PARTIAL_THRESHOLD:
             status = VerificationStatus.PARTIAL
-            explanation = f"Verificación parcial: {len(supporting)} fuentes apoyan, {len(contradicting)} contradicen."
+            explanation = f"Verificación parcial. Disonancia ({disonancia:.1f}) reduce la certeza absoluta."
             
         elif consensus_ratio <= (1 - self.VERIFIED_THRESHOLD):
             status = VerificationStatus.FABRICATED
@@ -167,13 +186,13 @@ class WeightedConsensusAlgorithm:
             
         else:
             status = VerificationStatus.PARTIAL
-            explanation = f"Evidencia mixta: {len(supporting)} fuentes apoyan, {len(contradicting)} contradicen."
+            explanation = f"Evidencia mixta o interferencia por ruido sistémico ({disonancia:.1f})."
         
         processing_time = (time.perf_counter() - start_time) * 1000
         
         return ConsensusResult(
             status=status,
-            confidence=consensus_ratio,
+            confidence=final_confidence,
             supporting_sources=len(supporting),
             contradicting_sources=len(contradicting),
             total_weight_supporting=weight_supporting,

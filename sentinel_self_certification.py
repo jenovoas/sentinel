@@ -38,6 +38,25 @@ def scan_files():
                 files['logs'].append(str(path))
     return files
 
+def get_system_disonancia():
+    """Lee la disonancia directamente de SHM (Shared Memory)"""
+    try:
+        import struct
+        import mmap
+        SHM_PATH = "/dev/shm/truthsync_shm"
+        if os.path.exists(SHM_PATH):
+            with open(SHM_PATH, "r+b") as f:
+                mm = mmap.mmap(f.fileno(), 1024 * 1024)
+                # Read 48 bytes: 5 doubles (8) + 1 u64 (8)
+                data = mm[:48]
+                unpacked = struct.unpack("dddddQ", data)
+                # unpacked[0] is entropy
+                mm.close()
+                return unpacked[0] * 100 # Convert to 0-100 scale
+    except Exception as e:
+        print(f"⚠️ Could not read SHM: {e}")
+    return 0.0
+
 def truthsync_certify(claims):
     """Envía a TruthSync CLI para scoring"""
     if not claims:
@@ -67,10 +86,19 @@ def query_ollama(prompt):
 
 def generate_report():
     print(f"🔍 Iniciando Pipeline de Auto-Certificación (TruthSync CLI + {MODEL})...")
+    
+    # Obtener estado del sistema
+    disonancia = get_system_disonancia()
+    print(f"🌡️ Estado del Sistema: Disonancia = {disonancia:.2f}")
+
     files = scan_files()
     
     report = {
         'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
+        'system_health': {
+            'disonancia': disonancia,
+            'status': 'OPTIMAL' if disonancia < 20 else ('WARNING' if disonancia < 50 else 'CRITICAL')
+        },
         'summary': {
             'total_code': len(files['code']),
             'total_docs': len(files['docs']),
@@ -116,7 +144,9 @@ def generate_report():
 
     # Save Markdown Report
     md_report = f"# 📜 SENTINEL SELF-CERTIFICATION PIPELINE REPORT\n"
-    md_report += f"**Timestamp:** {report['timestamp']}\n\n"
+    md_report += f"**Timestamp:** {report['timestamp']}\n"
+    md_report += f"**System Status:** {report['system_health']['status']} (Disonancia: {report['system_health']['disonancia']:.2f})\n\n"
+    
     md_report += f"## 📊 System Overview\n"
     md_report += f"- Code Artifacts: {report['summary']['total_code']}\n"
     md_report += f"- Documentation: {report['summary']['total_docs']}\n"
