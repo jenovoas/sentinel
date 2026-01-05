@@ -22,6 +22,7 @@ Start with: uvicorn app.main:app --host 0.0.0.0 --port 8000
 """
 
 from contextlib import asynccontextmanager
+import asyncio
 import logging
 import os
 import uuid
@@ -35,7 +36,14 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from app.config import get_settings, get_allowed_origins
 from app.logging_config import setup_logging
 from app.database import init_db, close_db, check_db_connection
-from app.routers import health, users, tenants, dashboard, analytics, ai, auth, backup, failsafe, incidents, gamma, cortex, metrics_summary, websocket, truthsync, quantum, terminal, infrastructure
+# Import only essential routers for TUI
+from app.routers import (
+    health, users, tenants, dashboard, analytics, ai, auth, 
+    backup, failsafe, incidents, gamma, cortex, metrics_summary, 
+    websocket, truthsync, ai_tools
+)
+# Commented out routers with missing dependencies:
+# from app.routers import quantum, terminal, infrastructure
 from app.api import workflows
 from app.shutdown import setup_signal_handlers  # Graceful shutdown
 
@@ -88,6 +96,13 @@ async def lifespan(app: FastAPI):
     # Setup graceful shutdown handlers
     setup_signal_handlers(app)
     logger.info("✅ Graceful shutdown handlers configured")
+    
+    # --- QUANTUM HEARTBEAT START ---
+    # Start the biological pulse listener in background
+    from app.routers.health import quantum_pulse_listener
+    asyncio.create_task(quantum_pulse_listener())
+    logger.info("💓 Quantum Heartbeat Listener STARTED")
+    # -------------------------------
     
     yield  # Application runs here
     
@@ -246,9 +261,12 @@ app.include_router(gamma.router)  # Guardian Gamma (HITL)
 app.include_router(metrics_summary.router)  # Metrics Summary for GUI
 app.include_router(websocket.router)  # Real-time Battlefield UI
 app.include_router(truthsync.router)  # Truth verification service
-app.include_router(quantum.router)  # Quantum membrane visualization
-app.include_router(terminal.router)  # Secure Terminal Service
-app.include_router(infrastructure.router)  # Sovereign Matrix (Docker, Network, Logs)
+app.include_router(ai_tools.router)  # AI Autonomous Tools (File/Command access)
+# Commented out routers with missing dependencies:
+# app.include_router(quantum.router)  # Quantum membrane visualization
+# app.include_router(terminal.router)  # Secure Terminal Service
+# app.include_router(infrastructure.router)  # Sovereign Matrix (Docker, Network, Logs)
+
 
 
 # ============================================================================

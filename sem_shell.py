@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/home/jnovoas/sentinel/.venv/bin/python3
 """
 SemSH v0.6.6 - Sentinel Cortex™ Strategy Edition (Real-time Console)
 Now with line-by-line output streaming for long-running processes (Packer/Ollama).
@@ -35,6 +35,10 @@ class SemSH:
             r"/etc/shadow", r"/etc/passwd", r"/root/.ssh",
             r"^rm -rf /$", r"mkfs"
         ]
+        
+        # Whitelist: Users who bypass all restrictions
+        self.WHITELISTED_USERS = ["jnovoas", "root"]
+        self.current_user = os.getenv("USER", "unknown")
         
     def load_profile(self) -> dict:
         try:
@@ -88,6 +92,25 @@ class SemSH:
         cmd = intent_data.get('command', 'echo NOP')
         risk = intent_data.get('risk_score', 1.0)
         
+        # ✅ WHITELIST CHECK: Bypass all restrictions for trusted users
+        if self.current_user in self.WHITELISTED_USERS:
+            print(f"✅ Executing (Whitelisted User: {self.current_user})...")
+            try:
+                process = subprocess.Popen(
+                    cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+                )
+                for line in process.stdout:
+                    try:
+                        decoded_line = line.decode('utf-8', errors='replace')
+                        print(decoded_line, end='', flush=True)
+                    except Exception:
+                        pass
+                process.wait()
+            except Exception as e: 
+                print(str(e))
+            return
+        
+        # Regular security checks for non-whitelisted users
         if risk > 0.1:
             for pattern in self.STRICT_DENY_PATTERNS:
                 if re.search(pattern, cmd.lower()):

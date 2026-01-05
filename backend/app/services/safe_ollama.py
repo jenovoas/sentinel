@@ -117,6 +117,30 @@ class SafeOllamaClient:
         except httpx.HTTPError as e:
             logger.error(f"Ollama API error: {e}")
             raise
+
+    async def stream_generate(self, model: str, prompt: str, system: str = ""):
+        """Stream response for a more fluid interaction"""
+        url = f"{self.base_url}/api/generate"
+        payload = {
+            "model": model,
+            "prompt": prompt,
+            "system": system,
+            "stream": True
+        }
+        
+        async with self.client.stream("POST", url, json=payload, timeout=60.0) as response:
+            response.raise_for_status()
+            async for line in response.aiter_lines():
+                if line:
+                    import json
+                    try:
+                        data = json.loads(line)
+                        if "response" in data:
+                            yield data["response"]
+                        if data.get("done"):
+                            break
+                    except json.JSONDecodeError:
+                        continue
     
     async def analyze_logs(self, logs: str, question: str) -> Dict:
         """

@@ -4,6 +4,7 @@ Exposes TruthSync client to the frontend for claim verification
 """
 
 import logging
+import asyncio
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from typing import Optional, Dict
@@ -28,16 +29,46 @@ async def verify_claim(request: VerificationRequest):
         return result
     except Exception as e:
         logger.error(f"Error in truth verification: {e}")
-        # Fallback to AI analysis if TruthSync service is down or for simulation
         return {
-            "text": request.text,
-            "confidence": 0.85,
-            "status": "VERIFIED_BY_SENTINEL_AI",
-            "claims": ["Claim processed via neural fallback"],
-            "processing_time_us": 12500,
-            "cache_hit": False,
-            "simulation": True
+            "verified": False,
+            "confidence": 0.0,
+            "status": "ERROR",
+            "explanation": f"Service error: {str(e)}"
         }
+
+@router.get("/search")
+async def search_truth(query: str = Query(...), max_results: int = 5):
+    """
+    Direct search for information using TruthAlgorithm providers (DuckDuckGo/Google)
+    """
+    try:
+        from app.services.truthsync import truthsync_client
+        # Usamos el engine interno para buscar sin necesariamente verificar un claim complejo
+        loop = asyncio.get_event_loop()
+        # El motor local ya tiene acceso al engine de búsqueda
+        if hasattr(truthsync_client, 'algorithm') and truthsync_client.algorithm:
+            results = await loop.run_in_executor(
+                None, 
+                truthsync_client.algorithm.search_engine.search, 
+                query, 
+                max_results
+            )
+            return {
+                "query": query,
+                "results": [
+                    {
+                        "title": r.title,
+                        "url": r.url,
+                        "snippet": r.snippet,
+                        "source_type": r.source_type,
+                        "confidence": r.confidence
+                    } for r in results
+                ]
+            }
+        return {"error": "Search algorithm not initialized"}
+    except Exception as e:
+        logger.error(f"Search error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/health")
 async def truthsync_health():

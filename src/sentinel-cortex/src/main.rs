@@ -8,8 +8,10 @@ mod api_server;
 
 use crate::actions::QuantumPulseEmitter;
 use collectors::PrometheusCollector;
-use engine::PatternDetector;
+use engine::{PatternDetector, FluidController, FlowScale, SemanticFirewall};
 use actions::N8NClient;
+use collectors::redis_subscriber::{RedisSubscriber, QuantumEvent};
+use tokio::sync::mpsc;
 use std::time::Duration;
 
 #[tokio::main]
@@ -40,11 +42,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let detector = PatternDetector::new();
     let n8n = N8NClient::new(n8n_url);
     
+    // --- BUFFER DE TELEMETRÍA (MPSC) ---
+    let buffer_capacity = 1024;
+    let (tx_events, mut rx_events) = mpsc::channel::<QuantumEvent>(buffer_capacity);
+    let mut fluid_ctrl = FluidController::new(buffer_capacity);
+    let semantic_firewall = SemanticFirewall::new();
+    
+    // Lanzar suscriptor de Redis en background
+    let redis_url_clone = redis_url.clone();
+    tokio::spawn(async move {
+        let redis_sub = RedisSubscriber::new(&redis_url_clone, "quantum_signals");
+        if let Err(e) = redis_sub.start(tx_events).await {
+            tracing::error!("❌ Error en el suscriptor de Redis: {}", e);
+        }
+    });
+
     // --- QUANTUM PULSE EMITTER ---
     let quantum_emitter: Option<QuantumPulseEmitter> = match std::env::var("REDIS_URL") {
         Ok(url) => {
-            // The previous logging line for EventBus URL is kept above.
-            // tracing::info!("⚡ EventBus URL: {}", url); // This line is redundant if redis_url is logged above
             match QuantumPulseEmitter::new(&url) {
                 Ok(emitter) => {
                     tracing::info!("✅ Quantum Pulse Emitter connected");
@@ -67,66 +82,79 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         api_server::start_api_server().await;
     });
 
-    tracing::info!("✅ Neural Guard started successfully");
+    tracing::info!("✅ Neural Guard started successfully (Fluid Mode)");
     
-    // Main loop: collect → detect → act
+    // --- MAIN LOOP ---
     let mut iteration = 0;
     loop {
         iteration += 1;
-        tracing::debug!("🔄 Iteration {} - Collecting events...", iteration);
+        let start_time = std::time::Instant::now();
         
-        // Collect events from Prometheus
-        match prometheus.collect().await {
-            Ok(events) => {
-                tracing::info!("📊 Collected {} events", events.len());
-                
-                // Detect patterns
-                let patterns = detector.detect(&events);
-
-                // --- QUANTUM PULSE EMISSION ---
-                if let Some(emitter) = &quantum_emitter {
-                    // Disonancia = Raw event count (Background noise)
-                    // Axiones = Detected patterns (Meaningful signal)
-                    let disonancia = events.len() as f64;
-                    let axiones = patterns.len() as u32;
-
-                    if let Err(e) = emitter.emit_signal(disonancia, axiones).await {
-                        tracing::error!("⚡ Failed to emit quantum signal: {}", e);
+        // 1. DRENAJE FLUIDO (Dynamic Buffering)
+        let batch_size = fluid_ctrl.get_batch_size();
+        
+        let mut ebpf_signals = Vec::new();
+        for _ in 0..batch_size {
+            match rx_events.try_recv() {
+                Ok(mut event) => {
+                    // Sanitización Semántica (AIOpsShield)
+                    let (sanitized_raw, is_malicious) = semantic_firewall.sanitize(&event.raw_event);
+                    if is_malicious {
+                        tracing::warn!("🛡️  Ignorando señal del Kernel por riesgo semántico: {}", event.source);
+                        continue;
                     }
-                }
-                // ------------------------------
-                
-                if !patterns.is_empty() {
-                    tracing::warn!("🚨 Detected {} patterns", patterns.len());
-                    
-                    // Trigger playbooks for detected patterns
-                    for pattern in patterns {
-                        tracing::warn!(
-                            "⚠️  Pattern: {} (confidence: {:.2})",
-                            pattern.name,
-                            pattern.confidence
-                        );
-                        
-                        // Only trigger if confidence > 0.7
-                        if pattern.confidence > 0.7 {
-                            if let Err(e) = n8n.trigger_playbook(&pattern).await {
-                                tracing::error!("❌ Failed to trigger playbook: {}", e);
-                            }
-                        } else {
-                            tracing::info!("ℹ️  Skipping playbook (low confidence)");
-                        }
-                    }
-                } else {
-                    tracing::debug!("✓ No patterns detected");
-                }
-            }
-            Err(e) => {
-                tracing::error!("❌ Failed to collect events: {}", e);
+                    event.raw_event = sanitized_raw;
+                    ebpf_signals.push(event);
+                },
+                Err(_) => break,
             }
         }
         
-        // Wait 30 seconds before next iteration
-        tokio::time::sleep(Duration::from_secs(30)).await;
+        // Medir latencia de procesamiento de este batch
+        let processing_latency_ms = start_time.elapsed().as_secs_f64() * 1000.0;
+        
+        // Ajustamos la escala basada en cuántos procesamos realmente Y la latencia medida
+        let scale = fluid_ctrl.observe(ebpf_signals.len(), processing_latency_ms);
+        
+        if !ebpf_signals.is_empty() {
+            tracing::info!(
+                "🌊 Flujo {:?}: Procesando batch de {} señales (Latencia: {:.2}ms)", 
+                scale, 
+                ebpf_signals.len(),
+                processing_latency_ms
+            );
+        }
+
+        // 2. Colectar Prometheus (Gating Sexagesimal)
+        // En modo Laminar colectamos siempre, en FlashFlood priorizamos telemetría crítica.
+        // Gating: Cada 6 iteraciones (1/10 de 60) para mantener armonía.
+        let should_collect_metrics = iteration % 6 == 0 || scale == FlowScale::Laminar;
+        
+        if should_collect_metrics {
+            match prometheus.collect().await {
+                Ok(events) => {
+                    let patterns = detector.detect(&events);
+                    
+                    if let Some(emitter) = &quantum_emitter {
+                        // Disonancia armonizada f64 (Final Physical Layer)
+                        let disonancia = events.len() as f64 + ebpf_signals.iter().map(|s| s.disonancia).sum::<f64>();
+                        let axiones = patterns.len() as u32;
+                        let _ = emitter.emit_signal(disonancia, axiones).await;
+                    }
+                    
+                    for pattern in patterns {
+                        // Umbral de Confianza Soberana: 42/60 (0.7)
+                        if pattern.confidence > (42.0 / 60.0) {
+                            let _ = n8n.trigger_playbook(&pattern).await;
+                        }
+                    }
+                }
+                Err(e) => tracing::error!("❌ Prometheus error: {}", e),
+            }
+        }
+        
+        // 3. Sleep Adaptativo (Backpressure / Fluidity S60)
+        tokio::time::sleep(fluid_ctrl.get_sleep_duration()).await;
     }
 }
 
