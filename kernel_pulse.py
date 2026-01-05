@@ -1,94 +1,164 @@
+#!/usr/bin/env python3
+"""
+KERNEL PULSE GENERATOR (Quantum Phase 1)
+----------------------------------------
+Generates high-frequency system state data (Entropy, Coherence)
+synchronized with a Time Crystal Clock (Base-60 / Salto 17).
 
-import mmap
+Output:
+1. Shared Memory: /dev/shm/truthsync_shm (High Speed, C-struct compatible)
+2. Redis Channel: sentinel:quantum:pulse (Decoupled, JSON)
+"""
+
+import sys
 import os
-import struct
 import time
 import math
-import sys
+import random
+import struct
+import mmap
+import json
 
-# Constants
+# Setup paths for Quantum Module
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'quantum')))
+try:
+    from time_crystal_clock import TimeCrystalClock
+except ImportError:
+    print("⚠️ Quantum Clock not found. Running in degradation mode (Linear Time).")
+    class TimeCrystalClock:
+        def __init__(self): 
+            self.ticks = 0
+            self.TICK_INTERVAL = 0.024 # Approx 41Hz
+        def tick(self): 
+            time.sleep(self.TICK_INTERVAL)
+            self.ticks += 1
+        def get_coherence(self): return 0.5
+
+# Constants (Shared Memory Layout)
+# Must match Rust struct: [f64; 5] + u64
 SHM_PATH = "/dev/shm/truthsync_shm"
 SHM_SIZE = 1024 * 1024  # 1MB
-CONTROL_SIZE = 64
+FORMAT = "dddddQ"       # 5 doubles + 1 unsigned long long
+CONTROL_OFFSET = 64     # Offset for control signals if needed
 
-def ensure_shm():
+def ensure_shm_exists():
+    """Create SHM file if it doesn't exist"""
     if not os.path.exists(SHM_PATH):
-        with open(SHM_PATH, "wb") as f:
-            f.write(b'\x00' * SHM_SIZE)
-        os.chmod(SHM_PATH, 0o666)
-    
-    # Ensure size
-    if os.path.getsize(SHM_PATH) != SHM_SIZE:
-        with open(SHM_PATH, "wb") as f:
-            f.truncate(SHM_SIZE)
+        try:
+            with open(SHM_PATH, "wb") as f:
+                f.write(b'\0' * SHM_SIZE)
+            os.chmod(SHM_PATH, 0o666) # RW for everyone
+        except Exception as e:
+            print(f"Error creating SHM: {e}")
 
-def run_pulse():
-    ensure_shm()
+def run_pulse_generator():
+    ensure_shm_exists()
+    
+    print(f"💓 Kernel Pulse Generator Active on {SHM_PATH}")
+    print("💎 Sincronizando con Reloj de Cristal de Tiempo (Base-60 / Salto 17)...")
+    
+    # Inicializar REDIS
+    redis_client = None
+    try:
+        import redis
+        redis_client = redis.Redis(host='localhost', port=6379, db=0)
+        redis_client.ping()
+        print("✅ Redis Connection Established")
+    except ImportError:
+        print("⚠️ Redis library not installed. Skipping Redis integration.")
+    except Exception as e:
+        print(f"⚠️ Redis Connection Failed: {e}")
+
+    # Inicializar Reloj Cuántico
+    clock = TimeCrystalClock()
+    
+    t = 0.0
     
     try:
-        with open(SHM_PATH, "r+b") as f:
-            # Map the file
-            mm = mmap.mmap(f.fileno(), SHM_SIZE)
+        while True:
+            # Esperar el Tick Sagrado (Auto-corrección de deriva)
+            clock.tick()
             
-            print(f"💓 Kernel Pulse Generator Active on {SHM_PATH}")
-            print("🌊 Generating Entropy Waves (Ctrl+C to stop)...")
+            # Calcular métricas basadas en el tiempo del reloj (más estable)
+            t = clock.ticks * clock.TICK_INTERVAL
             
-            start_time = time.time()
+            # 1. Entropy (Sine wave + random noise)
+            # Frecuencias armónicas: 0.5 (Base), 0.83 (5/6), 1.25 (5/4)
+            wave1 = math.sin(t * 0.5) * 20.0 
+            wave2 = math.sin(t * 0.8333) * 10.0
+            noise = random.uniform(-5.0, 5.0)
             
-            while True:
-                now = time.time()
-                elapsed = now - start_time
-                
-                # SImulate Entropy (Sine wave + noise)
-                entropy = 0.12 + (math.sin(elapsed) * 0.05) + (math.sin(elapsed * 3) * 0.02)
-                
-                # Simulate Coherence (Inverse of entropy usually)
-                coherence = 1.0 - (entropy * 0.5)
-                
-                # Simulate TTE (Microseconds, mostly stable with blips)
-                tte = 3.23
-                if (int(elapsed * 10) % 20) == 0: # Random blip
-                    tte = 3.85
-                
-                # Simulate Truth Score (Random high value for demo)
-                truth_score = 0.88 + (math.sin(elapsed * 0.5) * 0.05)
-                confidence = 3.0 # 3.0 = High
+            base_entropy = 30.0 + wave1 + wave2 + noise
+            entropy = max(0.0, min(100.0, base_entropy))
 
-                # Pack data: 5 doubles (8 bytes each) + 1 unsigned long long (8 bytes)
-                # Structure: [entropy | coherence | tte | truth_score | confidence | timestamp]
-                packed_data = struct.pack("dddddQ", entropy, coherence, tte, truth_score, confidence, int(now * 1000))
-                
-                # Write to beginning of SHM (Control Area)
-                mm.seek(0)
-                mm.write(packed_data)
+            # 2. Coherence (Inverse of entropy)
+            # La coherencia del reloj también influye
+            clock_quality = clock.get_coherence()
+            coherence = (100.0 - entropy) * clock_quality
+            
+            # 3. TTE (Time to Entropy)
+            tte = 1000.0 / (entropy + 1.0)
+            
+            # 4. Truth Score (Linked to coherence)
+            truth_score = coherence / 100.0
+            
+            # 5. Confidence 
+            confidence = 0.95 * truth_score
 
-                # 📡 BRIDGE TO REDIS (New addition for TruthSync Integration)
+            # 6. Timestamp (Nanoseconds)
+            timestamp = int(time.time() * 1e9)
+            
+            # --- FILTRO DE PUREZA DE DATOS (Anti-Decimal Garbage) ---
+            # Casteo explícito para evitar tipos numpy o basura
+            v_entropy = float(entropy)
+            v_coherence = float(coherence)
+            v_tte = float(tte)
+            v_truth = float(truth_score)
+            v_conf = float(confidence)
+            v_time = int(timestamp)
+
+            # Pack data: 5 doubles (5*8=40) + 1 u64 (8) = 48 bytes
+            try:
+                data = struct.pack(FORMAT, v_entropy, v_coherence, v_tte, v_truth, v_conf, v_time)
+            except struct.error as se:
+                print(f"Struct Error: {se}")
+                continue
+
+            # Write to SHM with strict alignment
+            try:
+                with open(SHM_PATH, "r+b") as f:
+                    mm = mmap.mmap(f.fileno(), SHM_SIZE)
+                    mm.seek(0)
+                    mm.write(data)
+                    
+                    # Control Block Sync
+                    # mm.seek(CONTROL_OFFSET) ... (Opcional, mantenemos simple por ahora)
+                    mm.close()
+            except ValueError:
+                 # Puede pasar si el archivo SHM es tocado concurrentemente
+                 pass
+            except Exception as e:
+                # Log only critical IO errors
+                if "No such file" in str(e): print(f"SHM Missing: {e}")
+
+            # Publish to Redis (Solo cada 10 ticks para no saturar, ~4 veces por segundo)
+            if redis_client and (clock.ticks % 10 == 0):
                 try:
-                    import redis
-                    import json
-                    r = redis.Redis(host='localhost', port=6379, db=0)
-                    pulse_data = {
-                        "disonancia": entropy * 100, # Scale to 0-100 for compatibility
-                        "axiones_count": int((1.0 - entropy) * 1000),
+                    payload = {
+                        "disonancia": entropy, # Key expected by backend
+                        "entropy": entropy,
                         "coherence": coherence,
                         "tte": tte,
                         "truth_score": truth_score,
-                        "timestamp": now
+                        "timestamp": timestamp,
+                        "clock_coherence": clock_quality
                     }
-                    r.publish("sentinel:quantum:pulse", json.dumps(pulse_data))
-                except ImportError:
-                    pass # Redis lib might not be installed in minimal envs
+                    redis_client.publish("sentinel:quantum:pulse", json.dumps(payload))
                 except Exception as e:
-                    # Silent fail to avoid spamming logs, pulse is high freq
                     pass
-                
-                # Sync frequency (60Hz approximate)
-                time.sleep(0.016)
-                
+
     except KeyboardInterrupt:
         print("\n🛑 Pulse stopped.")
-    except Exception as e:
-        print(f"❌ Error: {e}")
 
 if __name__ == "__main__":
-    run_pulse()
+    run_pulse_generator()
