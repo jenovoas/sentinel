@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-echo "⏳ Waiting for PostgreSQL (localhost:5432) to be ready..."
-while ! nc -z localhost 5432; do
+echo "⏳ Waiting for PostgreSQL (postgres:5432) to be ready..."
+while ! nc -z postgres 5432; do
   sleep 1
 done
 

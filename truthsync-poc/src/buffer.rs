@@ -19,6 +19,18 @@ pub mod message_type {
     pub const SHUTDOWN: u16 = 0xFF;
 }
 
+/// System Pulse State from Kernel (matches Python struct pack "dddddQ")
+#[repr(C)]
+#[derive(Debug, Clone, Copy, Default)]
+pub struct PulseState {
+    pub entropy: f64,
+    pub coherence: f64,
+    pub tte: f64,
+    pub truth_score: f64,
+    pub confidence: f64,
+    pub timestamp: u64,
+}
+
 const MAGIC: u32 = 0xDEADBEEF;
 const HEADER_SIZE: usize = std::mem::size_of::<MessageHeader>();
 const CONTROL_SIZE: usize = 64; // Cache line aligned
@@ -30,7 +42,7 @@ pub struct SharedBuffer {
 
 impl SharedBuffer {
     pub fn create(name: &str, size: usize) -> Result<Self, String> {
-        let shm_path = format!("/var/run/sentinel/{}", name);
+        let shm_path = format!("/dev/shm/{}", name);
         let file = OpenOptions::new()
             .read(true)
             .write(true)
@@ -50,7 +62,7 @@ impl SharedBuffer {
     }
     
     pub fn open(name: &str) -> Result<Self, String> {
-        let shm_path = format!("/var/run/sentinel/{}", name);
+        let shm_path = format!("/dev/shm/{}", name);
         let file = OpenOptions::new()
             .read(true)
             .write(true)
@@ -113,6 +125,13 @@ impl SharedBuffer {
         let zero: [u8; 4] = [0; 4];
         self.mmap[CONTROL_SIZE..CONTROL_SIZE + 4].copy_from_slice(&zero);
         Ok((msg_type, data))
+    }
+
+    pub fn read_pulse_state(&self) -> PulseState {
+        // Read from offset 0 (Control Area)
+        unsafe {
+            std::ptr::read(self.mmap.as_ptr() as *const PulseState)
+        }
     }
 
     pub fn name(&self) -> &str { "truthsync_shm" }

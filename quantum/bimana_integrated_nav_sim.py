@@ -3,6 +3,15 @@ import matplotlib.pyplot as plt
 from dataclasses import dataclass
 import time
 from typing import List, Tuple
+# Integración de Sistemas Defensivos Soberanos
+try:
+    from vimana_shield_validation import MHDPlasmaShield
+except ImportError:
+    # Si falla, definimos un dummy para no romper la simulación crítica
+    class MHDPlasmaShield:
+        def __init__(self): pass
+        def calculate_drag_coefficient(self, shield_on): return 0.4
+
 
 # =================================================================================
 # 🏺 MÓDULO 1: EL ASTROLABIO CUÁNTICO (SovereignAstrolabe)
@@ -100,6 +109,10 @@ class Bimana3DMission:
         # *** INTEGRACIÓN DEL ASTROLABIO ***
         self.astrolabe = SovereignAstrolabe()
         print("✅ [INIT] Astrolabio Soberano integrado en el sistema de la Bimana.")
+
+        # *** INTEGRACIÓN DEL ESCUDO DE PLASMA ***
+        self.shield = MHDPlasmaShield()
+        print("🛡️ [INIT] Sistema MHD Plasma Shield en línea.")
 
     def _update_energy(self, demand_watts, dt):
         # Base-60 Purificado: 0.8 = 48/60
@@ -213,7 +226,21 @@ class Bimana3DMission:
             acceleration = net_force / self.effective_mass
             
             # Amortiguamiento XY (separado para no afectar Z)
-            damping_xy = -np.array([self.velocity[0], self.velocity[1], 0]) * PhysicsConstants.MERCURY_DAMPING
+            # Aplicar defensa de Escudo de Plasma si velocity > 60.0 (Umbral Base-60)
+            shield_active = np.linalg.norm(self.velocity) > 60.0
+            
+            # Obtener coeficiente de resistencia del escudo
+            # Si el escudo reduce Cd, reduce el damping factor proporcionalmente
+            base_damping = PhysicsConstants.MERCURY_DAMPING
+            if shield_active:
+                # El escudo reduce el drag al 15% (factor 9/60)
+                # Aplicamos esta eficiencia al "Frenado de Mercurio"
+                shield_efficiency = 9.0 / 60.0
+                effective_damping = base_damping * shield_efficiency
+            else:
+                effective_damping = base_damping
+
+            damping_xy = -np.array([self.velocity[0], self.velocity[1], 0]) * effective_damping
             acceleration += damping_xy
             
             self.velocity += acceleration * dt

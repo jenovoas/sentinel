@@ -1,21 +1,198 @@
 {
-  "timestamp": "2026-01-01 15:06:03",
-  "system": "Linux darch 6.12.57+deb13-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.57-1 (2025-11-05) x86_64 GNU/Linux",
-  "results": {
-    "kernel_version": true,
-    "ebpf_lsm": true,
-    "ollama_running": true,
-    "ollama_model": true,
-    "postgres": true,
-    "sentinel_status": true,
-    "bpf_maps": true,
-    "resource_usage": true,
-    "ai_inference": true
+  "meta": {
+    "experiment": "Coherence-Truth Coupling",
+    "timestamp": 1767636562.3066368,
+    "algorithm_version": "WeightedConsensus v2 (Bio-Aware)"
   },
-  "summary": {
-    "total": 9,
-    "passed": 9,
-    "failed": 0,
-    "percentage": 100.0
-  }
+  "dataset": [
+    {
+      "disonancia": 0.0,
+      "system_state": "COHERENTE (Laminar)",
+      "confidence": 1.0,
+      "status": "\u2705 VERIFIED",
+      "penalty_applied": 0.0,
+      "veto_active": false,
+      "processing_ms": 0.024189999749069102
+    },
+    {
+      "disonancia": 5.0,
+      "system_state": "COHERENTE (Laminar)",
+      "confidence": 0.95,
+      "status": "\u2705 VERIFIED",
+      "penalty_applied": 0.050000000000000044,
+      "veto_active": false,
+      "processing_ms": 0.014161999388306867
+    },
+    {
+      "disonancia": 10.0,
+      "system_state": "COHERENTE (Laminar)",
+      "confidence": 0.9,
+      "status": "\u26a0\ufe0f PARTIALLY VERIFIED",
+      "penalty_applied": 0.09999999999999998,
+      "veto_active": false,
+      "processing_ms": 0.010143000508833211
+    },
+    {
+      "disonancia": 15.0,
+      "system_state": "COHERENTE (Laminar)",
+      "confidence": 0.85,
+      "status": "\u26a0\ufe0f PARTIALLY VERIFIED",
+      "penalty_applied": 0.15000000000000002,
+      "veto_active": false,
+      "processing_ms": 0.007497000297007617
+    },
+    {
+      "disonancia": 20.0,
+      "system_state": "RUIDOSO (Turbulento)",
+      "confidence": 0.8,
+      "status": "\u26a0\ufe0f PARTIALLY VERIFIED",
+      "penalty_applied": 0.19999999999999996,
+      "veto_active": false,
+      "processing_ms": 0.006569000106537715
+    },
+    {
+      "disonancia": 25.0,
+      "system_state": "RUIDOSO (Turbulento)",
+      "confidence": 0.75,
+      "status": "\u26a0\ufe0f PARTIALLY VERIFIED",
+      "penalty_applied": 0.25,
+      "veto_active": false,
+      "processing_ms": 0.005824999789183494
+    },
+    {
+      "disonancia": 30.0,
+      "system_state": "RUIDOSO (Turbulento)",
+      "confidence": 0.7,
+      "status": "\u26a0\ufe0f PARTIALLY VERIFIED",
+      "penalty_applied": 0.30000000000000004,
+      "veto_active": false,
+      "processing_ms": 0.00556699978915276
+    },
+    {
+      "disonancia": 35.0,
+      "system_state": "RUIDOSO (Turbulento)",
+      "confidence": 0.65,
+      "status": "\u26a0\ufe0f PARTIALLY VERIFIED",
+      "penalty_applied": 0.35,
+      "veto_active": false,
+      "processing_ms": 0.005208000402490143
+    },
+    {
+      "disonancia": 40.0,
+      "system_state": "RUIDOSO (Turbulento)",
+      "confidence": 0.6,
+      "status": "\u26a0\ufe0f PARTIALLY VERIFIED",
+      "penalty_applied": 0.4,
+      "veto_active": false,
+      "processing_ms": 0.005035999492974952
+    },
+    {
+      "disonancia": 45.0,
+      "system_state": "RUIDOSO (Turbulento)",
+      "confidence": 0.55,
+      "status": "\u26a0\ufe0f PARTIALLY VERIFIED",
+      "penalty_applied": 0.44999999999999996,
+      "veto_active": false,
+      "processing_ms": 0.007028000254649669
+    },
+    {
+      "disonancia": 50.0,
+      "system_state": "CA\u00d3TICO (Disonante)",
+      "confidence": 0.5,
+      "status": "\u26a0\ufe0f PARTIALLY VERIFIED",
+      "penalty_applied": 0.5,
+      "veto_active": false,
+      "processing_ms": 0.006803000360378064
+    },
+    {
+      "disonancia": 55.0,
+      "system_state": "CA\u00d3TICO (Disonante)",
+      "confidence": 0.0,
+      "status": "\u2753 UNVERIFIED",
+      "penalty_applied": 1.0,
+      "veto_active": true,
+      "processing_ms": 0.008113000149023719
+    },
+    {
+      "disonancia": 60.0,
+      "system_state": "CA\u00d3TICO (Disonante)",
+      "confidence": 0.0,
+      "status": "\u2753 UNVERIFIED",
+      "penalty_applied": 1.0,
+      "veto_active": true,
+      "processing_ms": 0.003423000634938944
+    },
+    {
+      "disonancia": 65.0,
+      "system_state": "CA\u00d3TICO (Disonante)",
+      "confidence": 0.0,
+      "status": "\u2753 UNVERIFIED",
+      "penalty_applied": 1.0,
+      "veto_active": true,
+      "processing_ms": 0.0026140005502384156
+    },
+    {
+      "disonancia": 70.0,
+      "system_state": "CA\u00d3TICO (Disonante)",
+      "confidence": 0.0,
+      "status": "\u2753 UNVERIFIED",
+      "penalty_applied": 1.0,
+      "veto_active": true,
+      "processing_ms": 0.002426999344606884
+    },
+    {
+      "disonancia": 75.0,
+      "system_state": "CA\u00d3TICO (Disonante)",
+      "confidence": 0.0,
+      "status": "\u2753 UNVERIFIED",
+      "penalty_applied": 1.0,
+      "veto_active": true,
+      "processing_ms": 0.0023089996830094606
+    },
+    {
+      "disonancia": 80.0,
+      "system_state": "CA\u00d3TICO (Disonante)",
+      "confidence": 0.0,
+      "status": "\u2753 UNVERIFIED",
+      "penalty_applied": 1.0,
+      "veto_active": true,
+      "processing_ms": 0.0037099998735357076
+    },
+    {
+      "disonancia": 85.0,
+      "system_state": "CA\u00d3TICO (Disonante)",
+      "confidence": 0.0,
+      "status": "\u2753 UNVERIFIED",
+      "penalty_applied": 1.0,
+      "veto_active": true,
+      "processing_ms": 0.004281000656192191
+    },
+    {
+      "disonancia": 90.0,
+      "system_state": "CA\u00d3TICO (Disonante)",
+      "confidence": 0.0,
+      "status": "\u2753 UNVERIFIED",
+      "penalty_applied": 1.0,
+      "veto_active": true,
+      "processing_ms": 0.0039030001062201336
+    },
+    {
+      "disonancia": 95.0,
+      "system_state": "CA\u00d3TICO (Disonante)",
+      "confidence": 0.0,
+      "status": "\u2753 UNVERIFIED",
+      "penalty_applied": 1.0,
+      "veto_active": true,
+      "processing_ms": 0.004025999260193203
+    },
+    {
+      "disonancia": 100.0,
+      "system_state": "CA\u00d3TICO (Disonante)",
+      "confidence": 0.0,
+      "status": "\u2753 UNVERIFIED",
+      "penalty_applied": 1.0,
+      "veto_active": true,
+      "processing_ms": 0.0040439999793306924
+    }
+  ]
 }

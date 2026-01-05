@@ -19,6 +19,7 @@ pub enum EventSource {
     Loki,
     Auditd,
     Docker,
+    EbpfGuardian,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
@@ -31,32 +32,40 @@ pub enum Severity {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum EventType {
-    // Métricas
+    // Métricas de Sistema
     CpuSpike,
     MemoryLeak,
     DiskFull,
     
-    // Seguridad
+    // Seguridad y Autenticación
     FailedLogin,
     SuccessfulLoginNewIP,
     SuspiciousCommand,
+    UnauthorizedRootAccess,
+    SuspiciousBinaryExecution,
     
-    // Red
+    // Red y Tráfico
     LargeDataTransfer,
     UnusualTraffic,
+    DnsTunneling,
     
-    // Aplicación
+    // Base de Datos
+    SlowSqlQuery,
+    DatabaseAuthFailure,
+    
+    // Aplicación y Telemetría
     ErrorSpike,
     SlowResponse,
+    SensitiveFileAccess,
 }
 
 /// Patrón de ataque detectado
 #[derive(Debug, Clone, Serialize)]
 pub struct DetectedPattern {
     pub name: String,
-    pub confidence: f32,  // 0.0 - 1.0
+    pub confidence: f32, // 0.0 - 1.0
     pub severity: Severity,
     pub events: Vec<Event>,
     pub recommended_action: String,
-    pub playbook: String,  // Nombre del playbook N8N
+    pub playbook: String, // Nombre del playbook N8N
 }
