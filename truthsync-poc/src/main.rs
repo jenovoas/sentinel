@@ -23,9 +23,12 @@ struct VerifyResponse {
     processing_time_us: f64,
 }
 
+use truthsync_core::buffer::PulseState;
+
 struct AppState {
     extractor: ClaimExtractor,
     cache: RwLock<PredictiveCache>,
+    pulse_state: RwLock<PulseState>,
 }
 
 #[tokio::main]
@@ -58,6 +61,7 @@ async fn main() {
     let state = Arc::new(AppState {
         extractor: ClaimExtractor::new(),
         cache: RwLock::new(PredictiveCache::new(100_000, 3600)),
+        pulse_state: RwLock::new(PulseState::default()),
     });
 
     // Spawn SHM Background Listener
@@ -92,7 +96,9 @@ fn shm_listener(state: Arc<AppState>) {
         }
     };
 
+    let mut counter = 0;
     loop {
+        // 1. Check for messages (Commands)
         if let Ok((msg_type, data)) = buffer.consume() {
             if msg_type == message_type::PROCESS_TEXT {
                 let text = String::from_utf8_lossy(&data);
@@ -107,6 +113,18 @@ fn shm_listener(state: Arc<AppState>) {
                 }
             }
         }
+        
+        // 2. Read Pulse State (every ~10ms -> 100 iters * 100us)
+        counter += 1;
+        if counter >= 100 {
+            let pulse = buffer.read_pulse_state();
+            // Update global state
+            if let Ok(mut w) = state.pulse_state.write() {
+                *w = pulse;
+            }
+            counter = 0;
+        }
+
         // Poll every 100 microseconds
         std::thread::sleep(Duration::from_micros(100));
     }
@@ -134,7 +152,7 @@ async fn verify_handler(
             let duration = start.elapsed();
             return Json(VerifyResponse {
                 claims: claims.clone(),
-                confidence: 1.0,
+                confidence: 1.0, // Cache hits are trusted
                 cache_hit: true,
                 processing_time_us: duration.as_secs_f64() * 1_000_000.0,
             });
@@ -143,9 +161,19 @@ async fn verify_handler(
 
     // 3. Cache miss: Extract claims
     let claims = state.extractor.extract(&payload.text);
-    let confidence = 0.95; // Fixed for now
+    
+    // 4. Calculate Confidence based on Disonancia (Entropy)
+    let entropy = {
+        state.pulse_state.read().unwrap().entropy
+    };
+    
+    // Penalty: High entropy (noise) reduces confidence.
+    // If entropy > 0.5 (Severe Chaos), confidence drops significantly.
+    let base_confidence = 0.95;
+    let penalty = entropy.max(0.0).min(1.0); 
+    let confidence = (base_confidence * (1.0 - penalty)) as f32;
 
-    // 4. Update cache (Write lock)
+    // 5. Update cache (Write lock)
     {
         let mut cache = state.cache.write().unwrap();
         cache.put(key, claims.clone(), confidence);

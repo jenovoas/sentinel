@@ -62,8 +62,8 @@ class SecurityValidator:
         - Scripts maliciosos
         """
         # Longitud razonable
-        if len(claim) > 500:
-            raise ValueError("Claim demasiado largo (max 500 caracteres)")
+        if len(claim) > 5000:
+            raise ValueError("Claim demasiado largo (max 5000 caracteres)")
         
         # Patrones peligrosos
         dangerous_patterns = [
@@ -305,11 +305,6 @@ class SourceSearchEngine:
     def _duckduckgo_search(self, claim: str, max_results: int, region: str = "cl-es") -> List[SearchResult]:
         """
         Búsqueda usando DuckDuckGo (100% GRATIS, sin API key)
-        
-        Args:
-            claim: Consulta
-            max_results: Número de resultados
-            region: Región de búsqueda (cl-es por defecto para Chile/Español)
         """
         try:
             from duckduckgo_search import DDGS
@@ -323,15 +318,15 @@ class SourceSearchEngine:
                     "region": region
                 }
                 
+                # Ejecutar búsqueda de texto
                 search_results = list(ddgs.text(**search_params))
                 
                 # FALLBACK: Si no hay resultados con región, intentar sin ella
                 if not search_results and region:
-                    print(f"⚠️  No hay resultados en región {region}. Intentando búsqueda global...")
                     search_params["region"] = None
                     search_results = list(ddgs.text(**search_params))
                 
-                for item in search_results:
+                for item in search_results[:max_results]:
                     # Clasificar tipo de fuente
                     url = item.get('href', '')
                     source_type = self._classify_source(url)
@@ -347,14 +342,8 @@ class SourceSearchEngine:
             
             return results
             
-        except ImportError:
-            print("⚠️  DuckDuckGo library no instalada.")
-            print("   Instalar con: pip install duckduckgo-search")
-            print("   Usando mock por ahora...")
-            return self._mock_search(claim, max_results)
         except Exception as e:
             print(f"⚠️  Error en DuckDuckGo search: {e}")
-            print("   Usando mock como fallback...")
             return self._mock_search(claim, max_results)
     
     def _perplexity_search(self, claim: str, max_results: int) -> List[SearchResult]:

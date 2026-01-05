@@ -58,13 +58,14 @@ class TruthAlgorithm:
         self.search_engine = SourceSearchEngine(provider=search_provider)
         self.consensus_algorithm = WeightedConsensusAlgorithm()
         
-    def verify(self, claim: str, max_sources: int = 10) -> TruthVerificationResult:
+    def verify(self, claim: str, max_sources: int = 10, disonancia: float = 0.0) -> TruthVerificationResult:
         """
-        Verifica un claim end-to-end
+        Verifica un claim end-to-end considerando la disonancia del sistema.
         
         Args:
             claim: El claim a verificar
             max_sources: Máximo número de fuentes a buscar
+            disonancia: Nivel de ruido del sistema
             
         Returns:
             TruthVerificationResult con veredicto completo
@@ -81,7 +82,7 @@ class TruthAlgorithm:
         
         # PASO 3: Calcular consenso
         consensus_start = time.perf_counter()
-        consensus_result = self.consensus_algorithm.verify_claim(claim, sources)
+        consensus_result = self.consensus_algorithm.verify_claim(claim, sources, disonancia=disonancia)
         consensus_time = (time.perf_counter() - consensus_start) * 1000
         
         total_time = (time.perf_counter() - start_time) * 1000

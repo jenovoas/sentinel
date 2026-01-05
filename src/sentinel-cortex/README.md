@@ -9,24 +9,15 @@ Sentinel Cortex is the cognitive decision engine for Sentinel's autonomous secur
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────┐
-│  Data Sources                                    │
-├─────────────────────────────────────────────────┤
-│  • Prometheus (metrics)                          │
-│  • PostgreSQL (events)                           │
-│  • Loki (logs)                                   │
-│  • Auditd (security)                             │
-└────────────────┬────────────────────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────────────────────┐
-│  Sentinel Cortex (Rust)                             │
-├─────────────────────────────────────────────────┤
-│  1. Collect events (every 30s)                   │
-│  2. Detect patterns (multi-factor)               │
-│  3. Calculate confidence (0.0-1.0)               │
-│  4. Trigger playbooks (if confidence > 0.7)      │
-└────────────────┬────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│              Sentinel Cortex (Rust Core)                    │
+├─────────────────────────────────────────────────────────────┤
+│  1. Ingest: Redis (ebpf_signals) + Prometheus (metrics)     │
+│  2. Sanitize: AIOpsShield (Semantic Firewall)               │
+│  3. Drip: FluidController (Laminar/Turbulent/FlashFlood)    │
+│  4. Detect: Pattern Engine (Base-60 Confidence)             │
+│  5. Action: N8N Trigger + Quantum Pulse Emission            │
+└─────────────────────────────────────────────────────────────┘
                  │
                  ▼
 ┌─────────────────────────────────────────────────┐
@@ -40,19 +31,21 @@ Sentinel Cortex is the cognitive decision engine for Sentinel's autonomous secur
 
 ## Features
 
-### Pattern Detection
+Currently implements 5 high-fidelity patterns:
 
-Currently implements 2 patterns (more coming):
+1. **Credential Stuffing**: 50+ failed logins + IP anomaly.
+2. **Resource Exhaustion**: Memory leak + CPU spike correlation.
+3. **Database Attack**: Slow SQL + Auth failures burst.
+4. **System Compromise**: Unauthorized root access or suspicious binaries.
+5. **Data Exfiltration**: DNS Tunneling or massive data transfers.
 
-1. **Credential Stuffing**: 50+ failed logins + successful login from new IP
-2. **Resource Exhaustion**: Memory leak + CPU spike
+### Confidence Scoring (Base-60)
 
-### Confidence Scoring
-
-Each pattern has a confidence score (0.0-1.0):
-- **0.95**: Credential stuffing (very high confidence)
-- **0.85**: Resource exhaustion (high confidence)
-- **0.70**: Threshold for triggering playbooks
+Each pattern has a sexagesimal confidence score (n/60):
+- **59/60 (~0.98)**: System Compromise (Critical)
+- **57/60 (~0.95)**: Credential Stuffing
+- **54/60 (~0.90)**: Database Attack
+- **42/60 (~0.70)**: Threshold for triggering Playbooks
 
 ### Multi-Source Correlation
 
@@ -119,15 +112,19 @@ RUST_LOG=neural_guard=debug,info
 ```
 sentinel-cortex/
 ├── src/
-│   ├── main.rs              # Main loop
-│   ├── models/              # Data structures
+│   ├── main.rs              # Adaptive Main Loop (Fluid Logic)
+│   ├── models/              # Unified Event Models
 │   │   └── event.rs
-│   ├── collectors/          # Data collectors
-│   │   └── prometheus.rs
-│   ├── engine/              # Pattern detection
-│   │   └── patterns.rs
-│   └── actions/             # N8N integration
-│       └── n8n_client.rs
+│   ├── collectors/          # Multi-Source Collectors
+│   │   ├── prometheus.rs    # Periodic Metrics
+│   │   └── redis_subscriber.rs # Real-time eBPF Signals
+│   ├── engine/              # Decision Logic
+│   │   ├── patterns.rs      # Pattern Correlation
+│   │   ├── fluido.rs        # S60 Fluid Controller 
+│   │   └── semantic_firewall.rs # AIOpsShield Middleware
+│   └── actions/             # Response Layer
+│       ├── n8n_client.rs    # Automation Trigger
+│       └── quantum_pulse.rs # Bus Sync Emission
 ├── Cargo.toml
 ├── Dockerfile
 └── .env.example
