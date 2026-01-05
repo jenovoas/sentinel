@@ -80,6 +80,15 @@ CRITICAL_FILES = [
     "../research/SACRED_GEOMETRY_PATTERNS.md"       # Geometric Patterns
 ]
 
+# Archivos en proceso de validación científica (Etiqueta: "Under Research")
+RESEARCH_FILES = [
+    "ZPE_POSSIBILITIES_MATRIX_V2.md",
+    "time_crystal_analysis.py",
+    "../tests/bench_coherence_impact.py",
+    "../research/COHERENCE_TRUTH_COUPLING_STUDY.md",
+    "../demo_real_search.py"
+]
+
 def calculate_file_hash(filepath):
     """Calcula SHA-256 del contenido del archivo."""
     sha256_hash = hashlib.sha256()
@@ -92,9 +101,9 @@ def calculate_file_hash(filepath):
     except FileNotFoundError:
         return None
 
-def register_fact_in_db(filename, file_hash):
+def register_fact_in_db(filename, file_hash, status_label="Verified"):
     """Inserta el hash en la DB Postgres como una verdad verificada."""
-    claim = f"File Integrity: {filename}"
+    claim = f"File Integrity: {filename} (Status: {status_label})"
     source = '["certify_codebase.py", "user_manual_audit"]'
     
     # Comando SQL para insertar
@@ -125,35 +134,46 @@ def main():
     
     results = []
     
+    # Procesar Archivos Críticos (Verified)
     for filename in CRITICAL_FILES:
-        filepath = os.path.join(base_dir, filename)
-        file_hash = calculate_file_hash(filepath)
-        
-        if file_hash:
-            print(f"\n📄 Procesando: {filename}")
-            print(f"   SHA-256: {file_hash}")
-            
-            # Intentar registrar en DB
-            success = register_fact_in_db(filename, file_hash)
-            
-            if success:
-                print("   ✅ CERTIFICADO: Hash registrado en TruthSync DB.")
-                results.append({"file": filename, "status": "SECURED", "hash": file_hash})
-            else:
-                print("   ❌ ERROR DE DB: No se pudo registrar. ¿Postgres encendido?")
-                results.append({"file": filename, "status": "FAILED", "hash": file_hash})
-        else:
-            print(f"\n⚠️  ARCHIVO NO ENCONTRADO: {filename}")
-            results.append({"file": filename, "status": "MISSING"})
+        process_file(base_dir, filename, "Verified", results)
+
+    # Procesar Archivos de Investigación (Under Research)
+    print("\n🔬 CERTIFICANDO INVESTIGACIÓN EN PROCESO:")
+    for filename in RESEARCH_FILES:
+        process_file(base_dir, filename, "Under Research and Validation", results)
 
     print("\n" + "=" * 60)
     print("RESUMEN DE CERTIFICACIÓN")
     print("=" * 60)
     for res in results:
         icon = "🔒" if res["status"] == "SECURED" else "❌"
-        print(f"{icon} {res['file']:<30} | {res['status']}")
+        print(f"{icon} {res['file']:<40} | {res['status']}")
     
     print("\nLos archivos han sido sellados digitalmente.")
+
+def process_file(base_dir, filename, label, results):
+    filepath = os.path.join(base_dir, filename)
+    file_hash = calculate_file_hash(filepath)
+    
+    if file_hash:
+        print(f"\n📄 Procesando: {filename}")
+        print(f"   SHA-256: {file_hash}")
+        print(f"   Estado:  {label}")
+        
+        # Intentar registrar en DB
+        success = register_fact_in_db(filename, file_hash, label)
+        
+        if success:
+            print("   ✅ CERTIFICADO: Hash registrado en TruthSync DB.")
+            results.append({"file": filename, "status": f"SECURED ({label})", "hash": file_hash})
+        else:
+            print("   ❌ ERROR DE DB: No se pudo registrar. ¿Postgres encendido?")
+            results.append({"file": filename, "status": "FAILED", "hash": file_hash})
+    else:
+        print(f"\n⚠️  ARCHIVO NO ENCONTRADO: {filename}")
+        results.append({"file": filename, "status": "MISSING"})
+
 
 if __name__ == "__main__":
     main()
