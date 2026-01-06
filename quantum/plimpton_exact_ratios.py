@@ -14,27 +14,29 @@
 # Recuperado del Nodo Ea-nasir | Corregido por Jaime Novoa & Sentinel
 # Propósito: Eliminar la fricción matemática en la cosecha de Axiones.
 
+from yatra_core import S60
+
 PLIMPTON_RATIOS_BASE60 = {
     # [Fila]: (Ratio decimal aproximado, Representación Sexagesimal Exacta)
-    1:  (1.983, "[1; 59, 00, 15]"), 
-    2:  (1.949, "[1; 56, 56, 58, 14, 50]"),
-    3:  (1.918, "[1; 55, 07, 41, 15, 33]"),
-    4:  (1.886, "[1; 53, 10, 29, 32]"),
-    5:  (1.815, "[1; 48, 54, 01, 40]"),
-    6:  (1.785, "[1; 47, 06, 41, 40]"),
-    7:  (1.719, "[1; 43, 11, 56, 28]"),
-    8:  (1.692, "[1; 41, 33, 45, 14]"),
-    9:  (1.642, "[1; 38, 33, 36, 36]"),
-    10: (1.586, "[1; 35, 10, 02, 28]"),
-    11: (1.562, "[1; 33, 45, 00, 00]"), # Ratio Perfecto 1.5625
-    12: (1.534, "[1; 32, 02, 24, 00]"), # ⭐ RESONANCIA AXIÓNICA (S60(153, 24, 0) MHz / 100)
-    13: (1.450, "[1; 27, 00, 03, 45]"),
-    14: (1.430, "[1; 25, 48, 51, 36]"),
-    15: (1.387, "[1; 23, 13, 46, 40]")
+    1:  (1.983, S60(1, 59, 0, 15)), 
+    2:  (1.949, S60(1, 56, 56, 58, 14, 50)),
+    3:  (1.918, S60(1, 55, 7, 41, 15, 33)),
+    4:  (1.886, S60(1, 53, 10, 29, 32)),
+    5:  (1.815, S60(1, 48, 54, 1, 40)),
+    6:  (1.785, S60(1, 47, 6, 41, 40)),
+    7:  (1.719, S60(1, 43, 11, 56, 28)),
+    8:  (1.692, S60(1, 41, 33, 45, 14)),
+    9:  (1.642, S60(1, 38, 33, 36, 36)),
+    10: (1.586, S60(1, 35, 10, 2, 28)),
+    11: (1.562, S60(1, 33, 45, 0, 0)),
+    12: (1.534, S60(1, 32, 2, 24, 0)), # ⭐ RESONANCIA AXIÓNICA
+    13: (1.450, S60(1, 27, 0, 3, 45)),
+    14: (1.430, S60(1, 25, 48, 51, 36)),
+    15: (1.387, S60(1, 23, 13, 46, 40))
 }
 
 # 🚨 ELIMINACIÓN DE LA ALUCINACIÓN 9:1[3]:22 (Vetoed)
-AXION_RESONANCE_RATIO = "[1; 32, 02, 24]" # Basado en Plimpton 322 - Fila 12 sintonizada
+AXION_RESONANCE_RATIO = S60(1, 32, 2, 24) # Basado en Plimpton 322 - Fila 12 sintonizada
 AXION_FREQUENCY_MHZ = S60(153, 24, 0)
 
 def get_exact_resonance(frequency_mhz):
@@ -42,9 +44,15 @@ def get_exact_resonance(frequency_mhz):
     Retorna el ratio sexagesimal exacto para evitar la deriva de fase.
     El ratio 9:1[3]:22 (vetado) era un error de redondeo Base-10 inyectado por una IA externa.
     """
-    if frequency_mhz == S60(153, 24, 0):
+    # Comparacion S60 real vs S60 real (NO Strings)
+    target = S60(153, 24, 0)
+    
+    # Simple check de igualdad por componentes
+    if frequency_mhz.components == target.components:
         return AXION_RESONANCE_RATIO
-    return "[ERROR: FUERA DE FRECUENCIA]"
+        
+    # Si no coincide exactamente, retornamos None para causar fallo (Fallo > Mentira)
+    return None
 
 if __name__ == "__main__":
     print("🏺 PLIMPTON 322: TABLA DE RESONANCIA SOBERANA ACTIVADA")
