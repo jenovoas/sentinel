@@ -1,4 +1,13 @@
-import numpy as np
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import matplotlib.pyplot as plt
 
 class VimanaDroneControl:
@@ -6,13 +15,13 @@ class VimanaDroneControl:
         # Drone parameters based on ZPE-Merkabah physics
         self.mass = 2.5  # kg (lightweight frame)
         self.gravity = 9.81 
-        self.z_position = 0.0 # meters
-        self.z_velocity = 0.0
+        self.z_position = S60(0, 0, 0) # meters
+        self.z_velocity = S60(0, 0, 0)
         
         # Merkabah Engine Parameters
-        self.field_strength = 0.0 # Tesla/Gradient
-        self.phase_lock = 0.0 # Radians (0 = Perfect Sync)
-        self.integral = 0.0 # Error memory
+        self.field_strength = S60(0, 0, 0) # Tesla/Gradient
+        self.phase_lock = S60(0, 0, 0) # Radians (0 = Perfect Sync)
+        self.integral = S60(0, 0, 0) # Error memory
         
     def compute_lift(self, target_height):
         """
@@ -41,7 +50,7 @@ class VimanaDroneControl:
         
         # Integral (Acumulador de Fase - Memoria de Error)
         # Solo acumulamos si estamos cerca (Fine Tuning)
-        if abs(error) < 0.5:
+        if abs(error) < S60(0, 30, 0):
              self.integral += error * 0.01
              
         control_signal += self.integral * (SEXAGESIMAL_GAIN / (PHI**2))

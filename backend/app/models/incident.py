@@ -13,6 +13,7 @@ ITIL Practices Implemented:
     - Incident Closure
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from datetime import datetime, timezone
 from enum import Enum as PyEnum
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Enum, Boolean, JSON

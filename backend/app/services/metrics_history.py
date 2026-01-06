@@ -3,6 +3,7 @@ Historical Metrics Storage Service
 Stores all metrics samples for Phase 2 analysis and Phase 3 AI integration
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import logging
 from datetime import datetime, timedelta
 from typing import List, Optional, Dict, Tuple
@@ -217,7 +218,7 @@ class MetricsHistoryService:
         network_bytes = [s.network_bytes_sent + s.network_bytes_recv for s in samples]
         db_connections = [s.db_connections_active for s in samples]
 
-        import numpy as np
+        import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 
         stats = {
             'period': f"{start_time} to {end_time}",

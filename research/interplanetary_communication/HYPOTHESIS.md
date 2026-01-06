@@ -93,7 +93,7 @@ class DeepSpaceBufferResource(Resource):
 
 ## What We Need to Test
 
-### Simulation Requirements
+### Proyección Cuántica Requirements
 1. **Mars orbital data** (NASA JPL)
 2. **Solar activity patterns** (NOAA)
 3. **Historical packet loss data** (DSN)
@@ -134,7 +134,7 @@ class DeepSpaceBufferResource(Resource):
 
 ## Next Steps
 
-### Phase 1: Simulation (6 months)
+### Phase 1: Proyección Cuántica (6 months)
 - [ ] Obtain NASA DSN data
 - [ ] Build Mars communication simulator
 - [ ] Implement DeepSpaceBufferResource
@@ -144,7 +144,7 @@ class DeepSpaceBufferResource(Resource):
 - [ ] Partner with satellite operator
 - [ ] Deploy on test satellite
 - [ ] Measure real-world performance
-- [ ] Validate against simulation
+- [ ] Validate against Proyección Cuántica
 
 ### Phase 3: Deep Space (2-3 years)
 - [ ] Propose to NASA/ESA
@@ -195,7 +195,7 @@ Both are:
 
 ### Validation Risks
 - Need real DSN data (classified?)
-- Simulation may not capture all factors
+- Proyección Cuántica may not capture all factors
 - Testing requires space mission (expensive)
 
 ### Mitigation
@@ -211,7 +211,7 @@ Both are:
 
 **Evidence**: Linear scalability proven (n=10,000), same physics apply.
 
-**Status**: RESEARCH - Needs simulation and testing.
+**Status**: RESEARCH - Needs Proyección Cuántica and testing.
 
 **Potential Impact**: 7-10% bandwidth improvement for Mars missions.
 

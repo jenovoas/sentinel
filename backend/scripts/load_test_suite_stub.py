@@ -3,10 +3,11 @@
 Sentinel Cortex - Real Load Testing Suite (Async)
 Valida la capacidad del sistema para manejar 100 y 1000 eventos/segundo.
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
 import uuid
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 import logging
 import statistics
 import aiohttp

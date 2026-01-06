@@ -5,6 +5,7 @@ Prometheus Client for Quantum Cooling
 Fetches real-time metrics from Prometheus for buffer optimization.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import requests
 import time
 from typing import Dict, List, Optional
@@ -16,7 +17,7 @@ from datetime import datetime
 class BufferMetrics:
     """Real-time buffer metrics from Prometheus"""
     timestamp: float
-    utilization: float  # 0.0-1.0
+    utilization: float  # S60(0, 0, 0)-S60(1, 0, 0)
     drop_rate: float    # drops per second
     traffic_rate: float # packets per second
     buffer_size: int    # current size in bytes
@@ -65,7 +66,7 @@ class PrometheusClient:
     
     def get_buffer_utilization(self) -> Optional[float]:
         """
-        Get current buffer utilization (0.0-1.0).
+        Get current buffer utilization (S60(0, 0, 0)-S60(1, 0, 0)).
         
         PromQL: buffer_used_bytes / buffer_total_bytes
         """

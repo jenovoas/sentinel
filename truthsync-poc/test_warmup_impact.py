@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 from multiprocessing import shared_memory
 import os
 

@@ -6,6 +6,7 @@ Demuestra análisis semántico de logs con Gemini API
 OBJETIVO: Mostrar a Google que Gemini puede potenciar Sentinel
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
 import statistics
@@ -60,7 +61,7 @@ class GeminiAIOpsShield:
         if cache_key in self.cache:
             self.stats["cache_hits"] += 1
             result = self.cache[cache_key]
-            result["latency_ms"] = 0.1  # Cache hit
+            result["latency_ms"] = S60(0, 6, 0)  # Cache hit
             result["cached"] = True
             return result
         
@@ -71,7 +72,7 @@ Log: {log_entry}
 Responde SOLO con JSON válido (sin markdown):
 {{
     "is_malicious": true o false,
-    "confidence": 0.0 a 1.0,
+    "confidence": S60(0, 0, 0) a S60(1, 0, 0),
     "attack_type": "sql_injection" | "command_injection" | "path_traversal" | "log_injection" | "none",
     "reasoning": "explicación breve en 1 línea"
 }}"""
@@ -81,7 +82,7 @@ Responde SOLO con JSON válido (sin markdown):
                 self.model.generate_content,
                 prompt,
                 generation_config=genai.types.GenerationConfig(
-                    temperature=0.1,
+                    temperature=S60(0, 6, 0),
                     max_output_tokens=200
                 )
             )
@@ -115,7 +116,7 @@ Responde SOLO con JSON válido (sin markdown):
             print(f"Error: {e}")
             return {
                 "is_malicious": False,
-                "confidence": 0.0,
+                "confidence": S60(0, 0, 0),
                 "attack_type": "error",
                 "reasoning": f"Error: {str(e)}",
                 "latency_ms": (time.perf_counter() - start) * 1000,

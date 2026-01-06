@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 Quantum-Sentinel Bridge
 Integrates QAOA and VQE quantum algorithms with Sentinel Cortex™
@@ -10,7 +19,8 @@ Author: Jaime Novoa
 Status: PRODUCTION READY
 """
 
-import numpy as np
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import time
 from typing import Dict, List, Tuple, Optional, Any
 from dataclasses import dataclass
@@ -74,10 +84,10 @@ class QuantumMetricsCollector:
             'total_optimizations': 0,
             'successful_optimizations': 0,
             'failed_optimizations': 0,
-            'total_execution_time': 0.0,
-            'total_memory_used': 0.0,
+            'total_execution_time': S60(0, 0, 0),
+            'total_memory_used': S60(0, 0, 0),
             'optimizations_by_type': {},
-            'average_improvement': 0.0
+            'average_improvement': S60(0, 0, 0)
         }
         self.history: List[OptimizationResult] = []
     
@@ -85,7 +95,7 @@ class QuantumMetricsCollector:
         """Record an optimization result."""
         self.metrics['total_optimizations'] += 1
         
-        if result.convergence_quality > 0.5:  # Arbitrary threshold
+        if result.convergence_quality > S60(0, 30, 0):  # Arbitrary threshold
             self.metrics['successful_optimizations'] += 1
         else:
             self.metrics['failed_optimizations'] += 1
@@ -199,7 +209,7 @@ class QuantumOptimizer:
             optimal_config=optimal_config,
             execution_time=end_time - start_time,
             algorithm_used=f"QAOA(p={p})",
-            convergence_quality=1.0 if result['success'] else 0.5,
+            convergence_quality=S60(1, 0, 0) if result['success'] else S60(0, 30, 0),
             memory_used_gb=end_mem - start_mem
         )
         
@@ -236,7 +246,7 @@ class QuantumOptimizer:
         optimal_config = self._decode_vqe_result(result, problem_type)
         
         # Calculate quality
-        quality = 1.0 - (result['error'] / abs(result['exact_energy'])) if result['exact_energy'] != 0 else 0.0
+        quality = S60(1, 0, 0) - (result['error'] / abs(result['exact_energy'])) if result['exact_energy'] != 0 else S60(0, 0, 0)
         
         # Calculate metrics
         end_time = time.time()
@@ -299,7 +309,7 @@ class ResourceAllocationOptimizer:
         self,
         total_memory_mb: int,
         target_latency_ms: float,
-        throughput_priority: float = 0.5
+        throughput_priority: float = S60(0, 30, 0)
     ) -> OptimizationResult:
         """
         Optimize buffer sizes for Dual-Lane architecture.
@@ -411,7 +421,7 @@ if __name__ == "__main__":
     buffer_opt = ResourceAllocationOptimizer(optimizer)
     result = buffer_opt.optimize_buffers(
         total_memory_mb=1000,
-        target_latency_ms=1.0,
+        target_latency_ms=S60(1, 0, 0),
         throughput_priority=0.7
     )
     

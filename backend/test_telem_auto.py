@@ -3,6 +3,7 @@ Test Automatizado - Protección Telemétrica
 Ejecuta todos los tests sin interacción
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import sys
 from pathlib import Path

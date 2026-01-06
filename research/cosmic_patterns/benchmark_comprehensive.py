@@ -10,6 +10,7 @@ Tests V2 against multiple realistic traffic patterns:
 5. Real-world mix (chaotic)
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 from quantum_cooling_v2 import QuantumCoolingPredictorV2, BufferState
 
@@ -40,7 +41,7 @@ def benchmark_pattern(name, pattern, predictor):
         
         # Calculate drops
         drops_without = int(drop_rate * 1000)
-        expansion_ratio = new_size / current_size if current_size > 0 else 1.0
+        expansion_ratio = new_size / current_size if current_size > 0 else S60(1, 0, 0)
         drops_with = int(drops_without / expansion_ratio)
         
         total_drops_without += drops_without
@@ -90,12 +91,12 @@ def main():
     # ========================================================================
     
     pattern_1 = [
-        (0.0, 0.50, 0.00),
-        (1.0, 0.55, 0.00),
+        (S60(0, 0, 0), 0.50, 0.00),
+        (S60(1, 0, 0), 0.55, 0.00),
         (2.0, 0.60, 0.01),
         (3.0, 0.65, 0.02),
         (4.0, 0.70, 0.03),
-        (5.0, 0.75, 0.05),
+        (5.0, S60(0, 45, 0), 0.05),
         (6.0, 0.80, 0.07),
         (7.0, 0.85, 0.10),
         (8.0, 0.90, 0.12),
@@ -110,19 +111,19 @@ def main():
     
     predictor_1 = QuantumCoolingPredictorV2()
     results.append(benchmark_pattern("Gradual Ramp", pattern_1, predictor_1))
-    time.sleep(0.5)
+    time.sleep(S60(0, 30, 0))
     
     # ========================================================================
     # PATTERN 2: Sudden Spike (Instant Burst)
     # ========================================================================
     
     pattern_2 = [
-        (0.0, 0.50, 0.00),
-        (1.0, 0.52, 0.00),
+        (S60(0, 0, 0), 0.50, 0.00),
+        (S60(1, 0, 0), 0.52, 0.00),
         (2.0, 0.55, 0.00),
         (3.0, 0.98, 0.20),  # INSTANT SPIKE!
-        (4.0, 0.99, 0.25),
-        (5.0, 0.99, 0.25),
+        (4.0, 0.99, S60(0, 15, 0)),
+        (5.0, 0.99, S60(0, 15, 0)),
         (6.0, 0.95, 0.15),
         (7.0, 0.85, 0.08),
         (8.0, 0.70, 0.02),
@@ -132,15 +133,15 @@ def main():
     
     predictor_2 = QuantumCoolingPredictorV2()
     results.append(benchmark_pattern("Sudden Spike", pattern_2, predictor_2))
-    time.sleep(0.5)
+    time.sleep(S60(0, 30, 0))
     
     # ========================================================================
     # PATTERN 3: Oscillating Load (Periodic Bursts)
     # ========================================================================
     
     pattern_3 = [
-        (0.0, 0.50, 0.00),
-        (1.0, 0.80, 0.05),  # Burst 1
+        (S60(0, 0, 0), 0.50, 0.00),
+        (S60(1, 0, 0), 0.80, 0.05),  # Burst 1
         (2.0, 0.60, 0.01),
         (3.0, 0.85, 0.08),  # Burst 2
         (4.0, 0.55, 0.00),
@@ -155,20 +156,20 @@ def main():
     
     predictor_3 = QuantumCoolingPredictorV2()
     results.append(benchmark_pattern("Oscillating Load", pattern_3, predictor_3))
-    time.sleep(0.5)
+    time.sleep(S60(0, 30, 0))
     
     # ========================================================================
     # PATTERN 4: Cascading Failure (Exponential Growth)
     # ========================================================================
     
     pattern_4 = [
-        (0.0, 0.50, 0.00),
-        (1.0, 0.60, 0.01),
+        (S60(0, 0, 0), 0.50, 0.00),
+        (S60(1, 0, 0), 0.60, 0.01),
         (2.0, 0.70, 0.03),
         (3.0, 0.80, 0.07),  # Accelerating
         (4.0, 0.90, 0.12),  # Accelerating more
         (5.0, 0.95, 0.18),  # Critical
-        (6.0, 0.98, 0.25),  # Cascading
+        (6.0, 0.98, S60(0, 15, 0)),  # Cascading
         (7.0, 0.99, 0.30),  # Failure imminent
         (8.0, 0.95, 0.20),  # Recovery starts
         (9.0, 0.85, 0.10),
@@ -178,16 +179,16 @@ def main():
     
     predictor_4 = QuantumCoolingPredictorV2()
     results.append(benchmark_pattern("Cascading Failure", pattern_4, predictor_4))
-    time.sleep(0.5)
+    time.sleep(S60(0, 30, 0))
     
     # ========================================================================
     # PATTERN 5: Real-World Mix (Chaotic)
     # ========================================================================
     
     pattern_5 = [
-        (0.0, 0.50, 0.00),
-        (1.0, 0.55, 0.00),
-        (2.0, 0.75, 0.03),  # Small burst
+        (S60(0, 0, 0), 0.50, 0.00),
+        (S60(1, 0, 0), 0.55, 0.00),
+        (2.0, S60(0, 45, 0), 0.03),  # Small burst
         (3.0, 0.65, 0.01),
         (4.0, 0.70, 0.02),
         (5.0, 0.95, 0.15),  # Big spike
@@ -196,7 +197,7 @@ def main():
         (8.0, 0.60, 0.00),  # Sudden drop
         (9.0, 0.90, 0.12),  # Another burst
         (10.0, 0.98, 0.20), # Peak
-        (11.0, 0.75, 0.04),
+        (11.0, S60(0, 45, 0), 0.04),
         (12.0, 0.65, 0.01),
         (13.0, 0.55, 0.00),
     ]

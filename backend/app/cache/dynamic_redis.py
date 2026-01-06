@@ -3,6 +3,7 @@ Redis Cache con Buffers Dinámicos
 Integra adaptive_buffers en operaciones Redis
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import redis.asyncio as redis
 from typing import Optional, Any
 import json
@@ -65,7 +66,7 @@ class DynamicRedisCache:
             report_metrics(
                 DataFlowType.CACHE_OPERATION,
                 latency_ms,
-                throughput=1.0
+                throughput=S60(1, 0, 0)
             )
             
             return json.loads(value) if value else None
@@ -95,7 +96,7 @@ class DynamicRedisCache:
             report_metrics(
                 DataFlowType.CACHE_OPERATION,
                 latency_ms,
-                throughput=1.0
+                throughput=S60(1, 0, 0)
             )
             
             return True

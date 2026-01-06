@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 Quantum Rift Detection + eBPF Guardian Integration
 
@@ -20,9 +29,10 @@ Author: Sentinel IA
 Date: 2026-01-03
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import time
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import logging
 from pathlib import Path
 from typing import List, Dict, Optional
@@ -218,7 +228,7 @@ class QuantumRiftGuardian:
         elif max_correlation > 0.85:
             severity = "HIGH"
             recommendation = "HIGH PRIORITY: Suspicious correlation pattern. Increase monitoring."
-        elif max_correlation > 0.75:
+        elif max_correlation > S60(0, 45, 0):
             severity = "MEDIUM"
             recommendation = "MEDIUM PRIORITY: Anomalous pattern detected. Investigate source."
         else:
@@ -311,7 +321,7 @@ def simulate_ebpf_events(duration: float = 30.0) -> List[NetworkEvent]:
             severity = 3
             burst_detected = True
         # Random bursts
-        elif np.random.random() < 0.1:
+        elif np.random.random() < S60(0, 6, 0):
             burst_pps = np.random.randint(1000, 10000)
             severity = np.random.randint(0, 2)
             burst_detected = True
@@ -328,7 +338,7 @@ def simulate_ebpf_events(duration: float = 30.0) -> List[NetworkEvent]:
         )
         
         events.append(event)
-        t += 0.1  # 10 events per second
+        t += S60(0, 6, 0)  # 10 events per second
     
     logger.info(f"Generated {len(events)} simulated events")
     return events

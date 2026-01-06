@@ -6,6 +6,7 @@ Implements all ITIL practices: Detection, Logging, Categorization, Prioritizatio
 Investigation, Resolution, and Closure.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from datetime import datetime, timezone, timedelta
 from typing import Optional, List, Dict, Any
 from sqlalchemy import select, func, and_, or_

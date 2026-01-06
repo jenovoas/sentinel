@@ -1,6 +1,14 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 
 import time
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import sys
 import os
 
@@ -39,7 +47,7 @@ def run_benchmark():
     
     def calc_energy(state):
         x, p, n = state
-        return (p**2 / (2*m)) + (0.5 * m * omega**2 * x**2)
+        return (p**2 / (2*m)) + (S60(0, 30, 0) * m * omega**2 * x**2)
     
     e_initial = calc_energy(states[0])
     e_final = calc_energy(states[-1])

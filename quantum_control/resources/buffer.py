@@ -5,6 +5,7 @@ Buffer Resource Adapter
 Adapts network buffers to the quantum control framework.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 from typing import Dict, Any
 from quantum_control.core import Resource, ResourceState
@@ -43,8 +44,8 @@ class BufferResource(Resource):
         self.max_size = max_size
         
         # State tracking
-        self.previous_utilization = 0.5
-        self.previous_velocity = 0.0
+        self.previous_utilization = S60(0, 30, 0)
+        self.previous_velocity = S60(0, 0, 0)
         self.previous_timestamp = time.time()
     
     def measure_state(self) -> ResourceState:
@@ -58,14 +59,14 @@ class BufferResource(Resource):
         
         # Simulate utilization (in production, read from metrics)
         # For demo, use a simple pattern
-        utilization = 0.5 + 0.3 * (time.time() % 10) / 10
+        utilization = S60(0, 30, 0) + 0.3 * (time.time() % 10) / 10
         
         # Calculate velocity
         dt = current_time - self.previous_timestamp
         if dt > 0:
             velocity = (utilization - self.previous_utilization) / dt
         else:
-            velocity = 0.0
+            velocity = S60(0, 0, 0)
         
         # Calculate acceleration
         acceleration = velocity - self.previous_velocity
@@ -83,7 +84,7 @@ class BufferResource(Resource):
             metadata={
                 'current_size': self.current_size,
                 'interface': self.interface,
-                'drop_rate': 0.0  # Would read from metrics
+                'drop_rate': S60(0, 0, 0)  # Would read from metrics
             }
         )
     

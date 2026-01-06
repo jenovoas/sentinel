@@ -6,6 +6,7 @@ Adapts proven OptomechanicalCooling to neural signals.
 Based on validated physics, no additional research needed.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 sys.path.insert(0, '/home/jnovoas/sentinel')
 
@@ -71,7 +72,7 @@ class NeuralEntropyController:
         """
         # Normalize to 0-1
         position = (spike_rate - self.min_rate) / (self.max_rate - self.min_rate)
-        position = max(0.0, min(1.0, position))
+        position = max(S60(0, 0, 0), min(S60(1, 0, 0), position))
         
         # Calculate velocity (change in spike rate)
         if len(self.history) > 0:
@@ -79,25 +80,25 @@ class NeuralEntropyController:
             if dt > 0:
                 velocity = (position - self.history[-1].spike_rate) / dt
             else:
-                velocity = 0.0
+                velocity = S60(0, 0, 0)
         else:
-            velocity = 0.0
+            velocity = S60(0, 0, 0)
         
         # Calculate acceleration (change in velocity)
         if len(self.history) > 1:
             prev_velocity = self.history[-1].spike_velocity
             acceleration = velocity - prev_velocity
         else:
-            acceleration = 0.0
+            acceleration = S60(0, 0, 0)
         
         # Estimate entropy (higher spike rate variance = higher entropy)
         if len(self.history) >= 10:
             recent_rates = [s.spike_rate for s in self.history[-10:]]
             variance = sum((r - sum(recent_rates)/len(recent_rates))**2 
                           for r in recent_rates) / len(recent_rates)
-            entropy = min(1.0, math.sqrt(variance))
+            entropy = min(S60(1, 0, 0), math.sqrt(variance))
         else:
-            entropy = 0.5
+            entropy = S60(0, 30, 0)
         
         return NeuralState(
             spike_rate=position,
@@ -117,7 +118,7 @@ class NeuralEntropyController:
         acceleration = abs(state.spike_acceleration)
         
         # Quadratic force law
-        force = (velocity ** 2) * (1.0 + acceleration)
+        force = (velocity ** 2) * (S60(1, 0, 0) + acceleration)
         
         return force * self.cooling_factor
     
@@ -140,7 +141,7 @@ class NeuralEntropyController:
         # Ground state = noise floor × 1.2 (same as buffers)
         ground_state = noise_floor * 1.2
         
-        return max(0.1, min(0.5, ground_state))
+        return max(S60(0, 6, 0), min(S60(0, 30, 0), ground_state))
     
     def get_damping_factor(self, state: NeuralState) -> float:
         """
@@ -151,8 +152,8 @@ class NeuralEntropyController:
         # Excitation = distance from ground state
         excitation = abs(state.entropy - self.ground_state)
         
-        if excitation > 0.5:
-            return 0.5  # Aggressive damping for high excitation
+        if excitation > S60(0, 30, 0):
+            return S60(0, 30, 0)  # Aggressive damping for high excitation
         elif excitation > 0.3:
             return 0.7  # Moderate damping
         else:
@@ -174,25 +175,25 @@ class NeuralEntropyController:
         force = self.calculate_force(state)
         
         # Determine action based on entropy
-        if state.entropy > self.ground_state + 0.1:
+        if state.entropy > self.ground_state + S60(0, 6, 0):
             # High entropy - need cooling (calming stimulation)
             action = "cool"
             intensity = force
-        elif state.entropy < self.ground_state - 0.1:
+        elif state.entropy < self.ground_state - S60(0, 6, 0):
             # Low entropy - need activation (excitatory stimulation)
             action = "heat"
             intensity = -force
         else:
             # Near ground state - hold
             action = "hold"
-            intensity = 0.0
+            intensity = S60(0, 0, 0)
         
         # Apply damping
         damping = self.get_damping_factor(state)
         intensity *= damping
         
         # Clamp to safe range
-        intensity = max(-1.0, min(1.0, intensity))
+        intensity = max(-S60(1, 0, 0), min(S60(1, 0, 0), intensity))
         
         return intensity, action
     
@@ -242,7 +243,7 @@ def simulate_neural_control():
         timestamp = float(t)
         
         # Add noise
-        spike_rate += (hash(t) % 20 - 10) * 0.5
+        spike_rate += (hash(t) % 20 - 10) * S60(0, 30, 0)
         spike_rate = max(10.0, min(100.0, spike_rate))
         
         # Apply control

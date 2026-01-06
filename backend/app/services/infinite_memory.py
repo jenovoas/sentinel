@@ -3,6 +3,7 @@ Infinite Memory System for Sentinel TUI
 Implements hierarchical memory compression to maintain unlimited conversation history.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import json
 from pathlib import Path
 from typing import List, Dict, Optional

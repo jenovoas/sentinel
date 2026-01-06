@@ -5,6 +5,7 @@ Indexes all technical documentation into ChromaDB for RAG retrieval.
 This ensures the AI always has full context about Sentinel's architecture.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import sys
 from pathlib import Path

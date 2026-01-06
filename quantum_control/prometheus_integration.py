@@ -15,6 +15,7 @@ Author: Sentinel IA
 Date: 2026-01-03
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import time
 import logging
@@ -66,7 +67,7 @@ class QuantumPrometheusIntegrator:
     def __init__(
         self,
         prometheus_url: str = "http://localhost:9090",
-        control_interval: float = 1.0,
+        control_interval: float = S60(1, 0, 0),
         enable_export: bool = False
     ):
         """
@@ -96,7 +97,7 @@ class QuantumPrometheusIntegrator:
         
         # Statistics
         self.optimization_count = 0
-        self.total_improvement = 0.0
+        self.total_improvement = S60(0, 0, 0)
         self.results_history = []
     
     def check_prometheus_health(self) -> bool:
@@ -277,7 +278,7 @@ def demo_integration():
     # Initialize integrator
     integrator = QuantumPrometheusIntegrator(
         prometheus_url="http://localhost:9090",
-        control_interval=1.0,
+        control_interval=S60(1, 0, 0),
         enable_export=False
     )
     
@@ -324,7 +325,7 @@ def main():
     parser.add_argument(
         "--interval",
         type=float,
-        default=1.0,
+        default=S60(1, 0, 0),
         help="Control interval in seconds"
     )
     parser.add_argument(

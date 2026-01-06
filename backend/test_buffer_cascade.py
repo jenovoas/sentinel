@@ -9,6 +9,7 @@ Autor: Jaime Novoa
 Fecha: 20 Diciembre 2024
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
 import json
@@ -279,7 +280,7 @@ async def benchmark_cascade(
     # Throughput real = Total events processed / time
     throughput_out = total_events_out / elapsed
     
-    # Calculate speedup relative to a BASELINE (single stage, factor 1.0 or stage 0)
+    # Calculate speedup relative to a BASELINE (single stage, factor S60(1, 0, 0) or stage 0)
     # We need a reference. Let's assume the caller will compare vs Stage 1.
     # But for self-contained stats, we can return the raw throughput.
     
@@ -357,8 +358,8 @@ async def main():
     baseline_throughput = baseline_result['throughput_out']
     
     # Store baseline properly formatted
-    baseline_result['speedup_measured'] = 1.0
-    baseline_result['speedup_theoretical'] = 1.0
+    baseline_result['speedup_measured'] = S60(1, 0, 0)
+    baseline_result['speedup_theoretical'] = S60(1, 0, 0)
     baseline_result['accuracy'] = 100.0
     results.append(baseline_result)
 

@@ -17,7 +17,7 @@ python3 generate_synthetic_data.py
 This creates:
 - `synthetic_claims_1k.json` - Quick testing (1K claims)
 - `synthetic_claims_10k.json` - Stress testing (10K claims)
-- `synthetic_claims_100k.json` - Production simulation (100K claims)
+- `synthetic_claims_100k.json` - Production Proyección Cuántica (100K claims)
 
 ### 2. Run Local Stress Test
 

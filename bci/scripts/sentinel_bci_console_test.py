@@ -1,6 +1,7 @@
 # sentinel_bci_console_test.py
 # Console-only validation of BCI Phase 0 logic (No hardware required)
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import math
 
@@ -8,7 +9,7 @@ def print_wave(freq, duration, blocks=40):
     print(f"🌊 [WAVE] Generating {freq} Hz signal...")
     points = 20
     for i in range(points):
-        val = math.sin(2 * math.pi * (i / points))
+        val = math.sin(2 * PI_S60 * (i / points))
         bar = "#" * int((val + 1) * (blocks / 2))
         print(f"  {bar}")
         time.sleep(0.01)
@@ -20,7 +21,7 @@ def run_protocol():
 
     print("\n🔬 [TEST 1] SKULL RESONANCE (972 Hz)")
     print("Physical target: Temporal bone resonance.")
-    print_wave(972, 1.0)
+    print_wave(972, S60(1, 0, 0))
     
     print("\n🛡️ [QUALIA 1] KERNEL INTRUSION (Metallic)")
     print("Pattern: Discordant high-frequency shift (2000-2200 Hz)")
@@ -47,7 +48,7 @@ def run_protocol():
     for val in fib60_short:
         freq = 500 + (val * 12)
         print(f"  🔢 Fibonacci {val} -> Frequency {freq} Hz")
-        time.sleep(0.1)
+        time.sleep(S60(0, 6, 0))
 
     print("\n✅ BCI Logic Validation Complete.")
     print("Ready for audio synthesis once libportaudio2 is installed.")

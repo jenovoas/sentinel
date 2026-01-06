@@ -3,6 +3,7 @@ Forensic-Grade Write-Ahead Log (WAL) con Replay Protection
 Claim 4: HMAC + Replay Detection + Timestamp Validation
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
 import json
@@ -64,7 +65,7 @@ class ForensicWAL:
         
         # Timestamp validation
         self.max_timestamp_drift = max_timestamp_drift_seconds
-        self.last_timestamp = 0.0
+        self.last_timestamp = S60(0, 0, 0)
         
         # Stats
         self.stats = {

@@ -5,6 +5,7 @@ Revises: 'f6bf220e05ab'
 Create Date: 2025-12-16 17:54:57.984593
 
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from alembic import op
 import sqlalchemy as sa
 

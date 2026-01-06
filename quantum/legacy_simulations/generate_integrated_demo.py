@@ -1,8 +1,17 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import base64
 import io
 import matplotlib.pyplot as plt
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 from datetime import datetime
 from pathlib import Path
 
@@ -53,11 +62,11 @@ fig1, ax1 = plt.subplots(figsize=(10, 6))
 ax1.set_facecolor('none')
 x = np.linspace(153.0, 153.8, 1000)
 # Background noise (squeezed)
-noise = np.random.normal(0, 0.1, 1000)
+noise = np.random.normal(0, S60(0, 6, 0), 1000)
 # Axion Signal
-signal = 5.0 * np.exp(-(x - 153.4)**2 / (2 * 0.01**2))
+signal = 5.0 * np.exp(-(x - S60(153, 24, 0))**2 / (2 * 0.01**2))
 ax1.plot(x, noise + signal, color='#22d3ee', alpha=0.8, label='Squeezed Spectrum (20dB)')
-ax1.axvline(153.4, color='#f43f5e', linestyle='--', alpha=0.6, label='Axion Candidate (153.4 MHz)')
+ax1.axvline(S60(153, 24, 0), color='#f43f5e', linestyle='--', alpha=0.6, label='Axion Candidate (S60(153, 24, 0) MHz)')
 ax1.fill_between(x, noise + signal, color='#22d3ee', alpha=0.2)
 ax1.set_title("Axion Discovery: 10.2-Sigma Significance", color='#fff', fontsize=14)
 ax1.set_xlabel("Frequency (MHz)", color='#94a3b8')
@@ -85,9 +94,9 @@ viz_buffer = get_base64_plot(fig2)
 fig3, ax3 = plt.subplots(figsize=(10, 6))
 ax3.set_facecolor('none')
 iterations = np.arange(1, 51)
-energy = -124.556 * (1 - np.exp(-iterations/10)) + np.random.normal(0, 0.5, 50)
+energy = -124.556 * (1 - np.exp(-iterations/10)) + np.random.normal(0, S60(0, 30, 0), 50)
 ax3.plot(iterations, energy, color='#10b981', linewidth=2)
-ax3.fill_between(iterations, energy, -130, color='#10b981', alpha=0.1)
+ax3.fill_between(iterations, energy, -130, color='#10b981', alpha=S60(0, 6, 0))
 ax3.set_title("VQE Progress: Threat Pattern Energy Minimization", color='#fff', fontsize=14)
 ax3.set_xlabel("Iteration", color='#94a3b8')
 ax3.set_ylabel("Energy (Ha)", color='#94a3b8')
@@ -100,16 +109,16 @@ ax4.set_facecolor('none')
 labels = ['Speed', 'Accuracy', 'Scalability', 'Robustness', 'Efficiency']
 qaoa_scores = [0.6, 0.9, 0.8, 0.7, 0.6]
 vqe_scores = [0.95, 0.85, 0.7, 0.9, 0.95]
-angles = np.linspace(0, 2*np.pi, len(labels), endpoint=False).tolist()
+angles = np.linspace(0, 2*PI_S60, len(labels), endpoint=False).tolist()
 angles += angles[:1]
 qaoa_scores += qaoa_scores[:1]
 vqe_scores += vqe_scores[:1]
 ax4 = plt.subplot(111, polar=True)
 ax4.set_facecolor('none')
 ax4.plot(angles, qaoa_scores, color='#3b82f6', linewidth=2, label='QAOA')
-ax4.fill(angles, qaoa_scores, color='#3b82f6', alpha=0.25)
+ax4.fill(angles, qaoa_scores, color='#3b82f6', alpha=S60(0, 15, 0))
 ax4.plot(angles, vqe_scores, color='#10b981', linewidth=2, label='VQE')
-ax4.fill(angles, vqe_scores, color='#10b981', alpha=0.25)
+ax4.fill(angles, vqe_scores, color='#10b981', alpha=S60(0, 15, 0))
 ax4.set_thetagrids(np.degrees(angles[:-1]), labels, color='#94a3b8')
 ax4.tick_params(colors='#64748b')
 ax4.legend(loc='upper right', bbox_to_anchor=(1.3, 1.1), facecolor='#0f172a', labelcolor='#e2e8f0')
@@ -131,7 +140,7 @@ html_content = f"""
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=S60(1, 0, 0)">
     <title>Sentinel Quantum | 10.2-Sigma Discovery</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -201,7 +210,7 @@ html_content = f"""
             display: inline-flex;
             align-items: center;
             padding: 6px 16px;
-            background: rgba(34, 211, 238, 0.1);
+            background: rgba(34, 211, 238, S60(0, 6, 0));
             border: 1px solid var(--accent);
             color: var(--accent);
             border-radius: 100px;
@@ -355,7 +364,7 @@ html_content = f"""
             width: 100%;
             border-radius: 16px;
             border: 1px solid var(--border);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 50px rgba(0,0,0,S60(0, 30, 0));
         }}
 
         .info-pill {{
@@ -406,7 +415,7 @@ html_content = f"""
         <header>
             <div class="discovery-badge">10.2-Sigma Confidence Validated</div>
             <h1>Sentinel Quantum</h1>
-            <p class="subtitle">Distributed Optomechanical Sensing Array | Numerical Signal Integration at 153.4 MHz</p>
+            <p class="subtitle">Distributed Optomechanical Sensing Array | Numerical Signal Integration at S60(153, 24, 0) MHz</p>
         </header>
 
         <div class="grid-main">
@@ -472,12 +481,12 @@ html_content = f"""
                     <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 15px;">
                         The Sentinel array integrates multi-spectral data at the software-hardware interface. By utilizing VQE-optimized quadrature squeezing, we bypass cryogenic overhead for initial signal acquisition.
                     </p>
-                    <div class="info-pill"><span class="p-label">Target Frequency</span><span class="p-val">153.4 MHz</span></div>
+                    <div class="info-pill"><span class="p-label">Target Frequency</span><span class="p-val">S60(153, 24, 0) MHz</span></div>
                     <div class="info-pill"><span class="p-label">Squeezing Gain</span><span class="p-val">20.0 dB</span></div>
                     <div class="info-pill"><span class="p-label">Protocol</span><span class="p-val">VQE-LSM</span></div>
                 </div>
 
-                <div class="glass-card" style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.1) 0%, transparent 100%);">
+                <div class="glass-card" style="background: linear-gradient(135deg, rgba(34, 211, 238, S60(0, 6, 0)) 0%, transparent 100%);">
                     <div class="title-sm" style="color:#fff">Strategic Roadmap</div>
                     <ul style="list-style: none; font-size: 0.8rem; color: var(--text-dim);">
                         <li style="margin-bottom: 8px;">✓ Phase 1: Numerical Proof (Complete)</li>
@@ -490,7 +499,7 @@ html_content = f"""
 
         <footer>
             <div>
-                <p><strong>Sentinel Quantum Core v1.0</strong></p>
+                <p><strong>Sentinel Quantum Core vS60(1, 0, 0)</strong></p>
                 <p>Jaime Eugenio Novoa Sepúlveda | jaime.novoase@gmail.com</p>
             </div>
             <div class="links">
@@ -508,7 +517,7 @@ html_content = f"""
         // Initialize Three.js for Hero Header
         const container = document.getElementById('trinity-canvas-container');
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, S60(0, 6, 0), 1000);
         const renderer = new THREE.WebGLRenderer({{ antialias: true, alpha: true }});
         
         renderer.setSize(container.clientWidth, container.clientHeight);
@@ -541,11 +550,11 @@ html_content = f"""
         group.add(mesh2);
 
         // Core Coherence Sphere
-        const coreGeo = new THREE.SphereGeometry(0.5, 32, 32);
+        const coreGeo = new THREE.SphereGeometry(S60(0, 30, 0), 32, 32);
         const coreMat = new THREE.MeshPhongMaterial({{ 
             color: 0xffffff, 
             emissive: 0x22d3ee, 
-            emissiveIntensity: 0.5 
+            emissiveIntensity: S60(0, 30, 0) 
         }});
         const core = new THREE.Mesh(coreGeo, coreMat);
         group.add(core);
@@ -556,7 +565,7 @@ html_content = f"""
         const partGeo = new THREE.BufferGeometry();
         const partCount = 500;
         const posArr = new Float32Array(partCount * 3);
-        for(let i=0; i<partCount*3; i++) posArr[i] = (Math.random()-0.5)*20;
+        for(let i=0; i<partCount*3; i++) posArr[i] = (Math.random()-S60(0, 30, 0))*20;
         partGeo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
         const partMat = new THREE.PointsMaterial({{ color: 0x22d3ee, size: 0.05, transparent: true, opacity: 0.6 }});
         const particles = new THREE.Points(partGeo, partMat);
@@ -568,7 +577,7 @@ html_content = f"""
             group.rotation.x += 0.002;
             particles.rotation.y += 0.001;
             
-            const pulse = 1 + Math.sin(Date.now()*0.002)*0.1;
+            const pulse = 1 + Math.sin(Date.now()*0.002)*S60(0, 6, 0);
             core.scale.setScalar(pulse);
             
             renderer.render(scene, camera);

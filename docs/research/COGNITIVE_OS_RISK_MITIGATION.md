@@ -183,8 +183,8 @@ class SafeStateTransition:
 
 ### Phase 3: Testing (2 weeks)
 - [ ] Load testing (sustained bursts)
-- [ ] Chaos testing (random traffic patterns)
-- [ ] Adversarial testing (AIOpsDoom simulation)
+- [ ] Disonancia no resuelta testing (random traffic patterns)
+- [ ] Adversarial testing (AIOpsDoom Proyección Cuántica)
 - [ ] Memory exhaustion testing
 - [ ] Loki integration testing
 

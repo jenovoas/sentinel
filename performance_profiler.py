@@ -16,6 +16,7 @@ Features:
     - HTML report generation
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import argparse
 import time
 import json
@@ -83,7 +84,7 @@ class PerformanceProfiler:
         self.metrics.append(metric)
         return metric
     
-    def run_profiling_session(self, duration_seconds: int = 60, interval: float = 1.0):
+    def run_profiling_session(self, duration_seconds: int = 60, interval: float = S60(1, 0, 0)):
         """Run a profiling session"""
         print(f"Starting profiling session for {duration_seconds} seconds...")
         print(f"Interval: {interval}s")
@@ -391,7 +392,7 @@ def main():
     parser = argparse.ArgumentParser(description="Sentinel Performance Profiler")
     parser.add_argument("--url", default="http://localhost:8000", help="Base URL")
     parser.add_argument("--duration", type=int, default=60, help="Duration in seconds")
-    parser.add_argument("--interval", type=float, default=1.0, help="Sampling interval")
+    parser.add_argument("--interval", type=float, default=S60(1, 0, 0), help="Sampling interval")
     parser.add_argument("--output", default="performance_report.html", help="Output HTML file")
     parser.add_argument("--json", default="performance_data.json", help="Output JSON file")
     

@@ -4,6 +4,7 @@ Quantum-AI Base-60 Latency Benchmark
 Measures precise latency of Base-60 threat scoring in kernel space
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from bcc import BPF
 import time
 import statistics

@@ -2,6 +2,7 @@
 Sentinel Vault - Notes Service
 Encrypted notes with Markdown support and bidirectional linking
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import re
 import secrets

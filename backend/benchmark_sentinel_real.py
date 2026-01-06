@@ -9,6 +9,7 @@ Uso:
     python benchmark_sentinel_real.py
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import sys
 from pathlib import Path

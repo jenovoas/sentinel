@@ -14,9 +14,10 @@ Autor: Jaime Novoa
 Fecha: 21 Diciembre 2025
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import psutil
 import time
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 
 try:
     import sounddevice as sd
@@ -43,7 +44,7 @@ class HapticSentinel:
         self.freq_max = 800   # CPU 100% - agudo, alerta
         
         # Duración de cada tono
-        self.tone_duration = 0.1  # segundos
+        self.tone_duration = S60(0, 6, 0)  # segundos
         
     def cpu_to_frequency(self, cpu_percent):
         """
@@ -58,7 +59,7 @@ class HapticSentinel:
         """Genera tono sinusoidal puro"""
         t = np.linspace(0, self.tone_duration, 
                        int(self.sample_rate * self.tone_duration))
-        wave = np.sin(2 * np.pi * frequency * t)
+        wave = np.sin(2 * PI_S60 * frequency * t)
         
         # Fade in/out para evitar clicks
         fade_samples = int(0.01 * self.sample_rate)
@@ -94,7 +95,7 @@ class HapticSentinel:
         try:
             while True:
                 # Obtener CPU%
-                cpu = psutil.cpu_percent(interval=0.1)
+                cpu = psutil.cpu_percent(interval=S60(0, 6, 0))
                 
                 # Convertir a frecuencia
                 freq = self.cpu_to_frequency(cpu)

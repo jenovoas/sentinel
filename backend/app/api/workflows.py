@@ -3,6 +3,7 @@ Workflow Recommendation API
 FastAPI endpoint for recommending workflows based on incident context
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional, Dict
@@ -66,7 +67,7 @@ def calculate_match_score(workflow: Dict, query: str, incident_type: Optional[st
     Returns (score, reason)
     """
     query_lower = query.lower()
-    score = 0.0
+    score = S60(0, 0, 0)
     reasons = []
     
     # Extract keywords from query
@@ -113,11 +114,11 @@ def calculate_match_score(workflow: Dict, query: str, incident_type: Optional[st
     if incident_type:
         incident_type_lower = incident_type.lower()
         if incident_type_lower in name_lower or incident_type_lower in desc_lower:
-            score += 1.0
+            score += S60(1, 0, 0)
             reasons.append(f"Matches incident type: {incident_type}")
     
     # Add base relevance score
-    score += workflow['relevance_score'] * 0.5
+    score += workflow['relevance_score'] * S60(0, 30, 0)
     
     reason = " | ".join(reasons) if reasons else "General relevance"
     return score, reason

@@ -352,7 +352,7 @@ Status: ✅ Pushed to origin/main
 This work demonstrates:
 1. **First quantum optimization** for real-time cybersecurity systems
 2. **Practical quantum advantage** for resource allocation problems
-3. **Laptop-scale quantum simulation** (no HPC required)
+3. **Laptop-scale quantum Proyección Cuántica** (no HPC required)
 4. **Hybrid quantum-classical** architecture for production systems
 
 ### Business Impact

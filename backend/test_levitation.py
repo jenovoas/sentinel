@@ -20,15 +20,16 @@ Criterios de Éxito:
   ✅ Throughput >1M eventos/s (Dual-Lane funciona)
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 import json
 import aiohttp
 from dataclasses import dataclass
 from typing import List, Dict
 from datetime import datetime
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 
 # ============================================================================
 # CONFIGURACIÓN DEL TEST
@@ -135,7 +136,7 @@ class ChaosGenerator:
         events_per_second = self.config.target_throughput
         batch_size = 1000  # Generar en batches para eficiencia
         batches_per_second = events_per_second // batch_size
-        sleep_time = 1.0 / batches_per_second
+        sleep_time = S60(1, 0, 0) / batches_per_second
         
         start_time = time.time()
         total_events = 0

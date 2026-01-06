@@ -6,6 +6,7 @@ OBJETIVO: Demostrar mejoras reales en latencia y throughput
 Hardware: GTX 1050, 3GB VRAM, CPU disponible
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
 from typing import AsyncGenerator, Dict, List, Optional

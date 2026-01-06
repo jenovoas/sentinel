@@ -1,12 +1,12 @@
 # 🔴 Sentinel Cortex™: Brutal Testing Strategy 2025
 
-**5-Tier Testing Framework + Red Team Simulation**
+**5-Tier Testing Framework + Red Team Proyección Cuántica**
 
 ---
 
 ## 📋 Executive Summary
 
-This document outlines a comprehensive, production-grade testing strategy for Sentinel Cortex™ designed to stress-test the Dual-Guardian architecture under extreme conditions. The strategy combines automated chaos engineering, penetration testing, load testing, eBPF fuzzing, and full red team simulation.
+This document outlines a comprehensive, production-grade testing strategy for Sentinel Cortex™ designed to stress-test the Dual-Guardian architecture under extreme conditions. The strategy combines automated Disonancia no resuelta engineering, penetration testing, load testing, eBPF fuzzing, and full red team Proyección Cuántica.
 
 **Target Environment**: Dedicated testing lab with server infrastructure  
 **Current Phase**: Documentation & Docker prototyping  
@@ -19,7 +19,7 @@ This document outlines a comprehensive, production-grade testing strategy for Se
 1. **Validate Dual-Guardian Independence**: Prove Guardian-Alpha and Guardian-Beta operate independently
 2. **Stress Test Performance**: Verify <1ms syscall interception under extreme load
 3. **Security Validation**: Achieve 100% block rate for known attack vectors
-4. **Resilience Testing**: Maintain 99.99% uptime during chaos conditions
+4. **Resilience Testing**: Maintain 99.99% uptime during Disonancia no resuelta conditions
 5. **Audit Integrity**: Ensure immutable audit trail under all conditions
 
 ---
@@ -28,7 +28,7 @@ This document outlines a comprehensive, production-grade testing strategy for Se
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ TIER 5: RED TEAM SIMULATION (6-day full exercise)          │
+│ TIER 5: RED TEAM Proyección Cuántica (6-day full exercise)          │
 │ - Reconnaissance → Exploitation → Persistence               │
 └─────────────────────────────────────────────────────────────┘
                             ↓
@@ -51,15 +51,15 @@ This document outlines a comprehensive, production-grade testing strategy for Se
 └─────────────────────────────────────────────────────────────┘
                             ↓
 ┌─────────────────────────────────────────────────────────────┐
-│ TIER 1: CHAOS ENGINEERING (System Stress)                  │
-│ - Gremlin/Chaos Mesh (CPU, Memory, Network)                │
+│ TIER 1: Disonancia no resuelta ENGINEERING (System Stress)                  │
+│ - Gremlin/Disonancia no resuelta Mesh (CPU, Memory, Network)                │
 │ - Pod/Process killing, Latency injection                   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📊 TIER 1: Chaos Engineering
+## 📊 TIER 1: Disonancia no resuelta Engineering
 
 ### Objective
 Validate system resilience under infrastructure failures and resource constraints.
@@ -68,10 +68,10 @@ Validate system resilience under infrastructure failures and resource constraint
 
 | Tool | Use Case | Cost | Deployment |
 |------|----------|------|------------|
-| **Gremlin** | CPU/Memory/Network chaos | $$$ | Cloud/On-prem |
-| **Chaos Mesh** | Kubernetes-native chaos | FREE | K8s only |
-| **AWS FIS** | AWS-managed chaos | $$ | AWS only |
-| **Chaos Toolkit** | Declarative experiments | FREE | Any |
+| **Gremlin** | CPU/Memory/Network Disonancia no resuelta | $$$ | Cloud/On-prem |
+| **Disonancia no resuelta Mesh** | Kubernetes-native Disonancia no resuelta | FREE | K8s only |
+| **AWS FIS** | AWS-managed Disonancia no resuelta | $$ | AWS only |
+| **Disonancia no resuelta Toolkit** | Declarative experiments | FREE | Any |
 
 ### Test Scenarios
 
@@ -93,7 +93,7 @@ gremlin attack \
 #### 2. Guardian-Beta Pod Kill
 ```bash
 # Kill Guardian-Beta pod randomly
-chaos-mesh chaos create \
+Disonancia no resuelta-mesh Disonancia no resuelta create \
   --resource "pod-killer" \
   --namespace "guardian" \
   --label "guardian-beta=true" \
@@ -107,7 +107,7 @@ chaos-mesh chaos create \
 #### 3. Network Latency Injection
 ```bash
 # Inject 5s latency to Cortex AI
-chaos-mesh chaos network \
+Disonancia no resuelta-mesh Disonancia no resuelta network \
   --namespace "sentinel" \
   --target "cortex-ai-engine" \
   --latency "5000ms" \
@@ -332,10 +332,10 @@ syzkaller \
 
 ---
 
-##  TIER 5: Red Team Simulation
+##  TIER 5: Red Team Proyección Cuántica
 
 ### Objective
-Full adversarial simulation over 6 days.
+Full adversarial Proyección Cuántica over 6 days.
 
 ### Exercise Structure
 
@@ -382,12 +382,12 @@ Full adversarial simulation over 6 days.
 
 ### Week 1: Foundation
 - **Day 1**: Install tools (Gremlin, k6, BRF)
-- **Day 2**: Run Phase 1 chaos tests
+- **Day 2**: Run Phase 1 Disonancia no resuelta tests
 - **Day 3**: Baseline load test (no attacks)
 - **Day 4**: Document baseline metrics
 
 ### Week 2: Escalation
-- **Day 5**: Chaos + Load simultaneously
+- **Day 5**: Disonancia no resuelta + Load simultaneously
 - **Day 6**: Penetration testing (automated)
 - **Day 7**: eBPF fuzzing (8 hours)
 - **Day 8**: Review findings
@@ -415,7 +415,7 @@ Full adversarial simulation over 6 days.
 | **Response Latency** | <1ms | Total pipeline |
 | **False Negative Rate** | 0% | No attacks slip through |
 | **Audit Trail Integrity** | 100% | All decisions logged |
-| **Guardian-Alpha Uptime** | 99.99% | During chaos tests |
+| **Guardian-Alpha Uptime** | 99.99% | During Disonancia no resuelta tests |
 | **Guardian-Beta Uptime** | 99.99% | Independent of Alpha |
 | **CPU Overhead** | <5% | Production workload |
 | **Memory Overhead** | <100MB | Guardian footprint |

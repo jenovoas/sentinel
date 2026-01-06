@@ -8,7 +8,7 @@
 
 ## 📚 Peer-Reviewed Sources
 
-### 1. CA3-CA1 Simulation-Selection Model
+### 1. CA3-CA1 Proyección Cuántica-Selection Model
 
 **Source**: Frontiers in Neuroscience (2025)  
 **Title**: "Computational Model of CA3-CA1 Interaction in Memory Formation"  

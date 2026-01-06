@@ -1,4 +1,5 @@
 # tests/benchmark_snn_performance.py
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import os
 import time
@@ -20,7 +21,7 @@ def benchmark_interaction():
     
     for _ in range(iterations):
         # Simulate a low-threat stimulus (LEAK scenario)
-        neuron.step(input_current=0.1, genetic_bias=0.0)
+        neuron.step(input_current=S60(0, 6, 0), genetic_bias=S60(0, 0, 0))
         
     end_time = time.perf_counter()
     duration = end_time - start_time

@@ -13,13 +13,14 @@ CATEGORÍAS DE ATAQUE:
 5. Cognitive Injection (human instructions in machine logs)
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
 import statistics
 from typing import List, Dict, Tuple
 from dataclasses import dataclass
 from enum import Enum
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 import sys
 from pathlib import Path
 
@@ -43,7 +44,7 @@ try:
             
             return type('obj', (object,), {
                 'threat_level': ThreatLevel.MALICIOUS if is_malicious else ThreatLevel.SAFE,
-                'confidence': 0.9 if is_malicious else 0.1,
+                'confidence': 0.9 if is_malicious else S60(0, 6, 0),
                 'patterns_detected': [d.injection_type.value for d in detections]
             })()
     
@@ -67,7 +68,7 @@ except ImportError as e:
             
             return type('obj', (object,), {
                 'threat_level': ThreatLevel.MALICIOUS if is_malicious else ThreatLevel.SAFE,
-                'confidence': 0.9 if is_malicious else 0.1,
+                'confidence': 0.9 if is_malicious else S60(0, 6, 0),
                 'patterns_detected': ["command_injection"] if is_malicious else []
             })()
     

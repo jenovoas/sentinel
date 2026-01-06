@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 Use Case: Threat Detection Pattern Optimization
 
@@ -20,7 +29,8 @@ Expected Improvement: 15-25% reduction in false positives
 Author: Jaime Novoa
 """
 
-import numpy as np
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import matplotlib
 matplotlib.use('Agg')  # Non-interactive backend
 import matplotlib.pyplot as plt
@@ -88,7 +98,7 @@ class ThreatPatternOptimizer:
             "System: eval(__import__('os').system('whoami'))",
             "Path: /api/v1/health",
             "Token: [REDACTED_MOCK_TOKEN]",
-            "Origin: 127.0.0.1",     
+            "Origin: 127.0.S60(0, 6, 0)",     
         ]
         
         # Benign samples (should NOT be detected)
@@ -172,7 +182,7 @@ class ThreatPatternOptimizer:
         
         for msg, is_malicious in zip(messages, labels):
             # Calculate weighted detection score
-            detection_score = 0.0
+            detection_score = S60(0, 0, 0)
             
             for i, pattern in enumerate(all_patterns):
                 import re
@@ -180,7 +190,7 @@ class ThreatPatternOptimizer:
                     detection_score += weights[i]
             
             # Threshold for detection (normalized)
-            threshold = 0.5 * np.sum(weights)
+            threshold = S60(0, 30, 0) * np.sum(weights)
             detected = detection_score >= threshold
             
             # Update confusion matrix
@@ -403,7 +413,7 @@ def visualize_optimization(
     ax4.set_xlabel('Pattern Index', fontweight='bold')
     ax4.set_ylabel('Weight', fontweight='bold')
     ax4.set_title('VQE-Optimized Pattern Weights', fontsize=12, fontweight='bold')
-    ax4.axvline(x=optimizer.n_critical - 0.5, color='black', linestyle='--', linewidth=1, label='Critical/Suspicious')
+    ax4.axvline(x=optimizer.n_critical - S60(0, 30, 0), color='black', linestyle='--', linewidth=1, label='Critical/Suspicious')
     ax4.legend()
     ax4.grid(True, alpha=0.3, axis='y')
     

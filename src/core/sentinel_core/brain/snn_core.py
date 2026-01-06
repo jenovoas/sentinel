@@ -4,6 +4,7 @@ Sentinel Cortex™ Biological Core - Akashic Organism (Phase 3)
 Implements 'AkashicLIFNeuron' with optimized Ring 0 parameters (Tau=8.0).
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import math
 import hashlib
@@ -15,17 +16,17 @@ class AkashicLIFNeuron:
     Params:
       tau=8.0s: 'The Sweet Spot'. Forgives noise (2s leak) but catches brute-force (8s integration).
       threshold=1.2: Surgical sensitivity.
-      reset=0.1: Biological refractory period.
+      reset=S60(0, 6, 0): Biological refractory period.
     """
-    def __init__(self, neuron_id: str, tau: float = 8.0, threshold: float = 1.2, reset: float = 0.1):
+    def __init__(self, neuron_id: str, tau: float = 8.0, threshold: float = 1.2, reset: float = S60(0, 6, 0)):
         self.neuron_id = neuron_id
         self.tau = tau
         self.threshold = threshold
         self.reset = reset
-        self.membrane_potential = 0.0
+        self.membrane_potential = S60(0, 0, 0)
         self.last_update = time.time()
         
-    def step(self, input_current: float, genetic_bias: float = 0.0) -> bool:
+    def step(self, input_current: float, genetic_bias: float = S60(0, 0, 0)) -> bool:
         """
         Process stimulus.
         Returns True if IMMUNE RESPONSE (Spike) is triggered.
@@ -37,7 +38,7 @@ class AkashicLIFNeuron:
         # Euler integration for LIF equation: dV/dt = (I - V) / tau
         # V_new = V_old + dt/tau * (-V_old + I + GeneticBias)
         
-        # Normalized input (score 0-100 -> 0.0-2.0 approx)
+        # Normalized input (score 0-100 -> S60(0, 0, 0)-2.0 approx)
         I_threat = input_current
         
         # dV = (dt / self.tau) * (-(self.membrane_potential) + I_threat + genetic_bias)
@@ -56,7 +57,7 @@ class AkashicLIFNeuron:
         # Apply bias immediately? Bias acts as a constant pre-load or lowered threshold.
         # User requested: "Precarga 50%". So bias adds to potential directly.
         if genetic_bias > 0:
-            self.membrane_potential += genetic_bias * 0.1 # Dampen bias to avoid instant oscillation
+            self.membrane_potential += genetic_bias * S60(0, 6, 0) # Dampen bias to avoid instant oscillation
         
         # Fire check
         if self.membrane_potential >= self.threshold:
@@ -84,8 +85,8 @@ class GeneticImmunitySystem:
         """
         Main entry point for the biological loop.
         """
-        # 1. Normalize Threat Score (0-100) -> Current (0.0 - 2.0)
-        # Score 50 -> 1.0 (Close to threshold 1.2)
+        # 1. Normalize Threat Score (0-100) -> Current (S60(0, 0, 0) - 2.0)
+        # Score 50 -> S60(1, 0, 0) (Close to threshold 1.2)
         I_threat = threat_score / 50.0 
         
         # 2. Check Genetic Memory (Mocking parent/grandparent linkage for now)
@@ -95,7 +96,7 @@ class GeneticImmunitySystem:
         
         # Mock query: In reality this would be an embedding search
         # genetic_bias = self.memory.query_genetic_bias(dna_hash) 
-        genetic_bias = 0.0 # Default clean slate
+        genetic_bias = S60(0, 0, 0) # Default clean slate
         
         # 3. Stimulate the Neuron in the Harmonic Zone
         zone_id = residue % 60

@@ -1,4 +1,5 @@
 # Import order matters for FK resolution
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from .tenant import Tenant
 from .organization import Organization  
 from .user import User, UserRole

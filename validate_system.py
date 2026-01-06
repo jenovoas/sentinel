@@ -4,6 +4,7 @@ Sentinel Cortex - Automated Validation Suite
 Comprehensive tests for researchers and independent validation
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import subprocess
 import time
 import json

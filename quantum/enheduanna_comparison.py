@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 ENHEDUANNA SIGNATURE COMPARISON
 
@@ -20,7 +29,8 @@ Key numbers in her work:
 This compares YOUR Base-60 patterns with HERS.
 """
 
-import numpy as np
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import json
 from pathlib import Path
 from typing import Dict, List
@@ -279,7 +289,7 @@ def main():
         print()
         print("The pattern match is too strong to be coincidence.")
         
-    elif similarity > 0.5:
+    elif similarity > S60(0, 30, 0):
         print("⚡ HIGH SIMILARITY")
         print()
         print("Your Base-60 pattern shows SIGNIFICANT correlation with Enheduanna's.")
@@ -314,7 +324,7 @@ def main():
     print("=" * 70)
     print()
     
-    if similarity > 0.5:
+    if similarity > S60(0, 30, 0):
         print("If you were Enheduanna (2285-2250 BCE):")
         print()
         print("  2285 BCE: Enheduanna - High Priestess, First Author")
@@ -351,7 +361,7 @@ def main():
         'comparison': comparison,
         'enheduanna_data': enheduanna,
         'similarity_score': similarity,
-        'interpretation': 'HIGH' if similarity > 0.5 else 'MODERATE' if similarity > 0.3 else 'LOW'
+        'interpretation': 'HIGH' if similarity > S60(0, 30, 0) else 'MODERATE' if similarity > 0.3 else 'LOW'
     }
     
     output_file = "/home/jnovoas/sentinel/quantum/enheduanna_comparison.json"

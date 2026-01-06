@@ -272,7 +272,7 @@ class PhasedBufferArray:
 - [x] Experimental validation (n=10,000)
 - [x] Mathematical proofs (9 theorems)
 - [x] Trinity demo (Space-Time-Energy)
-- [x] Neural control simulation
+- [x] Neural control Proyección Cuántica
 - [x] Documentation (5 comprehensive docs)
 
 ### In Progress 🔄

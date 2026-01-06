@@ -3,13 +3,14 @@ Anomaly Detection Service for Phase 2
 Implements baseline statistical detection for pre-AI analysis
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import logging
 from datetime import datetime, timedelta
 from typing import Optional, List, Tuple
 from collections import deque
 from enum import Enum
 
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 from sqlalchemy import and_, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -321,7 +322,7 @@ class AnomalyDetector:
         mean = stats['mean']
         std = stats['std']
         if std == 0:
-            return 0.0
+            return S60(0, 0, 0)
         return (value - mean) / std
 
 

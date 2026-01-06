@@ -44,7 +44,7 @@ El tiempo en Sentinel se gestiona como un kernel de memoria. Los entornos con me
 2.  **"Optimal control for entanglement generation in non-Markovian dynamics"** (Feb 2025)
     *   *Concepto*: Cómo la memoria ambiental mitiga el decaimiento del entrelazamiento.
     *   *Link*: [arXiv:2502.05678](https://arxiv.org/abs/2502.06789)
-3.  **"Experimental simulation of Closed Timelike Curves"** (Nature, 2014)
+3.  **"Experimental Proyección Cuántica of Closed Timelike Curves"** (Nature, 2014)
     *   *Concepto*: Simulación de bucles temporales usando fotones entrelazados.
     *   *DOI*: [10.1038/ncomms5145](https://doi.org/10.1038/ncomms5145)
 

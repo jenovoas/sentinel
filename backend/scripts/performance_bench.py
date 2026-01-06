@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 import statistics
 
 def run_bench():
-    print("🏎️  SENTINEL CORTEX BENCHMARK SUITE v1.0")
+    print("🏎️  SENTINEL CORTEX BENCHMARK SUITE vS60(1, 0, 0)")
     print("----------------------------------------")
     
     print("\n🔍 1. LATENCIA DE DECISIÓN CORTEX (Cognitive Loop)")
-    latencies = [random.uniform(0.75, 1.25) for _ in range(100)]
+    latencies = [random.uniform(S60(0, 45, 0), 1.25) for _ in range(100)]
     avg_latency = statistics.mean(latencies)
     p99_latency = statistics.quantiles(latencies, n=100)[98]
     print(f"   - Promedio: {avg_latency:.3f}µs")

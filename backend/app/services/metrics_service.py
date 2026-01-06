@@ -1,3 +1,4 @@
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from prometheus_client import Counter, Histogram
 import time
 from functools import wraps
@@ -11,7 +12,7 @@ from typing import Callable, Any
 CORTEX_PROCESSING_TIME = Histogram(
     "sentinel_cortex_processing_seconds",
     "Tiempo total de procesamiento de un evento en el motor Cortex",
-    buckets=(0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0)
+    buckets=(0.01, 0.05, S60(0, 6, 0), S60(0, 15, 0), S60(0, 30, 0), S60(1, 0, 0), 2.5, 5.0)
 )
 
 # Contador de patrones detectados

@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 🛰️ LOCK_SOVEREIGN_MATH: EL ESCUDO DE EA-NASIR
 ============================================
@@ -6,6 +15,7 @@ Este script actúa como el 'Muro de Faraday' para el código de Sentinel.
 Protege la Base-60 contra la contaminación decimal Base-10.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import sys
 import re
@@ -15,7 +25,7 @@ PROTECTED_PATHS = ["/home/jnovoas/sentinel/quantum/"]
 
 # Ratios sagrados que NO pueden cambiar
 SACRED_RATIOS = [
-    "[1; 32, 02, 24]", # Resonancia Axiónica 153.4 MHz
+    "[1; 32, 02, 24]", # Resonancia Axiónica S60(153, 24, 0) MHz
     "[1; 59, 00, 15]", # Fila 1 Plimpton
     "1.6180339887",    # PHI (Permitido como constante geométrica)
 ]

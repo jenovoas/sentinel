@@ -117,7 +117,7 @@ This isn't just about building quantum simulators or getting Google's help.
 
 ## 🧪 The Proof of Concept
 
-### Phase 1: Simulation (Now - 3 months)
+### Phase 1: Proyección Cuántica (Now - 3 months)
 1. ✅ Quantum simulators built
 2. ⏳ Integrate Gemini API with quantum simulator
 3. ⏳ Demonstrate quantum-enhanced reasoning

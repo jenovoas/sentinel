@@ -1,6 +1,7 @@
 """
 Test script para Sentinel Vault POC API
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import requests
 import json
 

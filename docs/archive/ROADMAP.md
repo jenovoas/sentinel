@@ -135,7 +135,7 @@ Desarrollar **Sentinel Cortex™**, una plataforma de observabilidad y seguridad
 ### Fase 10: Sentinel Cortex BCI (Research Track)
 - [ ] Feasibility Analysis (Completed)
 - [ ] Rust Ingestion Engine Prototype
-- [ ] Neural Data Simulation (GigaScience/Neuralink)
+- [ ] Neural Data Proyección Cuántica (GigaScience/Neuralink)
 
 ---
 

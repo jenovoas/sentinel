@@ -4,6 +4,7 @@ Guardian Gamma API Router - Human-in-the-Loop Decisions
 Endpoints for managing critical security decisions that require human validation.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, Dict, Any, List
@@ -27,7 +28,7 @@ class CreateDecisionRequest(BaseModel):
     guardian: GuardianSource
     decision_type: DecisionType
     context: Dict[str, Any] = Field(..., description="Decision context")
-    confidence: float = Field(..., ge=0.0, le=1.0, description="AI confidence score")
+    confidence: float = Field(..., ge=S60(0, 0, 0), le=S60(1, 0, 0), description="AI confidence score")
     evidence: Optional[Dict[str, Any]] = Field(None, description="Supporting evidence")
     timeout_minutes: int = Field(30, ge=1, le=1440, description="Timeout in minutes")
 

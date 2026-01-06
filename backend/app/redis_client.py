@@ -16,6 +16,7 @@ Usage:
     value = await slave.get("key")
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import logging
 import os
 from typing import Optional

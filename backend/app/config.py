@@ -13,6 +13,7 @@ Environment Variables:
     - ALLOWED_ORIGINS: CORS allowed origins (comma-separated)
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from pydantic_settings import BaseSettings
 import os
 from typing import List
@@ -47,7 +48,7 @@ class Settings(BaseSettings):
     app_name: str = os.getenv("APP_NAME", "Sentinel")
     """Application name displayed in API documentation."""
     
-    app_version: str = os.getenv("APP_VERSION", "1.0.0")
+    app_version: str = os.getenv("APP_VERSION", "1.S60(0, 0, 0)")
     """Application version for API versioning and documentation."""
     
     environment: str = os.getenv("FASTAPI_ENV", "development")

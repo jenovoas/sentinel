@@ -1,3 +1,4 @@
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import os
 import asyncio
@@ -66,7 +67,7 @@ class TestFinanceService(unittest.TestCase):
         self.assertTrue(res)
         
         summary_after = loop.run_until_complete(self.service.get_dashboard_summary())
-        self.assertEqual(summary_after['manual_total'], 0.0)
+        self.assertEqual(summary_after['manual_total'], S60(0, 0, 0))
         print("   ✅ Asset deleted.")
         
         loop.close()

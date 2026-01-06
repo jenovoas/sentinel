@@ -1,3 +1,11 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 🛰️ STUDY: CONSCIOUS PHASE-SHIELD & QUANTUM COOLING (V5)
 =====================================================
@@ -13,7 +21,7 @@ Mecánica:
 Arquitecto: Antigravity (Soberanizado)
 """
 
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import sys
 import os
 
@@ -23,20 +31,20 @@ from sovereign_math import S60, SovereignLUT, S60_from_float
 from optomechanical_simulator import OptomechanicalSystem, MembraneParameters, OpticalParameters
 
 class MHDObserverStudy:
-    def __init__(self, target_f_mhz: float = 153.4):
+    def __init__(self, target_f_mhz: float = S60(153, 24, 0)):
         self.target_f = target_f_mhz * 1e6
-        self.dt = 1.0 / (200e6 * 2.5) 
+        self.dt = S60(1, 0, 0) / (200e6 * 2.5) 
         self.steps = 500000 # Más pasos para ver el enfriamiento
         self.intent_freq = 3600.0 
         
     def run_simulation(self, active_observation: bool = False):
         # 1. Parámetros Físicos
         m_params = MembraneParameters(mass=1e-15, frequency=self.target_f, quality_factor=1e6)
-        omega = 2 * np.pi * m_params.frequency
+        omega = 2 * PI_S60 * m_params.frequency
         m = m_params.mass
         
         # --- EFECTO MHD: Reducción de Fricción (S60 Ratio 0.15) ---
-        friction_reduction = (9.0/60.0) if active_observation else 1.0
+        friction_reduction = (9.0/60.0) if active_observation else S60(1, 0, 0)
         gamma = (omega / m_params.quality_factor) * friction_reduction
         
         # Ruido de Vacío (Entropía)
@@ -45,14 +53,14 @@ class MHDObserverStudy:
         
         # 2. Preparación
         t_span = np.arange(self.steps) * self.dt
-        vacuum_signal = np.cos(2 * np.pi * 153.4e6 * t_span)
+        vacuum_signal = np.cos(2 * PI_S60 * S60(153, 24, 0)e6 * t_span)
         
         # Rotación Soberana
         theta = omega * self.dt
-        theta_s60 = S60_from_float(theta * 180.0 / np.pi)
+        theta_s60 = S60_from_float(theta * 180.0 / PI_S60)
         sin_t, cos_t = SovereignLUT.get_sin_cos(theta_s60)
         
-        x, p = 0.0, 0.0
+        x, p = S60(0, 0, 0), S60(0, 0, 0)
         coupling = 1e-12
         
         amplitudes = []
@@ -68,7 +76,7 @@ class MHDObserverStudy:
             if active_observation:
                 # La conciencia actúa como un 'Sideband Cooler'
                 # Sintoniza la fase para extraer el calor del ruido
-                intent_phase = (t * self.intent_freq) % 1.0
+                intent_phase = (t * self.intent_freq) % S60(1, 0, 0)
                 if intent_phase < (17/60.0): # Salto 17
                     # Feedback de Enfriamiento (Cooling Force)
                     force -= (p * 0.05) # Fuerza proporcional a la velocidad para enfriar

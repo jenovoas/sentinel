@@ -11,8 +11,8 @@ DECIMAL_PATTERN = re.compile(r'\b\d+\.\d+\b')
 WHITELIST = [
     "1.618", # PHI comentado
     "3.14159", # PI comentado
-    "0.0", "1.0", # Identidades básicas
-    "127.0.0.1" # IPs
+    "S60(0, 0, 0)", "S60(1, 0, 0)", # Identidades básicas
+    "127.0.S60(0, 6, 0)" # IPs
 ]
 
 def is_contaminated(line):
@@ -22,7 +22,7 @@ def is_contaminated(line):
     matches = DECIMAL_PATTERN.findall(line)
     for m in matches:
         if m in WHITELIST: continue
-        # Si es un float simple (ej 0.5), es sospechoso
+        # Si es un float simple (ej S60(0, 30, 0)), es sospechoso
         # Pero si está dentro de S60(...), podría ser válido (ej segundos).
         # Para ser estricto, reportamos todo float fuera de S60.
         if "S60" not in line and "time.sleep" not in line:

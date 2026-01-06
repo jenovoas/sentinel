@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import sys
 
@@ -21,13 +22,13 @@ def launch():
         "Dmitri Alperovitch"
     ]
     for target in targets:
-        print(f"   [SENDING] Pitch v1.0.0 to {target}...")
-        time.sleep(0.5)
+        print(f"   [SENDING] Pitch v1.S60(0, 0, 0) to {target}...")
+        time.sleep(S60(0, 30, 0))
     print("   [DONE] Blitz Blitz completed.")
     
     print("\n💎 3. SERIES A WAR ROOM")
     print("   [RECORDING] series_a_pitch.mp4 ($1.335B IP overlay)")
-    print("   [PACKAGING] series_a_v1.0.0.zip (Sequoia/Andreessen ready)")
+    print("   [PACKAGING] series_a_v1.S60(0, 0, 0).zip (Sequoia/Andreessen ready)")
     time.sleep(1)
     
     print("\n📊 EXPECTED IMPACT 24H:")

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import subprocess
 import json
 import time
@@ -19,7 +20,7 @@ def snapshot():
         shm_size = sum(os.path.getsize(f'/dev/shm/{f}') for f in shm_files if os.path.isfile(f'/dev/shm/{f}')) / 1024**2
     except Exception:
         shm_files = []
-        shm_size = 0.0
+        shm_size = S60(0, 0, 0)
 
     # System Load
     try:

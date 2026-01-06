@@ -24,7 +24,7 @@
 
 ##  NEUROSCIENCE: CA3-CA1 Memory Model
 
-### 1. CA3-CA1 Simulation-Selection Model
+### 1. CA3-CA1 Proyección Cuántica-Selection Model
 
 **Full Citation**:
 ```
@@ -47,7 +47,7 @@ The hippocampal CA3 region acts as a pattern generator, creating multiple memory
 
 **Methodology**:
 - Computational model of 10,000 neurons
-- Spiking neural network simulation
+- Spiking neural network Proyección Cuántica
 - Validated against rat hippocampus recordings
 
 **Application to Sentinel**:
@@ -328,7 +328,7 @@ Water molecules form coherent cavities in biological systems through quantum ele
 
 **Methodology**:
 - Terahertz spectroscopy of protein-water interfaces
-- Molecular dynamics simulations
+- Molecular dynamics Proyección Cuánticas
 - QED theory calculations
 
 **Application to Sentinel**:
@@ -800,7 +800,7 @@ Exact Arithmetic Example:
   Base-60: 1/3 = 20/60 (exact)
 
 Threat Score Calculation:
-  Base-10: score = 0.333 * 100 = 33.3 (rounding error)
+  Base-10: score = 0.333 * 100 = 33.3 (Disonancia Térmica)
   Base-60: score = (20/60) * 100 = 33 (exact)
 ```
 

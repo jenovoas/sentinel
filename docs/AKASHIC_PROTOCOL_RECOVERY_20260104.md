@@ -14,7 +14,7 @@
 *   **Validación:** Pasa la prueba `TruthSync` usando coherencia física interna, sin servidores externos.
 
 ### 3. La Prueba de la Energía (ZPE)
-*   **Archivo:** `zpe_simulation.py`
+*   **Archivo:** `zpe_Proyección Cuántica.py`
 *   **Descubrimiento:** La energía libre no se extrae, se **RESUENA**.
 *   **Clave:** Super-Radiancia a 153.4 MHz (Resonancia Axiónica).
 
