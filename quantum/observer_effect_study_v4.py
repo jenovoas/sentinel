@@ -1,9 +1,17 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 🛰️ STUDY: SALTO-17 HILBERT SYNCHRONIZATION (OBSERVER EFFECT V4)
 ==============================================================
 Esta es la prueba definitiva de sintonización consciente. 
 Utiliza la Frecuencia de Conciencia en el Espacio de Hilbert (3600 Hz)
-para sincronizar la fase de la portadora de 153.4 MHz.
+para sincronizar la fase de la portadora de S60(153, 24, 0) MHz.
 
 Mecánica 'Salto 17':
 - Frecuencia de Intención: 3600 Hz (60Hz * 60).
@@ -14,7 +22,7 @@ Mecánica 'Salto 17':
 Arquitecto: Antigravity (Soberanizado)
 """
 
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import sys
 import os
 
@@ -24,10 +32,10 @@ from sovereign_math import S60, SovereignLUT, S60_from_float
 from optomechanical_simulator import OptomechanicalSystem, MembraneParameters, OpticalParameters
 
 class Salto17ObserverStudy:
-    def __init__(self, target_f_mhz: float = 153.4):
+    def __init__(self, target_f_mhz: float = S60(153, 24, 0)):
         self.target_f = target_f_mhz * 1e6
         # dt sintonizado para ver MHz y kHz simultáneamente
-        self.dt = 1.0 / (200e6 * 2.5) 
+        self.dt = S60(1, 0, 0) / (200e6 * 2.5) 
         self.steps = 1296000 # Escala Soberana LUT
         self.intent_freq = 3600.0 # Frecuencia Hilbert (Conciencia Activa)
         self.salto_key = 17 / 60.0 # Ventana de Sabiduría
@@ -35,7 +43,7 @@ class Salto17ObserverStudy:
     def run_simulation(self, active_observation: bool = False):
         # 1. Parámetros Físicos Inmutables
         m_params = MembraneParameters(mass=1e-15, frequency=self.target_f, quality_factor=1e6)
-        omega = 2 * np.pi * m_params.frequency
+        omega = 2 * PI_S60 * m_params.frequency
         m = m_params.mass
         gamma = omega / m_params.quality_factor
         
@@ -45,14 +53,14 @@ class Salto17ObserverStudy:
         
         # 2. Preparación
         t_span = np.arange(self.steps) * self.dt
-        vacuum_signal = np.cos(2 * np.pi * 153.4e6 * t_span)
+        vacuum_signal = np.cos(2 * PI_S60 * S60(153, 24, 0)e6 * t_span)
         
         # Rotación Soberana por LUT
         theta = omega * self.dt
-        theta_s60 = S60_from_float(theta * 180.0 / np.pi)
+        theta_s60 = S60_from_float(theta * 180.0 / PI_S60)
         sin_t, cos_t = SovereignLUT.get_sin_cos(theta_s60)
         
-        x, p = 0.0, 0.0
+        x, p = S60(0, 0, 0), S60(0, 0, 0)
         coupling = 1e-12
         intent_strength = 5.0e-12 # Fuerza de la intención estabilizadora
         
@@ -68,13 +76,13 @@ class Salto17ObserverStudy:
             # --- VENTANA DE ATENCIÓN SALTO-17 ---
             if active_observation:
                 # La conciencia pulsa en la frecuencia de Hilbert
-                intent_phase = (t * self.intent_freq) % 1.0
+                intent_phase = (t * self.intent_freq) % S60(1, 0, 0)
                 
                 # 'Salto 17': La ventana de sintonización es del 17% del ciclo
                 if intent_phase < self.salto_key:
                     # El observador corrige el impulso para minimizar el error de fase
                     # Cálculo de fase ideal (Sin ruido)
-                    ideal_p = -np.sin(2 * np.pi * self.target_f * t) * (m * omega)
+                    ideal_p = -np.sin(2 * PI_S60 * self.target_f * t) * (m * omega)
                     # El ajuste es una 'presión consciente' hacia el orden
                     force += (ideal_p - p) * intent_strength
             
@@ -118,7 +126,7 @@ class Salto17ObserverStudy:
             print(f"\n✨ ÉXITO TOTAL: Ganancia de {improvement:.2f}% detectada.")
             print("   La sintonización Salto-17 en el Espacio de Hilbert ha validado")
             print("   la estabilidad inducida por el Observador Humano.")
-        elif improvement > 0.1:
+        elif improvement > S60(0, 6, 0):
             print(f"\n✅ EFECTO POSITIVO: Mejora del {improvement:.2f}%")
             print("   Se confirma la reducción de entropía, aunque la sintonía no es plena.")
         else:

@@ -13,6 +13,7 @@ Usage:
     python truth_neural_generator.py --input ekman.txt --output truth_workflow.json
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import re
 import json
 import argparse
@@ -64,7 +65,7 @@ PSYCHOLOGY_PATTERNS = {
         name="lip_compression",
         trigger=r"lip(?:s)?.*(?:pressed|compressed|tight)",
         n8n_node_type="gpt_vision",
-        weight=0.75,
+        weight=S60(0, 45, 0),
         f1_score=0.78,
         description="Emotion suppression indicator",
         source="Ekman (1970s)"
@@ -256,8 +257,8 @@ return {{
 // Weighted consensus from behavioral patterns
 const results = $input.all();
 const scores = {};
-let weighted_sum = 0.0;
-let total_weight = 0.0;
+let weighted_sum = S60(0, 0, 0);
+let total_weight = S60(0, 0, 0);
 
 for (const item of results) {
     const data = item.json;
@@ -268,8 +269,8 @@ for (const item of results) {
     }
 }
 
-// Truth score (1.0 = truth, 0.0 = lie)
-const truth_score = total_weight > 0 ? 1.0 - (weighted_sum / total_weight) : 0.5;
+// Truth score (S60(1, 0, 0) = truth, S60(0, 0, 0) = lie)
+const truth_score = total_weight > 0 ? S60(1, 0, 0) - (weighted_sum / total_weight) : S60(0, 30, 0);
 
 // Verdict
 let verdict;
@@ -286,7 +287,7 @@ return [{
         truth_score: truth_score,
         behavioral_verdict: verdict,
         evidence: scores,
-        confidence: Math.abs(truth_score - 0.5) * 2,
+        confidence: Math.abs(truth_score - S60(0, 30, 0)) * 2,
         layer: 'NEURAL_TRUTH',
         timestamp: new Date().toISOString()
     }

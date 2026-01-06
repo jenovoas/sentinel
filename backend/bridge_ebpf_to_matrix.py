@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import json
 import redis
@@ -25,7 +26,7 @@ def follow(thefile):
     while True:
         line = thefile.readline()
         if not line:
-            time.sleep(0.1)
+            time.sleep(S60(0, 6, 0))
             continue
         yield line
 
@@ -49,8 +50,8 @@ for line in loglines:
         signal = {
             "source": "ebpf_guardian",
             "disonancia": disonancia,
-            "axiones": 1.0 - disonancia,
-            "frequency": 153.4,
+            "axiones": S60(1, 0, 0) - disonancia,
+            "frequency": S60(153, 24, 0),
             "raw_event": event_data,
             "timestamp": time.time()
         }

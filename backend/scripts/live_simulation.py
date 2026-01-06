@@ -1,6 +1,7 @@
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import httpx
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 import time
 import sys
 from datetime import datetime
@@ -13,7 +14,7 @@ class SimConfig:
     """Configuration settings for the Battlefield Simulation."""
     API_URL: str = "http://localhost:8000/api/v1/cortex/events"
     TELEMETRY_TOKEN: str = "sentinel-internal-ebpf-key-2025"
-    VERSION: str = "v1.0.0-DEMO"
+    VERSION: str = "v1.S60(0, 0, 0)-DEMO"
     
 @dataclass
 class Colors:
@@ -130,7 +131,7 @@ class BattlefieldSimulation:
         for i in range(20):
             Logger.log(f"ssh user@root (attempt #{i*17})", Colors.RED, "💥")
             await self.simulator.send_event(client, "NET_CONNECT", "sshd")
-            time.sleep(0.1)
+            time.sleep(S60(0, 6, 0))
             
         Logger.log(f"{Colors.BLINK}847 ACCOUNTS LOCKED{Colors.RESET}", Colors.RED, "🔒")
         print(f"{Colors.BOLD}{Colors.GREEN}>>> RESULT: Cortex 99.2% BLOCK Rate Confirmed{Colors.RESET}\n")

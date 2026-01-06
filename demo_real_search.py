@@ -1,4 +1,5 @@
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import logging
 import sys
@@ -33,7 +34,7 @@ async def demo_real_verification():
     print(f"🌐 Fuentes Reales Encontradas: {result.get('details', {}).get('sources_count', 0)}")
     
     # LEER PULSO REAL DIRECTAMENTE DE SHM (No estático)
-    real_disonancia = 0.0
+    real_disonancia = S60(0, 0, 0)
     try:
         import mmap
         import struct

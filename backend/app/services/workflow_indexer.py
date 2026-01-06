@@ -4,11 +4,12 @@ Workflow Indexer Service
 Analyzes and indexes n8n workflows for semantic search.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import json
 from pathlib import Path
 from typing import Dict, List, Optional
 from dataclasses import dataclass
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 
 @dataclass
 class WorkflowMetadata:

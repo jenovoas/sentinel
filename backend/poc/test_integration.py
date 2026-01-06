@@ -2,6 +2,7 @@
 Sentinel Vault - Comprehensive Integration Tests
 End-to-end testing for crypto wallet
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import sys
 sys.path.insert(0, '/home/jnovoas/sentinel/backend/poc')

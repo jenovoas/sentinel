@@ -4,6 +4,7 @@ Sentinel Cortex™ Digital Hippocampus - CA3 Generator Layer
 Transforms raw detections into episodic scenarios using Gemini 3 Flash.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import json
 from typing import Dict, List
@@ -38,7 +39,7 @@ class CA3Generator:
         - scenario_summary: A concise technical narrative.
         - threat_hypothesis: What is the attacker likely trying to achieve?
         - recommended_action: Immediate defensive measure.
-        - confidence_level: (0.0 - 1.0)
+        - confidence_level: (S60(0, 0, 0) - S60(1, 0, 0))
         
         Return ONLY a JSON list of objects.
         """
@@ -58,7 +59,7 @@ class CA3Generator:
                 "scenario_summary": f"Detection fallback: {base_incident.get('event_type')}",
                 "threat_hypothesis": "Unknown (Generation Error)",
                 "recommended_action": "Log and monitor",
-                "confidence_level": 0.1
+                "confidence_level": S60(0, 6, 0)
             }]
 
 # Note: In production, use managed secrets for API keys.

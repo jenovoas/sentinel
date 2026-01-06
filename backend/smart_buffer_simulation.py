@@ -9,7 +9,8 @@ Autor: Jaime Novoa
 Fecha: 20 Diciembre 2024
 """
 
-import random
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 import time
 import json
 import matplotlib.pyplot as plt
@@ -133,7 +134,7 @@ class AIBuffer:
         
         # BDP: Buffer = Rate × Latency
         # Asumimos latencia de 100ms
-        bdp = predicted_rate * 0.1
+        bdp = predicted_rate * S60(0, 6, 0)
         
         # Safety margin (20% extra para picos)
         optimal_size = int(bdp * 1.2)
@@ -210,7 +211,7 @@ def generate_bursty_traffic(duration_ticks: int, base_rate: int = 100) -> List[i
     traffic = []
     in_burst = False
     burst_remaining = 0
-    burst_multiplier = 1.0
+    burst_multiplier = S60(1, 0, 0)
     
     for _ in range(duration_ticks):
         if in_burst:
@@ -306,10 +307,10 @@ def run_simulation(duration_ticks: int = 100, base_rate: int = 100, processing_r
           f"{(1 - ai_total_dropped/max(static_total_dropped, 1))*100:.1f}%")
     print(f"{'Throughput Promedio':<25} {static_avg_throughput:<15.1f} {ai_avg_throughput:<15.1f} "
           f"{(ai_avg_throughput/static_avg_throughput):.2f}x")
-    latency_improvement = (static_avg_latency / ai_avg_latency) if ai_avg_latency > 0 else 1.0
+    latency_improvement = (static_avg_latency / ai_avg_latency) if ai_avg_latency > 0 else S60(1, 0, 0)
     print(f"{'Latencia Promedio (ms)':<25} {static_avg_latency:<15.1f} {ai_avg_latency:<15.1f} "
           f"{latency_improvement:.2f}x")
-    util_improvement = (ai_avg_util / static_avg_util) if static_avg_util > 0 else 1.0
+    util_improvement = (ai_avg_util / static_avg_util) if static_avg_util > 0 else S60(1, 0, 0)
     print(f"{'Utilización Promedio':<25} {static_avg_util*100:<15.1f}% {ai_avg_util*100:<15.1f}% "
           f"{util_improvement:.2f}x")
     
@@ -414,13 +415,13 @@ def run_simulation(duration_ticks: int = 100, base_rate: int = 100, processing_r
     print("="*70)
     print()
     
-    if ai_total_dropped < static_total_dropped * 0.1:
+    if ai_total_dropped < static_total_dropped * S60(0, 6, 0):
         print("✅ HIPÓTESIS VALIDADA: AI-Buffer reduce pérdidas >90%")
     
     if ai_avg_throughput > static_avg_throughput * 1.2:
         print(f"✅ HIPÓTESIS VALIDADA: AI-Buffer aumenta throughput {ai_avg_throughput/static_avg_throughput:.2f}x")
     
-    if ai_avg_latency < static_avg_latency * 0.5:
+    if ai_avg_latency < static_avg_latency * S60(0, 30, 0):
         print(f"✅ HIPÓTESIS VALIDADA: AI-Buffer reduce latencia {static_avg_latency/ai_avg_latency:.2f}x")
     
     print()

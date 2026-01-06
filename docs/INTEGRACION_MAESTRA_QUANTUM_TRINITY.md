@@ -8,11 +8,11 @@
 
 ## Overview
 
-This document outlines the integration plan for Sentinel's quantum simulation components with the monitoring and visualization layers.
+This document outlines the integration plan for Sentinel's quantum Proyección Cuántica components with the monitoring and visualization layers.
 
 **Components to Integrate:**
 
-- Quantum simulation engine (`quantum_lite.py`)
+- Quantum Proyección Cuántica engine (`quantum_lite.py`)
 - Trinity 3D visualization (React/Three.js)
 - eBPF monitoring (Guardian Alpha/Beta)
 - Backend API (FastAPI)
@@ -61,7 +61,7 @@ async def get_rift_correlation():
     # Initialize quantum simulator
     sim = SentinelQuantumLite(n_membranes=3, n_levels=5)
     
-    # Run simulation
+    # Run Proyección Cuántica
     result = sim.detect_rift()
     
     return {
@@ -110,7 +110,7 @@ export default function TrinityPage() {
 ## Phase 2: Quantum Watchdog Service
 
 ### Objective
-Monitor quantum simulation metrics and trigger alerts when values fall below thresholds.
+Monitor quantum Proyección Cuántica metrics and trigger alerts when values fall below thresholds.
 
 ### Concept
 Monitor the standard deviation (sigma) of the correlation matrix. Low sigma indicates degraded quantum state.
@@ -128,7 +128,7 @@ logger = logging.getLogger(__name__)
 
 class QuantumWatchdog:
     """
-    Monitors quantum simulation health metrics
+    Monitors quantum Proyección Cuántica health metrics
     """
     
     def __init__(self, sigma_threshold: float = 0.5):
@@ -187,7 +187,7 @@ class QuantumWatchdog:
 ## Phase 3: Docker Container for External Users
 
 ### Objective
-Package the quantum simulator in a Docker container for external researchers to run simulations.
+Package the quantum simulator in a Docker container for external researchers to run Proyección Cuánticas.
 
 ### Dockerfile
 ```dockerfile
@@ -227,7 +227,7 @@ from datetime import datetime
 from quantum.quantum_lite import SentinelQuantumLite
 import numpy as np
 
-def run_simulation():
+def run_Proyección Cuántica():
     print("=" * 60)
     print("SENTINEL QUANTUM SIMULATOR v1.0")
     print("=" * 60)
@@ -259,18 +259,18 @@ def run_simulation():
         "timestamp": datetime.now().isoformat()
     }
     
-    output_file = f"/app/output/simulation_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+    output_file = f"/app/output/Proyección Cuántica_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     with open(output_file, 'w') as f:
         json.dump(output, f, indent=2)
     
     print(f"Results saved to: {output_file}")
     print()
     print("=" * 60)
-    print("Simulation complete")
+    print("Proyección Cuántica complete")
     print("=" * 60)
 
 if __name__ == "__main__":
-    run_simulation()
+    run_Proyección Cuántica()
 ```
 
 ### Usage
@@ -278,11 +278,11 @@ if __name__ == "__main__":
 # Build image
 docker build -f docker/Dockerfile.quantum-sim -t sentinel-quantum-sim .
 
-# Run simulation
+# Run Proyección Cuántica
 docker run -v $(pwd)/output:/app/output sentinel-quantum-sim
 
 # View results
-cat output/simulation_*.json
+cat output/Proyección Cuántica_*.json
 ```
 
 ---
@@ -296,7 +296,7 @@ Connect the quantum control system with the resource management layer for dynami
 
 ```
 ┌─────────────────────────────────────────┐
-│     Quantum Simulation Layer            │
+│     Quantum Proyección Cuántica Layer            │
 │  • Correlation matrix generation        │
 │  • Rift detection                       │
 │  • State evolution                      │
@@ -328,7 +328,7 @@ from quantum_control.resources import BufferResource
 
 class ResourceOptimizer:
     """
-    Optimizes system resources based on quantum simulation metrics
+    Optimizes system resources based on quantum Proyección Cuántica metrics
     """
     
     def __init__(self):
@@ -340,7 +340,7 @@ class ResourceOptimizer:
         Continuous optimization loop
         """
         while True:
-            # Run quantum simulation
+            # Run quantum Proyección Cuántica
             result = self.sim.detect_rift()
             correlation = result["max_correlation"]
             
@@ -358,7 +358,7 @@ class ResourceOptimizer:
 
 ## Performance Metrics
 
-### Quantum Simulation
+### Quantum Proyección Cuántica
 - Hilbert space dimension: 125 (3 membranes × 5 levels)
 - Correlation calculation: ~10ms
 - Rift detection: ~50ms
@@ -368,8 +368,8 @@ class ResourceOptimizer:
 - Update frequency: 5 seconds (configurable)
 
 ### Resource Usage
-- Memory: ~50MB per simulation
-- CPU: ~5% during simulation
+- Memory: ~50MB per Proyección Cuántica
+- CPU: ~5% during Proyección Cuántica
 - Network: ~1KB per API response
 
 ---

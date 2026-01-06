@@ -4,7 +4,7 @@
 
 Implement the first functional components of Sentinel Living Nodes to validate the biological architecture concepts:
 
-1. **Swarm Simulation** (n8n): 100 autonomous nodes negotiating traffic
+1. **Swarm Proyección Cuántica** (n8n): 100 autonomous nodes negotiating traffic
 2. **Unikernel Specification**: Minimal OS for node (eBPF + IA only)
 3. **Bio-Watchdog Prototype**: Self-healing circuit design
 
@@ -12,11 +12,11 @@ Implement the first functional components of Sentinel Living Nodes to validate t
 
 ## Proposed Changes
 
-### Component 1: Swarm Simulation (n8n Workflows)
+### Component 1: Swarm Proyección Cuántica (n8n Workflows)
 
 #### New Files
 
-##### [NEW] `orchestrator/workflows/living_nodes_swarm_simulation.json`
+##### [NEW] `orchestrator/workflows/living_nodes_swarm_Proyección Cuántica.json`
 n8n workflow that simulates 100 autonomous nodes with:
 - **Node Agent**: Each node as a sub-workflow
 - **Mesh Communication**: Nodes discover and communicate with neighbors
@@ -25,14 +25,14 @@ n8n workflow that simulates 100 autonomous nodes with:
 - **Metrics Collection**: Track swarm behavior (latency, throughput, failures)
 
 **Key Features**:
-- Gossip protocol simulation (each node broadcasts state to neighbors)
+- Gossip protocol Proyección Cuántica (each node broadcasts state to neighbors)
 - Dynamic topology (nodes can join/leave)
 - Zero-trust handshake (cryptographic verification between nodes)
 - Emergent behavior tracking (load balancing without central coordinator)
 
 ---
 
-##### [NEW] `tests/swarm_simulation/node_agent.py`
+##### [NEW] `tests/swarm_Proyección Cuántica/node_agent.py`
 Python script representing a single autonomous node:
 ```python
 class LivingNode:
@@ -70,7 +70,7 @@ class LivingNode:
 
 ---
 
-##### [NEW] `tests/swarm_simulation/swarm_orchestrator.py`
+##### [NEW] `tests/swarm_Proyección Cuántica/swarm_orchestrator.py`
 Orchestrator that spawns 100 nodes and monitors swarm behavior:
 ```python
 class SwarmOrchestrator:
@@ -210,11 +210,11 @@ int main() {
 
 ## Verification Plan
 
-### 1. Swarm Simulation Tests
+### 1. Swarm Proyección Cuántica Tests
 
 **Test 1: Node Discovery**
 ```bash
-cd tests/swarm_simulation
+cd tests/swarm_Proyección Cuántica
 python3 swarm_orchestrator.py --nodes 10 --test discovery
 ```
 **Expected**: All 10 nodes discover their neighbors within 5 seconds
@@ -266,9 +266,9 @@ xl create -c sentinel_node.xl
 ## User Review Required
 
 > [!IMPORTANT]
-> **Swarm Simulation Scope**
+> **Swarm Proyección Cuántica Scope**
 > 
-> The swarm simulation will use Python + asyncio to model 100 nodes. This is a **logical simulation**, not physical hardware. Is this acceptable for Phase 1, or do you want to deploy actual hardware nodes?
+> The swarm Proyección Cuántica will use Python + asyncio to model 100 nodes. This is a **logical Proyección Cuántica**, not physical hardware. Is this acceptable for Phase 1, or do you want to deploy actual hardware nodes?
 
 > [!WARNING]
 > **Unikernel Choice**
@@ -285,7 +285,7 @@ xl create -c sentinel_node.xl
 
 | Phase | Duration | Deliverable |
 |-------|----------|-------------|
-| **Swarm Simulation** | 1 week | 100-node Python simulation + metrics |
+| **Swarm Proyección Cuántica** | 1 week | 100-node Python Proyección Cuántica + metrics |
 | **Unikernel Spec** | 1 week | Complete specification + build system |
 | **Bio-Watchdog** | 1 week | Circuit schematic + firmware prototype |
 | **Integration** | 1 week | Unikernel running on simulated swarm |
@@ -295,7 +295,7 @@ xl create -c sentinel_node.xl
 
 ## Next Steps After Approval
 
-1. Implement swarm simulation in Python
+1. Implement swarm Proyección Cuántica in Python
 2. Create n8n workflow for visualization
 3. Write unikernel specification
 4. Design bio-watchdog circuit

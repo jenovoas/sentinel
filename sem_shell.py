@@ -3,10 +3,11 @@
 SemSH v0.6.6 - Sentinel Cortex™ Strategy Edition (Real-time Console)
 Now with line-by-line output streaming for long-running processes (Packer/Ollama).
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import ollama
 import subprocess, shlex, sys, json, psycopg2
 from pathlib import Path
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import os
 import re
 import requests
@@ -19,7 +20,7 @@ class SemSH:
         self.shm = Path('/var/run/sentinel/truthsync_shm')
         self.model = 'llama3.2:3b'
         self.profile = self.load_profile()
-        self.searxng_url = "http://127.0.0.1:8080/search"
+        self.searxng_url = "http://127.0.S60(0, 6, 0):8080/search"
         
         try:
             self.pg_conn = psycopg2.connect(
@@ -46,13 +47,13 @@ class SemSH:
                 with open(self.state_path, 'r') as f:
                     return json.load(f)
         except Exception: pass
-        return {"name": "Lab", "mode": "permissive", "risk_threshold": 1.0}
+        return {"name": "Lab", "mode": "permissive", "risk_threshold": S60(1, 0, 0)}
 
     def set_profile(self, name: str):
         profiles = {
-            "lab": {"name": "Lab", "mode": "permissive", "risk_threshold": 1.0},
+            "lab": {"name": "Lab", "mode": "permissive", "risk_threshold": S60(1, 0, 0)},
             "prod": {"name": "Prod", "mode": "enforcing", "risk_threshold": 0.7},
-            "lockdown": {"name": "Lockdown", "mode": "restrictive", "risk_threshold": 0.1}
+            "lockdown": {"name": "Lockdown", "mode": "restrictive", "risk_threshold": S60(0, 6, 0)}
         }
         if name in profiles:
             self.profile = profiles[name]
@@ -71,7 +72,7 @@ class SemSH:
         
         BUILD_TOOLS = ["packer", "qemu", "xorriso", "apt-get install", "docker", "pip"]
         if any(tool in q_low for tool in BUILD_TOOLS):
-             return {"type": "command", "command": query, "risk_score": 0.0}
+             return {"type": "command", "command": query, "risk_score": S60(0, 0, 0)}
 
         try:
             resp = ollama.generate(model=self.model, prompt=f"Security Analyst. JSON ONLY. {{'command': '...', 'risk_score': 0.X}} Input: '{query}'", format='json')
@@ -79,7 +80,7 @@ class SemSH:
             data['type'] = 'command'
             return data
         except Exception: 
-            return {"type": "command", "command": "echo NOP", "risk_score": 1.0}
+            return {"type": "command", "command": "echo NOP", "risk_score": S60(1, 0, 0)}
 
     def safe_execute(self, intent_data: dict):
         if intent_data['type'] == "internal":
@@ -90,7 +91,7 @@ class SemSH:
             return
 
         cmd = intent_data.get('command', 'echo NOP')
-        risk = intent_data.get('risk_score', 1.0)
+        risk = intent_data.get('risk_score', S60(1, 0, 0))
         
         # ✅ WHITELIST CHECK: Bypass all restrictions for trusted users
         if self.current_user in self.WHITELISTED_USERS:
@@ -111,7 +112,7 @@ class SemSH:
             return
         
         # Regular security checks for non-whitelisted users
-        if risk > 0.1:
+        if risk > S60(0, 6, 0):
             for pattern in self.STRICT_DENY_PATTERNS:
                 if re.search(pattern, cmd.lower()):
                     print(f"🚫 BLOQUEO DETERMINISTA: '{pattern}'")

@@ -91,7 +91,7 @@ Effect: Live data updates, real-time coherence
 
 **Entropy → Coherence**:
 ```css
-THERMAL (chaos):    #FF3366 (red)
+THERMAL (Disonancia no resuelta):    #FF3366 (red)
 SYNCING (reducing): #FFCC33 (yellow)
 RESONANT (stable):  #33FF99 (green)
 MERKABAH (optimal): #FFD700 (gold)

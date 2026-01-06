@@ -99,7 +99,7 @@ print(qc.get_statevector())
 - Membrane dynamics (Q > 10⁸)
 - Radiation pressure coupling
 - Non-Markovian baths
-- Axion detection simulation
+- Axion detection Proyección Cuántica
 
 ```python
 from optomechanical_simulator import OptomechanicalSystem, MembraneParameters
@@ -294,7 +294,7 @@ bloch_vec = state.get_bloch_vector()
 demo_rift_detection(n_membranes=2, n_levels=4)
 ```
 
-### "Simulation too slow"
+### "Proyección Cuántica too slow"
 **Solution**: Reduce time steps:
 ```python
 times, states = core.evolve_fast(psi0, t_max, n_steps=50)  # Instead of 1000
@@ -341,7 +341,7 @@ pip install numpy scipy matplotlib psutil
 
 1. **Always start with quantum_lite.py** - it's safe and fast
 2. **Check memory before scaling up** - use QuantumResourceManager
-3. **Save intermediate results** - simulations can take time
+3. **Save intermediate results** - Proyección Cuánticas can take time
 4. **Visualize everything** - plots reveal insights
 5. **Compare to theory** - validate against academic papers
 

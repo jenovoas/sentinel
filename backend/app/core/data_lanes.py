@@ -11,6 +11,7 @@ ELIMINA RIESGOS EXISTENCIALES:
 4. Fabricación de evidencia por regeneración
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
 import json
@@ -235,7 +236,7 @@ class SecurityLaneCollector:
         self.stats = {
             "events_collected": 0,
             "events_lost": 0,
-            "avg_latency_ms": 0.0
+            "avg_latency_ms": S60(0, 0, 0)
         }
         self.latencies: List[float] = []
         

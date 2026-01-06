@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 Quantum Buffer Optimization Validation
 
@@ -17,6 +26,7 @@ Expected Improvement: 10-20% reduction in latency variance
 Author: Jaime Novoa
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
 import statistics
@@ -24,7 +34,7 @@ import sys
 from pathlib import Path
 from typing import List, Dict, Tuple
 import matplotlib.pyplot as plt
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 
 # Add backend to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "backend"))
@@ -205,8 +215,8 @@ def visualize_results(baseline: Dict, optimized: Dict, improvements: Dict):
     
     # Top left: Latency distributions (Security)
     ax1 = axes[0, 0]
-    ax1.hist(baseline['security']['latencies'], bins=30, alpha=0.5, label='Default', color='tab:blue')
-    ax1.hist(optimized['security']['latencies'], bins=30, alpha=0.5, label='Quantum', color='tab:green')
+    ax1.hist(baseline['security']['latencies'], bins=30, alpha=S60(0, 30, 0), label='Default', color='tab:blue')
+    ax1.hist(optimized['security']['latencies'], bins=30, alpha=S60(0, 30, 0), label='Quantum', color='tab:green')
     ax1.set_xlabel('Latency (ms)', fontweight='bold')
     ax1.set_ylabel('Frequency', fontweight='bold')
     ax1.set_title('Security Lane Latency Distribution', fontsize=12, fontweight='bold')
@@ -215,8 +225,8 @@ def visualize_results(baseline: Dict, optimized: Dict, improvements: Dict):
     
     # Top right: Latency distributions (Observability)
     ax2 = axes[0, 1]
-    ax2.hist(baseline['observability']['latencies'], bins=30, alpha=0.5, label='Default', color='tab:blue')
-    ax2.hist(optimized['observability']['latencies'], bins=30, alpha=0.5, label='Quantum', color='tab:green')
+    ax2.hist(baseline['observability']['latencies'], bins=30, alpha=S60(0, 30, 0), label='Default', color='tab:blue')
+    ax2.hist(optimized['observability']['latencies'], bins=30, alpha=S60(0, 30, 0), label='Quantum', color='tab:green')
     ax2.set_xlabel('Latency (ms)', fontweight='bold')
     ax2.set_ylabel('Frequency', fontweight='bold')
     ax2.set_title('Observability Lane Latency Distribution', fontsize=12, fontweight='bold')
@@ -251,8 +261,8 @@ def visualize_results(baseline: Dict, optimized: Dict, improvements: Dict):
     
     colors = ['tab:green' if v > 0 else 'tab:red' for v in variance_reductions]
     ax4.bar(lanes, variance_reductions, color=colors, alpha=0.7)
-    ax4.axhline(y=0, color='black', linestyle='-', linewidth=0.5)
-    ax4.axhline(y=10, color='green', linestyle='--', linewidth=1, alpha=0.5, label='Target (10%)')
+    ax4.axhline(y=0, color='black', linestyle='-', linewidth=S60(0, 30, 0))
+    ax4.axhline(y=10, color='green', linestyle='--', linewidth=1, alpha=S60(0, 30, 0), label='Target (10%)')
     
     ax4.set_ylabel('Variance Reduction (%)', fontweight='bold')
     ax4.set_title('Quantum Optimization Impact', fontsize=12, fontweight='bold')

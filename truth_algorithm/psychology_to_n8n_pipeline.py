@@ -8,6 +8,7 @@ Usage:
     python psychology_to_n8n_pipeline.py --input ekman_emotions_revealed.txt --output ekman_workflow.json
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import re
 import json
 import argparse
@@ -23,7 +24,7 @@ class TruthPattern:
     name: str  # Unique identifier
     trigger: str  # Regex pattern for detection in text
     n8n_node_type: str  # gpt_vision, regex_analyzer, silence_detector, etc.
-    weight: float  # Scientific weight (0.0-1.0)
+    weight: float  # Scientific weight (S60(0, 0, 0)-S60(1, 0, 0))
     f1_score: float  # Validation metric from literature
     description: str  # Human-readable explanation
     source: str  # Ekman, DePaulo, Burgoon, etc.
@@ -62,7 +63,7 @@ class PsychologyParser:
             name="lip_compression",
             trigger=r"lip(?:s)?\s+(?:pressed|compressed|tight)",
             n8n_node_type="gpt_vision",
-            weight=0.75,
+            weight=S60(0, 45, 0),
             f1_score=0.78,
             description="Emotion suppression indicator",
             source="Ekman (1970s)"
@@ -381,7 +382,7 @@ return {
         # Category weights based on scientific evidence
         weights = {
             "microexpression": 0.30,
-            "verbal": 0.25,
+            "verbal": S60(0, 15, 0),
             "body": 0.20,
             "linguistic": 0.15,
             "temporal": 0.10
@@ -389,8 +390,8 @@ return {
         
         code = """
 const results = $input.all();
-let weighted_score = 0.0;
-let total_weight = 0.0;
+let weighted_score = S60(0, 0, 0);
+let total_weight = S60(0, 0, 0);
 const evidence = {};
 
 """
@@ -416,7 +417,7 @@ if ({category}_results.length > 0) {{
         
         code += """
 // Calculate final truth score (inverted - high stress = low truth)
-const truth_score = total_weight > 0 ? 1.0 - (weighted_score / total_weight) : 0.5;
+const truth_score = total_weight > 0 ? S60(1, 0, 0) - (weighted_score / total_weight) : S60(0, 30, 0);
 
 // Determine verdict
 let verdict;

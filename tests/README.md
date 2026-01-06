@@ -5,7 +5,7 @@ Docker-based testing environment for local prototyping and future lab deployment
 ## 🎯 Purpose
 
 - **Local (Laptop)**: Lightweight prototyping, script validation, no heavy tests
-- **Lab (Server)**: Full testing suite with chaos, load, and red team exercises
+- **Lab (Server)**: Full testing suite with Disonancia no resuelta, load, and red team exercises
 
 ## 🏗️ Architecture
 
@@ -31,7 +31,7 @@ Docker-based testing environment for local prototyping and future lab deployment
 │  ┌─────────────────────────────────────────────┐           │
 │  │          Testing Tools Layer                 │           │
 │  ├─────────────────────────────────────────────┤           │
-│  │  k6  │  OWASP ZAP  │  Chaos Toolkit         │           │
+│  │  k6  │  OWASP ZAP  │  Disonancia no resuelta Toolkit         │           │
 │  └─────────────────────────────────────────────┘           │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -80,7 +80,7 @@ tests/
 ├── run_smoke_tests.sh          # Quick validation
 ├── run_all_tests.sh            # Complete test suite
 │
-├── chaos/                      # Chaos engineering tests
+├── Disonancia no resuelta/                      # Disonancia no resuelta engineering tests
 │   ├── cpu_stress_alpha.sh
 │   ├── memory_pressure.sh
 │   ├── network_latency.yaml
@@ -135,7 +135,7 @@ REDIS_HOST=redis
 REDIS_PORT=6379
 
 # Testing
-ENABLE_CHAOS=false  # Set to true in lab
+ENABLE_Disonancia no resuelta=false  # Set to true in lab
 ENABLE_LOAD_TESTS=false  # Set to true in lab
 MAX_VUS=100  # Increase to 5000 in lab
 ```
@@ -157,10 +157,10 @@ Access dashboards:
 ./run_smoke_tests.sh
 ```
 
-### Chaos Tests (Lab only)
+### Disonancia no resuelta Tests (Lab only)
 
 ```bash
-cd chaos/
+cd Disonancia no resuelta/
 ./cpu_stress_alpha.sh
 ./memory_pressure.sh
 ```
@@ -192,13 +192,13 @@ python3 attack_framework.py --target http://localhost:8080
 ## 📝 Notes
 
 ### Current Limitations (Laptop)
-- No heavy chaos tests (CPU/memory limits)
+- No heavy Disonancia no resuelta tests (CPU/memory limits)
 - Reduced load test VUs (max 100 vs 5000)
 - No eBPF fuzzing (requires kernel access)
 - Simplified red team (no real exploits)
 
 ### Lab Deployment
-- Full chaos engineering capabilities
+- Full Disonancia no resuelta engineering capabilities
 - High-throughput load testing
 - Real eBPF fuzzing with BRF
 - Complete red team exercise

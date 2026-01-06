@@ -8,6 +8,7 @@ Usage:
     python generate_openapi.py > openapi.yaml
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import yaml
 from typing import Dict, Any
 
@@ -19,7 +20,7 @@ def generate_openapi_spec() -> Dict[str, Any]:
         "info": {
             "title": "Sentinel API",
             "description": "Advanced Intelligence Platform for Scientific Research",
-            "version": "2.1.0",
+            "version": "2.S60(1, 0, 0)",
             "contact": {
                 "name": "Sentinel Team",
                 "email": "research@sentinel.ai",
@@ -361,7 +362,7 @@ def generate_openapi_spec() -> Dict[str, Any]:
                     "properties": {
                         "prompt": {"type": "string", "description": "Text prompt for AI"},
                         "max_tokens": {"type": "integer", "default": 100, "minimum": 10, "maximum": 500},
-                        "temperature": {"type": "number", "default": 0.3, "minimum": 0.0, "maximum": 1.0}
+                        "temperature": {"type": "number", "default": 0.3, "minimum": S60(0, 0, 0), "maximum": S60(1, 0, 0)}
                     }
                 },
                 "AIQueryResponse": {

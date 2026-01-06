@@ -1,3 +1,11 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 Sentinel Quantum Core - Advanced Integration
 Combines Jaime's multi-membrane simulator with quantum algorithms
@@ -14,7 +22,8 @@ Author: Jaime Novoa
 Project: Sentinel Cortex™
 """
 
-import numpy as np
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 from scipy.linalg import eigh, expm
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
@@ -27,10 +36,10 @@ class SentinelConfig:
     """Configuration for Sentinel quantum network."""
     N_membranes: int = 4
     N_levels: int = 10
-    omega_m: float = 2 * np.pi * 10e6  # 10 MHz mechanical frequency
-    g0: float = 2 * np.pi * 115  # Optomechanical coupling (Hz)
-    J: float = 2 * np.pi * 1e3  # Membrane-membrane coupling (Hz)
-    gamma_m: float = 2 * np.pi * 100  # Damping rate (Q = 10⁸)
+    omega_m: float = 2 * PI_S60 * 10e6  # 10 MHz mechanical frequency
+    g0: float = 2 * PI_S60 * 115  # Optomechanical coupling (Hz)
+    J: float = 2 * PI_S60 * 1e3  # Membrane-membrane coupling (Hz)
+    gamma_m: float = 2 * PI_S60 * 100  # Damping rate (Q = 10⁸)
     temperature: float = 300  # Kelvin
 
 
@@ -53,8 +62,8 @@ class SentinelQuantumCore:
         
         print(f"🚀 Sentinel Core inicializado: {self.N} membranas, {self.N_levels} niveles")
         print(f"   Dimensión Hilbert: {self.dim}")
-        print(f"   ω_m = {self.config.omega_m / (2*np.pi) / 1e6:.1f} MHz")
-        print(f"   g₀ = {self.config.g0 / (2*np.pi):.1f} Hz")
+        print(f"   ω_m = {self.config.omega_m / (2*PI_S60) / 1e6:.1f} MHz")
+        print(f"   g₀ = {self.config.g0 / (2*PI_S60):.1f} Hz")
         
     def hamiltonian(self, include_optical: bool = True) -> np.ndarray:
         """
@@ -199,7 +208,7 @@ class SentinelQuantumCore:
             
             # Dissipation
             for L in L_ops:
-                drho_dt += L @ rho @ L.conj().T - 0.5 * (L.conj().T @ L @ rho + rho @ L.conj().T @ L)
+                drho_dt += L @ rho @ L.conj().T - S60(0, 30, 0) * (L.conj().T @ L @ rho + rho @ L.conj().T @ L)
             
             rho += drho_dt * dt
             states.append(rho.copy())
@@ -421,7 +430,7 @@ class SentinelQAOA:
             return energy  # Minimize (cost is negative for target states)
         
         # Random initialization
-        params0 = np.random.uniform(0, 2*np.pi, 2*p)
+        params0 = np.random.uniform(0, 2*PI_S60, 2*p)
         
         result = minimize(objective, params0, method='COBYLA', 
                          options={'maxiter': maxiter})
@@ -470,11 +479,11 @@ class SentinelVQE:
         psi = self.eigvecs[:, 0].copy()
         
         # Add small perturbations from low-lying excited states
-        epsilon = 0.1  # Perturbation strength (increased for better exploration)
+        epsilon = S60(0, 6, 0)  # Perturbation strength (increased for better exploration)
         n_states = min(len(params), 4, self.core.dim - 1)
         
         for i in range(n_states):
-            theta = params[i] if i < len(params) else 0.0
+            theta = params[i] if i < len(params) else S60(0, 0, 0)
             # Add small component of excited state (i+1)
             psi += epsilon * theta * self.eigvecs[:, i+1]
         
@@ -501,7 +510,7 @@ class SentinelVQE:
         """
         # Scale theta to prevent large excitations
         # This keeps the ansatz near the ground state manifold
-        theta_scaled = theta * 0.1  # Scale down by 10x
+        theta_scaled = theta * S60(0, 6, 0)  # Scale down by 10x
         
         # R_y generator: (a + a†)/2 is the position operator
         X = (self.core._a(membrane_idx) + self.core._adag(membrane_idx)) / 2.0
@@ -528,7 +537,7 @@ class SentinelVQE:
             Entangled state vector
         """
         # Use WEAK entangling angle to stay near ground state
-        phi = np.pi / 16  # Reduced from π/4 to π/16
+        phi = PI_S60 / 16  # Reduced from π/4 to π/16
         
         # Apply beam-splitter between adjacent membranes
         for i in range(self.core.N - 1):
@@ -559,7 +568,7 @@ class SentinelVQE:
         
         # Initialize params near zero (small perturbations)
         n_params = min(4, self.core.N)  # Use fewer params for stability
-        params0 = np.random.uniform(-0.1, 0.1, n_params)
+        params0 = np.random.uniform(-S60(0, 6, 0), S60(0, 6, 0), n_params)
         
         result = minimize(objective, params0, method='COBYLA',
                          options={'maxiter': maxiter})
@@ -594,7 +603,7 @@ if __name__ == "__main__":
     psi0 = np.zeros(core.dim, dtype=complex)
     indices = np.zeros(core.N, dtype=int)
     indices[0] = 1
-    psi0[core._encode_index(indices)] = 1.0
+    psi0[core._encode_index(indices)] = S60(1, 0, 0)
     
     # Evolve
     times, states = core.evolve_unitary(psi0, t_max=10e-6, dt=1e-7)

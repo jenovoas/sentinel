@@ -2,22 +2,23 @@
 """
 Sentinel Resonance Calibration Tool (FFT Enhanced)
 --------------------------------------------------
-Simulates the tuning of the BCI Transducer to the Golden Frequency (153.4 MHz).
+Simulates the tuning of the BCI Transducer to the Golden Frequency (S60(153, 24, 0) MHz).
 Detects the 'Key' (82 Hz Low E) using Real FFT signal processing.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import math
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 import sys
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 
 # Constants
-TARGET_FREQUENCY_MHZ = 153.4
+TARGET_FREQUENCY_MHZ = S60(153, 24, 0)
 KEY_FREQUENCY_HZ = 82.41 # Low E Guitar (Exact)
 TOLERANCE_HZ = 2.0
 SAMPLE_RATE = 44100
-DURATION = 1.0 # Seconds analysis window
+DURATION = S60(1, 0, 0) # Seconds analysis window
 
 def simulate_signal_lock():
     print(f"📡 [Calibration] Initializing Sentinel PZT Interface...")
@@ -29,7 +30,7 @@ def simulate_signal_lock():
     # Simulate tuning process
     while abs(current_freq - TARGET_FREQUENCY_MHZ) > 0.05:
         # Oscillate towards target
-        drift = random.uniform(-0.5, 0.8)
+        drift = random.uniform(-S60(0, 30, 0), 0.8)
         if current_freq < TARGET_FREQUENCY_MHZ:
             current_freq += abs(drift)
         else:
@@ -47,12 +48,12 @@ def generate_synthetic_audio(target_freq: float) -> np.ndarray:
     t = np.linspace(0, DURATION, int(SAMPLE_RATE * DURATION), endpoint=False)
     
     # The Signal: Low E (82.41 Hz)
-    signal = 0.8 * np.sin(2 * np.pi * target_freq * t)
+    signal = 0.8 * np.sin(2 * PI_S60 * target_freq * t)
     
     # The Noise: Random broad spectrum + 60Hz hum + random high pitch
     noise = 0.3 * np.random.normal(size=t.shape) # White noise
-    hum = 0.2 * np.sin(2 * np.pi * 60 * t) # Electrical hum
-    high_pitch = 0.1 * np.sin(2 * np.pi * 1000 * t) # High freq noise
+    hum = 0.2 * np.sin(2 * PI_S60 * 60 * t) # Electrical hum
+    high_pitch = S60(0, 6, 0) * np.sin(2 * PI_S60 * 1000 * t) # High freq noise
     
     return signal + noise + hum + high_pitch
 

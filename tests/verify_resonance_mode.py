@@ -1,4 +1,5 @@
 # tests/verify_resonance_mode.py
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import os
 import time
@@ -17,10 +18,10 @@ def test_resonance_qualia():
     time.sleep(1)
     
     # 2. Test The Resonance (Day 4 Event)
-    print("\n🎸 [Test] Triggering RESONANCE_EVENT (153.4 MHz Harmonic)...")
+    print("\n🎸 [Test] Triggering RESONANCE_EVENT (S60(153, 24, 0) MHz Harmonic)...")
     bci_controller.trigger_qualia("RESONANCE_EVENT")
     
-    # Wait for the long sustain sequence (3 tones * 0.5 sleep + duration)
+    # Wait for the long sustain sequence (3 tones * S60(0, 30, 0) sleep + duration)
     # The BCI controller logic uses threads, so we wait a bit to see print output
     time.sleep(3)
     

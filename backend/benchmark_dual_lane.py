@@ -10,6 +10,7 @@ CLAIMS A VALIDAR:
 5. Throughput: Sin degradación vs baseline
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
 import statistics
@@ -122,14 +123,14 @@ async def benchmark_routing_performance(iterations: int = 10000) -> Dict:
     print(f"  P99: {sorted(latencies)[int(len(latencies)*0.99)]:.4f}ms")
     
     # Validar claim
-    if mean_latency < 1.0:
+    if mean_latency < S60(1, 0, 0):
         print(f"\n✅ CLAIM VALIDADO: Routing <1ms ({mean_latency:.4f}ms)")
     else:
         print(f"\n❌ CLAIM FALLIDO: Routing >{mean_latency:.4f}ms (target <1ms)")
     
     return {
         "latencies": latencies,
-        "claim_validated": mean_latency < 1.0
+        "claim_validated": mean_latency < S60(1, 0, 0)
     }
 
 
@@ -351,13 +352,13 @@ async def benchmark_adaptive_buffers(iterations: int = 1000) -> Dict:
     print(f"\n📊 Observability Flows (no bypass):")
     print(f"  Mean: {obs_mean:.4f}ms")
     
-    # Overhead debe ser despreciable (<0.1ms)
-    overhead_ok = security_mean < 0.1
+    # Overhead debe ser despreciable (<S60(0, 6, 0)ms)
+    overhead_ok = security_mean < S60(0, 6, 0)
     
     if overhead_ok:
-        print(f"\n✅ CLAIM VALIDADO: Bypass overhead <0.1ms ({security_mean:.4f}ms)")
+        print(f"\n✅ CLAIM VALIDADO: Bypass overhead <S60(0, 6, 0)ms ({security_mean:.4f}ms)")
     else:
-        print(f"\n⚠️ Bypass overhead {security_mean:.4f}ms (target <0.1ms)")
+        print(f"\n⚠️ Bypass overhead {security_mean:.4f}ms (target <S60(0, 6, 0)ms)")
     
     return {
         "security_latencies": security_latencies,
@@ -432,10 +433,10 @@ async def main():
             print("❌ Security Lane >10ms")
         
         if buffer_results["claim_validated"]:
-            print("✅ Bypass overhead <0.1ms")
+            print("✅ Bypass overhead <S60(0, 6, 0)ms")
             claims_validated += 1
         else:
-            print("❌ Bypass overhead >0.1ms")
+            print("❌ Bypass overhead >S60(0, 6, 0)ms")
         
         print(f"\n{'='*60}")
         print(f"CLAIMS VALIDADOS: {claims_validated}/{total_claims} ({claims_validated/total_claims*100:.0f}%)")

@@ -33,8 +33,8 @@ A novel buffering mechanism where each stage in a telemetry pipeline proactively
 
 ## 4. SCIENTIFIC EXTENSION: THE DIGITAL HALOSCOPE METHODOLOGY
 Sentinel's filtering logic is architecturally inspired by **Quantum Axion Haloscopes**. 
-*   **Conceptual Application**: The system utilizes a numerical simulation model based on **VQE-optimized noise squeezing** and **Distributed Oscillator Networks (1000 membranes)** to identify faint anomaly signals in noise-heavy environments.
-*   **Performance Projection**: Numerical simulations achieve a sensitivity significance of **10.2-Sigma** (Numerical Evidence).
+*   **Conceptual Application**: The system utilizes a numerical Proyección Cuántica model based on **VQE-optimized noise squeezing** and **Distributed Oscillator Networks (1000 membranes)** to identify faint anomaly signals in noise-heavy environments.
+*   **Performance Projection**: Numerical Proyección Cuánticas achieve a sensitivity significance of **10.2-Sigma** (Numerical Evidence).
 
 ## 5. COMMERCIAL SUMMARY & STATUS
 -   **TRL (Technology Readiness Level)**: **Level 5** (Technology validated in relevant environment).

@@ -7,6 +7,7 @@ Usage:
     python auto_review_workflows.py --input n8n-workflows-safe --output workflow-analysis
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import json
 import sys
 from pathlib import Path

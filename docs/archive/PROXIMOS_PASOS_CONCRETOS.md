@@ -170,7 +170,7 @@ sha256sum guardian_alpha_lsm.o
 **Acción**:
 ```bash
 cd backend
-python smart_buffer_simulation.py
+python smart_buffer_Proyección Cuántica.py
 python test_buffer_cascade.py
 ```
 

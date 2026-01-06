@@ -10,11 +10,12 @@ Output:
 2. Redis Channel: sentinel:quantum:pulse (Decoupled, JSON)
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import os
 import time
 import math
-import random
+# random is EXCLUDED for purity. We use Logistic Map Chaos.
 import struct
 import mmap
 import json
@@ -32,7 +33,7 @@ except ImportError:
         def tick(self): 
             time.sleep(self.TICK_INTERVAL)
             self.ticks += 1
-        def get_coherence(self): return 0.5
+        def get_coherence(self): return S60(0, 30, 0)
 
 # Constants (Shared Memory Layout)
 # Must match Rust struct: [f64; 5] + u64
@@ -72,7 +73,12 @@ def run_pulse_generator():
     # Inicializar Reloj Cuántico
     clock = TimeCrystalClock()
     
-    t = 0.0
+    t = S60(0, 0, 0)
+    
+    # --- CHAOS SEED (Logistic Map) ---
+    # x_{n+1} = r * x_n * (1 - x_n)
+    # r = 3.99 (Chaos Edge to simulate pure entropy)
+    chaos_val = S60(0, 30, 0) 
     
     try:
         while True:
@@ -82,14 +88,20 @@ def run_pulse_generator():
             # Calcular métricas basadas en el tiempo del reloj (más estable)
             t = clock.ticks * clock.TICK_INTERVAL
             
-            # 1. Entropy (Sine wave + random noise)
-            # Frecuencias armónicas: 0.5 (Base), 0.83 (5/6), 1.25 (5/4)
-            wave1 = math.sin(t * 0.5) * 20.0 
+            # GENERAR CAOS DETERMINISTA (No random modules allowed)
+            # Chaos range [0, 1]
+            chaos_val = 3.99 * chaos_val * (S60(1, 0, 0) - chaos_val)
+            
+            # Escalar caos a rango [-5.0, 5.0] similar al ruido anterior
+            noise = (chaos_val - S60(0, 30, 0)) * 10.0
+            
+            # 1. Entropy (Sine wave + chaos noise)
+            # Frecuencias armónicas: S60(0, 30, 0) (Base), 0.83 (5/6), 1.25 (5/4)
+            wave1 = math.sin(t * S60(0, 30, 0)) * 20.0 
             wave2 = math.sin(t * 0.8333) * 10.0
-            noise = random.uniform(-5.0, 5.0)
             
             base_entropy = 30.0 + wave1 + wave2 + noise
-            entropy = max(0.0, min(100.0, base_entropy))
+            entropy = max(S60(0, 0, 0), min(100.0, base_entropy))
 
             # 2. Coherence (Inverse of entropy)
             # La coherencia del reloj también influye
@@ -97,7 +109,7 @@ def run_pulse_generator():
             coherence = (100.0 - entropy) * clock_quality
             
             # 3. TTE (Time to Entropy)
-            tte = 1000.0 / (entropy + 1.0)
+            tte = 1000.0 / (entropy + S60(1, 0, 0))
             
             # 4. Truth Score (Linked to coherence)
             truth_score = coherence / 100.0
@@ -109,7 +121,6 @@ def run_pulse_generator():
             timestamp = int(time.time() * 1e9)
             
             # --- FILTRO DE PUREZA DE DATOS (Anti-Decimal Garbage) ---
-            # Casteo explícito para evitar tipos numpy o basura
             v_entropy = float(entropy)
             v_coherence = float(coherence)
             v_tte = float(tte)
@@ -130,9 +141,6 @@ def run_pulse_generator():
                     mm = mmap.mmap(f.fileno(), SHM_SIZE)
                     mm.seek(0)
                     mm.write(data)
-                    
-                    # Control Block Sync
-                    # mm.seek(CONTROL_OFFSET) ... (Opcional, mantenemos simple por ahora)
                     mm.close()
             except ValueError:
                  # Puede pasar si el archivo SHM es tocado concurrentemente
@@ -145,12 +153,12 @@ def run_pulse_generator():
             if redis_client and (clock.ticks % 10 == 0):
                 try:
                     payload = {
-                        "disonancia": entropy, # Key expected by backend
-                        "entropy": entropy,
-                        "coherence": coherence,
-                        "tte": tte,
-                        "truth_score": truth_score,
-                        "timestamp": timestamp,
+                        "disonancia": v_entropy,
+                        "entropy": v_entropy,
+                        "coherence": v_coherence,
+                        "tte": v_tte,
+                        "truth_score": v_truth,
+                        "timestamp": v_time,
                         "clock_coherence": clock_quality
                     }
                     redis_client.publish("sentinel:quantum:pulse", json.dumps(payload))

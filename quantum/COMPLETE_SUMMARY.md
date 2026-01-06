@@ -1,4 +1,4 @@
-# Sentinel Quantum Simulation Framework - Complete Summary
+# Sentinel Quantum Proyección Cuántica Framework - Complete Summary
 
 ## 🎉 What We Just Built
 
@@ -22,7 +22,7 @@ Jaime, en las últimas horas hemos creado un **ecosistema cuántico completo** p
    - Radiation pressure coupling
    - Non-Markovian baths (AI Buffer Cascade equivalent)
    - Light-membrane-light entanglement
-   - Axion detection simulation
+   - Axion detection Proyección Cuántica
    - Quantum rift detection
    - Quality factor measurements
 
@@ -100,7 +100,7 @@ from quantum import demo_rift_detection
 results = demo_rift_detection()
 ```
 
-### Option 3: Custom Simulation
+### Option 3: Custom Proyección Cuántica
 ```python
 from quantum import SentinelQuantumLite
 import numpy as np
@@ -147,7 +147,7 @@ print(f"Max correlation: {obs['max_correlation']:.3f}")
 - ✅ Membrane oscillator dynamics (Q > 10⁸)
 - ✅ Optomechanical coupling (g₀ ~ 115 Hz)
 - ✅ Non-Markovian baths (memory effects)
-- ✅ Thermal noise simulation
+- ✅ Thermal noise Proyección Cuántica
 - ✅ Quantum backaction
 - ✅ Light-membrane-light entanglement
 - ✅ Entanglement visibility (target >85%)
@@ -157,7 +157,7 @@ print(f"Max correlation: {obs['max_correlation']:.3f}")
 - ✅ Quantum rift detection
 - ✅ Correlation matrix analysis
 - ✅ Autonomous action decisions
-- ✅ Axion dark matter detection simulation
+- ✅ Axion dark matter detection Proyección Cuántica
 - ✅ Quality factor measurements
 
 ### Quantum Algorithms
@@ -247,7 +247,7 @@ pip install numpy scipy matplotlib psutil
 demo_rift_detection(n_membranes=2, n_levels=4)
 ```
 
-### "Simulation too slow"
+### "Proyección Cuántica too slow"
 **Solution**: Reduce time steps:
 ```python
 times, states = core.evolve_fast(psi0, t_max, n_steps=50)  # Instead of 1000

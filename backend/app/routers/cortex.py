@@ -4,6 +4,7 @@ Cortex API Router
 REST API endpoints for the Cortex Decision Engine.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import logging
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Header
@@ -104,7 +105,7 @@ async def submit_event(
             confidence=decision.confidence,
             patterns_detected=decision.patterns_detected or [],
             reasoning=decision.reasoning or "",
-            processing_time_ms=decision.processing_time_ms or 0.0
+            processing_time_ms=decision.processing_time_ms or S60(0, 0, 0)
         )
         
     except Exception as e:

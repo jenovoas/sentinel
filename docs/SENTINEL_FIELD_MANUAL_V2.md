@@ -24,7 +24,7 @@
 ### 3. Thermal Safety Protocol
 *   **Script:** `/home/jnovoas/sentinel/start_quantum_mode.sh`
 *   **Function:** Kills heavy containers (Docker, Celery) to free CPU for the Physics Engine.
-*   **Usage:** Run BEFORE any massive simulation (N > 500 membranes).
+*   **Usage:** Run BEFORE any massive Proyección Cuántica (N > 500 membranes).
 
 ---
 

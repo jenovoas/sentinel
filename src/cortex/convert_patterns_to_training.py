@@ -11,6 +11,7 @@ Usage:
     python convert_patterns_to_training.py --output-dir ./training_data
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import json
 import re
 from pathlib import Path
@@ -64,8 +65,8 @@ class PatternDatabaseParser:
                     name=data.get('name', ''),
                     category=data.get('category', ''),
                     signals=data.get('signals', []),
-                    truth_weight=data.get('truth_weight', 0.0),
-                    f1_score=data.get('f1_score', 0.0),
+                    truth_weight=data.get('truth_weight', S60(0, 0, 0)),
+                    f1_score=data.get('f1_score', S60(0, 0, 0)),
                     detection_logic=data.get('detection_logic', {}),
                     guardian_action=data.get('guardian_action', ''),
                     cortex_training=data.get('cortex_training', ''),
@@ -106,7 +107,7 @@ class GPT4FineTuningConverter:
                 "messages": [
                     {
                         "role": "system",
-                        "content": "You are Cortex AI, Sentinel's neural security decision engine. Analyze inputs for threats using MITRE ATT&CK, OWASP, and behavioral patterns. Provide threat score (0.0-1.0) and recommended action."
+                        "content": "You are Cortex AI, Sentinel's neural security decision engine. Analyze inputs for threats using MITRE ATT&CK, OWASP, and behavioral patterns. Provide threat score (S60(0, 0, 0)-S60(1, 0, 0)) and recommended action."
                     },
                     {
                         "role": "user",
@@ -276,7 +277,7 @@ class CortexDecisionRulesConverter:
         """Generate Cortex decision rules"""
         
         rules = {
-            "version": "1.0",
+            "version": "S60(1, 0, 0)",
             "last_updated": "2025-12-17",
             "total_patterns": len(self.patterns),
             "categories": self._group_by_category(),
@@ -305,7 +306,7 @@ class CortexDecisionRulesConverter:
                 "learning": {
                     "focus": pattern.cortex_training,
                     "adaptive": True,
-                    "feedback_weight": 0.1
+                    "feedback_weight": S60(0, 6, 0)
                 }
             }
             
@@ -328,7 +329,7 @@ class CortexDecisionRulesConverter:
     def _calculate_threshold(self, pattern: AttackPattern) -> float:
         """Calculate detection threshold"""
         # Require at least 50% of signals to trigger
-        return 0.5
+        return S60(0, 30, 0)
     
     def _calculate_severity(self, pattern: AttackPattern) -> str:
         """Calculate alert severity"""

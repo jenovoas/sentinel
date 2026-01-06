@@ -9,6 +9,7 @@ Este benchmark demuestra la diferencia crítica entre:
 El resultado es la "levitación": el tráfico fluye sin tocar los límites.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import sys
 import os
@@ -37,7 +38,7 @@ class BufferState:
     """Estado del buffer en un momento dado"""
     timestamp: float
     size_mb: float
-    utilization: float  # 0.0 - 1.0
+    utilization: float  # S60(0, 0, 0) - S60(1, 0, 0)
     mode: str  # 'reactive' or 'predictive'
 
 
@@ -47,10 +48,10 @@ class BenchmarkResults:
     mode: str
     total_packets: int = 0
     dropped_packets: int = 0
-    avg_latency_ms: float = 0.0
-    max_latency_ms: float = 0.0
-    avg_throughput_mbps: float = 0.0
-    max_throughput_mbps: float = 0.0
+    avg_latency_ms: float = S60(0, 0, 0)
+    max_latency_ms: float = S60(0, 0, 0)
+    avg_throughput_mbps: float = S60(0, 0, 0)
+    max_throughput_mbps: float = S60(0, 0, 0)
     
     # Time series data para visualización
     timestamps: List[float] = field(default_factory=list)
@@ -68,10 +69,10 @@ class ReactiveBufferManager:
     Resultado: Packet drops durante el inicio del burst.
     """
     
-    def __init__(self, initial_size_mb: float = 0.5, max_size_mb: float = 10.0):
+    def __init__(self, initial_size_mb: float = S60(0, 30, 0), max_size_mb: float = 10.0):
         self.current_size_mb = initial_size_mb
         self.max_size_mb = max_size_mb
-        self.utilization = 0.0
+        self.utilization = S60(0, 0, 0)
         
     def update(self, incoming_rate_mbps: float) -> BufferState:
         """
@@ -90,7 +91,7 @@ class ReactiveBufferManager:
         
         # Si utilización baja, reduce buffer
         elif self.utilization < 0.3:
-            self.current_size_mb = max(1.0, self.current_size_mb * 0.9)
+            self.current_size_mb = max(S60(1, 0, 0), self.current_size_mb * 0.9)
         
         return BufferState(
             timestamp=time.time(),
@@ -103,9 +104,9 @@ class ReactiveBufferManager:
         """
         Calcula paquetes perdidos si el buffer está saturado.
         """
-        if self.utilization > 1.0:
+        if self.utilization > S60(1, 0, 0):
             # Drops proporcionales al exceso de utilización
-            drop_rate = (self.utilization - 1.0) / self.utilization
+            drop_rate = (self.utilization - S60(1, 0, 0)) / self.utilization
             return int(incoming_packets * drop_rate)
         return 0
 
@@ -118,10 +119,10 @@ class PredictiveBufferManager:
     Resultado: Zero packet drops.
     """
     
-    def __init__(self, initial_size_mb: float = 0.5, max_size_mb: float = 10.0):
+    def __init__(self, initial_size_mb: float = S60(0, 30, 0), max_size_mb: float = 10.0):
         self.current_size_mb = initial_size_mb
         self.max_size_mb = max_size_mb
-        self.utilization = 0.0
+        self.utilization = S60(0, 0, 0)
         self.prediction_active = False
         
     def predict_and_prepare(self, predicted_burst_mbps: float, confidence: float):
@@ -130,7 +131,7 @@ class PredictiveBufferManager:
         
         Args:
             predicted_burst_mbps: Magnitud predicha del burst
-            confidence: Confianza de la predicción (0.0 - 1.0)
+            confidence: Confianza de la predicción (S60(0, 0, 0) - S60(1, 0, 0))
         """
         if confidence >= 0.3:  # >= para incluir el threshold exacto
             # Calcular tamaño necesario para el burst predicho (más agresivo)
@@ -152,7 +153,7 @@ class PredictiveBufferManager:
         
         # Si el burst terminó, reducir buffer gradualmente
         if self.prediction_active and self.utilization < 0.3:
-            self.current_size_mb = max(1.0, self.current_size_mb * 0.95)
+            self.current_size_mb = max(S60(1, 0, 0), self.current_size_mb * 0.95)
             if self.current_size_mb <= 1.1:
                 self.prediction_active = False
         
@@ -167,8 +168,8 @@ class PredictiveBufferManager:
         """
         Calcula drops (debería ser CERO si la predicción fue correcta).
         """
-        if self.utilization > 1.0:
-            drop_rate = (self.utilization - 1.0) / self.utilization
+        if self.utilization > S60(1, 0, 0):
+            drop_rate = (self.utilization - S60(1, 0, 0)) / self.utilization
             return int(incoming_packets * drop_rate)
         return 0
 
@@ -186,13 +187,13 @@ async def run_benchmark(mode: str, duration: float = 30) -> BenchmarkResults:
     print(f"{'='*70}\n")
     
     # Crear monitor
-    monitor = TrafficMonitor(window_size=60, sample_interval=0.5)
+    monitor = TrafficMonitor(window_size=60, sample_interval=S60(0, 30, 0))
     
     # Crear buffer manager - PARÁMETROS CALIBRADOS
     if mode == 'reactive':
-        buffer_mgr = ReactiveBufferManager(initial_size_mb=0.5, max_size_mb=10.0)
+        buffer_mgr = ReactiveBufferManager(initial_size_mb=S60(0, 30, 0), max_size_mb=10.0)
     else:
-        buffer_mgr = PredictiveBufferManager(initial_size_mb=0.5, max_size_mb=10.0)
+        buffer_mgr = PredictiveBufferManager(initial_size_mb=S60(0, 30, 0), max_size_mb=10.0)
     
     # Resultados
     results = BenchmarkResults(mode=mode)
@@ -239,7 +240,7 @@ async def run_benchmark(mode: str, duration: float = 30) -> BenchmarkResults:
         buffer_state = buffer_mgr.update(throughput_mbps)
         
         # Calcular drops
-        packets_this_sample = int(metrics.packet_rate * 0.5)  # 0.5s interval
+        packets_this_sample = int(metrics.packet_rate * S60(0, 30, 0))  # S60(0, 30, 0)s interval
         drops = buffer_mgr.calculate_drops(packets_this_sample)
         
         # Registrar métricas

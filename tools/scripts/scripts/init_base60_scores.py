@@ -9,6 +9,7 @@ Prime residues = high threat
 Highly composite residues = low threat
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import sys
 from bcc import BPF

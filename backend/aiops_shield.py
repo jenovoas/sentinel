@@ -10,6 +10,7 @@ Status: PRODUCTION READY
 Criticality: MAXIMUM
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import re
 import json
 from typing import Dict, List, Tuple, Optional, Any

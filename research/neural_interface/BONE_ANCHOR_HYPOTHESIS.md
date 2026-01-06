@@ -155,7 +155,7 @@ class NeuralBufferResource(Resource):
 
 ## Proposed Implementation
 
-### Phase 1: Simulation (1 year)
+### Phase 1: Proyección Cuántica (1 year)
 - [ ] Model neural spike dynamics
 - [ ] Implement NeuralBufferResource
 - [ ] Simulate with real EEG data
@@ -234,7 +234,7 @@ class NeuralBufferResource(Resource):
 
 ## Timeline
 
-**2025-2026**: Simulation and modeling  
+**2025-2026**: Proyección Cuántica and modeling  
 **2027-2028**: In vitro testing  
 **2029-2031**: Animal studies  
 **2032-2035**: Human trials  

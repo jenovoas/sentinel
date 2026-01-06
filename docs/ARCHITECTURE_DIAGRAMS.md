@@ -361,7 +361,7 @@ gantt
     Production Deploy      :2026-03, 2026-06
     
     section Research
-    Neural Simulation      :active, 2025-12, 2026-06
+    Neural Proyección Cuántica      :active, 2025-12, 2026-06
     In Vitro Testing       :2026-06, 2027-06
     Animal Studies         :2027-06, 2030-01
     Human Trials           :2030-01, 2035-01

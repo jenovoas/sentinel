@@ -10,6 +10,7 @@ Objetivos:
 - CPU: <10% idle (vs 15%) → 1.5x efficiency
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
 import sys

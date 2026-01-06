@@ -4,6 +4,7 @@ n8n Workflow Security Scanner
 Analyzes workflows for security risks before execution.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import json
 import re
 from pathlib import Path

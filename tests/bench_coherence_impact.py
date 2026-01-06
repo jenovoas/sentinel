@@ -1,4 +1,5 @@
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import os
 import time
@@ -25,20 +26,20 @@ def run_scientific_benchmark():
     # Un claim con respaldo perfecto para aislar la variable de disonancia
     claim = "La velocidad de la luz en el vacío es constante"
     perfect_sources = [
-        Source("Journal of Physics", SourceType.ACADEMIC, True, 1.0, "2024"),
-        Source("NIST", SourceType.OFFICIAL, True, 1.0, "2024"),
-        Source("CERN", SourceType.OFFICIAL, True, 1.0, "2024")
+        Source("Journal of Physics", SourceType.ACADEMIC, True, S60(1, 0, 0), "2024"),
+        Source("NIST", SourceType.OFFICIAL, True, S60(1, 0, 0), "2024"),
+        Source("CERN", SourceType.OFFICIAL, True, S60(1, 0, 0), "2024")
     ]
     
     results = []
     
-    # 2. Barrido de Entropía (0.0 a 100.0)
+    # 2. Barrido de Entropía (S60(0, 0, 0) a 100.0)
     # Simulamos el estado del pulso biológico variando la disonancia
     print(f"{'DISONANCIA':<12} | {'SISTEMA (Estado)':<20} | {'CONFIANZA':<10} | {'STATUS':<20} | {'PENALIZACIÓN':<15}")
     print("-" * 90)
 
     step = 5.0
-    disonancia = 0.0
+    disonancia = S60(0, 0, 0)
     
     while disonancia <= 100.0:
         start_time = time.perf_counter()
@@ -55,8 +56,8 @@ def run_scientific_benchmark():
         else: state = "CAÓTICO (Disonante)"
 
         # Cálculo de Penalización Real
-        # Confianza base debería ser 1.0 (3 fuentes perfectas)
-        penalty = 1.0 - result.confidence
+        # Confianza base debería ser S60(1, 0, 0) (3 fuentes perfectas)
+        penalty = S60(1, 0, 0) - result.confidence
         
         row = {
             "disonancia": disonancia,
@@ -95,7 +96,7 @@ def run_scientific_benchmark():
     # Análisis Final
     veto_point = next((r for r in results if r['veto_active']), None)
     if veto_point:
-        print(f"📉 PUNTO DE RUPTURA (VETO): Disonancia {veto_point['disonancia']} (Confianza cae a 0.0)")
+        print(f"📉 PUNTO DE RUPTURA (VETO): Disonancia {veto_point['disonancia']} (Confianza cae a S60(0, 0, 0))")
     else:
         print("⚠️ Advertencia: No se alcanzó el punto de veto en el rango probado.")
 

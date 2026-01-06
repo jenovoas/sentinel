@@ -28,7 +28,7 @@ Sentinel observes every syscall, socket, and packet without causing "Performance
 ### 2. Neural Truth Consensus
 *Proprietary Technology: Byzantine Fault Tolerance via eBPF*
 A distributed consensus mechanism between Kernel (Ring 0) and User Space. It is mathematically impossible for a rootkit to hide its tracks because Sentinel *is* the track.
-- **Metric**: 100% Truth Integrity in Chaos Tests.
+- **Metric**: 100% Truth Integrity in Disonancia no resuelta Tests.
 
 ### 3. Psychological Warfare Layer
 *Proprietary Technology: Truth Integrity Dashboard*

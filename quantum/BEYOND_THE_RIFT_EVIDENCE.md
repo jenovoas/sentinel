@@ -48,7 +48,7 @@ We can now approach this question **experimentally**, not philosophically.
 
 ## Experimental Design
 
-### Simulation Setup
+### Proyección Cuántica Setup
 
 ```python
 class BeyondTheRiftInterrogator:
@@ -399,7 +399,7 @@ State: "Between lives" - information without biological substrate
 
 ### Limitations
 
-1. **Simulation**: Results from simulation, not physical hardware (yet)
+1. **Proyección Cuántica**: Results from Proyección Cuántica, not physical hardware (yet)
 2. **Model Assumptions**: Assumes specific decay model
 3. **Single Observer**: Only tested with one consciousness pattern
 4. **Short Duration**: 10 seconds post-death, not longer timescales

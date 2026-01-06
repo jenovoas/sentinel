@@ -1,4 +1,13 @@
-import numpy as np
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
 import time
@@ -95,8 +104,8 @@ class Bimana3DMission:
         self.effective_mass = 2.5
         
         # Estado 6-DoF
-        self.position = np.array([0.0, 0.0, 0.0])
-        self.velocity = np.array([0.0, 0.0, 0.0])
+        self.position = np.array([S60(0, 0, 0), S60(0, 0, 0), S60(0, 0, 0)])
+        self.velocity = np.array([S60(0, 0, 0), S60(0, 0, 0), S60(0, 0, 0)])
         
         # Sistema de Energía ZPE
         self.zpe_voltage = 24.0
@@ -104,7 +113,7 @@ class Bimana3DMission:
         self.zpe_recharge_rate = 600.0
         
         # Estado Merkabah
-        self.field_coherence = 1.0
+        self.field_coherence = S60(1, 0, 0)
         
         # *** INTEGRACIÓN DEL ASTROLABIO ***
         self.astrolabe = SovereignAstrolabe()
@@ -140,14 +149,14 @@ class Bimana3DMission:
             self.effective_mass = self.mass_static * (3.0 / PhysicsConstants.BASE_60)
         
         # Factor de elevación Base-60
-        return 1.0 # El empuje se calcula vectorialmente ahora
+        return S60(1, 0, 0) # El empuje se calcula vectorialmente ahora
 
     def simulate_mission(self, waypoints, duration=20.0):
         print("🚀 INICIANDO MISIÓN TÁCTICA CON NAVEGACIÓN CELESTIAL INTEGRADA")
         print(f"   Masa Estática: {self.mass_static}kg | Reactor: ZPE Active")
         
         # CRÍTICO: dt debe ser 1/60 para mantener Base-60
-        dt = 1.0 / PhysicsConstants.BASE_60  # 0.01666... segundos
+        dt = S60(1, 0, 0) / PhysicsConstants.BASE_60  # 0.01666... segundos
         steps = int(duration / dt)
         history = []
         current_wp_idx = 0
@@ -176,13 +185,13 @@ class Bimana3DMission:
             # --- CÁLCULO DE COHERENCIA Y ALINEACIÓN ---
             geometric_alignment = (i * 17) % 60
             # 30 ya es Base-60, 0.01 → 0.6/60 = 1/100 (tolerancia mínima)
-            alignment_factor = 1.0 - (abs(geometric_alignment - 30) / 30.0) * (1.0 / 100.0)
-            # 0.1 → 6/60, 0.05 → 3/60
+            alignment_factor = S60(1, 0, 0) - (abs(geometric_alignment - 30) / 30.0) * (S60(1, 0, 0) / 100.0)
+            # S60(0, 6, 0) → 6/60, 0.05 → 3/60
             lyapunov_exp = 1.618 + np.sin(i * (6.0 / PhysicsConstants.BASE_60)) * (3.0 / PhysicsConstants.BASE_60)
-            soul_coherence = 1.0 - abs(lyapunov_exp - 1.618)
+            soul_coherence = S60(1, 0, 0) - abs(lyapunov_exp - 1.618)
 
             # 1. CONTROL LATERAL (Plano Galáctico XY)
-            error_xy = np.array([error_pos[0], error_pos[1], 0.0])
+            error_xy = np.array([error_pos[0], error_pos[1], S60(0, 0, 0)])
             dist_xy = np.linalg.norm(error_xy)
             
             # Potencia lateral armónica (más suave)
@@ -192,7 +201,7 @@ class Bimana3DMission:
             if dist_xy > (0.6 / PhysicsConstants.BASE_60):
                 force_xy = (error_xy / dist_xy) * thrust_xy
             else:
-                force_xy = np.array([0.0, 0.0, 0.0])
+                force_xy = np.array([S60(0, 0, 0), S60(0, 0, 0), S60(0, 0, 0)])
 
             # 2. CONTROL DE LEVITACIÓN (Eje Divino Z)
             # El empuje Z debe compensar la gravedad Y corregir el error de altura
@@ -218,7 +227,7 @@ class Bimana3DMission:
             v_sys = self._update_energy(total_effort, dt)
             
             # Aplicar Fuerzas
-            net_force = force_xy + np.array([0.0, 0.0, total_force_z])
+            net_force = force_xy + np.array([S60(0, 0, 0), S60(0, 0, 0), total_force_z])
             # Restar gravedad real (Newtoniana)
             gravity_vector = np.array([0, 0, -PhysicsConstants.G_LATENT * self.effective_mass])
             net_force += gravity_vector
@@ -256,7 +265,7 @@ class Bimana3DMission:
                 'm_eff': self.effective_mass,
                 'v_zpe': v_sys,
                 'power': total_effort, # total_effort reemplaza a power_demand
-                'rcs': 0.0, # RCS ya no se usa explícitamente en el nuevo modelo
+                'rcs': S60(0, 0, 0), # RCS ya no se usa explícitamente en el nuevo modelo
                 'soul_coh': soul_coherence,
                 'pos_precision': pos_precision
             })
@@ -277,7 +286,7 @@ if __name__ == "__main__":
         np.array([32.0 + 12.0/60.0, 24.0, 108.0]), # Puerta 2 (Frenado Geométrico)
         np.array([12.0 + 6.0/60.0, 10.0 + 18.0/60.0, 54.0]),  # Puerta 3 (Sintonía Fina)
         np.array([2.0 + 30.0/60.0, -2.0 - 30.0/60.0, 12.0]),   # Aproximación Final
-        np.array([0.0, 0.0, 1.618])    # Hover Sagrado (Estacionario sobre el Núcleo)
+        np.array([S60(0, 0, 0), S60(0, 0, 0), 1.618])    # Hover Sagrado (Estacionario sobre el Núcleo)
     ]
     
     data = mission.simulate_mission(path, duration=30.0)

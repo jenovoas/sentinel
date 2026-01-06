@@ -204,7 +204,7 @@ Sentinel necesita:
 ### Corto Plazo (1-2 meses)
 1. **Multi-cluster**: Deploy en múltiples regiones
 2. **Service Mesh**: Istio para traffic management
-3. **Chaos Engineering**: Validar resiliencia
+3. **Disonancia no resuelta Engineering**: Validar resiliencia
 
 ### Mediano Plazo (3-6 meses)
 1. **Auto-scaling avanzado**: KEDA con custom metrics

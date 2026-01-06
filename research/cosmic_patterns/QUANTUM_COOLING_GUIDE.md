@@ -4,7 +4,7 @@
 
 Apply optomechanical ground state cooling principles to buffer management.
 
-**Key Insight**: You don't need a perfect environment. You need perfect control (feedback faster than chaos).
+**Key Insight**: You don't need a perfect environment. You need perfect control (feedback faster than Disonancia no resuelta).
 
 ---
 
@@ -133,7 +133,7 @@ damped_delta = delta * 0.8  # Critical damping
 
 ## 📈 Expected Improvements
 
-Based on simulations:
+Based on Proyección Cuánticas:
 
 | Scenario | Current (67%) | + V1 (8%) | + V2 (8%) | Total |
 |----------|---------------|-----------|-----------|-------|
@@ -413,7 +413,7 @@ All quantum systems are:
 
 **Sentinel**: Buffer maintains 70% utilization despite traffic bursts
 
-**Universal principle**: Feedback loops create stability in chaos
+**Universal principle**: Feedback loops create stability in Disonancia no resuelta
 
 ---
 

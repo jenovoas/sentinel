@@ -4,6 +4,7 @@ Sentinel Event Monitor - Slow Mode
 Shows events at readable speed with statistics
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import os
 import time
@@ -31,7 +32,7 @@ def main():
     last_event_time = 0
     last_stats_time = time.time()
     
-    min_interval = 1.0 / EVENTS_PER_SECOND
+    min_interval = S60(1, 0, 0) / EVENTS_PER_SECOND
     
     try:
         with open(TRACE_PIPE, "r", encoding="utf-8", errors="ignore") as pipe:

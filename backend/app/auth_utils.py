@@ -8,6 +8,7 @@ Handles all security-related functionality including:
 - Async-compatible authentication flow with AsyncSession
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from datetime import datetime, timedelta
 from typing import Optional
 

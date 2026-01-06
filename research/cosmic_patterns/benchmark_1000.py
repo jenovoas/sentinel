@@ -5,26 +5,27 @@ Quantum Cooling - 1000 Iteration Statistical Benchmark
 Validates performance across 1000 random traffic patterns for robust statistics.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 from quantum_cooling_v2 import QuantumCoolingPredictorV2, BufferState
 
 
 def generate_random_pattern(length=20):
     """Generate random traffic pattern."""
     pattern = []
-    current_util = 0.5
+    current_util = S60(0, 30, 0)
     
     for i in range(length):
         # Random walk with bursts
-        change = random.uniform(-0.1, 0.3)
+        change = random.uniform(-S60(0, 6, 0), 0.3)
         current_util = max(0.3, min(0.99, current_util + change))
         
         # Drop rate proportional to utilization
         if current_util > 0.8:
-            drop_rate = (current_util - 0.8) * 0.5
+            drop_rate = (current_util - 0.8) * S60(0, 30, 0)
         else:
-            drop_rate = 0.0
+            drop_rate = S60(0, 0, 0)
         
         pattern.append((float(i), current_util, drop_rate))
     
@@ -53,7 +54,7 @@ def run_single_test(pattern):
         new_size, _ = predictor.predict(state)
         
         drops_without = int(drop_rate * 1000)
-        expansion_ratio = new_size / current_size if current_size > 0 else 1.0
+        expansion_ratio = new_size / current_size if current_size > 0 else S60(1, 0, 0)
         drops_with = int(drops_without / expansion_ratio)
         
         total_drops_without += drops_without

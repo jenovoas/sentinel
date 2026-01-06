@@ -106,7 +106,7 @@ Donde:
 
 #### **AIBuffer** (ML Prediction)
 
-**Ubicación**: `/backend/smart_buffer_simulation.py`
+**Ubicación**: `/backend/smart_buffer_Proyección Cuántica.py`
 
 **Tecnología**: Python + Machine Learning
 
@@ -540,7 +540,7 @@ pero aún así mejor que un buffer estático. Históricamente, mi precisión es
 # /backend/app/routers/buffers.py
 from fastapi import APIRouter
 from quantum_control.resources import BufferResource
-from backend.smart_buffer_simulation import AIBuffer
+from backend.smart_buffer_Proyección Cuántica import AIBuffer
 
 router = APIRouter(prefix="/api/v1/buffers")
 

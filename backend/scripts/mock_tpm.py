@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import hashlib
 import json
 import time
@@ -52,7 +53,7 @@ class MockTPM2:
 
 def verify_report(report, tpm_proof):
     print("\n🕵️  VALIDATOR: Verifying TPM 2.0 Quote...")
-    time.sleep(0.5)
+    time.sleep(S60(0, 30, 0))
     
     # 1. Verify Magic
     if tpm_proof["quote"]["magic"] != "TPM_GENERATED_VALUE":

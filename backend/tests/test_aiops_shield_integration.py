@@ -4,6 +4,7 @@ Integration Tests for n8n + AIOpsShield Air Gap
 Validates that the Air Gap prevents AIOpsDoom attacks from reaching Ollama.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import pytest
 import httpx
 from typing import Dict, Any

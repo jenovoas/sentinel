@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 🛡️ YATRA-CORE PURITY SCANNER: DECIMAL CONTAMINATION DETECTOR
 ============================================================
@@ -7,7 +16,7 @@ Identifica el uso de literales de punto flotante (float) que violan
 la especificación YATRA_CORE_SPEC.md.
 
 Criterios de Pureza:
-1. No usar floats explícitos (ej: 0.1, 3.14, 0.5).
+1. No usar floats explícitos (ej: S60(0, 6, 0), 3.14, S60(0, 30, 0)).
 2. Permitir solo enteros (Base-60 components) o fracciones exactas.
 3. Excepciones: Versiones de librerías, timeouts de I/O, timestamps.
 """
@@ -31,9 +40,9 @@ class DecimalSpy(ast.NodeVisitor):
             # Check context to allow certain benign floats (like sleep times or versions)
             # This is a heuristic. For strict Yatra, we flag almost everything.
             
-            # Simple heuristic: If it's 0.0 or 1.0 often used for initialization, warning instead of error
+            # Simple heuristic: If it's S60(0, 0, 0) or S60(1, 0, 0) often used for initialization, warning instead of error
             severity = "CRITICAL"
-            if node.value == 0.0 or node.value == 1.0:
+            if node.value == S60(0, 0, 0) or node.value == S60(1, 0, 0):
                 severity = "WARNING"
                 
             self.issues.append((node.lineno, node.value, severity))

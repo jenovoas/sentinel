@@ -274,10 +274,10 @@ Collect real behavioral baselines + attack signatures
 [ ] Inject controlled attacks
     ├─ SQL injection (web app)
     ├─ Command injection (API)
-    ├─ Ransomware simulation (encrypt test files)
+    ├─ Ransomware Proyección Cuántica (encrypt test files)
     ├─ Data exfiltration (large transfers)
     ├─ Credential stuffing (brute force)
-    └─ DDoS simulation (traffic flood)
+    └─ DDoS Proyección Cuántica (traffic flood)
 
 [ ] Document attack signatures
     ├─ Syscall sequences
@@ -396,7 +396,7 @@ Comprehensive testing before production
 [ ] Integration tests
     ├─ End-to-end attack scenarios
     ├─ Admin operation workflows
-    ├─ Disaster recovery simulations
+    ├─ Disaster recovery Proyección Cuánticas
     └─ N8N playbook triggers
 
 [ ] Performance tests
@@ -420,7 +420,7 @@ Comprehensive testing before production
     ├─ Try to corrupt Cortex
     └─ Document findings
 
-[ ] Chaos testing
+[ ] Disonancia no resuelta testing
     ├─ Kill Guardian-Alpha (Beta should detect)
     ├─ Kill Guardian-Beta (Alpha should detect)
     ├─ Network partition

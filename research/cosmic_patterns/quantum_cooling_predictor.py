@@ -10,6 +10,7 @@ Based on optomechanical ground state cooling:
 No cryogenics needed. Just perfect control.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 from collections import deque
 from dataclasses import dataclass
@@ -40,7 +41,7 @@ class QuantumCoolingPredictor:
         """
         Args:
             measurement_window: How many samples to track (like laser sampling rate)
-            velocity_threshold: When to apply counterforce (0.0-1.0)
+            velocity_threshold: When to apply counterforce (S60(0, 0, 0)-S60(1, 0, 0))
             cooling_factor: How strong the counterforce (like laser power)
         """
         self.measurement_window = measurement_window
@@ -61,10 +62,10 @@ class QuantumCoolingPredictor:
         In buffers: velocity = change in utilization / time
         
         Returns:
-            Normalized velocity (0.0 = stationary, 1.0 = max change)
+            Normalized velocity (S60(0, 0, 0) = stationary, S60(1, 0, 0) = max change)
         """
         if len(self.history) < 2:
-            return 0.0
+            return S60(0, 0, 0)
         
         # Recent state vs previous state
         current = self.history[-1]
@@ -73,14 +74,14 @@ class QuantumCoolingPredictor:
         # Calculate rate of change
         dt = current.timestamp - previous.timestamp
         if dt == 0:
-            return 0.0
+            return S60(0, 0, 0)
         
         # Velocity = change in utilization over time
         du = current.utilization - previous.utilization
         velocity = abs(du / dt)
         
-        # Normalize to 0-1 range (assume max change is 1.0/sec)
-        return min(velocity, 1.0)
+        # Normalize to 0-1 range (assume max change is S60(1, 0, 0)/sec)
+        return min(velocity, S60(1, 0, 0))
     
     def calculate_deviation(self) -> float:
         """
@@ -90,7 +91,7 @@ class QuantumCoolingPredictor:
         In buffers: deviation from optimal utilization
         """
         if not self.history:
-            return 0.0
+            return S60(0, 0, 0)
         
         current = self.history[-1]
         deviation = abs(current.utilization - self.ground_state_utilization)
@@ -119,7 +120,7 @@ class QuantumCoolingPredictor:
         # If velocity is high, apply strong counterforce
         if velocity > self.velocity_threshold:
             # Expand buffer proportional to velocity
-            expansion_factor = 1.0 + (velocity * self.cooling_factor)
+            expansion_factor = S60(1, 0, 0) + (velocity * self.cooling_factor)
             new_size = int(current.size * expansion_factor)
             
             print(f"🧊 Cooling: velocity={velocity:.3f} -> expand {expansion_factor:.2f}x")
@@ -197,19 +198,19 @@ def simulate_traffic_burst():
     # Traffic pattern: gradual increase, sudden burst, gradual decrease
     traffic_pattern = [
         # Time, utilization, drop_rate
-        (0.0, 0.5, 0.0),   # Normal
-        (1.0, 0.6, 0.0),   # Increasing
-        (2.0, 0.7, 0.0),   # Getting full
+        (S60(0, 0, 0), S60(0, 30, 0), S60(0, 0, 0)),   # Normal
+        (S60(1, 0, 0), 0.6, S60(0, 0, 0)),   # Increasing
+        (2.0, 0.7, S60(0, 0, 0)),   # Getting full
         (3.0, 0.85, 0.02), # Burst starts!
         (4.0, 0.95, 0.05), # High pressure
         (5.0, 0.98, 0.10), # Critical!
         (6.0, 0.99, 0.15), # Maximum stress
         (7.0, 0.95, 0.08), # Cooling applied
         (8.0, 0.85, 0.03), # Recovering
-        (9.0, 0.75, 0.01), # Stabilizing
-        (10.0, 0.70, 0.0), # Ground state
-        (11.0, 0.70, 0.0), # Steady
-        (12.0, 0.68, 0.0), # Steady
+        (9.0, S60(0, 45, 0), 0.01), # Stabilizing
+        (10.0, 0.70, S60(0, 0, 0)), # Ground state
+        (11.0, 0.70, S60(0, 0, 0)), # Steady
+        (12.0, 0.68, S60(0, 0, 0)), # Steady
     ]
     
     total_drops_without_cooling = 0
@@ -231,7 +232,7 @@ def simulate_traffic_burst():
         drops_without = int(drop_rate * 1000)  # Assume 1000 packets/sec
         
         # With cooling, drops are reduced proportionally to buffer expansion
-        expansion_ratio = new_size / current_buffer_size if current_buffer_size > 0 else 1.0
+        expansion_ratio = new_size / current_buffer_size if current_buffer_size > 0 else S60(1, 0, 0)
         drops_with = int(drops_without / expansion_ratio)
         
         total_drops_without_cooling += drops_without
@@ -245,7 +246,7 @@ def simulate_traffic_burst():
         # Update buffer size
         current_buffer_size = new_size
         
-        time.sleep(0.1)  # Visual delay
+        time.sleep(S60(0, 6, 0))  # Visual delay
     
     # Summary
     print("="*70)

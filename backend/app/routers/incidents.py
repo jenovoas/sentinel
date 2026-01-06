@@ -5,6 +5,7 @@ FastAPI endpoints for incident management with ITIL v4 compliance.
 Includes authentication, authorization, and full CRUD operations.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession

@@ -428,7 +428,7 @@ class ReverseTelemetry:
         """
         return [
             len(requests),                          # Request count
-            self.calculate_entropy(requests),       # Randomness
+            self.calculate_entropy(requests),       # Entropía del Sistema
             self.calculate_time_variance(requests), # Timing patterns
             self.count_failed_auth(requests),       # Failed logins
             self.count_endpoint_diversity(requests),# Endpoint scanning

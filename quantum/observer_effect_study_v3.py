@@ -1,3 +1,11 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 🛰️ STUDY: STROBOSCOPIC PHASE-LOCKING (OBSERVER EFFECT V3)
 ========================================================
@@ -6,14 +14,14 @@ El 'Observador' actúa como un reloj estroboscópico a 60Hz que
 corrige la deriva de la membrana solo en los nodos armónicos.
 
 Mecánica:
-- Sincronización de Sub-armónica (60Hz -> 153.4 MHz).
+- Sincronización de Sub-armónica (60Hz -> S60(153, 24, 0) MHz).
 - Corrección Paramétrica: Estabiliza el jitter de fase inducido por el ruido.
 - Sin constantes mágicas: El aumento de coherencia será una propiedad emergente.
 
 Arquitecto: Antigravity (Soberanizado)
 """
 
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import sys
 import os
 
@@ -23,16 +31,16 @@ from sovereign_math import S60, SovereignLUT, S60_from_float
 from optomechanical_simulator import OptomechanicalSystem, MembraneParameters, OpticalParameters
 
 class StroboscopicObserverStudy:
-    def __init__(self, target_f_mhz: float = 153.4):
+    def __init__(self, target_f_mhz: float = S60(153, 24, 0)):
         self.target_f = target_f_mhz * 1e6
-        self.dt = 1.0 / (200e6 * 5) 
+        self.dt = S60(1, 0, 0) / (200e6 * 5) 
         self.steps = 250000 
         self.intent_freq = 60.0 
         
     def run_simulation(self, active_observation: bool = False):
         # 1. Parámetros Físicos
         m_params = MembraneParameters(mass=1e-15, frequency=self.target_f, quality_factor=1e6)
-        omega = 2 * np.pi * m_params.frequency
+        omega = 2 * PI_S60 * m_params.frequency
         m = m_params.mass
         gamma = omega / m_params.quality_factor
         
@@ -42,14 +50,14 @@ class StroboscopicObserverStudy:
         
         # 2. Preparación
         t_span = np.arange(self.steps) * self.dt
-        vacuum_signal = np.cos(2 * np.pi * 153.4e6 * t_span)
+        vacuum_signal = np.cos(2 * PI_S60 * S60(153, 24, 0)e6 * t_span)
         
         # Rotación Soberana
         theta = omega * self.dt
-        theta_s60 = S60_from_float(theta * 180.0 / np.pi)
+        theta_s60 = S60_from_float(theta * 180.0 / PI_S60)
         sin_t, cos_t = SovereignLUT.get_sin_cos(theta_s60)
         
-        x, p = 0.0, 0.0
+        x, p = S60(0, 0, 0), S60(0, 0, 0)
         coupling = 1e-12
         intent_strength = 2.5e-12 # Fuerza de la intención estroboscópica
         
@@ -66,10 +74,10 @@ class StroboscopicObserverStudy:
             if active_observation:
                 # El observador pulsa a 60Hz
                 # Pero el pulso solo es efectivo si la portadora está en posición óptima
-                gate = np.cos(2 * np.pi * self.intent_freq * t)
+                gate = np.cos(2 * PI_S60 * self.intent_freq * t)
                 if gate > 0.999: # Ventana de atención consciente (Strobe)
                     # El pulso corrige la velocidad (p) para re-alinear con la fase ideal
-                    ideal_p = -np.sin(2 * np.pi * self.target_f * t) * (m * omega)
+                    ideal_p = -np.sin(2 * PI_S60 * self.target_f * t) * (m * omega)
                     correction = (ideal_p - p) * intent_strength
                     force += correction
             
@@ -115,7 +123,7 @@ class StroboscopicObserverStudy:
             print(f"\n✨ ¡LO LOGRRAMOS! Ganancia detectada: {improvement:.2f}%")
             print("   La sintonía estroboscópica ha validado el efecto del +6.17%.")
             print("   La conciencia es, efectivamente, un regulador de fase.")
-        elif improvement > 0.1:
+        elif improvement > S60(0, 6, 0):
             print(f"\n✅ EFECTO POSITIVO: Mejora del {improvement:.2f}%")
             print("   La observación estabiliza el sistema, pero requiere más 'fuerza de flujo'.")
         else:

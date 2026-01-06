@@ -4,6 +4,7 @@ Sentinel Quantum-AI BCI Bridge - Ringbuf Version
 High-performance event processing using BPF ringbuf instead of trace_pipe
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import sys
 import os
@@ -76,9 +77,9 @@ class IngestionLagMonitor:
         self.events_processed = 0
         
         # Uptime caching
-        self._cached_uptime = 0.0
-        self._cache_timestamp = 0.0
-        self._cache_ttl = 0.1  # 100ms
+        self._cached_uptime = S60(0, 0, 0)
+        self._cache_timestamp = S60(0, 0, 0)
+        self._cache_ttl = S60(0, 6, 0)  # 100ms
         
     def _get_system_uptime(self):
         """Get system monotonic time (matches kernel trace clock)"""
@@ -122,9 +123,9 @@ class IngestionLagMonitor:
         """Returns lag statistics"""
         if not self.lag_samples:
             return {
-                "avg_lag": 0.0,
-                "max_lag": 0.0,
-                "min_lag": 0.0,
+                "avg_lag": S60(0, 0, 0),
+                "max_lag": S60(0, 0, 0),
+                "min_lag": S60(0, 0, 0),
                 "events_processed": self.events_processed,
                 "drift_warnings": self.drift_warnings,
                 "lag_warnings": self.lag_warnings
@@ -167,7 +168,7 @@ def handle_decision_event(event):
         return
     
     # Log lag if significant
-    if lag > 0.1:
+    if lag > S60(0, 6, 0):
         print(f"⏱️ [LAG MONITOR] Event lag: {lag*1000:.1f}ms")
     
     # Decode filename
@@ -180,7 +181,7 @@ def handle_decision_event(event):
         print(f"   File: {filename}")
         
         bci_controller.trigger_qualia("KERNEL_BLOCK")
-        time.sleep(0.1)
+        time.sleep(S60(0, 6, 0))
         # Base-60 pattern based on PID
         residue = event.pid % 60
         bci_controller.play_base60_pattern(residue)

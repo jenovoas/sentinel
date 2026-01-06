@@ -1,6 +1,7 @@
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import os
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 from fastapi import APIRouter, HTTPException
 
 # Add the quantum core directory to PYTHONPATH
@@ -45,19 +46,19 @@ def get_quantum_status():
         from hexagonal_control import HexagonalController
         
         # 1. Read Physical Reality (The Host Machine)
-        cpu_entropy = psutil.cpu_percent(interval=0.1) / 100.0  # 0.0 to 1.0
+        cpu_entropy = psutil.cpu_percent(interval=S60(0, 6, 0)) / 100.0  # S60(0, 0, 0) to S60(1, 0, 0)
         ram_state = psutil.virtual_memory()
-        ram_potential = ram_state.available / ram_state.total # 0.0 to 1.0
+        ram_potential = ram_state.available / ram_state.total # S60(0, 0, 0) to S60(1, 0, 0)
         
         # 2. Map to Quantum Metaphor (Base-60 Logic)
         # Low Entropy (Idle CPU) = High Coherence
         # We add a small 60hz oscillation to represent the AC power cycle/heartbeat
-        t_osc = (time.time() * 60) % (2 * np.pi)
+        t_osc = (time.time() * 60) % (2 * PI_S60)
         heartbeat = 0.02 * np.sin(t_osc)
         
-        raw_coherence = (1.0 - cpu_entropy + heartbeat)
+        raw_coherence = (S60(1, 0, 0) - cpu_entropy + heartbeat)
         # Clamp to 0-1
-        norm_coherence = max(0.0, min(1.0, raw_coherence))
+        norm_coherence = max(S60(0, 0, 0), min(S60(1, 0, 0), raw_coherence))
         
         # 3. Determine State based on Real Physics
         state = "THERMAL" # High CPU / Chaos
@@ -68,7 +69,7 @@ def get_quantum_status():
         # 4. Neural Hierarchy (Mapped to Process Tree)
         # We simulate hierarchy health based on system load
         def get_layer_status(load_factor):
-            health = 1.0 - (cpu_entropy * load_factor)
+            health = S60(1, 0, 0) - (cpu_entropy * load_factor)
             return {
                 "alpha": round(health, 2),
                 "beta": round(health * 0.95, 2),
@@ -78,19 +79,19 @@ def get_quantum_status():
         return {
             "coherence": round(norm_coherence, 4),
             "state": state,
-            "micro": round(0.05 + (cpu_entropy * 0.1), 4), # Micro-jitter increases with load
+            "micro": round(0.05 + (cpu_entropy * S60(0, 6, 0)), 4), # Micro-jitter increases with load
             "macro": round(ram_potential, 4), # Macro stability is memory capacity
             "hierarchy": [
                 { "name": 'Systems', **get_layer_status(0.2) },
                 { "name": 'Areas', **get_layer_status(0.4) },
                 { "name": 'Columns', **get_layer_status(0.6) },
                 { "name": 'Circuits', **get_layer_status(0.8) },
-                { "name": 'Neurons', **get_layer_status(1.0) },
+                { "name": 'Neurons', **get_layer_status(S60(1, 0, 0)) },
                 { "name": 'Synapses', **get_layer_status(1.2) },
                 { "name": 'Molecules', **get_layer_status(1.5) }
             ],
             "components": [
-                { "name": 'Buffer', "utilization": round(1.0 - ram_potential, 2), "status": 'OK' },
+                { "name": 'Buffer', "utilization": round(S60(1, 0, 0) - ram_potential, 2), "status": 'OK' },
                 { "name": 'Thread', "utilization": round(cpu_entropy, 2), "status": 'OK' },
                 { "name": 'Memory', "utilization": round(ram_state.percent / 100, 2), "status": 'OK' if ram_state.percent < 90 else 'WARN' },
                 { "name": 'Network', "utilization": 0.34, "status": 'OK' }, # Placeholder until net_io implemented
@@ -141,7 +142,7 @@ def get_perpetual_engine_status():
             return json.load(f)
             
     return {
-        "energy_level": 153.4,
+        "energy_level": S60(153, 24, 0),
         "status": "INITIALIZING",
         "message": "Engine cold boot sequence in progress."
     }
@@ -157,12 +158,12 @@ def get_phase_jump_telemetry():
     sequence = (n * 17) % 60
     
     # 2. TruthSync Verification of the Jump
-    verification = truth_sync_verify("Phase Jump Telemetry: Sexagesimal Coherence 1.0")
+    verification = truth_sync_verify("Phase Jump Telemetry: Sexagesimal Coherence S60(1, 0, 0)")
     
     return {
         "sequence": sequence.tolist(),
-        "coherence": 1.0,
-        "dissonance": 0.0,
+        "coherence": S60(1, 0, 0),
+        "dissonance": S60(0, 0, 0),
         "mqt_status": "LOCKED",
         "inertial_mass": 0.000,
         "idi": 0.382, # Inverse of PHI
@@ -175,7 +176,7 @@ def rift_detection():
     core = _make_core()
     # Vacuum state (all zeros) as placeholder initial state
     psi0 = np.zeros(core.dim, dtype=complex)
-    psi0[0] = 1.0
+    psi0[0] = S60(1, 0, 0)
     _, states = core.evolve_unitary(psi0, t_max=5e-6, dt=5e-7)
     detector = SentinelRiftDetector(core)
     result = detector.detect_rift(states, threshold=0.8)
@@ -227,9 +228,9 @@ def quantum_oracle(question: dict):
 
     # Simulation parameters for 1000 membranes (Semiclassical / Large N limit)
     N_MEMBRANES = 1000
-    OMEGA_M = 2 * np.pi * 10e6
-    GAMMA = 2 * np.pi * 100
-    J_COUPLING = 2 * np.pi * 1e3
+    OMEGA_M = 2 * PI_S60 * 10e6
+    GAMMA = 2 * PI_S60 * 100
+    J_COUPLING = 2 * PI_S60 * 1e3
     TIME_MAX = 50e-6 # 50 microseconds
 
     # 1. Encode query
@@ -242,7 +243,7 @@ def quantum_oracle(question: dict):
     # "Seed" the network with a specific pattern derived from the question
     for i in range(N_MEMBRANES):
         if (seed_val >> (i % 32)) & 1:
-            alpha_0[i] = 0.1 * np.exp(1j * (i / N_MEMBRANES) * 2 * np.pi)
+            alpha_0[i] = S60(0, 6, 0) * np.exp(1j * (i / N_MEMBRANES) * 2 * PI_S60)
 
     # 3. Equations of Motion
     # 3. Equations of Motion (Rotating Frame / Interaction Picture)
@@ -274,13 +275,13 @@ def quantum_oracle(question: dict):
 
     # Inverse Participation Ratio (IPR)
     ipr = np.sum(densities**2) / (total_energy**2 + 1e-20)
-    localization_length = 1.0 / (ipr + 1e-9)
+    localization_length = S60(1, 0, 0) / (ipr + 1e-9)
 
     # Interpretation Logic
     result_type = "UNKNOWN"
     interpretation = ""
     
-    if ipr > 0.1:
+    if ipr > S60(0, 6, 0):
         result_type = "LOCALIZED"
         interpretation = "La energía no fluye (Estado Atrapado). Bucle o estancamiento local."
     elif ipr < 0.01:

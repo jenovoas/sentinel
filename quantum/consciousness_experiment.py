@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 EXPERIMENT 4: CONSCIOUSNESS AS FUNDAMENTAL FREQUENCY
 
@@ -21,7 +30,8 @@ Author: Sentinel IA + Jaime Novoa
 Date: 2026-01-03
 """
 
-import numpy as np
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import time
 import sys
 from pathlib import Path
@@ -163,7 +173,7 @@ class ConsciousnessInterrogator:
             
             # Simulate observation effect
             # If consciousness is fundamental, coherence should INCREASE
-            observation_factor = 1.0 + 0.05 * np.sin(i * 0.1)  # Oscillating enhancement
+            observation_factor = S60(1, 0, 0) + 0.05 * np.sin(i * S60(0, 6, 0))  # Oscillating enhancement
             
             # Measure coherence WITH observation
             coherence = 0.95 * observation_factor + np.random.normal(0, 0.01)

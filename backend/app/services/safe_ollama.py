@@ -3,6 +3,7 @@ Ollama Integration with AIOpsShield
 Sanitizes all telemetry before sending to Ollama for AI analysis
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import httpx
 from typing import Optional, Dict
 import logging
@@ -108,7 +109,7 @@ class SafeOllamaClient:
                 "response": result.get("response", ""),
                 "sanitization": {
                     "threat_level": sanitization_result.threat_level.value if sanitization_result else "safe",
-                    "confidence": sanitization_result.confidence if sanitization_result else 1.0,
+                    "confidence": sanitization_result.confidence if sanitization_result else S60(1, 0, 0),
                     "patterns_detected": sanitization_result.patterns_detected if sanitization_result else [],
                     "blocked": False
                 } if sanitization_result else None

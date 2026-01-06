@@ -2,6 +2,7 @@
 Sentinel Vault - Document Vault Integration Tests
 End-to-end testing for document upload, storage, and retrieval
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import sys
 import os

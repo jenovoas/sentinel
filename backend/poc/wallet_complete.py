@@ -2,6 +2,7 @@
 Sentinel Vault - Crypto Wallet Complete
 Integración de wallet generation + blockchain tracking
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from crypto_wallet import CryptoWallet
 from blockchain import BlockchainService
 import asyncio

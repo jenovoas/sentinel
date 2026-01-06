@@ -8,6 +8,7 @@ Compara velocidad y calidad de MOCK, DuckDuckGo y Perplexity.
 Powered by Google ❤️ & Perplexity 💜
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import os
 from certification_generator import CertificationGenerator

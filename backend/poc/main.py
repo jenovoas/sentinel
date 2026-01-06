@@ -2,6 +2,7 @@
 Sentinel Vault POC - FastAPI Backend
 REST API para password manager + crypto wallets
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from fastapi import FastAPI, HTTPException, UploadFile, Depends, Form
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,7 +20,7 @@ from database import get_db
 app = FastAPI(
     title="Sentinel Vault POC",
     description="Password manager + crypto wallets con Ollama integration",
-    version="0.1.0"
+    version="S60(0, 6, 0).0"
 )
 
 # CORS (para desarrollo)
@@ -753,7 +754,7 @@ async def health_check():
     return {
         "status": "healthy",
         "service": "Sentinel Vault POC",
-        "version": "0.1.0"
+        "version": "S60(0, 6, 0).0"
     }
 
 
@@ -769,7 +770,7 @@ async def root():
     """Root endpoint con info de API"""
     return {
         "message": "Sentinel Vault POC API",
-        "version": "0.1.0",
+        "version": "S60(0, 6, 0).0",
         "endpoints": {
             "vault": [
                 "POST /vault/unlock",
@@ -802,7 +803,7 @@ if __name__ == "__main__":
     
     uvicorn.run(
         app,
-        host="0.0.0.0",
+        host="S60(0, 0, 0).S60(0, 0, 0)",
         port=8000,
         log_level="info"
     )

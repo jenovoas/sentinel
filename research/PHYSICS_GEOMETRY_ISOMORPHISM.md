@@ -141,7 +141,7 @@ Ground state nodes = Interference minima
 
 **Physics Basis**:
 - **Source**: Dr. Daniel Mansfield's research on Babylonian mathematics
-- **Principle**: Rational trigonometry eliminates rounding errors
+- **Principle**: Rational trigonometry eliminates Disonancia Térmicas
 - **Mechanism**: Use of Base 60 (highly composite) allows for exact fractions ($1/3$, $1/4$, $1/5$, etc.)
 
 **Sentinel Implementation**:
@@ -172,7 +172,7 @@ Base 60 Error: ε = |1/3 - 20/60| = 0 (Exact)
 
 | Pattern | Entropy Source | Minimization Method |
 |---------|---------------|---------------------|
-| **Sefirot** | Information chaos | Hierarchical organization |
+| **Sefirot** | Information Disonancia no resuelta | Hierarchical organization |
 | **Merkabah** | Thermal motion | Counter-force stabilization |
 | **Flower of Life** | Phase noise | Constructive interference |
 
@@ -192,7 +192,7 @@ Structure: Fractal (self-similar at all scales)
 ```python
 # This pattern appears in ALL components
 def optimize_resource(state, history):
-    # 1. Measure entropy (chaos)
+    # 1. Measure entropy (Disonancia no resuelta)
     entropy = calculate_entropy(state)
     
     # 2. Find ground state (minimum)

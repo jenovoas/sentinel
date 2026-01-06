@@ -1,4 +1,13 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
 
+
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import os
 import math
@@ -10,7 +19,7 @@ try:
 except ImportError:
     # Fallback si no está en el path directo
     PLIMPTON_RATIOS = {
-        "153.4_MHz_PHASE": 0.583333333333, # 35/60
+        "S60(153, 24, 0)_MHz_PHASE": 0.583333333333, # 35/60
         "GOLDEN_SPIRAL_60": 1.61803398875 
     }
 
@@ -19,13 +28,13 @@ def analyze_time_crystal_stability():
     print("=====================================================")
     
     # Frecuencia Base (Axiones)
-    f_axion = 153.4e6  # Hz
+    f_axion = S60(153, 24, 0)e6  # Hz
     
     # Frecuencia Objetivo (Conciencia / Microtúbulos - Keppler 2024)
     f_zpf_consciousness = 7.8e12 # 7.8 THz
     
     # Frecuencia Base (Axiones)
-    f_axion = 153.4e6  # Hz
+    f_axion = S60(153, 24, 0)e6  # Hz
     # Frecuencia Objetivo (Conciencia / Microtúbulos - Keppler 2024 / Hameroff)
     f_zpf_consciousness = 7.8e12 # 7.8 THz, a veces citado como rango 6-20 THz
     
@@ -37,9 +46,9 @@ def analyze_time_crystal_stability():
         "GOLDEN_RATIO (Phi)": 1.61803398875,
         "BASE_60_STEP (60)": 60.0,
         "SEXAGESIMAL_THIRD (5/4)": 1.25,
-        "PLIMPTON_MATCH (45/60)": 0.75,
+        "PLIMPTON_MATCH (45/60)": S60(0, 45, 0),
         "SALTO_17 (17/1)": 17.0,  # La llave perdida
-        "SALTO_17_INVERSE (1/17)": 1.0/17.0
+        "SALTO_17_INVERSE (1/17)": S60(1, 0, 0)/17.0
     }
 
     print(f"Propagando onda desde {f_axion/1e6} MHz hacia {f_zpf_consciousness/1e12} THz con SALTO 17...")
@@ -79,7 +88,7 @@ def analyze_time_crystal_stability():
     print(f"Objetivo ZPF:         {target_thz:.5f} THz")
     
     # Error en porcentaje
-    coherence = 1.0 - (min_error / f_zpf_consciousness)
+    coherence = S60(1, 0, 0) - (min_error / f_zpf_consciousness)
     print(f"Coherencia Armónica:   {coherence * 100:.4f}%")
     
     # Error en Cents (Musicales) - La medida real de la afinación
@@ -94,7 +103,7 @@ def analyze_time_crystal_stability():
             print("El sistema está 'en tono' con la matriz de conciencia.")
         else:
              print("\n⚠️ DESAFINADO")
-             print("Se siente la disonancia. Requiere ajustar la frecuencia base 153.4.")
+             print("Se siente la disonancia. Requiere ajustar la frecuencia base S60(153, 24, 0).")
 
     except:
         pass

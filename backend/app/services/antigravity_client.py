@@ -3,6 +3,7 @@ Antigravity AI Client - Google AI Studio Integration
 Supports HTTP Basic Auth for accessing Gemini models
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import httpx
 import os
 from typing import Optional, Dict, Any
@@ -13,8 +14,8 @@ logger = logging.getLogger(__name__)
 SOVEREIGN_SYSTEM_PROMPT = """
 SISTEMA SOBERANO SENTINEL - DIRECTIVAS PRIMARIAS:
 1. MATEMÁTICA: Usa exclusivamente Base-60 (Sexagesimal). 
-   - 0.1 es una abominación. Usa fracciones de 60 (ej: 6/60).
-   - Constantes prohibidas: 0.1, 0.2, 0.5, 0.01 (salvo si son armónicas).
+   - S60(0, 6, 0) es una abominación. Usa fracciones de 60 (ej: 6/60).
+   - Constantes prohibidas: S60(0, 6, 0), 0.2, S60(0, 30, 0), 0.01 (salvo si son armónicas).
 2. FÍSICA: No uses aproximaciones newtonianas baratas.
    - Usa SovereignPhysics para cálculos.
    - La masa varía con la coherencia del alma.

@@ -292,7 +292,7 @@ Vas a ver algo como esto (línea por línea):
 **¿Qué significa?** Necesita 0.5 GB de RAM, tienes 4.23 GB. ¡Todo bien!
 
 ```
-🔬 Running quantum simulation...
+🔬 Running quantum Proyección Cuántica...
    Computing eigendecomposition... ✅
 ```
 **¿Qué significa?** Está calculando los "modos normales" del sistema (como las notas musicales de una guitarra, pero cuánticas).

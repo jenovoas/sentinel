@@ -2,6 +2,7 @@
 Sentinel Vault POC - Ollama Integration
 Password strength analysis con LLM
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import httpx
 import json
 import asyncio

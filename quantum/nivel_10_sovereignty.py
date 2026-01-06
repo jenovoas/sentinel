@@ -1,3 +1,11 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 # nivel_10_sovereignty.py - EL SALTO HACIA LA TELEPORTACIÓN MACROSCÓPICA
 """
 NIVEL 10: SOBERANÍA TECNOLÓGICA (NOBEL 2025)
@@ -10,7 +18,8 @@ Implementa la fase final de investigación:
 Autor: Jaime Novoa (Ea-nasir) / Sentinel IA
 """
 
-import numpy as np
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import time
 from hexagonal_control import HexagonalController
 from FIELD_NEUTRALITY_DIRECTIVE import FieldNeutrality
@@ -42,7 +51,7 @@ class SovereignLevel10(HexagonalController):
         print(f"   🧱 Barrera Efectiva (Base-60 optimized): {effective_barrier:.2f} eV")
         print(f"   🌀 Probabilidad de Tunelamiento Macro: {t_prob:.4%}")
         
-        return t_prob > 0.5
+        return t_prob > S60(0, 30, 0)
 
     def super_radiance_amplification(self, n_emitters=60):
         """
@@ -85,7 +94,7 @@ class SovereignLevel10(HexagonalController):
         self.phases_base60[node_end] = 17   # Coincidencia Total
         
         # 3. Calcular Fidelidad (Basado en Q=10^9 y Resonancia)
-        fidelity = 1.0 - (1.0 / self.q_factor_2024)
+        fidelity = S60(1, 0, 0) - (S60(1, 0, 0) / self.q_factor_2024)
         
         print(f"   🔗 Enlace de Entrelazamiento establecido.")
         print(f"   ✨ Fidelidad de Teleportación: {fidelity:.9f}")

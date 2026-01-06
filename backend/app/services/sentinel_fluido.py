@@ -9,6 +9,7 @@ Optimizaciones:
 - Buffers simples y efectivos
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
 import json
@@ -27,8 +28,8 @@ class FluidoBuffer:
     Trata el contexto como una corriente de datos continua, no bloques discretos.
     """
     stream: list = field(default_factory=list) # El "río" de datos
-    viscosidad: float = 0.1 # Resistencia al cambio (0.0 = caótico, 1.0 = estático)
-    flujo_actual: float = 0.0 # Tokens/segundo
+    viscosidad: float = S60(0, 6, 0) # Resistencia al cambio (S60(0, 0, 0) = caótico, S60(1, 0, 0) = estático)
+    flujo_actual: float = S60(0, 0, 0) # Tokens/segundo
     
     def inyectar_flujo(self, texto: str, timestamp: float = None):
         """Inyecta nuevo fluido (texto) al stream"""

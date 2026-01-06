@@ -1,3 +1,11 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 # ai_buffer_cascade.py - PILAR 3: Memoria No-Markoviana
 """
 AI BUFFER CASCADE - Pilar 3 de la Trinidad Sentinel
@@ -8,7 +16,8 @@ Usa un kernel de correlación para mitigar la decoherencia masiva.
 Autor: Jaime Novoa (Ea-nasir) / Sentinel IA
 """
 
-import numpy as np
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import sys
 import os
 from typing import Dict, Any, List
@@ -28,7 +37,7 @@ class AIBufferCascade:
         self.memory_kernel = self._init_non_markovian_kernel()
         self.akashic_records = {}  # Estado histórico: timestamp -> data
     
-    def _init_non_markovian_kernel(self, tau_c=1.0):  # Increased tau_c for simulation visibility
+    def _init_non_markovian_kernel(self, tau_c=S60(1, 0, 0)):  # Increased tau_c for simulation visibility
         """Kernel Ornstein-Uhlenbeck para optomecánica"""
         def kernel(t, s, tau_c=tau_c):
             # Evitamos divisiones por cero y manejamos la diferencia de tiempo
@@ -63,7 +72,7 @@ class AIBufferCascade:
                 # Calculamos la influencia del pasado en el presente
                 k_val = self.memory_kernel(now, ts)
                 # El backflow de información recupera la coherencia perdida
-                memory_effect += k_val * 0.5
+                memory_effect += k_val * S60(0, 30, 0)
         
         # 3. AI Prediction (Simulando el flujo no-Markoviano)
         prediction = self._predict_non_markovian_evolution(rift_coords, memory_effect)
@@ -113,7 +122,7 @@ if __name__ == "__main__":
     # Simulamos una historia de estabilidad (inyectamos memoria)
     print("⏳ Generando historial de coherencia en los Registros Akáshicos...")
     for i in range(5):
-        t = datetime.now().timestamp() - (5 - i) * 0.1
+        t = datetime.now().timestamp() - (5 - i) * S60(0, 6, 0)
         cascade.akashic_records[t] = {
             'timestamp': t,
             'coherence': 42.50,

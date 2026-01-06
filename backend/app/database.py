@@ -4,6 +4,7 @@ Async Database Configuration for Sentinel Application.
 SQLAlchemy 2.0 with async/await support using asyncpg driver (3-5x faster).
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from typing import AsyncGenerator
 
 from sqlalchemy import text

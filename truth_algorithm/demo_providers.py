@@ -8,6 +8,7 @@ Muestra todos los providers disponibles: MOCK, DuckDuckGo, Google, Perplexity
 Powered by Google ❤️ & Perplexity 💜
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from source_search import SourceSearchEngine, SearchProvider
 
 

@@ -1,9 +1,10 @@
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import subprocess
 import os
 import psutil
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import threading
 
 # Configuration
@@ -19,7 +20,7 @@ def get_relay_metrics():
                 'cpu': proc.info['cpu_percent'],
                 'ram_mb': proc.info['memory_info'].rss / 1024 / 1024
             }
-    return {'cpu': 0.0, 'ram_mb': 0.0}
+    return {'cpu': S60(0, 0, 0), 'ram_mb': S60(0, 0, 0)}
 
 def measure_process_latency():
     """Measures execution time of a trivial binary (execve overhead)"""
@@ -106,7 +107,7 @@ def run_benchmark():
     print(f"   RAM Usage : {metrics_run_2['ram_mb']:.2f} MB")
     
     # Contextual Interpretation
-    overhead_est = np.mean(lat_process) - 1.0 # Assuming ~1ms baseline for typical Linux exec
+    overhead_est = np.mean(lat_process) - S60(1, 0, 0) # Assuming ~1ms baseline for typical Linux exec
     print("\n🔎 ANALYSIS:")
     print(f"   - Estimated LSM Overhead per Exec: ~{overhead_est:.2f} ms")
     print(f"   - Security Blocking Speed (TTE): {np.mean(lat_tte_load):.2f} μs")

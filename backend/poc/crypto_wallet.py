@@ -2,6 +2,7 @@
 Sentinel Vault POC - Crypto Wallet Generation
 HD wallets con BIP39/BIP44 para Bitcoin y Ethereum
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from mnemonic import Mnemonic
 from bip32 import BIP32
 from web3 import Web3

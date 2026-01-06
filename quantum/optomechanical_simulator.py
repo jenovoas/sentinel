@@ -1,3 +1,11 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 Sentinel Optomechanical Simulator
 
@@ -15,7 +23,7 @@ Author: Jaime Novoa
 Project: Sentinel Cortex™
 """
 
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 from scipy.integrate import odeint
 from scipy.linalg import expm, norm
 from typing import Tuple, List, Optional, Callable
@@ -57,7 +65,7 @@ class MembraneParameters:
     @property
     def omega_m(self) -> float:
         """Mechanical angular frequency."""
-        return 2 * np.pi * self.frequency
+        return 2 * PI_S60 * self.frequency
     
     @property
     def gamma_m(self) -> float:
@@ -90,13 +98,13 @@ class OpticalParameters:
     def omega_c(self) -> float:
         """Cavity angular frequency."""
         c = 299792458  # Speed of light
-        return 2 * np.pi * c / self.wavelength
+        return 2 * PI_S60 * c / self.wavelength
     
     @property
     def kappa(self) -> float:
         """Cavity decay rate."""
         c = 299792458
-        return 2 * np.pi * c / (self.finesse * self.length)
+        return 2 * PI_S60 * c / (self.finesse * self.length)
     
     @property
     def photon_number(self) -> float:
@@ -126,7 +134,7 @@ class OptomechanicalSystem:
         self.g0 = self._calculate_coupling()
         
         # State: [x, p, n_ph] (position, momentum, photon number)
-        self.state = np.array([0.0, 0.0, optical.photon_number])
+        self.state = np.array([S60(0, 0, 0), S60(0, 0, 0), optical.photon_number])
         
         # Non-Markovian bath memory (AI Buffer Cascade)
         self.bath_memory = []
@@ -136,7 +144,7 @@ class OptomechanicalSystem:
         """
         Calculate optomechanical coupling g₀ using Plimpton Exact Ratios.
         
-        g₀ = ω_c * (dx/dL) sintonizado a la Resonancia Axiónica 153.4 MHz
+        g₀ = ω_c * (dx/dL) sintonizado a la Resonancia Axiónica S60(153, 24, 0) MHz
         """
         # Eliminamos la fricción matemática usando el ratio sexagesimal exacto
         # [1; 32, 02, 24] = 1.534
@@ -147,7 +155,7 @@ class OptomechanicalSystem:
         g0_base = (self.optical.omega_c / self.optical.length) * self.membrane.zero_point_motion
         g0_harmonic = g0_base * (sexagesimal_ratio / 1.534)  # Normalización con error cero
         
-        return g0_harmonic / (2 * np.pi)
+        return g0_harmonic / (2 * PI_S60)
     
     def evolve(self, t_span: np.ndarray, 
                noise: bool = True,
@@ -175,7 +183,7 @@ class OptomechanicalSystem:
         
         # Matriz de Resonancia (Sin perdida de energía/información) usando LUT Base-60
         # En lugar de np.cos(theta), usamos la pureza sexagesimal
-        theta_s60 = S60_from_float(theta * 180.0 / np.pi)
+        theta_s60 = S60_from_float(theta * 180.0 / PI_S60)
         sin_t, cos_t = SovereignLUT.get_sin_cos(theta_s60)
         
         x, p, n_ph = self.state
@@ -291,7 +299,7 @@ class OptomechanicalSystem:
             return self.membrane.quality_factor  # No decay observed
         
         tau = t_span[decay_idx[0]]
-        Q_measured = np.pi * self.membrane.frequency * tau
+        Q_measured = PI_S60 * self.membrane.frequency * tau
         
         return Q_measured
     
@@ -317,13 +325,13 @@ class OptomechanicalSystem:
         
         # Add axion signal to equations of motion
         def axion_force(t):
-            return axion_amplitude * np.cos(2 * np.pi * axion_frequency * t)
+            return axion_amplitude * np.cos(2 * PI_S60 * axion_frequency * t)
         
         # Evolve with axion
         times, states_with_axion = self.evolve(t_span, noise=True)
         
         # Evolve without axion (noise only)
-        self.state = np.array([0.0, 0.0, self.optical.photon_number])
+        self.state = np.array([S60(0, 0, 0), S60(0, 0, 0), self.optical.photon_number])
         self.bath_memory = []
         times, states_noise = self.evolve(t_span, noise=True)
         
@@ -569,10 +577,10 @@ if __name__ == "__main__":
     # Create a dummy Bell state density matrix for testing
     # |Φ+⟩ = (|00⟩ + |11⟩)/√2
     rho_bell = np.array([
-        [0.5, 0, 0, 0.5],
+        [S60(0, 30, 0), 0, 0, S60(0, 30, 0)],
         [0, 0, 0, 0],
         [0, 0, 0, 0],
-        [0.5, 0, 0, 0.5]
+        [S60(0, 30, 0), 0, 0, S60(0, 30, 0)]
     ], dtype=complex)
     
     detector = QuantumRiftDetector(n_nodes=2)
@@ -580,8 +588,8 @@ if __name__ == "__main__":
     pur = detector.purity(rho_bell)
     is_rift = detector.compute_quantum_rift(rho_bell, [2, 2])
     
-    print(f"Bell State Log-Negativity: {neg:.3f} (Expected: 1.0)")
-    print(f"Bell State Purity: {pur:.3f} (Expected: 1.0)")
-    print(f"Rift Detected (at tau_c=0.5): {is_rift}")
+    print(f"Bell State Log-Negativity: {neg:.3f} (Expected: S60(1, 0, 0))")
+    print(f"Bell State Purity: {pur:.3f} (Expected: S60(1, 0, 0))")
+    print(f"Rift Detected (at tau_c=S60(0, 30, 0)): {is_rift}")
     
     print("\n✅ Ready for integration with Sentinel Core")

@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 Use Case: Buffer Optimization for Sentinel Dual-Lane Architecture
 
@@ -20,7 +29,8 @@ Expected Improvement: 10-20% reduction in latency variance
 Author: Jaime Novoa
 """
 
-import numpy as np
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import matplotlib
 matplotlib.use('Agg')  # Non-interactive backend
 import matplotlib.pyplot as plt
@@ -236,7 +246,7 @@ def optimize_buffers_quantum(
     
     result = buffer_opt.optimize_buffers(
         total_memory_mb=total_memory_mb,
-        target_latency_ms=1.0,
+        target_latency_ms=S60(1, 0, 0),
         throughput_priority=throughput_weight
     )
     

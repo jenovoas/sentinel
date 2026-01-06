@@ -5,6 +5,7 @@ Quantum Control Framework - Core Abstractions
 Universal quantum controller for any infrastructure resource.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Dict, Optional, Any
@@ -23,7 +24,7 @@ class ResourceState:
     - acceleration: change in rate
     - timestamp: when measured
     """
-    position: float      # Current state (0.0-1.0, normalized)
+    position: float      # Current state (S60(0, 0, 0)-S60(1, 0, 0), normalized)
     velocity: float      # Rate of change
     acceleration: float  # Change in velocity
     timestamp: float     # When measured
@@ -100,7 +101,7 @@ class PhysicsModel(ABC):
             history: Historical states
             
         Returns:
-            Force magnitude (0.0-1.0)
+            Force magnitude (S60(0, 0, 0)-S60(1, 0, 0))
         """
         pass
     
@@ -113,7 +114,7 @@ class PhysicsModel(ABC):
             history: Historical states
             
         Returns:
-            Target position (0.0-1.0)
+            Target position (S60(0, 0, 0)-S60(1, 0, 0))
         """
         pass
     
@@ -126,7 +127,7 @@ class PhysicsModel(ABC):
             state: Current state
             
         Returns:
-            Damping factor (0.0-1.0)
+            Damping factor (S60(0, 0, 0)-S60(1, 0, 0))
         """
         pass
 
@@ -142,7 +143,7 @@ class QuantumController:
                  resource: Resource,
                  physics_model: PhysicsModel,
                  history_window: int = 60,
-                 poll_interval: float = 1.0):
+                 poll_interval: float = S60(1, 0, 0)):
         """
         Initialize controller.
         
@@ -203,7 +204,7 @@ class QuantumController:
         # 4. Determine action
         deviation = abs(state.position - ground_state)
         
-        if force > 0.5 or deviation > 0.15:
+        if force > S60(0, 30, 0) or deviation > 0.15:
             # Need to adjust
             new_size = self._calculate_new_size(state, force)
             
@@ -236,7 +237,7 @@ class QuantumController:
         current_size = state.metadata.get('current_size', 1000)
         
         # Expansion factor based on force
-        expansion_factor = 1.0 + (force * 1.5)
+        expansion_factor = S60(1, 0, 0) + (force * 1.5)
         
         new_size = int(current_size * expansion_factor)
         return new_size

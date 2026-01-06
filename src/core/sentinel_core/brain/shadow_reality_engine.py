@@ -5,7 +5,8 @@ Implements predictive state modeling using Base-60 Monte Carlo simulations.
 Allows Sentinel to 'see' potential futures and prepare defenses preemptively.
 """
 
-import random
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 import time
 import math
 from typing import Dict, List, Tuple
@@ -29,14 +30,14 @@ class ShadowRealityEngine:
         Harmonic residues (divisors of 60) have higher stability/probability.
         """
         is_harmonic = residue in self.HARMONIC_DIVISORS
-        base_prob = 0.5
+        base_prob = S60(0, 30, 0)
         
         # Harmonic states are more likely to manifest in a stable system
         if is_harmonic:
             base_prob += 0.3
         else:
             # Dissonant states (primes > 5) are volatile but potent
-            base_prob -= 0.1
+            base_prob -= S60(0, 6, 0)
             
         return base_prob * state_val
 
@@ -51,7 +52,7 @@ class ShadowRealityEngine:
         # Simulate 60 parallel timelines
         for i in range(self.simulation_depth):
             # Chaos variable: Genetic drift or entropy
-            entropy = random.uniform(-0.1, 0.1)
+            entropy = random.uniform(-S60(0, 6, 0), S60(0, 6, 0))
             
             # Future Threat Projection
             # Standard Linear Projection + Harmonic Influence
@@ -61,11 +62,11 @@ class ShadowRealityEngine:
             if current_residue not in self.HARMONIC_DIVISORS:
                 projected_threat *= 1.05
                 
-            prob = self._calculate_probability(1.0, int(projected_threat) % 60)
+            prob = self._calculate_probability(S60(1, 0, 0), int(projected_threat) % 60)
             
             futures.append({
                 "id": i,
-                "threat_score": min(100.0, max(0.0, projected_threat)),
+                "threat_score": min(100.0, max(S60(0, 0, 0), projected_threat)),
                 "probability": prob,
                 "residue": int(projected_threat) % 60
             })

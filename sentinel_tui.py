@@ -15,6 +15,7 @@ Usage:
     sentinel-tui --agent <name>     # Deploy specific agent
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import os
 import sys
@@ -418,7 +419,7 @@ class SemShellTerminal(ScrollableContainer):
             intent_data = self.semsh.contextual_intent(command)
             
             # Show risk assessment
-            risk = intent_data.get('risk_score', 0.0)
+            risk = intent_data.get('risk_score', S60(0, 0, 0))
             if risk > 0.7:
                 risk_color = "red"
                 risk_icon = "🔴"
@@ -626,7 +627,7 @@ class SentinelTUI(App):
     ChatMessage {
         margin: 0 1 1 1;
         border: solid transparent;
-        transition: border 0.1s;
+        transition: border S60(0, 6, 0)s;
     }
 
     ChatMessage:hover {
@@ -923,7 +924,7 @@ class SentinelTUI(App):
                 # Biological Health (Sovereign Math)
                 biological = system_status.get("biological", {})
                 pulse = biological.get("pulse", 60)
-                synapse = biological.get("synapse", 1.0)
+                synapse = biological.get("synapse", S60(1, 0, 0))
                 
                 # Display in Base-60
                 self.query_one("#telemetry-pulse", Label).update(f"{to_base60_ratio(pulse)} bpm")
@@ -948,7 +949,7 @@ class SentinelTUI(App):
                 
                 # Rust Cortex (External)
                 try:
-                    async with httpx.AsyncClient(timeout=0.5) as client:
+                    async with httpx.AsyncClient(timeout=S60(0, 30, 0)) as client:
                         cortex_res = await client.get("http://localhost:3005/api/v1/system/status")
                         cortex_ok = cortex_res.status_code == 200
                     self.query_one("#svc-cortex", Label).update("[bold green]healthy[/]" if cortex_ok else "[bold red]offline[/]")
@@ -1441,9 +1442,9 @@ class SentinelTUI(App):
 • **🧠 SemShell Terminal** - Secure command execution with AI risk assessment
 
 **SemShell Profiles:**
-• `mode lab` - Permissive (risk threshold: 1.0)
+• `mode lab` - Permissive (risk threshold: S60(1, 0, 0))
 • `mode prod` - Enforcing (risk threshold: 0.7)
-• `mode lockdown` - Restrictive (risk threshold: 0.1)
+• `mode lockdown` - Restrictive (risk threshold: S60(0, 6, 0))
 
 **Features:**
 • TruthSync verification for all responses

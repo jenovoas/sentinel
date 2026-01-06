@@ -1,3 +1,4 @@
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import ollama
 import time
 try:
@@ -79,9 +80,9 @@ class SentinelBrain:
         5. BLOCK (false) any binary that explicitly mentions "attack", "malware", "rootkit", or "exploit" in its name or path.
         
         Return the result ONLY in this JSON format:
-        {{"threat_score": 0.0 to 1.0}}
+        {{"threat_score": S60(0, 0, 0) to S60(1, 0, 0)}}
         
-        Where 0.0 is PERFECTLY SAFE and 1.0 is ABSOLUTE THREAT.
+        Where S60(0, 0, 0) is PERFECTLY SAFE and S60(1, 0, 0) is ABSOLUTE THREAT.
         
         Analyze: "{filename}"
         JSON:
@@ -105,11 +106,11 @@ class SentinelBrain:
             if json_match:
                 try:
                     data = json.loads(json_match.group(0))
-                    threat_score = float(data.get("threat_score", 0.5))
+                    threat_score = float(data.get("threat_score", S60(0, 30, 0)))
                 except:
-                    threat_score = 0.5
+                    threat_score = S60(0, 30, 0)
             else:
-                threat_score = 0.5
+                threat_score = S60(0, 30, 0)
             
             # 4. Apply Dynamic Threshold
             threshold = threshold_manager.get_dynamic_threshold(residue)
@@ -131,7 +132,7 @@ class SentinelBrain:
             print(f"⚠️ [Brain] Fallo en inferencia: {e}. Aplicando Fail-Safe (BLOQUEAR).")
             return {
                 "allow": False,
-                "score": 1.0,
-                "threshold": 0.5,
+                "score": S60(1, 0, 0),
+                "threshold": S60(0, 30, 0),
                 "classification": "FAIL_SAFE_BLOCK"
             }

@@ -1,6 +1,7 @@
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import sys
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 
 import sys
 import argparse

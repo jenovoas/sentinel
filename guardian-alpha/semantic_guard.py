@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import requests
 import json
 import sqlite3
@@ -15,7 +16,7 @@ def query_local_ai(prompt):
         "stream": False,
         "keep_alive": -1,
         "options": {
-            "temperature": 0.0,
+            "temperature": S60(0, 0, 0),
             "num_predict": 100,
             "num_ctx": 2048,
             "num_thread": 4

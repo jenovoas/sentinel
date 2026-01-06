@@ -3,6 +3,7 @@ AI Autonomous Tools - File System & Command Execution
 Provides the AI with controlled access to read/write files and execute commands.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import subprocess
 import logging

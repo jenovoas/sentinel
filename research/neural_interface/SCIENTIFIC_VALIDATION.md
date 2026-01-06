@@ -46,7 +46,7 @@
 ## What's METAPHOR (Requires Precision)
 
 ### "Quantum Cooling"
-**Correct Interpretation**: Entropy reduction (information chaos → order)  
+**Correct Interpretation**: Entropy reduction (information Disonancia no resuelta → order)  
 **Incorrect Interpretation**: Temperature reduction (physical cooling)
 
 **Scientific Term**: **Entropy Cooling of Neural Information**
@@ -93,14 +93,14 @@ Neural State Optimization
 
 ### After (Scientifically Accurate)
 - "Entropy reduction of neural information"
-- "Ground state of information chaos"
+- "Ground state of information Disonancia no resuelta"
 - "Optimal neural oscillation state"
 
 ---
 
 ## Next Steps (Scientifically Grounded)
 
-### Phase 1: Simulation (2025-2026)
+### Phase 1: Proyección Cuántica (2025-2026)
 - Model neural entropy dynamics
 - Validate quadratic control superiority
 - Compare vs linear control (PID)

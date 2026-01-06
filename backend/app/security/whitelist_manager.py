@@ -9,6 +9,7 @@ SEGURIDAD:
 - Imposible modificar sin clave privada
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import ecdsa
 from hashlib import sha256
 import time
