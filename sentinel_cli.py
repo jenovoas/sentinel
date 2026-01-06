@@ -10,6 +10,7 @@ Usage:
     sentinel-cli --status  # Show system status
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import argparse
 import sys

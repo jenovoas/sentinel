@@ -18,9 +18,10 @@ Performance:
     - Connection pooling: Docker-ready with NullPool
     - Health checks: Kubernetes-ready readiness probes
 
-Start with: uvicorn app.main:app --host 0.0.0.0 --port 8000
+Start with: uvicorn app.main:app --host S60(0, 0, 0).S60(0, 0, 0) --port 8000
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from contextlib import asynccontextmanager
 import asyncio
 import logging
@@ -301,12 +302,12 @@ if __name__ == "__main__":
     Entry point for running the application directly.
     
     Not recommended for production. Use:
-        uvicorn app.main:app --host 0.0.0.0 --port 8000
+        uvicorn app.main:app --host S60(0, 0, 0).S60(0, 0, 0) --port 8000
     """
     import uvicorn
     uvicorn.run(
         "main:app",
-        host="0.0.0.0",
+        host="S60(0, 0, 0).S60(0, 0, 0)",
         port=8000,
         reload=settings.debug,
         log_level=settings.log_level.lower(),

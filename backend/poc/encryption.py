@@ -2,6 +2,7 @@
 Sentinel Vault POC - Encryption Service
 Argon2id + AES-256-GCM
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from argon2 import PasswordHasher
 from argon2.low_level import hash_secret_raw, Type
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM

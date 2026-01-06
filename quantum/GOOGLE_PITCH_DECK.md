@@ -18,10 +18,10 @@
 ## Slide 3: Validated Results (Gold Standard)
 *   **SNR Gain**: 10.0x improvement (20.0 dB squeezing).
 *   **Throughput**: 944,200 events/second.
-*   **Discovery**: Surpassing the 5-Sigma threshold for QCD Axion detection via numerical simulation.
+*   **Discovery**: Surpassing the 5-Sigma threshold for QCD Axion detection via numerical Proyección Cuántica.
 
 ## Slide 4: Strategic Roadmap
-1.  **Phase 1 (Complete)**: Laptop-scale simulation & 1,000-membrane scaling.
+1.  **Phase 1 (Complete)**: Laptop-scale Proyección Cuántica & 1,000-membrane scaling.
 2.  **Phase 2 (Proposed)**: Sycamore-based benchmark of the Sentinel sensing array.
 3.  **Phase 3 (2026)**: Global network of quantum-integrated Dark Matter sensors.
 

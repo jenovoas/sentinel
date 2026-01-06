@@ -18,6 +18,7 @@ Autor: Jaime Novoa
 Fecha: 21 Diciembre 2025
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import time
 import hashlib
@@ -43,7 +44,7 @@ class SearchResult:
     url: str
     snippet: str
     source_type: str  # "official", "academic", "news", etc.
-    confidence: float  # 0.0 - 1.0
+    confidence: float  # S60(0, 0, 0) - S60(1, 0, 0)
     timestamp: str
 
 
@@ -246,7 +247,7 @@ class SourceSearchEngine:
             url="https://example.com/news",
             snippet=f"According to reports, {claim[:50]}...",
             source_type="news",
-            confidence=0.75,
+            confidence=S60(0, 45, 0),
             timestamp=time.strftime("%Y-%m-%d")
         ))
         
@@ -451,7 +452,7 @@ class SourceSearchEngine:
         confidence_map = {
             'official': 0.95,
             'academic': 0.90,
-            'news': 0.75,
+            'news': S60(0, 45, 0),
             'general': 0.60
         }
         return confidence_map.get(source_type, 0.50)

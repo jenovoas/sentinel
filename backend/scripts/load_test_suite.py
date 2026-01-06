@@ -3,9 +3,10 @@
 Sentinel Cortex - High Velocity Load Testing Suite
 Validates system behavior under 100 RPS and 1000 RPS loads.
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 import logging
 import statistics
 import os
@@ -48,7 +49,7 @@ async def send_event(client):
         latency = (time.perf_counter() - start) * 1000 # ms
         return response.status_code, latency
     except Exception as e:
-        return 0, 0.0
+        return 0, S60(0, 0, 0)
 
 async def run_scenario(client, target_rps, duration_sec):
     print(f"\n⚡ INICIANDO ESCENARIO: {target_rps} Req/s por {duration_sec}s...")
@@ -60,10 +61,10 @@ async def run_scenario(client, target_rps, duration_sec):
     tasks = []
     
     # Simple burst implementation: send N requests every 1 second
-    # For smoother load, verify every 0.1s
+    # For smoother load, verify every S60(0, 6, 0)s
     
     batch_size = target_rps // 10
-    interval = 0.1
+    interval = S60(0, 6, 0)
     
     total_batches = int(duration_sec / interval)
     

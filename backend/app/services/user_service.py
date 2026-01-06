@@ -2,6 +2,7 @@
 User service - Business logic for user operations
 Supports both legacy (tenant_id) and new (organization_id) schemas
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from sqlalchemy.orm import Session
 from app.models.user import User
 from app.schemas import UserCreate

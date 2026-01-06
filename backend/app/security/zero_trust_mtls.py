@@ -3,6 +3,7 @@ Zero Trust mTLS with SSRF Prevention
 Claim 5: Header Signing + Certificate Validation
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import hmac
 import hashlib
 import time

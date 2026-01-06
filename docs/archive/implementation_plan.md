@@ -37,7 +37,7 @@ Create a new eBPF LSM module that extends `guardian_alpha_lsm.c` with:
 - `ebpf/test_cognitive.sh`
 
 ### Manual Verification
-- Run destructive command simulation and observe "Cognitive Block" in dmesg.
+- Run destructive command Proyección Cuántica and observe "Cognitive Block" in dmesg.
 
 ## Success Criteria
 - [ ] `rm` is allowed generally.

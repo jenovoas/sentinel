@@ -1,4 +1,5 @@
 # tests/verify_digital_hippocampus.py
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import os
 import json

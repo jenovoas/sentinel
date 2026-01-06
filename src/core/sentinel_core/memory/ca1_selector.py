@@ -4,6 +4,7 @@ Sentinel Cortex™ Digital Hippocampus - CA1 Selector Layer
 Implements the 'Best Truth' selection logic (Pattern separation).
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from typing import Dict, List
 from .chromadb_storage import memory_vault
 
@@ -21,9 +22,9 @@ class CA1Selector:
         Calculate how 'harmonic' a scenario is relative to the Base-60 residue.
         Prefer scenarios where confidence is high and threat is clearly defined.
         """
-        confidence = scenario.get("confidence_level", 0.0)
+        confidence = scenario.get("confidence_level", S60(0, 0, 0))
         # Harmony bonus: if residue is 0 (prime anomaly), we want maximum clarity
-        harmony_bonus = 0.1 if residue == 0 else 0.0
+        harmony_bonus = S60(0, 6, 0) if residue == 0 else S60(0, 0, 0)
         
         return confidence + harmony_bonus
 

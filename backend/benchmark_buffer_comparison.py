@@ -10,6 +10,7 @@ Mide:
 - Network throughput (antes/después)
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
 import json
@@ -239,7 +240,7 @@ class BufferBenchmarkComparison:
         ax3.set_title('Mejora Porcentual con Buffers Dinámicos')
         ax3.set_xticks(x_pos)
         ax3.set_xticklabels([qt.capitalize() for qt in query_types])
-        ax3.axhline(y=0, color='black', linestyle='-', linewidth=0.5)
+        ax3.axhline(y=0, color='black', linestyle='-', linewidth=S60(0, 30, 0))
         ax3.grid(axis='y', alpha=0.3)
         
         # Subplot 4: Speedup

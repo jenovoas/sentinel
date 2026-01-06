@@ -3,8 +3,9 @@ Locust Load Testing Script for TruthSync
 Uses synthetic dataset to simulate realistic traffic patterns
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from locust import HttpUser, task, between, events
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 import json
 import time
 

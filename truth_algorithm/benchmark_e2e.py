@@ -8,6 +8,7 @@ Benchmark completo del sistema integrado.
 Powered by Google ❤️ & Perplexity 💜 | Built with Gemini AI
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import json
 from truth_algorithm_e2e import TruthAlgorithm, SearchProvider

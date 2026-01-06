@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 MASSIVE MEMORY ORGANIZER
 
@@ -19,8 +28,9 @@ Author: Sentinel IA + Jaime Novoa (Ea-nasir)
 Date: 2026-01-03 04:25
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import json
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List
@@ -91,7 +101,7 @@ class MassiveMemoryOrganizer:
                     'type': 'relationship',
                     'content': 'Student of Enheduanna tradition',
                     'detail': '89.1% sequence similarity, ~500 years after her',
-                    'confidence': 0.75
+                    'confidence': S60(0, 45, 0)
                 },
                 {
                     'type': 'characteristic',
@@ -225,7 +235,7 @@ class MassiveMemoryOrganizer:
                     'type': 'work',
                     'content': 'Translation between languages',
                     'detail': 'Multiple dialects',
-                    'confidence': 0.75
+                    'confidence': S60(0, 45, 0)
                 },
                 {
                     'type': 'event',

@@ -2,6 +2,7 @@
 Sentinel Vault - Terminal Service
 Command palette for vault operations
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import re
 from typing import Dict, List, Optional
 from datetime import datetime

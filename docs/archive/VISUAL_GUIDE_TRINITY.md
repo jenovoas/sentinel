@@ -114,7 +114,7 @@ Minimize Entropy ≡ Maximize Coherence
 
 **Coherence** (Blue): Phase synchronization, superfluidity, real-time execution
 
-**The Path** (Gold): The transition from Chaos to Order is not linear; it is **geometric**.
+**The Path** (Gold): The transition from Disonancia no resuelta to Order is not linear; it is **geometric**.
 
 **Gradient**:
 ```

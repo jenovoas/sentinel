@@ -3,6 +3,7 @@ Benchmark Comparativo - Ollama Antes/Después Optimización
 Documenta latencias para validar mejoras
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import sys
 import json

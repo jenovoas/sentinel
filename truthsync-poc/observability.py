@@ -3,6 +3,7 @@ TruthSync Observability & Integrity Metrics
 Integration with Prometheus, Grafana, and Loki for complete system monitoring
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import json
 from typing import Dict, List, Optional
@@ -76,7 +77,7 @@ class TruthSyncMetrics:
         'truthsync_processing_duration_seconds',
         'Time spent processing claims',
         ['stage'],  # extraction, verification, caching
-        buckets=[0.00001, 0.00005, 0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1]
+        buckets=[0.00001, 0.00005, 0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, S60(0, 6, 0)]
     )
     
     buffer_write_duration_seconds = Histogram(
@@ -94,7 +95,7 @@ class TruthSyncMetrics:
     claim_confidence_score = Histogram(
         'truthsync_claim_confidence_score',
         'Distribution of claim confidence scores',
-        buckets=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+        buckets=[S60(0, 0, 0), S60(0, 6, 0), 0.2, 0.3, 0.4, S60(0, 30, 0), 0.6, 0.7, 0.8, 0.9, S60(1, 0, 0)]
     )
     
     # Gauges
@@ -148,7 +149,7 @@ class IntegrityMonitor:
         
         # Set system info
         self.metrics.system_info.info({
-            'version': '1.0.0-poc',
+            'version': '1.S60(0, 0, 0)-poc',
             'architecture': 'hybrid_rust_python',
             'cache_type': 'predictive_lru',
             'verification': 'self_verifying',

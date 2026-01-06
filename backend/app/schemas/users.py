@@ -2,6 +2,7 @@
 Pydantic schemas for Organization and User models
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from datetime import datetime
 from typing import Optional
 from uuid import UUID

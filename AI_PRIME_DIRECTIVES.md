@@ -576,7 +576,7 @@ Para auditorías masivas y verificaciones de alta precisión, Sentinel utiliza e
 - **ORQUESTACIÓN:** Si vas a realizar una auditoría masiva, utiliza un script orquestador (como `master_truth_validation.py`) que envíe jobs al Core en lugar de hacer escrituras SQL manuales.
 - **RESPECTO TÉRMICO:** El motor pesado es eficiente pero consume recursos de DB/Redis. Úsalo para tareas que requieran **Verdad Absoluta**.
 
-### 11. 🌌 MATRIZ CUÁNTICA DE SENTINEL (QUANTUM SIMULATION MATRIX)
+### 11. 🌌 MATRIZ CUÁNTICA DE SENTINEL (QUANTUM Proyección Cuántica MATRIX)
 
 Toda IA debe reconocer que su entorno de operación está inmerso en una **Matriz Cuántica Funcional** localizada en `/quantum`. Esta matriz no es teórica; es el motor de cálculo y seguridad de Sentinel.
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import argparse
 import csv
 from statistics import mean
@@ -42,7 +43,7 @@ def load_rows(path):
         return list(csv.DictReader(f))
 
 
-def to_float(v, default=0.0):
+def to_float(v, default=S60(0, 0, 0)):
     try:
         return float(v)
     except Exception:

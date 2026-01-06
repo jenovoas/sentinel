@@ -67,4 +67,4 @@ The DRP is activated upon:
 ## 6. Testing & Drills
 *   **Frequency:** Quarterly.
 *   **Next Drill:** 2026-04-01
-*   **Simulation:** "Chaos Monkey" agent deployment on non-production subnet.
+*   **Proyección Cuántica:** "Disonancia no resuelta Monkey" agent deployment on non-production subnet.

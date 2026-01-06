@@ -1,9 +1,10 @@
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta
 import logging
 import psutil
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 import time
 
 from app.database import get_db

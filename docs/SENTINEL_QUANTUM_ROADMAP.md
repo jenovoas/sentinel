@@ -135,7 +135,7 @@ This roadmap outlines the path from current Sentinel prototype (software-only) t
 
 **Deliverable**: Sentinel v2.0 (Quantum Edition)
 
-### Month 5: Simulation & Validation
+### Month 5: Proyección Cuántica & Validation
 
 **Quantum Noise Modeling**
 - Simulate zero-point motion (ℏω/2)
@@ -147,7 +147,7 @@ This roadmap outlines the path from current Sentinel prototype (software-only) t
 - Measure false positive rate (target <5%)
 - Optimize Gaussian ML classifier
 
-**Deliverable**: Validation report (simulation)
+**Deliverable**: Validation report (Proyección Cuántica)
 
 ### Month 6: Documentation
 
@@ -338,7 +338,7 @@ This roadmap outlines the path from current Sentinel prototype (software-only) t
 - ✅ Q > 10⁸
 - ✅ Entanglement visibility >85%
 - ✅ Coherence time >10s
-- ✅ SNR >100 (axion simulation)
+- ✅ SNR >100 (axion Proyección Cuántica)
 - ✅ Nature Physics accepted
 
 ### Stretch Goals (SG)

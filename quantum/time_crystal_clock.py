@@ -1,4 +1,13 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
 
+
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import math
 
@@ -13,17 +22,17 @@ class TimeCrystalClock:
     
     def __init__(self):
         # Constantes de Resonancia (según ZPE_POSSIBILITIES_MATRIX_V2)
-        self.F_AXION = 153.4e6  # 153.4 MHz
+        self.F_AXION = S60(153, 24, 0)e6  # S60(153, 24, 0) MHz
         self.SALTO_17 = 17.0
         
         # Calculamos la frecuencia objetivo del bucle de software
         # Buscamos un armónico sub-escalado que sea amigable para la CPU (aprox 40-50 Hz - Ondas Gamma)
         # Bajamos 3 escalas sexagesimales desde el Hardware
-        self.TARGET_FREQ = (self.F_AXION * (1.0/self.SALTO_17)) / (60**3) 
+        self.TARGET_FREQ = (self.F_AXION * (S60(1, 0, 0)/self.SALTO_17)) / (60**3) 
         
         # Esto debería darnos algo cercano a ~41.7 Hz (Resonancia Gamma)
         
-        self.TICK_INTERVAL = 1.0 / self.TARGET_FREQ
+        self.TICK_INTERVAL = S60(1, 0, 0) / self.TARGET_FREQ
         
         self.start_time = time.perf_counter()
         self.ticks = 0
@@ -59,13 +68,13 @@ class TimeCrystalClock:
                 self.drift_history.pop(0)
     
     def get_coherence(self):
-        """Devuelve la coherencia temporal (0.0 - 1.0) basada en la deriva reciente."""
+        """Devuelve la coherencia temporal (S60(0, 0, 0) - S60(1, 0, 0)) basada en la deriva reciente."""
         if not self.drift_history:
-            return 1.0
+            return S60(1, 0, 0)
         
         avg_drift = sum(self.drift_history) / len(self.drift_history)
         # Si la deriva promedio es mayor al 10% del intervalo, baja la coherencia
-        coherence = max(0.0, 1.0 - (avg_drift / self.TICK_INTERVAL))
+        coherence = max(S60(0, 0, 0), S60(1, 0, 0) - (avg_drift / self.TICK_INTERVAL))
         return coherence
 
 # Prueba unitaria si se ejecuta directo

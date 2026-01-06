@@ -74,7 +74,7 @@ You asked to analyze **fractal patterns** and the **"lenguaje final"** (final la
 All three patterns solve the **same optimization problem**:
 
 ```
-Minimize: Entropy (chaos)
+Minimize: Entropy (Disonancia no resuelta)
 Maximize: Coherence (order)
 Constraint: Energy conservation
 ```

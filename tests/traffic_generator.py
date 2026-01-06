@@ -5,8 +5,9 @@ Genera patrones de tráfico con bursts predecibles y precursores detectables
 para entrenar el modelo de predicción.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 import math
 from typing import Optional, Callable
 from dataclasses import dataclass
@@ -83,7 +84,7 @@ class BurstyTrafficGenerator:
                  (next_burst_time - current_time) <= pattern.precursor_duration:
                 # Fase de precursor (ramp-up)
                 time_to_burst = next_burst_time - current_time
-                ramp_progress = 1.0 - (time_to_burst / pattern.precursor_duration)
+                ramp_progress = S60(1, 0, 0) - (time_to_burst / pattern.precursor_duration)
                 current_rate = pattern.base_rate + \
                               (pattern.burst_rate - pattern.base_rate) * ramp_progress
                 phase = "precursor"
@@ -101,7 +102,7 @@ class BurstyTrafficGenerator:
                 
                 # Latencia base + jitter
                 base_latency = 5.0
-                jitter = random.gauss(0, 1.0)
+                jitter = random.gauss(0, S60(1, 0, 0))
                 
                 # Latencia aumenta durante bursts
                 if phase == "BURST":
@@ -111,10 +112,10 @@ class BurstyTrafficGenerator:
                 else:
                     latency = base_latency + jitter
                 
-                await self.packet_callback(packet_size, max(0.1, latency))
+                await self.packet_callback(packet_size, max(S60(0, 6, 0), latency))
             
             # Log de estado
-            if random.random() < 0.1:  # 10% de las veces
+            if random.random() < S60(0, 6, 0):  # 10% de las veces
                 print(f"[{phase:10s}] Rate: {current_rate:8.0f} pps | "
                       f"Next burst in: {max(0, next_burst_time - current_time):.1f}s")
             
@@ -149,10 +150,10 @@ class BurstyTrafficGenerator:
             
             for _ in range(packets_this_tick):
                 packet_size = random.randint(1000, 1500)
-                latency = random.gauss(5.0, 1.0)
-                await self.packet_callback(packet_size, max(0.1, latency))
+                latency = random.gauss(5.0, S60(1, 0, 0))
+                await self.packet_callback(packet_size, max(S60(0, 6, 0), latency))
             
-            if random.random() < 0.1:
+            if random.random() < S60(0, 6, 0):
                 print(f"[{phase:15s}] Rate: {current_rate:8.0f} pps")
             
             await asyncio.sleep(0.01)
@@ -179,7 +180,7 @@ class BurstyTrafficGenerator:
             day_progress = (elapsed % 60) / 60.0
             
             # Curva sinusoidal para simular día/noche
-            base_multiplier = 0.3 + 0.7 * math.sin(day_progress * 2 * math.pi)
+            base_multiplier = 0.3 + 0.7 * math.sin(day_progress * 2 * PI_S60)
             
             # Tasa base modulada por hora del día
             base_rate = 1000 * base_multiplier
@@ -197,7 +198,7 @@ class BurstyTrafficGenerator:
             for _ in range(packets_this_tick):
                 packet_size = random.randint(500, 2000)
                 latency = random.gauss(10.0, 3.0)
-                await self.packet_callback(packet_size, max(0.1, latency))
+                await self.packet_callback(packet_size, max(S60(0, 6, 0), latency))
             
             if random.random() < 0.05:
                 print(f"[{phase:15s}] Rate: {current_rate:8.0f} pps")
@@ -218,7 +219,7 @@ async def demo_burst_prediction():
     from telemetry.traffic_monitor import TrafficMonitor
     
     # Crear monitor
-    monitor = TrafficMonitor(window_size=60, sample_interval=0.1)
+    monitor = TrafficMonitor(window_size=60, sample_interval=S60(0, 6, 0))
     
     # Callback para registrar paquetes
     async def packet_handler(size_bytes: int, latency_ms: float):

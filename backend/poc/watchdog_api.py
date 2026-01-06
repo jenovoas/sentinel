@@ -3,6 +3,7 @@ Watchdog Status API
 Provides real-time status of system watchdogs, services, and containers
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from fastapi import APIRouter, HTTPException
 from typing import List, Dict, Any
 import subprocess

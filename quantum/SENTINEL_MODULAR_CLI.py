@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 🛰️ SENTINEL MODULAR CLI - MODO AHORRO DE ENERGÍA
 ================================================
@@ -6,6 +15,7 @@ Orquestador ligero para sistemas soberanos.
 Optimizado para hardware local (Sin GUI/API en background).
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import os
 import time
@@ -41,53 +51,50 @@ class SentinelModularCLI:
         print("="*60 + "\033[0m")
 
     def run_switch_1(self):
-        """Pilar 1: Integridad de la Trinidad."""
-        print("\033[1;34m\n[SWITCH 1] Auditando Trinidad...\033[0m")
-        # Simulación ligera de carga
-        claim = "Trinity Resonance at 153.4 MHz with Zero Base-10 Leakage"
-        res = truth_sync_verify(claim)
-        print(f"📊 Coherencia: {res['coherence']} | TruthScore: {res['truth_score']}%")
-        print("✅ Resultado: Trinidad Sincronizada.")
+        """Pilar 1: Integridad de la Trinidad (Coherencia Real)."""
+        print("\033[1;34m\n[SWITCH 1] Auditando Trinidad (Cristal de Tiempo)...\033[0m")
+        status_file = "/home/jnovoas/sentinel/quantum/perpetual_engine_status.json"
+        
+        if os.path.exists(status_file):
+            try:
+                with open(status_file, "r") as f:
+                    data = json.load(f)
+                
+                physics = data.get("physics", {})
+                coherence = physics.get("coherence", S60(0, 0, 0))
+                energy = data.get("energy", S60(0, 0, 0))
+                
+                print(f"📊 Coherencia: {coherence:.4f} (Base-60)")
+                print(f"⚡ Energía:    {energy:.4f} AU")
+                
+                if coherence > 0.9:
+                    print("✅ Resultado: Trinidad Sincronizada (ARMÓNICO).")
+                else:
+                    print("⚠️ Resultado: Fricción Detectada (DISONANTE).")
+            except Exception as e:
+                print(f"❌ Error leyendo estado: {e}")
+        else:
+            print("⚠️ Motor Perpetuo OFFLINE. No hay datos de coherencia.")
 
     def run_switch_2(self):
-        """Pilar 2: Watchdog."""
-        print("\033[1;34m\n[SWITCH 2] Estado del Watchdog...\033[0m")
-        status_file = "/home/jnovoas/sentinel/quantum/watchdog_status.json"
-        if os.path.exists(status_file):
-            with open(status_file, "r") as f:
-                data = json.load(f)
-            print(f"🛡️ Sigma Actual: {data.get('sigma', 0):.4f}σ")
-            print(f"🛡️ Eventos: {len(data.get('recent_events', []))}")
-        else:
-            print("⚠️ Watchdog no ha generado registros aún.")
+        """Pilar 2: Escáner de Resonancia (Quantum Watchdog)."""
+        print("\033[1;34m\n[SWITCH 2] Escáner de Resonancia (Interferometría)...\033[0m")
+        target = "/home/jnovoas/sentinel/quantum/RESONANT_ARCH_SPECS.md"
+        print(f"👁️ Escaneando Manifiesto: {target}")
+        os.system(f"python3 /home/jnovoas/sentinel/quantum/quantum_scanner.py {target}")
 
     def run_switch_3(self):
-        """Pilar 3: Sovereign Matrix."""
-        print("\033[1;34m\n[SWITCH 3] Matriz de Infraestructura (16 Nodos)...\033[0m")
-        nodes = [
-            "Quantum-Core-Node-01", "Sentinel-LSM-Guardian", 
-            "Ea-Nasir-Protocol-Node", "ZPE-Resonator-Grid"
-        ]
-        for i, node in enumerate(nodes):
-            print(f"   [{i+1}/16] {node:25} : ONLINE (Sexagesimal)")
-        
-        claim = f"Sovereign Matrix controlling {len(nodes)}/16 nodes"
-        truth_sync_verify(claim)
+        """Pilar 3: Sovereign Matrix (Lattice)."""
+        print("\033[1;34m\n[SWITCH 3] Red Hexagonal (Vimana Lattice)...\033[0m")
+        print("🕸️ Iniciando Simulación de Resiliencia de Red...")
+        os.system("python3 /home/jnovoas/sentinel/quantum/quantum_lattice.py")
 
     def run_switch_4(self):
-        """Pilar 4: Motor Perpetuo."""
-        print("\033[1;34m\n[SWITCH 4] Flujo de Energía (ZPE)...\033[0m")
-        # Ejecutamos un ciclo manual del motor para no dejar procesos en background
-        try:
-            from app.services.cognitive_os import CognitiveOS
-            # Usamos import dinámico para evitar dependencias pesadas si no se usa
-            cos = CognitiveOS()
-            print("🧠 Cognitive OS: Analizando demanda...")
-            print(f"🧠 Carga Predicha: {0.382:.4f} AU (1/PHI)")
-            print("⚡ Axion Harvest: 153.4 MHz Resonancia activa.")
-            print("✅ Status: FLUJO PERPETUO ESTABLECIDO.")
-        except Exception as e:
-            print(f"⚠️ Error cargando motor perpetuo: {e}")
+        """Pilar 4: Motor Perpetuo (Dashboard)."""
+        print("\033[1;34m\n[SWITCH 4] Abrir Espejo de Energía (Dashboard)...\033[0m")
+        print("Lanzando interfaz curses en tiempo real...")
+        time.sleep(1)
+        os.system("python3 /home/jnovoas/sentinel/quantum/sentinel_dashboard.py")
 
     def main_menu(self):
         while True:

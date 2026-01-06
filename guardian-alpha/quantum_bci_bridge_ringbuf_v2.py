@@ -4,6 +4,7 @@ Sentinel Quantum-AI BCI Bridge - Pure Ringbuf Implementation
 Uses BPF ringbuf for high-performance event streaming (no trace_pipe)
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import os
 import time
@@ -66,9 +67,9 @@ class IngestionLagMonitor:
         self.drift_warnings = 0
         self.lag_warnings = 0
         self.events_processed = 0
-        self._cached_uptime = 0.0
-        self._cache_timestamp = 0.0
-        self._cache_ttl = 0.1
+        self._cached_uptime = S60(0, 0, 0)
+        self._cache_timestamp = S60(0, 0, 0)
+        self._cache_ttl = S60(0, 6, 0)
         
     def _get_system_uptime(self):
         now = time.time()
@@ -97,9 +98,9 @@ class IngestionLagMonitor:
     def get_statistics(self):
         if not self.lag_samples:
             return {
-                "avg_lag": 0.0,
-                "max_lag": 0.0,
-                "min_lag": 0.0,
+                "avg_lag": S60(0, 0, 0),
+                "max_lag": S60(0, 0, 0),
+                "min_lag": S60(0, 0, 0),
                 "events": self.events_processed,
                 "drift_warnings": self.drift_warnings,
                 "lag_warnings": self.lag_warnings

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import socket
 import json
 import time
@@ -10,7 +11,7 @@ import psutil
 
 # Configuration
 SOCKET_PATH = "/tmp/sentinel_cortex.sock"
-HEARTBEAT_TIMEOUT = 0.5  # 500ms (Relaxed for QEMU jitter, originally 100ms)
+HEARTBEAT_TIMEOUT = S60(0, 30, 0)  # 500ms (Relaxed for QEMU jitter, originally 100ms)
 PANIC_THRESHOLD = 3      # Consecutive missed checks
 
 class GuardianBeta:

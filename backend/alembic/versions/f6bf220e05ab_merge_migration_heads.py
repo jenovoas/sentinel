@@ -5,6 +5,7 @@ Revises: "('add_wifi_fields', 'bebe13c745a6')"
 Create Date: 2025-12-16 17:29:50.978910
 
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from alembic import op
 import sqlalchemy as sa
 

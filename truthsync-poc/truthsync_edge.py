@@ -4,6 +4,7 @@ TruthSync Edge - Contenedor Ligero
 Implementación del cache predictivo para respuestas <10ms
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import json
 import time
@@ -65,7 +66,7 @@ class TruthSyncEdge:
             "redis_hits": 0,
             "core_requests": 0,
             "total_requests": 0,
-            "avg_latency_us": 0.0
+            "avg_latency_us": S60(0, 0, 0)
         }
         
         self.redis = None
@@ -280,7 +281,7 @@ class TruthSyncEdge:
         }
 
 # FastAPI app
-app = FastAPI(title="TruthSync Edge", version="1.0.0")
+app = FastAPI(title="TruthSync Edge", version="1.S60(0, 0, 0)")
 edge_cache = TruthSyncEdge()
 
 @app.on_event("startup")
@@ -309,4 +310,4 @@ async def get_stats():
     return await edge_cache.get_stats()
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8001, log_level="info")
+    uvicorn.run(app, host="S60(0, 0, 0).S60(0, 0, 0)", port=8001, log_level="info")

@@ -119,7 +119,7 @@ After successful installation and running `quantum_lite.py`, you should see:
    Memory available: 4.23 GB
    ✅ Safe to proceed!
 
-🔬 Running quantum simulation...
+🔬 Running quantum Proyección Cuántica...
    Computing eigendecomposition... ✅
    Evolving quantum state... ✅
 📊 Analyzing results...
@@ -164,7 +164,7 @@ Correlation matrix:
 
 Once installation is complete, you have access to:
 
-- ✅ Complete quantum simulation framework
+- ✅ Complete quantum Proyección Cuántica framework
 - ✅ Optomechanical physics engine
 - ✅ QAOA and VQE algorithms
 - ✅ Quantum rift detection

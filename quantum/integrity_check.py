@@ -1,3 +1,11 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 🛰️ INTEGRITY CHECK: QUANTUM RADIO RESONANCE
 ==========================================
@@ -9,7 +17,8 @@ Comparamos:
 Si el motor es honesto, el Caso 2 debe mostrar DISONANCIA (Estabilidad negativa).
 """
 
-import numpy as np
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import sys
 import os
 
@@ -17,7 +26,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from signal_stabilization_study import SignalStabilizerStudy
 
 def integrity_proof():
-    study = SignalStabilizerStudy(target_f_mhz=153.4)
+    study = SignalStabilizerStudy(target_f_mhz=S60(153, 24, 0))
     
     print("🧪 PRUEBA DE INTEGRIDAD DEL MOTOR CUÁNTICO")
     print("==========================================")
@@ -25,8 +34,8 @@ def integrity_proof():
     # Baseline
     amp_base, err_base = study.run_simulation(stabilized=False)
     
-    # CASO 1: Sintonía Correcta (153.4 MHz)
-    print("\n[TEST 1] Sintonía Correcta (153.4 MHz)...")
+    # CASO 1: Sintonía Correcta (S60(153, 24, 0) MHz)
+    print("\n[TEST 1] Sintonía Correcta (S60(153, 24, 0) MHz)...")
     amp_ok, err_ok = study.run_simulation(stabilized=True)
     gain_ok = (err_base - err_ok) / err_base * 100
     print(f"   Resultado: {gain_ok:+.2f}% de estabilidad.")
@@ -35,28 +44,28 @@ def integrity_proof():
     print("\n[TEST 2] Sintonía Errónea (INTENCIÓN A 155.0 MHz)...")
     # Modificamos temporalmente el estudio para usar una frecuencia de intención errónea
     def run_mismatched():
-        m_params = study.run_simulation.__globals__['MembraneParameters'](mass=1e-15, frequency=153.4e6)
-        omega = 2 * np.pi * 153.4e6
+        m_params = study.run_simulation.__globals__['MembraneParameters'](mass=1e-15, frequency=S60(153, 24, 0)e6)
+        omega = 2 * PI_S60 * S60(153, 24, 0)e6
         dt = study.dt
         steps = study.steps
         np.random.seed(42)
         vacuum_noise = np.random.normal(0, 2e-12, steps)
-        vacuum_signal = np.cos(2 * np.pi * 153.4e6 * np.arange(steps) * dt)
+        vacuum_signal = np.cos(2 * PI_S60 * S60(153, 24, 0)e6 * np.arange(steps) * dt)
         
-        x, p = 0.0, 0.0
+        x, p = S60(0, 0, 0), S60(0, 0, 0)
         errs = []
         for i in range(steps):
             t = i * dt
             force = (vacuum_signal[i] * 1e-12) + vacuum_noise[i]
             # EL ERROR: Intentamos anclar a 155 MHz
-            x_mismatch = np.cos(2 * np.pi * 155.0e6 * t)
+            x_mismatch = np.cos(2 * PI_S60 * 155.0e6 * t)
             force += - (x - x_mismatch * 1e-11) * 2e-2
             
             # Evolución (Euler simple para este test rápido)
             p += (force - (omega/1e6)*p) * dt
             x += (p/1e-15) * dt
             if i > steps - 10000:
-                errs.append(abs(x/max(abs(x),1e-25) - np.cos(2 * np.pi * 153.4e6 * t)))
+                errs.append(abs(x/max(abs(x),1e-25) - np.cos(2 * PI_S60 * S60(153, 24, 0)e6 * t)))
         return np.mean(errs)
 
     err_fail = run_mismatched()

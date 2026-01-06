@@ -3,6 +3,7 @@
 Sentinel SHM Warmup - Page Fault Mitigator
 Toca cada página de la memoria compartida para asegurar que esté en RAM física.
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 from multiprocessing import shared_memory
 

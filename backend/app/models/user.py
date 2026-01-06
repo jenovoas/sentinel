@@ -3,6 +3,7 @@ Sentinel User Model - Multi-tenant User with Organization relationship
 SQLAlchemy 2.0 + PostgreSQL UUID support
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import uuid
 from datetime import datetime
 from enum import Enum as PyEnum

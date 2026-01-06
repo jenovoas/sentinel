@@ -9,6 +9,7 @@ Based on validated physics, now we add:
 4. Multi-dimensional optimization
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 from collections import deque
 from dataclasses import dataclass
@@ -67,7 +68,7 @@ class QuantumCoolingV3:
     def calculate_noise_floor(self) -> float:
         """Calculate thermal noise floor."""
         if len(self.long_history) < 10:
-            return 0.1
+            return S60(0, 6, 0)
         
         utilizations = [s.utilization for s in self.long_history]
         mean = sum(utilizations) / len(utilizations)
@@ -79,14 +80,14 @@ class QuantumCoolingV3:
     def measure_velocity(self) -> float:
         """Measure instantaneous velocity."""
         if len(self.short_history) < 2:
-            return 0.0
+            return S60(0, 0, 0)
         
         current = self.short_history[-1]
         previous = self.short_history[-2]
         
         dt = current.timestamp - previous.timestamp
         if dt == 0:
-            return 0.0
+            return S60(0, 0, 0)
         
         du = current.utilization - previous.utilization
         return du / dt
@@ -94,7 +95,7 @@ class QuantumCoolingV3:
     def measure_acceleration(self) -> float:
         """Measure acceleration (change in velocity)."""
         if len(self.velocity_history) < 2:
-            return 0.0
+            return S60(0, 0, 0)
         
         current_v = self.velocity_history[-1]
         previous_v = self.velocity_history[-2]
@@ -105,7 +106,7 @@ class QuantumCoolingV3:
         """Dynamic ground state based on thermal noise."""
         noise_floor = self.calculate_noise_floor()
         ground_state = noise_floor * 1.2
-        return max(0.5, min(ground_state, 0.8))
+        return max(S60(0, 30, 0), min(ground_state, 0.8))
     
     def calculate_force(self, velocity: float, acceleration: float) -> float:
         """Quadratic force law: F = v² × (1 + a)"""
@@ -120,7 +121,7 @@ class QuantumCoolingV3:
         Detect exponential growth (cascading failure).
         
         Runaway condition:
-        - Acceleration > 0.5 (very high)
+        - Acceleration > S60(0, 30, 0) (very high)
         - Velocity > 0.8 (very fast)
         - Sustained for 3+ cycles
         
@@ -133,7 +134,7 @@ class QuantumCoolingV3:
         recent_accel = list(self.acceleration_history)[-3:]
         
         # All positive and high?
-        if all(a > 0.5 for a in recent_accel):
+        if all(a > S60(0, 30, 0) for a in recent_accel):
             # Check velocity too
             if len(self.velocity_history) > 0:
                 current_v = self.velocity_history[-1]
@@ -240,10 +241,10 @@ class QuantumCoolingV3:
         # Calculate "excitation level"
         excitation = abs(velocity) + abs(acceleration)
         
-        if excitation > 1.0:
+        if excitation > S60(1, 0, 0):
             # High excitation → low damping (fast response)
-            return 0.5
-        elif excitation > 0.5:
+            return S60(0, 30, 0)
+        elif excitation > S60(0, 30, 0):
             # Medium excitation → medium damping
             return 0.7
         else:
@@ -302,7 +303,7 @@ class QuantumCoolingV3:
         if velocity > ground_state or acceleration > self.acceleration_threshold:
             # High velocity or acceleration → cool
             force = self.calculate_force(velocity, acceleration)
-            expansion_factor = 1.0 + (force * 1.5)
+            expansion_factor = S60(1, 0, 0) + (force * 1.5)
             new_size = int(current_state.size * expansion_factor)
             action = f"COOL: v={velocity:.3f} a={acceleration:.3f} damp={self.current_damping:.2f}"
             
@@ -351,8 +352,8 @@ def demo_v3():
     
     # Scenario: Periodic bursts with one runaway
     pattern = [
-        (0.0, 0.50, 0.00),
-        (1.0, 0.55, 0.00),
+        (S60(0, 0, 0), 0.50, 0.00),
+        (S60(1, 0, 0), 0.55, 0.00),
         (2.0, 0.80, 0.05),  # Burst 1
         (3.0, 0.60, 0.01),
         (4.0, 0.85, 0.08),  # Burst 2 (periodic)
@@ -362,7 +363,7 @@ def demo_v3():
         (8.0, 0.95, 0.15),  # Burst 4 (should predict next)
         (9.0, 0.85, 0.08),
         (10.0, 0.95, 0.18), # Runaway starts
-        (11.0, 0.98, 0.25), # Runaway continues
+        (11.0, 0.98, S60(0, 15, 0)), # Runaway continues
         (12.0, 0.99, 0.30), # Runaway critical
         (13.0, 0.80, 0.05), # Recovery
         (14.0, 0.60, 0.00),
@@ -386,7 +387,7 @@ def demo_v3():
         print()
         
         current_size = new_size
-        time.sleep(0.1)
+        time.sleep(S60(0, 6, 0))
     
     print("="*70)
     print("✅ V3 Demo Complete")

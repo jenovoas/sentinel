@@ -8,6 +8,7 @@ Test de integración que simula certificar una decisión de Guardian Gamma.
 Powered by Google ❤️ & Perplexity 💜
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import json
 from datetime import datetime

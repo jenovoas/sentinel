@@ -7,6 +7,7 @@ Verifies:
 3. Human Approval (API simulation)
 4. Feedback Loop closure
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import os
 import sys

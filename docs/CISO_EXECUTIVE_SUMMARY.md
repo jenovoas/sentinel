@@ -19,7 +19,7 @@ Resultados validados en **Live Investor Demo (30 Dic 2025)**:
 | **Block Rate** | 99.5% (Signatures) | **99.24% (Behavioral)** | **Zero False Negatives** |
 | **Integrity** | Killable Processes | **Byzantine Fault Tolerant** | **Immune to Rootkits** |
 
-## 3. The 4-Act Attack Simulation (Hollywood Grade)
+## 3. The 4-Act Attack Proyección Cuántica (Hollywood Grade)
 During the live demo, Sentinel neutralizes a full "Kill Chain" in 90 seconds:
 
 1.  **Reconnaissance**: XDP layers drop port scanners instantly (Spike on Dashboard).

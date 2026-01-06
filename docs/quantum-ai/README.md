@@ -166,7 +166,7 @@ Pre-trained lookup table for O(1) threat classification.
 ---
 
 #### [Shadow Reality Engine](shadow-engine.md)
-Quantum annealing simulation for pre-emptive threat collapse.
+Quantum annealing Proyección Cuántica for pre-emptive threat collapse.
 
 **Concept**: Simulate 60 parallel scenarios, collapse dangerous ones before manifestation.
 

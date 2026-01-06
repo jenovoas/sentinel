@@ -45,7 +45,7 @@ Key Results (Dec 23, 2025):
 • 944,200 events/sec throughput (QAOA)
 • 24 threat patterns analyzed (VQE)
 • 10.06s total execution, <0.01 GB memory
-• Laptop-scale quantum simulation
+• Laptop-scale quantum Proyección Cuántica
 
 Strong synergy with Willow chip for hybrid quantum-classical systems.
 

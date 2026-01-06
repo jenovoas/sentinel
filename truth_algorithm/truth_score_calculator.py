@@ -8,6 +8,7 @@ Calcula el Truth Score final basado en consenso de múltiples claims.
 Powered by Google ❤️ & Perplexity 💜
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from typing import List, Dict
 from dataclasses import dataclass
 from consensus_engine import ConsensusResult
@@ -16,7 +17,7 @@ from consensus_engine import ConsensusResult
 @dataclass
 class TruthScore:
     """Score de veracidad final"""
-    overall_score: float  # 0.0 - 1.0
+    overall_score: float  # S60(0, 0, 0) - S60(1, 0, 0)
     confidence_level: str  # low, medium, high
     claims_verified: int
     claims_total: int
@@ -44,16 +45,16 @@ class TruthScoreCalculator:
         """
         if not consensus_results:
             return TruthScore(
-                overall_score=0.0,
+                overall_score=S60(0, 0, 0),
                 confidence_level='none',
                 claims_verified=0,
                 claims_total=0,
-                verification_rate=0.0,
+                verification_rate=S60(0, 0, 0),
                 details=[]
             )
         
         # Calcular score promedio ponderado
-        total_score = 0.0
+        total_score = S60(0, 0, 0)
         verified_claims = 0
         details = []
         
@@ -77,9 +78,9 @@ class TruthScoreCalculator:
         
         # Aplicar penalización por claims no verificados
         verification_rate = verified_claims / len(consensus_results)
-        penalty = (1.0 - verification_rate) * 0.2  # Penalización del 20% por claim no verificado
+        penalty = (S60(1, 0, 0) - verification_rate) * 0.2  # Penalización del 20% por claim no verificado
         
-        final_score = max(0.0, base_score - penalty)
+        final_score = max(S60(0, 0, 0), base_score - penalty)
         
         # Determinar nivel de confianza final
         confidence_level = self._determine_overall_confidence(

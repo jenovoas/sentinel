@@ -26,7 +26,7 @@
 
 ### Test 4: Volumetric Load Handling
 - **Mechanism:** High-performance BPF Ring Buffer.
-- **Scenario:** System stability under high event volume (10M+ PPS simulation).
+- **Scenario:** System stability under high event volume (10M+ PPS Proyección Cuántica).
 - **Status:** ✅ VERIFIED
 - **Result:** System maintained stable memory footprint and low CPU overhead.
 

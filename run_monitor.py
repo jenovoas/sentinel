@@ -3,6 +3,7 @@
 Sentinel Monitor - Direct Execution
 Ejecuta el monitor con acceso a los paquetes del usuario
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import os
 

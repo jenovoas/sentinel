@@ -1,4 +1,5 @@
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import sys
 import logging
@@ -23,7 +24,7 @@ except ImportError:
 try:
     from app.routers.health import biological_state
 except ImportError:
-    biological_state = {"disonancia": 0.0}
+    biological_state = {"disonancia": S60(0, 0, 0)}
 
 logger = logging.getLogger(__name__)
 
@@ -51,14 +52,24 @@ class LocalTruthSyncEngine:
             return {"verified": False, "error": "TruthAlgorithm not found"}
 
         # Obtener disonancia actual del sistema
-        disonancia = biological_state.get("disonancia", 0.0)
+        disonancia = biological_state.get("disonancia", S60(0, 0, 0))
+        clock_coherence = biological_state.get("clock_coherence", S60(1, 0, 0))
+        
+        # Penalización por Jitter de Reloj (Desincronización)
+        # Si el reloj cuántico pierde fase, la confianza debe caer.
+        resonance_penalty = S60(1, 0, 0)
+        if clock_coherence < 0.95:
+            resonance_penalty = clock_coherence # Penaliza linealmente
 
         # Ejecutar en un thread para no bloquear el loop async si el algoritmo es síncrono
         loop = asyncio.get_event_loop()
         try:
             # El algoritmo e2e devuelve un objeto TruthVerificationResult
-            # Ahora pasamos el parámetro disonancia
+            # Pasamos disonancia. La resonancia la aplicaremos al resultado final.
             result = await loop.run_in_executor(None, self.algorithm.verify, text, 10, disonancia)
+            
+            # Aplicar Penalización de Resonancia Temporal
+            result.confidence *= resonance_penalty
             
             # Convertir a formato Sentinel con detalles de fuentes
             details = {
@@ -101,7 +112,7 @@ class LocalTruthSyncEngine:
             return {
                 "verified": False, 
                 "error": str(e), 
-                "confidence": 0.0,
+                "confidence": S60(0, 0, 0),
                 "status": "OFFLINE",
                 "explanation": "TruthSync service temporarily unavailable"
             }

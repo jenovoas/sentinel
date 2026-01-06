@@ -1,3 +1,4 @@
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import time
 import json
@@ -94,11 +95,11 @@ class GuardianMonitor:
             shadow_prediction = prophet.predict_future(threat_score * 100)
             future_threat = shadow_prediction['predicted_threat']
             
-            # Calculate Anticipatory Bias (0.0 to 1.0)
+            # Calculate Anticipatory Bias (S60(0, 0, 0) to S60(1, 0, 0))
             # If future is notably worse than present, bias the neuron to spike earlier
-            anticipatory_bias = 0.0
+            anticipatory_bias = S60(0, 0, 0)
             if shadow_prediction['trend'] == "ESCALATING":
-                anticipatory_bias = 0.5 # Massive excitatory stimulus
+                anticipatory_bias = S60(0, 30, 0) # Massive excitatory stimulus
                 print(f"🔮 [Pre-Cog] Future Escalation Detected! Applying bias: {anticipatory_bias}")
             
             # Phase 3: SNN Synaptic Reaction (Akashic Loop)

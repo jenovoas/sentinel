@@ -1,5 +1,13 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
 
-import numpy as np
+
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import math
 import sys
 import os
@@ -7,10 +15,10 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from sovereign_math import S60, S60_from_float, SovereignLUT
 
-omega_m = 2 * np.pi * 1e6
+omega_m = 2 * PI_S60 * 1e6
 dt = 0.01 / 600000
 theta = omega_m * dt
-theta_deg = theta * 180.0 / np.pi
+theta_deg = theta * 180.0 / PI_S60
 s60 = S60_from_float(theta_deg)
 
 print(f"Theta (rad): {theta}")

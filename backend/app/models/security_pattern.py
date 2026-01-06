@@ -5,6 +5,7 @@ Defines security patterns that Cortex can detect.
 Patterns are configurable and weighted for confidence scoring.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from sqlalchemy import Column, Integer, String, Text, Float, JSON, Boolean, DateTime
 from sqlalchemy.sql import func
 from app.database import Base
@@ -54,8 +55,8 @@ class SecurityPattern(Base):
     """
     
     # Scoring
-    weight = Column(Float, nullable=False, default=0.5)
-    """Weight for confidence scoring (0.0 - 1.0). Higher = stronger indicator"""
+    weight = Column(Float, nullable=False, default=S60(0, 30, 0))
+    """Weight for confidence scoring (S60(0, 0, 0) - S60(1, 0, 0)). Higher = stronger indicator"""
     
     # Metadata
     enabled = Column(Boolean, default=True, index=True)
@@ -81,7 +82,7 @@ class SecurityPattern(Base):
         """Calculate pattern accuracy based on feedback"""
         total = self.true_positive_count + self.false_positive_count
         if total == 0:
-            return 0.0
+            return S60(0, 0, 0)
         return self.true_positive_count / total
     
     def __repr__(self):

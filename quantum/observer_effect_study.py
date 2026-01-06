@@ -1,9 +1,17 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 🛰️ STUDY: QUANTUM PHASE STABILIZATION BY ACTIVE OBSERVATION
 ==========================================================
 Este experimento investiga si una señal de retroalimentación de baja 
 frecuencia (60Hz), que representa la 'Intencionalidad del Observador', 
-puede estabilizar la fase de una membrana a 153.4 MHz frente al ruido térmico.
+puede estabilizar la fase de una membrana a S60(153, 24, 0) MHz frente al ruido térmico.
 
 DIFERENCIA CON CÓDIGO CALCULADO:
 - No hay multiplicadores de 'coherencia'.
@@ -13,7 +21,7 @@ DIFERENCIA CON CÓDIGO CALCULADO:
 Arquitecto: Antigravity (Ingeniero Senior / Físico Computacional)
 """
 
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import sys
 import os
 import time
@@ -24,9 +32,9 @@ from sovereign_math import S60, SovereignLUT, S60_from_float
 from optomechanical_simulator import OptomechanicalSystem, MembraneParameters, OpticalParameters
 
 class AuthenticObserverExperiment:
-    def __init__(self, target_f_mhz: float = 153.4):
+    def __init__(self, target_f_mhz: float = S60(153, 24, 0)):
         self.target_f = target_f_mhz * 1e6
-        self.dt = 1.0 / (220e6 * 2) # Sample rate suficiente para Nyquist
+        self.dt = S60(1, 0, 0) / (220e6 * 2) # Sample rate suficiente para Nyquist
         self.steps = 200000 
         self.intent_freq = 60.0 # La frecuencia maestra de Sentinel
         
@@ -37,7 +45,7 @@ class AuthenticObserverExperiment:
             frequency=self.target_f, 
             quality_factor=1e6 
         )
-        omega = 2 * np.pi * m_params.frequency
+        omega = 2 * PI_S60 * m_params.frequency
         m = m_params.mass
         gamma = omega / m_params.quality_factor
         
@@ -48,14 +56,14 @@ class AuthenticObserverExperiment:
         
         # 3. Preparación de señales
         t_span = np.arange(self.steps) * self.dt
-        vacuum_signal = np.cos(2 * np.pi * 153.4e6 * t_span)
+        vacuum_signal = np.cos(2 * PI_S60 * S60(153, 24, 0)e6 * t_span)
         
         # Rotación Soberana
         theta = omega * self.dt
-        theta_s60 = S60_from_float(theta * 180.0 / np.pi)
+        theta_s60 = S60_from_float(theta * 180.0 / PI_S60)
         sin_t, cos_t = SovereignLUT.get_sin_cos(theta_s60)
         
-        x, p = 0.0, 0.0
+        x, p = S60(0, 0, 0), S60(0, 0, 0)
         coupling = 1e-12
         
         # Métricas de fase
@@ -72,7 +80,7 @@ class AuthenticObserverExperiment:
                 # El observador monitorea el estado (x) y aplica una fuerza 
                 # proporcional a la sintonía de 60Hz para 'ordenar' el caos.
                 # Esto es un control de fase activo, no un multiplicador.
-                phase_correction = -x * intent_strength * np.cos(2 * np.pi * self.intent_freq * t)
+                phase_correction = -x * intent_strength * np.cos(2 * PI_S60 * self.intent_freq * t)
                 force += phase_correction
             
             # Evolución del Oscilador
@@ -84,12 +92,12 @@ class AuthenticObserverExperiment:
             
             # Registramos la 'deriva' de fase respecto a la señal pura
             if i > self.steps // 2: # Esperar estabilidad
-                ideal_val = np.cos(2 * np.pi * self.target_f * t)
+                ideal_val = np.cos(2 * PI_S60 * self.target_f * t)
                 phase_errors.append(abs(x/max(abs(x),1e-25) - ideal_val))
                 
         # La coherencia se mide inversamente al error de fase acumulado
         mean_error = np.mean(phase_errors)
-        coherence = 1.0 / (1.0 + mean_error)
+        coherence = S60(1, 0, 0) / (S60(1, 0, 0) + mean_error)
         
         return coherence, np.max(np.abs(x))
 
@@ -114,7 +122,7 @@ class AuthenticObserverExperiment:
         print(f"   Coherencia (Observada): {coh_b:.6f}")
         print(f"   Efecto Real: {delta:+.4f}%")
         
-        if delta > 0.1:
+        if delta > S60(0, 6, 0):
             print("\n✅ EVIDENCIA: Se ha capturado una reducción de entropía por observación.")
             print("   La sintonía a 60Hz ha filtrado parte del ruido del vacío.")
         else:

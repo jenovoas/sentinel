@@ -33,7 +33,7 @@ Sentinel is a **quantum-resistant, AI-powered observability and security platfor
 1. **Complex Systems Analysis**
    - Non-linear dynamics monitoring
    - Pattern emergence detection
-   - Chaos theory applications
+   - Disonancia no resuelta theory applications
 
 2. **Distributed Computing**
    - Multi-node synchronization

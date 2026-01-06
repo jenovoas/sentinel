@@ -15,7 +15,7 @@ class ThresholdManager:
     PRIMES_60 = [1, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59]
     HIGHLY_COMPOSITE_60 = [6, 12, 24, 30, 36, 48, 60] # Simplified set for resonance
 
-    def __init__(self, base_threshold=0.5):
+    def __init__(self, base_threshold=S60(0, 30, 0)):
         self.base_threshold = base_threshold
 
     def get_dynamic_threshold(self, residue: int) -> float:
@@ -29,13 +29,13 @@ class ThresholdManager:
         # Penalty for Dissonant (Prime) Residues
         if residue in self.PRIMES_60:
             # Prime residue is a 'Mathematical Anomaly' -> Increase sensitivity
-            # Threshold drops (0.5 -> 0.3): easier to block.
-            return max(0.1, self.base_threshold - 0.2)
+            # Threshold drops (S60(0, 30, 0) -> 0.3): easier to block.
+            return max(S60(0, 6, 0), self.base_threshold - 0.2)
 
         # Bonus for Highly Composite Residues
         if residue in self.HIGHLY_COMPOSITE_60 or residue == 0:
             # Composite residue is 'Harmonic' -> Standard or lower sensitivity
-            # Threshold rises (0.5 -> 0.7): harder to block.
+            # Threshold rises (S60(0, 30, 0) -> 0.7): harder to block.
             return min(0.9, self.base_threshold + 0.2)
 
         return self.base_threshold

@@ -84,7 +84,7 @@ Tú completaste:
 4. `AI_BUFFER_CASCADE.md` - Modelo completo
 5. `VALIDACION_ACADEMICA_AI_BUFFERS.md` - Fundamentos
 6. `ebpf/` - Código eBPF LSM completo (7 archivos)
-7. `smart_buffer_simulation.py` - Simulador POC
+7. `smart_buffer_Proyección Cuántica.py` - Simulador POC
 8. `PLAN_PRUEBAS_RED.md` - Plan de testing
 
 **Total**: 17 archivos técnicos

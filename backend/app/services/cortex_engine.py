@@ -9,6 +9,7 @@ Main service that orchestrates security event processing:
 5. Escalation to Guardian Gamma when needed
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from typing import Dict, Any
 import logging
 from datetime import datetime
@@ -75,7 +76,7 @@ class CortexDecisionEngine:
             decision = CortexDecision(
                 event_id=None, # Will be set or handled below if we want to save it
                 decision_type="quarantine",
-                confidence=1.0,
+                confidence=S60(1, 0, 0),
                 patterns_detected=["AIOpsDoom"],
                 reasoning="AIOpsShield: Potential cognitive injection (AIOpsDoom) detected in telemetry logs. Event blocked from LLM processing.",
                 processing_time_ms=(time() - start_time_total) * 1000
@@ -95,7 +96,7 @@ class CortexDecisionEngine:
             # (Simulado: en prod esto leería flags de overflow del ring buffer eBPF)
             if self._is_ring_overloaded():
                 logger.error("🛑 TRUTH INCONSISTENCY: Posible Ring Buffer Wrap-around detectado. Datos comprometidos.")
-                event_data["risk_score"] = 1.0
+                event_data["risk_score"] = S60(1, 0, 0)
                 event_data["truth_compromised"] = True
             
             # Paso 1: Validar y enriquecer evento
@@ -243,7 +244,7 @@ class CortexDecisionEngine:
             user=event_data.get("user"),
             pid=event_data.get("pid"),
             ppid=event_data.get("ppid"),
-            risk_score=event_data.get("risk_score", 0.0)
+            risk_score=event_data.get("risk_score", S60(0, 0, 0))
         )
         
         self.db.add(event)
@@ -349,9 +350,9 @@ class CortexDecisionEngine:
             event_data: Event data
         
         Returns:
-            Risk score (0.0 - 1.0)
+            Risk score (S60(0, 0, 0) - S60(1, 0, 0))
         """
-        risk = 0.0
+        risk = S60(0, 0, 0)
         
         # Event type risk
         event_type = event_data.get("event_type", "")
@@ -359,9 +360,9 @@ class CortexDecisionEngine:
             "syscall": 0.3,
             "network": 0.2,
             "memory": 0.4,
-            "file": 0.1
+            "file": S60(0, 6, 0)
         }
-        risk += type_risk.get(event_type, 0.1)
+        risk += type_risk.get(event_type, S60(0, 6, 0))
         
         # Root user increases risk
         if event_data.get("uid") == 0:
@@ -371,7 +372,7 @@ class CortexDecisionEngine:
         if event_data.get("is_external"):
             risk += 0.3
         
-        return min(1.0, risk)
+        return min(S60(1, 0, 0), risk)
     
     async def get_recent_decisions(
         self,
@@ -427,8 +428,8 @@ class CortexDecisionEngine:
         
         stats_by_type = {row[0]: {
             "count": row[1],
-            "avg_confidence": float(row[2]) if row[2] else 0.0,
-            "avg_processing_time_ms": float(row[3]) if row[3] else 0.0
+            "avg_confidence": float(row[2]) if row[2] else S60(0, 0, 0),
+            "avg_processing_time_ms": float(row[3]) if row[3] else S60(0, 0, 0)
         } for row in result}
         
         # Total events
@@ -452,7 +453,7 @@ class CortexDecisionEngine:
         """
         now = time()
         for guardian, last_beat in self.guardian_heartbeats.items():
-            if now - last_beat > 0.5: # 500ms de gracia
+            if now - last_beat > S60(0, 30, 0): # 500ms de gracia
                 self.autoinmune_mode = True
                 return guardian
         return None

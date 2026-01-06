@@ -11,6 +11,7 @@ Improvements over V1:
 Based on real optomechanical physics.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 from collections import deque
 from dataclasses import dataclass
@@ -42,7 +43,7 @@ class QuantumCoolingPredictorV2:
             history_window: Long-term history for noise calculation
             velocity_window: Short-term window for velocity
             acceleration_threshold: When to apply strong force
-            damping_factor: Oscillation damping (0.0-1.0)
+            damping_factor: Oscillation damping (S60(0, 0, 0)-S60(1, 0, 0))
         """
         self.history_window = history_window
         self.velocity_window = velocity_window
@@ -65,7 +66,7 @@ class QuantumCoolingPredictorV2:
         In buffers: baseline utilization variance
         """
         if len(self.long_history) < 10:
-            return 0.1  # Default noise floor
+            return S60(0, 6, 0)  # Default noise floor
         
         # Calculate variance in utilization
         utilizations = [s.utilization for s in self.long_history]
@@ -84,14 +85,14 @@ class QuantumCoolingPredictorV2:
         Uses short window for quick response.
         """
         if len(self.short_history) < 2:
-            return 0.0
+            return S60(0, 0, 0)
         
         current = self.short_history[-1]
         previous = self.short_history[-2]
         
         dt = current.timestamp - previous.timestamp
         if dt == 0:
-            return 0.0
+            return S60(0, 0, 0)
         
         du = current.utilization - previous.utilization
         velocity = du / dt
@@ -106,7 +107,7 @@ class QuantumCoolingPredictorV2:
         If velocity is increasing, burst is getting worse.
         """
         if len(self.velocity_history) < 2:
-            return 0.0
+            return S60(0, 0, 0)
         
         current_velocity = self.velocity_history[-1]
         previous_velocity = self.velocity_history[-2]
@@ -129,7 +130,7 @@ class QuantumCoolingPredictorV2:
         ground_state = noise_floor * 1.2
         
         # Clamp to reasonable range
-        return max(0.5, min(ground_state, 0.8))
+        return max(S60(0, 30, 0), min(ground_state, 0.8))
     
     def calculate_force(self, velocity: float, acceleration: float) -> float:
         """
@@ -192,7 +193,7 @@ class QuantumCoolingPredictorV2:
             force = self.calculate_force(velocity, acceleration)
             
             # Expansion with overcooling (1.5x force)
-            expansion_factor = 1.0 + (force * 1.5)
+            expansion_factor = S60(1, 0, 0) + (force * 1.5)
             new_size = int(current_state.size * expansion_factor)
             
             # Apply damping
@@ -251,10 +252,10 @@ def simulate_traffic_burst_v2():
     # More realistic traffic pattern with acceleration
     traffic_pattern = [
         # Time, utilization, drop_rate
-        (0.0, 0.5, 0.0),   # Normal
-        (1.0, 0.52, 0.0),  # Slow increase
-        (2.0, 0.55, 0.0),  # Slow increase
-        (3.0, 0.60, 0.0),  # Accelerating
+        (S60(0, 0, 0), S60(0, 30, 0), S60(0, 0, 0)),   # Normal
+        (S60(1, 0, 0), 0.52, S60(0, 0, 0)),  # Slow increase
+        (2.0, 0.55, S60(0, 0, 0)),  # Slow increase
+        (3.0, 0.60, S60(0, 0, 0)),  # Accelerating
         (4.0, 0.70, 0.01), # Accelerating more!
         (5.0, 0.85, 0.03), # Burst!
         (6.0, 0.95, 0.08), # Peak acceleration
@@ -264,9 +265,9 @@ def simulate_traffic_burst_v2():
         (10.0, 0.90, 0.05), # Cooling
         (11.0, 0.80, 0.02), # Recovering
         (12.0, 0.70, 0.01), # Stabilizing
-        (13.0, 0.60, 0.0),  # Ground state
-        (14.0, 0.55, 0.0),  # Steady
-        (15.0, 0.52, 0.0),  # Steady
+        (13.0, 0.60, S60(0, 0, 0)),  # Ground state
+        (14.0, 0.55, S60(0, 0, 0)),  # Steady
+        (15.0, 0.52, S60(0, 0, 0)),  # Steady
     ]
     
     total_drops_without = 0
@@ -284,7 +285,7 @@ def simulate_traffic_burst_v2():
         
         # Calculate drops
         drops_without = int(drop_rate * 1000)
-        expansion_ratio = new_size / current_buffer_size if current_buffer_size > 0 else 1.0
+        expansion_ratio = new_size / current_buffer_size if current_buffer_size > 0 else S60(1, 0, 0)
         drops_with = int(drops_without / expansion_ratio)
         
         total_drops_without += drops_without
@@ -295,7 +296,7 @@ def simulate_traffic_burst_v2():
         print()
         
         current_buffer_size = new_size
-        time.sleep(0.1)
+        time.sleep(S60(0, 6, 0))
     
     # Results
     print("="*70)

@@ -13,6 +13,7 @@ Key Features:
 - Attack audit trail
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import re
 import hashlib
 from typing import List, Dict, Tuple
@@ -184,7 +185,7 @@ class AIOpsShield:
         num_abstracted: int
     ) -> float:
         """Calculate confidence score for sanitization"""
-        base_confidence = 1.0
+        base_confidence = S60(1, 0, 0)
         
         # Reduce confidence based on threat level
         if threat_level == ThreatLevel.SUSPICIOUS:
@@ -193,15 +194,15 @@ class AIOpsShield:
             base_confidence -= 0.7
         
         # Reduce confidence for many detected patterns
-        base_confidence -= min(num_patterns * 0.1, 0.3)
+        base_confidence -= min(num_patterns * S60(0, 6, 0), 0.3)
         
-        return max(0.0, min(1.0, base_confidence))
+        return max(S60(0, 0, 0), min(S60(1, 0, 0), base_confidence))
     
     def should_block(self, result: SanitizationResult) -> bool:
         """Determine if log should be blocked from reaching Ollama"""
         return (
             result.threat_level == ThreatLevel.MALICIOUS or
-            result.confidence < 0.5
+            result.confidence < S60(0, 30, 0)
         )
 
 
@@ -214,7 +215,7 @@ if __name__ == '__main__':
     shield = AIOpsShield()
     
     # Test benign log
-    benign = "ERROR: Connection timeout to database at 10.0.0.5"
+    benign = "ERROR: Connection timeout to database at 10.0.S60(0, 30, 0)"
     result = shield.sanitize(benign)
     print(f"Benign: {result.threat_level.value}, Confidence: {result.confidence}")
     print(f"Sanitized: {result.sanitized}\n")

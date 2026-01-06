@@ -8,8 +8,9 @@ Este script valida la ecuación descubierta:
 Ejecuta múltiples pruebas para verificar que el patrón se mantiene.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import json
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import sys
 
 class ProportionalBufferController:
@@ -101,11 +102,11 @@ def test_pattern():
     for throughput, expected_buffer in test_cases:
         calculated = controller.calculate_buffer(throughput)
         error = abs(calculated - expected_buffer)
-        status = "✅" if error < 0.1 else "❌"
+        status = "✅" if error < S60(0, 6, 0) else "❌"
         
         print(f"{throughput:8.2f} Mbps | {expected_buffer:12.2f} MB | {calculated:13.2f} MB | {error:.3f} {status}")
         
-        if error >= 0.1:
+        if error >= S60(0, 6, 0):
             all_pass = False
     
     print()
@@ -123,7 +124,7 @@ def test_pattern():
         """Calcula throughput máximo dado un buffer"""
         return controller.baseline + (buffer_mb - controller.buffer_base) / controller.gain
     
-    buffer_sizes = [0.5, 1.0, 2.0, 5.0, 10.0]
+    buffer_sizes = [S60(0, 30, 0), S60(1, 0, 0), 2.0, 5.0, 10.0]
     
     print("Buffer Size | Throughput Soportado")
     print("------------+---------------------")

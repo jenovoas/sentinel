@@ -10,6 +10,7 @@ CARACTERÍSTICAS:
 - Compresión LZ4 (opcional)
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
 import json

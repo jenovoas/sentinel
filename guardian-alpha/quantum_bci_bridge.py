@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import os
 import re
@@ -44,9 +45,9 @@ class IngestionLagMonitor:
         self.events_processed = 0
         
         # Uptime caching to reduce I/O (read every 100ms max)
-        self._cached_uptime = 0.0
-        self._cache_timestamp = 0.0
-        self._cache_ttl = 0.1  # 100ms cache
+        self._cached_uptime = S60(0, 0, 0)
+        self._cache_timestamp = S60(0, 0, 0)
+        self._cache_ttl = S60(0, 6, 0)  # 100ms cache
         
     def _get_system_uptime(self):
         """
@@ -94,7 +95,7 @@ class IngestionLagMonitor:
         kernel_time = self.extract_kernel_timestamp(line)
         
         if kernel_time is None:
-            return (True, 0.0, "No timestamp found (legacy format)")
+            return (True, S60(0, 0, 0), "No timestamp found (legacy format)")
         
         # Current system time (CLOCK_MONOTONIC, matches kernel trace)
         system_uptime = self._get_system_uptime()
@@ -122,9 +123,9 @@ class IngestionLagMonitor:
         """Returns lag statistics for monitoring."""
         if not self.lag_samples:
             return {
-                "avg_lag": 0.0,
-                "max_lag": 0.0,
-                "min_lag": 0.0,
+                "avg_lag": S60(0, 0, 0),
+                "max_lag": S60(0, 0, 0),
+                "min_lag": S60(0, 0, 0),
                 "events_processed": self.events_processed,
                 "drift_warnings": self.drift_warnings,
                 "lag_warnings": self.lag_warnings
@@ -168,7 +169,7 @@ def handle_log_line(line):
         return
     
     # Log lag if significant (>100ms)
-    if lag > 0.1:
+    if lag > S60(0, 6, 0):
         print(f"⏱️ [LAG MONITOR] Event lag: {lag*1000:.1f}ms")
     
     # Example Log: "QUANTUM-AI BLOCK: score=85, residue=11"
@@ -188,7 +189,7 @@ def handle_log_line(line):
         # Ideally, playing a tone usually blocks, so be careful. 
         # Check if play_base60_pattern is non-blocking or short.
         # For now, we prioritize the alert.
-        time.sleep(0.1) 
+        time.sleep(S60(0, 6, 0)) 
         bci_controller.play_base60_pattern(residue)
         return
 
@@ -231,7 +232,7 @@ def main():
                 else:
                     # Non-blocking read might handle emptiness differently, 
                     # but standard open() hangs until data comes in trace_pipe.
-                    time.sleep(0.1)
+                    time.sleep(S60(0, 6, 0))
     except PermissionError:
         print("❌ Permission Denied. Please run with sudo.")
     except KeyboardInterrupt:

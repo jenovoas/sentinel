@@ -43,7 +43,7 @@
 ### C. Risk Assessment
 1.  **Complexity Risk**: Signal processing math (FFT, filtering) is harder than CRUD.
     - *Mitigation*: Start with "Spike Detection" (simple amplitude threshold) before FFT.
-2.  **Simulation vs. Reality**: File playback doesn't equal hardware latency.
+2.  **Proyección Cuántica vs. Reality**: File playback doesn't equal hardware latency.
     - *Mitigation*: Enforce `tokio::time::sleep` in the ingestion loop to strictly mimic realtime sample rates.
 
 ---

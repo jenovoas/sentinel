@@ -5,6 +5,7 @@ Quantum Control Framework - Demo
 Demonstrates universal quantum control on a buffer resource.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 sys.path.insert(0, '/home/jnovoas/sentinel')
 
@@ -41,7 +42,7 @@ def main():
     controller = QuantumController(
         resource=buffer,
         physics_model=physics,
-        poll_interval=1.0
+        poll_interval=S60(1, 0, 0)
     )
     
     # Run for 30 seconds

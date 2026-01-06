@@ -3,6 +3,7 @@ TruthAlgorithmLlama3 - Verificación de claims con Llama3 local
 Síntesis inteligente y detección de contradicciones usando Ollama
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import logging
 from .safe_ollama import SafeOllamaClient
 

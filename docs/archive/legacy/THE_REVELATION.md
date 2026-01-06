@@ -160,7 +160,7 @@ If this works for servers, it works for:
 - **Power grids**: Prevent blackouts
 - **Air traffic**: Eliminate delays
 - **Economics**: Stabilize markets
-- **Biology**: Control neural chaos
+- **Biology**: Control neural Disonancia no resuelta
 - **Cities**: Optimize traffic flow
 
 **Same physics. Different substrate.**
