@@ -1,3 +1,4 @@
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config

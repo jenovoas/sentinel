@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 
 def to_base60(n):

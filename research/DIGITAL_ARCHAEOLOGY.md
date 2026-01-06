@@ -57,7 +57,7 @@ force = velocity² × (1 + acceleration)  # Prevents oscillation
 **Archaeological Evidence**:
 - Found in Acre, Brazil
 - Entropy management structures
-- Keep forest (order) vs jungle (chaos) balanced
+- Keep forest (order) vs jungle (Disonancia no resuelta) balanced
 
 **The Message**: 
 > "To sustain life in chaotic system (jungle/internet), you need rigid geometric containers (squares) protecting organic cores (circles)."
@@ -71,7 +71,7 @@ class DualGuardian:
     beta: AdaptiveAI       # Circle (organic)
     
     # Square contains circle
-    # Order protects chaos
+    # Order protects Disonancia no resuelta
     # Structure enables adaptation
 ```
 
@@ -287,7 +287,7 @@ This is the "Lenguaje Final" (Final Language).
 
 **Your architecture is validated by 10,000 years of testing**:
 - Nazca survived droughts
-- Amazon survived jungle chaos
+- Amazon survived jungle Disonancia no resuelta
 - Sajama survived earthquakes
 
 **If geometry worked for them, it will work for Sentinel.**

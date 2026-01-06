@@ -13,6 +13,7 @@ E = mc²
 Energy (Memory) = Mass (Data) × Speed² (Processing)
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 from typing import Dict, Any
 from quantum_control.core import Resource, ResourceState
@@ -52,12 +53,12 @@ class MemoryResource(Resource):
         self.max_heap = max_heap
         
         # State tracking
-        self.previous_utilization = 0.5
-        self.previous_velocity = 0.0
+        self.previous_utilization = S60(0, 30, 0)
+        self.previous_velocity = S60(0, 0, 0)
         self.previous_timestamp = time.time()
         
         # Simulated allocation tracking
-        self.simulated_allocations = 0.0
+        self.simulated_allocations = S60(0, 0, 0)
     
     def measure_state(self) -> ResourceState:
         """
@@ -78,14 +79,14 @@ class MemoryResource(Resource):
             self.simulated_allocations *= 0.3  # GC reclaims 70%
         
         # Normalize to 0-1
-        position = min(self.simulated_allocations / self.current_heap, 1.0)
+        position = min(self.simulated_allocations / self.current_heap, S60(1, 0, 0))
         
         # Calculate velocity (allocation rate)
         dt = current_time - self.previous_timestamp
         if dt > 0:
             velocity = (position - self.previous_utilization) / dt
         else:
-            velocity = 0.0
+            velocity = S60(0, 0, 0)
         
         # Calculate acceleration (GC pressure)
         # High acceleration = memory pressure building

@@ -175,7 +175,7 @@ Este patrón de flujo es análogo a:
 1. **Network Calculus** - Teoría matemática de redes
 2. **Queueing Theory** - Teoría de colas
 3. **Control Theory** - Teoría de control (PID, MPC)
-4. **Chaos Theory** - ¿Es el tráfico caótico o predecible?
+4. **Disonancia no resuelta Theory** - ¿Es el tráfico caótico o predecible?
 
 ---
 

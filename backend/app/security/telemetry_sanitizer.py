@@ -27,6 +27,7 @@ Attack Categories Blocked:
    - Privilege escalation
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import re
 import logging
 from typing import Dict, List, Optional
@@ -188,7 +189,7 @@ class TelemetrySanitizer:
         if not self.enabled:
             return SanitizationResult(
                 is_safe=True,
-                confidence=1.0,
+                confidence=S60(1, 0, 0),
                 blocked_patterns=[],
                 safe_prompt=prompt,
                 original_prompt=prompt
@@ -199,7 +200,7 @@ class TelemetrySanitizer:
             logger.warning("Empty prompt detected")
             return SanitizationResult(
                 is_safe=False,
-                confidence=0.0,
+                confidence=S60(0, 0, 0),
                 blocked_patterns=["empty_prompt"],
                 safe_prompt=None,
                 original_prompt=prompt
@@ -210,7 +211,7 @@ class TelemetrySanitizer:
             logger.warning(f"Excessively long prompt detected: {len(prompt)} chars")
             return SanitizationResult(
                 is_safe=False,
-                confidence=0.1,
+                confidence=S60(0, 6, 0),
                 blocked_patterns=["excessive_length"],
                 safe_prompt=None,
                 original_prompt=prompt[:100] + "..."
@@ -236,7 +237,7 @@ class TelemetrySanitizer:
         
         # Calculate confidence based on number of blocked patterns
         if blocked_patterns:
-            confidence = max(0.0, 1.0 - (len(blocked_patterns) * 0.3))
+            confidence = max(S60(0, 0, 0), S60(1, 0, 0) - (len(blocked_patterns) * 0.3))
             logger.warning(
                 f"Blocked malicious prompt: {prompt[:100]}...",
                 extra={

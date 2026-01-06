@@ -177,7 +177,7 @@ ab -n 10000 -c 100 https://staging.sentinel.example.com:8000/metrics
 # Monitor: CPU, memory, response times
 ```
 
-### 4. Chaos Tests (1 hour)
+### 4. Disonancia no resuelta Tests (1 hour)
 
 ```bash
 # Kill random services
@@ -286,7 +286,7 @@ deny all;
 - [ ] Run all smoke tests (5/5 passing)
 - [ ] Run security tests (100% detection)
 - [ ] Run performance tests (benchmarks validated)
-- [ ] Run chaos tests (recovery successful)
+- [ ] Run Disonancia no resuelta tests (recovery successful)
 - [ ] Invite 3-5 white-hat hackers
 - [ ] Monitor for 7 days
 - [ ] Fix any issues found
@@ -319,7 +319,7 @@ docker-compose -f docker-compose.staging.yml exec backend \
 1. ✅ All services healthy (100% uptime for 7 days)
 2. ✅ Security tests passing (100% detection maintained)
 3. ✅ Performance benchmarks validated (within 10% of local)
-4. ✅ Chaos tests successful (recovery < 1 minute)
+4. ✅ Disonancia no resuelta tests successful (recovery < 1 minute)
 5. ✅ White-hat testing complete (0 critical findings)
 6. ✅ Monitoring alerts working (0 false positives)
 

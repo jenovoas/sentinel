@@ -4,6 +4,7 @@ Quantum Control Framework - Core Module
 Universal quantum controller for infrastructure optimization.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from .controller import (
     Resource,
     ResourceState,
@@ -18,4 +19,4 @@ __all__ = [
     'QuantumController'
 ]
 
-__version__ = '0.1.0'
+__version__ = 'S60(0, 6, 0).0'

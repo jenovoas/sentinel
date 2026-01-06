@@ -3,6 +3,7 @@ Tests para Forensic-Grade WAL (Claim 4)
 Valida: HMAC, Replay Protection, Timestamp Validation
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import pytest
 import asyncio
 import time

@@ -2,6 +2,7 @@
 Sentinel Vault - Blockchain Integration
 Balance and transaction tracking para crypto wallets
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import httpx
 from typing import Optional, Dict, List
 

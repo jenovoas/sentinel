@@ -4,6 +4,7 @@ Test Runner Simple para Forensic WAL
 Ejecuta tests sin necesidad de pytest
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import asyncio
 from pathlib import Path

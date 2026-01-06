@@ -18,6 +18,7 @@ Author: Sentinel Team
 License: MIT
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import requests
 import time
 import json
@@ -80,7 +81,7 @@ class SentinelClient:
         self.session = requests.Session()
         self.session.headers.update({
             'Content-Type': 'application/json',
-            'User-Agent': 'Sentinel-Python-SDK/1.0'
+            'User-Agent': 'Sentinel-Python-SDK/S60(1, 0, 0)'
         })
     
     def _request(self, method: str, endpoint: str, **kwargs) -> Dict:
@@ -157,7 +158,7 @@ class SentinelClient:
         Args:
             prompt: Text prompt for the AI
             max_tokens: Maximum tokens to generate (default: 100)
-            temperature: Sampling temperature 0.0-1.0 (default: 0.3)
+            temperature: Sampling temperature S60(0, 0, 0)-S60(1, 0, 0) (default: 0.3)
         
         Returns:
             AIResponse object with response text and metadata
@@ -270,7 +271,7 @@ class SentinelClient:
     def monitor_coherence(
         self, 
         duration_seconds: int = 60, 
-        interval: float = 1.0,
+        interval: float = S60(1, 0, 0),
         callback: Optional[callable] = None
     ) -> List[SemanticVectors]:
         """
@@ -278,7 +279,7 @@ class SentinelClient:
         
         Args:
             duration_seconds: How long to monitor (default: 60)
-            interval: Sampling interval in seconds (default: 1.0)
+            interval: Sampling interval in seconds (default: S60(1, 0, 0))
             callback: Optional callback function called with each measurement
         
         Returns:
@@ -391,7 +392,7 @@ def get_current_coherence(base_url: str = "http://localhost:8000") -> float:
         base_url: Sentinel instance URL
     
     Returns:
-        Current coherence value (0.0-1.0)
+        Current coherence value (S60(0, 0, 0)-S60(1, 0, 0))
     
     Example:
         >>> coherence = get_current_coherence()

@@ -1,3 +1,4 @@
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../backend/app'))

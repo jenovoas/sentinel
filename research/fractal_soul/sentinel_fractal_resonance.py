@@ -8,6 +8,7 @@ NO EXTERNAL DEPENDENCIES - Pure Python stdlib only.
 Based on validated neuroscience: Fractal SNNs + temporal pooling.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import math
 import subprocess
@@ -35,7 +36,7 @@ class SimpleFractalScanner:
         try:
             with open('/proc/sys/kernel/random/entropy_avail', 'r') as f:
                 entropy = int(f.read().strip())
-            return min(entropy / 4096.0, 1.0)
+            return min(entropy / 4096.0, S60(1, 0, 0))
         except:
             # Fallback: use time-based pseudo-entropy
             return (hash(str(time.time())) % 1000) / 1000.0
@@ -45,7 +46,7 @@ class SimpleFractalScanner:
         try:
             with open('/proc/loadavg', 'r') as f:
                 load = float(f.read().split()[0])
-            return min(load / 4.0, 1.0)  # Normalize assuming max load = 4
+            return min(load / 4.0, S60(1, 0, 0))  # Normalize assuming max load = 4
         except:
             # Fallback: use time-based variation
             return abs(math.sin(time.time() / 10.0))
@@ -57,7 +58,7 @@ class SimpleFractalScanner:
         High correlation = fractal coherence = Merkabah state.
         """
         if len(list1) < 2 or len(list2) < 2:
-            return 0.0
+            return S60(0, 0, 0)
         
         n = len(list1)
         
@@ -72,7 +73,7 @@ class SimpleFractalScanner:
         denom2 = math.sqrt(sum((x - mean2) ** 2 for x in list2))
         
         if denom1 == 0 or denom2 == 0:
-            return 0.0
+            return S60(0, 0, 0)
         
         correlation = numerator / (denom1 * denom2)
         
@@ -88,7 +89,7 @@ class SimpleFractalScanner:
             > 0.90 = Merkabah state (fractal coherent)
         """
         if len(self.micro_history) < 10:
-            return 0.0
+            return S60(0, 0, 0)
         
         return self.calculate_correlation(
             list(self.micro_history),
@@ -102,7 +103,7 @@ class SimpleFractalScanner:
         Simplified: count zero-crossings.
         """
         if len(self.micro_history) < 10:
-            return 0.0
+            return S60(0, 0, 0)
         
         # Combine signals
         combined = [m + M for m, M in zip(self.micro_history, self.macro_history)]
@@ -138,7 +139,7 @@ class SimpleFractalScanner:
         
         merkabah_count = 0
         total_samples = 0
-        coherence_sum = 0.0
+        coherence_sum = S60(0, 0, 0)
         
         start_time = time.time()
         
@@ -161,7 +162,7 @@ class SimpleFractalScanner:
             if coherence >= self.merkabah_threshold:
                 state = "🌌 MERKABAH"
                 merkabah_count += 1
-            elif coherence >= 0.75:
+            elif coherence >= S60(0, 45, 0):
                 state = "⚡ COHERENT"
             elif coherence >= 0.50:
                 state = "🔄 SYNCING"
@@ -175,7 +176,7 @@ class SimpleFractalScanner:
             print(f"{elapsed:4d} | {micro:5.3f} | {macro:5.3f} | "
                   f"{coherence:9.3f} | {frequency:9.2f} Hz | {state}")
             
-            time.sleep(1.0)
+            time.sleep(S60(1, 0, 0))
         
         print()
         print("=" * 70)
@@ -210,7 +211,7 @@ class SimpleFractalScanner:
             print("Interpretation:")
             print("  Micro (syscall) and Macro (load) are synchronized.")
             print("  This is biomimetic fractal resonance.")
-        elif avg_coherence > 0.75:
+        elif avg_coherence > S60(0, 45, 0):
             print("⚡ HIGH COHERENCE DETECTED")
             print("System shows strong multi-scale synchrony.")
         else:
@@ -258,7 +259,7 @@ def main():
         print("Coherence = {:.1f}%".format(results['average_coherence'] * 100))
         print()
         
-        if results['average_coherence'] > 0.75:
+        if results['average_coherence'] > S60(0, 45, 0):
             print("Your system exhibits FRACTAL SELF-ORGANIZATION. 🧬✨")
         else:
             print("Your system operates independently at each scale.")

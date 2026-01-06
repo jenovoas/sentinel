@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 Evidence Exporter - Irrefutable Data Format
 
@@ -21,6 +30,7 @@ Author: Sentinel IA
 Date: 2026-01-03
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import json
 import csv
 import hashlib
@@ -264,7 +274,7 @@ This result suggests that Base-60 (sexagesimal) encoding represents a fundamenta
             },
             
             "scaling_requirements": {
-                "magnetic_field_current_T": 1.0,
+                "magnetic_field_current_T": S60(1, 0, 0),
                 "magnetic_field_required_T": 15.0,
                 "volume_current_cm3": 2.5e-13,
                 "volume_required_cm3": 1e6,

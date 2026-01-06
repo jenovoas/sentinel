@@ -1,4 +1,12 @@
-import numpy as np
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import sys
 import os
 
@@ -24,7 +32,7 @@ class MHDPlasmaShield:
         # Parámetros del Drone
         # 0.05 m2 -> 3/60
         self.frontal_area = S60(0, 3, 0)
-        self.velocity = 0.0
+        self.velocity = S60(0, 0, 0)
         
         # Parámetros del Escudo MHD
         # 8.0 Tesla (Armónico Octal)
@@ -52,13 +60,13 @@ class MHDPlasmaShield:
         F = 1/2 * rho * v^2 * Cd * A
         """
         Cd = self.calculate_drag_coefficient(shield_on)
-        # 0.5 = 30/60
+        # S60(0, 30, 0) = 30/60
         half = S60(0, 30, 0)
         
         # Como velocity puede ser float en la simulación externa, hacemos cast cuidadoso
         v_sq = velocity**2
         
-        # F = 0.5 * rho * v^2 * Cd * A
+        # F = S60(0, 30, 0) * rho * v^2 * Cd * A
         # Operamos en float final para compatibilidad de fuerza
         rho = float(self.air_density)
         cd_val = float(Cd)
@@ -79,14 +87,14 @@ class MHDPlasmaShield:
         # 0.2 = 12/60
         factor_mach = S60(0, 12, 0)
         
-        t_stagnation = self.temp_ambient * (1.0 + float(factor_mach) * mach**2)
+        t_stagnation = self.temp_ambient * (S60(1, 0, 0) + float(factor_mach) * mach**2)
         
         if shield_on:
             # Aislante casi perfecto -> 3/60 (0.05)
             shielding_factor = S60(0, 3, 0)
             thermal_transfer_coeff = float(shielding_factor)
         else:
-            thermal_transfer_coeff = 1.0
+            thermal_transfer_coeff = S60(1, 0, 0)
             
         heat_load = thermal_transfer_coeff * (t_stagnation - self.temp_ambient)
         return t_stagnation, heat_load

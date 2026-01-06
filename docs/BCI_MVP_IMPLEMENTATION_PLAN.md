@@ -28,7 +28,7 @@ Implement the **Sentinel Cortex BCI MVP** ("Phase 10") by creating the Rust Inge
 
 #### [NEW] [bci-engine/Cargo.toml](file:///home/jnovoas/sentinel/bci-engine/Cargo.toml)
 - Define Rust workspace members.
-- Dependencies: `tokio`, `reqwest`, `serde`, `serde_json`, `rand` (for simulation), `rubato` (placeholder).
+- Dependencies: `tokio`, `reqwest`, `serde`, `serde_json`, `rand` (for Proyección Cuántica), `rubato` (placeholder).
 
 #### [NEW] [bci-engine/src/main.rs](file:///home/jnovoas/sentinel/bci-engine/src/main.rs)
 - **Main Loop**: Async loop running at 30Hz (simulated chunk rate).

@@ -1,7 +1,8 @@
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import subprocess
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import threading
 import os
 import psutil

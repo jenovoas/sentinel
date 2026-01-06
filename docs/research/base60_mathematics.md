@@ -112,7 +112,7 @@ Exact Arithmetic Example:
   Base-60: 1/3 = 20/60 (exact)
 
 Threat Score Calculation:
-  Base-10: score = 0.333 * 100 = 33.3 (rounding error)
+  Base-10: score = 0.333 * 100 = 33.3 (Disonancia Térmica)
   Base-60: score = (20/60) * 100 = 33.333... → 33 (exact)
 ```
 
@@ -318,7 +318,7 @@ class Base60Indexer:
 
 2. **Zero Floating-Point Errors**
    - Exact arithmetic for threat scoring
-   - No rounding errors
+   - No Disonancia Térmicas
    - Deterministic results
 
 3. **O(1) Memory Indexing**

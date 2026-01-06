@@ -4,7 +4,8 @@ Synthetic Claims Dataset Generator for TruthSync Testing
 Generates realistic but completely fictional claims for stress testing
 """
 
-import random
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 import json
 import hashlib
 from typing import List, Dict

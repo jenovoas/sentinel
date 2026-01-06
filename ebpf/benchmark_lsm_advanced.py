@@ -4,6 +4,7 @@ Guardian-Alpha LSM - Advanced Performance Analysis
 Measures syscall interception overhead with statistical analysis
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import subprocess
 import time
 import statistics

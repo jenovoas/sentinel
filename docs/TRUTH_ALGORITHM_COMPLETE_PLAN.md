@@ -151,7 +151,7 @@ This is the master document that ties together the complete Truth Algorithm syst
 - ✅ Property-based testing (edge case discovery)
 - ✅ Mutation testing (test quality verification)
 - ✅ Load testing (1000+ concurrent users)
-- ✅ Chaos testing (resilience under failure)
+- ✅ Disonancia no resuelta testing (resilience under failure)
 - ✅ Security testing (penetration, SAST, DAST)
 
 ### **Targets**:

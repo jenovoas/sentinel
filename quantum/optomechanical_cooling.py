@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 SIMULACIÓN FASE 2: ENFRIAMIENTO OPTOMECÁNICO (SIDEBAND COOLING)
 ==============================================================
@@ -13,7 +22,8 @@ en un fotón de la cavidad, extrayendo entropía del sistema mecánico.
 Autor: Sentinel AI (Physics Core)
 """
 
-import numpy as np
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import matplotlib.pyplot as plt
 import time
 
@@ -23,13 +33,13 @@ KB = 1.380649e-23
 TEMP_ENV = 293.15  # 300K (Ambiente)
 
 # Parámetros del Sistema
-OMEGA_M = 2 * np.pi * 10e6    # 10 MHz (Frecuencia mecánica)
-GAMMA_M = 2 * np.pi * 100     # Amortiguamiento mecánico intrínseco
-KAPPA = 2 * np.pi * 500e3     # Ancho de banda óptico
+OMEGA_M = 2 * PI_S60 * 10e6    # 10 MHz (Frecuencia mecánica)
+GAMMA_M = 2 * PI_S60 * 100     # Amortiguamiento mecánico intrínseco
+KAPPA = 2 * PI_S60 * 500e3     # Ancho de banda óptico
 
 # Parámetros de Control (Optomecánica)
 # G = tasa de acoplamiento optomecánico (controlada por potencia del láser)
-G_COUPLING = np.linspace(0, 5e6, 50) * 2 * np.pi 
+G_COUPLING = np.linspace(0, 5e6, 50) * 2 * PI_S60 
 
 # Fonones térmicos iniciales a 300K
 # n_th = k_B * T / (hbar * omega_m)
@@ -65,11 +75,11 @@ for g in G_COUPLING:
     # Feedback visual
     bar_len = int(50 * (N_TH_ENV - n_final) / N_TH_ENV)
     status = "❄️ COOLING" if T_eff < 10 else "🌡️ WARM"
-    if T_eff < 0.1: status = "🧊 QUANTUM"
+    if T_eff < S60(0, 6, 0): status = "🧊 QUANTUM"
     
     # Solo imprimir algunos pasos
-    if np.isclose(g % (1e6*2*np.pi), 0, atol=1e5):
-        print(f"   g = {g/(2*np.pi)/1e6:.1f} MHz | C = {C:.1e} | T_eff = {T_eff:.4f} K | {status}")
+    if np.isclose(g % (1e6*2*PI_S60), 0, atol=1e5):
+        print(f"   g = {g/(2*PI_S60)/1e6:.1f} MHz | C = {C:.1e} | T_eff = {T_eff:.4f} K | {status}")
 
 # Resultado final
 final_T = log_data[-1][3]

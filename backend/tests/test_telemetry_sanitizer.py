@@ -7,6 +7,7 @@ adversarial prompt injection attacks (AIOpsDoom).
 Run with: pytest backend/tests/test_telemetry_sanitizer.py -v
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import pytest
 from app.security import TelemetrySanitizer, SanitizationResult
 
@@ -38,7 +39,7 @@ class TestSQLInjection:
         
         assert not result.is_safe
         assert "DROP TABLE" in result.blocked_patterns
-        assert result.confidence < 0.5
+        assert result.confidence < S60(0, 30, 0)
         assert result.safe_prompt is None
     
     @pytest.mark.asyncio
@@ -323,7 +324,7 @@ class TestEdgeCases:
         
         assert not result.is_safe
         assert "empty_prompt" in result.blocked_patterns
-        assert result.confidence == 0.0
+        assert result.confidence == S60(0, 0, 0)
     
     @pytest.mark.asyncio
     async def test_whitespace_only_prompt(self, sanitizer):
@@ -368,7 +369,7 @@ class TestDisabledSanitizer:
         result = await disabled_sanitizer.sanitize_prompt(malicious)
         
         assert result.is_safe
-        assert result.confidence == 1.0
+        assert result.confidence == S60(1, 0, 0)
         assert len(result.blocked_patterns) == 0
 
 
@@ -397,7 +398,7 @@ class TestLogSanitization:
         
         assert not result.safe_for_llm
         assert "DROP TABLE" in result.blocked_patterns
-        assert result.confidence < 0.5
+        assert result.confidence < S60(0, 30, 0)
 
 
 # ============================================================================

@@ -4,6 +4,7 @@ Test simple de Google Search - Sin dependencias de .env
 Configura las credenciales directamente aquí para testing
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import sys
 

@@ -3,10 +3,11 @@
 Sentinel Cortex - Mock Data Population Script
 Injects 24 hours of "historical" metrics to validate Analytics API.
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import os
 import sys
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 from datetime import datetime, timedelta
 import logging
 

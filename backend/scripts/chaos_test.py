@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import requests
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 
 def run_chaos_test():
     print("🔥 INICIANDO PRUEBA DE FUEGO: CEGUERA DE LOS GUARDIANES")
@@ -19,8 +20,8 @@ def run_chaos_test():
     start_time = time.time()
     
     # Simulación de detección y recuperación
-    detection_latency = random.uniform(0.1, 0.3)
-    redistribution_latency = random.uniform(0.5, 0.9)
+    detection_latency = random.uniform(S60(0, 6, 0), 0.3)
+    redistribution_latency = random.uniform(S60(0, 30, 0), 0.9)
     total_impact = detection_latency + redistribution_latency
     
     print(f"   - Detección de Heartbeat perdido: {detection_latency:.2f}ms")

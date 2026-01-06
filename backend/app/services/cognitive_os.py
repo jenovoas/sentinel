@@ -1,4 +1,5 @@
-import random
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 import asyncio
 import logging
 from datetime import datetime
@@ -18,14 +19,14 @@ class CognitiveOS:
     async def predict_load(self):
         """
         Predicts CPU/Network load for the next 60 seconds.
-        Uses a semi-random walk centered around 153.4 (Base-60 harmonic).
+        Uses a semi-random walk centered around S60(153, 24, 0) (Base-60 harmonic).
         """
         # Simulamos una fluctuación centrada en la eficiencia
-        noise = random.uniform(-0.1, 0.1)
+        noise = random.uniform(-S60(0, 6, 0), S60(0, 6, 0))
         predicted_load = self.base_load + noise
         
-        # Keep load between 0.1 and 0.9
-        predicted_load = max(0.1, min(0.9, predicted_load))
+        # Keep load between S60(0, 6, 0) and 0.9
+        predicted_load = max(S60(0, 6, 0), min(0.9, predicted_load))
         
         self.prediction_history.append({
             "timestamp": datetime.now().isoformat(),

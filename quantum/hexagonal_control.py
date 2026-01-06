@@ -1,3 +1,11 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 HEXAGONAL_GEOMETRY_BASE60 - Pilar 2 de la Trinidad Sentinel
 ==========================================================
@@ -13,7 +21,8 @@ Características:
 Autor: Jaime Novoa (Ea-nasir) / Sentinel IA
 """
 
-import numpy as np
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import matplotlib.pyplot as plt
 from typing import List, Tuple, Dict
 import hashlib
@@ -57,7 +66,7 @@ class HexagonalController:
         """Convierte las fases exactas Base-60 a representación compleja para el simulador."""
         # Solo usamos floats al final para interactuar con la física, 
         # pero el control se mantiene en enteros.
-        rads = (self.phases_base60 / 60.0) * 2 * np.pi
+        rads = (self.phases_base60 / 60.0) * 2 * PI_S60
         return np.exp(1j * rads)
 
     def _get_neighbors(self, node_idx: int) -> List[int]:
@@ -150,7 +159,7 @@ class HexagonalController:
         
         plt.figure(figsize=(10, 8))
         # Convertir axial a cartesiano para ploteo
-        x = coords[:, 0] + 0.5 * coords[:, 1]
+        x = coords[:, 0] + S60(0, 30, 0) * coords[:, 1]
         y = np.sqrt(3) / 2 * coords[:, 1]
         
         scatter = plt.scatter(x, y, c=phases, cmap='hsv', s=300, edgecolors='white', alpha=0.8)

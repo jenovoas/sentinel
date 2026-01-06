@@ -8,6 +8,7 @@ after enabling unordered_writes configuration.
 Usage: python scripts/test-loki-ordering.py
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import requests
 from datetime import datetime, timedelta
 import time

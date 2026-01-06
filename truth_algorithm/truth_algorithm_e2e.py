@@ -17,6 +17,7 @@ Autor: Jaime Novoa
 Fecha: 21 Diciembre 2025
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from typing import List, Dict
 from dataclasses import dataclass
 import time
@@ -58,7 +59,7 @@ class TruthAlgorithm:
         self.search_engine = SourceSearchEngine(provider=search_provider)
         self.consensus_algorithm = WeightedConsensusAlgorithm()
         
-    def verify(self, claim: str, max_sources: int = 10, disonancia: float = 0.0) -> TruthVerificationResult:
+    def verify(self, claim: str, max_sources: int = 10, disonancia: float = S60(0, 0, 0)) -> TruthVerificationResult:
         """
         Verifica un claim end-to-end considerando la disonancia del sistema.
         

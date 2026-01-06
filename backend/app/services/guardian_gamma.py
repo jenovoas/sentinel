@@ -6,6 +6,7 @@ Guardian Alpha (eBPF) and Guardian Beta (Dual-Lane) can escalate decisions
 to Guardian Gamma when confidence is below threshold.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any, List
 from enum import Enum

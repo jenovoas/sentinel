@@ -5,6 +5,7 @@ Optomechanical Cooling Physics Model
 Implements active feedback cooling based on optomechanical levitation.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import math
 from collections import deque
 from quantum_control.core import PhysicsModel, ResourceState
@@ -56,7 +57,7 @@ class OptomechanicalCooling(PhysicsModel):
         force = (velocity ** 2) * (1 + acceleration)
         
         # Normalize to 0-1
-        return min(force, 1.0)
+        return min(force, S60(1, 0, 0))
     
     def calculate_ground_state(self, history: deque[ResourceState]) -> float:
         """
@@ -77,7 +78,7 @@ class OptomechanicalCooling(PhysicsModel):
         ground_state = noise_floor * 1.2
         
         # Clamp to reasonable range
-        return max(0.5, min(ground_state, 0.8))
+        return max(S60(0, 30, 0), min(ground_state, 0.8))
     
     def get_damping_factor(self, state: ResourceState) -> float:
         """
@@ -88,9 +89,9 @@ class OptomechanicalCooling(PhysicsModel):
         """
         excitation = abs(state.velocity) + abs(state.acceleration)
         
-        if excitation > 1.0:
-            return 0.5  # Low damping, aggressive
-        elif excitation > 0.5:
+        if excitation > S60(1, 0, 0):
+            return S60(0, 30, 0)  # Low damping, aggressive
+        elif excitation > S60(0, 30, 0):
             return 0.7  # Medium
         else:
             return 0.9  # High damping, conservative

@@ -331,7 +331,7 @@ timing_recommendations = [
 - **Volatility analysis**: Standard deviation, VaR
 - **Sharpe ratio**: Risk-adjusted returns
 - **Beta**: Market sensitivity
-- **Monte Carlo simulation**: Portfolio projections
+- **Monte Carlo Proyección Cuántica**: Portfolio projections
 
 **Visualization**:
 - **Interactive charts**: Plotly, D3.js, Recharts

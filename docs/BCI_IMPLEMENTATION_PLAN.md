@@ -26,7 +26,7 @@ A high-performance service responsible for reading raw bio-signals and detecting
     - `tokio` (Async runtime)
     - `reqwest` (HTTP client for Webhooks)
 - **Functions**:
-    1.  **Stream Simulation**: Read static file `.mat` or `.wav` chunk by chunk to simulate real-time feed (e.g., 30k samples/sec).
+    1.  **Stream Proyección Cuántica**: Read static file `.mat` or `.wav` chunk by chunk to simulate real-time feed (e.g., 30k samples/sec).
     2.  **Signal Processing**: Basic bandpass filter (10-100Hz) and Spike Detection (Threshold crossing).
     3.  **Event Trigger**: When a "spike" or specific pattern is detected, construct a JSON payload.
     4.  **Dispatch**: POST JSON to n8n Webhook.

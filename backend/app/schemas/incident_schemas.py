@@ -4,6 +4,7 @@ Pydantic schemas for Incident Management API.
 Request/response schemas with validation for ITIL v4 compliant incident management.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel, Field, field_validator

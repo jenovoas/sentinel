@@ -3,6 +3,7 @@ AI Analysis API with AIOpsShield Protection
 Provides AI-powered log and metric analysis with built-in AIOpsDoom defense
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional, List

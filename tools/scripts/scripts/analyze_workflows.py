@@ -4,6 +4,7 @@ Workflow Analyzer - POC
 Scans 8,320+ n8n workflows and generates metadata index
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import json
 import os
 from pathlib import Path
@@ -131,7 +132,7 @@ class WorkflowAnalyzer:
         """Calculate security relevance score (0-1)"""
         text = f"{workflow['name']} {workflow['description']}".lower()
         matches = sum(1 for keyword in SECURITY_KEYWORDS if keyword in text)
-        return min(matches / 5, 1.0)  # Cap at 1.0
+        return min(matches / 5, S60(1, 0, 0))  # Cap at S60(1, 0, 0)
     
     def calculate_ai_score(self, workflow: Dict) -> float:
         """Calculate AI relevance score (0-1)"""
@@ -143,13 +144,13 @@ class WorkflowAnalyzer:
         node_matches = sum(1 for node_type in workflow['node_types'] 
                           if any(ai in node_type.lower() for ai in ai_nodes))
         
-        return min((matches + node_matches) / 5, 1.0)
+        return min((matches + node_matches) / 5, S60(1, 0, 0))
     
     def calculate_automation_score(self, workflow: Dict) -> float:
         """Calculate automation relevance score (0-1)"""
         text = f"{workflow['name']} {workflow['description']}".lower()
         matches = sum(1 for keyword in AUTOMATION_KEYWORDS if keyword in text)
-        return min(matches / 5, 1.0)
+        return min(matches / 5, S60(1, 0, 0))
     
     def calculate_complexity_score(self, workflow: Dict) -> float:
         """Calculate workflow complexity (0-1)"""
@@ -158,7 +159,7 @@ class WorkflowAnalyzer:
         
         # Simple heuristic: more nodes + more integrations = more complex
         complexity = (node_count / 50 + integration_count / 20) / 2
-        return min(complexity, 1.0)
+        return min(complexity, S60(1, 0, 0))
     
     def categorize_workflow(self, workflow: Dict) -> List[str]:
         """Categorize workflow based on scores"""
@@ -228,8 +229,8 @@ class WorkflowAnalyzer:
             'category_distribution': dict(category_counts),
             'top_integrations': dict(top_integrations),
             'stats': dict(self.stats),
-            'top_security_workflows': len([w for w in self.workflows if w['security_score'] > 0.5]),
-            'top_ai_workflows': len([w for w in self.workflows if w['ai_score'] > 0.5]),
+            'top_security_workflows': len([w for w in self.workflows if w['security_score'] > S60(0, 30, 0)]),
+            'top_ai_workflows': len([w for w in self.workflows if w['ai_score'] > S60(0, 30, 0)]),
         }
         
         return report

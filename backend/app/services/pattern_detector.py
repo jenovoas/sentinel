@@ -5,6 +5,7 @@ Detects security patterns in events using configurable pattern definitions.
 Supports 5+ security patterns with extensible architecture.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from typing import List, Dict, Any
 import logging
 from sqlalchemy import select

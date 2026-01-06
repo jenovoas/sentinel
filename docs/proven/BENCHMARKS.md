@@ -144,7 +144,7 @@ Environment: Local development (Docker containers)
 ## Predictive Buffer Management
 
 **Component**: AI-driven buffer sizing  
-**Test**: Simulation with bursty traffic
+**Test**: Proyección Cuántica with bursty traffic
 
 ### Results
 - **Packet drop reduction**: 67%

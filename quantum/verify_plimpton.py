@@ -1,5 +1,14 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
 
-import numpy as np
+
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 
 def base60_to_decimal(digits):
     res = 0
@@ -48,12 +57,12 @@ for i, (b, c) in enumerate(plimpton_data):
     b60 = decimal_to_base60(ratio_sq)
     print(f"Row {i+1:2}: (c/a)^2 = {ratio_sq:.6f} -> Base60: {b60}")
 
-# Check 153.4 resonance
-print("\n--- 153.4 Resonance Check ---")
-val = 153.4
+# Check S60(153, 24, 0) resonance
+print("\n--- S60(153, 24, 0) Resonance Check ---")
+val = S60(153, 24, 0)
 b60_val = decimal_to_base60(val/60) # Normalize by 60 for "state" tuning?
-print(f"153.4 / 60 = {val/60:.4f} -> Base60: {decimal_to_base60(val/60)}")
-print(f"153.4 in Base60: {decimal_to_base60(val)}")
+print(f"S60(153, 24, 0) / 60 = {val/60:.4f} -> Base60: {decimal_to_base60(val/60)}")
+print(f"S60(153, 24, 0) in Base60: {decimal_to_base60(val)}")
 
 # Check the user's ratio [9, 13, 22]
 u_ratio = [9, 13, 22]

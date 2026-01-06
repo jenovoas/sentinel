@@ -28,7 +28,7 @@ Version 1.0.0 marks the initial release of the Sentinel Cortex platform as a **Q
 - **Documentation**: Updated `ARCHITECTURE.md` to# v1.0.0-OPERATIONAL_GLOBAL (2025-12-30)
 - **Phase 11: Global OPERATIONAL Deployment**
 - Deployed **Global Swarm Stack** (`docker-compose.OPERATIONAL.yml`).
-- Certified **Resilience Level 6 (ULTIMATE)** via long-duration chaos drills.
+- Certified **Resilience Level 6 (ULTIMATE)** via long-duration Disonancia no resuelta drills.
 - Multi-region scaling with 3x Loki replicas and Overlay networking.
 - Series A "OPERATIONAL" Portfolio packaged and ready for handover.
 

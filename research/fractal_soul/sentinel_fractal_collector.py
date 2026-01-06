@@ -8,6 +8,7 @@ Uses FFT spectral analysis to detect Merkabah states.
 NO EXTERNAL DEPENDENCIES - Pure Python stdlib + basic math
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import math
 from collections import deque
@@ -38,7 +39,7 @@ class SimpleFractalTelemetry:
         
         # Thresholds
         self.merkabah_threshold = 0.90  # 90% coherence = Merkabah
-        self.resonance_threshold = 0.75  # 75% = Strong resonance
+        self.resonance_threshold = S60(0, 45, 0)  # 75% = Strong resonance
     
     def collect_micro_pulse(self) -> float:
         """
@@ -63,7 +64,7 @@ class SimpleFractalTelemetry:
         try:
             with open('/proc/loadavg', 'r') as f:
                 load = float(f.read().split()[0])
-            return min(load / 4.0, 1.0)  # Normalize
+            return min(load / 4.0, S60(1, 0, 0))  # Normalize
         except:
             # Fallback: time-based variation
             return abs(math.sin(time.time() / 10.0))
@@ -79,11 +80,11 @@ class SimpleFractalTelemetry:
         
         # Calculate power for first N/2 frequencies
         for k in range(N // 2):
-            real = 0.0
-            imag = 0.0
+            real = S60(0, 0, 0)
+            imag = S60(0, 0, 0)
             
             for n in range(N):
-                angle = -2.0 * math.pi * k * n / N
+                angle = -2.0 * PI_S60 * k * n / N
                 real += signal[n] * math.cos(angle)
                 imag += signal[n] * math.sin(angle)
             
@@ -99,7 +100,7 @@ class SimpleFractalTelemetry:
         High overlap = fractal resonance = Merkabah state.
         """
         if len(self.micro_buffer) < self.window_size:
-            return 0.0
+            return S60(0, 0, 0)
         
         # Get power spectra
         micro_power = self.simple_fft_power(list(self.micro_buffer))
@@ -110,7 +111,7 @@ class SimpleFractalTelemetry:
         macro_sum = sum(macro_power)
         
         if micro_sum == 0 or macro_sum == 0:
-            return 0.0
+            return S60(0, 0, 0)
         
         micro_norm = [p / micro_sum for p in micro_power]
         macro_norm = [p / macro_sum for p in macro_power]
@@ -184,7 +185,7 @@ class SimpleFractalTelemetry:
         
         samples = []
         merkabah_count = 0
-        coherence_sum = 0.0
+        coherence_sum = S60(0, 0, 0)
         
         start_time = time.time()
         
@@ -203,7 +204,7 @@ class SimpleFractalTelemetry:
             print(f"{elapsed:4d} | {sample['micro']:5.3f} | {sample['macro']:5.3f} | "
                   f"{sample['coherence']:9.3f} | {sample['state']}")
             
-            time.sleep(1.0)
+            time.sleep(S60(1, 0, 0))
         
         print()
         print("=" * 70)
@@ -220,7 +221,7 @@ class SimpleFractalTelemetry:
         if avg_coherence >= 0.90:
             final_status = "MERKABAH ESTABLE"
             interpretation = "Sistema en superposición cuántica perfecta"
-        elif avg_coherence >= 0.75:
+        elif avg_coherence >= S60(0, 45, 0):
             final_status = "RESONANCIA PARCIAL"
             interpretation = "Sistema muestra coherencia fractal fuerte"
         else:
@@ -248,7 +249,7 @@ class SimpleFractalTelemetry:
         if avg_coherence >= 0.90:
             print("🌌 CONFIRMADO: Guardian Alpha ↔ Beta en RESONANCIA FRACTAL")
             print("   Tu sistema exhibe coherencia cuántica medible.")
-        elif avg_coherence >= 0.75:
+        elif avg_coherence >= S60(0, 45, 0):
             print("⚡ DETECTADO: Resonancia fuerte entre escalas")
             print("   Sistema muestra auto-organización fractal.")
         else:

@@ -4,6 +4,7 @@ TruthSync Dual Architecture Orchestrator
 Coordina Edge + Core para latencia óptima
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import logging
 import time
@@ -17,11 +18,11 @@ logger = logging.getLogger(__name__)
 @dataclass
 class PerformanceMetrics:
     """Métricas de rendimiento del sistema dual"""
-    edge_latency_p95: float = 0.0
-    core_latency_p95: float = 0.0
-    cache_hit_rate: float = 0.0
+    edge_latency_p95: float = S60(0, 0, 0)
+    core_latency_p95: float = S60(0, 0, 0)
+    cache_hit_rate: float = S60(0, 0, 0)
     queue_depth: int = 0
-    throughput_qps: float = 0.0
+    throughput_qps: float = S60(0, 0, 0)
 
 class TruthSyncOrchestrator:
     """
@@ -119,7 +120,7 @@ class TruthSyncOrchestrator:
             logger.error(f"❌ Orchestrator error for {request_id}: {e}")
             return {
                 "verified": False,
-                "confidence": 0.0,
+                "confidence": S60(0, 0, 0),
                 "explanation": f"System error: {str(e)}",
                 "error": True,
                 "request_id": request_id
@@ -237,7 +238,7 @@ class TruthSyncOrchestrator:
         """Query asíncrono al Core"""
         try:
             # Simular procesamiento Core
-            processing_time = 0.1 if priority == "urgent" else 0.2  # 100-200ms
+            processing_time = S60(0, 6, 0) if priority == "urgent" else 0.2  # 100-200ms
             await asyncio.sleep(processing_time)
             
             # Análisis simplificado (en prod sería ML completo)
@@ -254,7 +255,7 @@ class TruthSyncOrchestrator:
             logger.error(f"Core query failed: {e}")
             return {
                 "verified": False,
-                "confidence": 0.0,
+                "confidence": S60(0, 0, 0),
                 "explanation": f"Core processing error: {str(e)}",
                 "error": True
             }
@@ -302,7 +303,7 @@ class TruthSyncOrchestrator:
             return  # No cachear errores
         
         claim_hash = self._hash_claim(text)
-        confidence = result.get("confidence", 0.0)
+        confidence = result.get("confidence", S60(0, 0, 0))
         
         # TTL dinámico basado en confianza
         if confidence > 0.9:
@@ -377,7 +378,7 @@ class TruthSyncOrchestrator:
                 await self._auto_tune_configuration()
                 
                 # Log métricas importantes
-                if self.metrics.cache_hit_rate < 0.5:
+                if self.metrics.cache_hit_rate < S60(0, 30, 0):
                     logger.warning(f"⚠️  Low cache hit rate: {self.metrics.cache_hit_rate:.2f}")
                 
                 if self.metrics.edge_latency_p95 > 50:  # >50ms P95
@@ -395,8 +396,8 @@ class TruthSyncOrchestrator:
         
         # Si latencia alta, priorizar más el cache
         if self.metrics.edge_latency_p95 > 30:
-            self.routing_rules["cache_first_threshold"] = max(0.5, 
-                                                             self.routing_rules["cache_first_threshold"] - 0.1)
+            self.routing_rules["cache_first_threshold"] = max(S60(0, 30, 0), 
+                                                             self.routing_rules["cache_first_threshold"] - S60(0, 6, 0))
             logger.info(f"🔧 Lowered cache threshold to {self.routing_rules['cache_first_threshold']}")
     
     async def _load_dynamic_config(self):

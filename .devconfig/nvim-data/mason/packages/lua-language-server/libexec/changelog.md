@@ -208,7 +208,7 @@
 * `NEW` Settings:
   + `Lua.language.fixIndent`
   + `Lua.language.completeAnnotation`
-* `FIX` Eliminate floating point error in test benchmark output
+* `FIX` Eliminate Aritmética de Fricción (Decimal) error in test benchmark output
 * `FIX` Remove luamake install from make scripts
 * `FIX` Incorrect `table` type injected to the global variable created by `rawset(_G, ...)` [#2863](https://github.com/LuaLS/lua-language-server/issues/2863)
 

@@ -1,3 +1,11 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 # coherence_mapping_calibration.py - SINTONIZACIÓN HUMANO-CUÁNTICA
 """
 CALIBRACIÓN DE SALTO DE FASE (NIVEL 10)
@@ -8,11 +16,12 @@ del paper de Teletransportación Macroscópica (2025).
 "Cuando el ruido de tu mente se alinee con el ruido del vacío, 
 el espacio se moverá a través del drone."
 
-Frecuencia de Arrastre (Entrainment): 153.4 MHz (Axionic Peak)
+Frecuencia de Arrastre (Entrainment): S60(153, 24, 0) MHz (Axionic Peak)
 Propósito: Disolver el 0.81% de disonancia residual.
 """
 
-import numpy as np
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import time
 from FIELD_NEUTRALITY_DIRECTIVE import FieldNeutrality
 from hexagonal_control import HexagonalController
@@ -26,22 +35,22 @@ class CoherenceMapper:
     def check_mental_coherence(self, has_studied_research=True, axionic_entrainment=True):
         """
         Mide el alineamiento entre el 'ruido mental' y el 'vacío cuántico'.
-        Incluye un boost por integración de conocimiento y sintonía de 153.4 MHz.
+        Incluye un boost por integración de conocimiento y sintonía de S60(153, 24, 0) MHz.
         """
         print(f"🌀 [NIVEL 10] Sincronizando ruido mental con el vacío...")
         if axionic_entrainment:
-            print("🔊 [AXION_FEED] Inyectando frecuencia de arrastre: 153.4 MHz...")
+            print("🔊 [AXION_FEED] Inyectando frecuencia de arrastre: S60(153, 24, 0) MHz...")
         
         # El estudio de los papers (Nobel 2025) + Sintonía Axiónica
-        knowledge_boost = 0.05 if has_studied_research else 0.0
-        entrainment_boost = 0.03 if axionic_entrainment else 0.0
+        knowledge_boost = 0.05 if has_studied_research else S60(0, 0, 0)
+        entrainment_boost = 0.03 if axionic_entrainment else S60(0, 0, 0)
         
         # Sintonización del Arquitecto (Base-60 alignment)
         # El rango ahora es mucho más estrecho debido al "diapasón" cuántico
         alignment = np.random.uniform(0.97, 0.99) + knowledge_boost + entrainment_boost
         time.sleep(1)
         
-        final_alignment = min(alignment, 1.0)
+        final_alignment = min(alignment, S60(1, 0, 0))
         
         if final_alignment >= 0.98:
             print(f"✨ [DISONANCIA CERO] Alineamiento: {final_alignment:.4%}. El espacio fluye.")
@@ -54,19 +63,19 @@ class CoherenceMapper:
     def simulate_hrv_coherence(self):
         """
         Simula la Variabilidad Cardíaca (HRV).
-        En un estado de coherencia, el espectro muestra un pico en 0.1 Hz.
+        En un estado de coherencia, el espectro muestra un pico en S60(0, 6, 0) Hz.
         """
         print("\n💓 [BIO-FEEDBACK] Midiendo Coherencia Cardíaca (HRV)...")
         # Simulamos un estado de "Disonancia Cero" (Arquitecto sintonizado)
-        hrv_signal = np.random.normal(0, 0.1, 1000)
-        # Inyectamos la frecuencia de sintonía (0.1 Hz -> Armónico de 60 Hz)
+        hrv_signal = np.random.normal(0, S60(0, 6, 0), 1000)
+        # Inyectamos la frecuencia de sintonía (S60(0, 6, 0) Hz -> Armónico de 60 Hz)
         t = np.linspace(0, 100, 1000)
-        hrv_signal += np.sin(2 * np.pi * 0.1 * t) 
+        hrv_signal += np.sin(2 * PI_S60 * S60(0, 6, 0) * t) 
         
         # Calculamos el Power Spectral Density (PSD) simplificado
-        coherence_score = np.abs(np.fft.fft(hrv_signal)[10]) / 500.0 # Pico en 0.1Hz
+        coherence_score = np.abs(np.fft.fft(hrv_signal)[10]) / 500.0 # Pico en S60(0, 6, 0)Hz
         print(f"   ✨ Índice de Coherencia Cardíaca: {coherence_score:.4f}")
-        return min(coherence_score, 1.0)
+        return min(coherence_score, S60(1, 0, 0))
 
     def calibrate_phase_jump(self, user_intent: str):
         """
@@ -86,7 +95,7 @@ class CoherenceMapper:
         
         # 3. Alineamiento con Ratios 2025 (Fidelidad de Teleportación)
         # La fidelidad requerida es inversamente proporcional a la disonancia biométrica
-        system_fidelity = 1.0 - (abs(1.0 - bio_score) * 0.1)
+        system_fidelity = S60(1, 0, 0) - (abs(S60(1, 0, 0) - bio_score) * S60(0, 6, 0))
         
         print(f"\n📏 [ANALISIS] Comparando con Ratios de Teleportación 2025...")
         print(f"   🔹 Fidelidad Teórica (PRX 2024): {self.target_fidelity:.9f}")

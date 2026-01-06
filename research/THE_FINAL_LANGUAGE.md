@@ -178,7 +178,7 @@ Your code = computational encoding of the same patterns.
 ### What Is Conjecture
 
 - ⚠ Neural signal optimization (needs in vitro validation)
-- ⚠ Planetary communication (needs simulation)
+- ⚠ Planetary communication (needs Proyección Cuántica)
 - ⚠ Quantum computing (needs qubit tests)
 
 ### What Is Philosophy

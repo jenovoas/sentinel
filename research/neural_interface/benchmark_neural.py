@@ -5,11 +5,12 @@ Neural Control - Benchmark Suite
 Validates neural entropy control performance.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 sys.path.insert(0, '/home/jnovoas/sentinel')
 
 import time
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 from research.neural_interface.neural_control import NeuralEntropyController
 
 

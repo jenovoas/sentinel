@@ -174,7 +174,7 @@ networks:
 
 **Attack Vector**:
 ```python
-# Attacker sends logs with micro-second timestamp chaos
+# Attacker sends logs with micro-second timestamp Disonancia no resuelta
 logs = [
     {"ts": "2024-12-19T10:00:00.001Z", "msg": "normal"},
     {"ts": "2024-12-19T09:59:59.999Z", "msg": "backdated"},  # Out of order

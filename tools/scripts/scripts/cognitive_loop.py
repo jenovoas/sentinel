@@ -4,6 +4,7 @@ Guardian-Alpha Cognitive Loop
 Monitors kernel events and uses AI to make security decisions.
 Integrated with sentinel_core modules.
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import os
 

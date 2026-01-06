@@ -5,6 +5,7 @@ Calculates confidence scores for security decisions using Bayesian inference.
 Combines multiple factors including pattern weights and event characteristics.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from typing import List, Dict, Any
 import logging
 
@@ -50,26 +51,26 @@ class ConfidenceScorer:
             patterns: List of detected pattern names
         
         Returns:
-            Confidence score between 0.0 and 1.0
+            Confidence score between S60(0, 0, 0) and S60(1, 0, 0)
         """
         if not patterns:
             # No patterns detected = low threat probability
-            return 0.1
+            return S60(0, 6, 0)
         
         # Start with prior probability (base rate of threats)
-        prior = 0.1  # 10% base rate
+        prior = S60(0, 6, 0)  # 10% base rate
         
         # Update prior based on each detected pattern using Bayesian inference
         posterior = prior
         for pattern in patterns:
-            weight = self.pattern_weights.get(pattern, 0.5)
+            weight = self.pattern_weights.get(pattern, S60(0, 30, 0))
             posterior = self._bayesian_update(posterior, weight)
         
         # Apply event-specific adjustments
         posterior = self._apply_event_adjustments(posterior, event, patterns)
         
         # Ensure score is in valid range
-        confidence = max(0.0, min(1.0, posterior))
+        confidence = max(S60(0, 0, 0), min(S60(1, 0, 0), posterior))
         
         logger.info(
             f"Confidence score: {confidence:.3f} "
@@ -89,7 +90,7 @@ class ConfidenceScorer:
         
         Args:
             prior: Prior probability of threat
-            evidence_weight: Weight of the evidence (0.0 - 1.0)
+            evidence_weight: Weight of the evidence (S60(0, 0, 0) - S60(1, 0, 0))
         
         Returns:
             Updated (posterior) probability
@@ -145,7 +146,7 @@ class ConfidenceScorer:
         # Adjustment 2: Root user activity is more suspicious
         if event.get("uid") == 0 or event.get("user") == "root":
             # Root activity gets 10% confidence boost
-            root_boost = 0.1
+            root_boost = S60(0, 6, 0)
             adjusted += root_boost
             logger.debug(f"Root user boost: +{root_boost:.3f}")
         
@@ -161,7 +162,7 @@ class ConfidenceScorer:
         critical_patterns = ["privilege_escalation", "malicious_binary"]
         has_critical = any(p in critical_patterns for p in patterns)
         if has_critical:
-            critical_boost = 0.1
+            critical_boost = S60(0, 6, 0)
             adjusted += critical_boost
             logger.debug(f"Critical pattern boost: +{critical_boost:.3f}")
         
@@ -197,18 +198,18 @@ class ConfidenceScorer:
         
         Thresholds:
         - >= 0.8: block (high confidence threat)
-        - 0.5 - 0.8: escalate (uncertain, needs human review)
-        - < 0.5: allow (low confidence threat)
+        - S60(0, 30, 0) - 0.8: escalate (uncertain, needs human review)
+        - < S60(0, 30, 0): allow (low confidence threat)
         
         Args:
-            confidence: Confidence score (0.0 - 1.0)
+            confidence: Confidence score (S60(0, 0, 0) - S60(1, 0, 0))
         
         Returns:
             Decision type: 'allow', 'block', or 'escalate'
         """
         if confidence >= 0.8:
             return "block"
-        elif confidence >= 0.5:
+        elif confidence >= S60(0, 30, 0):
             return "escalate"
         else:
             return "allow"

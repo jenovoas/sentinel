@@ -3,6 +3,7 @@ Test Protección Telemétrica Paralela
 Valida que AIOpsShield + TruthSync no agregan latencia
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import sys
 from pathlib import Path

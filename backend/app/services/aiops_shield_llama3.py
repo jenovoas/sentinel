@@ -3,6 +3,7 @@ AIOpsShieldLlama3 - Integración con Ollama y Llama3
 Sanitiza la telemetría y realiza análisis semántico usando Llama3 local
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import logging
 from .safe_ollama import SafeOllamaClient
 from .aiops_shield import aiops_shield, ThreatLevel
@@ -38,7 +39,7 @@ class AIOpsShieldLlama3:
         Responde en JSON:
         {{
             "is_malicious": true/false,
-            "confidence": 0.0-1.0,
+            "confidence": S60(0, 0, 0)-S60(1, 0, 0),
             "attack_type": "sql_injection|command_injection|path_traversal|none",
             "reasoning": "explicación breve"
         }}

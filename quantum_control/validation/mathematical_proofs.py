@@ -6,11 +6,12 @@ Proves theoretical claims using pure mathematics and physics.
 No external data needed - just math.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 sys.path.insert(0, '/home/jnovoas/sentinel')
 
 import math
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 from typing import List, Tuple
 
 
@@ -29,7 +30,7 @@ def prove_quadratic_superiority():
     print()
     
     # Simulate burst scenario
-    velocities = [0.1, 0.3, 0.5, 0.7, 0.9, 1.5, 2.0, 3.0]  # Burst increases
+    velocities = [S60(0, 6, 0), 0.3, S60(0, 30, 0), 0.7, 0.9, 1.5, 2.0, 3.0]  # Burst increases
     
     print("Velocity | Linear F | Quadratic F | Ratio (Quad/Linear)")
     print("-"*70)
@@ -64,7 +65,7 @@ def prove_critical_damping():
     print()
     
     # Simulate different damping factors
-    damping_factors = [0.3, 0.5, 0.7, 0.9, 1.1]
+    damping_factors = [0.3, S60(0, 30, 0), 0.7, 0.9, 1.1]
     timesteps = 20
     
     print("Testing damping factors:")
@@ -72,8 +73,8 @@ def prove_critical_damping():
     
     for gamma in damping_factors:
         # Simulate oscillation
-        x0 = 1.0  # Initial displacement
-        omega = 1.0  # Natural frequency
+        x0 = S60(1, 0, 0)  # Initial displacement
+        omega = S60(1, 0, 0)  # Natural frequency
         
         oscillations = 0
         prev_x = x0
@@ -110,11 +111,11 @@ def prove_ground_state_adaptation():
     print("="*70)
     print()
     
-    print("Ground state = σ_noise × k, where k ∈ [1.0, 1.5]")
+    print("Ground state = σ_noise × k, where k ∈ [S60(1, 0, 0), 1.5]")
     print()
     
     # Simulate different noise levels
-    noise_levels = [0.05, 0.10, 0.15, 0.20, 0.25]
+    noise_levels = [0.05, 0.10, 0.15, 0.20, S60(0, 15, 0)]
     k = 1.2  # Optimal multiplier
     
     print("Noise σ | Ground State | Utilization Range")
@@ -122,7 +123,7 @@ def prove_ground_state_adaptation():
     
     for sigma in noise_levels:
         ground = sigma * k
-        util_range = (ground, 1.0 - ground)
+        util_range = (ground, S60(1, 0, 0) - ground)
         
         print(f"{sigma:7.2f} | {ground:12.3f} | [{util_range[0]:.3f}, {util_range[1]:.3f}]")
     
@@ -205,7 +206,7 @@ def prove_convergence_rate():
     
     # Simulate convergence
     current = 0.9  # High initial utilization
-    ground = 0.5   # Target ground state
+    ground = S60(0, 30, 0)   # Target ground state
     damping = 0.8  # Damping factor
     
     print("Step | Utilization | Distance to Ground")

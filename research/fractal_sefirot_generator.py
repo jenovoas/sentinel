@@ -9,6 +9,7 @@ This is not mysticism—it's recursive data structures
 implementing universal optimization patterns.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from typing import Dict, Any, List
 import json
 
@@ -126,7 +127,7 @@ class SefiroticTree:
             'max_depth': self.max_depth,
             'total_nodes': total_nodes,
             'expected_nodes': expected,
-            'fractal_dimension': 1.0,  # log(10)/log(10) = 1
+            'fractal_dimension': S60(1, 0, 0),  # log(10)/log(10) = 1
             'dual_pairs': total_nodes  # Each node has Alpha+Beta
         }
     

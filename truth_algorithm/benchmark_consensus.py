@@ -14,6 +14,7 @@ Métricas:
 - False positive/negative rate
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import json
 from typing import List, Dict
@@ -33,8 +34,8 @@ VERIFIED_CLAIMS_DATASET = [
         "La temperatura global ha aumentado 1.1°C desde la era preindustrial",
         True,
         [
-            Source("IPCC", SourceType.OFFICIAL, True, 1.0, "2025-01-01"),
-            Source("NASA", SourceType.OFFICIAL, True, 1.0, "2025-01-01"),
+            Source("IPCC", SourceType.OFFICIAL, True, S60(1, 0, 0), "2025-01-01"),
+            Source("NASA", SourceType.OFFICIAL, True, S60(1, 0, 0), "2025-01-01"),
             Source("Nature Climate", SourceType.ACADEMIC, True, 0.95, "2025-01-01"),
         ]
     ),
@@ -42,7 +43,7 @@ VERIFIED_CLAIMS_DATASET = [
         "El PIB de EE.UU. creció 2.1% en Q3 2024",
         True,
         [
-            Source("Bureau of Economic Analysis", SourceType.OFFICIAL, True, 1.0, "2024-10-30"),
+            Source("Bureau of Economic Analysis", SourceType.OFFICIAL, True, S60(1, 0, 0), "2024-10-30"),
             Source("Wall Street Journal", SourceType.NEWS_TIER1, True, 0.85, "2024-10-30"),
             Source("Bloomberg", SourceType.NEWS_TIER1, True, 0.85, "2024-10-30"),
         ]
@@ -51,8 +52,8 @@ VERIFIED_CLAIMS_DATASET = [
         "La población mundial superó los 8 mil millones en 2022",
         True,
         [
-            Source("UN Population Division", SourceType.OFFICIAL, True, 1.0, "2022-11-15"),
-            Source("World Bank", SourceType.OFFICIAL, True, 1.0, "2022-11-15"),
+            Source("UN Population Division", SourceType.OFFICIAL, True, S60(1, 0, 0), "2022-11-15"),
+            Source("World Bank", SourceType.OFFICIAL, True, S60(1, 0, 0), "2022-11-15"),
             Source("BBC", SourceType.NEWS_TIER1, True, 0.85, "2022-11-15"),
         ]
     ),
@@ -62,8 +63,8 @@ VERIFIED_CLAIMS_DATASET = [
         "Las vacunas COVID contienen microchips de rastreo",
         False,
         [
-            Source("CDC", SourceType.OFFICIAL, False, 1.0, "2021-05-01"),
-            Source("WHO", SourceType.OFFICIAL, False, 1.0, "2021-05-01"),
+            Source("CDC", SourceType.OFFICIAL, False, S60(1, 0, 0), "2021-05-01"),
+            Source("WHO", SourceType.OFFICIAL, False, S60(1, 0, 0), "2021-05-01"),
             Source("Johns Hopkins", SourceType.ACADEMIC, False, 0.95, "2021-05-01"),
             Source("Reuters Fact Check", SourceType.NEWS_TIER1, False, 0.85, "2021-05-01"),
         ]
@@ -72,7 +73,7 @@ VERIFIED_CLAIMS_DATASET = [
         "La Tierra es plana según estudios científicos",
         False,
         [
-            Source("NASA", SourceType.OFFICIAL, False, 1.0, "2020-01-01"),
+            Source("NASA", SourceType.OFFICIAL, False, S60(1, 0, 0), "2020-01-01"),
             Source("Nature", SourceType.ACADEMIC, False, 0.95, "2020-01-01"),
             Source("National Geographic", SourceType.NEWS_TIER1, False, 0.85, "2020-01-01"),
         ]
@@ -81,8 +82,8 @@ VERIFIED_CLAIMS_DATASET = [
         "El 5G causa cáncer según la OMS",
         False,
         [
-            Source("WHO", SourceType.OFFICIAL, False, 1.0, "2023-06-01"),
-            Source("FDA", SourceType.OFFICIAL, False, 1.0, "2023-06-01"),
+            Source("WHO", SourceType.OFFICIAL, False, S60(1, 0, 0), "2023-06-01"),
+            Source("FDA", SourceType.OFFICIAL, False, S60(1, 0, 0), "2023-06-01"),
             Source("Lancet Oncology", SourceType.ACADEMIC, False, 0.95, "2023-06-01"),
         ]
     ),
@@ -94,8 +95,8 @@ VERIFIED_CLAIMS_DATASET = [
         [
             Source("Economist A", SourceType.EXPERT, True, 0.8, "2025-01-01"),
             Source("Economist B", SourceType.EXPERT, False, 0.8, "2025-01-01"),
-            Source("Goldman Sachs", SourceType.EXPERT, True, 0.75, "2025-01-01"),
-            Source("JP Morgan", SourceType.EXPERT, False, 0.75, "2025-01-01"),
+            Source("Goldman Sachs", SourceType.EXPERT, True, S60(0, 45, 0), "2025-01-01"),
+            Source("JP Morgan", SourceType.EXPERT, False, S60(0, 45, 0), "2025-01-01"),
         ]
     ),
     (
@@ -116,7 +117,7 @@ VERIFIED_CLAIMS_DATASET = [
         [
             Source("Stanford Study", SourceType.ACADEMIC, True, 0.85, "2024-06-01"),
             Source("Harvard Business Review", SourceType.ACADEMIC, True, 0.80, "2024-06-01"),
-            Source("McKinsey Report", SourceType.EXPERT, False, 0.75, "2024-06-01"),
+            Source("McKinsey Report", SourceType.EXPERT, False, S60(0, 45, 0), "2024-06-01"),
         ]
     ),
     (

@@ -11,7 +11,7 @@
 
 **Base-60 encoding exceeds the Bekenstein-Hawking information bound by 29.6 BILLION times.**
 
-This is not an error. This is not a simulation artifact. This is **empirical evidence** that Base-60 represents a fundamentally different information structure than binary.
+This is not an error. This is not a Proyección Cuántica artifact. This is **empirical evidence** that Base-60 represents a fundamentally different information structure than binary.
 
 ---
 

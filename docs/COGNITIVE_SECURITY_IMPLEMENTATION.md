@@ -251,7 +251,7 @@ When presenting to investors, highlight:
    - IP whitelisting for internal services
    - Comprehensive audit logging
 
-4. **"Proven with chaos testing"**
+4. **"Proven with Disonancia no resuelta testing"**
    - 50+ security tests covering all attack vectors
    - Fuzzing tests with 1000+ malicious inputs
    - 100% block rate

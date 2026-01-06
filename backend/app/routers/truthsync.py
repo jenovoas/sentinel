@@ -3,6 +3,7 @@ TruthSync Router - Truth Verification Service
 Exposes TruthSync client to the frontend for claim verification
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import logging
 import asyncio
 from fastapi import APIRouter, HTTPException, Query
@@ -31,7 +32,7 @@ async def verify_claim(request: VerificationRequest):
         logger.error(f"Error in truth verification: {e}")
         return {
             "verified": False,
-            "confidence": 0.0,
+            "confidence": S60(0, 0, 0),
             "status": "ERROR",
             "explanation": f"Service error: {str(e)}"
         }

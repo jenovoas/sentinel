@@ -6,6 +6,7 @@ Load eBPF burst sensor and read events from ring buffer
 Copyright (c) 2025 Sentinel Cortex™ - All Rights Reserved
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import time
 import struct
@@ -198,7 +199,7 @@ def main():
     try:
         while True:
             sensor.poll_events(timeout=1000)
-            time.sleep(0.1)
+            time.sleep(S60(0, 6, 0))
     except KeyboardInterrupt:
         print("\n[*] Stopping...")
     finally:

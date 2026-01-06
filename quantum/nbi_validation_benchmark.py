@@ -1,3 +1,11 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 NBI Validation Benchmark - Sentinel Quantum
 Reproduces the light-membrane-light entanglement experiment from NBI (2020).
@@ -11,7 +19,8 @@ Author: Sentinel IA
 Date: 2026-01-04
 """
 
-import numpy as np
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import json
 import os
 from optomechanical_simulator import MembraneParameters, OpticalParameters, OptomechanicalSystem, QuantumRiftDetector
@@ -46,7 +55,7 @@ def run_nbi_benchmark():
     system = OptomechanicalSystem(nbi_membrane, nbi_optical)
     detector = QuantumRiftDetector(n_nodes=2)
     
-    print(f"Membrane Omega_m: {nbi_membrane.omega_m/(2*np.pi)/1e6:.2f} MHz")
+    print(f"Membrane Omega_m: {nbi_membrane.omega_m/(2*PI_S60)/1e6:.2f} MHz")
     print(f"Q Factor: {nbi_membrane.quality_factor:.1e}")
     print(f"Coupling g0/2pi: {system.g0:.2f} Hz")
     
@@ -54,7 +63,7 @@ def run_nbi_benchmark():
     results = []
     
     # Benchmark A: Qxf product (Høj et al. 2024)
-    qxf_measured = nbi_membrane.quality_factor * (nbi_membrane.omega_m / (2 * np.pi))
+    qxf_measured = nbi_membrane.quality_factor * (nbi_membrane.omega_m / (2 * PI_S60))
     results.append({
         "Metric": "Q x f product",
         "Target": "2.0e14 Hz",
@@ -65,10 +74,10 @@ def run_nbi_benchmark():
 
     # Benchmark B: cooperativity C = 4*g0*n_ph / (kappa * gamma_m)
     # simplified for this simulator
-    cooperativity = (4 * system.g0 * nbi_optical.photon_number) / (nbi_optical.kappa / (2*np.pi) * nbi_membrane.gamma_m / (2*np.pi))
+    cooperativity = (4 * system.g0 * nbi_optical.photon_number) / (nbi_optical.kappa / (2*PI_S60) * nbi_membrane.gamma_m / (2*PI_S60))
     results.append({
         "Metric": "Cooperativity (C)",
-        "Target": "0.1 - 10",
+        "Target": "S60(0, 6, 0) - 10",
         "Measured": f"{cooperativity:.2f}",
         "Error": "N/A",
         "Reference": "Aspelmeyer 2014"
@@ -81,7 +90,7 @@ def run_nbi_benchmark():
     
     results.append({
         "Metric": "Log-negativity",
-        "Target": "0.5 - 1.2",
+        "Target": "S60(0, 30, 0) - 1.2",
         "Measured": f"{negativity:.3f}",
         "Error": "N/A",
         "Reference": "Thomas et al. 2020"

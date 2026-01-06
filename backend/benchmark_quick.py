@@ -3,6 +3,7 @@ Benchmark Rápido - Buffers Estáticos vs Dinámicos
 Versión simplificada para validación rápida (2-3 minutos)
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
 import sys

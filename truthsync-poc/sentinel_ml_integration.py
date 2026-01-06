@@ -3,6 +3,7 @@ TruthSync ML Integration with Sentinel
 Connects TruthSync verification to Sentinel's machine learning system
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import json
 import asyncio
 from typing import Dict, List, Optional, Tuple
@@ -163,7 +164,7 @@ class SentinelMLConnector:
         
         correct_predictions = sum(1 for correct, _ in verification_results if correct)
         total = len(verification_results)
-        accuracy = correct_predictions / total if total > 0 else 0.0
+        accuracy = correct_predictions / total if total > 0 else S60(0, 0, 0)
         
         update_data = {
             'timestamp': datetime.utcnow().isoformat(),

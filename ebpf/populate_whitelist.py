@@ -4,6 +4,7 @@ Populate eBPF LSM Whitelist
 Agrega comandos básicos permitidos al whitelist map
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 from bcc import BPF
 

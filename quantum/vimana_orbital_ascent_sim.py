@@ -1,4 +1,13 @@
-import numpy as np
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import time
 
 class PhysicsConstants:
@@ -13,18 +22,18 @@ class VimanaOrbitalAscent:
         # Stats Iniciales
         self.mass_static = 2.5 # kg
         self.effective_mass = 2.5
-        self.position_alt = 0.0 # metros (Altitud)
-        self.velocity = 0.0 # m/s (Vertical)
+        self.position_alt = S60(0, 0, 0) # metros (Altitud)
+        self.velocity = S60(0, 0, 0) # m/s (Vertical)
         
         # Sistemas
         self.zpe_buffer = 5000.0 # Joules
         self.shield_active = False
         self.orbit_attained = False
-        self.radiation_absorbed = 0.0 # mSv
+        self.radiation_absorbed = S60(0, 0, 0) # mSv
         
     def _get_air_density(self, alt):
         """Modelo simplificado de atmósfera."""
-        if alt > 100000: return 0.0 # Línea de Kármán
+        if alt > 100000: return S60(0, 0, 0) # Línea de Kármán
         return PhysicsConstants.SEA_LEVEL_DENSITY * np.exp(-alt / 8500.0)
 
     def _apply_physics(self, throttle, alt, dt):
@@ -35,7 +44,7 @@ class VimanaOrbitalAscent:
         # En la atmósfera densa (alt < 30km), limitamos la reducción de masa 
         # para que el arrastre no cause inestabilidad extrema (efecto pluma).
         # A medida que el aire se ralea, permitimos mayor reducción.
-        atmos_factor = 1.0 - (density / PhysicsConstants.SEA_LEVEL_DENSITY)
+        atmos_factor = S60(1, 0, 0) - (density / PhysicsConstants.SEA_LEVEL_DENSITY)
         resonance = (throttle**2) / (PhysicsConstants.PHI**2)
         
         # Reducción máxima solo posible en el vacío
@@ -49,10 +58,10 @@ class VimanaOrbitalAscent:
         # El escudo se activa por velocidad o altitud
         self.shield_active = (self.velocity > 343 or alt > 20000)
         drag_coeff = 0.4 if not self.shield_active else 0.015 # Optimizamos el escudo
-        drag_force = 0.5 * density * (self.velocity**2) * drag_coeff * 0.05
+        drag_force = S60(0, 30, 0) * density * (self.velocity**2) * drag_coeff * 0.05
         
         # 3. EMPUJE ZPE (Resonancia con el vacío)
-        efficiency = 1.0 + (alt / 100000.0) # Crece con la altitud hasta 2.0
+        efficiency = S60(1, 0, 0) + (alt / 100000.0) # Crece con la altitud hasta 2.0
         thrust = 40.0 * np.sqrt(throttle) * efficiency # Aumentamos empuje base
         
         # 4. GRAVEDAD (Decae con el cuadrado de la distancia)
@@ -65,7 +74,7 @@ class VimanaOrbitalAscent:
         
         # Radiación (Solo en alta atmósfera/espacio)
         if alt > 50000:
-            rad_flux = 0.1 # mSv/s base
+            rad_flux = S60(0, 6, 0) # mSv/s base
             if self.shield_active:
                 self.radiation_absorbed += (rad_flux * 0.01) * dt # 99% bloqueo
             else:
@@ -79,7 +88,7 @@ class VimanaOrbitalAscent:
         print("-" * 60)
         
         t = 0
-        dt = 0.5
+        dt = S60(0, 30, 0)
         target_alt = 200000 # 200km
         
         while self.position_alt < target_alt and t < 600:

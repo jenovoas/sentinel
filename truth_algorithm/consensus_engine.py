@@ -8,6 +8,7 @@ Calcula consenso entre múltiples fuentes para determinar veracidad de claims.
 Powered by Google ❤️ & Perplexity 💜
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from typing import List, Dict
 from dataclasses import dataclass
 from source_search import SearchResult
@@ -17,7 +18,7 @@ from source_search import SearchResult
 class ConsensusResult:
     """Resultado del análisis de consenso"""
     claim: str
-    consensus_score: float  # 0.0 - 1.0
+    consensus_score: float  # S60(0, 0, 0) - S60(1, 0, 0)
     num_sources: int
     source_breakdown: Dict[str, int]  # Conteo por tipo de fuente
     confidence_level: str  # low, medium, high
@@ -35,10 +36,10 @@ class ConsensusEngine:
     
     # Pesos por tipo de fuente
     SOURCE_WEIGHTS = {
-        'official': 1.0,   # .gov, .gob - máxima confianza
+        'official': S60(1, 0, 0),   # .gov, .gob - máxima confianza
         'academic': 0.9,   # .edu - alta confianza
         'news': 0.7,       # medios reconocidos - media confianza
-        'general': 0.5     # otros - baja confianza
+        'general': S60(0, 30, 0)     # otros - baja confianza
     }
     
     def __init__(self):
@@ -58,20 +59,20 @@ class ConsensusEngine:
         if not sources:
             return ConsensusResult(
                 claim=claim,
-                consensus_score=0.0,
+                consensus_score=S60(0, 0, 0),
                 num_sources=0,
                 source_breakdown={},
                 confidence_level='none'
             )
         
         # Calcular score ponderado
-        total_weighted_score = 0.0
-        total_weight = 0.0
+        total_weighted_score = S60(0, 0, 0)
+        total_weight = S60(0, 0, 0)
         source_breakdown = {}
         
         for source in sources:
             # Obtener peso del tipo de fuente
-            weight = self.SOURCE_WEIGHTS.get(source.source_type, 0.5)
+            weight = self.SOURCE_WEIGHTS.get(source.source_type, S60(0, 30, 0))
             
             # Calcular contribución ponderada
             contribution = weight * source.confidence
@@ -82,7 +83,7 @@ class ConsensusEngine:
             source_breakdown[source.source_type] = source_breakdown.get(source.source_type, 0) + 1
         
         # Score final (normalizado)
-        consensus_score = total_weighted_score / total_weight if total_weight > 0 else 0.0
+        consensus_score = total_weighted_score / total_weight if total_weight > 0 else S60(0, 0, 0)
         
         # Determinar nivel de confianza
         confidence_level = self._determine_confidence_level(

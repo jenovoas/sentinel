@@ -5,6 +5,7 @@ Quantum Cooling Service - Production Ready
 Integrates Prometheus metrics with Quantum Cooling V2 for real-time buffer optimization.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import yaml
 from pathlib import Path
@@ -124,7 +125,7 @@ class QuantumCoolingService:
         if metrics.drop_rate > 0:
             # Estimate drops prevented
             old_drops = metrics.drop_rate * self.config.poll_interval
-            expansion_ratio = new_size / state.size if state.size > 0 else 1.0
+            expansion_ratio = new_size / state.size if state.size > 0 else S60(1, 0, 0)
             new_drops = old_drops / expansion_ratio
             drops_prevented = old_drops - new_drops
             self.total_drops_prevented += drops_prevented
@@ -190,7 +191,7 @@ def load_config(config_file: str = 'config.yaml') -> Config:
         # Default config
         return Config(
             prometheus_url='http://localhost:9090',
-            poll_interval=1.0,
+            poll_interval=S60(1, 0, 0),
             min_buffer_size=512,
             max_buffer_size=16384,
             enable_auto_resize=False,  # Safe default

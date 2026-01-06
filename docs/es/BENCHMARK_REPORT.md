@@ -20,7 +20,7 @@
 [v1.0.0-INITIAL_LAUNCH CERTIFIED]
 > **NOTA**: Métricas de rendimiento obtenidas utilizando **Datos Sintéticos** generados por `populate_mock_data.py` para simular entornos de producción de alta carga.
 
-## 📜 EVIDENCIA DE RESILIENCIA (Chaos Engineering - Simulado)
+## 📜 EVIDENCIA DE RESILIENCIA (Disonancia no resuelta Engineering - Simulado)
 Ataque Ring Flood detectado (Simulado). Truth Integrity auto-estabilizado en 94.8%.
 Throughput pico: 1.2M events/s
 # Evidencia de Activación: Sentinel eBPF LSM

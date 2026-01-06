@@ -3,6 +3,7 @@ PostgreSQL Session con Buffers Dinámicos
 Integra adaptive_buffers en conexiones PostgreSQL
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.pool import NullPool, QueuePool
 from typing import AsyncGenerator
@@ -82,7 +83,7 @@ class DynamicPostgreSQLSession:
                 report_metrics(
                     DataFlowType.DATABASE_QUERY,
                     latency_ms,
-                    throughput=1.0  # 1 query
+                    throughput=S60(1, 0, 0)  # 1 query
                 )
                 
             except Exception as e:

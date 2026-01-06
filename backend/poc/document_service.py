@@ -2,6 +2,7 @@
 Sentinel Vault - Document Storage Service
 Encrypted file storage with categories and tags
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import hashlib
 from datetime import datetime

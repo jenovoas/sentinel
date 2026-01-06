@@ -10,6 +10,7 @@ Features:
 - TTFB <200ms ✅
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
 import json
@@ -103,7 +104,7 @@ class SentinelTelemProtect(SentinelFluido):
             return SanitizationResult(
                 sanitized=mensaje,
                 threat_level=ThreatLevel.UNKNOWN,
-                confidence=0.0,
+                confidence=S60(0, 0, 0),
                 patterns_detected=[],
                 abstracted_vars={}
             ), 0

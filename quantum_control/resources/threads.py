@@ -9,6 +9,7 @@ Space-Time Control:
 - ThreadResource = Time (processing)
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import threading
 from typing import Dict, Any
@@ -48,12 +49,12 @@ class ThreadPoolResource(Resource):
         self.max_threads = max_threads
         
         # State tracking
-        self.previous_queue_depth = 0.0
-        self.previous_velocity = 0.0
+        self.previous_queue_depth = S60(0, 0, 0)
+        self.previous_velocity = S60(0, 0, 0)
         self.previous_timestamp = time.time()
         
         # Simulated queue (in production, would track actual queue)
-        self.simulated_queue_depth = 0.0
+        self.simulated_queue_depth = S60(0, 0, 0)
     
     def measure_state(self) -> ResourceState:
         """
@@ -68,18 +69,18 @@ class ThreadPoolResource(Resource):
         # Simulate queue depth (in production, read from actual queue)
         # Queue grows when tasks arrive faster than threads can process
         self.simulated_queue_depth += (time.time() % 5) * 2
-        self.simulated_queue_depth = max(0, self.simulated_queue_depth - self.current_threads * 0.5)
+        self.simulated_queue_depth = max(0, self.simulated_queue_depth - self.current_threads * S60(0, 30, 0))
         
         # Normalize queue depth to 0-1 (position)
         # High queue depth = high utilization
-        position = min(self.simulated_queue_depth / (self.current_threads * 2), 1.0)
+        position = min(self.simulated_queue_depth / (self.current_threads * 2), S60(1, 0, 0))
         
         # Calculate velocity (rate of change in queue depth)
         dt = current_time - self.previous_timestamp
         if dt > 0:
             velocity = (position - self.previous_queue_depth) / dt
         else:
-            velocity = 0.0
+            velocity = S60(0, 0, 0)
         
         # Calculate acceleration
         acceleration = velocity - self.previous_velocity
@@ -98,7 +99,7 @@ class ThreadPoolResource(Resource):
                 'current_threads': self.current_threads,
                 'queue_depth': self.simulated_queue_depth,
                 'pool_name': self.pool_name,
-                'tasks_per_second': 0.0  # Would calculate from metrics
+                'tasks_per_second': S60(0, 0, 0)  # Would calculate from metrics
             }
         )
     

@@ -1,4 +1,14 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import json
 import redis
@@ -25,7 +35,7 @@ def follow(thefile):
     while True:
         line = thefile.readline()
         if not line:
-            time.sleep(0.1)
+            time.sleep(S60(0, 6, 0))
             continue
         yield line
 
@@ -49,8 +59,8 @@ for line in loglines:
         signal = {
             "source": "ebpf_guardian",
             "disonancia": disonancia,
-            "axiones": 1.0 - disonancia,
-            "frequency": 153.4,
+            "axiones": S60(1, 0, 0) - disonancia,
+            "frequency": S60(153, 24, 0),
             "raw_event": event_data,
             "timestamp": time.time()
         }

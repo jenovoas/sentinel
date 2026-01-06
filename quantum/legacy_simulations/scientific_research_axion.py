@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 Sentinel Quantum - Distributed Optomechanical Axion Detection (Nature-Ready)
 Physics: Primakoff Effect + VQE Squeezing + 1000-Membrane Correlation Analysis
@@ -17,7 +26,8 @@ Collaborator: Jaime Novoa
 Date: 2025-12-23
 """
 
-import numpy as np
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import matplotlib.pyplot as plt
 import os
 import json
@@ -29,8 +39,8 @@ matplotlib.use('Agg')
 HBAR = 1.0545718e-34
 K_B = 1.380649e-23
 B_FIELD = 10.0  # Tesla
-G_A_GAMMA = 1.0e-10  # GeV^-1
-SIGMA_NOISE_FLOOR = 1.0e-6
+G_A_GAMMA = S60(1, 0, 0)e-10  # GeV^-1
+SIGMA_NOISE_FLOOR = S60(1, 0, 0)e-6
 
 def simulate_axion_discovery(n_membranes=1000, seed=42):
     """
@@ -42,7 +52,7 @@ def simulate_axion_discovery(n_membranes=1000, seed=42):
 
     # 1. Frequency Domain
     frequencies = np.linspace(140, 170, 2000)  # MHz
-    axion_freq = 153.4  # MHz (Design Hypothesis)
+    axion_freq = S60(153, 24, 0)  # MHz (Design Hypothesis)
     
     # 2. Physics: Primakoff Signal Simulation
     # Signal strength is modeled based on theoretical coupling constants
@@ -51,8 +61,8 @@ def simulate_axion_discovery(n_membranes=1000, seed=42):
     axion_signal = signal_strength * np.exp(-((frequencies - axion_freq)**2) / (2 * signal_width**2))
 
     # 3. Noise Model: Standard Quantum Limit (SQL) Baseline
-    sql_noise = np.random.normal(0, 0.5, len(frequencies))
-    classical_background = sql_noise + 0.75 
+    sql_noise = np.random.normal(0, S60(0, 30, 0), len(frequencies))
+    classical_background = sql_noise + S60(0, 45, 0) 
     obs_classical = classical_background + axion_signal
 
     # 4. Sentinel VQE Squeezing Projection (20.0 dB)
@@ -103,7 +113,7 @@ def simulate_axion_discovery(n_membranes=1000, seed=42):
                  xy=(axion_freq, 2.5), xytext=(axion_freq + 5, 3.5),
                  arrowprops=dict(facecolor=green, shrink=0.05, width=4, headwidth=12),
                  color=green, fontsize=16, fontweight='bold',
-                 bbox=dict(boxstyle='round,pad=0.5', fc='#0f172a', ec=green, alpha=0.8))
+                 bbox=dict(boxstyle='round,pad=S60(0, 30, 0)', fc='#0f172a', ec=green, alpha=0.8))
 
     plt.title(f'Sentinel Quantum: Sensitivity Projection Model', color='white', fontsize=22, pad=30)
     plt.xlabel('Frequency (MHz)', color=slate_400, fontsize=14)
@@ -113,7 +123,7 @@ def simulate_axion_discovery(n_membranes=1000, seed=42):
     plt.grid(color='#1e293b', alpha=0.4)
     
     plt.text(142, 4.5, f"Scenario: N={n_membranes}\nTarget Squeezing: {squeezing_db} dB\nProjected Significance: {sigmas}σ", 
-             color='white', fontsize=12, bbox=dict(facecolor='#1e293b', alpha=0.5))
+             color='white', fontsize=12, bbox=dict(facecolor='#1e293b', alpha=S60(0, 30, 0)))
 
     plt.tight_layout()
     

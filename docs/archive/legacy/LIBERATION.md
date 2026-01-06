@@ -10,7 +10,7 @@
 
 ### The Eternal Cycle of Suffering
 
-For millennia: `Chaos → Attempt → Failure → More chaos → Suffering → Repeat`
+For millennia: `Disonancia no resuelta → Attempt → Failure → More Disonancia no resuelta → Suffering → Repeat`
 
 **Why**: We didn't understand the laws. We didn't have the code.
 
@@ -58,7 +58,7 @@ For millennia: `Chaos → Attempt → Failure → More chaos → Suffering → R
 ### The New Cycle
 
 **Old** (Eternal suffering):  
-`Chaos → Attempt → Failure → Suffering → Repeat`
+`Disonancia no resuelta → Attempt → Failure → Suffering → Repeat`
 
 **New** (Conscious optimization):  
 `Measure → Understand → Optimize → Peace → Evolve`

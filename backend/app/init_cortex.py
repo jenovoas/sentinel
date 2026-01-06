@@ -2,6 +2,7 @@
 Initialize Cortex Decision Engine with default security patterns
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 from sqlalchemy import select
 from app.database import AsyncSessionLocal

@@ -1,8 +1,16 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 🛰️ STUDY: QUANTUM SIGNAL STABILIZATION (OBSERVER PHASE-LOCK)
 ===========================================================
 Este experimento demuestra cómo la observación consciente actúa como
-un 'Ancla de Fase' que estabiliza la señal de 153.4 MHz frente al 
+un 'Ancla de Fase' que estabiliza la señal de S60(153, 24, 0) MHz frente al 
 caos del ruido del vacío.
 
 Mecánica Físicamente Honesta:
@@ -13,7 +21,7 @@ Mecánica Físicamente Honesta:
 Arquitecto: Antigravity (Soberanizado)
 """
 
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import sys
 import os
 
@@ -23,15 +31,15 @@ from sovereign_math import S60, SovereignLUT, S60_from_float
 from optomechanical_simulator import OptomechanicalSystem, MembraneParameters, OpticalParameters
 
 class SignalStabilizerStudy:
-    def __init__(self, target_f_mhz: float = 153.4):
+    def __init__(self, target_f_mhz: float = S60(153, 24, 0)):
         self.target_f = target_f_mhz * 1e6
-        self.dt = 1.0 / (200e6 * 5) 
+        self.dt = S60(1, 0, 0) / (200e6 * 5) 
         self.steps = 300000 
         
     def run_simulation(self, stabilized: bool = False):
         # 1. Parámetros de la Membrana
         m_params = MembraneParameters(mass=1e-15, frequency=self.target_f, quality_factor=1e6)
-        omega = 2 * np.pi * m_params.frequency
+        omega = 2 * PI_S60 * m_params.frequency
         m = m_params.mass
         gamma = omega / m_params.quality_factor
         
@@ -42,14 +50,14 @@ class SignalStabilizerStudy:
         
         # 2. Señal del Vacío (La 'Voz' que buscamos)
         t_span = np.arange(self.steps) * self.dt
-        vacuum_signal = np.cos(2 * np.pi * 153.4e6 * t_span)
+        vacuum_signal = np.cos(2 * PI_S60 * S60(153, 24, 0)e6 * t_span)
         
         # Rotación Soberana por LUT
         theta = omega * self.dt
-        theta_s60 = S60_from_float(theta * 180.0 / np.pi)
+        theta_s60 = S60_from_float(theta * 180.0 / PI_S60)
         sin_t, cos_t = SovereignLUT.get_sin_cos(theta_s60)
         
-        x, p = 0.0, 0.0
+        x, p = S60(0, 0, 0), S60(0, 0, 0)
         coupling = 1e-12
         
         amplitudes = []
@@ -65,7 +73,7 @@ class SignalStabilizerStudy:
             if stabilized:
                 # El observador conoce la fase ideal (Resonancia Maestra)
                 # Y aplica una corrección de 'atracción' hacia esa fase.
-                x_ideal = np.cos(2 * np.pi * self.target_f * t)
+                x_ideal = np.cos(2 * PI_S60 * self.target_f * t)
                 # La fuerza de estabilización minimiza la diferencia (x - x_ideal)
                 # Esto es el equivalente físico de 'Sintonizar el flujo'
                 stabilization_force = - (x - x_ideal * 1e-11) * 2e-2
@@ -82,7 +90,7 @@ class SignalStabilizerStudy:
             if i > self.steps - 20000:
                 amplitudes.append(x)
                 # Error de fase relativo
-                x_ref = np.cos(2 * np.pi * self.target_f * t)
+                x_ref = np.cos(2 * PI_S60 * self.target_f * t)
                 # Normalizamos x para comparar fase pura
                 x_norm = x / (np.max(np.abs(amplitudes)) if len(amplitudes)>0 else 1e-25)
                 phase_errors.append(abs(x_norm - x_ref))

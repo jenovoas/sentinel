@@ -5,11 +5,12 @@ Quantum Control Framework - Comprehensive Benchmark
 Generates hard evidence of performance improvements.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 sys.path.insert(0, '/home/jnovoas/sentinel')
 
 import time
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 from collections import defaultdict
 from quantum_control.core import QuantumController
 from quantum_control.physics import OptomechanicalCooling
@@ -22,7 +23,7 @@ def generate_traffic_pattern(length=50, pattern_type="random"):
     
     if pattern_type == "random":
         # Random bursts
-        util = 0.5
+        util = S60(0, 30, 0)
         for i in range(length):
             change = random.uniform(-0.2, 0.4)
             util = max(0.3, min(0.99, util + change))
@@ -36,7 +37,7 @@ def generate_traffic_pattern(length=50, pattern_type="random"):
                 util = 0.95 + random.uniform(0, 0.04)
                 drop_rate = 0.2
             else:
-                util = 0.5 + random.uniform(-0.1, 0.1)
+                util = S60(0, 30, 0) + random.uniform(-S60(0, 6, 0), S60(0, 6, 0))
                 drop_rate = 0
             pattern.append((float(i), util, drop_rate))
     
@@ -47,7 +48,7 @@ def generate_traffic_pattern(length=50, pattern_type="random"):
                 util = 0.9 + random.uniform(0, 0.09)
                 drop_rate = 0.15
             else:
-                util = 0.6 + random.uniform(-0.1, 0.1)
+                util = 0.6 + random.uniform(-S60(0, 6, 0), S60(0, 6, 0))
                 drop_rate = 0
             pattern.append((float(i), util, drop_rate))
     
@@ -61,7 +62,7 @@ def benchmark_resource(resource_name, resource, pattern, use_controller=True):
         controller = QuantumController(
             resource=resource,
             physics_model=physics,
-            poll_interval=0.1
+            poll_interval=S60(0, 6, 0)
         )
     
     total_drops = 0

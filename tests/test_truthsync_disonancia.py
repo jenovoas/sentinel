@@ -1,4 +1,5 @@
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import os
 import asyncio
@@ -21,16 +22,16 @@ async def test_disonancia_logic():
     algorithm = WeightedConsensusAlgorithm()
     claim = "La capital de Francia es París"
     
-    # Mock sources that fully support the claim (Confidence 1.0)
+    # Mock sources that fully support the claim (Confidence S60(1, 0, 0))
     sources = [
-        Source("Official Source", SourceType.OFFICIAL, True, 1.0, "2024-01-01"),
-        Source("News Source", SourceType.NEWS_TIER1, True, 1.0, "2024-01-01")
+        Source("Official Source", SourceType.OFFICIAL, True, S60(1, 0, 0), "2024-01-01"),
+        Source("News Source", SourceType.NEWS_TIER1, True, S60(1, 0, 0), "2024-01-01")
     ]
 
     # CASE 1: Silencio Sistémico (Disonancia = 0)
     # Expected: VERIFIED, 100% confidence
     print("\n--- CASE 1: Silencio Sistémico (Disonancia = 0) ---")
-    res1 = algorithm.verify_claim(claim, sources, disonancia=0.0)
+    res1 = algorithm.verify_claim(claim, sources, disonancia=S60(0, 0, 0))
     print(f"Status: {res1.status.value}")
     print(f"Confidence: {res1.confidence*100:.1f}%")
     print(f"Explanation: {res1.explanation}")

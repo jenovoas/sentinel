@@ -21,6 +21,7 @@ Para ejecutar:
 Powered by Google ❤️ & Perplexity 💜
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import time
 from source_search import SourceSearchEngine, SearchProvider

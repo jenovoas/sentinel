@@ -2,6 +2,7 @@
 Sentinel Vault - TruthSync Verification Service
 Integrates Local AI (Ollama) to verify factual claims in real-time.
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import httpx
 import json
 import logging
