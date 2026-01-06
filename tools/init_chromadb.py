@@ -3,6 +3,7 @@
 Sentinel Digital Hippocampus Initializer
 Sets up the vector database for first-run.
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import chromadb
 from pathlib import Path
 

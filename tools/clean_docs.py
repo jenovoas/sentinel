@@ -4,6 +4,7 @@ Documentation Cleaner - Removes aspirational language from technical docs
 Preserves scientific content while removing marketing/motivational language
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import re
 import os
 from pathlib import Path

@@ -162,7 +162,7 @@ Today we completed the **foundational architecture** for Sentinel's evolution fr
 **Purpose**: 4-week implementation plan
 
 **Phases**:
-1. Swarm Simulation (100 nodes in Python/n8n)
+1. Swarm Proyección Cuántica (100 nodes in Python/n8n)
 2. Unikernel Specification (eBPF + AI only)
 3. Bio-Watchdog Circuit (hardware + firmware)
 4. Integration
@@ -278,12 +278,12 @@ Transmission of state (not bytes) via resonance predictive of distributed nodes.
 ### Immediate Priorities
 1. **Review & Correct** all 9 documentation files
 2. **Decide on tech stack** for Living Nodes:
-   - Swarm simulation: Python or actual hardware?
+   - Swarm Proyección Cuántica: Python or actual hardware?
    - Unikernel base: MirageOS (OCaml) or IncludeOS (C++)?
 3. **Tune benchmark parameters** to show clear reactive vs predictive difference
 
 ### Short-term (Post-Review)
-1. Implement swarm simulation (100 nodes)
+1. Implement swarm Proyección Cuántica (100 nodes)
 2. Design PCB for SBN-1 prototype
 3. Create unikernel specification
 4. Design bio-watchdog circuit

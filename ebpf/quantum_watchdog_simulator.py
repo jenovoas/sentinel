@@ -8,8 +8,9 @@ Ensures maintenance of 10.2σ stability.
 Metaphor: Low-level kernel monitoring of quantum resonance.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 import json
 import os
 from datetime import datetime
@@ -62,7 +63,7 @@ class QuantumWatchdog:
                 # Check for Rifts
                 if random.random() < 0.01:
                     self._log_event("RIFT_DETECTED", "Quantum rift detected in membrane subspace. Redirecting energy via Hexagonal Lattice.", "CRITICAL")
-                    time.sleep(0.5)
+                    time.sleep(S60(0, 30, 0))
                     self._log_event("MITIGATION", "Rift stabilized at Node 63. No information leak detected.", "INFO")
 
                 # Guardar estado actual para el backend

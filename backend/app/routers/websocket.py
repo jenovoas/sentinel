@@ -1,3 +1,4 @@
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from app.managers.connection_manager import manager
 import logging

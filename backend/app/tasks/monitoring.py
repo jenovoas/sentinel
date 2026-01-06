@@ -3,6 +3,7 @@ Monitoring Tasks - Phase 2
 Async tasks for metrics collection, anomaly detection, and historical storage
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 

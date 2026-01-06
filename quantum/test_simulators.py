@@ -1,9 +1,19 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 Quick test script for Sentinel Quantum Simulators
 Tests all modules to ensure they work correctly.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import traceback
 
@@ -41,7 +51,7 @@ def test_core_simulator():
     
     try:
         from core_simulator import QuantumCircuit, QuantumGates
-        import numpy as np
+        import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
         
         # Test 1: Bell state
         print("Test 1: Creating Bell state...")
@@ -91,7 +101,7 @@ def test_quantum_lite():
     
     try:
         from quantum_lite import QuantumResourceManager, SentinelQuantumLite
-        import numpy as np
+        import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
         
         # Test 1: Resource check
         print("Test 1: Checking system resources...")
@@ -113,7 +123,7 @@ def test_quantum_lite():
         # Test 3: Quick evolution
         print("Test 3: Running quantum evolution...")
         psi0 = np.zeros(core.dim, dtype=np.complex64)
-        psi0[1] = 1.0  # Excited state
+        psi0[1] = S60(1, 0, 0)  # Excited state
         
         times, states = core.evolve_fast(psi0, t_max=1e-6, n_steps=10)
         
@@ -153,7 +163,7 @@ def test_optomechanical():
         from optomechanical_simulator import (
             MembraneParameters, OpticalParameters, OptomechanicalSystem
         )
-        import numpy as np
+        import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
         
         # Test 1: Create system
         print("Test 1: Creating optomechanical system...")

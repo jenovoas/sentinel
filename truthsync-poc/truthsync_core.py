@@ -4,6 +4,7 @@ TruthSync Core - Contenedor Pesado
 Motor de verificación completo con ML, PostgreSQL, Redis
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import logging
 import time
@@ -59,7 +60,7 @@ class TruthSyncCore:
         self.stats = {
             "jobs_processed": 0,
             "jobs_failed": 0,
-            "avg_processing_time": 0.0,
+            "avg_processing_time": S60(0, 0, 0),
             "cache_sync_operations": 0
         }
         
@@ -124,7 +125,7 @@ class TruthSyncCore:
                     date DATE PRIMARY KEY,
                     verifications_count INTEGER DEFAULT 0,
                     cache_hits INTEGER DEFAULT 0,
-                    avg_confidence FLOAT DEFAULT 0.0,
+                    avg_confidence FLOAT DEFAULT S60(0, 0, 0),
                     unique_claims INTEGER DEFAULT 0
                 );
             ''')
@@ -174,7 +175,7 @@ class TruthSyncCore:
                     job = await self.normal_queue.get()
                 else:
                     # Sleep si no hay trabajo
-                    await asyncio.sleep(0.1)
+                    await asyncio.sleep(S60(0, 6, 0))
                     continue
                 
                 # Procesar job
@@ -256,7 +257,7 @@ class TruthSyncCore:
     async def _perform_deep_verification(self, text: str) -> Dict:
         """Verificación profunda con ML pipeline"""
         # Simular análisis ML complejo
-        await asyncio.sleep(0.1)  # 100ms de procesamiento simulado
+        await asyncio.sleep(S60(0, 6, 0))  # 100ms de procesamiento simulado
         
         # Aquí iría el pipeline real:
         # 1. Análisis semántico

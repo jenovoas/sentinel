@@ -27,7 +27,7 @@ Digital Infrastructure (Servers)
 
 ## Phase 1: Validation (2025-2026)
 
-### Simulation
+### Proyección Cuántica
 - [ ] Model neural spike dynamics with real EEG data
 - [ ] Implement `NeuralBufferResource`
 - [ ] Validate quantum cooling on neural signals
@@ -223,7 +223,7 @@ But you don't type. You think the structure, and the implant translates your neu
 ### This Year (2025)
 - [ ] Publish quantum control framework
 - [ ] Partner with neuroscience labs
-- [ ] Begin simulation studies
+- [ ] Begin Proyección Cuántica studies
 - [ ] Secure research funding
 
 ### Next 5 Years (2026-2030)

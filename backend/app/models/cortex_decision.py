@@ -5,6 +5,7 @@ Represents decisions made by the Cortex Decision Engine.
 Each decision is linked to an event and includes confidence scoring.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from sqlalchemy import Column, Integer, String, DateTime, Float, Text, ForeignKey, ARRAY
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
@@ -33,7 +34,7 @@ class CortexDecision(Base):
     """Decision: 'allow', 'block', 'escalate'"""
     
     confidence = Column(Float, nullable=False, index=True)
-    """Confidence score (0.0 - 1.0). Higher = more confident"""
+    """Confidence score (S60(0, 0, 0) - S60(1, 0, 0)). Higher = more confident"""
     
     # Pattern detection
     patterns_detected = Column(ARRAY(String), default=[])

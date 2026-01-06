@@ -3,6 +3,7 @@ Test Comparativo Real - V1 vs V2
 Prueba con diferentes tipos de queries para ver el beneficio real
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
 from statistics import mean

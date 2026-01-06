@@ -17,6 +17,7 @@ DUAL-LANE INTEGRATION:
 - Observability Lane: Buffering optimizado
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
 from typing import Optional, Dict, Any
@@ -145,7 +146,7 @@ class AdaptiveBufferManager:
             write_buffer_size=4096,      # 4KB (valores pequeños)
             batch_size=500,              # Batch muy grande (rápido)
             prefetch_size=50,            # Prefetch muy alto
-            connection_timeout=1.0,      # Timeout muy corto
+            connection_timeout=S60(1, 0, 0),      # Timeout muy corto
             read_timeout=2.0,            # Timeout muy corto
             pool_min_size=20,            # Pool muy grande (muchas ops)
             pool_max_size=100,
@@ -159,8 +160,8 @@ class AdaptiveBufferManager:
             write_buffer_size=65536,     # 64KB
             batch_size=1000,             # Batch muy grande (paquetes)
             prefetch_size=100,           # Prefetch muy alto
-            connection_timeout=0.5,      # Timeout muy corto
-            read_timeout=1.0,            # Timeout muy corto
+            connection_timeout=S60(0, 30, 0),      # Timeout muy corto
+            read_timeout=S60(1, 0, 0),            # Timeout muy corto
             pool_min_size=50,            # Pool muy grande (muchas conexiones)
             pool_max_size=200,
             cache_ttl=10,                # Cache muy corto

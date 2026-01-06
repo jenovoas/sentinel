@@ -2,6 +2,7 @@
 Sentinel Vault - Database Models
 SQLAlchemy models for PostgreSQL
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from sqlalchemy import Column, String, Integer, Float, DateTime, JSON, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker

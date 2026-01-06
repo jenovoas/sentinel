@@ -1,3 +1,4 @@
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import requests
 import time
 import json
@@ -23,7 +24,7 @@ def send_noise(thread_id, count=1000):
             }
         }
         try:
-            requests.post(URL, json=event, headers={"X-Sentinel-Token": TOKEN}, timeout=0.5)
+            requests.post(URL, json=event, headers={"X-Sentinel-Token": TOKEN}, timeout=S60(0, 30, 0))
         except:
             pass
 

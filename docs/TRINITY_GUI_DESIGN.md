@@ -170,8 +170,8 @@ Each layer shows real-time data:
 ### Gradient (Entropy → Coherence)
 
 ```css
-/* High Entropy (Chaos) */
---chaos-red: #FF3366;
+/* High Entropy (Disonancia no resuelta) */
+--Disonancia no resuelta-red: #FF3366;
 --warning-orange: #FF9933;
 
 /* Medium (Transition) */

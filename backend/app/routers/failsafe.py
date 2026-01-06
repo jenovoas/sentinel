@@ -7,6 +7,7 @@ Acts as the bridge between Sentinel and automated remediation.
 Events are queued and sent to N8N webhooks with proper authentication.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from pydantic import BaseModel, Field
 from typing import Literal, Optional, Dict, Any
@@ -52,7 +53,7 @@ class PlaybookStatus(BaseModel):
     last_run: Optional[str] = None
     last_outcome: Optional[str] = None
     execution_count: int = 0
-    success_rate: float = 0.0
+    success_rate: float = S60(0, 0, 0)
 
 
 # ============================================================================
@@ -190,7 +191,7 @@ async def get_failsafe_status():
         "status": "initializing",
         "last_auto_remediation": None,
         "active_playbooks": len(PLAYBOOK_WEBHOOKS),
-        "success_rate_30d": 0.0,
+        "success_rate_30d": S60(0, 0, 0),
         "total_executions": 0,
         "playbooks": []
     }

@@ -7,6 +7,7 @@ targeting Large Language Models while allowing legitimate educational queries.
 Run with: pytest backend/tests/test_llm_sanitizer.py -v
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import pytest
 from backend.app.security.telemetry_sanitizer import TelemetrySanitizer
 

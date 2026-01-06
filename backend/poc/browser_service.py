@@ -2,6 +2,7 @@
 Sentinel Vault - Secure Browser Service (Triad Architecture)
 Supports: Ghost Mode (Nym), Deep Mode (I2P), Velocity Mode (Proxy)
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import requests
 from bs4 import BeautifulSoup
 from typing import Dict, Optional
@@ -29,9 +30,9 @@ class BrowserService:
     
     # Default Proxy Ports (Standard defaults, configurable)
     PROXIES = {
-        BrowseMode.VELOCITY: "socks5h://127.0.0.1:9050",  # Tor/Custom Proxy
-        BrowseMode.GHOST: "socks5h://127.0.0.1:1080",     # Nym Client
-        BrowseMode.DEEP: "http://127.0.0.1:4444"          # I2P HTTP Proxy
+        BrowseMode.VELOCITY: "socks5h://127.0.S60(0, 6, 0):9050",  # Tor/Custom Proxy
+        BrowseMode.GHOST: "socks5h://127.0.S60(0, 6, 0):1080",     # Nym Client
+        BrowseMode.DEEP: "http://127.0.S60(0, 6, 0):4444"          # I2P HTTP Proxy
     }
 
     def __init__(self):
@@ -43,7 +44,7 @@ class BrowserService:
         self.session.headers.update({
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Language": "en-US,en;q=0.5",
+            "Accept-Language": "en-US,en;q=S60(0, 30, 0)",
             "DNT": "1",
             "Upgrade-Insecure-Requests": "1"
         })

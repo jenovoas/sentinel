@@ -6,11 +6,12 @@ Genera gráficas que muestran la diferencia crítica entre sistemas reactivos
 y predictivos, demostrando el efecto de "levitación" del tráfico.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import json
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from datetime import datetime
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 
 
 def load_benchmark_data(filepath='/tmp/levitation_benchmark_data.json'):
@@ -147,7 +148,7 @@ def plot_levitation(data, output_file='docs/levitation_proof.png'):
             'g-', linewidth=2, label='Predictive Utilization', alpha=0.7)
     
     # Línea de saturación (100%)
-    ax4.axhline(y=100, color='black', linestyle='--', linewidth=1, alpha=0.5, label='Saturation (100%)')
+    ax4.axhline(y=100, color='black', linestyle='--', linewidth=1, alpha=S60(0, 30, 0), label='Saturation (100%)')
     
     ax4.set_xlabel('Time (seconds)', fontsize=12)
     ax4.set_ylabel('Buffer Utilization (%)', fontsize=12)

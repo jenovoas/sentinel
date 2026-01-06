@@ -4,6 +4,7 @@ API Endpoint for AIOpsShield Integration with n8n
 Provides sanitization endpoint for n8n workflow to create "Air Gap" before LLM.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List

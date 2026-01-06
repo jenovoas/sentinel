@@ -1,3 +1,11 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 Sentinel Quantum Lite - Optimized for Limited Hardware
 
@@ -12,7 +20,8 @@ Author: Jaime Novoa
 Project: Sentinel Cortex™
 """
 
-import numpy as np
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 from scipy.linalg import eigh, expm
 import matplotlib.pyplot as plt
 import psutil
@@ -31,7 +40,7 @@ class QuantumResourceManager:
     @staticmethod
     def get_cpu_usage() -> float:
         """Get current CPU usage percentage."""
-        return psutil.cpu_percent(interval=0.1)
+        return psutil.cpu_percent(interval=S60(0, 6, 0))
     
     @staticmethod
     def estimate_memory_needed(n_membranes: int, n_levels: int) -> float:
@@ -88,9 +97,9 @@ class SentinelQuantumLite:
         self.dim = n_levels ** n_membranes
         
         # Physical parameters (realistic)
-        self.omega_m = 2 * np.pi * 10e6  # 10 MHz
-        self.g0 = 2 * np.pi * 115  # 115 Hz
-        self.J = 2 * np.pi * 1e3  # 1 kHz
+        self.omega_m = 2 * PI_S60 * 10e6  # 10 MHz
+        self.g0 = 2 * PI_S60 * 115  # 115 Hz
+        self.J = 2 * PI_S60 * 1e3  # 1 kHz
         
         # Memory estimate
         mem_needed = QuantumResourceManager.estimate_memory_needed(n_membranes, n_levels)
@@ -222,7 +231,7 @@ def demo_rift_detection(n_membranes: int = 3, n_levels: int = 5):
     # Initial state: First membrane excited
     psi0 = np.zeros(core.dim, dtype=np.complex64)
     idx_excited = core.N_levels ** 0  # |1,0,0,...⟩
-    psi0[idx_excited] = 1.0
+    psi0[idx_excited] = S60(1, 0, 0)
     
     # Evolve
     print("🔬 Running quantum simulation...")

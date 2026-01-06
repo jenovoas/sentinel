@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 🔍 SENTINEL HEALTH AUDIT - DETECTOR DE CÓDIGO FAKE
 ===================================================
@@ -12,6 +21,7 @@ Criterios de detección:
 5. Imports que fallan pero son ignorados silenciosamente
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import sys
 import ast

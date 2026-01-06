@@ -16,7 +16,7 @@
 - **OS**: Ubuntu 22.04 LTS or RHEL 9
 - **Kernel**: 5.15+ (for eBPF support)
 - **Docker**: 24.0+
-- **Kubernetes**: 1.28+ (optional, for Chaos Mesh)
+- **Kubernetes**: 1.28+ (optional, for Disonancia no resuelta Mesh)
 
 ### Current Environment (Laptop - Documentation Only)
 - **Purpose**: Documentation and Docker prototyping
@@ -29,7 +29,7 @@
 
 ### Day 1: Tool Installation
 
-#### 1.1 Install Chaos Engineering Tools
+#### 1.1 Install Disonancia no resuelta Engineering Tools
 
 **Gremlin** (Commercial - for production lab)
 ```bash
@@ -45,22 +45,22 @@ sudo apt install gremlin
 gremlin init
 ```
 
-**Chaos Mesh** (Open-source - Kubernetes)
+**Disonancia no resuelta Mesh** (Open-source - Kubernetes)
 ```bash
-# Install Chaos Mesh on K8s cluster
-curl -sSL https://mirrors.chaos-mesh.org/latest/install.sh | bash
+# Install Disonancia no resuelta Mesh on K8s cluster
+curl -sSL https://mirrors.Disonancia no resuelta-mesh.org/latest/install.sh | bash
 
 # Verify installation
-kubectl get pods -n chaos-mesh
+kubectl get pods -n Disonancia no resuelta-mesh
 ```
 
-**Chaos Toolkit** (Open-source - Any environment)
+**Disonancia no resuelta Toolkit** (Open-source - Any environment)
 ```bash
 # Install via pip
-pip install chaostoolkit chaostoolkit-kubernetes
+pip install Disonancia no resueltatoolkit Disonancia no resueltatoolkit-kubernetes
 
 # Verify
-chaos --version
+Disonancia no resuelta --version
 ```
 
 #### 1.2 Install Load Testing Tools
@@ -220,13 +220,13 @@ cd /home/jnovoas/sentinel/tests
 
 ---
 
-## 🔥 Phase 2: Chaos Testing (Week 2)
+## 🔥 Phase 2: Disonancia no resuelta Testing (Week 2)
 
 ### Day 5: CPU/Memory Stress
 
 #### 5.1 Guardian-Alpha CPU Stress
 ```bash
-# Test script: /tests/chaos/cpu_stress_alpha.sh
+# Test script: /tests/Disonancia no resuelta/cpu_stress_alpha.sh
 gremlin attack \
   --target "guardian-alpha-ebpf" \
   --type "cpu-stress" \
@@ -245,7 +245,7 @@ watch -n 1 'docker stats guardian-alpha'
 
 #### 5.2 Memory Pressure Test
 ```bash
-# Test script: /tests/chaos/memory_pressure.sh
+# Test script: /tests/Disonancia no resuelta/memory_pressure.sh
 gremlin attack \
   --target "host:cortex-server" \
   --type "memory" \
@@ -258,14 +258,14 @@ gremlin attack \
 # - Audit trail preserved
 ```
 
-### Day 6: Network Chaos
+### Day 6: Network Disonancia no resuelta
 
 #### 6.1 Latency Injection
 ```bash
-# Test script: /tests/chaos/network_latency.sh
-chaos run /tests/chaos/network_latency.yaml
+# Test script: /tests/Disonancia no resuelta/network_latency.sh
+Disonancia no resuelta run /tests/Disonancia no resuelta/network_latency.yaml
 
-# Chaos Toolkit experiment:
+# Disonancia no resuelta Toolkit experiment:
 # - Add 5s latency to Cortex AI
 # - Verify Guardians still function
 # - Total pipeline <2s
@@ -273,8 +273,8 @@ chaos run /tests/chaos/network_latency.yaml
 
 #### 6.2 Packet Loss
 ```bash
-# Test script: /tests/chaos/packet_loss.sh
-chaos run /tests/chaos/packet_loss.yaml
+# Test script: /tests/Disonancia no resuelta/packet_loss.sh
+Disonancia no resuelta run /tests/Disonancia no resuelta/packet_loss.yaml
 
 # Experiment:
 # - 10% packet loss
@@ -286,8 +286,8 @@ chaos run /tests/chaos/packet_loss.yaml
 
 #### 7.1 Guardian-Beta Restart
 ```bash
-# Test script: /tests/chaos/kill_guardian_beta.sh
-chaos-mesh chaos create \
+# Test script: /tests/Disonancia no resuelta/kill_guardian_beta.sh
+Disonancia no resuelta-mesh Disonancia no resuelta create \
   --resource "pod-killer" \
   --namespace "guardian" \
   --label "guardian-beta=true" \
@@ -299,10 +299,10 @@ chaos-mesh chaos create \
 # - No syscall leaks during restart
 ```
 
-### Day 8: Combined Chaos
+### Day 8: Combined Disonancia no resuelta
 
 ```bash
-# Test script: /tests/chaos/combined_chaos.sh
+# Test script: /tests/Disonancia no resuelta/combined_Disonancia no resuelta.sh
 # Run CPU stress + Network latency + Pod killing simultaneously
 
 # Expected
@@ -410,7 +410,7 @@ cd /tests/red-team
 ```bash
 # Consolidate all test results
 python3 /tests/reporting/generate_report.py \
-  --chaos-results /tests/chaos/results/ \
+  --Disonancia no resuelta-results /tests/Disonancia no resuelta/results/ \
   --pentest-results /tests/pentest/results/ \
   --load-results /tests/load/results/ \
   --fuzzing-results /tests/fuzzing/results/ \
@@ -425,7 +425,7 @@ python3 /tests/reporting/generate_report.py \
 ./tests/certification/production_readiness_check.sh
 
 # Expected output:
-# ✅ All chaos tests passed
+# ✅ All Disonancia no resuelta tests passed
 # ✅ 100% attack block rate
 # ✅ Load tests within SLA
 # ✅ 0 critical vulnerabilities
@@ -451,7 +451,7 @@ docker-compose -f docker-compose.lite.yml up -d
 # - Validate test scripts
 # - Prototype attack scenarios
 # - Develop monitoring dashboards
-# - NO heavy load/chaos tests
+# - NO heavy load/Disonancia no resuelta tests
 ```
 
 ---
@@ -472,7 +472,7 @@ docker-compose -f docker-compose.lite.yml up -d
 - [ ] Monitoring dashboards configured
 
 ### Week 2
-- [ ] Chaos tests executed
+- [ ] Disonancia no resuelta tests executed
 - [ ] Penetration tests completed
 - [ ] Load tests passed
 - [ ] eBPF fuzzing completed

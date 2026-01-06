@@ -11,6 +11,7 @@ Uso:
     python test_google_api.py
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 from certification_generator import CertificationGenerator
 from source_search import SearchProvider

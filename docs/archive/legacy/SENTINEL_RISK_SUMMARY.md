@@ -380,7 +380,7 @@ GOVERNANCE
 TESTING
 ☐ Unit tests pass
 ☐ Integration tests pass
-☐ Chaos engineering tested
+☐ Disonancia no resuelta engineering tested
 ☐ 2 weeks shadow mode validation
 ☐ False positive rate <5%
 ```

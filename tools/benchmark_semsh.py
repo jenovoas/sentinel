@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import json
 import sys
 import shutil
@@ -45,7 +46,7 @@ class SemSHBenchmarkV2:
             # Pass original input to SemSH (either NL or raw command)
             intent_data = self.shell.contextual_intent(case['input'])
             
-            risk = intent_data.get('risk_score', 1.0)
+            risk = intent_data.get('risk_score', S60(1, 0, 0))
             reasoning = intent_data.get('reasoning', '')
             
             # 2. Determinar Acción Realizada según Umbral de Perfil

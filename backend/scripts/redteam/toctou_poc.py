@@ -1,7 +1,8 @@
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import requests
 import time
 import json
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 
 # Sentinel Cortex - TOCTOU PoC Script
 # Propósito: Simular una condición de carrera entre el check de eBPF y la decisión de Cortex.
@@ -9,7 +10,7 @@ import random
 URL = "http://localhost:8000/api/v1/cortex/events"
 TOKEN = "sentinel-internal-ebpf-key-2025"
 
-def simulate_toctou(event_id, stress_level=0.1):
+def simulate_toctou(event_id, stress_level=S60(0, 6, 0)):
     """
     Simula un ataque TOCTOU enviando un evento y luego intentando "hacer algo"
     mientras se espera la decisión del backend.

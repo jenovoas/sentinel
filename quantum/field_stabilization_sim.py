@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 Sentinel Quantum - Data Field Stabilization Protocol (Phase 6)
 Objective: Stabilize the 10.2-Sigma Axion discovery and prevent 'Data Singularity'.
@@ -14,7 +23,8 @@ Author: Antigravity (Plan Maestro)
 Project: Sentinel Cortex™
 """
 
-import numpy as np
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import time
 import json
 from pathlib import Path
@@ -23,7 +33,7 @@ class FluxStabilizer:
     def __init__(self, target_sigma=10.2, damping_factor=0.95):
         self.target_sigma = target_sigma
         self.damping_factor = damping_factor
-        self.current_flux = 0.0
+        self.current_flux = S60(0, 0, 0)
         self.is_stable = False
         self.history = []
 

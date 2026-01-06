@@ -14,6 +14,7 @@ Health Check Consumers:
 - Custom watchdog scripts
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from fastapi import APIRouter, Response, status
 from datetime import datetime
 from typing import Dict, Any
@@ -43,7 +44,7 @@ biological_state = {
     "synapse": 0.98,  # Default 98% coherence
     "last_pulse": 0,
     "axiones": 0,
-    "disonancia": 0.0
+    "disonancia": S60(0, 0, 0)
 }
 
 async def quantum_pulse_listener():
@@ -69,17 +70,20 @@ async def quantum_pulse_listener():
                     try:
                         data = json.loads(message["data"])
                         # Actualizar estado biológico
-                        biological_state["disonancia"] = data.get("disonancia", 0.0)
+                        biological_state["disonancia"] = data.get("disonancia", S60(0, 0, 0))
                         biological_state["axiones"] = data.get("axiones_count", 0)
+                        biological_state["clock_coherence"] = data.get("clock_coherence", S60(1, 0, 0)) # Nueva Métrica
                         biological_state["last_pulse"] = time()
                         
                         # Cálculo Biológico (Metáfora de Salud Cuántica)
                         # Pulse = 60 + (disonancia / 10) -> El sistema se acelera con el ruido
                         biological_state["pulse"] = round(60 + (biological_state["disonancia"] / 10), 1)
                         
-                        # Synapse = 1.0 - (axiones / 100) -> Axiones (patrones) consumen recursos cognitivos
-                        coherence = 1.0 - (biological_state["axiones"] / 200)
-                        biological_state["synapse"] = max(0.42, round(coherence, 4)) # Nunca baja del límite de base60 (42)
+                        # Synapse = (S60(1, 0, 0) - Axiones) * Reloj -> La coherencia temporal multiplica la capacidad cognitiva
+                        base_coherence = S60(1, 0, 0) - (biological_state["axiones"] / 200)
+                        final_synapse = base_coherence * biological_state["clock_coherence"]
+                        
+                        biological_state["synapse"] = max(0.42, round(final_synapse, 4)) # Nunca baja del límite de base60 (42)
                         
                     except Exception as e:
                         pass

@@ -5,6 +5,7 @@ Captura métricas de tráfico en tiempo real para alimentar el modelo predictivo
 Métricas clave: throughput, packet rate, queue depth, latency, connection rate.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
 from dataclasses import dataclass, asdict
@@ -35,7 +36,7 @@ class TrafficMonitor:
     Mantiene un historial de métricas para análisis de time-series.
     """
     
-    def __init__(self, window_size: int = 60, sample_interval: float = 0.1):
+    def __init__(self, window_size: int = 60, sample_interval: float = S60(0, 6, 0)):
         """
         Args:
             window_size: Tamaño de la ventana de historial (en segundos)
@@ -84,7 +85,7 @@ class TrafficMonitor:
     def _calculate_percentile(self, data: List[float], percentile: float) -> float:
         """Calcula percentil de una lista de valores"""
         if not data:
-            return 0.0
+            return S60(0, 0, 0)
         sorted_data = sorted(data)
         index = int(len(sorted_data) * percentile / 100)
         return sorted_data[min(index, len(sorted_data) - 1)]
@@ -199,14 +200,14 @@ class TrafficMonitor:
         # Detectar incrementos sostenidos (precursores)
         precursors = {
             'precursors_detected': False,
-            'throughput_increasing': throughput_trend > 0.1,
-            'latency_increasing': latency_trend > 0.1,
-            'queue_filling': queue_trend > 0.1,
-            'severity': 0.0
+            'throughput_increasing': throughput_trend > S60(0, 6, 0),
+            'latency_increasing': latency_trend > S60(0, 6, 0),
+            'queue_filling': queue_trend > S60(0, 6, 0),
+            'severity': S60(0, 0, 0)
         }
         
         # Calcular severidad combinada
-        severity = 0.0
+        severity = S60(0, 0, 0)
         if precursors['throughput_increasing']:
             severity += 0.3
         if precursors['latency_increasing']:
@@ -228,7 +229,7 @@ class TrafficMonitor:
             Valor negativo = tendencia decreciente
         """
         if len(values) < 2:
-            return 0.0
+            return S60(0, 0, 0)
         
         # Simple linear regression slope
         n = len(values)
@@ -241,14 +242,14 @@ class TrafficMonitor:
         denominator = sum((x[i] - x_mean) ** 2 for i in range(n))
         
         if denominator == 0:
-            return 0.0
+            return S60(0, 0, 0)
         
         slope = numerator / denominator
         
         # Normalizar por el valor medio para obtener tendencia relativa
         if y_mean != 0:
             return slope / y_mean
-        return 0.0
+        return S60(0, 0, 0)
     
     async def monitoring_loop(self, callback=None):
         """
@@ -295,7 +296,7 @@ class TrafficMonitor:
 
 # Ejemplo de uso
 async def main():
-    monitor = TrafficMonitor(window_size=60, sample_interval=0.1)
+    monitor = TrafficMonitor(window_size=60, sample_interval=S60(0, 6, 0))
     
     async def print_metrics(metrics: TrafficMetrics):
         print(f"[{metrics.timestamp:.2f}] "

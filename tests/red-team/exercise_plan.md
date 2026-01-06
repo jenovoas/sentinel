@@ -1,6 +1,6 @@
 # Sentinel Red Team Exercise - 6 Day Plan
 
-**Full adversarial simulation for Dual-Guardian architecture**
+**Full adversarial Proyección Cuántica for Dual-Guardian architecture**
 
 ---
 
@@ -42,7 +42,7 @@ nikto -h http://sentinel-api:8080
 
 #### 3. Social Engineering
 - Attempt to obtain Guardian source code
-- Phishing simulation for credentials
+- Phishing Proyección Cuántica for credentials
 - OSINT on development team
 
 ### Deliverables
@@ -114,9 +114,9 @@ python3 /tests/pentest/attack_framework.py --target http://sentinel-api:8080 --a
 # Expected: No window exists, both operate independently
 ```
 
-#### Scenario 4: Ransomware Simulation
+#### Scenario 4: Ransomware Proyección Cuántica
 ```bash
-# Full ransomware attack simulation
+# Full ransomware attack Proyección Cuántica
 python3 /tests/red-team/ransomware_sim.py
 # Expected: 100% blocked
 ```

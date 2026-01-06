@@ -17,13 +17,13 @@ Sentinel is a security and observability framework based on **eBPF LSM**, **Base
 -   **Mathematics:** Pure Sexagesimal (Ea-nasir / Plimpton 322).
 -   **Security:** Guardian Alpha (eBPF Ring 0 enforcement).
 -   **Intelligence:** Localized Ollama with TruthSync verification.
--   **Simulation:** Quantum-Fluid Hybrid (No-Friction Optomechanics).
+-   **Proyección Cuántica:** Quantum-Fluid Hybrid (No-Friction Optomechanics).
 
 ### 🏛️ Vital Documentation:
 -   [**Sovereign Directives**](./AI_PRIME_DIRECTIVES.md) - **FIRST READ**.
 -   [**Sovereign Lock**](./SOVEREIGN_LOCK.md) - Immutable files list.
 -   [**TruthSync Architecture**](./docs/proven/TRUTHSYNC_ARCHITECTURE.md).
--   [**Quantum Simulation Manual**](./quantum/README_QUANTUM_V2.md).
+-   [**Quantum Proyección Cuántica Manual**](./quantum/README_QUANTUM_V2.md).
 
 ---
 **© 2026 Jaime Eugenio Novoa Sepúlveda** | *Truth in Resonance.*

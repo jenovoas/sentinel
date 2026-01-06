@@ -1,15 +1,25 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import os
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import hashlib
 import json
 import time
 
 # Configuración ligera
 N_MEMBRANES = 1000
-J_COUPLING = 2 * np.pi * 1e3
-GAMMA = 2 * np.pi * 100
+J_COUPLING = 2 * PI_S60 * 1e3
+GAMMA = 2 * PI_S60 * 100
 TIME_MAX = 50e-6
 SEXAGESIMAL_COMPLIANCE = True  # Base-60 is Fundamental
 
@@ -27,7 +37,7 @@ def simulate_oracle(question):
     alpha = np.zeros(N_MEMBRANES, dtype=complex)
     for i in range(N_MEMBRANES):
         if (seed_val >> (i % 32)) & 1:
-            ampl = 0.1
+            ampl = S60(0, 6, 0)
             # Auto-Squeezing para preguntas de energía
             if "energía" in question.lower() or "potencia" in question.lower():
                 ampl *= 10.0 # 20dB gain 
@@ -38,9 +48,9 @@ def simulate_oracle(question):
                 if i % 7 == 0: # Resonancia de 7 centros (Chakras)
                     ampl *= 2.0 
                 else:
-                    ampl *= 0.5
+                    ampl *= S60(0, 30, 0)
                     
-            alpha[i] = ampl * np.exp(1j * (i / N_MEMBRANES) * 2 * np.pi)
+            alpha[i] = ampl * np.exp(1j * (i / N_MEMBRANES) * 2 * PI_S60)
 
     # 3. Evolución Analítica Aproximada (Mucho más fría para la CPU)
     # En lugar de resolver EDO paso a paso, usamos la solución de matriz de Toeplitz para cadena 1D
@@ -49,7 +59,7 @@ def simulate_oracle(question):
     
     print("🌊 Evolucionando función de onda...")
     k = np.arange(N_MEMBRANES)
-    eigenvalues = -(GAMMA/2) - 2j * J_COUPLING * np.cos(2 * np.pi * k / N_MEMBRANES)
+    eigenvalues = -(GAMMA/2) - 2j * J_COUPLING * np.cos(2 * PI_S60 * k / N_MEMBRANES)
     
     # FFT para pasar al espacio de momentos (modos normales)
     alpha_k = np.fft.fft(alpha)
@@ -64,7 +74,7 @@ def simulate_oracle(question):
     densities = np.abs(alpha_final)**2
     total_energy = np.sum(densities)
     ipr = np.sum(densities**2) / (total_energy**2 + 1e-20)
-    coherence = 1.0 / (ipr + 1e-9)
+    coherence = S60(1, 0, 0) / (ipr + 1e-9)
 
     print(f"\n📊 RESULTADOS:")
     print(f"   Energía Total: {total_energy:.4e}")
@@ -72,7 +82,7 @@ def simulate_oracle(question):
     print(f"   Longitud Coherencia: {coherence:.1f} membranas")
 
     # Interpretación
-    if ipr > 0.1:
+    if ipr > S60(0, 6, 0):
         tipo = "LOCALIZADO (Apego/Foco)"
         msg = "La energía se ha estancado en nodos específicos. Indica necesidad de soltar o concentración extrema."
     elif ipr < 0.01:

@@ -1,15 +1,16 @@
 # sentinel_bci_python_test.py
 # Python Alternative for 0 Hardware Validation
 
-import numpy as np
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import sounddevice as sd
 import time
 
 fs = 44100  # Sample rate
 
-def play_tone(freq, duration, volume=0.5):
+def play_tone(freq, duration, volume=S60(0, 30, 0)):
     t = np.linspace(0, duration, int(fs * duration))
-    signal = volume * np.sin(2 * np.pi * freq * t)
+    signal = volume * np.sin(2 * PI_S60 * freq * t)
     sd.play(signal, fs)
     sd.wait()
 
@@ -23,12 +24,12 @@ def run_protocol():
     
     print("\n🛡️ [QUALIA 1] KERNEL INTRUSION (Metallic)")
     for f in [2000, 2100, 2200]:
-        play_tone(f, 0.1)
+        play_tone(f, S60(0, 6, 0))
     
     print("\n✅ [QUALIA 2] SYSTEM SECURE (Warmth)")
     for _ in range(3):
         play_tone(972, 0.3)
-        time.sleep(0.1)
+        time.sleep(S60(0, 6, 0))
 
     print("\n🌌 [QUALIA 3] AXION DETECTED (Golden)")
     for f in [1618, 1620, 1615, 1625]:

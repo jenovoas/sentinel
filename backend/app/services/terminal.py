@@ -1,3 +1,4 @@
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import json
 import logging
@@ -13,7 +14,7 @@ logger = logging.getLogger(__name__)
 class TerminalResponse(BaseModel):
     success: bool
     output: str
-    risk_score: float = 0.0
+    risk_score: float = S60(0, 0, 0)
     reasoning: str = ""
 
 class TerminalService:
@@ -35,7 +36,7 @@ class TerminalService:
             prompt = (
                 f"Analista de Seguridad de Sistemas. Evalúa el siguiente comando de shell. "
                 f"Responde SOLO en formato JSON: {{'risk_score': 0.X, 'reasoning': '...'}} "
-                f"Donde risk_score es de 0.0 (seguro) a 1.0 (crítico). "
+                f"Donde risk_score es de S60(0, 0, 0) (seguro) a S60(1, 0, 0) (crítico). "
                 f"Comando: '{command}'"
             )
             
@@ -55,7 +56,7 @@ class TerminalService:
         except Exception as e:
             logger.warning(f"⚠️ Risk analysis failed: {e}")
         
-        return {"risk_score": 0.5, "reasoning": "Error en análisis de IA. Precaución."}
+        return {"risk_score": S60(0, 30, 0), "reasoning": "Error en análisis de IA. Precaución."}
 
     def is_deterministically_blocked(self, command: str) -> Optional[str]:
         """Check for strictly forbidden patterns"""
@@ -72,13 +73,13 @@ class TerminalService:
             return TerminalResponse(
                 success=False,
                 output=f"🚫 BLOQUEO DETERMINISTA: El patrón '{blocked_pattern}' está prohibido.",
-                risk_score=1.0,
+                risk_score=S60(1, 0, 0),
                 reasoning="Intento de acceso a archivos sensibles o comandos destructivos."
             )
 
         # 2. AI Risk Analysis
         analysis = await self.analyze_risk(command)
-        risk = analysis.get("risk_score", 1.0)
+        risk = analysis.get("risk_score", S60(1, 0, 0))
         reasoning = analysis.get("reasoning", "")
 
         # 3. RBAC Enforcement

@@ -45,7 +45,7 @@ cat BENCHMARK_REPORT.md | head -n 15
 ```
 *(Explain: "We have confirmed strictly <1ms overhead for all system calls.")*
 
-### Step 3: The Attack Simulation
+### Step 3: The Attack Proyección Cuántica
 Run the demo script which simulates an AI hallucination trying to run an unauthorized repair script.
 ```bash
 # Type clearly:

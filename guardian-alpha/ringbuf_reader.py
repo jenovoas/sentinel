@@ -4,6 +4,7 @@ Sentinel Ringbuf Reader - Direct Map Access
 Reads ringbuf using direct file descriptor access (no BCC/libbpf needed)
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import sys
 import time

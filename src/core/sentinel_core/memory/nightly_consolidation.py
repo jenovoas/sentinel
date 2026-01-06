@@ -4,6 +4,7 @@ Sentinel Cortex™ Digital Hippocampus - Consolidation Layer
 Simulates AI 'sleep' by strengthening and pruning memories.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 from typing import List
 from .chromadb_storage import memory_vault

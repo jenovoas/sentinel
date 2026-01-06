@@ -251,7 +251,7 @@ Structure identical to terrestrial case
 ∴ Should work (unproven)
 ```
 
-**Required**: Simulation with NASA data
+**Required**: Proyección Cuántica with NASA data
 
 **Status**: CONJECTURE ⚠
 

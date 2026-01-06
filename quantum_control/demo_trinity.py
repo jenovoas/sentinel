@@ -10,6 +10,7 @@ The Trinity of Infrastructure Control:
 All controlled by the same physics: OptomechanicalCooling
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 sys.path.insert(0, '/home/jnovoas/sentinel')
 
@@ -26,7 +27,7 @@ def run_controller(name, resource, duration=20):
     controller = QuantumController(
         resource=resource,
         physics_model=physics,
-        poll_interval=1.0
+        poll_interval=S60(1, 0, 0)
     )
     
     print(f"\n{'='*70}")
@@ -38,7 +39,7 @@ def run_controller(name, resource, duration=20):
     try:
         while time.time() - start < duration:
             controller._control_cycle()
-            time.sleep(1.0)
+            time.sleep(S60(1, 0, 0))
     except KeyboardInterrupt:
         pass
     finally:

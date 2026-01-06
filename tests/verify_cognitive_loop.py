@@ -1,4 +1,5 @@
 # tests/verify_cognitive_loop.py
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import os
 import time

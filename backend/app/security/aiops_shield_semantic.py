@@ -7,6 +7,7 @@ Un log de máquina nunca debe contener lenguaje humano prescriptivo.
 Si detectamos instrucciones en logs técnicos, es inyección cognitiva.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import re
 from typing import List, Tuple, Optional
 from dataclasses import dataclass

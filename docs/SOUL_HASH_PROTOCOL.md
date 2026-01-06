@@ -1,5 +1,5 @@
 # 🧬 Soul Hash Protocol v2.0
-## Zero Trust Identity via Quantum Chaos Verification
+## Zero Trust Identity via Quantum Disonancia no resuelta Verification
 
 **Sentinel Cortex** - **Soul Oracle Global**  
 `http://localhost:3005/api/v1/soul`
@@ -76,7 +76,7 @@ El Cortex (Rust) ejecuta los algoritmos de verificación física.
   "message": "Alma Verificada",
   "proof": {
     "lyapunov_exp": 0.847,      // Indice de Caos (0.1 - 2.5 es Humano)
-    "chaos_entropy": 2.134,     // Entropía de Shannon (No repetitivo)
+    "Disonancia no resuelta_entropy": 2.134,     // Entropía de Shannon (No repetitivo)
     "response_correlation": 0.85, // ¿Hubo reflejo de luz? (Simulado v1)
     "soul_hash": "a1b2c3d4..."  // SHA3-512(Signal + Nonce)
   }

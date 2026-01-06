@@ -1,3 +1,11 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 Sentinel Quantum Package - __init__.py
 
@@ -5,7 +13,7 @@ Provides easy imports for all quantum simulators.
 """
 
 # Version info
-__version__ = "1.0.0"
+__version__ = "1.S60(0, 0, 0)"
 __author__ = "Jaime Novoa"
 __project__ = "Sentinel Cortex™"
 

@@ -8,6 +8,7 @@ MEJORA CLAVE: Buffers dinámicos según:
 - Tipo de contenido (código vs texto)
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import time
 import json

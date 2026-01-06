@@ -273,7 +273,7 @@ pytest backend/tests/test_backup_api.py -v
 - test_legitimate_incident_auto_resolved()
 - test_low_confidence_escalated_to_human()
 - test_guardian_failure_auto_regenerated()
-- test_full_attack_simulation_blocked()
+- test_full_attack_Proyección Cuántica_blocked()
 - test_performance_under_load()
 ```
 

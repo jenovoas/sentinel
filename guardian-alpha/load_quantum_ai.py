@@ -4,6 +4,7 @@ Quantum-AI Base-60 Loader (BCC Version)
 Loads and initializes the eBPF module using BCC
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from bcc import BPF
 import time
 

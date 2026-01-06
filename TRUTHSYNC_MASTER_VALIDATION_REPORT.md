@@ -154,10 +154,10 @@
 | `app/poc/wallet_complete.py` | `27e70c4b926f5ec8...` | `truth-1767630388625` | ✅ CERTIFIED |
 | `app/poc/watchdog_api.py` | `c349421a5b13309d...` | `truth-1767630388415` | ✅ CERTIFIED |
 | `app/quick_test.py` | `cdc9213d20973679...` | `truth-1767630387264` | ✅ CERTIFIED |
-| `app/scripts/chaos_test.py` | `2900167705b75c1f...` | `truth-1767630391369` | ✅ CERTIFIED |
+| `app/scripts/Disonancia no resuelta_test.py` | `2900167705b75c1f...` | `truth-1767630391369` | ✅ CERTIFIED |
 | `app/scripts/domination_phase.py` | `e308ff777cec3243...` | `truth-1767630391579` | ✅ CERTIFIED |
 | `app/scripts/export_final_metrics.py` | `9960d9afda0c0ef5...` | `truth-1767630391474` | ✅ CERTIFIED |
-| `app/scripts/live_simulation.py` | `efdf709b08da35ff...` | `truth-1767630391474` | ✅ CERTIFIED |
+| `app/scripts/live_Proyección Cuántica.py` | `efdf709b08da35ff...` | `truth-1767630391474` | ✅ CERTIFIED |
 | `app/scripts/load_test_suite.py` | `581a59c5e58ea203...` | `truth-1767630391682` | ✅ CERTIFIED |
 | `app/scripts/load_test_suite_stub.py` | `c6c99013decb5f70...` | `truth-1767630391365` | ✅ CERTIFIED |
 | `app/scripts/mock_tpm.py` | `5075f6d45582dfa7...` | `truth-1767630391472` | ✅ CERTIFIED |
@@ -177,7 +177,7 @@
 | `app/sentinel_global_benchmark.py` | `40ca33533a13f6e3...` | `truth-1767630387996` | ✅ CERTIFIED |
 | `app/sentinel_global_benchmark_results.json` | `9a3a7dca1156e303...` | `truth-1767630387997` | ✅ CERTIFIED |
 | `app/smart_buffer_results.json` | `7bb2bd565af70e84...` | `truth-1767630387892` | ✅ CERTIFIED |
-| `app/smart_buffer_simulation.py` | `91dfd2cacfae435d...` | `truth-1767630387162` | ✅ CERTIFIED |
+| `app/smart_buffer_Proyección Cuántica.py` | `91dfd2cacfae435d...` | `truth-1767630387162` | ✅ CERTIFIED |
 | `app/test_aiops_shield.py` | `496b525b3744c2af...` | `truth-1767630387681` | ✅ CERTIFIED |
 | `app/test_buffer_cascade.py` | `0e36e03cef76d669...` | `truth-1767630387891` | ✅ CERTIFIED |
 | `app/test_dual_lane.py` | `5fdd79ffbfd98dad...` | `truth-1767630387159` | ✅ CERTIFIED |
@@ -7687,7 +7687,7 @@
 | `usr/local/lib/python3.11/site-packages/sympy/parsing/autolev/_build_autolev_antlr.py` | `d2822b0b7b165037...` | `truth-1767630279278` | ✅ CERTIFIED |
 | `usr/local/lib/python3.11/site-packages/sympy/parsing/autolev/_listener_autolev_antlr.py` | `8efd6362f9ab1a6a...` | `truth-1767630279276` | ✅ CERTIFIED |
 | `usr/local/lib/python3.11/site-packages/sympy/parsing/autolev/_parse_autolev_antlr.py` | `6fd8486a5b8951dd...` | `truth-1767630279270` | ✅ CERTIFIED |
-| `usr/local/lib/python3.11/site-packages/sympy/parsing/autolev/test-examples/pydy-example-repo/chaos_pendulum.py` | `152bb84cfd810d34...` | `truth-1767630279741` | ✅ CERTIFIED |
+| `usr/local/lib/python3.11/site-packages/sympy/parsing/autolev/test-examples/pydy-example-repo/Disonancia no resuelta_pendulum.py` | `152bb84cfd810d34...` | `truth-1767630279741` | ✅ CERTIFIED |
 | `usr/local/lib/python3.11/site-packages/sympy/parsing/autolev/test-examples/pydy-example-repo/double_pendulum.py` | `b94f5acd3506ad8d...` | `truth-1767630279743` | ✅ CERTIFIED |
 | `usr/local/lib/python3.11/site-packages/sympy/parsing/autolev/test-examples/pydy-example-repo/mass_spring_damper.py` | `f5178202a7141f91...` | `truth-1767630279794` | ✅ CERTIFIED |
 | `usr/local/lib/python3.11/site-packages/sympy/parsing/autolev/test-examples/pydy-example-repo/non_min_pendulum.py` | `0ddc5c5ab9b71cc4...` | `truth-1767630279705` | ✅ CERTIFIED |
@@ -9043,7 +9043,7 @@
 | `usr/local/lib/python3.11/turtledemo/__init__.py` | `5f465277c96c107a...` | `truth-1767630165779` | ✅ CERTIFIED |
 | `usr/local/lib/python3.11/turtledemo/__main__.py` | `6620f0af34be5e14...` | `truth-1767630165772` | ✅ CERTIFIED |
 | `usr/local/lib/python3.11/turtledemo/bytedesign.py` | `6deeee99e0ddb4ed...` | `truth-1767630165778` | ✅ CERTIFIED |
-| `usr/local/lib/python3.11/turtledemo/chaos.py` | `bc8a3a9b77e90446...` | `truth-1767630165778` | ✅ CERTIFIED |
+| `usr/local/lib/python3.11/turtledemo/Disonancia no resuelta.py` | `bc8a3a9b77e90446...` | `truth-1767630165778` | ✅ CERTIFIED |
 | `usr/local/lib/python3.11/turtledemo/clock.py` | `8728b6e1f7e81e8c...` | `truth-1767630165772` | ✅ CERTIFIED |
 | `usr/local/lib/python3.11/turtledemo/colormixer.py` | `bbb065830edb37fd...` | `truth-1767630165779` | ✅ CERTIFIED |
 | `usr/local/lib/python3.11/turtledemo/forest.py` | `68cd81b7da35ca49...` | `truth-1767630165777` | ✅ CERTIFIED |

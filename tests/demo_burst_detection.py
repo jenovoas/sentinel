@@ -6,6 +6,7 @@ Ejecuta una demostración rápida (30 segundos) del sistema de detección
 de precursores de bursts.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import sys
 import os
@@ -45,7 +46,7 @@ async def quick_demo():
     print()
     
     # Crear monitor
-    monitor = TrafficMonitor(window_size=60, sample_interval=0.5)
+    monitor = TrafficMonitor(window_size=60, sample_interval=S60(0, 30, 0))
     
     # Callback para registrar paquetes
     packet_count = 0

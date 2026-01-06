@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import subprocess
 import json
@@ -55,12 +56,12 @@ def get_system_disonancia():
                 return unpacked[0] * 100 # Convert to 0-100 scale
     except Exception as e:
         print(f"⚠️ Could not read SHM: {e}")
-    return 0.0
+    return S60(0, 0, 0)
 
 def truthsync_certify(claims):
     """Envía a TruthSync CLI para scoring"""
     if not claims:
-        return {"status": "NO_CLAIMS", "score": 0.0}
+        return {"status": "NO_CLAIMS", "score": S60(0, 0, 0)}
     try:
         proc = subprocess.run([
             TRUTHSYNC_BIN,
@@ -69,14 +70,14 @@ def truthsync_certify(claims):
         ], capture_output=True, text=True, timeout=30)
         return json.loads(proc.stdout)
     except Exception as e:
-        return {"status": "ERROR", "error": str(e), "score": 0.0}
+        return {"status": "ERROR", "error": str(e), "score": S60(0, 0, 0)}
 
 def query_ollama(prompt):
     payload = {
         "model": MODEL,
         "prompt": prompt,
         "stream": False,
-        "options": {"temperature": 0.1, "num_ctx": 4096}
+        "options": {"temperature": S60(0, 6, 0), "num_ctx": 4096}
     }
     try:
         response = requests.post(OLLAMA_URL, json=payload, timeout=120)

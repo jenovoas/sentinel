@@ -5,6 +5,7 @@ Neural Control - Test Suite
 Validates neural entropy control algorithms.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 sys.path.insert(0, '/home/jnovoas/sentinel')
 
@@ -30,30 +31,30 @@ class TestNeuralEntropyController(unittest.TestCase):
     
     def test_measure_state(self):
         """Test state measurement."""
-        state = self.controller.measure_state(50.0, 0.0)
+        state = self.controller.measure_state(50.0, S60(0, 0, 0))
         
         self.assertIsInstance(state, NeuralState)
-        self.assertGreaterEqual(state.spike_rate, 0.0)
-        self.assertLessEqual(state.spike_rate, 1.0)
-        self.assertEqual(state.spike_velocity, 0.0)  # First measurement
+        self.assertGreaterEqual(state.spike_rate, S60(0, 0, 0))
+        self.assertLessEqual(state.spike_rate, S60(1, 0, 0))
+        self.assertEqual(state.spike_velocity, S60(0, 0, 0))  # First measurement
     
     def test_quadratic_force_law(self):
         """Test quadratic force calculation."""
         # Create state with known velocity
         state = NeuralState(
             spike_rate=0.8,
-            spike_velocity=0.5,
+            spike_velocity=S60(0, 30, 0),
             spike_acceleration=0.3,
             entropy=0.6,
-            timestamp=0.0
+            timestamp=S60(0, 0, 0)
         )
         
         force = self.controller.calculate_force(state)
         
         # F = v² × (1 + a) × cooling_factor
-        # F = 0.5² × (1 + 0.3) × 1.5
-        # F = 0.25 × 1.3 × 1.5 = 0.4875
-        expected = 0.25 * 1.3 * 1.5
+        # F = S60(0, 30, 0)² × (1 + 0.3) × 1.5
+        # F = S60(0, 15, 0) × 1.3 × 1.5 = 0.4875
+        expected = S60(0, 15, 0) * 1.3 * 1.5
         self.assertAlmostEqual(force, expected, places=3)
     
     def test_ground_state_adaptation(self):
@@ -61,9 +62,9 @@ class TestNeuralEntropyController(unittest.TestCase):
         # Add history with known entropy
         for i in range(20):
             state = NeuralState(
-                spike_rate=0.5,
-                spike_velocity=0.0,
-                spike_acceleration=0.0,
+                spike_rate=S60(0, 30, 0),
+                spike_velocity=S60(0, 0, 0),
+                spike_acceleration=S60(0, 0, 0),
                 entropy=0.3 + (i % 5) * 0.01,  # Small variance
                 timestamp=float(i)
             )
@@ -72,18 +73,18 @@ class TestNeuralEntropyController(unittest.TestCase):
         ground = self.controller.calculate_ground_state()
         
         # Should be close to mean entropy
-        self.assertGreaterEqual(ground, 0.1)
-        self.assertLess(ground, 0.5)
+        self.assertGreaterEqual(ground, S60(0, 6, 0))
+        self.assertLess(ground, S60(0, 30, 0))
     
     def test_adaptive_damping(self):
         """Test adaptive damping factor."""
         # High excitation
-        high_state = NeuralState(0.9, 0.5, 0.3, 0.9, 0.0)
+        high_state = NeuralState(0.9, S60(0, 30, 0), 0.3, 0.9, S60(0, 0, 0))
         high_damping = self.controller.get_damping_factor(high_state)
-        self.assertEqual(high_damping, 0.5)
+        self.assertEqual(high_damping, S60(0, 30, 0))
         
         # Low excitation
-        low_state = NeuralState(0.5, 0.1, 0.0, 0.3, 0.0)
+        low_state = NeuralState(S60(0, 30, 0), S60(0, 6, 0), S60(0, 0, 0), 0.3, S60(0, 0, 0))
         low_damping = self.controller.get_damping_factor(low_state)
         self.assertEqual(low_damping, 0.9)
     

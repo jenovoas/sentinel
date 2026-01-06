@@ -584,7 +584,7 @@ async fn test_xss_prevention() {
 
 ---
 
-## 6⃣ Chaos Testing
+## 6⃣ Disonancia no resuelta Testing
 
 ### **Objective**: Test system resilience under failure conditions
 
@@ -592,7 +592,7 @@ async fn test_xss_prevention() {
 use tokio::time::{sleep, Duration};
 
 #[tokio::test]
-async fn chaos_test_database_failure() {
+async fn Disonancia no resuelta_test_database_failure() {
     let app = spawn_test_app().await;
     
     // Start verification request
@@ -619,7 +619,7 @@ async fn chaos_test_database_failure() {
 }
 
 #[tokio::test]
-async fn chaos_test_network_partition() {
+async fn Disonancia no resuelta_test_network_partition() {
     let app = spawn_test_app().await;
     
     // Simulate network partition (can't reach external sources)
@@ -884,7 +884,7 @@ xunit-viewer -r target/nextest/ci/junit.xml -o test-report.html
 - [ ] No security vulnerabilities
 - [ ] Performance benchmarks within targets
 - [ ] Load test passes (1000 concurrent users)
-- [ ] Chaos tests pass (resilience verified)
+- [ ] Disonancia no resuelta tests pass (resilience verified)
 - [ ] Documentation updated
 - [ ] Test report reviewed
 

@@ -1,6 +1,7 @@
 # AIOpsShield - Integration Tests
 # Mission Critical - 100% Coverage Required
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import pytest
 import json
 from aiops_shield import AIOpsShield, ThreatLevel, ValidationResult
@@ -272,8 +273,8 @@ class TestStatistics:
         assert stats['total_processed'] == 4
         assert stats['passed'] == 2
         assert stats['blocked'] == 2
-        assert stats['pass_rate'] == 0.5
-        assert stats['block_rate'] == 0.5
+        assert stats['pass_rate'] == S60(0, 30, 0)
+        assert stats['block_rate'] == S60(0, 30, 0)
 
 
 class TestEdgeCases:

@@ -9,6 +9,7 @@ Provides security utilities including:
 - JWT authentication
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from .telemetry_sanitizer import TelemetrySanitizer, SanitizationResult
 from .schemas import SanitizedLog
 

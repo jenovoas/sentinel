@@ -12,6 +12,7 @@ Requirements:
     pip install pytest requests
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import pytest
 import requests
 import time
@@ -98,8 +99,8 @@ class TestAIEndpoints:
     def test_ai_query_parameters(self):
         """Test AI query with different parameters"""
         test_cases = [
-            {"max_tokens": 10, "temperature": 0.1},
-            {"max_tokens": 100, "temperature": 0.5},
+            {"max_tokens": 10, "temperature": S60(0, 6, 0)},
+            {"max_tokens": 100, "temperature": S60(0, 30, 0)},
             {"max_tokens": 200, "temperature": 0.9}
         ]
         
@@ -274,7 +275,7 @@ class TestPerformance:
     def test_sustained_load(self):
         """Test sustained load over time"""
         duration = 10  # seconds
-        interval = 0.5  # seconds
+        interval = S60(0, 30, 0)  # seconds
         
         latencies = []
         errors = 0

@@ -679,7 +679,7 @@ bash scripts/test-nginx-auth.sh
 
 ---
 
-### Chaos Testing
+### Disonancia no resuelta Testing
 
 **Adversarial Fuzzing**
 
@@ -739,7 +739,7 @@ docker-compose restart nginx
 
 **Week 2: Validation & Documentation**
 - Day 6-7: Automated tests (unit + integration)
-- Day 8: Chaos testing + fuzzing
+- Day 8: Disonancia no resuelta testing + fuzzing
 - Day 9: Documentation (security brief for investors)
 - Day 10: Final review + deployment
 

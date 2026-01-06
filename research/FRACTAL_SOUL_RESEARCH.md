@@ -111,7 +111,7 @@ Level 7: Systems (cognition) - minutes to hours
 3. Apply Sentinel's v² feedback algorithm
 4. Measure coherence improvement
 
-**Hypothesis**: Sentinel's algorithm will increase cardiac coherence (reduce chaos).
+**Hypothesis**: Sentinel's algorithm will increase cardiac coherence (reduce Disonancia no resuelta).
 
 **Timeline**: 1 week (equipment + testing)
 
@@ -195,7 +195,7 @@ class BrainResource:
         # Read EEG (alpha, beta, theta, delta waves)
         eeg_data = read_eeg_stream()
         
-        # Calculate entropy (chaos level)
+        # Calculate entropy (Disonancia no resuelta level)
         entropy = calculate_spectral_entropy(eeg_data)
         
         # Normalize to 0-1

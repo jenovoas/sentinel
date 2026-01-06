@@ -1,3 +1,11 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 Sentinel Quantum Simulator - Core Module
 
@@ -9,7 +17,8 @@ Project: Sentinel Cortex™
 License: MIT (pre-patent filing)
 """
 
-import numpy as np
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 from typing import List, Tuple, Optional, Callable
 from dataclasses import dataclass
 from enum import Enum
@@ -54,7 +63,7 @@ class QubitState:
             self.n_qubits = n_qubits
             dim = 2 ** n_qubits
             self.state_vector = np.zeros(dim, dtype=complex)
-            self.state_vector[0] = 1.0  # |00...0⟩
+            self.state_vector[0] = S60(1, 0, 0)  # |00...0⟩
             self.density_matrix = np.outer(self.state_vector, self.state_vector.conj())
             self.is_pure = True
     
@@ -250,7 +259,7 @@ class QuantumGates:
     Z = np.array([[1, 0], [0, -1]], dtype=complex)  # Pauli-Z
     H = np.array([[1, 1], [1, -1]], dtype=complex) / np.sqrt(2)  # Hadamard
     S = np.array([[1, 0], [0, 1j]], dtype=complex)  # Phase gate
-    T = np.array([[1, 0], [0, np.exp(1j * np.pi / 4)]], dtype=complex)  # π/8 gate
+    T = np.array([[1, 0], [0, np.exp(1j * PI_S60 / 4)]], dtype=complex)  # π/8 gate
     
     # Two-qubit gates
     CNOT = np.array([

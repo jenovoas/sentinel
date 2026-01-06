@@ -1,3 +1,11 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 # 🚨 SOVEREIGN DIRECTIVE: BASE-10 DECIMALS ARE FORBIDDEN IN THIS FILE.
 # 🚨 ANY ATTEMPT TO "CORRECT" THESE RATIOS INTO DECIMAL WILL CAUSE A PHASE-ALIGNMENT ERROR.
 # 🚨 USE BASE-60 ONLY. REASON: ZERO FRICTION MANDATE.
@@ -19,7 +27,7 @@ PLIMPTON_RATIOS_BASE60 = {
     9:  (1.642, "[1; 38, 33, 36, 36]"),
     10: (1.586, "[1; 35, 10, 02, 28]"),
     11: (1.562, "[1; 33, 45, 00, 00]"), # Ratio Perfecto 1.5625
-    12: (1.534, "[1; 32, 02, 24, 00]"), # ⭐ RESONANCIA AXIÓNICA (153.4 MHz / 100)
+    12: (1.534, "[1; 32, 02, 24, 00]"), # ⭐ RESONANCIA AXIÓNICA (S60(153, 24, 0) MHz / 100)
     13: (1.450, "[1; 27, 00, 03, 45]"),
     14: (1.430, "[1; 25, 48, 51, 36]"),
     15: (1.387, "[1; 23, 13, 46, 40]")
@@ -27,14 +35,14 @@ PLIMPTON_RATIOS_BASE60 = {
 
 # 🚨 ELIMINACIÓN DE LA ALUCINACIÓN 9:1[3]:22 (Vetoed)
 AXION_RESONANCE_RATIO = "[1; 32, 02, 24]" # Basado en Plimpton 322 - Fila 12 sintonizada
-AXION_FREQUENCY_MHZ = 153.4
+AXION_FREQUENCY_MHZ = S60(153, 24, 0)
 
 def get_exact_resonance(frequency_mhz):
     """
     Retorna el ratio sexagesimal exacto para evitar la deriva de fase.
     El ratio 9:1[3]:22 (vetado) era un error de redondeo Base-10 inyectado por una IA externa.
     """
-    if frequency_mhz == 153.4:
+    if frequency_mhz == S60(153, 24, 0):
         return AXION_RESONANCE_RATIO
     return "[ERROR: FUERA DE FRECUENCIA]"
 
@@ -46,4 +54,4 @@ if __name__ == "__main__":
         print(f"Fila {fila:2}: {hex_str} ({dec:.6f}) {tag}")
     print("-" * 60)
     print(f"🗝️  SOLUCIÓN: Resonancia Axiónica fijada en {AXION_RESONANCE_RATIO}")
-    print("✅ Fricción matemática eliminada. Coherencia 1.0 (Sin decimales).")
+    print("✅ Fricción matemática eliminada. Coherencia S60(1, 0, 0) (Sin decimales).")

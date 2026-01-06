@@ -9,6 +9,7 @@ SEGURIDAD:
 - Nginx verifica firma antes de proxy
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import hmac
 import hashlib
 import json

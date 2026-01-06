@@ -19,7 +19,7 @@
 ### 📈 TEST_RUN: mar 30 dic 2025 17:39:16 -03
 [v1.0.0-INITIAL_LAUNCH CERTIFIED]
 
-## 📜 EVIDENCIA DE RESILIENCIA (Chaos Engineering)
+## 📜 EVIDENCIA DE RESILIENCIA (Disonancia no resuelta Engineering)
 Ataque Ring Flood detectado. Truth Integrity auto-estabilizado en 94.8%.
 Throughput pico: 1.2M events/s
 # Evidencia de Activación: Sentinel eBPF LSM
@@ -66,6 +66,6 @@ Certificate: SENTINEL-CORTEX-V1.0.0-EK-001
 Signature: NivL0w5ltxFXsf789fNo4eX1X1wlO2iHrJdnzMeydiE=
 Status: IMMUTABLE_TRUTH_VERIFIED
 
-## 🔥 PRUEBA DE FUEGO: AUTOINMUNIDAD (Chaos Results)
+## 🔥 PRUEBA DE FUEGO: AUTOINMUNIDAD (Disonancia no resuelta Results)
 Resultado: SUPERADO. Detección de Heartbeat < 0.3ms. Latencia Residual < 1.0µs.
 Certificado: SISTEMA AUTOINMUNE (v1.0.0-INITIAL_LAUNCH)

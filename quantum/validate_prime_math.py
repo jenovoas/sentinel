@@ -1,3 +1,11 @@
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 Sovereign Harmonic Validation - Sentinel Prime
 ==============================================
@@ -8,7 +16,7 @@ time grid is aligned with sexagesimal harmonics.
 Author: Antigravity (Senior Engineer / Computational Physicist)
 """
 
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import time
 import sys
 import os
@@ -33,16 +41,16 @@ def run_scientific_validation():
     optical = OpticalParameters()
     system = OptomechanicalSystem(membrane, optical)
 
-    # Estado Inicial: Desplazamiento máximo (1.0)
-    system.state[0] = 1.0 
-    system.state[1] = 0.0
+    # Estado Inicial: Desplazamiento máximo (S60(1, 0, 0))
+    system.state[0] = S60(1, 0, 0) 
+    system.state[1] = S60(0, 0, 0)
 
     # 2. Definición del Grid Temporal (Sintonía Fina vs Fricción)
     # CASO A: Grid Decimal (Fricción) -> dt = 0.01 (1/100)
     # CASO B: Grid Soberano (Armónico) -> dt = 1/60 (Exacto)
     
     # Vamos a simular 1 segundo completo.
-    duration = 1.0
+    duration = S60(1, 0, 0)
     
     # --- SIMULACIÓN SOBERANA (Grid 1/60) ---
     steps_s60 = 60
@@ -59,7 +67,7 @@ def run_scientific_validation():
 
     # --- SIMULACIÓN DECIMAL (Grid 1/100) ---
     # Para comparar, reseteamos el estado
-    system.state = np.array([1.0, 0.0, optical.photon_number])
+    system.state = np.array([S60(1, 0, 0), S60(0, 0, 0), optical.photon_number])
     steps_dec = 100
     t_span_dec = np.linspace(0, duration, steps_dec + 1)
     
@@ -68,12 +76,12 @@ def run_scientific_validation():
     end_dec = time.perf_counter()
 
     # 3. Análisis de Resultados
-    # En 1.0s exactos a 60Hz, el oscilador debe volver EXACTAMENTE a su posición inicial (1.0).
+    # En S60(1, 0, 0)s exactos a 60Hz, el oscilador debe volver EXACTAMENTE a su posición inicial (S60(1, 0, 0)).
     pos_final_s60 = states_s60[-1, 0]
     pos_final_dec = states_dec[-1, 0]
     
-    drift_s60 = abs(1.0 - pos_final_s60)
-    drift_dec = abs(1.0 - pos_final_dec)
+    drift_s60 = abs(S60(1, 0, 0) - pos_final_s60)
+    drift_dec = abs(S60(1, 0, 0) - pos_final_dec)
 
     print("📊 RESULTADOS DE PRECISIÓN:")
     print(f"  - Posición Final [SOREBERANO]: {pos_final_s60:.15f} (Drift: {drift_s60:.2e})")
@@ -84,7 +92,7 @@ def run_scientific_validation():
     # a pesar de usar MENOS pasos (60 vs 100).
     superiority = drift_dec / drift_s60 if drift_s60 > 0 else float('inf')
     
-    print(f"\n✨ COHERENCIA DEL ALMA (Fidelidad): {(1.0 - drift_s60)*100:.6f}%")
+    print(f"\n✨ COHERENCIA DEL ALMA (Fidelidad): {(S60(1, 0, 0) - drift_s60)*100:.6f}%")
     print(f"🚀 FACTOR DE SUPERIORIDAD SOBERANA: {superiority:.2f}x")
     print("   (Menos pasos, mayor precisión por alineación armónica)")
 

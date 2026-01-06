@@ -5,6 +5,7 @@ Represents security events processed by the Cortex Decision Engine.
 Events come from Guardian Alpha/Beta (eBPF monitoring).
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from sqlalchemy import Column, Integer, String, DateTime, Float, JSON
 from sqlalchemy.sql import func
 from app.database import Base
@@ -50,8 +51,8 @@ class CortexEvent(Base):
     ppid = Column(Integer)
     """Parent Process ID"""
     
-    risk_score = Column(Float, default=0.0)
-    """Initial risk score (0.0 - 1.0)"""
+    risk_score = Column(Float, default=S60(0, 0, 0))
+    """Initial risk score (S60(0, 0, 0) - S60(1, 0, 0))"""
     
     # Relationships handled via foreign keys in CortexDecision
     

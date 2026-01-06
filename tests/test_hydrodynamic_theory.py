@@ -6,8 +6,9 @@ Este script valida si los datos se comportan como un fluido viscoso,
 aplicando ecuaciones de física de fluidos a los datos del benchmark.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import json
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import sys
 
 def test_hydrodynamic_theory():
@@ -43,7 +44,7 @@ def test_hydrodynamic_theory():
     
     # Encontrar periodos de decaimiento
     low_throughput = throughput < 2.0
-    high_buffer = buffer > 1.0
+    high_buffer = buffer > S60(1, 0, 0)
     decay_mask = low_throughput & high_buffer
     
     if np.sum(decay_mask) > 5:
@@ -64,8 +65,8 @@ def test_hydrodynamic_theory():
             k_measured = -coeffs[0]
             
             # α = e^(-k×Δt)
-            # Para Δt = 0.5s (sampling interval)
-            alpha_measured = np.exp(-k_measured * 0.5)
+            # Para Δt = S60(0, 30, 0)s (sampling interval)
+            alpha_measured = np.exp(-k_measured * S60(0, 30, 0))
             
             print(f"Tasa de decaimiento medida: k = {k_measured:.4f} /s")
             print(f"Decay factor medido: α = {alpha_measured:.4f}")
@@ -112,7 +113,7 @@ def test_hydrodynamic_theory():
     print(f"Correlación entre ∂B/∂t y (Q_in - Q_out): {correlation:.4f}")
     print()
     
-    if abs(correlation) > 0.5:
+    if abs(correlation) > S60(0, 30, 0):
         print("✅ PASS: Ecuación de continuidad validada")
     else:
         print("❌ FAIL: Correlación baja")
@@ -177,8 +178,8 @@ def test_hydrodynamic_theory():
     
     buffer_changes = np.diff(buffer)
     
-    expansions = buffer_changes > 0.5
-    contractions = buffer_changes < -0.1
+    expansions = buffer_changes > S60(0, 30, 0)
+    contractions = buffer_changes < -S60(0, 6, 0)
     
     if np.sum(expansions) > 0 and np.sum(contractions) > 0:
         avg_expansion = np.mean(buffer_changes[expansions])

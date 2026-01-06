@@ -10,6 +10,7 @@ SEGURIDAD:
 - Alertas de integrity gaps
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import hmac
 import hashlib
 import time

@@ -11,7 +11,7 @@
 
 1. **`trinity_visualization.html`** (Standalone)
    - ✅ Three.js with Merkabah, Hierarchy, Flower of Life
-   - ✅ OrbitControls, particle field, coherence simulation
+   - ✅ OrbitControls, particle field, coherence Proyección Cuántica
    - ❌ No custom shaders, bloom, or audio
 
 2. **`frontend/app/trinity/page.tsx`** (Dashboard)

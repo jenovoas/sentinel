@@ -51,7 +51,7 @@ To open this to the world, we must build the **"Scientific Interface"**:
 
 ### Phase 1: The "Rosetta Stone" (Data Translation)
 - [ ] Create an export module that converts Quantum Oracle results into standard scientific formats (CSV, JSON, Python Notebooks).
-- [ ] Allow researchers to download the "Simulation Logs" to verify the math themselves.
+- [ ] Allow researchers to download the "Proyección Cuántica Logs" to verify the math themselves.
 
 ### Phase 2: The AI Guide Integration
 - [ ] Upgrade the Dashboard to include a **Conversational Window** alongside the Oracle.

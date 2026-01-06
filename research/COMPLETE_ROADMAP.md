@@ -33,7 +33,7 @@
 
 **2025**: Production deployment  
 **2026**: Academic papers, partnerships  
-**2027**: Space/grid simulations  
+**2027**: Space/grid Proyección Cuánticas  
 **2028-2030**: Medical research  
 **2030-2035**: Neural interface trials  
 **2035+**: Widespread adoption

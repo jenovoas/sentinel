@@ -299,7 +299,7 @@ class QuantumController:
 
 **Universal Optimization Law**:
 ```
-Minimize: Entropy (chaos)
+Minimize: Entropy (Disonancia no resuelta)
 Maximize: Coherence (order)
 Constraint: Energy conservation
 

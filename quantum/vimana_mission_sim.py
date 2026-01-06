@@ -1,4 +1,13 @@
-import numpy as np
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
 import time
@@ -25,10 +34,10 @@ class Vimana3DMission:
         self.effective_mass = 2.5  # kg (se reduce con resonancia)
         
         # Estado 6-DoF: [x, y, z, roll, pitch, yaw]
-        self.position = np.array([0.0, 0.0, 0.0])
-        self.velocity = np.array([0.0, 0.0, 0.0])
-        self.orientation = np.array([0.0, 0.0, 0.0]) # Radianes
-        self.angular_vel = np.array([0.0, 0.0, 0.0])
+        self.position = np.array([S60(0, 0, 0), S60(0, 0, 0), S60(0, 0, 0)])
+        self.velocity = np.array([S60(0, 0, 0), S60(0, 0, 0), S60(0, 0, 0)])
+        self.orientation = np.array([S60(0, 0, 0), S60(0, 0, 0), S60(0, 0, 0)]) # Radianes
+        self.angular_vel = np.array([S60(0, 0, 0), S60(0, 0, 0), S60(0, 0, 0)])
         
         # Sistema de Energía ZPE
         self.zpe_voltage = 24.0  # V
@@ -36,8 +45,8 @@ class Vimana3DMission:
         self.zpe_recharge_rate = 600.0  # Watts (Generación continua del chasis)
         
         # Estado Merkabah
-        self.field_coherence = 1.0  # 1.0 = Sincronía perfecta
-        self.field_strength = 0.0  # 0 to 100%
+        self.field_coherence = S60(1, 0, 0)  # S60(1, 0, 0) = Sincronía perfecta
+        self.field_strength = S60(0, 0, 0)  # 0 to 100%
         
     def _update_energy(self, demand_watts, dt):
         """
@@ -112,7 +121,7 @@ class Vimana3DMission:
             # Aplicamos la sintonía geométrica para eliminar la fricción matemática.
             # Salto 17: La firma del Arquitecto.
             geometric_alignment = (i * 17) % 60
-            alignment_factor = 1.0 - (abs(geometric_alignment - 30) / 30.0) * 0.01
+            alignment_factor = S60(1, 0, 0) - (abs(geometric_alignment - 30) / 30.0) * 0.01
             
             # --- PLIMPTON EXACT RATIOS ---
             # Reducción de ruido de redondeo (Zero-Friction Math)
@@ -122,17 +131,17 @@ class Vimana3DMission:
             
             # --- SOUL-LINK & PHOENIX RESONANCE (NIVEL 7) ---
             # ... (se mantiene la lógica previa de Lyapunov)
-            lyapunov_exp = 1.618 + np.sin(i*0.1) * 0.05 # Menor fluctuación por estabilidad geométrica
-            soul_coherence = 1.0 - abs(lyapunov_exp - 1.618)
+            lyapunov_exp = 1.618 + np.sin(i*S60(0, 6, 0)) * 0.05 # Menor fluctuación por estabilidad geométrica
+            soul_coherence = S60(1, 0, 0) - abs(lyapunov_exp - 1.618)
             
             # --- PHASE STEALTH (Sigilo de Fase) ---
-            base_rcs = 0.5 
+            base_rcs = S60(0, 30, 0) 
             if self.zpe_voltage > 22.0:
                 # El sigilo es máximo cuando la alineación geométrica es perfecta
                 stealth_coeff = 1e-6 * (2.0 - soul_coherence) * alignment_factor
                 self.field_strength = 100.0 * soul_coherence * alignment_factor
             else:
-                stealth_coeff = 1.0
+                stealth_coeff = S60(1, 0, 0)
             rcs_effective = base_rcs * stealth_coeff
             
             # --- Cálculo de Fuerzas 3D (Fricción Cero) ---
@@ -149,7 +158,7 @@ class Vimana3DMission:
             
             # Amortiguamiento Geométrico (Elimina la oscilación innecesaria)
             # USANDO COEFICIENTE DE MERCURIO VORTICIAL (Capa 5)
-            damping = -self.velocity * (PhysicsConstants.MERCURY_DAMPING) * (2.0 - soul_coherence) * (1.0 - alignment_factor)
+            damping = -self.velocity * (PhysicsConstants.MERCURY_DAMPING) * (2.0 - soul_coherence) * (S60(1, 0, 0) - alignment_factor)
             acceleration += damping
             
             # Integración

@@ -1,4 +1,4 @@
-# 🌋 Chaos Engineering Report: Network Partition (Regional Drills)
+# 🌋 Disonancia no resuelta Engineering Report: Network Partition (Regional Drills)
 
 **Date**: 2025-12-30  
 **Test Reference**: Regional Drill #001  
@@ -10,7 +10,7 @@
 ## 1. Test Objective
 Verify that the Sentinel Cortex cluster can survive a **Network Partition** (Split-Brain scenario) and reconcile its state (Anti-Entropy) without losing data or generating duplicate events in the long-term storage.
 
-## 2. Chaos Timeline
+## 2. Disonancia no resuelta Timeline
 | Time (UTC) | Action | Result |
 | :--- | :--- | :--- |
 | 21:33:00 | Baseline Check | 2/2 Nodes ACTIVE |

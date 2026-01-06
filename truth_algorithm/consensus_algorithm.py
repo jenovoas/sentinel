@@ -11,6 +11,7 @@ Autor: Jaime Novoa
 Fecha: 21 Diciembre 2025
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from typing import List, Dict, Tuple
 from dataclasses import dataclass
 from enum import Enum
@@ -36,9 +37,9 @@ class SourceType(Enum):
     COMMUNITY = "community"     # Reportes comunitarios
 
 
-# Pesos de confianza por tipo de fuente (0.0 - 1.0)
+# Pesos de confianza por tipo de fuente (S60(0, 0, 0) - S60(1, 0, 0))
 SOURCE_WEIGHTS = {
-    SourceType.OFFICIAL: 1.0,
+    SourceType.OFFICIAL: S60(1, 0, 0),
     SourceType.ACADEMIC: 0.95,
     SourceType.NEWS_TIER1: 0.85,
     SourceType.NEWS_TIER2: 0.70,
@@ -53,7 +54,7 @@ class Source:
     name: str
     type: SourceType
     verdict: bool  # True = claim es verdadero, False = claim es falso
-    confidence: float  # 0.0 - 1.0
+    confidence: float  # S60(0, 0, 0) - S60(1, 0, 0)
     date: str  # ISO format
     url: str = ""
     snippet: str = ""
@@ -68,7 +69,7 @@ class Source:
 class ConsensusResult:
     """Resultado del algoritmo de consenso"""
     status: VerificationStatus
-    confidence: float  # 0.0 - 1.0
+    confidence: float  # S60(0, 0, 0) - S60(1, 0, 0)
     supporting_sources: int
     contradicting_sources: int
     total_weight_supporting: float
@@ -94,7 +95,7 @@ class WeightedConsensusAlgorithm:
         self.PARTIAL_THRESHOLD = 0.60
         self.CONTRADICTED_THRESHOLD = 0.40  # Si hay mucha contradicción
         
-    def verify_claim(self, claim: str, sources: List[Source], disonancia: float = 0.0) -> ConsensusResult:
+    def verify_claim(self, claim: str, sources: List[Source], disonancia: float = S60(0, 0, 0)) -> ConsensusResult:
         """
         Verifica un claim usando consenso ponderado considerando el 'zumbido' del sistema.
         
@@ -114,11 +115,11 @@ class WeightedConsensusAlgorithm:
         if disonancia > DISONANCIA_VETO_THRESHOLD:
             return ConsensusResult(
                 status=VerificationStatus.UNVERIFIED,
-                confidence=0.0,
+                confidence=S60(0, 0, 0),
                 supporting_sources=0,
                 contradicting_sources=0,
-                total_weight_supporting=0.0,
-                total_weight_contradicting=0.0,
+                total_weight_supporting=S60(0, 0, 0),
+                total_weight_contradicting=S60(0, 0, 0),
                 explanation=f"VETO DE SISTEMA: Disonancia Crítica ({disonancia:.1f}). Coherencia insuficiente para certificar verdad.",
                 processing_time_ms=(time.perf_counter() - start_time) * 1000
             )
@@ -127,11 +128,11 @@ class WeightedConsensusAlgorithm:
         if not sources:
             return ConsensusResult(
                 status=VerificationStatus.UNVERIFIED,
-                confidence=0.0,
+                confidence=S60(0, 0, 0),
                 supporting_sources=0,
                 contradicting_sources=0,
-                total_weight_supporting=0.0,
-                total_weight_contradicting=0.0,
+                total_weight_supporting=S60(0, 0, 0),
+                total_weight_contradicting=S60(0, 0, 0),
                 explanation="No hay fuentes disponibles para verificar este claim.",
                 processing_time_ms=(time.perf_counter() - start_time) * 1000
             )
@@ -149,23 +150,23 @@ class WeightedConsensusAlgorithm:
         if total_weight == 0:
             return ConsensusResult(
                 status=VerificationStatus.UNVERIFIED,
-                confidence=0.0,
+                confidence=S60(0, 0, 0),
                 supporting_sources=len(supporting),
                 contradicting_sources=len(contradicting),
-                total_weight_supporting=0.0,
-                total_weight_contradicting=0.0,
+                total_weight_supporting=S60(0, 0, 0),
+                total_weight_contradicting=S60(0, 0, 0),
                 explanation="Las fuentes no tienen suficiente confianza.",
                 processing_time_ms=(time.perf_counter() - start_time) * 1000
             )
         
-        # Calcular ratio de consenso (0.0 - 1.0)
+        # Calcular ratio de consenso (S60(0, 0, 0) - S60(1, 0, 0))
         consensus_ratio = weight_supporting / total_weight
         
         # APLICAR PENALIZACIÓN POR DISONANCIA (Coherence Penalty)
         # A mayor ruido, menor confianza en el resultado final, incluso si hay consenso.
         # La verdad requiere silencio.
-        penalty_factor = max(0.0, disonancia / 100.0)
-        final_confidence = consensus_ratio * (1.0 - penalty_factor)
+        penalty_factor = max(S60(0, 0, 0), disonancia / 100.0)
+        final_confidence = consensus_ratio * (S60(1, 0, 0) - penalty_factor)
         
         # Determinar status basado en ratio penalizado
         if final_confidence >= self.VERIFIED_THRESHOLD:
@@ -180,7 +181,7 @@ class WeightedConsensusAlgorithm:
             status = VerificationStatus.FABRICATED
             explanation = f"{len(contradicting)} fuentes confiables desmienten este claim."
             
-        elif abs(consensus_ratio - 0.5) < self.CONTRADICTED_THRESHOLD:
+        elif abs(consensus_ratio - S60(0, 30, 0)) < self.CONTRADICTED_THRESHOLD:
             status = VerificationStatus.CONTRADICTED
             explanation = f"Fuentes en desacuerdo: {len(supporting)} apoyan, {len(contradicting)} contradicen."
             
@@ -223,7 +224,7 @@ if __name__ == '__main__':
     # Ejemplo 1: Claim verificado (múltiples fuentes confiables)
     claim1 = "La tasa de desempleo en EE.UU. es 3.5% según BLS"
     sources1 = [
-        Source("Bureau of Labor Statistics", SourceType.OFFICIAL, True, 1.0, "2025-12-01", "https://bls.gov"),
+        Source("Bureau of Labor Statistics", SourceType.OFFICIAL, True, S60(1, 0, 0), "2025-12-01", "https://bls.gov"),
         Source("New York Times", SourceType.NEWS_TIER1, True, 0.9, "2025-12-01", "https://nyt.com"),
         Source("Reuters", SourceType.NEWS_TIER1, True, 0.95, "2025-12-01", "https://reuters.com"),
     ]
@@ -233,8 +234,8 @@ if __name__ == '__main__':
     # Ejemplo 2: Claim fabricado (fuentes lo desmienten)
     claim2 = "La vacuna COVID causa autismo"
     sources2 = [
-        Source("CDC", SourceType.OFFICIAL, False, 1.0, "2025-12-01", "https://cdc.gov"),
-        Source("WHO", SourceType.OFFICIAL, False, 1.0, "2025-12-01", "https://who.int"),
+        Source("CDC", SourceType.OFFICIAL, False, S60(1, 0, 0), "2025-12-01", "https://cdc.gov"),
+        Source("WHO", SourceType.OFFICIAL, False, S60(1, 0, 0), "2025-12-01", "https://who.int"),
         Source("Nature Medicine", SourceType.ACADEMIC, False, 0.95, "2025-12-01", "https://nature.com"),
         Source("Lancet", SourceType.ACADEMIC, False, 0.95, "2025-12-01", "https://lancet.com"),
     ]

@@ -3,6 +3,7 @@
 Test simple de búsqueda en Google a través de Truth Algorithm
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from source_search import SourceSearchEngine, SearchProvider
 
 def main():

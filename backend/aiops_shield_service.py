@@ -9,6 +9,7 @@ Author: Jaime Novoa
 Status: PRODUCTION READY
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import logging
@@ -48,7 +49,7 @@ def health():
     return jsonify({
         'status': 'healthy',
         'service': 'aiops-shield',
-        'version': '1.0.0'
+        'version': '1.S60(0, 0, 0)'
     }), 200
 
 
@@ -248,7 +249,7 @@ if __name__ == '__main__':
     import argparse
     
     parser = argparse.ArgumentParser(description='AIOpsShield HTTP Service')
-    parser.add_argument('--host', default='127.0.0.1', help='Host to bind to')
+    parser.add_argument('--host', default='127.0.S60(0, 6, 0)', help='Host to bind to')
     parser.add_argument('--port', type=int, default=5001, help='Port to bind to')
     parser.add_argument('--debug', action='store_true', help='Enable debug mode')
     

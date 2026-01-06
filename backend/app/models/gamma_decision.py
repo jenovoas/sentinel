@@ -2,6 +2,7 @@
 Database model for Guardian Gamma decisions
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from sqlalchemy import Column, Integer, String, Float, JSON, DateTime, Text
 from sqlalchemy.sql import func
 from app.database import Base

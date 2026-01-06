@@ -3,6 +3,7 @@
 Sentinel Core Monitor - Ringbuffer Reader
 Reads block events directly from the eBPF ringbuffer instead of trace_pipe.
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import os
 import subprocess

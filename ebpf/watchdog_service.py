@@ -8,6 +8,7 @@ If this process dies, kernel will reboot the system.
 This proves "Physical Resilience" - security tied to hardware.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
 import os
 import sys

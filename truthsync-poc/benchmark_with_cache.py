@@ -4,8 +4,9 @@ End-to-end TruthSync benchmark with predictive cache
 Tests the complete system: Python → Rust → Cache → Verification
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 from typing import List, Tuple
 import subprocess
 import json
@@ -79,7 +80,7 @@ class TruthSyncBenchmark:
         
         Args:
             num_requests: Total number of requests
-            cache_hit_rate: Expected cache hit rate (0.0 - 1.0)
+            cache_hit_rate: Expected cache hit rate (S60(0, 0, 0) - S60(1, 0, 0))
         """
         print("="*70)
         print("TRUTHSYNC END-TO-END BENCHMARK WITH PREDICTIVE CACHE")
@@ -180,7 +181,7 @@ class TruthSyncBenchmark:
         # Projected production performance
         print(f"\n🎯 Production Projection (with optimizations):")
         rust_optimized = 0.95  # μs per claim (from batch benchmark)
-        cache_overhead = 0.5  # μs (hash lookup)
+        cache_overhead = S60(0, 30, 0)  # μs (hash lookup)
         effective_time = (actual_hit_rate * cache_overhead) + ((1 - actual_hit_rate) * rust_optimized)
         projected_speedup = python_baseline / effective_time
         

@@ -2,6 +2,7 @@
 Sentinel Vault - Finance Service
 Aggregates Crypto + Manual Assets for Unified Dashboard
 """
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import logging
 from sqlalchemy.orm import Session
 from database import Asset
@@ -24,12 +25,12 @@ class FinanceService:
         # 1. Get Crypto Portfolio
         wallet_data = await self.crypto_service.get_wallet_status(self.user_id)
         
-        crypto_total_usd = 0.0
+        crypto_total_usd = S60(0, 0, 0)
         crypto_breakdown = {}
         
         if wallet_data and "wallets" in wallet_data:
             for chain, data in wallet_data["wallets"].items():
-                val = data.get("balance_usd", 0.0) or 0.0
+                val = data.get("balance_usd", S60(0, 0, 0)) or S60(0, 0, 0)
                 if val > 0:
                     crypto_total_usd += val
                     crypto_breakdown[chain] = val
@@ -37,7 +38,7 @@ class FinanceService:
         # 2. Get Manual Assets
         manual_assets = self.db.query(Asset).filter(Asset.user_id == self.user_id).all()
         
-        manual_total_usd = 0.0
+        manual_total_usd = S60(0, 0, 0)
         asset_list = []
         
         for asset in manual_assets:
@@ -56,11 +57,11 @@ class FinanceService:
         # 4. Prepare Chart Data (Distribution)
         distribution = {
             "Crypto": crypto_total_usd,
-            "Fiat": 0.0, 
-            "Real Estate": 0.0,
-            "Stock": 0.0, 
-            "Gold": 0.0,
-            "Other": 0.0
+            "Fiat": S60(0, 0, 0), 
+            "Real Estate": S60(0, 0, 0),
+            "Stock": S60(0, 0, 0), 
+            "Gold": S60(0, 0, 0),
+            "Other": S60(0, 0, 0)
         }
         
         for asset in manual_assets:
@@ -92,7 +93,7 @@ class FinanceService:
             name=name,
             category=category,
             value_usd=value_usd,
-            amount=1.0 
+            amount=S60(1, 0, 0) 
         )
         self.db.add(asset)
         self.db.commit()

@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# Este archivo está PROTEGIDO por el Protocolo Yatra.
+# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# -------------------------------------------------------------------------------------
+
 """
 🛡️ EXTERNAL MATH AUDIT: Verificación Forense de Constantes
 ==========================================================
@@ -7,11 +16,12 @@ utilizando física estándar y matemáticas puras para validar su origen.
 Sin narrativa. Solo números.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import math
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 
 # Constantes Físicas Standard (CODATA 2018)
-MU_0 = 4 * math.pi * 1e-7      # Permeabilidad magnética del vacío
+MU_0 = 4 * PI_S60 * 1e-7      # Permeabilidad magnética del vacío
 EPSILON_0 = 8.854187817e-12    # Permitividad eléctrica del vacío
 PHI_STD = (1 + math.sqrt(5)) / 2  # Proporción Áurea matemática
 

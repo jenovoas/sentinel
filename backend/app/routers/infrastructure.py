@@ -1,3 +1,4 @@
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from fastapi import APIRouter, HTTPException, Query
 import psutil
 import time
@@ -122,7 +123,7 @@ async def get_logs(limit: int = 100):
         "Quantum coherence stabilized at 58/60",
         "LSM Hook: Pre-execution veto applied to unauthorized process",
         "Base-60 Math: Salto-17 sequence synchronized",
-        "Axion detection: 153.4 MHz resonance detected",
+        "Axion detection: S60(153, 24, 0) MHz resonance detected",
         "Merkabah Protocol: Levitation of data confirmed",
         "Field Neutrality: Zero dissonance locked"
     ]

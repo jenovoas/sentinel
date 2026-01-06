@@ -10,6 +10,7 @@ Validates the complete Dual-Guardian architecture including:
 Run with: pytest backend/tests/test_dual_guardian.py -v
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import pytest
 import asyncio
 import time

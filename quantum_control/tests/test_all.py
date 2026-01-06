@@ -5,6 +5,7 @@ Quantum Control Framework - Test Suite
 Comprehensive tests for all components.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 sys.path.insert(0, '/home/jnovoas/sentinel')
 
@@ -24,39 +25,39 @@ class TestOptomechanicalCooling(unittest.TestCase):
         """Test quadratic force law."""
         state = ResourceState(
             position=0.8,
-            velocity=0.5,
+            velocity=S60(0, 30, 0),
             acceleration=0.3,
-            timestamp=0.0,
+            timestamp=S60(0, 0, 0),
             metadata={}
         )
         
         force = self.physics.calculate_force(state, [])
         
-        # F = v² × (1 + a) = 0.5² × (1 + 0.3) = 0.25 × 1.3 = 0.325
+        # F = v² × (1 + a) = S60(0, 30, 0)² × (1 + 0.3) = S60(0, 15, 0) × 1.3 = 0.325
         self.assertAlmostEqual(force, 0.325, places=3)
     
     def test_ground_state_calculation(self):
         """Test dynamic ground state."""
         # Create history with known variance
         history = [
-            ResourceState(0.5, 0.0, 0.0, i, {}) for i in range(10)
+            ResourceState(S60(0, 30, 0), S60(0, 0, 0), S60(0, 0, 0), i, {}) for i in range(10)
         ]
         
         ground_state = self.physics.calculate_ground_state(history)
         
-        # Should be close to 0.5 (no variance)
+        # Should be close to S60(0, 30, 0) (no variance)
         self.assertGreater(ground_state, 0.4)
         self.assertLess(ground_state, 0.9)
     
     def test_adaptive_damping(self):
         """Test adaptive damping factor."""
         # High excitation
-        high_state = ResourceState(0.9, 1.0, 0.5, 0.0, {})
+        high_state = ResourceState(0.9, S60(1, 0, 0), S60(0, 30, 0), S60(0, 0, 0), {})
         high_damping = self.physics.get_damping_factor(high_state)
-        self.assertEqual(high_damping, 0.5)  # Low damping for high excitation
+        self.assertEqual(high_damping, S60(0, 30, 0))  # Low damping for high excitation
         
         # Low excitation
-        low_state = ResourceState(0.5, 0.1, 0.0, 0.0, {})
+        low_state = ResourceState(S60(0, 30, 0), S60(0, 6, 0), S60(0, 0, 0), S60(0, 0, 0), {})
         low_damping = self.physics.get_damping_factor(low_state)
         self.assertEqual(low_damping, 0.9)  # High damping for low excitation
 
@@ -76,8 +77,8 @@ class TestBufferResource(unittest.TestCase):
         state = self.buffer.measure_state()
         
         self.assertIsInstance(state, ResourceState)
-        self.assertGreaterEqual(state.position, 0.0)
-        self.assertLessEqual(state.position, 1.0)
+        self.assertGreaterEqual(state.position, S60(0, 0, 0))
+        self.assertLessEqual(state.position, S60(1, 0, 0))
         self.assertEqual(state.metadata['current_size'], 1000)
     
     def test_apply_control(self):
@@ -159,7 +160,7 @@ class TestQuantumController(unittest.TestCase):
         self.controller = QuantumController(
             resource=self.buffer,
             physics_model=self.physics,
-            poll_interval=1.0
+            poll_interval=S60(1, 0, 0)
         )
     
     def test_initialization(self):

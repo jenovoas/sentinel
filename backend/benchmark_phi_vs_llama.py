@@ -3,6 +3,7 @@ Benchmark Comparativo: phi3 vs llama3
 Compara latencias de diferentes modelos en GTX 1050
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
 import sys
 import json

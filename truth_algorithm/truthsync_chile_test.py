@@ -13,6 +13,7 @@ Context:
 - Verification: Perplexity AI / DuckDuckGo real-time search
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import sys
 import json
@@ -35,7 +36,7 @@ def main():
     
     # System Context (Enriched)
     system_context = {
-        "architecture_version": "Sentinel Cortex 1.0.0-POC",
+        "architecture_version": "Sentinel Cortex 1.S60(0, 0, 0)-POC",
         "philosophy": "Cognitive Kernel - Semantic Understanding at Ring 0",
         "validation_confidenc_score": 0.999,  # Based on IRREFUTABLE_EVIDENCE.md
         "innovation": "Dual-Lane Telemetry (2,857x faster than classical)",

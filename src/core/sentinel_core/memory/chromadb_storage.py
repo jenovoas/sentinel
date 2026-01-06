@@ -4,6 +4,7 @@ Sentinel Cortex™ Digital Hippocampus - Storage Layer
 Implements persistent memory using ChromaDB with Base-60 lattice indexing.
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import time
 from typing import Dict, List, Optional
@@ -75,7 +76,7 @@ class SentinelMemoryStorage:
             "timestamp": time.time(),
             "residue": residue,
             "zone_id": zone_id,
-            "activation_level": 1.0  # Initial activation
+            "activation_level": S60(1, 0, 0)  # Initial activation
         })
         
         collection.add(

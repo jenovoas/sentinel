@@ -6,8 +6,9 @@ Simulates eBPF burst detection without requiring kernel access
 Copyright (c) 2025 Sentinel Cortex™ - All Rights Reserved
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
-import random
+# import random  <-- YATRA: PROHIBIDO (CAOS)
 from dataclasses import dataclass
 
 @dataclass
@@ -55,7 +56,7 @@ class BurstSensorSimulator:
                 pps = max(0, pps)  # No negative PPS
                 
                 yield pps
-                time.sleep(0.1)  # 100ms intervals
+                time.sleep(S60(0, 6, 0))  # 100ms intervals
     
     def _detect_burst(self, pps):
         """Detect burst and determine severity"""

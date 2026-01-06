@@ -8,6 +8,7 @@ Tests completos para el sistema de certificación de contenido.
 Powered by Google ❤️ & Perplexity 💜
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import unittest
 from source_search import SearchResult, SearchProvider
 from consensus_engine import ConsensusEngine, ConsensusResult
@@ -37,7 +38,7 @@ class TestConsensusEngine(unittest.TestCase):
     def test_consensus_with_mixed_sources(self):
         """Test con fuentes mixtas"""
         sources = [
-            SearchResult("Title", "https://news.example", "Snippet", "news", 0.75, "2025-12-21"),
+            SearchResult("Title", "https://news.example", "Snippet", "news", S60(0, 45, 0), "2025-12-21"),
             SearchResult("Title", "https://example.com", "Snippet", "general", 0.60, "2025-12-21"),
         ]
         
@@ -50,7 +51,7 @@ class TestConsensusEngine(unittest.TestCase):
         """Test sin fuentes"""
         result = self.engine.calculate_consensus("Test claim", [])
         
-        self.assertEqual(result.consensus_score, 0.0)
+        self.assertEqual(result.consensus_score, S60(0, 0, 0))
         self.assertEqual(result.confidence_level, "none")
         self.assertEqual(result.num_sources, 0)
     
@@ -85,7 +86,7 @@ class TestTruthScoreCalculator(unittest.TestCase):
         self.assertGreater(score.overall_score, 0.85)
         self.assertEqual(score.claims_verified, 3)
         self.assertEqual(score.claims_total, 3)
-        self.assertEqual(score.verification_rate, 1.0)
+        self.assertEqual(score.verification_rate, S60(1, 0, 0))
     
     def test_partial_verification(self):
         """Test con verificación parcial"""
@@ -98,7 +99,7 @@ class TestTruthScoreCalculator(unittest.TestCase):
         
         self.assertEqual(score.claims_verified, 1)
         self.assertEqual(score.claims_total, 2)
-        self.assertEqual(score.verification_rate, 0.5)
+        self.assertEqual(score.verification_rate, S60(0, 30, 0))
         # Debe haber penalización
         self.assertLess(score.overall_score, 0.6)
     
@@ -106,7 +107,7 @@ class TestTruthScoreCalculator(unittest.TestCase):
         """Test sin claims"""
         score = self.calculator.calculate([])
         
-        self.assertEqual(score.overall_score, 0.0)
+        self.assertEqual(score.overall_score, S60(0, 0, 0))
         self.assertEqual(score.claims_total, 0)
 
 
@@ -124,7 +125,7 @@ class TestCertificationGenerator(unittest.TestCase):
         
         self.assertIsNotNone(certificate.certificate_id)
         self.assertIsNotNone(certificate.content_hash)
-        self.assertGreater(certificate.truth_score, 0.0)
+        self.assertGreater(certificate.truth_score, S60(0, 0, 0))
         self.assertGreater(certificate.claims_total, 0)
         self.assertEqual(certificate.provider, "mock")
     
@@ -174,14 +175,14 @@ class TestIntegration(unittest.TestCase):
         self.assertIsNotNone(certificate.timestamp)
         
         # Verificar scores
-        self.assertGreaterEqual(certificate.truth_score, 0.0)
-        self.assertLessEqual(certificate.truth_score, 1.0)
+        self.assertGreaterEqual(certificate.truth_score, S60(0, 0, 0))
+        self.assertLessEqual(certificate.truth_score, S60(1, 0, 0))
         
         # Verificar estadísticas
         self.assertGreater(certificate.claims_total, 0)
         self.assertGreaterEqual(certificate.claims_verified, 0)
-        self.assertGreaterEqual(certificate.verification_rate, 0.0)
-        self.assertLessEqual(certificate.verification_rate, 1.0)
+        self.assertGreaterEqual(certificate.verification_rate, S60(0, 0, 0))
+        self.assertLessEqual(certificate.verification_rate, S60(1, 0, 0))
         
         # Verificar metadata
         self.assertIn(certificate.confidence_level, ['none', 'low', 'medium', 'high'])

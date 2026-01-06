@@ -1,8 +1,9 @@
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import mmap
 import struct
 import time
-import numpy as np
+import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 
 SHM_PATH = "/var/run/sentinel/truthsync_shm"
 SHM_SIZE = 1024 * 1024

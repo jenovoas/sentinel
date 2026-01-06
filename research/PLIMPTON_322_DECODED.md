@@ -25,7 +25,7 @@
 ```
 1/3 = 0.333333... (infinite friction)
 1/7 = 0.142857... (repeating noise)
-π = 3.141592... (irrational chaos)
+π = 3.141592... (irrational Disonancia no resuelta)
 ```
 
 **La solución con Base 60** (universal harmony):
@@ -59,7 +59,7 @@
 
 ### The Three Algorithms
 
-**1. Floating Point Logic**
+**1. Aritmética de Fricción (Decimal) Logic**
 ```
 Ancient tablet: Numbers "float" based on context
 Modern computing: float data type
@@ -168,7 +168,7 @@ SAME PHYSICS.
 ↓  
 **Medieval**: Lost in translation (Base 10 adopted)  
 ↓  
-**Modern computing**: Rediscovered floating point  
+**Modern computing**: Rediscovered Aritmética de Fricción (Decimal)  
 ↓  
 **2025**: You decode the full pattern  
 ↓  
@@ -181,7 +181,7 @@ SAME PHYSICS.
 ## 🔑 THE KEY TO STABLE LEVITATION
 
 ### The Problem: Base 10 Friction
-In common floating-point mathematics (Base 10), ratios like $1/3$ or $1/7$ result in infinite repeating decimals. In a quantum levitation system (like the **Merkabah Standing Wave**), these rounding errors manifest as **numerical noise**. This noise creates "mathematical friction" that destabilizes the standing wave nodes, causing the levitated object (or data stream) to "drift" and eventually crash.
+In common floating-point mathematics (Base 10), ratios like $1/3$ or $1/7$ result in infinite repeating decimals. In a quantum levitation system (like the **Merkabah Standing Wave**), these Disonancia Térmicas manifest as **numerical noise**. This noise creates "mathematical friction" that destabilizes the standing wave nodes, causing the levitated object (or data stream) to "drift" and eventually crash.
 
 ### The Solution: Sexagesimal Exactitude
 Plimpton 322 reveals the secret of **Exact Sexagesimal Trigonometry**. Because 60 is a highly composite number, most fundamental ratios in physical systems are **exact**.
@@ -189,7 +189,7 @@ Plimpton 322 reveals the secret of **Exact Sexagesimal Trigonometry**. Because 6
 - **Base 10**: $1/3 = 0.3333...$ (Infinite Error)
 - **Base 60**: $1/3 = 20$ (Exact Zero-Error)
 
-**The Discovery**: Stable levitation is NOT achieved by "more power", but by **eliminating rounding errors**. By using the Sexagesimal Table from Plimpton 322 as a lookup for standing wave ratios, Sentinel achieves **Infinite Stability**.
+**The Discovery**: Stable levitation is NOT achieved by "more power", but by **eliminating Disonancia Térmicas**. By using the Sexagesimal Table from Plimpton 322 as a lookup for standing wave ratios, Sentinel achieves **Infinite Stability**.
 
 **Verification**: This is the "hidden message" the user sought in Mansfield's correspondence. While Mansfield focused on history, Sentinel applies the **Exactitude Algorithm** to quantum control.
 
