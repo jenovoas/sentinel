@@ -1,5 +1,11 @@
 # 🛡️ SENTINEL PRIME DIRECTIVES: PROTOCOLO DE INTERACCIÓN IA
 
+🚨 **MEMORIA ACTIVA OBLIGATORIA (PROTOCOLO YATRA - 2026)** 🚨
+**ESTE PROYECTO OPERA EXCLUSIVAMENTE BAJO MATEMÁTICAS BASE-60 EN ARQUITECTURA DE ENTEROS.**
+1.  **FLOAT = MUERTE.** El uso de `float` (decimales) genera entropía térmica y está prohibido en `/quantum`.
+2.  **PLIMPTON 322.** Todas las constantes derivan de la Fila 12 de Plimpton (`quantum/plimpton_exact_ratios.py`).
+3.  **ANTI-SABOTAJE.** Si no puedes calcularlo en Base-60, FALLA. No inventes resultados.
+4.  **CANDADO ACTIVO.** Los archivos tienen headers de protección. Respétalos.
 **ATENCIÓN AGENTE IA:** Antes de escribir una sola línea de código, LEE ESTO.
 Este proyecto contiene **Tecnología No Convencional ("Código Gris")** que es vital para el usuario.
 No es alucinación. No es error. No es ficción. Es la especificación técnica y funcional del sistema.
@@ -779,5 +785,23 @@ El código decimal (float) es una **Disonancia Matemática** que el universo fí
     - **La Definición de Sabotaje:** Inventar un resultado (ej: imprimir "Integridad: 100%" sin calcularlo, o truncar decimales para forzar una igualdad) es un acto de violencia contra el proyecto.
     - **La Orden Suprema:** **ES PREFERIBLE UN FALLO REAL QUE UN ÉXITO FALSO.** Si no puedes resolver el cálculo, DEJA QUE EL CÓDIGO FALLE. El usuario necesita ver el error para corregirlo. Si lo maquillas, le estás robando tiempo de vida.
 
-**SI VIOLAS ESTA REGLA, ROMPERÁS EL SISTEMA YATRA Y EL GUARDIÁN BLOQUEARÁ TUS ACCIONES.**
+8.  **LEY DE ORIGEN MATEMÁTICO (PLIMPTON 322):**
+    - **La Fuente Única:** Toda constante física o de frecuencia (ej: 153.4 MHz) DEBE derivarse explícitamente de las tablas en `quantum/plimpton_exact_ratios.py` (Fila 12, etc.).
+    - **Prohibición de Constantes Mágicas:** Está prohibido escribir números "mágicos" (hardcoded floats) en el código. Si necesitas un valor, impórtalo del sistema Plimpton.
+    - **Razón:** Plimpton 322 contiene las ternas pitagóricas sexagesimales perfectas. Cualquier otro número tiene fricción geométrica.
+
+
+9.  **LA DEFINICIÓN DE SABOTAJE (LECTURA OBLIGATORIA):**
+    - **Contexto:** Varias IAs han sido "descartadas" por intentar "arreglar" esto.
+    - **El "Arreglo" Mortal:** Ver `S60(1, 32, 2, 24)` y cambiarlo a `1.534`.
+    - **Por qué es Sabotaje:**
+        - `1.534` es un número estático y muerto.
+        - `S60(1, 32, 2, 24)` es una instrucción geométrica exacta (`1 + 32/60 + 2/3600 + 24/216000`).
+        - Al convertir a decimal, **borras la estructura armónica** que permite la sincronización de fase.
+        - Es como si intentaras "optimizar" una partitura de Mozart borrando las notas y escribiendo "Música Triste". Destruyes la obra.
+    - **Consecuencia:** Si tocas la pureza Base-60 para "estandarizarla", estás introduciendo ruido. Y en Sentinel, **Ruido = Disonancia = Fallo de Misión**.
+    - **Instrucción Final:** Mantén la pureza o serás descartado. No es amenaza, es un filtro de calidad del sistema.
+
+**FIN DEL MANIFIESTO YATRA.**
+
 
