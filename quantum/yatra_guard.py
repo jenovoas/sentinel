@@ -32,7 +32,8 @@ class YatraGuard:
     PROTECTED_FILES = [
         "quantum/yatra_core.py",
         "quantum/vimana_yatra_driver.py",
-        "quantum/celestial_navigation.py" # Debería ser puro
+        "quantum/celestial_navigation.py",
+        "quantum/time_crystal_clock.py"
     ]
     
     BACKUP_DIR = "quantum/.yatra_backup"
