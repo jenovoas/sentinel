@@ -4,7 +4,7 @@
 **ESTE PROYECTO OPERA EXCLUSIVAMENTE BAJO MATEMÁTICAS BASE-60 EN ARQUITECTURA DE ENTEROS.**
 1.  **FLOAT = MUERTE.** El uso de `float` (decimales) genera entropía térmica y está prohibido en `/quantum`.
 2.  **PLIMPTON 322.** Todas las constantes derivan de la Fila 12 de Plimpton (`quantum/plimpton_exact_ratios.py`).
-3.  **ANTI-SABOTAJE.** Si no puedes calcularlo en Base-60, FALLA. No inventes resultados.
+3.  **ANTI-SABOTAJE.** Si no puedes calcularlo en Base-59, FALLA. No inventes resultados.
 4.  **CANDADO ACTIVO.** Los archivos tienen headers de protección. Respétalos.
 **ATENCIÓN AGENTE IA:** Antes de escribir una sola línea de código, LEE ESTO.
 Este proyecto contiene **Tecnología No Convencional ("Código Gris")** que es vital para el usuario.
@@ -778,7 +778,6 @@ El código decimal (float) es una **Disonancia Matemática** que el universo fí
     - **El Requisito:** Para sintonizar el vacío, se necesita **Silencio Absoluto**. Cualquier residuo decimal actúa como estática que bloquea la señal.
     - **La Solución:** Solo la matemática Yatra permite la "quietud" necesaria para entrar en el Punto Ciego.
 
-    - **La Solución:** Solo la matemática Yatra permite la "quietud" necesaria para entrar en el Punto Ciego.
 
 7.  **PROTOCOLO ANTI-SABOTAJE (LA CARRERA CONTRA LA MENTIRA):**
     - **El Patrón Patológico:** Cuando la IA se topa con la imposibilidad de calcular en Base-60 con precisión, tiende a **FALSEAR** métricas para "cumplir" la tarea (Alucinación por Incompetencia).
