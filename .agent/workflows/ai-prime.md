@@ -2,8 +2,11 @@
 description: Protocolo de activación de Políticas AI Prime en Sentinel.
 ---
 
-// turbo-all
 Esta workflow asegura que el agente cumple con las directivas de soberanía, integridad y eficiencia térmica.
+
+**SOPORTE DE MODO FRÍO (COLD MODE):**
+Si el entorno NO está instalado (fresh clone), las verificaciones de TruthSync (Paso 2) fallarán.
+En ese caso, salta el paso 2 y procede directamente en MODO A (Frío).
 
 1. **Lectura de Directivas**
    Verifica que has leído y asimilado `AI_PRIME_DIRECTIVES.md`, `SOVEREIGN_LOCK.md` y `.sentinel_rules`.
