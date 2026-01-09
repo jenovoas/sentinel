@@ -44,17 +44,25 @@ class QubitState:
         """
         if state_vector is not None:
             self.state_vector = list(state_vector)
-            self.density_matrix = [[(S60(0)) for _ in range(len(state_vector))] for _ in range(len(state_vector))]
-            # n_qubits simple (para qubits binarios)
-            import math # Solo para cálculo de arquitectura, no en runtime core si es posible
-            self.n_qubits = int(math.log2(len(state_vector)))
+            dim = len(state_vector)
+            self.density_matrix = [[(S60(0)) for _ in range(dim)] for _ in range(dim)]
+            # n_qubits log2 entero
+            self.n_qubits = 0
+            temp_dim = dim
+            while temp_dim > 1:
+                temp_dim >>= 1
+                self.n_qubits += 1
             self.is_pure = True
         elif density_matrix is not None:
             self.density_matrix = density_matrix
             self.state_vector = None
-            import math
-            self.n_qubits = int(math.log2(len(density_matrix)))
-            self.is_pure = False # Default simplify
+            dim = len(density_matrix)
+            self.n_qubits = 0
+            temp_dim = dim
+            while temp_dim > 1:
+                temp_dim >>= 1
+                self.n_qubits += 1
+            self.is_pure = False 
         else:
             # Initialize to |0⟩^⊗n
             self.n_qubits = n_qubits
@@ -69,32 +77,86 @@ class QubitState:
         """
         Apply quantum gate to state (Discrete S60).
         """
-        if target_qubits is None:
-            if self.is_pure:
-                # Simplified multiplication for S60 lists
-                new_vec = [S60(0) for _ in range(len(self.state_vector))]
-                for r in range(len(gate)):
-                    for c in range(len(gate[0])):
-                        new_vec[r] += gate[r][c] * self.state_vector[c]
-                self.state_vector = new_vec
+        if target_qubits is not None:
+            # Multi-qubit or specific target expansion
+            if len(target_qubits) == 1:
+                full_gate = self._expand_gate(gate, target_qubits[0])
             else:
-                raise DecimalContaminationError("Mixed state gate application needs refactor.")
+                # For multi-qubit gates like CNOT, we assume the gate arrives 
+                # already in its 2^k x 2^k representation, and we need specialized expansion.
+                # Simplified for Bell state: CNOT on [0, 1] for 2-qubit system.
+                if self.n_qubits == len(target_qubits):
+                    full_gate = gate
+                else:
+                    raise DecimalContaminationError("General multi-qubit expansion beyond n=k needs permutation logic.")
         else:
-            raise DecimalContaminationError("Multi-qubit gate expansion needs S60 tensor product.")
+            full_gate = gate
+
+        if self.is_pure:
+            # Matrix-vector multiplication
+            new_vec = [S60(0) for _ in range(len(self.state_vector))]
+            for r in range(len(full_gate)):
+                for c in range(len(full_gate[0])):
+                    new_vec[r] += full_gate[r][c] * self.state_vector[c]
+            self.state_vector = new_vec
+        else:
+            # Matrix-matrix multiplication G * rho * G_dag
+            # rho_new = G @ rho @ G_dag
+            # Simplified for now (pure only)
+            raise DecimalContaminationError("Density matrix evolution needs S60 matrix multiplication.")
+
+    def _expand_gate(self, gate: List[List[S60]], target_qubit: int):
+        """
+        Expands a 1-qubit gate to act on a specific qubit in an n-qubit system.
+        """
+        res = [[S60(1)]]
+        I_gate = QuantumGates.I()
+        
+        for i in range(self.n_qubits):
+            current_op = gate if i == target_qubit else I_gate
+            res = S60Math.tensor_product(res, current_op)
+            
+        return res
     
-    def _expand_gate(self, gate: List[List[S60]], target_qubits: List[int]):
+    def measure(self, qubit_idx: int) -> Tuple[int, 'QubitState']:
         """
-        [DISABLED] Multi-qubit gate expansion.
-        Requires S60 tensor product implementation.
+        Measure qubit and collapse state (Deterministic S60).
         """
-        raise DecimalContaminationError("Tensor products (kron) require S60 refactor.")
-    
-    def measure(self, qubit_idx: int) -> int:
-        """
-        [DISABLED] Measure qubit.
-        Requires S60 projection implementation.
-        """
-        raise DecimalContaminationError("Measurement requires legacy decimal math.")
+        if not self.is_pure:
+            raise DecimalContaminationError("Mixed state measurement not yet implemented in S60.")
+            
+        p0 = S60(0)
+        dim = len(self.state_vector)
+        mask = 1 << (self.n_qubits - 1 - qubit_idx)
+        
+        for i in range(dim):
+            if not (i & mask):
+                p0 += self.state_vector[i] * self.state_vector[i]
+        
+        # Deterministic outcome: 0 if p0 >= 0.5
+        threshold = S60(0, 30, 0)
+        if p0._value >= threshold._value:
+            outcome = 0
+            norm = S60Math.sqrt(p0)
+            new_vec = [S60(0) for _ in range(dim)]
+            for i in range(dim):
+                if not (i & mask):
+                    new_vec[i] = self.state_vector[i] / norm
+        else:
+            outcome = 1
+            p1 = S60(1) - p0
+            if p1._value < 0: p1 = S60(0)
+            norm = S60Math.sqrt(p1)
+            new_vec = [S60(0) for _ in range(dim)]
+            if norm._value > 0:
+                for i in range(dim):
+                    if (i & mask):
+                        new_vec[i] = self.state_vector[i] / norm
+            else:
+                # Fallback if somehow normalization fails
+                new_vec[mask] = S60(1) 
+                    
+        return outcome, QubitState(state_vector=new_vec, n_qubits=self.n_qubits)
     
     def fidelity(self, other: 'QubitState') -> S60:
         """
@@ -110,12 +172,37 @@ class QubitState:
 
 
 class QuantumGates:
-    """Standard quantum gates (S60)."""
+    """Standard quantum gates (S60) - Derived from fundamental principles."""
     
-    # Simple gates
-    I = [[S60(1, 0, 0), S60(0)], [S60(0), S60(1, 0, 0)]]
-    X = [[S60(0), S60(1, 0, 0)], [S60(1, 0, 0), S60(0)]]
-    H = [[S60(0, 42, 25), S60(0, 42, 25)], [S60(0, 42, 25), S60(0, 17, 34)._from_raw(-S60(0, 42, 25)._value)]] # 1/sqrt(2) approx
+    @staticmethod
+    def I(): return [[S60(1), S60(0)], [S60(0), S60(1)]]
+    
+    @staticmethod
+    def X(): return [[S60(0), S60(1)], [S60(1), S60(0)]]
+    
+    @staticmethod
+    def Z(): return [[S60(1), S60(0)], [S60(0), S60(-1)]]
+    
+    @staticmethod
+    def H():
+        # Derived: 1/sqrt(2)
+        inv_sqrt2 = S60(1) / S60Math.sqrt(S60(2))
+        return [[inv_sqrt2, inv_sqrt2], [inv_sqrt2, S60(-1) * inv_sqrt2]]
+    
+    @staticmethod
+    def CNOT():
+        """Derived: |0><0| ⊗ I + |1><1| ⊗ X"""
+        P0 = [[S60(1), S60(0)], [S60(0), S60(0)]]
+        P1 = [[S60(0), S60(0)], [S60(0), S60(1)]]
+        I = QuantumGates.I()
+        X = QuantumGates.X()
+        
+        term0 = S60Math.tensor_product(P0, I)
+        term1 = S60Math.tensor_product(P1, X)
+        
+        # Matrix addition
+        res = [[(term0[i][j] + term1[i][j]) for j in range(4)] for i in range(4)]
+        return res
 
 
 class QuantumCircuit:
@@ -130,49 +217,25 @@ class QuantumCircuit:
         
     def h(self, qubit: int) -> 'QuantumCircuit':
         """Apply Hadamard gate."""
-        self.state.apply_gate(QuantumGates.H, [qubit])
+        self.state.apply_gate(QuantumGates.H(), [qubit])
         self.gates.append(('H', qubit))
         return self
     
     def x(self, qubit: int) -> 'QuantumCircuit':
         """Apply Pauli-X (NOT) gate."""
-        self.state.apply_gate(QuantumGates.X, [qubit])
+        self.state.apply_gate(QuantumGates.X(), [qubit])
         self.gates.append(('X', qubit))
-        return self
-    
-    def y(self, qubit: int) -> 'QuantumCircuit':
-        """Apply Pauli-Y gate."""
-        self.state.apply_gate(QuantumGates.Y, [qubit])
-        self.gates.append(('Y', qubit))
         return self
     
     def z(self, qubit: int) -> 'QuantumCircuit':
         """Apply Pauli-Z gate."""
-        self.state.apply_gate(QuantumGates.Z, [qubit])
+        self.state.apply_gate(QuantumGates.Z(), [qubit])
         self.gates.append(('Z', qubit))
-        return self
-    
-    def rx(self, qubit: int, theta: float) -> 'QuantumCircuit':
-        """Apply RX rotation."""
-        self.state.apply_gate(QuantumGates.RX(theta), [qubit])
-        self.gates.append(('RX', qubit, theta))
-        return self
-    
-    def ry(self, qubit: int, theta: float) -> 'QuantumCircuit':
-        """Apply RY rotation."""
-        self.state.apply_gate(QuantumGates.RY(theta), [qubit])
-        self.gates.append(('RY', qubit, theta))
-        return self
-    
-    def rz(self, qubit: int, theta: float) -> 'QuantumCircuit':
-        """Apply RZ rotation."""
-        self.state.apply_gate(QuantumGates.RZ(theta), [qubit])
-        self.gates.append(('RZ', qubit, theta))
         return self
     
     def cnot(self, control: int, target: int) -> 'QuantumCircuit':
         """Apply CNOT gate."""
-        self.state.apply_gate(QuantumGates.CNOT, [control, target])
+        self.state.apply_gate(QuantumGates.CNOT(), [control, target])
         self.gates.append(('CNOT', control, target))
         return self
     

@@ -124,7 +124,7 @@ class ZPEProtoSim:
             print(f"   Freq: {freq} MHz | SNR: {snr_ratio} | [{status}] {bar}")
             
             # Timestep Sagrado
-            time.sleep(0.01) 
+            time.sleep(1/100) 
 
         print("-" * 65)
         if peak_found:
