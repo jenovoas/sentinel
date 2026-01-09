@@ -74,8 +74,7 @@ def check_installation():
     print(f"  Lite Version:   {'✅' if _LITE_AVAILABLE else '❌'}")
     
     if not any([_CORE_AVAILABLE, _OPTO_AVAILABLE, _ADVANCED_AVAILABLE, _LITE_AVAILABLE]):
-        print("\n⚠️ No modules available! Check dependencies:")
-        print("  pip install numpy scipy matplotlib psutil")
+        print("\n⚠️ No hay módulos Yatra operativos. Verificar integridad de yatra_core.py.")
 
 
 def quick_start():
@@ -93,8 +92,7 @@ def quick_start():
         qc.h(0).cnot(0, 1)
         print(f"Bell state created: {qc.get_statevector()}")
     else:
-        print("❌ No simulators available. Install dependencies:")
-        print("  pip install numpy scipy matplotlib psutil")
+        print("❌ No hay simuladores soberanos disponibles. Verifique Yatra Core.")
 
 
 # Convenience imports
