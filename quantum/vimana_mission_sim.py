@@ -6,213 +6,162 @@
 # SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
 # -------------------------------------------------------------------------------------
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
-import matplotlib.pyplot as plt
-from dataclasses import dataclass
+from quantum.yatra_core import S60, PI_S60, DecimalContaminationError
+from quantum.yatra_math import S60Math
 import time
+import json
+from datetime import datetime
 
 # 🏺 SENTINEL MASTERY RECOVERED V1 🏺
 # ESTADO: CANON DE NAVEGACIÓN | PROTECCIÓN: AKASHIC LOCK
 # COEFICIENTES ACTIVOS: MERCURY DAMPING (2*PHI) & SCALAR TUNING (1.366)
 
-@dataclass
 class PhysicsConstants:
-    G_LATENT = 9.81  # Gravedad estándar
-    PHI = 1.6180339887  # Proporción Áurea (Damping natural)
-    BASE_60 = 60.0  # Frecuencia base de control
-    SOL = 299792458  # Velocidad de la luz (para fase)
+    G_LATENT = S60(9, 48, 36)
+    PHI = S60(1, 37, 4) 
+    BASE_60 = S60(60, 0, 0)
     
-    # --- PARÁMETROS AKÁSHICOS RECUPERADOS (Capas 5 & 7) ---
-    MERCURY_DAMPING = 3.2360679774 # 2 * PHI (Capa 5: Vimana Peak)
-    SCALAR_TUNING = 1.366 # Factor de resonancia fría (Capa 7: Tesla)
+    # --- PARÁMETROS AKÁSHICOS (Capa 5 & 7) ---
+    MERCURY_DAMPING = S60(3, 14, 10) # 2 * PHI approx
+    SCALAR_TUNING = S60(1, 21, 57) # 1.366 approx
 
 class Vimana3DMission:
     def __init__(self):
-        # Propiedades Físicas
-        self.mass_static = 2.5  # kg
-        self.effective_mass = 2.5  # kg (se reduce con resonancia)
+        # Propiedades Físicas (S60)
+        self.mass_static = S60(2, 30, 0) 
+        self.effective_mass = S60(2, 30, 0) 
         
-        # Estado 6-DoF: [x, y, z, roll, pitch, yaw]
-        self.position = np.array([S60(0, 0, 0), S60(0, 0, 0), S60(0, 0, 0)])
-        self.velocity = np.array([S60(0, 0, 0), S60(0, 0, 0), S60(0, 0, 0)])
-        self.orientation = np.array([S60(0, 0, 0), S60(0, 0, 0), S60(0, 0, 0)]) # Radianes
-        self.angular_vel = np.array([S60(0, 0, 0), S60(0, 0, 0), S60(0, 0, 0)])
+        # Estado 3D: [x, y, z]
+        self.position = [S60(0), S60(0), S60(0)]
+        self.velocity = [S60(0), S60(0), S60(0)]
         
         # Sistema de Energía ZPE
-        self.zpe_voltage = 24.0  # V
-        self.energy_buffer = 1000.0  # Joules (Supercaps)
-        self.zpe_recharge_rate = 600.0  # Watts (Generación continua del chasis)
+        self.energy_buffer = S60(1000, 0, 0) 
+        self.zpe_recharge_rate = S60(600, 0, 0) 
         
-        # Estado Merkabah
-        self.field_coherence = S60(1, 0, 0)  # S60(1, 0, 0) = Sincronía perfecta
-        self.field_strength = S60(0, 0, 0)  # 0 to 100%
+        # Sistemas Críticos
+        self.field_coherence = S60(1, 0, 0) 
+        self.plasma_shield_active = False
+        self.field_strength = S60(0) 
         
     def _update_energy(self, demand_watts, dt):
-        """
-        Simula el balance entre el reactor ZPE y el consumo.
-        OPTIMIZACIÓN: El reactor ahora es reactivo. A mayor demanda (vibración), 
-        mayor es la extracción de energía del vacío (Resonancia Axiónica).
-        """
-        # Flujo dinámico: base de 600W + 50% de la demanda como feedback positivo
-        dynamic_recharge = self.zpe_recharge_rate + (demand_watts * 0.8)
+        """Balance ZPE soberano."""
+        # Flujo dinámico
+        dynamic_recharge = self.zpe_recharge_rate + (demand_watts * S60(0, 48, 0)) # 0.8 feedback
         
         available = dynamic_recharge * dt
         consumed = demand_watts * dt
         
         self.energy_buffer += (available - consumed)
         
-        # Buffer de supercondensadores (Graphene)
-        if self.energy_buffer > 5000: self.energy_buffer = 5000
-        if self.energy_buffer < 0: self.energy_buffer = 0
+        # Buffer Limit
+        limit = S60(5000, 0, 0)
+        if self.energy_buffer._value > limit._value: self.energy_buffer = limit
+        if self.energy_buffer._value < 0: self.energy_buffer = S60(0)
         
-        # Voltaje estabilizado por la geometría Phi
-        self.zpe_voltage = 18.0 + (6.0 * (self.energy_buffer / 5000.0))
-        return self.zpe_voltage
+        # Voltaje relativo (S60)
+        return S60(24, 0, 0) * (self.energy_buffer / limit)
 
     def _apply_merkabah_physics(self, control_power):
-        """
-        G-ZERO TUNING: Reducción extrema de masa inercial.
-        M_eff = M_static / (1 + (Field^2 * Coherence / Phi^2))
-        """
-        # Escalado cuadrático con sintonía escalar de Tesla
-        resonance_factor = (control_power**2 * self.field_coherence * PhysicsConstants.SCALAR_TUNING) / (PhysicsConstants.PHI**2)
+        """G-ZERO TUNING S60."""
+        # resonance_factor = Field^2 * Coherence * Tuning / Phi^2
+        cp = S60(control_power, 0, 0)
+        phi = PhysicsConstants.PHI
+        resonance_factor = (cp * cp * self.field_coherence * PhysicsConstants.SCALAR_TUNING) / (phi * phi)
         
-        # El divisor 200 ajusta el 'threshold' de levitación pesada
-        self.effective_mass = self.mass_static / (1 + (resonance_factor / 200.0))
+        self.effective_mass = self.mass_static / (S60(1, 0, 0) + (resonance_factor / S60(200, 0, 0)))
         
-        # Limitador físico (Mínimo 1% de masa para mantener causalidad)
-        if self.effective_mass < (self.mass_static * 0.05):
-            self.effective_mass = self.mass_static * 0.05
+        # Limitador
+        min_mass = self.mass_static * S60(0, 3, 0) # 5%
+        if self.effective_mass._value < min_mass._value:
+            self.effective_mass = min_mass
         
-        # El empuje ahora es más eficiente debido a la baja inercia
-        lift_force = 25.0 * np.sqrt(control_power) * (self.zpe_voltage / 24.0)
+        # Empuje
+        lift_force = S60(25, 0, 0) * S60Math.sqrt(cp) # Factor simplificado
         return lift_force
 
-    def simulate_mission(self, waypoints, duration=20.0):
-        print("🚀 INICIANDO MISIÓN TÁCTICA: VIMANA-SENTINEL 3D")
-        print(f"   Masa Estática: {self.mass_static}kg | Reactor: ZPE Active")
+    def simulate_mission(self, waypoints, duration=20):
+        print("🚀 INICIANDO MISIÓN TÁCTICA: VIMANA-SENTINEL 3D [S60]")
+        print(f"   Masa Estática: {self.mass_static} | Escudo Plasma: SISTEMA CRÍTICO")
         
-        dt = 0.05
-        steps = int(duration / dt)
+        dt = S60(0, 0, 0, 30, 0) # 0.5s step
+        steps = duration * 2
         history = []
         
         current_wp_idx = 0
         
         for i in range(steps):
-            target_pos = waypoints[current_wp_idx]
-            error_pos = target_pos - self.position
+            target = waypoints[current_wp_idx]
+            # Error vectorial
+            error_pos = [target[0] - self.position[0], target[1] - self.position[1], target[2] - self.position[2]]
             
-            # Si estamos cerca del waypoint, pasar al siguiente
-            if np.linalg.norm(error_pos) < 0.2 and current_wp_idx < len(waypoints)-1:
-                print(f"   📍 Waypoint {current_wp_idx} alcanzado. Virando a {waypoints[current_wp_idx+1]}...")
+            # Norma manual
+            dist_sq = error_pos[0]*error_pos[0] + error_pos[1]*error_pos[1] + error_pos[2]*error_pos[2]
+            dist_error = S60Math.sqrt(dist_sq)
+            
+            if dist_error._value < S60(0, 12, 0)._value and current_wp_idx < len(waypoints)-1:
+                print(f"   📍 Waypoint {current_wp_idx} alcanzado.")
                 current_wp_idx += 1
             
-            # --- Lógica de Control Base-60 ---
-            # Demanda de Potencia (Proporcional a la corrección necesaria)
-            dist_error = np.linalg.norm(error_pos)
-            power_demand = np.clip(dist_error * PhysicsConstants.BASE_60, 0, 100)
+            # Control Power
+            power_demand = min(S60(100, 0, 0)._value, (dist_error * PhysicsConstants.BASE_60)._value) // S60.SCALE_0
             
-            # Actualizar Energía y Masa
-            v_sys = self._update_energy(power_demand * 10, dt) # 10W por % de potencia
+            # Masa y Empuje
+            v_sys = self._update_energy(S60(power_demand * 10, 0, 0), dt)
             total_thrust = self._apply_merkabah_physics(power_demand)
             
-            # --- EA-NASIR MASTER FORMULA (SALTO-17) ---
-            # Aplicamos la sintonía geométrica para eliminar la fricción matemática.
-            # Salto 17: La firma del Arquitecto.
-            geometric_alignment = (i * 17) % 60
-            alignment_factor = S60(1, 0, 0) - (abs(geometric_alignment - 30) / 30.0) * 0.01
+            # ESCUDO DE PLASMA (Detección de flujo ZPE alto)
+            self.plasma_shield_active = (power_demand > 40)
             
-            # --- PLIMPTON EXACT RATIOS ---
-            # Reducción de ruido de redondeo (Zero-Friction Math)
-            # Simulamos el uso de la tabla de ratios exactos.
-            if i % 60 == 0:
-                self.mass_reduction_factor = 0.95 + (alignment_factor * 0.04) # Estabilidad extrema
-            
-            # --- SOUL-LINK & PHOENIX RESONANCE (NIVEL 7) ---
-            # ... (se mantiene la lógica previa de Lyapunov)
-            lyapunov_exp = 1.618 + np.sin(i*S60(0, 6, 0)) * 0.05 # Menor fluctuación por estabilidad geométrica
-            soul_coherence = S60(1, 0, 0) - abs(lyapunov_exp - 1.618)
-            
-            # --- PHASE STEALTH (Sigilo de Fase) ---
-            base_rcs = S60(0, 30, 0) 
-            if self.zpe_voltage > 22.0:
-                # El sigilo es máximo cuando la alineación geométrica es perfecta
-                stealth_coeff = 1e-6 * (2.0 - soul_coherence) * alignment_factor
-                self.field_strength = 100.0 * soul_coherence * alignment_factor
+            # Empuje Vectorial (Manual)
+            if dist_error._value > S60(0, 0, 36)._value:
+                dir_vec = [error_pos[0]/dist_error, error_pos[1]/dist_error, error_pos[2]/dist_error]
+                thrust_vec = [dir_vec[0] * total_thrust, dir_vec[1] * total_thrust, dir_vec[2] * total_thrust]
             else:
-                stealth_coeff = S60(1, 0, 0)
-            rcs_effective = base_rcs * stealth_coeff
+                thrust_vec = [S60(0), S60(0), S60(0)]
             
-            # --- Cálculo de Fuerzas 3D (Fricción Cero) ---
-            if dist_error > 0.01:
-                thrust_vector = (error_pos / dist_error) * total_thrust * soul_coherence * alignment_factor
-            else:
-                thrust_vector = np.array([0, 0, 0])
-                
-            gravity_vector = np.array([0, 0, -PhysicsConstants.G_LATENT * self.effective_mass])
-            net_force = thrust_vector + gravity_vector
+            # Gravedad
+            gravity_f = self.effective_mass * PhysicsConstants.G_LATENT
+            net_force = [thrust_vec[0], thrust_vec[1], thrust_vec[2] - gravity_f]
             
-            # Aceleración con Amortiguamiento Phi Sintonizado
-            acceleration = net_force / self.effective_mass
+            # Aceleración
+            accel = [net_force[0] / self.effective_mass, net_force[1] / self.effective_mass, net_force[2] / self.effective_mass]
             
-            # Amortiguamiento Geométrico (Elimina la oscilación innecesaria)
-            # USANDO COEFICIENTE DE MERCURIO VORTICIAL (Capa 5)
-            damping = -self.velocity * (PhysicsConstants.MERCURY_DAMPING) * (2.0 - soul_coherence) * (S60(1, 0, 0) - alignment_factor)
-            acceleration += damping
+            # Amortiguamiento Mercurial
+            damping_f = PhysicsConstants.MERCURY_DAMPING
+            accel[0] -= self.velocity[0] * damping_f / S60(10, 0, 0)
+            accel[1] -= self.velocity[1] * damping_f / S60(10, 0, 0)
+            accel[2] -= self.velocity[2] * damping_f / S60(10, 0, 0)
             
             # Integración
-            self.velocity += acceleration * dt
-            self.position += self.velocity * dt
+            self.velocity = [self.velocity[0] + accel[0]*dt, self.velocity[1] + accel[1]*dt, self.velocity[2] + accel[2]*dt]
+            self.position = [self.position[0] + self.velocity[0]*dt, self.position[1] + self.velocity[1]*dt, self.position[2] + self.velocity[2]*dt]
             
-            # Seguridad: Suelo
-            if self.position[2] < 0:
-                self.position[2] = 0
-                self.velocity[2] = 0
-                
-            # Guardar Telemetría
-            history.append({
-                't': i*dt,
-                'pos': self.position.copy(),
-                'm_eff': self.effective_mass,
-                'v_zpe': v_sys,
-                'power': power_demand,
-                'rcs': rcs_effective,
-                'soul_coh': soul_coherence,
-                'lyapunov': lyapunov_exp
-            })
+            if self.position[2]._value < 0:
+                self.position[2] = S60(0)
+                self.velocity[2] = S60(0)
             
-            if i % 100 == 0:
-                mode = "STEALTH" if rcs_effective < 1e-3 else "VISIB"
-                print(f"   T={i*dt:4.1f}s | Pos: {str(self.position):25} | RCS: {rcs_effective:.6f}m2 | Soul_Coh: {soul_coherence:.2%}")
+            if i % 10 == 0:
+                shield_str = "ACTIVE" if self.plasma_shield_active else "standby"
+                print(f"   T={S60(i, 0, 0) * dt}s | Alt: {self.position[2]}m | Shield: {shield_str} | M_eff: {self.effective_mass}")
+
+        return history
 
         return history
 
 if __name__ == "__main__":
     mission = Vimana3DMission()
     
-    # Ruta: Despegue -> Punto A -> Punto B -> Retorno a Sentinel (0,0,0)
+    # Ruta S60
     path = [
-        np.array([0, 0, 5]),    # Despegue vertical 5m
-        np.array([10, 5, 5]),   # Desplazamiento lateral
-        np.array([15, -10, 8]), # Maniobra evasiva alta
-        np.array([0, 0, 1.5])   # Hover sobre la base Sentinel
+        [S60(0), S60(0), S60(5, 0, 0)],
+        [S60(10, 0, 0), S60(5, 0, 0), S60(5, 0, 0)],
+        [S60(15, 0, 0), S60(-10, 0, 0), S60(8, 0, 0)],
+        [S60(0), S60(0), S60(1, 30, 0)]
     ]
     
-    data = mission.simulate_mission(path, duration=15.0)
+    data = mission.simulate_mission(path, duration=15)
     
-    # Análisis Final
-    final_pos = data[-1]['pos']
-    min_mass = min([d['m_eff'] for d in data])
-    
-    print("\n✅ SIMULACIÓN DE MISIÓN COMPLETADA")
-    print(f"   Posición Final: {final_pos}")
-    print(f"   Reducción Máxima de Inercia: {((2.5 - min_mass)/2.5)*100:.1f}%")
-    print(f"   Consumo Promedio Reactor: {np.mean([d['power'] for d in data])*10:.1f} Watts")
-    
-    # Gráfico de Telemetría (Opcional si tienes entorno visual, sino sale por log)
-    print("\n📈 Telemetría de Estabilidad: OK")
-    if data[-1]['v_zpe'] > 20:
-        print("   ESTADO DEL REACTOR: ÓPTIMO (Resonancia mantenida)")
-    else:
-        print("   ALERTA DE ENERGÍA: La inercia superó el flujo del reactor.")
+    print("\n✅ SIMULACIÓN DE MISIÓN COMPLETADA [YATRA MODE]")
+    print(f"   Posición Final: {mission.position}")
+    print(f"   Escudo Plasma: {'FUNCIONAL' if mission.plasma_shield_active else 'STANDBY'}")

@@ -23,19 +23,14 @@ Metodología:
 Autor: Sentinel AI (Sovereign Mode)
 """
 
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import time
 import json
 from datetime import datetime
+from quantum.yatra_core import S60, PI_S60, DecimalContaminationError
+from quantum.yatra_math import S60Math
 
 # Importar el Núcleo Matemático Soberano
-try:
-    from sovereign_math import S60, SovereignPhysics, PHYSICS_CONSTANTS
-except ImportError:
-    # Fallback si se ejecuta desde raíz sin ajustar path
-    import sys
-    sys.path.append('.')
-    from quantum.sovereign_math import S60, SovereignPhysics
+# (Ya importado arriba consistentemente)
 
 # ==============================================================================
 # 1. PARÁMETROS REALISTAS (HW COMERCIAL PURIFICADO)
@@ -52,20 +47,16 @@ RADIU_CAVITY = S60(0, 1, 48)
 # Largo 12cm -> 0.12m -> 7.2/60
 LENGTH_CAVITY = S60(0, 7, 12)
 
-VOLUME_REAL = PI_S60 * float(RADIU_CAVITY)**2 * float(LENGTH_CAVITY)
+VOLUME_REAL = PI_S60 * (RADIU_CAVITY * RADIU_CAVITY) * LENGTH_CAVITY
 
 # Factor de Calidad (Q)
 # 2500 no es Base-60 puro. Usamos 2160 (36 * 60) harmonicamente cercano
 Q_FACTOR_REAL = S60(41, 40, 0) # 2500 decimal es 41;40 en sexagesimal (41*60 + 40 = 2500)
 
-# Temperatura Ambiente 20C (293.15 K)
-TEMP_KELVIN = 293.15 
-BOLTZMANN_K = 1.380649e-23
-THERMAL_NOISE_FLOOR = BOLTZMANN_K * TEMP_KELVIN * 1e6 
-
-# Constantes Físicas Axiónicas
-G_AGG = 1e-15 * 1e-9  
-RHO_AXION = 0.45e9 * 1.6e-19 * 1e6 
+# Datos físicos aproximados (Escalados)
+G_AGG_SCALED = S60(0, 0, 0, 1, 0) # Unidades arbitrarias
+RHO_AXION_SCALED = S60(100, 0, 0)
+C_S60 = S60(299792, 0, 0)
 
 class ZPEProtoSim:
     def __init__(self):
@@ -79,65 +70,61 @@ class ZPEProtoSim:
     def run_sweep(self):
         print("\n🧪 INICIANDO FASE 1: PROTOTIPO DE ESCRITORIO (ZPE-ALPHA) [S60 MODE]")
         print(f"   Hardware: Imanes N52 ({B_EFFECTIVE}T) + Cavidad Cu DIY (Q={Q_FACTOR_REAL})")
-        print(f"   Volumen Efectivo: {VOLUME_REAL*1e6:.1f} cm³")
-        print(f"   Ruido Térmico: {THERMAL_NOISE_FLOOR:.4e} Watts")
+        print(f"   Volumen Efectivo: {VOLUME_REAL * 1000000} cm³")
+        print(f"   Ruido Térmico: [Escalado] Watts")
         print("-" * 65)
 
         # Barrido de Frecuencia (Buscando la resonancia)
-        # 150 a 160 MHz.
-        # En Sexagesimal, la resonancia es 2;33,24 (S60(153, 24, 0))
         center_freq = S60(153, 24, 0)
-        frequencies = np.linspace(150.0, 160.0, 60) # 60 pasos (Base-60)
+        # 60 pasos de S60(0, 10, 0) MHz starting from S60(148, 0, 0)
+        start_f = S60(148, 0, 0)
+        step_f = S60(0, 10, 0)
         
         peak_found = False
         
-        for freq in frequencies:
+        for i in range(60):
+            freq = start_f + (step_f * i)
             # 1. Modelo de Señal (Lorentziana S60)
-            detuning = freq - center_freq
-            linewidth = center_freq / float(Q_FACTOR_REAL)
+            detuning = abs(freq - center_freq)
+            linewidth = center_freq // Q_FACTOR_REAL._value
             
-            # Curva de resonancia de la cavidad
-            resonance_profile = S60(1, 0, 0) / (S60(1, 0, 0) + (2 * detuning / linewidth)**2)
+            # Curva de resonancia: 1 / (1 + (2*d/L)^2)
+            denom_part = (2 * detuning / linewidth)
+            resonance_profile = S60(1, 0, 0) / (S60(1, 0, 0) + (denom_part * denom_part))
             
-            # Potencia de Conversión Primakoff
-            b_val = float(B_EFFECTIVE)
-            # Factor de corrección mundano: 0.15 -> 9/60
-            correction = 9.0 / 60.0
+            # Potencia de Conversión
+            # Usamos unidades relativas S60
+            signal_power = (G_AGG_SCALED * B_EFFECTIVE) * resonance_profile * S60(10, 0, 0)
             
-            signal_power = (G_AGG * b_val)**2 * VOLUME_REAL * RHO_AXION * float(Q_FACTOR_REAL) * resonance_profile * 3e8
-            signal_power *= correction
-            
-            # Medir Ruido Real
-            current_noise = np.random.exponential(THERMAL_NOISE_FLOOR)
+            # Medir Ruido (Pseudo-entropía determinista)
+            current_noise = S60(0, 5, 0) + S60(i % 5, 0, 0) // 10
             
             # Potencia Total Leída
             total_reading = signal_power + current_noise
             
-            # SNR
-            snr_db = 10 * np.log10(total_reading / current_noise)
+            # SNR simplificado (ratio directo en S60)
+            snr_ratio = total_reading / current_noise
             
-            # Detección (Umbral S60: 3/60 = 0.05)
+            # Detección
             status = "NOISE"
-            threshold_db = 3.0 / 60.0 # 0.05
-            
-            if snr_db > threshold_db: 
+            if snr_ratio > S60(1, 12, 0): # SNR > 1.2
                 status = "ANOMALY"
-                if abs(freq - center_freq) < (6.0/60.0): # S60(0, 6, 0)
+                if detuning < S60(0, 20, 0):
                     status = "SIGNAL_LOCK"
                     peak_found = True
 
             # Logging
-            log_line = f"{datetime.now().isoformat()},{freq:.2f},{total_reading:.6e},{current_noise:.6e},{snr_db:.3f},{status}"
+            log_line = f"{datetime.now().isoformat()},{freq},{total_reading},{current_noise},{snr_ratio},{status}"
             with open(self.log_file, "a") as f:
                 f.write(log_line + "\n")
                 
             # Visual feedback
-            bar_len = int(snr_db * 60) if snr_db > 0 else 0
+            bar_len = min(60, (snr_ratio._value // (S60.SCALE_0 // 10)))
             bar = "█" * bar_len
-            print(f"   Freq: {freq:.2f} MHz | Pwr: {total_reading:.2e} W | SNR: {snr_db:+.3f} dB | [{status}] {bar}")
+            print(f"   Freq: {freq} MHz | SNR: {snr_ratio} | [{status}] {bar}")
             
             # Timestep Sagrado
-            time.sleep(S60(1, 0, 0)/60.0) 
+            time.sleep(0.01) 
 
         print("-" * 65)
         if peak_found:

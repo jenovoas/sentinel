@@ -6,17 +6,15 @@
 # SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
 # -------------------------------------------------------------------------------------
 
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
+from quantum.yatra_core import S60, PI_S60, DecimalContaminationError
+from quantum.yatra_math import S60Math
 import sys
 import os
 
-# Importar el Núcleo Matemático Soberano
-try:
-    from sovereign_math import S60, SovereignPhysics, PHYSICS_CONSTANTS
-except ImportError:
-    # Fallback
-    sys.path.append('.')
-    from quantum.sovereign_math import S60, SovereignPhysics
+# Asegurar que el directorio raíz esté en el path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Importar el Núcleo Matemático Soberano (ya importado arriba)
 
 class MHDPlasmaShield:
     """
@@ -55,58 +53,39 @@ class MHDPlasmaShield:
         return Cd_effective
 
     def calculate_drag_force(self, velocity, shield_on=False):
-        """
-        Calcula la resistencia aerodinámica purificada.
-        F = 1/2 * rho * v^2 * Cd * A
-        """
+        """Calcula la resistencia aerodinámica purificada S60."""
         Cd = self.calculate_drag_coefficient(shield_on)
-        # S60(0, 30, 0) = 30/60
+        # S60(0, 30, 0) = 0.5
         half = S60(0, 30, 0)
         
-        # Como velocity puede ser float en la simulación externa, hacemos cast cuidadoso
-        v_sq = velocity**2
-        
-        # F = S60(0, 30, 0) * rho * v^2 * Cd * A
-        # Operamos en float final para compatibilidad de fuerza
-        rho = float(self.air_density)
-        cd_val = float(Cd)
-        area = float(self.frontal_area)
-        
-        drag_force = float(half) * rho * v_sq * cd_val * area
+        # F = 0.5 * rho * v^2 * Cd * A
+        drag_force = half * self.air_density * (velocity * velocity) * Cd * self.frontal_area
         return drag_force
 
     def calculate_thermal_load(self, velocity, shield_on=False):
-        """
-        Calcula el calor generado por fricción (Punto de estancamiento).
-        Q = h * (T_recovery - T_surface)
-        """
+        """Calcula el calor generado por fricción S60."""
+        # Mach 1 = 343 m/s approx
+        mach = velocity / S60(343, 0, 0)
+        
         # T0 = Ta * (1 + 0.2 * Mach^2)
-        # Mach 1 = 343 m/s (aprox) -> S60(5, 43, 0)
-        mach = velocity / 343.0
-        
-        # 0.2 = 12/60
-        factor_mach = S60(0, 12, 0)
-        
-        t_stagnation = self.temp_ambient * (S60(1, 0, 0) + float(factor_mach) * mach**2)
+        factor_mach = S60(0, 12, 0) # 0.2
+        t_stagnation = S60(self.temp_ambient, 0, 0) * (S60(1, 0, 0) + factor_mach * (mach * mach))
         
         if shield_on:
-            # Aislante casi perfecto -> 3/60 (0.05)
-            shielding_factor = S60(0, 3, 0)
-            thermal_transfer_coeff = float(shielding_factor)
+            shielding_factor = S60(0, 3, 0) # 0.05
+            thermal_transfer_coeff = shielding_factor
         else:
             thermal_transfer_coeff = S60(1, 0, 0)
             
-        heat_load = thermal_transfer_coeff * (t_stagnation - self.temp_ambient)
+        heat_load = thermal_transfer_coeff * (t_stagnation - S60(self.temp_ambient, 0, 0))
         return t_stagnation, heat_load
 
     def run_validation_test(self):
         print("🛡️ VALIDACIÓN DE ESCUDO DE PLASMA (MHD) [S60 MODE]")
-        # Force float conversion for f-string to work with S60
-        print(f"   Campo Magnético: {float(self.magnetic_field):.1f} Tesla | Cd Base: {float(self.calculate_drag_coefficient(False)):.2f}")
+        print(f"   Campo Magnético: {self.magnetic_field} Tesla | Cd Base: {self.calculate_drag_coefficient(False)}")
         
         # Velocidad de prueba: Mach 5 (1715 m/s)
-        # S60 para Mach 5 -> 1715.0
-        v_test = 1715.0
+        v_test = S60(1715, 0, 0)
         
         drag_off = self.calculate_drag_force(v_test, shield_on=False)
         t_off, q_off = self.calculate_thermal_load(v_test, shield_on=False)
@@ -114,14 +93,14 @@ class MHDPlasmaShield:
         drag_on = self.calculate_drag_force(v_test, shield_on=True)
         t_on, q_on = self.calculate_thermal_load(v_test, shield_on=True)
         
-        reduction = (1 - drag_on/drag_off) * 100
+        reduction = (S60(1, 0, 0) - (drag_on / drag_off)) * 100
         
         print(f"\n🧪 ANÁLISIS A MACH 5 ({v_test} m/s):")
-        print(f"   [OFF] Resistencia: {drag_off:.2f} N  | Temp Estancamiento: {t_off-273:.1f} °C")
-        print(f"   [ON]  Resistencia: {drag_on:.2f} N   | Calor Percibido: {q_on:.1f} K (Equivalente)")
-        print(f"\n✅ EFICIENCIA DEL ESCUDO: {reduction:.1f}%")
+        print(f"   [OFF] Resistencia: {drag_off} N  | Temp Estancamiento: {t_off}")
+        print(f"   [ON]  Resistencia: {drag_on} N   | Calor Percibido: {q_on}")
+        print(f"\n✅ EFICIENCIA DEL ESCUDO: {reduction}%")
         
-        if reduction > 80:
+        if reduction._value > S60(80, 0, 0)._value:
             print("🚀 ESTADO: VALIDADO. Tecnología Soberana MHD lista para integración.")
 
 if __name__ == "__main__":
