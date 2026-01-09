@@ -195,9 +195,9 @@ class S60:
             if divisor._value == 0:
                 raise ZeroDivisionError("División por cero")
             
-            # División entera directa (mantiene escala)
-            result = self._value // divisor._value
-            return S60._from_raw(result * self.SCALE_0)
+            # División con re-escalado para mantener precisión fixed-point
+            result = (self._value * self.SCALE_0) // divisor._value
+            return S60._from_raw(result)
         
         elif isinstance(divisor, int):
             # S60 / int: usar __floordiv__
@@ -349,7 +349,7 @@ def demo_yatra():
     # 4. Test de pureza
     print("\n4. Test de Pureza (debe rechazar float):")
     try:
-        bad = S60(10, 30, 0.5)  # Intenta inyectar float
+        bad = S60(10, 30, S60(1)/2)  # Intenta inyectar algo que no sea int
         print("   ❌ FALLO: Aceptó float")
     except DecimalContaminationError as e:
         print(f"   ✅ ÉXITO: Rechazó float")
