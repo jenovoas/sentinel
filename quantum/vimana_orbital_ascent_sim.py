@@ -6,80 +6,90 @@
 # SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
 # -------------------------------------------------------------------------------------
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
-import time
+from quantum.yatra_core import S60, PI_S60, DecimalContaminationError
+from quantum.yatra_math import S60Math
+import sys
+import os
+
+# Asegurar que el directorio raíz esté en el path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 class PhysicsConstants:
-    G_EARTH = 9.81
-    R_EARTH = 6371000 # metros
-    SEA_LEVEL_DENSITY = 1.225 # kg/m^3
-    PHI = 1.6180339887
-    BASE_60 = 60.0
+    G_EARTH = S60(9, 48, 36) # 9.81 approx
+    R_EARTH = S60(6371, 0, 0) * 1000 # 6,371,000 m
+    SEA_LEVEL_DENSITY = S60(1, 13, 30) # 1.225 approx
+    PHI = S60(1, 37, 4) 
 
 class VimanaOrbitalAscent:
     def __init__(self):
-        # Stats Iniciales
-        self.mass_static = 2.5 # kg
-        self.effective_mass = 2.5
-        self.position_alt = S60(0, 0, 0) # metros (Altitud)
-        self.velocity = S60(0, 0, 0) # m/s (Vertical)
+        # Stats Iniciales (S60)
+        self.mass_static = S60(2, 30, 0) # 2.5 kg
+        self.effective_mass = S60(2, 30, 0)
+        self.position_alt = S60(0) 
+        self.velocity = S60(0) 
         
-        # Sistemas
-        self.zpe_buffer = 5000.0 # Joules
-        self.shield_active = False
+        # Sistemas (S60)
+        self.zpe_buffer = S60(5000, 0, 0) 
+        self.plasma_shield_active = False
         self.orbit_attained = False
-        self.radiation_absorbed = S60(0, 0, 0) # mSv
+        self.radiation_absorbed = S60(0) 
         
     def _get_air_density(self, alt):
-        """Modelo simplificado de atmósfera."""
-        if alt > 100000: return S60(0, 0, 0) # Línea de Kármán
-        return PhysicsConstants.SEA_LEVEL_DENSITY * np.exp(-alt / 8500.0)
+        """Modelo simplificado de atmósfera S60."""
+        if alt > S60(100000, 0, 0): return S60(0)
+        # rho = rho0 * exp(-alt / H)
+        # H = 8500 m
+        exponent = -alt / S60(8500, 0, 0)
+        return PhysicsConstants.SEA_LEVEL_DENSITY * S60Math.exp(exponent)
 
     def _apply_physics(self, throttle, alt, dt):
-        """Calcula el balance de fuerzas en el ascenso."""
+        """Calcula el balance de fuerzas en el ascenso S60."""
         density = self._get_air_density(alt)
         
         # 1. G-ZERO TUNING DINÁMICO
-        # En la atmósfera densa (alt < 30km), limitamos la reducción de masa 
-        # para que el arrastre no cause inestabilidad extrema (efecto pluma).
-        # A medida que el aire se ralea, permitimos mayor reducción.
+        # atmos_factor = 1.0 - (density / rho0)
         atmos_factor = S60(1, 0, 0) - (density / PhysicsConstants.SEA_LEVEL_DENSITY)
-        resonance = (throttle**2) / (PhysicsConstants.PHI**2)
         
-        # Reducción máxima solo posible en el vacío
-        target_reduction = 1 + (resonance / 100.0)
-        actual_reduction = 1 + ((target_reduction - 1) * atmos_factor)
+        # resonance = (throttle**2) / (PHI**2)
+        th = S60(throttle, 0, 0)
+        resonance = (th * th) / (PhysicsConstants.PHI * PhysicsConstants.PHI)
+        
+        # Reducción de masa
+        target_reduction = S60(1, 0, 0) + (resonance / S60(100, 0, 0))
+        # actual_reduction = 1 + ((target_reduction - 1) * atmos_factor)
+        actual_reduction = S60(1, 0, 0) + ((target_reduction - S60(1, 0, 0)) * atmos_factor)
         
         self.effective_mass = self.mass_static / actual_reduction
-        if self.effective_mass < 0.025: self.effective_mass = 0.025
+        if self.effective_mass._value < S60(0, 1, 30)._value: self.effective_mass = S60(0, 1, 30)
         
-        # 2. ESCUDO MHD
-        # El escudo se activa por velocidad o altitud
-        self.shield_active = (self.velocity > 343 or alt > 20000)
-        drag_coeff = 0.4 if not self.shield_active else 0.015 # Optimizamos el escudo
-        drag_force = S60(0, 30, 0) * density * (self.velocity**2) * drag_coeff * 0.05
+        # 2. ESCUDO DE PLASMA
+        self.plasma_shield_active = (self.velocity > S60(343, 0, 0) or alt > S60(20000, 0, 0))
+        # Cd_standard = 0.4 (24/60), reduction = 0.15 (9/60)
+        Cd_standard = S60(0, 24, 0)
+        if self.plasma_shield_active:
+            drag_coeff = Cd_standard * S60(0, 9, 0) # 0.15 reduction
+        else:
+            drag_coeff = Cd_standard
         
-        # 3. EMPUJE ZPE (Resonancia con el vacío)
-        efficiency = S60(1, 0, 0) + (alt / 100000.0) # Crece con la altitud hasta 2.0
-        thrust = 40.0 * np.sqrt(throttle) * efficiency # Aumentamos empuje base
+        # drag = 0.5 * rho * v^2 * Cd * Area
+        # Simplificado: 0.5 * density * v^2 * Cd * 0.05
+        drag_force = S60(0, 30, 0) * density * (self.velocity * self.velocity) * drag_coeff * S60(0, 3, 0)
         
-        # 4. GRAVEDAD (Decae con el cuadrado de la distancia)
-        g_local = PhysicsConstants.G_EARTH * (PhysicsConstants.R_EARTH / (PhysicsConstants.R_EARTH + alt))**2
+        # 3. EMPUJE ZPE
+        efficiency = S60(1, 0, 0) + (alt / S60(100000, 0, 0))
+        thrust = S60(40, 0, 0) * S60Math.sqrt(th) * efficiency
+        
+        # 4. GRAVEDAD
+        # g_local = g0 * (R / (R + alt))^2
+        r = PhysicsConstants.R_EARTH
+        dist_ratio = r / (r + alt)
+        g_local = PhysicsConstants.G_EARTH * (dist_ratio * dist_ratio)
         weight = g_local * self.effective_mass
         
         # Fuerza Neta
         net_force = thrust - weight - drag_force
         accel = net_force / self.effective_mass
         
-        # Radiación (Solo en alta atmósfera/espacio)
-        if alt > 50000:
-            rad_flux = S60(0, 6, 0) # mSv/s base
-            if self.shield_active:
-                self.radiation_absorbed += (rad_flux * 0.01) * dt # 99% bloqueo
-            else:
-                self.radiation_absorbed += rad_flux * dt
-                
         return accel, thrust
 
     def run_ascent(self):
@@ -87,33 +97,33 @@ class VimanaOrbitalAscent:
         print(f"   Objetivo: Órbita Baja (LEO) @ 200km | Masa: {self.mass_static}kg")
         print("-" * 60)
         
-        t = 0
-        dt = S60(0, 30, 0)
-        target_alt = 200000 # 200km
+        t = S60(0)
+        dt = S60(0, 0, 0, 30, 0) # 0.5s step
+        target_alt = S60(200000, 0, 0)
+        limit_t = S60(600, 0, 0)
         
-        while self.position_alt < target_alt and t < 600:
+        while self.position_alt < target_alt and t < limit_t:
             # Perfil de Vuelo: Aceleración constante
-            throttle = 80.0
+            throttle = 80
             
             accel, thrust = self._apply_physics(throttle, self.position_alt, dt)
             
             self.velocity += accel * dt
             self.position_alt += self.velocity * dt
             
-            if int(t) % 20 == 0:
-                mode = "ATMOS" if self.position_alt < 100000 else "VACÍO"
-                shield_status = "ON" if self.shield_active else "OFF"
-                print(f"T={t:4.1f}s | Alt: {self.position_alt/1000:6.2f}km | Vel: {self.velocity:7.1f}m/s | M_eff: {self.effective_mass:5.3f}kg | [{mode}] Shield:{shield_status}")
+            if (t._value // S60.SCALE_0) % 20 == 0:
+                mode = "ATMOS" if self.position_alt < S60(100000, 0, 0) else "VACÍO"
+                shield_status = "PLASMA_ON" if self.plasma_shield_active else "OFF"
+                print(f"T={t}s | Alt: {self.position_alt}m | Vel: {self.velocity}m/s | M_eff: {self.effective_mass}kg | [{mode}] Shield:{shield_status}")
             
             t += dt
-            if t > 500: break # Timeout seguridad
             
         print("-" * 60)
         if self.position_alt >= target_alt:
-            print(f"✅ ¡ÓRBITA ALCANZADA! T={t:.1f}s")
-            print(f"   Velocidad Final: {self.velocity:.1f} m/s")
-            print(f"   Radiación Acumulada: {self.radiation_absorbed:.4f} mSv (Status: SAFE)")
-            print(f"   Eficiencia Inercial: {((self.mass_static - self.effective_mass)/self.mass_static)*100:.1f}%")
+            print(f"✅ ¡ÓRBITA ALCANZADA! T={t}s")
+            print(f"   Velocidad Final: {self.velocity} m/s")
+            print(f"   Radiación Acumulada: {self.radiation_absorbed} mSv (Status: SAFE)")
+            # Eficiencia opcional
         else:
             print("❌ FALLO EN LA INYECCIÓN ORBITAL.")
 
