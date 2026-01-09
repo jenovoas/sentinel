@@ -101,3 +101,7 @@ target/
 *.o
 attacher
 ebpf/benchmark_exec
+
+# Temporary/Backup refactor files
+*.backup*
+*.yatra_backup
