@@ -31,22 +31,35 @@ from typing import List
 class YatraGuard:
     PROTECTED_FILES = [
         "quantum/yatra_core.py",
-        "quantum/vimana_yatra_driver.py",
-        "quantum/celestial_navigation.py",
-        "quantum/time_crystal_clock.py"
+        "quantum/yatra_math.py",
+        "quantum/core_simulator.py",
+        "quantum/sentinel_quantum_core.py",
+        "quantum/hexagonal_control.py",
+        "quantum/vimana_drone_sim.py",
+        "quantum/vimana_orbital_ascent_sim.py",
+        "quantum/vimana_mission_sim.py",
+        "quantum/vimana_shield_validation.py",
+        "quantum/zpe_simulation.py",
+        "quantum/zpe_phase1_lab.py",
+        "quantum/observer_effect_study.py"
     ]
     
     BACKUP_DIR = "quantum/.yatra_backup"
 
-    def __init__(self, root_dir="/home/jnovoas/sentinel"):
-        self.root_dir = root_dir
-        self.backup_path = os.path.join(root_dir, self.BACKUP_DIR)
+    def __init__(self, root_dir=None):
+        if root_dir is None:
+            # Detect root dir from current file path
+            self.root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        else:
+            self.root_dir = root_dir
+            
+        self.backup_path = os.path.join(self.root_dir, self.BACKUP_DIR)
         
         # Crear directorio de snapshots seguros
         if not os.path.exists(self.backup_path):
             os.makedirs(self.backup_path)
             
-        print("🛡️ YATRA-GUARD ACTIVADO. Vigilando la pureza geométrica.")
+        print(f"🛡️ YATRA-GUARD ACTIVADO en {self.root_dir}. Vigilando el Canon Soberano.")
 
     def _get_file_hash(self, filepath):
         if not os.path.exists(filepath): return None
@@ -66,40 +79,37 @@ class YatraGuard:
                 # print(f"   📸 Snapshot seguro guardado: {rel_path}")
 
     def check_purity(self, filepath, silent=False) -> bool:
-        """Escanea un archivo en busca de literales float prohibidos."""
+        """Escanea un archivo en busca de literales float prohibidos y librerías sucias."""
         try:
             with open(filepath, 'r', encoding='utf-8') as f:
-                tree = ast.parse(f.read())
+                content = f.read()
+                tree = ast.parse(content)
                 
             for node in ast.walk(tree):
                 # 1. Detección de Float (Fricción)
                 if isinstance(node, ast.Constant) and isinstance(node.value, float):
+                    # Permitir 0.0 y 1.0 solo si es absolutamente necesario (idealmente usar S60(0/1))
                     if node.value in [0.0, 1.0]: continue
                     if not silent:
-                        print(f"   🚨 ALERTA DE CONTAMINACIÓN: {filepath}")
+                        print(f"   🚨 CONTAMINACIÓN: {filepath}")
                         print(f"      Línea {node.lineno}: DECIMAL detectado '{node.value}'")
                     return False
                 
-                # 2. Detección de Random (Caos Artificial)
+                # 2. Detección de Librerías Sucias (NumPy, SciPy, Random, Matplotlib)
+                dirty_libs = ['numpy', 'scipy', 'matplotlib', 'random']
                 if isinstance(node, ast.Import):
                     for alias in node.names:
-                        if 'random' in alias.name:
+                        if any(lib in alias.name for lib in dirty_libs):
                             if not silent:
-                                print(f"   🚨 ALERTA DE CAOS: {filepath}")
-                                print(f"      Línea {node.lineno}: Importación de 'random' prohibida.")
+                                print(f"   🚨 CONTAMINACIÓN: {filepath}")
+                                print(f"      Línea {node.lineno}: Importación de '{alias.name}' prohibida.")
                             return False
                 if isinstance(node, ast.ImportFrom):
-                    if 'random' in (node.module or ''):
+                    if any(lib in (node.module or '') for lib in dirty_libs):
                         if not silent:
-                            print(f"   🚨 ALERTA DE CAOS: {filepath}")
-                            print(f"      Línea {node.lineno}: Importación desde 'random' prohibida.")
+                            print(f"   🚨 CONTAMINACIÓN: {filepath}")
+                            print(f"      Línea {node.lineno}: Importación desde '{node.module}' prohibida.")
                         return False
-                if isinstance(node, ast.Attribute):
-                    if isinstance(node.value, ast.Name) and node.value.id == 'np' and node.attr == 'random':
-                         if not silent:
-                            print(f"   🚨 ALERTA DE CAOS: {filepath}")
-                            print(f"      Línea {node.lineno}: Uso de 'np.random' prohibido.")
-                         return False
 
             return True
         except Exception as e:
@@ -111,7 +121,7 @@ class YatraGuard:
         Ronda de vigilancia. Verifica si los archivos protegidos han sido violados.
         Si están sucios, RESTAURA la copia de seguridad pura.
         """
-        print("\n👮 INICIANDO PATRULLA YATRA...")
+        print("\n👮 EJECUTANDO PATRULLA SOBERANA...")
         violations = 0
         
         for rel_path in self.PROTECTED_FILES:
@@ -119,26 +129,24 @@ class YatraGuard:
             backup_file = os.path.join(self.backup_path, os.path.basename(rel_path))
             
             if not os.path.exists(full_path):
-                print(f"   ⚠️ Archivo desaparecido: {rel_path}")
                 continue
                 
             is_pure = self.check_purity(full_path)
             
             if not is_pure:
-                print(f"   🛑 ¡VIOLACIÓN DETECTADA EN {rel_path}!")
+                print(f"   🛑 VIOLACIÓN EN {rel_path}!")
                 violations += 1
                 
                 if os.path.exists(backup_file):
-                    print(f"   ♻️  RESTAURANDO ESTADO PURO DESDE SNAPSHOT...")
+                    print(f"   ♻️  RESTAURANDO ESTADO PURO...")
                     shutil.copy2(backup_file, full_path)
-                    print(f"   ✅ Restauración completada. La disonancia ha sido eliminada.")
                 else:
-                    print(f"   ❌ NO HAY BACKUP PURO DISPONIBLE. ¡ARCHIVO COMPROMETIDO!")
+                    print(f"   ❌ SIN RESPALDO PURO. ¡SISTEMA EXPUESTO!")
             else:
-                print(f"   ✅ {rel_path}: PURO")
+                pass # Puro
                 
         if violations == 0:
-            print("🏆 PATRULLA FINALIZADA: Sector Seguro.")
+            print("🏆 SECTOR SEGURO: 100% SOBERANÍA DETECTADA.")
         else:
             print(f"⚠️ PATRULLA FINALIZADA: {violations} Incursiones repelidas.")
 
