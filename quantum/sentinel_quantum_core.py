@@ -144,28 +144,23 @@ class SentinelQuantumCore:
             idx += indices[i] * (self.N_levels ** i)
         return idx
     
-    def evolve_unitary(self, psi0: List[S60], steps: int, dt: S60) -> List[List[S60]]:
+    def evolve_unitary(self, psi0: List[S60], steps: int, dt: S60, H_custom: Optional[List[List[S60]]] = None) -> List[List[S60]]:
         """
         Unitary time evolution (Discrete S60 approximation).
         |ψ(t+dt)⟩ ≈ (I - iH dt) |ψ(t)⟩
-        Nota: Para pureza S60, tratamos psi como amplitudes reales (aproximación fase).
         """
-        H = self.hamiltonian()
+        H = H_custom if H_custom is not None else self.hamiltonian()
         states = [psi0]
         psi = list(psi0)
         
-        for _ in range(1, steps):
+        for _ in range(1, steps + 1):
             new_psi = [S60(0) for _ in range(self.dim)]
             for r in range(self.dim):
-                # ψ_new[r] = ψ[r] - dt * Σ_c H[r][c] * ψ[c]
-                # (Simulamos la rotación unitaria mediante evolución conservativa)
                 interaction = S60(0)
                 for c in range(self.dim):
                     if H[r][c]._value != 0:
                         term = (H[r][c] * psi[c]) * dt
                         interaction += term
-                
-                # En un sistema real puro S60/Hardware, esto sería una rotación de base
                 new_psi[r] = psi[r] - interaction
             
             psi = new_psi
@@ -303,18 +298,54 @@ class SentinelQAOA:
     
     def qaoa_circuit(self, params: List[S60]) -> List[S60]:
         """
-        QAOA circuit simplified for S60.
+        QAOA circuit implementation for S60.
         """
-        # Start state
-        psi = [S60(1) for _ in range(self.core.dim)]
+        gamma, beta = params[0], params[1]
+        H_c = self.cost_hamiltonian()
+        H_m = self.mixer_hamiltonian()
+        
+        # Start state: superposition
+        norm_factor = S60Math.sqrt(S60(self.core.dim))
+        psi = [S60(1) / norm_factor for _ in range(self.core.dim)]
+        
+        # Evolve Cost
+        states_c = self.core.evolve_unitary(psi, steps=1, dt=gamma, H_custom=H_c)
+        psi = states_c[-1]
+        
+        # Evolve Mixer
+        states_m = self.core.evolve_unitary(psi, steps=1, dt=beta, H_custom=H_m)
+        psi = states_m[-1]
+        
         return psi
     
     def optimize(self, steps: int = 10) -> dict:
         """
-        Optimize QAOA parameters using S60 search.
+        Optimize QAOA parameters using S60 deterministic search.
         """
+        gamma, beta = S60(0, 10, 0), S60(0, 10, 0)
+        best_cost = S60(1000)
+        best_params = [gamma, beta]
+        
+        learning_rate = S60(0, 2, 0) # Fixed step
+        H_c = self.cost_hamiltonian()
+        
+        for _ in range(steps):
+            psi = self.qaoa_circuit([gamma, beta])
+            # Expectation value <psi|H_c|psi>
+            current_cost = S60(0)
+            for i in range(self.core.dim):
+                current_cost += (psi[i] * psi[i]) * H_c[i][i]
+            
+            if current_cost < best_cost:
+                best_cost = current_cost
+                best_params = [gamma, beta]
+                
+            gamma += learning_rate
+            beta += learning_rate
+            
         return {
-            'optimal_params': [S60(0)],
+            'optimal_params': best_params,
+            'min_cost': best_cost,
             'success': True
         }
 

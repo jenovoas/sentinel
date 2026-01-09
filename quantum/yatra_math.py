@@ -143,6 +143,29 @@ class S60Math:
         """
         return S60Math.sin(angle_s60, precision_terms), S60Math.cos(angle_s60, precision_terms)
 
+    @staticmethod
+    def tensor_product(A, B):
+        """
+        Calcula el producto de Kronecker de dos matrices o vectores representados como listas.
+        """
+        # Caso 2D: List[List[S60]]
+        if isinstance(A, list) and len(A) > 0 and isinstance(A[0], list):
+            m, n = len(A), len(A[0])
+            p, q = len(B), len(B[0])
+            
+            res = [[(A[i][j] * B[k][l]) for j in range(n) for l in range(q)] 
+                   for i in range(m) for k in range(p)]
+            return res
+        
+        # Caso 1D: List[S60]
+        elif isinstance(A, list):
+            m = len(A)
+            p = len(B)
+            res = [(A[i] * B[k]) for i in range(m) for k in range(p)]
+            return res
+        
+        return None
+
 
 # Alias de utilidad para el sistema
 def s60_abs(x): return abs(x)
