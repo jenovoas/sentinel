@@ -52,8 +52,8 @@ def run_orbit_stress_test():
         
         # Convertimos a escalar para comparar magnitud (solo para lógica de control)
         # Esto es seguro porque usamos enteros internos, no floats.
-        curr_mags = current_pos.components
-        targ_mags = target.components
+        curr_mags = current_pos._value
+        targ_mags = target._value
         
         # Heurística simple: Si el target es menor que el origen, sumamos 360 al target
         if targ_mags[0] < curr_mags[0]:
@@ -71,7 +71,7 @@ def run_orbit_stress_test():
         current_pos = current_pos + delta
         
         # Normalizar si nos pasamos de 360 (El universo es un círculo)
-        if current_pos.components[0] >= 360:
+        if current_pos._value // S60.SCALE_0 >= 360:
             current_pos = current_pos - S60(360, 0, 0, 0)
             
         print(f"   📍 LLEGADA: {current_pos}")
