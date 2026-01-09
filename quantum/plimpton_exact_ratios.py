@@ -48,7 +48,7 @@ def get_exact_resonance(frequency_mhz):
     target = S60(153, 24, 0)
     
     # Simple check de igualdad por componentes
-    if frequency_mhz.components == target.components:
+    if frequency_mhz == target:
         return AXION_RESONANCE_RATIO
         
     # Si no coincide exactamente, retornamos None para causar fallo (Fallo > Mentira)

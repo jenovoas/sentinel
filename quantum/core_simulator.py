@@ -17,14 +17,13 @@ Project: Sentinel Cortex™
 License: MIT (pre-patent filing)
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
+from quantum.yatra_core import S60, PI_S60, DecimalContaminationError
+from quantum.yatra_math import S60Math
 from typing import List, Tuple, Optional, Callable
 from dataclasses import dataclass
 from enum import Enum
-import matplotlib.pyplot as plt
-from scipy.linalg import expm
-from scipy.integrate import odeint
+import os
+import sys
 
 
 class QubitState:
@@ -37,210 +36,71 @@ class QubitState:
     - Multi-qubit systems (tensor products)
     """
     
-    def __init__(self, state_vector: Optional[np.ndarray] = None, 
-                 density_matrix: Optional[np.ndarray] = None,
+    def __init__(self, state_vector: Optional[List[S60]] = None, 
+                 density_matrix: Optional[List[List[S60]]] = None,
                  n_qubits: int = 1):
         """
-        Initialize quantum state.
-        
-        Args:
-            state_vector: Complex vector representing pure state |ψ⟩
-            density_matrix: Density matrix ρ for mixed states
-            n_qubits: Number of qubits (if creating from scratch)
+        Initialize quantum state (S60).
         """
         if state_vector is not None:
-            self.state_vector = state_vector / np.linalg.norm(state_vector)  # Normalize
-            self.density_matrix = np.outer(self.state_vector, self.state_vector.conj())
-            self.n_qubits = int(np.log2(len(state_vector)))
+            self.state_vector = list(state_vector)
+            self.density_matrix = [[(S60(0)) for _ in range(len(state_vector))] for _ in range(len(state_vector))]
+            # n_qubits simple (para qubits binarios)
+            import math # Solo para cálculo de arquitectura, no en runtime core si es posible
+            self.n_qubits = int(math.log2(len(state_vector)))
             self.is_pure = True
         elif density_matrix is not None:
             self.density_matrix = density_matrix
             self.state_vector = None
-            self.n_qubits = int(np.log2(density_matrix.shape[0]))
-            self.is_pure = np.allclose(density_matrix @ density_matrix, density_matrix)
+            import math
+            self.n_qubits = int(math.log2(len(density_matrix)))
+            self.is_pure = False # Default simplify
         else:
             # Initialize to |0⟩^⊗n
             self.n_qubits = n_qubits
             dim = 2 ** n_qubits
-            self.state_vector = np.zeros(dim, dtype=complex)
+            self.state_vector = [S60(0) for _ in range(dim)]
             self.state_vector[0] = S60(1, 0, 0)  # |00...0⟩
-            self.density_matrix = np.outer(self.state_vector, self.state_vector.conj())
+            self.density_matrix = [[S60(0) for _ in range(dim)] for _ in range(dim)]
+            self.density_matrix[0][0] = S60(1, 0, 0)
             self.is_pure = True
     
-    def apply_gate(self, gate: np.ndarray, target_qubits: Optional[List[int]] = None):
+    def apply_gate(self, gate: List[List[S60]], target_qubits: Optional[List[int]] = None):
         """
-        Apply quantum gate to state.
-        
-        Args:
-            gate: Unitary matrix representing quantum gate
-            target_qubits: Which qubits to apply gate to (None = all)
+        Apply quantum gate to state (Discrete S60).
         """
         if target_qubits is None:
-            # Apply to entire state
             if self.is_pure:
-                self.state_vector = gate @ self.state_vector
-                self.density_matrix = np.outer(self.state_vector, self.state_vector.conj())
+                # Simplified multiplication for S60 lists
+                new_vec = [S60(0) for _ in range(len(self.state_vector))]
+                for r in range(len(gate)):
+                    for c in range(len(gate[0])):
+                        new_vec[r] += gate[r][c] * self.state_vector[c]
+                self.state_vector = new_vec
             else:
-                self.density_matrix = gate @ self.density_matrix @ gate.conj().T
+                raise DecimalContaminationError("Mixed state gate application needs refactor.")
         else:
-            # Apply to specific qubits (tensor product)
-            full_gate = self._expand_gate(gate, target_qubits)
-            self.apply_gate(full_gate)
+            raise DecimalContaminationError("Multi-qubit gate expansion needs S60 tensor product.")
     
-    def _expand_gate(self, gate: np.ndarray, target_qubits: List[int]) -> np.ndarray:
-        """Expand gate to full Hilbert space using tensor products."""
-        n_gate_qubits = int(np.log2(gate.shape[0]))
-        
-        if len(target_qubits) != n_gate_qubits:
-            raise ValueError(f"Gate acts on {n_gate_qubits} qubits, but {len(target_qubits)} targets specified")
-        
-        # Build full gate via tensor products
-        full_gate = np.eye(1, dtype=complex)
-        gate_idx = 0
-        
-        for i in range(self.n_qubits):
-            if i in target_qubits:
-                # Extract appropriate part of gate
-                if n_gate_qubits == 1:
-                    full_gate = np.kron(full_gate, gate)
-                else:
-                    # Multi-qubit gate (e.g., CNOT)
-                    full_gate = np.kron(full_gate, gate)
-                    break  # Assume contiguous qubits for now
-                gate_idx += 1
-            else:
-                # Identity on this qubit
-                full_gate = np.kron(full_gate, np.eye(2))
-        
-        return full_gate
-    
-    def measure(self, qubit_idx: int) -> Tuple[int, 'QubitState']:
+    def _expand_gate(self, gate: List[List[S60]], target_qubits: List[int]):
         """
-        Measure qubit in computational basis, collapsing state.
-        
-        Args:
-            qubit_idx: Which qubit to measure
-            
-        Returns:
-            (outcome, collapsed_state): 0 or 1, and post-measurement state
+        [DISABLED] Multi-qubit gate expansion.
+        Requires S60 tensor product implementation.
         """
-        # Projection operators
-        P0 = self._projection_operator(qubit_idx, 0)
-        P1 = self._projection_operator(qubit_idx, 1)
-        
-        # Probabilities
-        if self.is_pure:
-            p0 = np.abs(self.state_vector.conj() @ P0 @ self.state_vector)
-            p1 = np.abs(self.state_vector.conj() @ P1 @ self.state_vector)
-        else:
-            p0 = np.real(np.trace(P0 @ self.density_matrix))
-            p1 = np.real(np.trace(P1 @ self.density_matrix))
-        
-        # Sample outcome
-        outcome = np.random.choice([0, 1], p=[p0, p1])
-        
-        # Collapse state
-        P = P0 if outcome == 0 else P1
-        p = p0 if outcome == 0 else p1
-        
-        if self.is_pure:
-            collapsed_vector = P @ self.state_vector / np.sqrt(p)
-            collapsed_state = QubitState(state_vector=collapsed_vector)
-        else:
-            collapsed_density = P @ self.density_matrix @ P / p
-            collapsed_state = QubitState(density_matrix=collapsed_density)
-        
-        return outcome, collapsed_state
+        raise DecimalContaminationError("Tensor products (kron) require S60 refactor.")
     
-    def _projection_operator(self, qubit_idx: int, outcome: int) -> np.ndarray:
-        """Build projection operator for measuring qubit_idx."""
-        # Single-qubit projector
-        if outcome == 0:
-            proj_single = np.array([[1, 0], [0, 0]], dtype=complex)
-        else:
-            proj_single = np.array([[0, 0], [0, 1]], dtype=complex)
-        
-        # Expand to full space
-        proj_full = np.eye(1, dtype=complex)
-        for i in range(self.n_qubits):
-            if i == qubit_idx:
-                proj_full = np.kron(proj_full, proj_single)
-            else:
-                proj_full = np.kron(proj_full, np.eye(2))
-        
-        return proj_full
-    
-    def get_bloch_vector(self, qubit_idx: int = 0) -> np.ndarray:
+    def measure(self, qubit_idx: int) -> int:
         """
-        Get Bloch sphere coordinates for single qubit.
-        
-        Returns:
-            [x, y, z] coordinates on Bloch sphere
+        [DISABLED] Measure qubit.
+        Requires S60 projection implementation.
         """
-        if self.n_qubits > 1:
-            # Trace out other qubits
-            rho = self._partial_trace(qubit_idx)
-        else:
-            rho = self.density_matrix
-        
-        # Pauli matrices
-        sigma_x = np.array([[0, 1], [1, 0]], dtype=complex)
-        sigma_y = np.array([[0, -1j], [1j, 0]], dtype=complex)
-        sigma_z = np.array([[1, 0], [0, -1]], dtype=complex)
-        
-        x = np.real(np.trace(rho @ sigma_x))
-        y = np.real(np.trace(rho @ sigma_y))
-        z = np.real(np.trace(rho @ sigma_z))
-        
-        return np.array([x, y, z])
+        raise DecimalContaminationError("Measurement requires legacy decimal math.")
     
-    def _partial_trace(self, keep_qubit: int) -> np.ndarray:
-        """Trace out all qubits except keep_qubit."""
-        # Simplified for single qubit extraction
-        dim = 2 ** self.n_qubits
-        rho_reduced = np.zeros((2, 2), dtype=complex)
-        
-        for i in range(dim):
-            for j in range(dim):
-                # Check if qubits match on keep_qubit
-                i_bit = (i >> keep_qubit) & 1
-                j_bit = (j >> keep_qubit) & 1
-                
-                # Sum over other qubits
-                if self._other_qubits_match(i, j, keep_qubit):
-                    rho_reduced[i_bit, j_bit] += self.density_matrix[i, j]
-        
-        return rho_reduced
-    
-    def _other_qubits_match(self, i: int, j: int, exclude_qubit: int) -> bool:
-        """Check if all qubits except exclude_qubit match between i and j."""
-        for q in range(self.n_qubits):
-            if q != exclude_qubit:
-                if ((i >> q) & 1) != ((j >> q) & 1):
-                    return False
-        return True
-    
-    def fidelity(self, other: 'QubitState') -> float:
+    def fidelity(self, other: 'QubitState') -> S60:
         """
-        Calculate fidelity between this state and another.
-        
-        F(ρ, σ) = Tr(√(√ρ σ √ρ))²
+        [DISABLED] Fidelity.
         """
-        rho = self.density_matrix
-        sigma = other.density_matrix
-        
-        sqrt_rho = self._matrix_sqrt(rho)
-        product = sqrt_rho @ sigma @ sqrt_rho
-        sqrt_product = self._matrix_sqrt(product)
-        
-        fidelity = np.real(np.trace(sqrt_product)) ** 2
-        return fidelity
-    
-    def _matrix_sqrt(self, matrix: np.ndarray) -> np.ndarray:
-        """Compute matrix square root via eigendecomposition."""
-        eigvals, eigvecs = np.linalg.eigh(matrix)
-        sqrt_eigvals = np.sqrt(np.maximum(eigvals, 0))  # Avoid numerical issues
-        return eigvecs @ np.diag(sqrt_eigvals) @ eigvecs.conj().T
+        raise DecimalContaminationError("Fidelity requires linalg.")
     
     def __repr__(self) -> str:
         if self.is_pure:
@@ -250,63 +110,12 @@ class QubitState:
 
 
 class QuantumGates:
-    """Standard quantum gates."""
+    """Standard quantum gates (S60)."""
     
-    # Single-qubit gates
-    I = np.eye(2, dtype=complex)
-    X = np.array([[0, 1], [1, 0]], dtype=complex)  # Pauli-X (NOT)
-    Y = np.array([[0, -1j], [1j, 0]], dtype=complex)  # Pauli-Y
-    Z = np.array([[1, 0], [0, -1]], dtype=complex)  # Pauli-Z
-    H = np.array([[1, 1], [1, -1]], dtype=complex) / np.sqrt(2)  # Hadamard
-    S = np.array([[1, 0], [0, 1j]], dtype=complex)  # Phase gate
-    T = np.array([[1, 0], [0, np.exp(1j * PI_S60 / 4)]], dtype=complex)  # π/8 gate
-    
-    # Two-qubit gates
-    CNOT = np.array([
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 0, 1],
-        [0, 0, 1, 0]
-    ], dtype=complex)
-    
-    SWAP = np.array([
-        [1, 0, 0, 0],
-        [0, 0, 1, 0],
-        [0, 1, 0, 0],
-        [0, 0, 0, 1]
-    ], dtype=complex)
-    
-    @staticmethod
-    def RX(theta: float) -> np.ndarray:
-        """Rotation around X-axis."""
-        return np.array([
-            [np.cos(theta/2), -1j*np.sin(theta/2)],
-            [-1j*np.sin(theta/2), np.cos(theta/2)]
-        ], dtype=complex)
-    
-    @staticmethod
-    def RY(theta: float) -> np.ndarray:
-        """Rotation around Y-axis."""
-        return np.array([
-            [np.cos(theta/2), -np.sin(theta/2)],
-            [np.sin(theta/2), np.cos(theta/2)]
-        ], dtype=complex)
-    
-    @staticmethod
-    def RZ(theta: float) -> np.ndarray:
-        """Rotation around Z-axis."""
-        return np.array([
-            [np.exp(-1j*theta/2), 0],
-            [0, np.exp(1j*theta/2)]
-        ], dtype=complex)
-    
-    @staticmethod
-    def Phase(phi: float) -> np.ndarray:
-        """General phase gate."""
-        return np.array([
-            [1, 0],
-            [0, np.exp(1j*phi)]
-        ], dtype=complex)
+    # Simple gates
+    I = [[S60(1, 0, 0), S60(0)], [S60(0), S60(1, 0, 0)]]
+    X = [[S60(0), S60(1, 0, 0)], [S60(1, 0, 0), S60(0)]]
+    H = [[S60(0, 42, 25), S60(0, 42, 25)], [S60(0, 42, 25), S60(0, 17, 34)._from_raw(-S60(0, 42, 25)._value)]] # 1/sqrt(2) approx
 
 
 class QuantumCircuit:
@@ -380,14 +189,11 @@ class QuantumCircuit:
             outcomes.append(self.measure(i))
         return outcomes
     
-    def get_statevector(self) -> np.ndarray:
-        """Get current state vector (if pure)."""
-        if self.state.is_pure:
-            return self.state.state_vector
-        else:
-            raise ValueError("State is mixed, no unique state vector")
+    def get_statevector(self) -> List[S60]:
+        """Get current state vector."""
+        return self.state.state_vector
     
-    def get_density_matrix(self) -> np.ndarray:
+    def get_density_matrix(self) -> List[List[S60]]:
         """Get current density matrix."""
         return self.state.density_matrix
     
