@@ -159,6 +159,12 @@ class S60Math:
         # Esto evita problemas de convergencia con series alternantes para x < -1
         if x < 0:
             return S60(1) / S60Math.exp(-x_s60, precision_terms)
+
+        # Range Reduction: Si x > 3, e^x = (e^(x/2))^2
+        # Reduce recursivamente hasta que x sea pequeño para convergencia rápida
+        if x > (3 * S60.SCALE_0):
+            half_exp = S60Math.exp(x_s60 / S60(2), precision_terms)
+            return half_exp * half_exp
             
         res = S60.SCALE_0
         term = S60.SCALE_0
@@ -266,6 +272,10 @@ class S60Math:
         elif isinstance(A, list):
             m = len(A)
             p = len(B)
+            # Validación de tipos estricta para evitar contaminación
+            if m > 0 and not isinstance(A[0], S60): raise TypeError("Tensor A must contain S60")
+            if p > 0 and not isinstance(B[0], S60): raise TypeError("Tensor B must contain S60")
+            
             res = [(A[i] * B[k]) for i in range(m) for k in range(p)]
             return res
         
