@@ -41,7 +41,11 @@ class YatraGuard:
         "quantum/vimana_shield_validation.py",
         "quantum/zpe_simulation.py",
         "quantum/zpe_phase1_lab.py",
-        "quantum/observer_effect_study.py"
+        "quantum/observer_effect_study.py",
+        "quantum/verify_meijer_scale.py",
+        "quantum/quantum_scanner.py",
+        "quantum/time_crystal_analysis.py",
+        "quantum/quantum_lattice.py"
     ]
     
     BACKUP_DIR = "quantum/.yatra_backup"
