@@ -57,17 +57,20 @@ class S60Math:
         """
         Calcula sin(x) mediante Serie de Taylor: x - x^3/3! + x^5/5! - ...
         No usa tablas. Deriva el valor puramente de la potencia y el factorial.
+        
+        Optimizado con early termination cuando term < epsilon.
         """
         norm_angle, s_sin, _ = S60Math._normalize_to_pi_half(angle_s60)
         
         # Convertir a "radianes internos" (escalados por SCALE_0)
-        # x = deg * (PI/180)
-        # En fixed point: (deg_raw * factor_raw) // SCALE_0
         x = (norm_angle._value * S60Math.DEG_TO_RAD_FACTOR._value) // S60.SCALE_0
         
         res = x
         term = x
-        x_sq = (x * x) // S60.SCALE_0
+        x_sq = (x * x) // S60.SCALE_0  # Cachear x^2
+        
+        # Epsilon para early termination (1/1000 de la escala)
+        epsilon = S60.SCALE_0 // 1000
         
         for i in range(1, precision_terms):
             # Próximo término: term * (-x^2) / ((2i)*(2i+1))
@@ -75,15 +78,25 @@ class S60Math:
             denom = n * (n + 1)
             term = -(term * x_sq) // (S60.SCALE_0 * denom)
             
-            if term == 0: break
+            # Early termination si el término es despreciable
+            if abs(term) < epsilon:
+                break
+            
             res += term
             
         return S60._from_raw(res * s_sin)
+    
+    @staticmethod
+    def sin_fast(angle_s60):
+        """Versión rápida de sin() con solo 5 términos (error ~0.1%)."""
+        return S60Math.sin(angle_s60, precision_terms=5)
 
     @staticmethod
     def cos(angle_s60, precision_terms=10):
         """
         Calcula cos(x) mediante Serie de Taylor: 1 - x^2/2! + x^4/4! - ...
+        
+        Optimizado con early termination y cacheo.
         """
         norm_angle, _, s_cos = S60Math._normalize_to_pi_half(angle_s60)
         
@@ -91,7 +104,9 @@ class S60Math:
         
         res = S60.SCALE_0
         term = S60.SCALE_0
-        x_sq = (x * x) // S60.SCALE_0
+        x_sq = (x * x) // S60.SCALE_0  # Cachear x^2
+        
+        epsilon = S60.SCALE_0 // 1000
         
         for i in range(1, precision_terms):
             # Próximo término: term * (-x^2) / ((2i-1)*(2i))
@@ -99,10 +114,17 @@ class S60Math:
             denom = (n - 1) * n
             term = -(term * x_sq) // (S60.SCALE_0 * denom)
             
-            if term == 0: break
+            if abs(term) < epsilon:
+                break
+            
             res += term
             
         return S60._from_raw(res * s_cos)
+    
+    @staticmethod
+    def cos_fast(angle_s60):
+        """Versión rápida de cos() con solo 5 términos."""
+        return S60Math.cos(angle_s60, precision_terms=5)
 
     @staticmethod
     def sqrt(x_s60, iterations=12):
@@ -128,18 +150,30 @@ class S60Math:
     def exp(x_s60, precision_terms=12):
         """
         Calcula e^x mediante Serie de Taylor: 1 + x + x^2/2! + x^3/3! ...
+        
+        Optimizado con early termination.
         """
         x = x_s60._value
         res = S60.SCALE_0
         term = S60.SCALE_0
         
+        epsilon = S60.SCALE_0 // 10000  # Más estricto para exp
+        
         for i in range(1, precision_terms):
             # Próximo término: term * x / i
             term = (term * x) // (S60.SCALE_0 * i)
-            if term == 0: break
+            
+            if abs(term) < epsilon:
+                break
+            
             res += term
             
         return S60._from_raw(res)
+    
+    @staticmethod
+    def exp_fast(x_s60):
+        """Versión rápida de exp() con solo 8 términos."""
+        return S60Math.exp(x_s60, precision_terms=8)
 
     @staticmethod
     def ln(x_s60, precision_terms=15):
@@ -233,6 +267,42 @@ class S60Math:
     def abs(x_s60):
         """Retorna el valor absoluto de un S60."""
         return abs(x_s60)
+    
+    @staticmethod
+    def floor(x_s60):
+        """
+        Redondea hacia abajo (hacia -infinito).
+        
+        Ejemplos:
+            floor(S60(3, 14, 15)) = S60(3)
+            floor(S60(-2, 30, 0)) = S60(-3)
+        """
+        # Obtener la parte entera (truncar hacia cero)
+        integer_part = x_s60._value // S60.SCALE_0
+        
+        # Si es negativo y tiene parte decimal, restar 1
+        if x_s60._value < 0 and (x_s60._value % S60.SCALE_0) != 0:
+            integer_part -= 1
+        
+        return S60(integer_part)
+    
+    @staticmethod
+    def ceil(x_s60):
+        """
+        Redondea hacia arriba (hacia +infinito).
+        
+        Ejemplos:
+            ceil(S60(3, 14, 15)) = S60(4)
+            ceil(S60(-2, 30, 0)) = S60(-2)
+        """
+        # Obtener la parte entera
+        integer_part = x_s60._value // S60.SCALE_0
+        
+        # Si es positivo y tiene parte decimal, sumar 1
+        if x_s60._value > 0 and (x_s60._value % S60.SCALE_0) != 0:
+            integer_part += 1
+        
+        return S60(integer_part)
 
 
 # Alias de utilidad para el sistema

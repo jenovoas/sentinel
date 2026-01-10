@@ -24,7 +24,7 @@ import threading
 import time
 import hashlib
 import copy
-from time_crystal_clock import TimeCrystalClock
+from quantum.time_crystal_clock import TimeCrystalClock
 
 class TimeCrystalMemory:
     def __init__(self, size_slots=60):
