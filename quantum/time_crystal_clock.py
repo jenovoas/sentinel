@@ -45,14 +45,18 @@ class TimeCrystalClock:
         # Salto = 17
         # Tick = (1 / (F_Axion / (17 * 60^3)))
         # Valor pre-calculado para evitar floats en tiempo de ejecución:
-        self.TICK_INTERVAL_NS = 23_939_835 
+        self.TICK_INTERVAL_NS = 23_939_835
+        
+        # Frecuencia objetivo (Hz) = 1 / (TICK_INTERVAL_NS / 1e9)
+        # TARGET_FREQ ≈ 41.77 Hz
+        self.TARGET_FREQ = 1_000_000_000 // self.TICK_INTERVAL_NS  # ~41 Hz
         
         # Estado Interno (Enteros Puros)
         self.start_time_ns = time.perf_counter_ns()
         self.ticks = 0
         self.drift_history = []
         
-        print(f"💎 YATRA CLOCK INIT: Intervalo {self.TICK_INTERVAL_NS} ns")
+        print(f"💎 YATRA CLOCK INIT: Intervalo {self.TICK_INTERVAL_NS} ns, Freq {self.TARGET_FREQ} Hz")
         
     def tick(self):
         """
