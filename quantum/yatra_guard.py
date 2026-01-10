@@ -99,20 +99,46 @@ class YatraGuard:
                         print(f"      Línea {node.lineno}: DECIMAL detectado '{node.value}'")
                     return False
                 
-                # 2. Detección de Librerías Sucias (NumPy, SciPy, Random, Matplotlib)
+                # 2. Detección de Librerías Sucias (NumPy, SciPy, Random, Matplotlib, Math)
+                # WHITELIST: yatra_math está permitido (es nuestro)
                 dirty_libs = ['numpy', 'scipy', 'matplotlib', 'random']
                 if isinstance(node, ast.Import):
                     for alias in node.names:
+                        # Bloquear 'import math' pero permitir 'import quantum.yatra_math'
+                        if alias.name == 'math':
+                            if not silent:
+                                print(f"   🚨 CONTAMINACIÓN: {filepath}")
+                                print(f"      Línea {node.lineno}: 'import math' prohibido (usa yatra_math).")
+                            return False
+                        # Bloquear otras librerías sucias
                         if any(lib in alias.name for lib in dirty_libs):
                             if not silent:
                                 print(f"   🚨 CONTAMINACIÓN: {filepath}")
                                 print(f"      Línea {node.lineno}: Importación de '{alias.name}' prohibida.")
                             return False
                 if isinstance(node, ast.ImportFrom):
+                    # Permitir 'from quantum.yatra_math import ...'
+                    if node.module and 'yatra_math' in node.module:
+                        continue  # Permitido
+                    # Bloquear 'from math import ...'
+                    if node.module == 'math':
+                        if not silent:
+                            print(f"   🚨 CONTAMINACIÓN: {filepath}")
+                            print(f"      Línea {node.lineno}: 'from math import' prohibido (usa yatra_math).")
+                        return False
+                    # Bloquear otras librerías sucias
                     if any(lib in (node.module or '') for lib in dirty_libs):
                         if not silent:
                             print(f"   🚨 CONTAMINACIÓN: {filepath}")
                             print(f"      Línea {node.lineno}: Importación desde '{node.module}' prohibida.")
+                        return False
+                
+                # 3. Detección de .to_float() (método que no existe en S60)
+                if isinstance(node, ast.Attribute):
+                    if node.attr == 'to_float':
+                        if not silent:
+                            print(f"   🚨 CONTAMINACIÓN: {filepath}")
+                            print(f"      Línea {node.lineno}: Llamada a '.to_float()' prohibida (método no existe en S60).")
                         return False
 
             return True
