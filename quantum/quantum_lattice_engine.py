@@ -13,6 +13,8 @@ from quantum.yatra_math import S60Math
 
 import time
 import os
+import csv
+from datetime import datetime
 
 
 class QuantumNode:
@@ -75,7 +77,7 @@ class QuantumNode:
         self.phase += phase_force * dt
 
 class QuantumLatticeEngine:
-    def __init__(self, rings=1, use_zpe=False):
+    def __init__(self, rings=1, use_zpe=False, log_dir="logs"):
         self.clock = TimeCrystalClock()
         self.nodes = []
         self.coupling = S60(0, 1, 0)  # Coupling strength J
@@ -83,7 +85,27 @@ class QuantumLatticeEngine:
         self._build_hex_lattice(rings)
         self.use_zpe = use_zpe
         self.zpe_strength = S60(0, 0, 0)
+        self.log_dir = log_dir
+        self.log_file = self._prepare_log()
         print(f"💎 Quantum Lattice Engine Initialized ({len(self.nodes)} nodes)")
+
+    def _prepare_log(self):
+        """Prepara el archivo de log CSV forense."""
+        if not os.path.exists(self.log_dir):
+            os.makedirs(self.log_dir)
+        filename = f"lattice_run_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+        path = os.path.join(self.log_dir, filename)
+        with open(path, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(["tick", "energy_total", "coherence", "drift"])
+        print(f"🧾 Logging enabled: {path}")
+        return path
+
+    def _log_state(self, tick, energy, coherence, drift):
+        """Registra el estado del sistema en el log."""
+        with open(self.log_file, 'a', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow([tick, str(energy), str(coherence), str(drift)])
 
     def _build_hex_lattice(self, rings):
         """Construye red hexagonal con múltiples anillos."""
@@ -213,6 +235,9 @@ class QuantumLatticeEngine:
             # Verificar conservación
             delta_E = abs(energy - E0)
             conservation_ok = "✅" if delta_E < S60(0, 0, 1) else "❌"
+            
+            # Loguear estado forense
+            self._log_state(t, energy, coh, drift)
             
             print(f"Tick {t:02d} | Coherence: {coh} | Energy: {energy} | "
                   f"ΔE: {delta_E} {conservation_ok} | Drift: {drift}")
