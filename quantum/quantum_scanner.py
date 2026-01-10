@@ -20,9 +20,10 @@
 """
 
 import os
-import math
 import sys
 from collections import Counter
+from quantum.yatra_core import S60
+from quantum.yatra_math import S60Math
 
 # Import opcional para integración, pero el scanner debe funcionar standalone
 # from yatra_core import S60 
@@ -35,52 +36,36 @@ class ResonanceScanner:
 
     def _calculate_entropy_integer(self, data):
         """
-        Calcula entropía mapeada a escala 0-60.
-        Menor entropía = Mayor Orden.
+        Calcula entropía mapeada a escala 0-60 usando S60Math.log2.
         Retorna un puntaje de ORDEN (0=Caos, 60=Cristal).
         """
         if not data:
             return 0
             
-        # Aproximación entera de Shannon
-        # Usamos frecuencias relativas escaladas
         length = len(data)
         counts = Counter(data)
         
-        # En lugar de logaritmos complejos (que requieren floats),
-        # medimos la "compresibilidad" simple:
-        # Ratio de bytes únicos vs total
-        unique_bytes = len(counts)
+        # Shannon Entropy = -sum(p * log2(p))
+        entropy_sum = S60(0)
+        len_s60 = S60(length)
         
-        # Si todos los bytes son diferentes, entropía máxima (Score 0)
-        # Si todos son iguales, entropía mínima (Score 60)
-        
-        if length == 0: return 0
-        
-        # Ratio inverso: (1 - unique/length) * 60
-        # Usamos multiplicación primero para mantener enteros
-        # score = 60 * (length - unique_bytes) // length
-        
-        # Sin embargo, Shannon es mejor. Vamos a permitir math.log2 SOLO aqui
-        # pero convertir inmediatamente a entero para el resultado.
-        entropy_sum = 0.0
         for count in counts.values():
-            p = count / length
-            entropy_sum -= p * math.log2(p)
+            p = S60(count) / len_s60
+            if p._value > 0:
+                # p * log2(p)
+                term = p * S60Math.log2(p)
+                entropy_sum -= term
             
-        # Entropía de Shannon va de 0 a 8 (bits).
-        # Queremos mapear 0->60 (Orden) y 8->0 (Caos).
-        # Un archivo de código fuente típico tiene entropía ~4-5.
+        # Entropía de Shannon va de 0 a 8 (bits para bytes).
+        # Mapeo: 8.0 -> Score 0, 0.0 -> Score 60
+        # Formula: 60 - (entropy * 60 / 8)
+        # 60 / 8 = 7.5 = S60(7, 30, 0)
         
-        entropy_int = int(entropy_sum * 10) # Preservar 1 decimal como entero
+        order_score_s60 = S60(60) - (entropy_sum * S60(7, 30, 0))
         
-        # Mapeo: 8.0 (80) -> 0 pts
-        #        0.0 (0)  -> 60 pts
-        # Formula lineal inversa: 60 - (entropy * 7.5) aprox
-        # Usaremos: 60 - (entropy_int * 60 // 80)
-        
-        order_score = 60 - (entropy_int * 60 // 80)
-        return max(0, order_score)
+        # Convertir a entero 0-60
+        score_int = order_score_s60.to_base_units() // S60.SCALE_0
+        return max(0, min(60, score_int))
 
     def _calculate_harmonic_alignment(self, data):
         """

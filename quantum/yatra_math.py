@@ -21,6 +21,11 @@ class S60Math:
     
     DEG_TO_RAD_FACTOR = S60(0, 1, 2, 49, 12) # PI / 180 ≈ 0.017453...
     
+    # Constantes Logarítmicas Raw (pre-escaladas por SCALE_0)
+    LN2_RAW = 8983187   # ln(2) * SCALE_0
+    LN60_RAW = 53062706 # ln(60) * SCALE_0
+    INV_LN2_RAW = 18698485 # (1/ln(2)) * SCALE_0 ≈ 1.442695
+    
     @staticmethod
     def _normalize_to_pi_half(angle_s60):
         """
@@ -137,6 +142,66 @@ class S60Math:
         return S60._from_raw(res)
 
     @staticmethod
+    def ln(x_s60, precision_terms=15):
+        """
+        Calcula ln(x) mediante Serie de potencias:
+        ln(x) = ln(y * 2^n) = ln(y) + n*ln(2)
+        donde y está en [0.75, 1.5]
+        """
+        raw = x_s60._value
+        if raw <= 0: raise ValueError("Math Domain Error: ln de no positivo")
+        
+        # 1. Normalización por potencias de 2
+        n = 0
+        y_raw = raw
+        while y_raw > (S60.SCALE_0 * 3) // 2:
+            y_raw //= 2
+            n += 1
+        while y_raw < (S60.SCALE_0 * 3) // 4:
+            y_raw *= 2
+            n -= 1
+            
+        # 2. ln(y) usando serie: 2 * sum( ((y-1)/(y+1))^(2k+1) / (2k+1) )
+        # z = (y-1)/(y+1)
+        num = (y_raw - S60.SCALE_0) * S60.SCALE_0
+        den = (y_raw + S60.SCALE_0)
+        z = num // den
+        
+        z_sq = (z * z) // S60.SCALE_0
+        res = 0
+        term = z
+        
+        for k in range(precision_terms):
+            res += term // (2 * k + 1)
+            term = (term * z_sq) // S60.SCALE_0
+            if term == 0: break
+            
+        ln_y = 2 * res
+        ln_x = ln_y + n * S60Math.LN2_RAW
+        
+        return S60._from_raw(ln_x)
+
+    @staticmethod
+    def log2(x_s60):
+        """Calcula log2(x) = ln(x) / ln(2)"""
+        ln_x = S60Math.ln(x_s60)
+        # log2 = (ln_x * (1/ln(2)))
+        res = (ln_x._value * S60Math.INV_LN2_RAW) // S60.SCALE_0
+        return S60._from_raw(res)
+
+    @staticmethod
+    def log(x_s60, base=60):
+        """Calcula logaritmo en base 60 (default) o cualquier otra base entera."""
+        ln_x = S60Math.ln(x_s60)
+        if base == 60:
+            res = (ln_x._value * S60.SCALE_0) // S60Math.LN60_RAW
+        else:
+            ln_b = S60Math.ln(S60(base))
+            res = (ln_x._value * S60.SCALE_0) // ln_b._value
+            
+        return S60._from_raw(res)
+
+    @staticmethod
     def sin_cos(angle_s60, precision_terms=10):
         """
         Calcula sin(x) y cos(x) simultáneamente para mayor eficiencia.
@@ -164,7 +229,10 @@ class S60Math:
             res = [(A[i] * B[k]) for i in range(m) for k in range(p)]
             return res
         
-        return None
+    @staticmethod
+    def abs(x_s60):
+        """Retorna el valor absoluto de un S60."""
+        return abs(x_s60)
 
 
 # Alias de utilidad para el sistema
