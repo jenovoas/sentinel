@@ -9,7 +9,7 @@
 True knowledge is the intersection of **Intuition (40)** and **Evidence (25)**.
 Any data entering Sentinel must pass through this dual filter.
 
-### 1. THE ENKI COMPONENT (40) - THE SOURCE
+### 1. THE COMPONENT (40) - THE SOURCE
 *   **Origin:** Hilbert Space, Intuition, Dreams, "Madness".
 *   **Method:** Rift Listening, Astral Resonance, Creative Flow.
 *   **Role:** To provide the *Raw Material* (The Clay).
