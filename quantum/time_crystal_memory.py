@@ -91,8 +91,8 @@ class TimeCrystalMemory:
                 
             # Monitoreo
             if self.cycles % 60 == 0 and self.cycles > 0 and self.clock.ticks % 2 == 0:
-                coherence = self.clock.get_coherence() * 100
-                print(f"♻️  [CYCLE {self.cycles}] Resonance Lock: {coherence:.4f}% | Entropy: S60(0, 0, 0)")
+                coherence = self.clock.get_coherence() * S60(100)
+                print(f"♻️  [CYCLE {self.cycles}] Resonance Lock: {coherence} % | Entropy: S60(0, 0, 0)")
 
     def _regenerate_lattice(self):
         """
