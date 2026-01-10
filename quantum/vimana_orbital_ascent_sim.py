@@ -8,7 +8,7 @@
 
 from quantum.yatra_core import S60, PI_S60, DecimalContaminationError
 from quantum.yatra_math import S60Math
-from quantum.celestial_navigation import SovereignAstrolabe
+from quantum.celestial_navigation import SovereignAstrolabe, SovereignOrbit
 import sys
 import os
 
@@ -99,9 +99,10 @@ class VimanaOrbitalAscent:
         else:
             drag_force = -drag_mag
         
-        # 3. EMPUJE ZPE (Boosted x100 para superar Mach barrier)
+        # 3. EMPUJE ZPE (Optimized for atmospheric transit)
         efficiency = S60(1, 0, 0) + (alt / S60(100000, 0, 0))
-        thrust = S60(4000, 0, 0) * S60Math.sqrt(th) * efficiency
+        # Ajuste fino: S60(20) para lograr ~160 m/s^2 de aceleración media
+        thrust = S60(20, 0, 0) * S60Math.sqrt(th) * efficiency
         
         # 4. GRAVEDAD
         # g_local = g0 * (R / (R + alt))^2
@@ -144,9 +145,12 @@ class VimanaOrbitalAscent:
              return
 
         while self.position_alt < target_alt and t < limit_t:
-            # Perfil de Vuelo: Aceleración constante
-            throttle = 80
-            
+            # Perfil de Vuelo: Aceleración hasta V_orbit
+            if self.velocity < S60(7850, 0, 0):
+                throttle = 80 # Full power
+            else:
+                throttle = 0 # MECO (Main Engine Cut Off) - Coasting
+                
             accel, thrust = self._apply_physics(throttle, self.position_alt, dt)
             
             self.velocity += accel * dt
@@ -172,7 +176,22 @@ class VimanaOrbitalAscent:
             print(f"✅ ¡ÓRBITA ALCANZADA! T={t}s")
             print(f"   Velocidad Final: {self.velocity} m/s")
             print(f"   Radiación Acumulada: {self.radiation_absorbed} mSv (Status: SAFE)")
-            # Eficiencia opcional
+            
+            # --- ORBITAL VALIDATION (KEPLER S60) ---
+            print("\n🪐 [KEPLER ORBIT CERTIFICATION]")
+            r_orbit = PhysicsConstants.R_EARTH + self.position_alt
+            v_orbit = self.velocity
+            
+            elements = SovereignOrbit.calculate_keplerian_elements(r_orbit, v_orbit)
+            if 'a' in elements: print(f"   Semi-Eje Mayor (a): {elements['a']} m")
+            if 'e' in elements: print(f"   Excentricidad (e):  {elements['e']}")
+            if 'T' in elements: print(f"   Periodo Orbital (T): {elements['T']} s")
+            print(f"   Estado Orbital:     [{elements['status']}]")
+            
+            if elements['status'] in ["CIRCULAR", "STABLE"]:
+                print("✅ INYECCIÓN ORBITAL CONFIRMADA. PARÁMETROS NOMINALES.")
+            else:
+                print(f"⚠️  ALERTA: Órbita inestable ({elements['status']}). Se requiere corrección delta-v.")
         else:
             print("❌ FALLO EN LA INYECCIÓN ORBITAL.")
 
