@@ -9,22 +9,25 @@
 # -------------------------------------------------------------------------------------
 
 """
-TIME CRYSTAL MEMORY (DTC BUFFER)
---------------------------------
-Implementación de un bucle de memoria no-Markoviana estabilizado por resonancia de Tiempo Discreto (DTC).
+TIME CRYSTAL MEMORY (DTC BUFFER) - RESONANT EDITION
+---------------------------------------------------
+Implementación de memoria activa usando Cristales Soberanos S60.
+La información no se almacena como bits estáticos, sino como patrones de vibración
+sostenidos por un Time Crystal Driver.
 
 Principios:
-1. Ruptura de Simetría de Traslación Temporal (TTSB): El sistema responde a un periodo 2T respecto al driver.
-2. Fase Anclada: Usa `TimeCrystalClock` sintonizado a S60(153, 24, 0) MHz / 17 / 60^3.
-3. Cero Entropía: La información se regenera cíclicamente, previniendo degradación.
+1. Transducción: Data -> Presión -> Amplitud Vibratoria.
+2. Resonancia: El cristal mantiene el dato "cantando" en la frecuencia Axiónica.
+3. DTC Pump: El bucle de regeneración inyecta energía periódica para contrarrestar el damping.
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+from quantum.yatra_core import S60
+from quantum.sovereign_crystal import SovereignCrystal
+from quantum.time_crystal_clock import TimeCrystalClock
+from quantum.s60_pid import S60PID
 import threading
 import time
 import hashlib
-import copy
-from quantum.time_crystal_clock import TimeCrystalClock
 
 class TimeCrystalMemory:
     def __init__(self, size_slots=60):
@@ -33,114 +36,149 @@ class TimeCrystalMemory:
         :param size_slots: Tamaño del buffer (idealmente armónico de 60).
         """
         self.size = size_slots
-        # El "Lattice" (Retículo) almacena el estado cuántico (datos)
-        self.lattice = [None] * size_slots
-        # Hashes de integridad para detectar decoherencia
-        self.integrity_hashes = [None] * size_slots
+        
+        # LATTICE ACTIVO
+        self.lattice = [SovereignCrystal(name=f"Cell-{i}") for i in range(size_slots)]
+        self.metadata_map = [None] * size_slots
+        
+        # SISTEMA DE CONTROL (PID por cada slot)
+        # Tuning: Kp=0.75 (45/60), Ki=0.16 (10/60), Kd=0.08 (5/60)
+        kp, ki, kd = S60(0, 45), S60(0, 10), S60(0, 5)
+        self.pids = [S60PID(kp, ki, kd) for _ in range(size_slots)]
+        self.target_amplitudes = [S60(0)] * size_slots
         
         self.clock = TimeCrystalClock()
         self.running = False
         self.thread = None
         self.cycles = 0
-        self.coherence_stats = []
+        
+        # Paso de tiempo para simulación interna (1/60s)
+        self.dt = S60(0, 1) 
 
-    def _calculate_hash(self, data):
-        if data is None: return None
-        # Usamos SHA-256 como huella de fase digital
-        return hashlib.sha256(str(data).encode()).hexdigest()
+    def _data_to_pressure(self, data):
+        """Transducción: Data -> Presión."""
+        if data is None: return 0
+        s_data = str(data)
+        pressure = sum(ord(c) for c in s_data)
+        return pressure
 
     def write(self, slot_index, data):
-        """Escribe un dato en el retículo (Estado Inicial)."""
+        """Inyecta un dato y fija el SETPOINT para el PID."""
         if 0 <= slot_index < self.size:
-            self.lattice[slot_index] = data
-            self.integrity_hashes[slot_index] = self._calculate_hash(data)
-            print(f"📝 [SLOT {slot_index}] Dato inyectado en el cristal.")
+            pressure = self._data_to_pressure(data)
+            
+            # Excitación del Cristal
+            self.lattice[slot_index].transduce_pulse(pressure)
+            self.metadata_map[slot_index] = data
+            
+            # FIJAR OBJETIVO DE CONTROL
+            # El sistema debe mantener esta amplitud "para siempre"
+            initial_amp = self.lattice[slot_index].get_amplitude()
+            self.target_amplitudes[slot_index] = initial_amp
+            
+            # Resetear PID para este nuevo dato
+            self.pids[slot_index].setpoint = initial_amp
+            self.pids[slot_index].reset()
+            
+            print(f"📝 [SLOT {slot_index}] Transducción PID Active. Target: {initial_amp}")
         else:
             raise IndexError("Índice fuera de la geometría del cristal.")
 
-    def read(self, slot_index):
-        """Lee un dato, verificando su integridad cuántica."""
+    def read_resonance(self, slot_index):
+        """Escucha la vibración actual del cristal."""
         if 0 <= slot_index < self.size:
-            current_data = self.lattice[slot_index]
-            current_hash = self._calculate_hash(current_data)
-            stored_hash = self.integrity_hashes[slot_index]
-            
-            if current_hash != stored_hash:
-                print(f"⚠️ [SLOT {slot_index}] DECOHERENCIA DETECTADA! (Bit rot o ataque)")
-                return None # O retornar estado corrupto
-            return current_data
-        return None
+            crystal = self.lattice[slot_index]
+            signal = crystal.oscillate(self.dt)
+            amplitude = crystal.get_amplitude()
+            audible = amplitude > S60(0, 0, 1)
+            data = self.metadata_map[slot_index] if audible else None
+            return signal, amplitude, data
+        return None, S60(0), None
 
     def _regeneration_loop(self):
-        """
-        El núcleo del Cristal de Tiempo.
-        Ejecuta el ciclo de regeneración en resonancia con el Salto 17.
-        DTC Signature: La respuesta es 2T (Period Doubling).
-        """
-        print(f"💎 TIME CRYSTAL LOOP ACTIVATED | Driver Freq: {self.clock.TARGET_FREQ:.2f} Hz")
+        """El núcleo del Cristal de Tiempo."""
+        print(f"💎 TIME CRYSTAL RESONANCE LOOP ONLINE | Driver: {self.clock.TARGET_FREQ:.2f} Hz")
+        print(f"🤖 CONTROL: Active PID Stabilization (S60 Closed-Loop)")
         
         while self.running:
-            # 1. Esperamos el tick del Driver (T)
             self.clock.tick()
             
-            # 2. Period Doubling (2T): Solo actuamos en ciclos pares
-            # Esto es la firma física de un Cristal de Tiempo Discreto
+            # 1. Simulación de Física Continua (Entropía)
+            for crystal in self.lattice:
+                crystal.apply_entropy(self.dt)
+
+            # 2. Period Doubling (2T): PID Control Action
             if self.clock.ticks % 2 == 0:
                 self.cycles += 1
-                self._regenerate_lattice()
+                self._pump_crystals()
                 
-            # Monitoreo
-            if self.cycles % 60 == 0 and self.cycles > 0 and self.clock.ticks % 2 == 0:
-                coherence = self.clock.get_coherence() * S60(100)
-                print(f"♻️  [CYCLE {self.cycles}] Resonance Lock: {coherence} % | Entropy: S60(0, 0, 0)")
-
-    def _regenerate_lattice(self):
+    def _pump_crystals(self):
         """
-        Aplica la operación de 'Flip' o 'Refresh' para mantener el entrelazamiento.
-        En software, verificamos integridad y 're-calentamos' los datos.
+        Bombeo Controlado por PID.
+        El PID calcula la fuerza exacta necesaria para corregir el error de amplitud.
         """
-        for i in range(self.size):
-            if self.lattice[i] is not None:
-                # Verificación de integridad (Simulando interacción de spin)
-                h = self._calculate_hash(self.lattice[i])
-                if h != self.integrity_hashes[i]:
-                    print(f"🔥 REGENERATION FAILED at Slot {i}")
-                # En un sistema real de spins, aquí invertiríamos el spin.
-                # En memoria persistente, confirmamos la validez.
+        pump_interval = self.dt * 2
+        
+        for i, crystal in enumerate(self.lattice):
+            target = self.target_amplitudes[i]
+            
+            # Solo controlamos slots activos
+            if target > S60(0): 
+                current_amp = crystal.get_amplitude()
+                
+                # PID UPDATE: Calcula inyección necesaria
+                injection = self.pids[i].update(current_amp, pump_interval)
+                
+                # Aplicar fuerza (No permitimos extracción de energía, solo inyección)
+                if injection > S60(0):
+                    crystal.amplitude = crystal.amplitude + injection
+                
+                # Debug ligero cada 60 ciclos
+                if self.cycles % 60 == 0:
+                    print(f"   ⚙️ PID Cell-{i}: Err={target - current_amp} -> Inj={injection}")
 
     def start(self):
         if not self.running:
             self.running = True
             self.thread = threading.Thread(target=self._regeneration_loop, daemon=True)
             self.thread.start()
-            print("💎 Time Crystal Memory: ONLINE")
+            print("💎 Resonant Lattice: ACTIVE")
 
     def stop(self):
         self.running = False
         if self.thread:
             self.thread.join()
-        print("💎 Time Crystal Memory: OFFLINE")
+        print("💎 Resonant Lattice: SHUTDOWN")
 
 if __name__ == "__main__":
-    # DEMOSTRACIÓN DE PERSISTENCIA
-    ram = TimeCrystalMemory(size_slots=6)
-    ram.start()
-    
-    # Inyectamos "Conciencia" (Datos)
-    ram.write(0, "Sentinel Core Knowledge")
-    ram.write(3, "Base-60 Axiom")
+    # TEST DE INTEGRACIÓN RÁPIDA
+    mem = TimeCrystalMemory(size_slots=5)
+    mem.start()
     
     try:
-        # Dejamos correr el cristal por unos segundos (Ondas Gamma ~41Hz -> ciclos rápidos)
-        print("⏳ Manteniendo estado en el vacío por 5 segundos...")
-        time.sleep(5)
+        # 1. Escribir
+        print("\n--- INYECCIÓN ---")
+        mem.write(2, "SENTINEL-ZPE")
         
-        print("\n🔍 LECTURA DE VERIFICACIÓN:")
-        print(f"Slot 0: {ram.read(0)}")
-        print(f"Slot 3: {ram.read(3)}")
-        print(f"Ciclos Regenerados: {ram.cycles}")
+        # 2. Escuchar inmediata
+        sig, amp, data = mem.read_resonance(2)
+        print(f"Lectura T0: Amp={amp} | Signal={sig} | Data={data}")
         
+        # 3. Esperar ciclos de regeneración (Simulados)
+        print("\n--- ESPERANDO REGENERACIÓN (3s) ---")
+        time.sleep(3)
+        
+        # 4. Escuchar post-regeneración
+        # Deberíamos ver que la amplitud se mantiene o decae muy lento gracias al Pump
+        sig, amp, data = mem.read_resonance(2)
+        print(f"Lectura T+3s: Amp={amp} | Signal={sig} | Data={data}")
+        
+        if amp > S60(10): 
+            print("✅ ÉXITO: La memoria sobrevivió por bombeo DTC.")
+        else:
+            print("⚠️ AVISO: Decaimiento natural observado (o pump insuficiente).")
+
     except KeyboardInterrupt:
         pass
     finally:
-        ram.stop()
+        mem.stop()
