@@ -8,6 +8,7 @@
 
 from quantum.yatra_core import S60, PI_S60, DecimalContaminationError
 from quantum.yatra_math import S60Math
+from quantum.celestial_navigation import SovereignAstrolabe
 import sys
 import os
 
@@ -32,7 +33,10 @@ class VimanaOrbitalAscent:
         self.zpe_buffer = S60(5000, 0, 0) 
         self.plasma_shield_active = False
         self.orbit_attained = False
-        self.radiation_absorbed = S60(0) 
+        self.radiation_absorbed = S60(0)
+        
+        # Nav System
+        self.astrolabe = SovereignAstrolabe()
         
     def _get_air_density(self, alt):
         """Modelo simplificado de atmósfera S60."""
@@ -43,12 +47,17 @@ class VimanaOrbitalAscent:
         return PhysicsConstants.SEA_LEVEL_DENSITY * S60Math.exp(exponent)
 
     def _apply_physics(self, throttle, alt, dt):
-        """Calcula el balance de fuerzas en el ascenso S60."""
+        if alt < S60(0): alt = S60(0) # Clamp underground
+
         density = self._get_air_density(alt)
         
         # 1. G-ZERO TUNING DINÁMICO
         # atmos_factor = 1.0 - (density / rho0)
-        atmos_factor = S60(1, 0, 0) - (density / PhysicsConstants.SEA_LEVEL_DENSITY)
+        # Prevent negative factor if density > rho0
+        dens_ratio = density / PhysicsConstants.SEA_LEVEL_DENSITY
+        if dens_ratio > S60(1): dens_ratio = S60(1)
+        
+        atmos_factor = S60(1, 0, 0) - dens_ratio
         
         # resonance = (throttle**2) / (PHI**2)
         th = S60(throttle, 0, 0)
@@ -62,22 +71,37 @@ class VimanaOrbitalAscent:
         self.effective_mass = self.mass_static / actual_reduction
         if self.effective_mass._value < S60(0, 1, 30)._value: self.effective_mass = S60(0, 1, 30)
         
-        # 2. ESCUDO DE PLASMA
-        self.plasma_shield_active = (self.velocity > S60(343, 0, 0) or alt > S60(20000, 0, 0))
+        # 2. ESCUDO DE PLASMA (SISTEMA ACTIVO)
+        # Requisito de Misión: El escudo debe estar activo para protección y aerodinamica
+        zpe_cost_per_tick = S60(0, 5, 0) 
+        if self.zpe_buffer > zpe_cost_per_tick:
+            self.plasma_shield_active = True
+            self.zpe_buffer -= zpe_cost_per_tick
+        else:
+            self.plasma_shield_active = False # Fallo de energía
+            
         # Cd_standard = 0.4 (24/60), reduction = 0.15 (9/60)
         Cd_standard = S60(0, 24, 0)
         if self.plasma_shield_active:
+            # El plasma reduce drásticamente el drag y protege el casco
             drag_coeff = Cd_standard * S60(0, 9, 0) # 0.15 reduction
         else:
             drag_coeff = Cd_standard
         
         # drag = 0.5 * rho * v^2 * Cd * Area
         # Simplificado: 0.5 * density * v^2 * Cd * 0.05
-        drag_force = S60(0, 30, 0) * density * (self.velocity * self.velocity) * drag_coeff * S60(0, 3, 0)
+        # Drag magnitude
+        drag_mag = S60(0, 30, 0) * density * (self.velocity * self.velocity) * drag_coeff * S60(0, 3, 0)
         
-        # 3. EMPUJE ZPE
+        # Directional Drag! Opposes velocity
+        if self.velocity > S60(0):
+            drag_force = drag_mag
+        else:
+            drag_force = -drag_mag
+        
+        # 3. EMPUJE ZPE (Boosted x100 para superar Mach barrier)
         efficiency = S60(1, 0, 0) + (alt / S60(100000, 0, 0))
-        thrust = S60(40, 0, 0) * S60Math.sqrt(th) * efficiency
+        thrust = S60(4000, 0, 0) * S60Math.sqrt(th) * efficiency
         
         # 4. GRAVEDAD
         # g_local = g0 * (R / (R + alt))^2
@@ -92,16 +116,33 @@ class VimanaOrbitalAscent:
         
         return accel, thrust
 
+    def _check_navigation(self):
+        """Verifica la alineación estelar."""
+        vectors = self.astrolabe.get_stellar_fix_pure()
+        # En una simulación real, compararíamos 'vectors' con una lectura simulada de sensores
+        # Por ahora, verificamos que el astrolabio esté LOCKED
+        nav_status = "LOCKED"
+        for star, data in vectors.items():
+            if "DRIFT" in data["status"]:
+                nav_status = "DRIFTING"
+                break
+        return nav_status
+
     def run_ascent(self):
-        print("🌌 INICIANDO PROTOCOLO 'VOID-WALKER': ASCENSO ORBITAL")
+        print("🌌 INICIANDO PROTOCOLO 'VOID-WALKER': ASCENSO ORBITAL [S60 INTEGRATED]")
         print(f"   Objetivo: Órbita Baja (LEO) @ 200km | Masa: {self.mass_static}kg")
         print("-" * 60)
         
         t = S60(0)
-        dt = S60(0, 0, 0, 30, 0) # 0.5s step
+        dt = S60(0, 30, 0) # 0.5s step (Corrected from S60(0,0,0,30,0))
         target_alt = S60(200000, 0, 0)
         limit_t = S60(600, 0, 0)
         
+        # Pre-flight check
+        if self._check_navigation() != "LOCKED":
+             print("❌ ABORT: Navigation Drift Detected pre-launch.")
+             return
+
         while self.position_alt < target_alt and t < limit_t:
             # Perfil de Vuelo: Aceleración constante
             throttle = 80
@@ -114,7 +155,15 @@ class VimanaOrbitalAscent:
             if (t._value // S60.SCALE_0) % 20 == 0:
                 mode = "ATMOS" if self.position_alt < S60(100000, 0, 0) else "VACÍO"
                 shield_status = "PLASMA_ON" if self.plasma_shield_active else "OFF"
-                print(f"T={t}s | Alt: {self.position_alt}m | Vel: {self.velocity}m/s | M_eff: {self.effective_mass}kg | [{mode}] Shield:{shield_status}")
+                
+                # Navigation Check
+                nav = self._check_navigation() if (t._value // S60.SCALE_0) % 60 == 0 else "LOCKED (Cached)"
+                
+                print(f"T={t}s | Alt: {self.position_alt}m | Vel: {self.velocity}m/s | Nav: {nav} | Shield:{shield_status}")
+                
+                if nav != "LOCKED" and nav != "LOCKED (Cached)":
+                    print("⚠️ ALERTA: Desviación de Navegación. Abortando ascenso.")
+                    break
             
             t += dt
             

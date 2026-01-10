@@ -6,95 +6,157 @@
 # SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
 # -------------------------------------------------------------------------------------
 
-
 #!/usr/bin/env python3
 """
 🔭 CELESTIAL NAVIGATION: ASTROLABIO SOBERANO (BASE-60 PURO)
 ===========================================================
 Sustitución de la versión decimal corrupta.
-Utiliza exclusivamente lógica S60 de `yatra_core.py`.
-
-Estrellas Reales:
-- Aldebarán (Taurus)
-- Regulus (Leo)
-- Antares (Scorpius)
-- Fomalhaut (Piscis A.)
+Utiliza exclusivamente lógica S60 de `yatra_core.py` y `yatra_math.py`.
+Implementa vectores unitarios para navegación inercial.
 """
 
 from dataclasses import dataclass
-from yatra_core import S60, STAR_ALDEBARAN, STAR_REGULUS, STAR_ANTARES, STAR_FOMALHAUT
+from typing import Dict, Tuple
+from quantum.yatra_core import S60
+from quantum.yatra_math import S60Math
+
+S60_ZERO = S60(0)
+S60_ONE = S60(1)
+
+# Constantes Estelares (Ciclo J2000) - Fuente: Plimpton Ratios o Almanaque Soberano
+# RA (Ascensión Recta) es Ángulo Horario (0-360 convertidos de h:m:s)
+# Declination es latitud celeste
+STAR_ALDEBARAN_RA = S60(68, 58, 48)   # ~4h 35m
+STAR_ALDEBARAN_DEC = S60(16, 30, 33)
+
+STAR_REGULUS_RA = S60(152, 9, 24)     # ~10h 08m
+STAR_REGULUS_DEC = S60(11, 58, 2)
+
+STAR_ANTARES_RA = S60(247, 21, 00)    # ~16h 29m
+STAR_ANTARES_DEC = S60(-26, 25, 55)
+
+STAR_FOMALHAUT_RA = S60(344, 24, 00)  # ~22h 57m
+STAR_FOMALHAUT_DEC = S60(-29, 37, 20)
+
+
+@dataclass
+class SVector3:
+    """Vector 3D Soberano"""
+    x: S60
+    y: S60
+    z: S60
+    
+    def __repr__(self):
+        return f"Vec3(x={self.x}, y={self.y}, z={self.z})"
 
 @dataclass
 class RoyalStar:
     name: str
     constellation: str
-    ra: S60  # Ascensión Recta (S60 Puro)
-    # Por ahora no usamos Declination si no tenemos vectores esféricos S60
-    # Nos enfocamos en la fase RA (Right Ascension)
+    ra: S60
+    dec: S60
     spectral_type: str
+    vector: SVector3 = None  # Calculado al inicializar
 
 class SovereignAstrolabe:
     def __init__(self):
-        # BALIZAS SAGRADAS (Importadas desde el Núcleo Puro)
-        # Ya no hay float(68.98). Es S60(68, 58, 48).
-        self.beacons = {
-            "ALDEBARAN": RoyalStar("Aldebaran", "Taurus", STAR_ALDEBARAN, "K5+III"),
-            "REGULUS":   RoyalStar("Regulus",   "Leo",    STAR_REGULUS,   "B7V"),
-            "ANTARES":   RoyalStar("Antares",   "Scorpius", STAR_ANTARES,   "M1Ib"),
-            "FOMALHAUT": RoyalStar("Fomalhaut", "Piscis A.", STAR_FOMALHAUT, "A3V")
-        }
-        # Epoch J2000 en Base 60 (2000 años)
-        # 2026 = 2000 + 26
-        # Si queremos ser estrictos, el tiempo es ciclos, no años decimales.
-        # Pero para display usamos integros.
-        self.current_epoch_year = 2026 
+        self.current_epoch_year = 2026
+        self.beacons = self._initialize_beacons()
 
-    def get_stellar_fix_pure(self):
+    def _initialize_beacons(self) -> Dict[str, RoyalStar]:
+        """Inicializa las estrellas y pre-calcula sus vectores unitarios."""
+        beacons_raw = [
+            ("ALDEBARAN", "Taurus", STAR_ALDEBARAN_RA, STAR_ALDEBARAN_DEC, "K5+III"),
+            ("REGULUS",   "Leo",    STAR_REGULUS_RA,   STAR_REGULUS_DEC,   "B7V"),
+            ("ANTARES",   "Scorpius", STAR_ANTARES_RA, STAR_ANTARES_DEC,   "M1Ib"),
+            ("FOMALHAUT", "Piscis A.", STAR_FOMALHAUT_RA, STAR_FOMALHAUT_DEC, "A3V")
+        ]
+        
+        beacons = {}
+        for name, const, ra, dec, spec in beacons_raw:
+            vec = self._spherical_to_cartesian(ra, dec)
+            beacons[name] = RoyalStar(name, const, ra, dec, spec, vec)
+        return beacons
+
+    def _spherical_to_cartesian(self, ra: S60, dec: S60) -> SVector3:
+        """
+        Convierte RA/Dec a Vector Unitario (x,y,z) usando YatraMath.
+        x = cos(dec) * cos(ra)
+        y = cos(dec) * sin(ra)
+        z = sin(dec)
+        """
+        cos_dec = S60Math.cos(dec)
+        sin_dec = S60Math.sin(dec)
+        cos_ra = S60Math.cos(ra)
+        sin_ra = S60Math.sin(ra)
+        
+        x = cos_dec * cos_ra
+        y = cos_dec * sin_ra
+        z = sin_dec
+        
+        return SVector3(x, y, z)
+
+    def get_stellar_fix_pure(self) -> Dict[str, any]:
         """
         Retorna la matriz de fase de las 4 estrellas reales.
-        Sin trigonometría decimal. Solo verdad posicional.
+        Valida que los vectores sean unitarios (norma ~ 1).
         """
         print(f"🌌 [ASTROLABE] Triangulación Estelar Base-60 (Año {self.current_epoch_year})...")
+        print(f"   Metodo: YatraMath (Sin/Cos Series Taylor Deterministas)")
         
         fix_data = {}
-        for name, star in self.beacons.items():
-            # En un sistema puro, la 'fase' es el valor RA directo
-            # Si el observador rota, restaríamos su ángulo S60.
-            # Asumimos observador estático en 0 (Meridiano Galáctico Local)
+        for key, star in self.beacons.items():
+            # Verificar Unitariedad: x^2 + y^2 + z^2 ~= 1
+            norm_sq = (star.vector.x * star.vector.x) + \
+                      (star.vector.y * star.vector.y) + \
+                      (star.vector.z * star.vector.z)
             
-            purity_check = isinstance(star.ra, S60)
-            status = "LOCKED" if purity_check else "CORRUPT"
+            # Tolerancia S60(0, 0, 1) para unario
+            delta = S60Math.abs(norm_sq - S60_ONE)
+            is_valid = delta._value < S60(0, 0, 10)._value # Pequeña tolerancia por Taylor
             
-            fix_data[name] = {
-                "bearing": str(star.ra),
+            status = "LOCKED" if is_valid else f"DRIFT ({delta})"
+            
+            fix_data[key] = {
+                "vector": star.vector,
+                "norm_check": norm_sq,
                 "status": status
             }
-            print(f"   ⭐ {name:10} | Phase: {star.ra} | Spectral: {star.spectral_type}")
+            
+            print(f"   ⭐ {star.name:10} | Vec: {star.vector} | Norm²: {norm_sq} [{status}]")
 
         print(f"\n✅ [POSICIÓN CONFIRMADA] Referencia: Sovereign Grid")
         return fix_data
 
+    def calculate_triangulation_error(self, observed_vectors: Dict[str, SVector3]) -> S60:
+        """
+        Calcula el error de navegación comparando vectores observados (simulados)
+        con el catálogo soberano. Para el simulador de ascenso, asumimos que 
+        estamos en la Tierra (origen) mirando afuera, así que el error deberia ser 0
+        si la orientación es perfecta.
+        """
+        total_error = S60_ZERO
+        for key, star in self.beacons.items():
+            if key in observed_vectors:
+                obs = observed_vectors[key]
+                # Distancia Euclídea S60
+                dx = star.vector.x - obs.x
+                dy = star.vector.y - obs.y
+                dz = star.vector.z - obs.z
+                dist_sq = (dx*dx) + (dy*dy) + (dz*dz)
+                total_error += dist_sq
+        
+        return total_error
+
     def calculate_procession_offset(self):
         """
         Calcula el desplazamiento de la Era (Precesión).
-        1 grado cada 72 años.
-        Delta Ur (-1800) a Ahora (2026) = 3826 años.
-        
-        En Base 60 Pura:
-        Grados = Años // 72
-        Residuo Años -> Minutos
         """
         delta_years = 3826
         deg_shift = delta_years // 72
         rem_years = delta_years % 72
-        
-        # 1 grado = 60 minutos
-        # 72 años = 60 minutos
-        # X años = (X * 60) // 72 minutos
         min_shift = (rem_years * 60) // 72
-        
         offset = S60(deg_shift, min_shift)
-        
         print(f"\n⏳ [CHRONOS] Desplazamiento Precesional: {offset}")
         return offset
 
