@@ -56,15 +56,17 @@ class QuantumNode:
             # Diferencia de fase discreta
             dphi = self.phase - n.phase
             
-            # Dinámica Hamiltoniana S60 pura (sin aproximaciones lineales sucias)
-            sin_dphi = S60Math.sin(dphi)
+            # Usar yatra_math para trigonometría precisa (Taylor Series)
+            # sin(x) y cos(x) con precisión completa en Base-60
+            sin_dphi = S60Math.sin(dphi, precision_terms=10)
+            cos_dphi = S60Math.cos(dphi, precision_terms=10)
             
             # Fuerza hamiltoniana: F = -J sin(Δφ)
             phase_force -= coupling * sin_dphi
             
             # Transferencia de energía (conservativa)
-            # ΔE = J * sin(Δφ) -> Intercambio de flujo
-            delta_e = coupling * abs(sin_dphi)
+            # ΔE = J (1 - cos(Δφ))
+            delta_e = coupling * (S60(1, 0, 0, 0, 0) - cos_dphi)
             
             self.energy += delta_e
             n.energy -= delta_e
