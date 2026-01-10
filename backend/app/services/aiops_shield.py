@@ -189,14 +189,26 @@ class AIOpsShield:
         
         # Reduce confidence based on threat level
         if threat_level == ThreatLevel.SUSPICIOUS:
-            base_confidence -= 0.3
+            base_confidence -= S60(0, 18, 0) # 0.3 = 18/60
         elif threat_level == ThreatLevel.MALICIOUS:
-            base_confidence -= 0.7
+            base_confidence -= S60(0, 42, 0) # 0.7 = 42/60
         
         # Reduce confidence for many detected patterns
-        base_confidence -= min(num_patterns * S60(0, 6, 0), 0.3)
+        pattern_reduction = num_patterns * S60(0, 6, 0) # 0.1 por patrón
+        max_reduction = S60(0, 18, 0) # Max 0.3 reduction
         
-        return max(S60(0, 0, 0), min(S60(1, 0, 0), base_confidence))
+        if pattern_reduction > max_reduction:
+             base_confidence -= max_reduction
+        else:
+             base_confidence -= pattern_reduction
+        
+        # Clamp result within [0, 1]
+        if base_confidence < S60(0, 0, 0):
+             return S60(0, 0, 0)
+        elif base_confidence > S60(1, 0, 0):
+             return S60(1, 0, 0)
+             
+        return base_confidence
     
     def should_block(self, result: SanitizationResult) -> bool:
         """Determine if log should be blocked from reaching Ollama"""

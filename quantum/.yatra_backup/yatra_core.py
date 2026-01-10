@@ -249,7 +249,7 @@ class S60:
         return self._value >= other._value
     
     def __eq__(self, other):
-        """Igual (==)."""
+        """Igual (==)"""
         if not isinstance(other, S60):
             return False
         return self._value == other._value
@@ -294,10 +294,18 @@ class S60:
     
     def to_base_units(self):
         """
-        Retorna el valor interno (int puro).
+        Retorna el valor interno en unidades mínimas (int puro).
+        
+        Útil para:
+        - Comparaciones externas
+        - Serialización
+        - Debugging
         
         Returns:
             int: Valor en unidades de 1/60^4
+        
+        Ejemplo:
+            S60(1, 30, 0, 0, 0).to_base_units() → 19,440,000
         """
         return self._value
     
@@ -308,7 +316,7 @@ class S60:
         Convierte float -> S60 con precisión de 4 niveles.
         
         ⚠️ ADVERTENCIA: Usa floats internamente.
-        ✅ ACEPTABLE: Solo para importar datos externos.
+        ✅ ACEPTABLE: Solo para # math import removed - Yatra uses pure Base-60 arithmetic onlyr datos externos.
         🔒 REGLA: NUNCA usar dentro de lógica Yatra.
         
         Args:
