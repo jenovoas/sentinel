@@ -87,7 +87,12 @@ CRITICAL_FILES = [
     "../research/PHYSICS_GEOMETRY_ISOMORPHISM.md",  # Physics Research
     "../research/FRACTAL_SOUL_RESEARCH.md",         # Consciousness Research
     "../research/DIGITAL_ARCHAEOLOGY.md",           # Historical Analysis
-    "../research/SACRED_GEOMETRY_PATTERNS.md"       # Geometric Patterns
+    "../research/SACRED_GEOMETRY_PATTERNS.md",      # Geometric Patterns
+    
+    # PHASE 7: SILICON SYNTHESIS - FROZEN
+    "hardware_synthesis.py",             # Synthesis Simulator
+    "numerical_control_unit.py",         # NCU Driver
+    "../docs/S60_HARDWARE_SPEC.md"       # Hardware Specification
 ]
 
 # Archivos en proceso de validación científica (Etiqueta: "Under Research")
