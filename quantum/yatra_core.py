@@ -183,25 +183,27 @@ class S60:
     def __truediv__(self, divisor):
         """
         División verdadera S60 / S60 o S60 / int.
-        
-        Args:
-            divisor: S60 o int
-            
-        Returns:
-            S60 con resultado de división
+        Retorna S60 con redondeo al cuarto más cercano (máxima precisión).
         """
         if isinstance(divisor, S60):
-            # S60 / S60: división de valores internos
             if divisor._value == 0:
                 raise ZeroDivisionError("División por cero")
             
-            # División con re-escalado para mantener precisión fixed-point
-            result = (self._value * self.SCALE_0) // divisor._value
-            return S60._from_raw(result)
+            # División con re-escalado y redondeo (+ divisor//2 para redondear)
+            num = self._value * self.SCALE_0
+            den = divisor._value
+            # Manejo de signo para redondeo correcto
+            sign = 1 if (num ^ den) >= 0 else -1
+            result = (abs(num) + abs(den) // 2) // abs(den)
+            return S60._from_raw(result * sign)
         
         elif isinstance(divisor, int):
-            # S60 / int: usar __floordiv__
-            return self.__floordiv__(divisor)
+            if divisor == 0:
+                raise ZeroDivisionError("División por cero")
+            # S60 / int con redondeo
+            sign = 1 if (self._value ^ divisor) >= 0 else -1
+            result = (abs(self._value) + abs(divisor) // 2) // abs(divisor)
+            return S60._from_raw(result * sign)
         
         else:
             raise TypeError(f"No se puede dividir S60 por {type(divisor)}")
@@ -255,6 +257,36 @@ class S60:
     def __ne__(self, other):
         """Diferente (!=)."""
         return not self.__eq__(other)
+
+    def __pow__(self, power: int):
+        """Potencia entera S60 ** int."""
+        if not isinstance(power, int):
+            raise TypeError("La potencia debe ser un entero para mantener soberanía determinista.")
+        if power < 0:
+            # e.g. x^-2 = 1 / x^2
+            res = (self**abs(power))
+            return S60(1) / res
+        
+        result = S60(1)
+        base = self
+        while power > 0:
+            if power % 2 == 1:
+                result = result * base
+            base = base * base
+            power //= 2
+        return result
+
+    def __hash__(self):
+        """Permite usar S60 como clave en diccionarios."""
+        return hash(self._value)
+
+    def __index__(self):
+        """Permite usar S60 como índice si es entero (o para conversiones)."""
+        return self._value // self.SCALE_0
+
+    def __bool__(self):
+        """True si el valor es distinto de cero."""
+        return self._value != 0
     
     # ========================================================================
     # UTILIDADES
