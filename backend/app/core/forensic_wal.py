@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 class WALRecord:
     """Registro WAL con protección forense"""
     event_id: str          # UUID único
-    timestamp: float       # Unix timestamp
+    timestamp: S60         # Unix timestamp (S60)
     nonce: str            # Nonce único (previene replay)
     data: dict            # Datos del evento
     hmac_signature: str   # HMAC-SHA256 del registro
@@ -64,7 +64,7 @@ class ForensicWAL:
         self.seen_nonces: Set[str] = set()
         
         # Timestamp validation
-        self.max_timestamp_drift = max_timestamp_drift_seconds
+        self.max_timestamp_drift = S60(0, max_timestamp_drift_seconds // 60, max_timestamp_drift_seconds % 60)
         self.last_timestamp = S60(0, 0, 0)
         
         # Stats
@@ -105,7 +105,7 @@ class ForensicWAL:
         # Reconstruir datos sin signature
         record_data = {
             "event_id": record.event_id,
-            "timestamp": record.timestamp,
+            "timestamp": str(record.timestamp), # S60 string repr
             "nonce": record.nonce,
             "data": record.data
         }
@@ -128,33 +128,30 @@ class ForensicWAL:
         
         return False
     
-    def _check_timestamp_manipulation(self, timestamp: float) -> bool:
+    def _check_timestamp_manipulation(self, timestamp_s60: S60) -> bool:
         """
-        Detecta manipulación de timestamp
-        
-        Reglas:
-        1. Timestamp no puede ser del futuro (> now + drift)
-        2. Timestamp no puede ser muy antiguo (< now - drift)
-        3. Timestamps deben ser monotónicamente crecientes (aprox)
-        
-        Returns:
-            True si es manipulación, False si es legítimo
+        Detecta manipulación de timestamp (Todo en S60)
         """
-        now = time.time()
+        now_float = time.time()
+        now_s60 = S60._from_raw(int(now_float * S60.SCALE_0)) # Conversión directa a escala interna
+        # O más simple: S60(int(now_float), 0, 0) si aceptamos perder precisión sub-segundo en la conversión
+        # Mejor: Usamos la conversión robusta:
+        now_s60 = S60(int(now_float), 0, 0) + S60(0, int((now_float % 1) * 60), 0)
         
         # Regla 1: No puede ser del futuro
-        if timestamp > (now + self.max_timestamp_drift):
-            logger.warning(f"Timestamp manipulation: future timestamp ({timestamp} > {now})")
+        if timestamp_s60 > (now_s60 + self.max_timestamp_drift):
+            logger.warning(f"Timestamp manipulation: future timestamp")
             return True
         
         # Regla 2: No puede ser muy antiguo
-        if timestamp < (now - self.max_timestamp_drift):
-            logger.warning(f"Timestamp manipulation: too old ({timestamp} < {now - self.max_timestamp_drift})")
+        if timestamp_s60 < (now_s60 - self.max_timestamp_drift):
+            logger.warning(f"Timestamp manipulation: too old")
             return True
         
         # Regla 3: Debe ser >= último timestamp (con tolerancia de drift)
-        if timestamp < (self.last_timestamp - self.max_timestamp_drift):
-            logger.warning(f"Timestamp manipulation: out of order ({timestamp} < {self.last_timestamp})")
+        # self.last_timestamp es S60. self.max_timestamp_drift es S60.
+        if timestamp_s60 < (self.last_timestamp - self.max_timestamp_drift):
+            logger.warning(f"Timestamp manipulation: out of order")
             return True
         
         return False
@@ -178,8 +175,9 @@ class ForensicWAL:
             # Generar nonce único
             nonce = self._generate_nonce()
             
-            # Timestamp actual
-            timestamp = time.time()
+            # Timestamp actual convertido a S60
+            ts_float = time.time()
+            timestamp = S60(int(ts_float), int((ts_float % 1) * 60), 0)
             
             # Generar event_id único
             event_id = secrets.token_hex(16)
@@ -187,7 +185,7 @@ class ForensicWAL:
             # Construir registro
             record_data = {
                 "event_id": event_id,
-                "timestamp": timestamp,
+                "timestamp": str(timestamp),
                 "nonce": nonce,
                 "data": event_data
             }
@@ -220,7 +218,7 @@ class ForensicWAL:
             with open(wal_file, "a") as f:
                 record_json = json.dumps({
                     "event_id": record.event_id,
-                    "timestamp": record.timestamp,
+                    "timestamp": str(record.timestamp),
                     "nonce": record.nonce,
                     "data": record.data,
                     "hmac": record.hmac_signature
