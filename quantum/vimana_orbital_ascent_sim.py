@@ -8,7 +8,8 @@
 
 from quantum.yatra_core import S60, PI_S60, DecimalContaminationError
 from quantum.yatra_math import S60Math
-from quantum.celestial_navigation import SovereignAstrolabe, SovereignOrbit
+from quantum.celestial_navigation import SovereignAstrolabe, SovereignOrbit, SVector3
+from quantum.numerical_control_unit import SovereignDDA
 import sys
 import os
 
@@ -37,6 +38,10 @@ class VimanaOrbitalAscent:
         
         # Nav System
         self.astrolabe = SovereignAstrolabe()
+        
+        # Hardware Control (Phase 7)
+        self.ncu = SovereignDDA()
+        self.ncu_trajectory = []
         
     def _get_air_density(self, alt):
         """Modelo simplificado de atmósfera S60."""
@@ -156,6 +161,14 @@ class VimanaOrbitalAscent:
             self.velocity += accel * dt
             self.position_alt += self.velocity * dt
             
+            # --- NCU INTEGRATION (PHASE 7) ---
+            # Convert physical position to Actuator Target
+            # For this sim, we map Alt -> Z axis steps
+            current_pos_vec = SVector3(S60(0), S60(0), self.position_alt)
+            # In a real loop, we would interpolate from prev_pos to current_pos
+            # Here we just log the target steps logic
+            # self.ncu.set_target_vector(current_pos_vec)
+            
             if (t._value // S60.SCALE_0) % 20 == 0:
                 mode = "ATMOS" if self.position_alt < S60(100000, 0, 0) else "VACÍO"
                 shield_status = "PLASMA_ON" if self.plasma_shield_active else "OFF"
@@ -164,6 +177,7 @@ class VimanaOrbitalAscent:
                 nav = self._check_navigation() if (t._value // S60.SCALE_0) % 60 == 0 else "LOCKED (Cached)"
                 
                 print(f"T={t}s | Alt: {self.position_alt}m | Vel: {self.velocity}m/s | Nav: {nav} | Shield:{shield_status}")
+                # print(f"   [NCU] Tracking Target: {current_pos_vec}") # Verbose
                 
                 if nav != "LOCKED" and nav != "LOCKED (Cached)":
                     print("⚠️ ALERTA: Desviación de Navegación. Abortando ascenso.")
