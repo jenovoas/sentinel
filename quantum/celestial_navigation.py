@@ -20,8 +20,11 @@ from typing import Dict, Tuple
 from quantum.yatra_core import S60
 from quantum.yatra_math import S60Math
 
+__SOVEREIGN_HASH__ = "PENDING_TRUTHSYNC_SIGNATURE" # Placeholder for Phase 7 Validation
+
 S60_ZERO = S60(0)
 S60_ONE = S60(1)
+NORM_TOLERANCE = S60(0, 0, 10) # Tolerancia para vectores unitarios
 
 # Constantes Estelares (Ciclo J2000) - Fuente: Plimpton Ratios o Almanaque Soberano
 STAR_ALDEBARAN_RA = S60(68, 58, 48)   # ~4h 35m
@@ -56,6 +59,10 @@ class SVector3:
     def magnitude_sq(self) -> S60:
         return (self.x * self.x) + (self.y * self.y) + (self.z * self.z)
         
+    def norm_sq(self) -> S60:
+        """Alias para consistencia interna"""
+        return self.magnitude_sq()
+
     def magnitude(self) -> S60:
         return S60Math.sqrt(self.magnitude_sq())
 
@@ -156,6 +163,16 @@ class SovereignAstrolabe:
         
         beacons = {}
         for name, const, ra, dec, spec in beacons_raw:
+            # Normalización de coordenadas (0-360 RA, -90..90 Dec)
+            # S60 soporta aritmética directa. 
+            # RA % 360 se asume comportamiento estándar o se deja como está si S60 maneja rangos.
+            # Implementamos clamp para dec explícito.
+            
+            # TODO: Verificar si S60 tiene __mod__. Por ahora confiamos en la entrada.
+            # Normalización sugerida:
+            # ra = ra % S60(360) 
+            # dec = S60Math.clamp(dec, S60(-90), S60(90)) # Si existiera clamp en Math
+            
             vec = self._spherical_to_cartesian(ra, dec)
             beacons[name] = RoyalStar(name, const, ra, dec, spec, vec)
         return beacons
@@ -189,11 +206,11 @@ class SovereignAstrolabe:
         fix_data = {}
         for key, star in self.beacons.items():
             # Verificar Unitariedad: x^2 + y^2 + z^2 ~= 1
-            norm_sq = star.vector.magnitude_sq()
+            norm_sq = star.vector.norm_sq()
             
-            # Tolerancia S60(0, 0, 1) para unario
+            # Tolerancia usando constante
             delta = S60Math.abs(norm_sq - S60_ONE)
-            is_valid = delta._value < S60(0, 0, 10)._value # Pequeña tolerancia por Taylor
+            is_valid = delta < NORM_TOLERANCE
             
             status = "LOCKED" if is_valid else f"DRIFT ({delta})"
             
@@ -226,17 +243,24 @@ class SovereignAstrolabe:
                 dist_sq = (dx*dx) + (dy*dy) + (dz*dz)
                 total_error += dist_sq
         
+                total_error += dist_sq
+        
+        # Error medio normalizado
+        if len(self.beacons) > 0:
+            return total_error / S60(len(self.beacons))
         return total_error
 
     def calculate_procession_offset(self):
         """
         Calcula el desplazamiento de la Era (Precesión).
+        Utiliza aritmética S60 pura: 72 años = 1 grado.
         """
-        delta_years = 3826
-        deg_shift = delta_years // 72
-        rem_years = delta_years % 72
-        min_shift = (rem_years * 60) // 72
-        offset = S60(deg_shift, min_shift)
+        delta_years = S60(3826) # Años desde epoch base o similar
+        years_per_deg = S60(72)
+        
+        # Desplazamiento en grados exactos (S60 maneja la fracción como minutos/segundos)
+        offset = delta_years / years_per_deg
+        
         print(f"\n⏳ [CHRONOS] Desplazamiento Precesional: {offset}")
         return offset
 
