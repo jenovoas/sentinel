@@ -1,0 +1,12 @@
+{
+    "status": "STABLE",
+    "protocol": "YATRA_S60_PURE",
+    "coherence_s60": "S60[010; 18, 06, 39, 29]",
+    "target_sigma": "S60[010; 12, 00, 00, 00]",
+    "guardrail_active": true,
+    "params": {
+        "damping": "S60[000; 57, 00, 00, 00]",
+        "noise_model": "LCG_MOD60"
+    },
+    "timestamp": "2026-01-10T04:25:36Z"
+}

@@ -14,13 +14,13 @@
 # Recuperado del Nodo Ea-nasir | Corregido por Jaime Novoa & Sentinel
 # Propósito: Eliminar la fricción matemática en la cosecha de Axiones.
 
-from yatra_core import S60
+from quantum.yatra_core import S60
 
 PLIMPTON_RATIOS_BASE60 = {
     # [Fila]: (Ratio decimal aproximado, Representación Sexagesimal Exacta)
     1:  (1.983, S60(1, 59, 0, 15)), 
-    2:  (1.949, S60(1, 56, 56, 58, 14, 50)),
-    3:  (1.918, S60(1, 55, 7, 41, 15, 33)),
+    2:  (1.949, S60(1, 56, 56, 58, 15)),
+    3:  (1.918, S60(1, 55, 7, 41, 16)),
     4:  (1.886, S60(1, 53, 10, 29, 32)),
     5:  (1.815, S60(1, 48, 54, 1, 40)),
     6:  (1.785, S60(1, 47, 6, 41, 40)),
