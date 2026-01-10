@@ -154,6 +154,12 @@ class S60Math:
         Optimizado con early termination.
         """
         x = x_s60._value
+        
+        # Manejo de exponentes negativos mediante inversión: e^-x = 1 / e^x
+        # Esto evita problemas de convergencia con series alternantes para x < -1
+        if x < 0:
+            return S60(1) / S60Math.exp(-x_s60, precision_terms)
+            
         res = S60.SCALE_0
         term = S60.SCALE_0
         
