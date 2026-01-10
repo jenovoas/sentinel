@@ -1,12 +1,14 @@
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
-import httpx
-# import random  <-- YATRA: PROHIBIDO (CAOS)
-import time
 import sys
-from datetime import datetime
+import time
 from dataclasses import dataclass, field
-from typing import List, Dict, Optional, Any
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+import httpx
+
+from quantum.yatra_core import PI_S60, S60  # YATRA AUTO-INJECT
+
 
 # Configuration Constants
 @dataclass

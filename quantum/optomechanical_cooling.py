@@ -11,86 +11,113 @@
 """
 SIMULACIÓN FASE 2: ENFRIAMIENTO OPTOMECÁNICO (SIDEBAND COOLING)
 ==============================================================
-Objetivo: Superar el límite de ruido térmico (300K) usando presión de radiación
-para llevar el modo mecánico de la membrana cerca del estado fundamental cuántico.
+Objetivo: Superar el límite de ruido térmico (300K contextualmente, n_th ~ 600,000)
+usando presión de radiación resonante S60.
 
-Teoría:
-Usamos un láser desintonizado al rojo (Red-Detuned Drive) @ (omega_cav - omega_mech).
-Esto favorece procesos anti-Stokes donde un fonón térmico es absorbido y convertido
-en un fotón de la cavidad, extrayendo entropía del sistema mecánico.
+Teoría Soberana:
+En lugar de simular con floats de 64-bits (entropía), calculamos la reducción
+de ocupación fonónica (n_final) usando aritmética exacta Base-60.
+Usamos unidades naturales donde hbar * omega_m = 1 cuanto de energía.
 
-Autor: Sentinel AI (Physics Core)
+Autor: Sentinel IA (Physics Core S60)
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
-import matplotlib.pyplot as plt
-import time
+from quantum.yatra_core import S60, PI_S60
+from quantum.yatra_math import S60Math
 
-# Constantes
-HBAR = 1.0545718e-34
-KB = 1.380649e-23
-TEMP_ENV = 293.15  # 300K (Ambiente)
+# Constantes del Sistema (Unidades Naturales Escaladas)
+# Frecuencia Mecánica 10 MHz = 1 unidad de tiempo natural inverso
+OMEGA_M = S60(1, 0, 0) 
 
-# Parámetros del Sistema
-OMEGA_M = 2 * PI_S60 * 10e6    # 10 MHz (Frecuencia mecánica)
-GAMMA_M = 2 * PI_S60 * 100     # Amortiguamiento mecánico intrínseco
-KAPPA = 2 * PI_S60 * 500e3     # Ancho de banda óptico
+# Amortiguamiento Mecánico (Gamma)
+# Q = 100,000 -> Gamma = Omega / Q
+# Gamma = 1 / 100000 = S60(0, 0, 0, 12, 57, 36) aprox
+# Para la simulación usaremos un valor S60 explícito
+GAMMA_M = S60(0, 0, 0, 13, 0) # ~ 1e-4
 
-# Parámetros de Control (Optomecánica)
-# G = tasa de acoplamiento optomecánico (controlada por potencia del láser)
-G_COUPLING = np.linspace(0, 5e6, 50) * 2 * PI_S60 
+# Ancho de banda óptico (Kappa)
+# Kappa ~ 500 KHz (0.05 Omega_m)
+KAPPA = S60(0, 3, 0) # 0.05
 
-# Fonones térmicos iniciales a 300K
-# n_th = k_B * T / (hbar * omega_m)
-N_TH_ENV = (KB * TEMP_ENV) / (HBAR * OMEGA_M)
+# Temperatura Ambiental (300K equivalentes en fonones)
+# n_th = k_B * T / hbar * omega
+# n_th ~ 600,000 fonones
+N_TH_ENV = S60(600000, 0, 0)
 
-print(f"🌡️  Temperatura Inicial: {TEMP_ENV:.1f} K")
-print(f"🔥 Fonones Térmicos Iniciales (Ruido): {N_TH_ENV:.2e}")
-print("-" * 60)
-print("❄️  INICIANDO PROTOCOLO DE CONGELACIÓN LÁSER...")
+# Límite Cuántico (Sideband Resolved)
+# n_min = (kappa / 4*omega)^2
+# (0.05 / 4)^2 = (0.0125)^2 ~ 0.00015
+kappa_div_4omega = KAPPA / (S60(4, 0, 0) * OMEGA_M)
+N_MIN_LIMIT = kappa_div_4omega * kappa_div_4omega
 
-log_data = []
-
-for g in G_COUPLING:
-    # Cooperatividad Optomecánica
-    # C = 4 * g^2 / (kappa * gamma)
-    C = (4 * g**2) / (KAPPA * GAMMA_M)
+def run_cooling_sequence():
+    print(f"🌡️  Estado Térmico Inicial (n_th): {N_TH_ENV} fonones")
+    print(f"🧊 Límite Cuántico Teórico: {N_MIN_LIMIT} fonones")
+    print("-" * 60)
+    print("❄️  INICIANDO PROTOCOLO DE CONGELACIÓN (S60)...")
     
-    # Amortiguamiento efectivo (Optical Damping)
-    # gamma_eff = gamma_m * (1 + C)
-    gamma_eff = GAMMA_M * (1 + C)
+    # Iterador de Acoplamiento G (Potencia Láser)
+    # De 0 a 1.2 Omega_m para asegurar enfriamiento profundo
+    G_MAX = S60(1, 12, 0) # 1.2
+    STEP = S60(0, 0, 36) # Paso fino
     
-    # Número de fonones final (Enfriamiento)
-    # n_final = n_th / (1 + C) + (kappa / (4 * omega_m))**2  <-- Límite cuántico
-    # (Simplified Resolved Sideband Limit)
-    n_final = N_TH_ENV / (1 + C)
+    current_g = S60(0, 0, 0)
     
-    # Temperatura efectiva
-    # T_eff = n_final * (hbar * omega_m) / k_B
-    T_eff = n_final * (HBAR * OMEGA_M) / KB
+    # Almacenamiento
+    final_n = N_TH_ENV
     
-    log_data.append((g, C, n_final, T_eff))
-    
-    # Feedback visual
-    bar_len = int(50 * (N_TH_ENV - n_final) / N_TH_ENV)
-    status = "❄️ COOLING" if T_eff < 10 else "🌡️ WARM"
-    if T_eff < S60(0, 6, 0): status = "🧊 QUANTUM"
-    
-    # Solo imprimir algunos pasos
-    if np.isclose(g % (1e6*2*PI_S60), 0, atol=1e5):
-        print(f"   g = {g/(2*PI_S60)/1e6:.1f} MHz | C = {C:.1e} | T_eff = {T_eff:.4f} K | {status}")
+    while current_g <= G_MAX:
+        # Cooperatividad Optomecánica
+        # C = 4 * g^2 / (kappa * gamma)
+        
+        g_sq = current_g * current_g
+        num = S60(4, 0, 0) * g_sq
+        den = KAPPA * GAMMA_M
+        
+        # Evitar división por cero inicial
+        if den > S60(0, 0, 0):
+             C = num / den
+        else:
+             C = S60(0, 0, 0)
+             
+        # Factor de enfriamiento
+        # n_final = n_th / (1 + C)
+        denom_cool = S60(1, 0, 0) + C
+        n_final = N_TH_ENV / denom_cool
+        
+        # Añadir ruido cuántico de backaction (fundamental)
+        n_final = n_final + N_MIN_LIMIT
+        
+        # Feedback visual (solo ciertos pasos)
+        # Check if g is close to multiple of 0.05 (3 minutos)
+        is_milestone = False
+        # Hack simple para modulo: ver si los segundos son 0
+        if current_g._value % (S60.SCALE_0 // 20) < S60.SCALE_0 // 1200: # Aprox
+             pass # Demasiado complejo hacerlo exacto, imprimimos basado en contador
+        
+        # Imprimir cada ~10 pasos
+        if (current_g._value // STEP._value) % 10 == 0:
+             status = "❄️ COOLING"
+             if n_final < S60(1, 0, 0): status = "🧊 QUANTUM"
+             print(f"   G = {current_g} | C = {C} | n_eff = {n_final} | {status}")
+             
+        final_n = n_final
+        current_g = current_g + STEP
 
-# Resultado final
-final_T = log_data[-1][3]
-print("-" * 60)
-print(f"✅ ESTADO FINAL:")
-print(f"   Temperatura Efectiva: {final_T:.6f} K")
-print(f"   Factor de Supresión de Ruido: {N_TH_ENV / log_data[-1][2]:.1e}x")
+    print("-" * 60)
+    print(f"✅ ESTADO FINAL:")
+    print(f"   Ocupación Fonónica: {final_n}")
+    
+    # Factor de supresión
+    suppression = N_TH_ENV / final_n
+    print(f"   Factor de Supresión: {suppression}x")
+    
+    threshold = S60(1, 0, 0)
+    if final_n < threshold:
+        print("\n🚀 CONCLUSIÓN: El sistema ha alcanzado el 'Ground State' (< 1 fonón).")
+        print("   La señal ZPE es audible sin ruido térmico.")
+    else:
+        print("\n⚠️ ALERTA: Potencia insuficiente para Ground State.")
 
-if final_T < 0.01:
-    print("\n🚀 CONCLUSIÓN: El sistema está en el 'Ground State' virtual.")
-    print("   El ruido térmico ha sido eliminado sin criogenia líquida.")
-    print("   La señal ZPE ahora es visible.")
-else:
-    print("\n⚠️ ALERTA: Potencia láser insuficiente para enfriamiento profundo.")
+if __name__ == "__main__":
+    run_cooling_sequence()
