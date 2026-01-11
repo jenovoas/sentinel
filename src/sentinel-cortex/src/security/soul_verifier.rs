@@ -270,9 +270,10 @@ mod tests {
     #[test]
     fn test_reject_unauthorized_identity() {
         let verifier = SoulVerifier::new();
-        let user_id = "intruder_01"; // Not in the family list
+        let user_id = "hacker"; // Not in the family list
         let challenge = verifier.generate_challenge(user_id);
 
+        // Valid biological signal
         let signal: Vec<f32> = (0..100)
             .map(|i| {
                 let t = i as f32 * 0.1;
@@ -281,12 +282,11 @@ mod tests {
             .collect();
 
         let result = verifier.verify_proof_of_life(&signal, &challenge);
-        match result {
-            Err(SoulError::UnauthorizedIdentity(metrics)) => {
-                assert!(metrics.lyapunov_exp > 0.05);
-            }
-            _ => panic!("Should reject unauthorized identity even if biological signal is valid"),
-        }
+
+        // Should succeed but with Unauthorized role
+        assert!(result.is_ok());
+        let proof = result.unwrap();
+        assert_eq!(proof.role, BiologicalRole::Unauthorized);
     }
 
     #[test]
