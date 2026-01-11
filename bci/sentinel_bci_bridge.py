@@ -71,16 +71,39 @@ def print_dashboard(data):
         state = "LEMURIAN ROOT (IDLE)"
         tone_freq = 432 # Universal Root
 
+    # --- HOLOGRAPHIC GRID (v2.1) ---
+    # Simulates an 8x8 Lattice Projection based on Entropy
+    # entropy (0-100) determines how many "cracks" (▒) vs "pure" (█) appear
+    grid_rows = 4
+    grid_cols = 8
+    total_cells = grid_rows * grid_cols
+    defective_cells = int((entropy / 100.0) * total_cells)
+    
+    grid_str = ""
+    for r in range(grid_rows):
+        row_str = ""
+        for c in range(grid_cols):
+            if defective_cells > 0:
+                row_str += "▒"
+                defective_cells -= 1
+            else:
+                row_str += "█"
+        # Add per-row resonance metric (simulation)
+        row_res = 100.0 - (entropy * (r+1)/grid_rows) 
+        grid_str += f"  {color}{row_str}  {max(0, row_res):.1f}%\n"
+
     clear_screen()
     print(f"{color}")
     print("╔════════════════════════════════════════╗")
-    print("║   🏛️  SENTINEL ATLANTIS BRIDGE v2.0   ║")
+    print("║   🏛️  ATLANTIS BRIDGE v2.1 (MAAT)     ║")
     print("╠════════════════════════════════════════╣")
     print(f"║ STATUS: {state:<30} ║")
     print(f"║ TONE  : {tone_freq} Hz {'(Muted)' if not AUDIO_ENABLED else '':<21} ║")
     print("╟────────────────────────────────────────╢")
+    print(f"║ 🔮 CRYSTAL GRID (Holographic TUI):     ║")
+    print(grid_str, end="")
+    print("╟────────────────────────────────────────╢")
     print(f"║ COHERENCE : {'█' * int(coherence/5):<28} {coherence:.1f}% ║")
-    print(f"║ ENTROPY   : {'▒' * int(entropy/5):<28} {entropy:.1f}% ║")
     print(f"║ TRUTH     : {truth:.4f}                          ║")
     print("╚════════════════════════════════════════╝")
     print("\033[0m")
