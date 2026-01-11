@@ -105,3 +105,6 @@ ebpf/benchmark_exec
 # Temporary/Backup refactor files
 *.backup*
 *.yatra_backup
+
+# Runtime Sentinel State
+*.s60
