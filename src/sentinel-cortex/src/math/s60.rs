@@ -139,6 +139,22 @@ impl S60 {
         }
     }
 
+    /// UNSAFE: Convert from f32 (for migration only)
+    ///
+    /// This is temporary for dual-path validation.
+    /// Production should use real S60 sources (not f32 conversion).
+    pub fn from_f32_unsafe(val: f32) -> Self {
+        let scaled = (val * Self::SCALE_0 as f32) as i64;
+        S60::from_raw(scaled)
+    }
+
+    /// UNSAFE: Convert to f64 (for comparison only)
+    ///
+    /// Used to compare S60 results with f64 baseline during migration.
+    pub fn to_f64_unsafe(&self) -> f64 {
+        self.value as f64 / Self::SCALE_0 as f64
+    }
+
     /// Zero constant
     pub const ZERO: S60 = S60 { value: 0 };
 
