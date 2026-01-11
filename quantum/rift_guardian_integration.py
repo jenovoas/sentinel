@@ -127,6 +127,18 @@ class QuantumRiftGuardian:
         logger.info(f"   Rift threshold: {rift_threshold}")
         logger.info(f"   Window size: {window_size} events")
     
+    def _get_real_entropy(self) -> float:
+        """
+        Genera entropía real desde /dev/urandom.
+        
+        Retorna un valor float en [0.0, 1.0) usando entropía del kernel.
+        Cumple con Axiom II (Radical Honesty) - NO pseudo-random.
+        """
+        import os
+        entropy_bytes = os.urandom(2)  # 2 bytes = 16 bits
+        raw_value = int.from_bytes(entropy_bytes, 'big')
+        return raw_value / 65536.0  # Normalizar a [0.0, 1.0)      
+    
     def process_event(self, event: NetworkEvent) -> Optional[RiftAlert]:
         """
         Process network event and check for quantum rifts.
@@ -320,8 +332,9 @@ def simulate_ebpf_events(duration: float = 30.0) -> List[NetworkEvent]:
             burst_pps = np.random.randint(50000, 100000)
             severity = 3
             burst_detected = True
-        # Random bursts
-        elif np.random.random() < S60(0, 6, 0):
+        # Random bursts (using real entropy, not pseudo-random)
+        elif self._get_real_entropy() < 0.1:  # S60(0, 6, 0) ≈ 0.1
+            # Evento raro: Rift detectado
             burst_pps = np.random.randint(1000, 10000)
             severity = np.random.randint(0, 2)
             burst_detected = True
