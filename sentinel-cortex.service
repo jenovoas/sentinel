@@ -1,0 +1,33 @@
+# /etc/systemd/system/sentinel-cortex.service
+# Sentinel Cortex v7.0 - Immortal Persistence
+# Optimized for Debian 13 (Trixie) + NVIDIA 3GB
+
+[Unit]
+Description=Sentinel Cortex v7.0 Hyper-Scale Memory
+After=network.target nvidia-persistenced.service
+Wants=nvidia-persistenced.service
+
+[Service]
+Type=simple
+User=jnovoas
+Group=jnovoas
+# Environment Config
+Environment=CUDA_VISIBLE_DEVICES=0
+Environment=RUST_BACKTRACE=1
+Environment=PYTHONPATH=/home/jnovoas/dev/sentinel
+# Hybrid GPU Optimizations
+Environment=__NV_PRIME_RENDER_OFFLOAD=1
+Environment=__NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
+Environment=__GLX_VENDOR_LIBRARY_NAME=nvidia
+
+WorkingDirectory=/home/jnovoas/dev/sentinel
+ExecStart=/usr/bin/python3 -m quantum.cortex_main --rust --gpu3gb --hybrid
+
+# Persistence Guarantees
+Restart=always
+RestartSec=5
+TimeoutStopSec=30
+
+
+[Install]
+WantedBy=multi-user.target
