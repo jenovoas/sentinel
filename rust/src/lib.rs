@@ -7,7 +7,7 @@ use pyo3::prelude::*;
 /// Target: 16 Bytes per QuantumNode.
 /// -------------------------------------------------------------------
 
-#[repr(C, packed)]
+#[repr(C, align(64))]
 #[derive(Clone, Copy, Debug)]
 struct QuantumNode {
     // 8 Bytes: Energy (S60 Amplitude)
@@ -24,9 +24,10 @@ struct QuantumNode {
     // Bit 1: Locked (Phase locked)
     flags: u8,
 
-    // 5 Bytes: Padding / Reserved (Future use: Paging ID?)
-    // Align to 16 bytes is good for SIMD/Cache.
-    _reserved: [u8; 5],
+    // 53 Bytes: Sacred Silence (Padding)
+    // Ensures Structure resonates with Cache Line (64 Bytes).
+    // 64 - 11 = 53 bytes of Silence.
+    _silence: [u8; 53],
 }
 
 #[pyclass]
@@ -106,7 +107,7 @@ impl RustLattice {
                 energy: val,
                 phase: 0,
                 flags: 1, // Active
-                _reserved: [0; 5],
+                _silence: [0; 53],
             };
 
             self.nodes.push(node);
