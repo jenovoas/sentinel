@@ -1,6 +1,6 @@
 // src/security/soul_verifier.rs
 use crate::math::s60::S60;
-use crate::security::rbac_biological::{BiologicalRole, RBACBiological};
+use crate::security::rbac_biological::BiologicalRole;
 use crate::security::soul_verifier_s60::{calculate_lyapunov_s60, chaos_entropy_s60};
 use serde::{Deserialize, Serialize};
 use sha3::{Digest, Sha3_512};
@@ -92,22 +92,14 @@ impl SoulVerifier {
         let soul_hash_str = self.compute_soul_hash(rppg_signal, &challenge.nonce.to_le_bytes());
 
         // Role-based validation
-        let role = self
-            .rbac
-            .validate_biological_identity(&challenge.user_id, lyapunov, entropy)?;
+        let role = BiologicalRole::from_soul_hash(&challenge.user_id);
 
         if lyapunov < 0.1 || lyapunov > 2.5 {
-            return Err(SoulError::InvalidSignal(format!(
-                "Lyapunov fuera de rango humano: {:.2}",
-                lyapunov
-            )));
+            return Err(SoulError::NoLivingSoul);
         }
 
         if entropy < 0.5 {
-            return Err(SoulError::InvalidSignal(format!(
-                "Entropía muy baja (señal periódica): {:.2}",
-                entropy
-            )));
+            return Err(SoulError::NoLivingSoul);
         }
 
         Ok(ProofOfLife {
