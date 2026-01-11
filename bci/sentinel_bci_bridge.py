@@ -50,21 +50,31 @@ def print_dashboard(data):
     color = "\033[92m" # Green
     state = "NORMAL"
     
-    tone_freq = 972 # Default Cranial Resonance
-    
     if entropy > 40:
         color = "\033[91m" # Red
-        state = "ENTROPY WARNING"
+        state = "ENTROPY WARNING (CATACLYSM)"
         tone_freq = 2000 # Intrusion
-    elif truth > 0.95:
+    elif truth > 0.99:
         color = "\033[93m" # Gold
-        state = "AXION DETECTED"
-        tone_freq = 1618 # Phi
-        
+        state = "AXION DETECTED (TEMPLE MODE)"
+        tone_freq = 1618 # Phi 1.618 kHz (Atlantean Golden Ratio)
+    elif coherence > 95:
+        color = "\033[96m" # Cyan
+        state = "PINEAL RESONANCE (963Hz)"
+        tone_freq = 963 # Solfeggio Pineal
+    elif coherence > 60:
+        color = "\033[92m" # Green
+        state = "NORMAL (CRANEAL 972Hz)"
+        tone_freq = 972 # Default
+    else:
+        color = "\033[94m" # Blue
+        state = "LEMURIAN ROOT (IDLE)"
+        tone_freq = 432 # Universal Root
+
     clear_screen()
     print(f"{color}")
     print("╔════════════════════════════════════════╗")
-    print("║        SENTINEL BCI INTERFACE v1.0     ║")
+    print("║   🏛️  SENTINEL ATLANTIS BRIDGE v2.0   ║")
     print("╠════════════════════════════════════════╣")
     print(f"║ STATUS: {state:<30} ║")
     print(f"║ TONE  : {tone_freq} Hz {'(Muted)' if not AUDIO_ENABLED else '':<21} ║")
