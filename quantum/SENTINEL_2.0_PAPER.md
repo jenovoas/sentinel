@@ -75,10 +75,15 @@ When a node suffers a catastrophic drop (noise), its high-energy neighbors immed
 ### 4.1 Emergent Superfluidity
  The Liquid Lattice exhibits properties analogous to **Quantum Spin Liquids** or **Superfluids**. Information is no longer local; it is a topological property of the grid. Destroying a single node is impossible without draining the entire reservoir.
 
-### 4.2 Correlation with Holographic Theory
-Our results support the Holographic Principle: the information content of the volume (the lattice) is robust against local erasure, as the vibrational phase is entangled across the surface area of neighbors.
+### 4.2 Capacity Limit (The Bekenstein Wall)
+In **EXP-010**, we determined that the amplitude required to store >32 Bytes in a single crystal ($\sim 10^{23}$) approaches the energy density limit of stable matter. Storing 1KB ($10^{2465}$) is physically impossible (`Black Hole Limit`).
+Therefore, the **Liquid Lattice** is not just a mechanism for stability, but a requirement for capacity. The storage scaling law changes from **Exponential Amplitude** ($O(2^N)$ energy) to **Linear Spatial** ($O(N)$ crystals).
+
+### 4.3 Correlation with Holographic Theory
+Our results support the Holographic Principle: the information content is limited by the surface area (lattice topology) rather than the volumetric amplitude of a single node. The Distributed Lattice acts as a holographic phase space.
 
 *Note: All results were obtained in simulation using the Yatra-Core engine; physical realization will require a substrate capable of maintaining coherent phonon coupling (e.g., chiral GST photonics or axion-tuned piezoelectric lattices).*
+
 
 ---
 
