@@ -49,18 +49,21 @@ pub fn calculate_lyapunov_s60(signal: &[S60]) -> S60 {
     }
 
     // Average: sum / count
-    let raw_lambda = match sum_div / count {
+    let count_s60 = S60::from_raw(count as i64 * S60::SCALE_0);
+    let raw_lambda = match sum_div / count_s60 {
         Ok(val) => val,
         Err(_) => return S60::ZERO,
     };
 
     // Scale to expected range [0.1 - 2.5] for Sentinel
-    // Multiply by 2 and clamp
+    // Take absolute value and multiply by 2
     let scaled = raw_lambda.abs() * 2;
 
+    // Define min and max bounds
     let min = S60::from_raw(S60::SCALE_0 / 10); // 0.1
-    let max = S60::from_raw(S60::SCALE_0 * 5 / 2); // 2.5
+    let max = S60::from_raw((S60::SCALE_0 * 5) / 2); // 2.5
 
+    // Clamp to range
     scaled.clamp(min, max)
 }
 
