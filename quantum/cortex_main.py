@@ -99,6 +99,24 @@ def main():
             # 2. Report Status
             status = gpu_controller.report_status()
             
+            # --- BCI FEEDBACK BRIDGE (Cortex Auto) ---
+            # Publish system vitality to BCI
+            try:
+                import redis
+                import json
+                r = redis.Redis(host='localhost', port=6379, db=0)
+                # Create a synthetic pulse from Cortex State
+                pulse = {
+                    "entropy": 10.0 if not SHUTDOWN_REQUESTED else 90.0, # Stress on shutdown
+                    "coherence": 100.0,  # Main Logic is coherent
+                    "truth_score": 1.0,
+                    "timestamp": int(time.time()),
+                    "cortex_msg": f"ACTIVE | BAT: {status.get('batch', 0)}"
+                }
+                r.publish('sentinel:quantum:pulse', json.dumps(pulse))
+            except Exception:
+                pass # Silent fail if Redis missing
+            
             # 3. Adaptive Sleep
             # Sleep defines the "Tick Rate" of the cortex.
             time.sleep(1.0) 

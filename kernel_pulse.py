@@ -86,30 +86,38 @@ def run_pulse_generator():
             clock.tick()
             
             # Calcular métricas basadas en el tiempo del reloj (más estable)
-            t = clock.ticks * clock.TICK_INTERVAL
+            # TICK_INTERVAL_NS is S60, convert to float seconds for sine wave math
+            # 1 ns = 1e-9 seconds
+            interval_sec = float(clock.TICK_INTERVAL_NS) / 1e9
+            t = clock.ticks * interval_sec
             
             # GENERAR CAOS DETERMINISTA (No random modules allowed)
             # Chaos range [0, 1]
-            chaos_val = 3.99 * chaos_val * (S60(1, 0, 0) - chaos_val)
+            # 3.99 -> S60(3, 59, 24) approx
+            chaos_val = S60(3, 59, 24) * chaos_val * (S60(1, 0, 0) - chaos_val)
             
             # Escalar caos a rango [-5.0, 5.0] similar al ruido anterior
-            noise = (chaos_val - S60(0, 30, 0)) * 10.0
+            # 10.0 -> S60(10, 0, 0)
+            noise = (chaos_val - S60(0, 30, 0)) * S60(10, 0, 0)
             
             # 1. Entropy (Sine wave + chaos noise)
             # Frecuencias armónicas: S60(0, 30, 0) (Base), 0.83 (5/6), 1.25 (5/4)
-            wave1 = math.sin(t * S60(0, 30, 0)) * 20.0 
+            # CAST TO FLOAT explicitly for wave simulation
+            wave1 = math.sin(t * 0.5) * 20.0 
             wave2 = math.sin(t * 0.8333) * 10.0
             
-            base_entropy = 30.0 + wave1 + wave2 + noise
-            entropy = max(S60(0, 0, 0), min(100.0, base_entropy))
+            # noise is S60, cast to float
+            base_entropy = 30.0 + wave1 + wave2 + float(noise)
+            entropy = max(0.0, min(100.0, base_entropy))
 
             # 2. Coherence (Inverse of entropy)
             # La coherencia del reloj también influye
             clock_quality = clock.get_coherence()
-            coherence = (100.0 - entropy) * clock_quality
+            # clock_quality is S60, cast to float
+            coherence = (100.0 - entropy) * float(clock_quality)
             
             # 3. TTE (Time to Entropy)
-            tte = 1000.0 / (entropy + S60(1, 0, 0))
+            tte = 1000.0 / (entropy + 1.0) # pure float arithmetic
             
             # 4. Truth Score (Linked to coherence)
             truth_score = coherence / 100.0
