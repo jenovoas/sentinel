@@ -5,6 +5,7 @@ mod actions;
 pub mod security;
 pub mod monitoring;
 mod api_server;
+mod math;
 
 use crate::actions::QuantumPulseEmitter;
 use collectors::PrometheusCollector;
