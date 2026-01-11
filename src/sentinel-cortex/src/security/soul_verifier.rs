@@ -155,7 +155,7 @@ impl SoulVerifier {
         let mut sum_div = 0.0f64;
         let mut count = 0;
 
-        // Versión optimizada: Analiza la divergencia de pendientes consecutivas
+        // Analyze divergence of consecutive slopes
         for i in 0..signal.len() - 2 {
             let d1 = (signal[i + 1] - signal[i]).abs() as f64;
             let d2 = (signal[i + 2] - signal[i + 1]).abs() as f64;
@@ -163,7 +163,8 @@ impl SoulVerifier {
             if d1 > 0.0001 {
                 let ratio = d2 / d1;
                 if ratio > 0.0 {
-                    sum_div += ratio.ln();
+                    // Take absolute value of ln to avoid issues with ratio < 1
+                    sum_div += ratio.ln().abs();
                     count += 1;
                 }
             }
@@ -172,10 +173,12 @@ impl SoulVerifier {
         if count == 0 {
             return 0.0;
         }
+
         let raw_lambda = sum_div / count as f64;
 
-        // Escalar al rango esperado [0.1 - 2.5] para Sentinel
-        (raw_lambda.abs() * 2.0).clamp(0.1, 2.5)
+        // Scale to expected range [0.1 - 2.5] for Sentinel
+        // Multiply by small factor and clamp
+        (raw_lambda * 0.5).clamp(0.1, 2.5)
     }
 
     fn chaos_entropy(&self, signal: &[f32]) -> f64 {
