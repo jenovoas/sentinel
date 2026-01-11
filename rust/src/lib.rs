@@ -121,7 +121,11 @@ impl RustLattice {
     }
 
     fn active_memory_usage(&self) -> usize {
-        self.nodes.len() * std::mem::size_of::<QuantumNode>() // Should be 16
+        self.nodes.len() * std::mem::size_of::<QuantumNode>()
+    }
+
+    fn get_node_size(&self) -> usize {
+        std::mem::size_of::<QuantumNode>()
     }
 
     // Phase 6: Diffusion Logic
