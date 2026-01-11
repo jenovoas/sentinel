@@ -1,8 +1,11 @@
 // src/security/soul_verifier.rs
-use super::rbac_biological::BiologicalRole;
+use crate::math::s60::S60;
+use crate::security::rbac_biological::{BiologicalRole, RBACBiological};
+use crate::security::soul_verifier_s60::{calculate_lyapunov_s60, chaos_entropy_s60};
 use serde::{Deserialize, Serialize};
 use sha3::{Digest, Sha3_512};
 use std::collections::HashMap;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct AlmaChallenge {
@@ -77,27 +80,34 @@ impl SoulVerifier {
         // b) Calcular Exponente Lyapunov (caos humano)
         let lyapunov = self.calculate_lyapunov_exponent(rppg_signal);
 
-        // c) Entropía caótica (no periódica, no random)
         let entropy = self.chaos_entropy(rppg_signal);
 
-        // d) Hash biológico SHA3-512
+        // S60 VALIDATION PATH (comparison only, not used for auth yet)
+        let (lyapunov_s60, entropy_s60) = self.calculate_s60_metrics(rppg_signal);
+        self.compare_and_log(lyapunov, lyapunov_s60, entropy, entropy_s60);
+
+        let light_response = self.correlate_light_challenge(rppg_signal, &challenge.light_sequence);
+
+        // Compute soul hash
         let soul_hash_str = self.compute_soul_hash(rppg_signal, &challenge.nonce.to_le_bytes());
 
-        // e) Verificar umbrales de vida primero
-        if lyapunov <= 0.05 || entropy <= 0.5 {
-            return Err(SoulError::NoLivingSoul);
+        // Role-based validation
+        let role = self
+            .rbac
+            .validate_biological_identity(&challenge.user_id, lyapunov, entropy)?;
+
+        if lyapunov < 0.1 || lyapunov > 2.5 {
+            return Err(SoulError::InvalidSignal(format!(
+                "Lyapunov fuera de rango humano: {:.2}",
+                lyapunov
+            )));
         }
 
-        // f) Identificación y Control de Acceso (RBAC) via BiologicalRole
-        // Usamos el user_id del challenge como proxy del hash real por ahora,
-        // tal como se definió en rbac_biological.rs
-        let role = BiologicalRole::from_soul_hash(&challenge.user_id);
-
-        if role == BiologicalRole::Unauthorized {
-            return Err(SoulError::UnauthorizedIdentity(BiologicalMetrics {
-                lyapunov_exp: lyapunov,
-                chaos_entropy: entropy,
-            }));
+        if entropy < 0.5 {
+            return Err(SoulError::InvalidSignal(format!(
+                "Entropía muy baja (señal periódica): {:.2}",
+                entropy
+            )));
         }
 
         Ok(ProofOfLife {
@@ -108,6 +118,41 @@ impl SoulVerifier {
             timestamp: now,
             role,
         })
+    }
+
+    /// Calculate S60 metrics for validation (dual-path)
+    fn calculate_s60_metrics(&self, signal: &[f32]) -> (f64, f64) {
+        // Convert f32 signal to S60
+        let signal_s60: Vec<S60> = signal
+            .iter()
+            .map(|&val| S60::from_f32_unsafe(val))
+            .collect();
+
+        // Calculate using S60
+        let lyap = calculate_lyapunov_s60(&signal_s60);
+        let entr = chaos_entropy_s60(&signal_s60);
+
+        // Convert back to f64 for comparison
+        (lyap.to_f64_unsafe(), entr.to_f64_unsafe())
+    }
+
+    /// Compare f64 and S60 results, log discrepancies
+    fn compare_and_log(&self, l_f64: f64, l_s60: f64, e_f64: f64, e_s60: f64) {
+        let lyap_diff = (l_f64 - l_s60).abs();
+        let entr_diff = (e_f64 - e_s60).abs();
+
+        if lyap_diff > 0.1 || entr_diff > 0.1 {
+            tracing::warn!(
+                "🔍 S60 divergence: Lyapunov Δ={:.4} (f64={:.4}, s60={:.4}), Entropy Δ={:.4} (f64={:.4}, s60={:.4})",
+                lyap_diff, l_f64, l_s60, entr_diff, e_f64, e_s60
+            );
+        } else {
+            tracing::debug!(
+                "✅ S60 validation OK: Lyapunov Δ={:.4}, Entropy Δ={:.4}",
+                lyap_diff,
+                entr_diff
+            );
+        }
     }
 
     fn calculate_lyapunov_exponent(&self, signal: &[f32]) -> f64 {
