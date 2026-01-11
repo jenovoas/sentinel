@@ -7,10 +7,10 @@
 use super::s60::{S60Error, S60};
 use std::collections::HashMap;
 
-/// Natural logarithm in Base-60 using integer approximation
+/// Natural logarithm in Base-60 using Taylor series
 ///
-/// Uses Taylor series expansion with integer arithmetic:
-/// ln(x) ≈ 2 * sum((1/(2n+1)) * ((x-1)/(x+1))^(2n+1))
+/// Uses the series: ln(x) = 2 * sum((1/(2n+1)) * ((x-1)/(x+1))^(2n+1))
+/// This converges for all x > 0
 pub fn ln_s60(x: &S60) -> Result<S60, S60Error> {
     if *x <= S60::ZERO {
         return Err(S60Error::ComponentOutOfRange(
@@ -18,26 +18,50 @@ pub fn ln_s60(x: &S60) -> Result<S60, S60Error> {
         ));
     }
 
-    // For now, use a lookup table approach for common values
-    // TODO: Implement full Taylor series for arbitrary precision
+    let one = S60::ONE;
 
-    let val = x.to_base_units();
-
-    // Approximate ln using integer math
-    // ln(x) ≈ (x - 1) for x close to 1
-    // This is a simplified version - full implementation would use Taylor series
-
-    let one = S60::SCALE_0;
-    if val == one {
+    // Special case: ln(1) = 0
+    if *x == one {
         return Ok(S60::ZERO);
     }
 
-    // Simple approximation for demonstration
-    // In production, implement proper Taylor series
-    let diff = val - one;
-    let approx = (diff * S60::SCALE_0) / one;
+    // For x close to 1, use Taylor series around 1
+    // ln(x) = (x-1) - (x-1)^2/2 + (x-1)^3/3 - ...
 
-    Ok(S60::from_raw(approx))
+    // Calculate y = (x - 1) / (x + 1)
+    let x_minus_1 = *x - one;
+    let x_plus_1 = *x + one;
+    let y = (x_minus_1 / x_plus_1)?;
+
+    // Calculate y^2 for series
+    let y_sq = y * y;
+
+    // Taylor series: ln(x) = 2 * (y + y^3/3 + y^5/5 + ...)
+    let mut sum = y;
+    let mut y_power = y;
+
+    // Iterate until convergence (max 20 terms)
+    for n in 1..20 {
+        y_power = y_power * y_sq;
+
+        // Divide by (2n + 1)
+        let divisor = (2 * n + 1) as i32;
+        let term = match y_power / divisor {
+            Ok(val) => val,
+            Err(_) => break,
+        };
+
+        // Check for convergence (term becomes negligible)
+        if term.abs().to_base_units() < 10 {
+            // Threshold: very small
+            break;
+        }
+
+        sum = sum + term;
+    }
+
+    // Multiply by 2
+    Ok(sum * 2)
 }
 
 /// Shannon entropy calculation in Base-60

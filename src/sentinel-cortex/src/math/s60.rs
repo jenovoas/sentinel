@@ -88,6 +88,11 @@ impl S60 {
         S60 { value }
     }
 
+    /// Create S60 from i32 (convenience method)
+    pub fn from_i32(val: i32) -> Result<Self, S60Error> {
+        S60::new(val, 0, 0, 0, 0)
+    }
+
     /// Get internal value in base units
     pub fn to_base_units(&self) -> i64 {
         self.value
