@@ -32,9 +32,9 @@ pub fn calculate_lyapunov_s60(signal: &[S60]) -> S60 {
             match d2 / d1 {
                 Ok(ratio) => {
                     if ratio > S60::ZERO {
-                        // ln(ratio)
+                        // ln(ratio) - take absolute value to handle ratio < 1
                         if let Ok(ln_ratio) = ln_s60(&ratio) {
-                            sum_div = sum_div + ln_ratio;
+                            sum_div = sum_div + ln_ratio.abs();
                             count += 1;
                         }
                     }
@@ -56,8 +56,9 @@ pub fn calculate_lyapunov_s60(signal: &[S60]) -> S60 {
     };
 
     // Scale to expected range [0.1 - 2.5] for Sentinel
-    // Take absolute value and multiply by 2
-    let scaled = raw_lambda.abs() * 2;
+    // Multiply by 0.5 (same as f64 version)
+    let half = S60::from_raw(S60::SCALE_0 / 2); // 0.5
+    let scaled = raw_lambda * half;
 
     // Define min and max bounds
     let min = S60::from_raw(S60::SCALE_0 / 10); // 0.1
