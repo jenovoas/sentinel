@@ -84,13 +84,19 @@ async def container_action(container_id: str, action: str):
     Simulates starting/stopping/restarting a container.
     Verified by TruthSync.
     """
+    action_past_tense = {
+        "start": "started",
+        "stop": "stopped",
+        "restart": "restarted",
+    }
+    action_result = action_past_tense.get(action, "action executed")
     claim = f"Action {action} performed on container {container_id} by The Architect"
     verification = truth_sync_verify("Architect Action Authorized")
     
     logger.info(f"🚀 Sovereign Matrix Action: {action} on {container_id}")
     return {
         "status": "success", 
-        "message": f"Container {container_id} {action}ed",
+        "message": f"Container {container_id} {action_result}",
         "truthsync": verification
     }
 
