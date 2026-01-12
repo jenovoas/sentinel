@@ -10,13 +10,11 @@ El **Backend** es el cerebro operacional de Sentinel. Procesa todas las solicitu
 
 ## 🎯 ¿Qué Hace Este Módulo?
 
-### Para Inversionistas
 - **API REST**: Punto de entrada para todas las operaciones (como el mostrador de un banco)
 - **Gestión de Datos**: Almacena y recupera información de forma segura
 - **Autenticación**: Verifica quién puede acceder al sistema
 - **Procesamiento Asíncrono**: Maneja tareas pesadas en segundo plano
 
-### Para Ingenieros
 - **FastAPI**: Framework Python moderno con async/await
 - **PostgreSQL**: Base de datos relacional con soporte HA
 - **Celery**: Queue de tareas asíncronas
@@ -102,9 +100,11 @@ backend/
 ## 🔑 Componentes Clave
 
 ### 1. API REST (app/api/)
+
 **Función**: Expone endpoints HTTP para el frontend y clientes externos
 
 **Endpoints principales**:
+
 - `/api/v1/auth/login` - Autenticación
 - `/api/v1/organizations` - Gestión de organizaciones
 - `/api/v1/telemetry` - Ingesta de métricas/logs
@@ -113,9 +113,11 @@ backend/
 **Tecnología**: FastAPI (async, auto-documentación con Swagger)
 
 ### 2. Modelos de Datos (app/db/)
+
 **Función**: Define estructura de tablas en PostgreSQL
 
 **Modelos principales**:
+
 - `Organization` - Multi-tenancy
 - `User` - Usuarios y autenticación
 - `TelemetryEvent` - Eventos de monitoreo
@@ -124,18 +126,22 @@ backend/
 **Tecnología**: SQLAlchemy (ORM), Alembic (migraciones)
 
 ### 3. Servicios de Negocio (app/services/)
+
 **Función**: Lógica de negocio reutilizable
 
 **Servicios**:
+
 - `AuthService` - Autenticación y autorización
 - `TelemetryService` - Procesamiento de telemetría
 - `AlertService` - Generación de alertas
 - `BackupService` - Gestión de backups
 
 ### 4. Tareas Asíncronas (app/tasks/)
+
 **Función**: Procesos en segundo plano
 
 **Tareas**:
+
 - Backup automático cada 6 horas
 - Generación de reportes diarios
 - Limpieza de datos antiguos
@@ -145,7 +151,7 @@ backend/
 
 ---
 
-## 🚀 Cómo Funciona (Flujo de Datos)
+## Cómo Funciona (Flujo de Datos)
 
 ```
 1. Cliente (Frontend/API) → 2. Nginx → 3. FastAPI → 4. Servicio → 5. Base de Datos
@@ -156,6 +162,7 @@ backend/
 ```
 
 **Ejemplo: Crear una organización**
+
 1. Frontend envía `POST /api/v1/organizations`
 2. Nginx enruta a backend (puerto 8000)
 3. FastAPI valida datos (Pydantic)
@@ -168,18 +175,19 @@ backend/
 
 ## 📈 Métricas de Performance
 
-| Métrica | Valor | Benchmark |
-|---------|-------|-----------|
-| **Latencia P95** | <100ms | <200ms (bueno) |
-| **Throughput** | 1000 req/s | 500+ req/s (bueno) |
-| **Uptime** | 99.95% | 99.9% (estándar) |
-| **Test Coverage** | 75% | 60-80% (bueno) |
+| Métrica           | Valor      | Benchmark          |
+| ----------------- | ---------- | ------------------ |
+| **Latencia P95**  | <100ms     | <200ms (bueno)     |
+| **Throughput**    | 1000 req/s | 500+ req/s (bueno) |
+| **Uptime**        | 99.95%     | 99.9% (estándar)   |
+| **Test Coverage** | 75%        | 60-80% (bueno)     |
 
 ---
 
-## 🔒 Seguridad
+## Seguridad
 
-### Implementado ✅
+### Implementado
+
 - **JWT Authentication**: Tokens con expiración
 - **Password Hashing**: bcrypt
 - **SQL Injection Prevention**: ORM (SQLAlchemy)
@@ -187,6 +195,7 @@ backend/
 - **Rate Limiting**: 100 req/min por IP
 
 ### Roadmap 🔜
+
 - RBAC (Role-Based Access Control)
 - 2FA (Two-Factor Authentication)
 - API Key management
@@ -250,12 +259,14 @@ docker-compose logs -f backend    # Ver logs
 ### Para Inversionistas
 
 **Este módulo representa**:
+
 - 40% del valor técnico de Sentinel
 - Core IP (propiedad intelectual)
 - Escalabilidad: 1000+ req/s con un solo servidor
 - Multi-tenancy: Soporta 1000+ organizaciones
 
 **Comparación con competidores**:
+
 - Datadog: API similar, pero cloud-only
 - Sentinel: Self-hosted, privacy-first, 10x más barato
 
