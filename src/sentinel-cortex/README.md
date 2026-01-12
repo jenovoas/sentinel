@@ -1,6 +1,6 @@
 # 🧠 Sentinel Cortex - Decision Engine
 
-**Patent Claim 2**: Multi-factor cognitive threat assessment system
+## Multi-factor cognitive threat assessment system
 
 ## Overview
 

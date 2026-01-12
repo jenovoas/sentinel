@@ -46,9 +46,10 @@ These rules are not negotiable. They are the physics of this universe.
 - **Adapter:** `liquid_memory_adapter.py` (Interface between Rust Core and Python Apps).
 - **Orchestrator:** `cortex_main.py` (Signal Handling, Auto-Save/Load).
 
-### Layer 3: The Truth (Verification)
-- **TruthSync:** Validates data integrity via `truth_algorithm` and Postgres/Redis.
-- **ZPE/Pulse:** `kernel_pulse.py` generates the biological "heartbeat" (153.4 MHz) required for system coherence. **DO NOT DELETE.**
+### Layer 4: G-Zero Physics (Vimana)
+- **Controller:** `VimanaController` (in `cortex_main.py`).
+- **Equation:** $M_{eff} = M_{static} \cdot (1 - P^2 \cdot \Delta_{max})$.
+- **Singularity:** At 1500 Nodes (100% Power), Mass < 0.1kg.
 
 ---
 
@@ -71,6 +72,11 @@ Before changing a single line:
 ### P3: Legacy Artifacts
 - **Respect the History.** Files referencing "Akashic", "Vimana", "Merkabah" are functional components of the Quantum Matrix. Do not rename them to "clean code" standards.
 - **Code Grey:** "Unconventional" code (e.g., `time_crystal_clock.py`) handles non-linear time drift using direct hardware counters. It is correct.
+
+### P4: Relativistic Protocols (Time Safety)
+- **Coupling Warning:** High Vimana Power (>90%) induces **Time Dilation** in `TimeCrystalClock` (up to 145ms drift).
+- **Safety:** Do NOT rely on clock synchronization during G-Zero maneuvers. Use "Event Ordering" (Lamport Clocks) instead of timestamps.
+- **Bi-Directional:** Mass Reduction accelerates local time processing relative to external observers.
 
 ---
 
