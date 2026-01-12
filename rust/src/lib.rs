@@ -24,10 +24,10 @@ struct QuantumNode {
     // Bit 1: Locked (Phase locked)
     flags: u8,
 
-    // 53 Bytes: Sacred Silence (Padding)
-    // Ensures Structure resonates with Cache Line (64 Bytes).
-    // 64 - 11 = 53 bytes of Silence.
-    _silence: [u8; 53],
+    // 5 Bytes: Reserved (Padding)
+    // Ensures Structure is exactly 16 Bytes.
+    // 16 - (8 + 2 + 1) = 5 bytes.
+    _silence: [u8; 5],
 }
 
 #[pyclass]
@@ -44,11 +44,6 @@ impl RustLattice {
     fn new(rings: usize) -> Self {
         println!("🦀 Sentinel Rust Core: Allocating Lattice...");
 
-        // For now, let's keep it empty or pre-alloc?
-        // If we want to demonstrate memory efficiency, we should push nodes.
-        // But Vector grows dynamically.
-        // Let's implement sparse-like behavior or just a growable vector.
-
         RustLattice {
             nodes: Vec::new(),
             rings,
@@ -57,57 +52,35 @@ impl RustLattice {
 
     /// Inject data: Creates nodes as needed.
     /// Simulates 'inject_holograph'.
+    /// ZERO DATA LOSS: We consume 8 bytes per node (u64 Energy).
     fn inject(&mut self, data: &[u8]) -> PyResult<usize> {
-        // Clear previous state? Or Append?
         self.nodes.clear();
 
-        let chunk_size = 16;
+        // 8 bytes per node -> Zero Loss
+        // (Previously 16 byte input -> 8 byte storage = 50% loss. Now fixed).
+        let chunk_size = 8;
         let chunks = data.chunks(chunk_size);
-        let count = chunks.len();
+        let count = (data.len() + chunk_size - 1) / chunk_size;
 
         // Reserve capacity to avoid re-allocs
         self.nodes.reserve(count);
 
         for chunk in chunks {
-            // Bytes to u64 (Big Endian)
-            // If chunk < 16 bytes, pad with 0
+            // Buffer for u64 conversion
             let mut buf = [0u8; 8];
-            // We only use 8 bytes for Energy Amplitude (u64).
-            // But data is 16 bytes?
-            // Python implementation: `_bytes_to_s60` uses int conversion.
-            // S60 is a Triple (v, 0, 0).
-            // We only store 'v' (the raw integer value).
-            // If data is > 8 bytes, u64 overflows!
-            // Wait. Python int is arbitrary precision. u64 is not.
-            // 8 Bytes = 64 bits.
-            // EXP-010 Limit was "32 bytes". Python handled it.
-            // Rust u64 handles 8 bytes.
-            // PROBLEM: User wanted "Dense Storage".
-            // If we only store u64, we store 8 bytes of data per 16-byte node.
-            // 50% efficiency.
-            // The user design doc said: "energy: u64".
-            // If S60 represents 16 bytes of data, it needs u128 or split.
 
-            // FIX: Use u128 for Energy? Or 2x u64?
-            // "QuantumNode ... energy: u64" was the approved design.
-            // This implies the payload per node is limited to 8 bytes in this V1 rust port.
-            // Or we treat 'energy' as a pointer/hash? No.
+            // Copy chunk data (pad with 0 if partial)
+            let len = chunk.len();
+            buf[..len].copy_from_slice(chunk);
 
-            // Let's use `u64` for now (8 bytes per node).
-            // We will consume data in 8-byte chunks.
-            // The design doc said "16B/nodo" for the *struct*, not payload capacity.
-            // If payload is 8B per 16B node, that's 50% overhead. Better than 350B!
-
-            // Copy up to 8 bytes
-            let len = chunk.len().min(8);
-            buf[..len].copy_from_slice(&chunk[..len]);
+            // Big Endian to preserve byte order hierarchy
             let val = u64::from_be_bytes(buf);
 
             let node = QuantumNode {
                 energy: val,
                 phase: 0,
                 flags: 1, // Active
-                _silence: [0; 53],
+                _silence: [0; 5],
             };
 
             self.nodes.push(node);
