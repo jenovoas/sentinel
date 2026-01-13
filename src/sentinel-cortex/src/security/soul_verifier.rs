@@ -1,4 +1,19 @@
 // src/security/soul_verifier.rs
+//
+// ⚠️ DEPRECATED: This module uses floating-point arithmetic (f32/f64)
+// ⚠️ DO NOT USE for physical model deployment - will cause hardware failure
+// ⚠️ Use soul_verifier_s60_production.rs instead
+//
+// This file is kept only for:
+// - Historical reference
+// - Comparison testing with S60 implementation
+// - Gradual migration path
+//
+// AXIOM I VIOLATION: Contains floats (thermal noise, precision errors)
+// AXIOM II VIOLATION: Uses rand::random() (pseudo-random, not real entropy)
+
+#![allow(deprecated)]
+
 use crate::math::s60::S60;
 use crate::security::rbac_biological::BiologicalRole;
 use crate::security::soul_verifier_s60::{calculate_lyapunov_s60, chaos_entropy_s60};
