@@ -108,7 +108,11 @@ class DualLaneRouter:
         "shield",
         "dual_guardian",
         "kernel",
-        "syscall"
+        "syscall",
+        "biometric",      # Soul Verifier biometric authentication
+        "soul_verifier",  # Alias for clarity
+        "rppg",           # Remote photoplethysmography signals
+        "authentication", # Generic authentication events
     }
     
     # Fuentes que van a Observability Lane
