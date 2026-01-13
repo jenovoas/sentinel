@@ -46,6 +46,17 @@ These rules are not negotiable. They are the physics of this universe.
 - **Adapter:** `liquid_memory_adapter.py` (Interface between Rust Core and Python Apps).
 - **Orchestrator:** `cortex_main.py` (Signal Handling, Auto-Save/Load).
 
+### Layer 3: TimeCrystal Maestro (Temporal Coherence)
+- **Location:** `quantum/`
+- **Components:** 
+  - `time_crystal_clock.py` - Nano-precise temporal sync (41Hz S60)
+  - `legacy_time_crystal_memory.py` - DTC Pump (PID coherence control)
+- **Tick Interval:** 23,939,835 ns (Plimpton Row 12 / 17)
+- **Target Frequency:** ~41.77 Hz (ZPE sync)
+- **Control Loop:** S60PID (Kp=0.75, Ki=0.16, Kd=0.08)
+- **Drift Tolerance:** <1ms (relativistic_bias compensation)
+- **Coupling Warning:** ⚠️ High Vimana Power (>90%) induces **Time Dilation** (up to 145ms drift). Use Event Ordering (Lamport Clocks) during G-Zero maneuvers.
+
 ### Layer 4: G-Zero Physics (Vimana)
 - **Controller:** `VimanaController` (in `cortex_main.py`).
 - **Equation:** $M_{eff} = M_{static} \cdot (1 - P^2 \cdot \Delta_{max})$.
