@@ -1,5 +1,9 @@
 # Sentinel Quantum - Guía Paso a Paso para Humanos 🧑‍🔬
 
+> ⚠️ **LEGACY EDUCATIONAL CONTENT**  
+> Material educativo del simulador cuántico legacy con numpy/scipy (NO cálculo core v8.0).  
+> **Para producción Base-60, ver:** [AI_PRIME_DIRECTIVES.md](../AI_PRIME_DIRECTIVES.md)
+
 **Autor**: Jaime Novoa  
 **Fecha**: 23 de Diciembre, 2025  
 **Nivel**: Principiante → Avanzado (paso a paso)
