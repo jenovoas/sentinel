@@ -1,5 +1,9 @@
 # Sentinel Quantum - Nivel 3: Física Real 🔬
 
+> ⚠️ **LEGACY EDUCATIONAL CONTENT**  
+> Material educativo del simulador cuántico legacy con código numpy/scipy.  
+> **Para Sentinel v8.0 producción, ver:** [AI_PRIME_DIRECTIVES.md](../AI_PRIME_DIRECTIVES.md)
+
 **Prerequisito**: Haber completado [Nivel 2: Conceptos Básicos](GUIA_NIVEL_2.md)
 
 ---
