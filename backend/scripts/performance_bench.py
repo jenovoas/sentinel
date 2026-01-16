@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
-# import random  <-- YATRA: PROHIBIDO (CAOS)
 import statistics
 
 def run_bench():
