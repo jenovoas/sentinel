@@ -36,3 +36,16 @@ La **Compresión de Fase** es viable. Podemos usar la fase como:
 2.  **Densidad Extra:** +6.25% de capacidad (1 Byte extra por cada 16 Bytes de energía).
 
 ✅ **TECNOLOGÍA VALIDADA.**
+
+---
+
+## Cómo Ejecutar
+
+Para reproducir este experimento:
+
+```bash
+python3 -m quantum.experiments.EXP_012_PHASE_COMPRESSION
+```
+
+**Nota:** Ejecutar desde el directorio raíz del proyecto `/home/jnovoas/dev/sentinel`
+
