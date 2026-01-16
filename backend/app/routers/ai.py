@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/ai", tags=["AI"])
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.S60(0, 6, 0):11434")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "phi3:mini")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2:3b")
 CORTEX_URL = os.getenv("CORTEX_URL", "http://localhost:3005")
 AI_ENABLED = os.getenv("AI_ENABLED", "true").lower() == "true"
 OLLAMA_TIMEOUT = int(os.getenv("OLLAMA_TIMEOUT", "60"))

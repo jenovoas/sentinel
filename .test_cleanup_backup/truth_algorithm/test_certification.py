@@ -5,9 +5,8 @@ Truth Algorithm - Test Suite
 
 Tests completos para el sistema de certificación de contenido.
 
-Powered by Google ❤️ & Perplexity 💜
-"""
 
+"""
 from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import unittest
 from source_search import SearchResult, SearchProvider

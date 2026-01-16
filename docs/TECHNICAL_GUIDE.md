@@ -1,4 +1,5 @@
-#  Sentinel Cortex™ - Guía Técnica Completa
+# Sentinel Cortex™ - Guía Técnica Completa
+
 **Documentación para Desarrolladores**
 
 **Última actualización:** Diciembre 2025  
@@ -21,13 +22,13 @@
 
 ---
 
-##  Introducción
+## Introducción
 
 ### ¿Qué es Sentinel Cortex™?
 
-Sentinel Cortex™ es el **primer organismo vivo de seguridad** - un sistema de seguridad cognitiva auto-regenerativo que combina:
+Sentinel Cortex™ es el **primer sistema operativo vivo de seguridad** - un sistema de seguridad cognitiva auto-regenerativo que combina:
 
--  **Cortex Engine**: Cerebro central con decision engine multi-factor
+- **Cortex Engine**: Cerebro central con decision engine multi-factor
 - 🚨 **Guardian-Alpha™**: Policía de intrusiones (syscall, memory, network)
 - 🔒 **Guardian-Beta™**: Policía de integridad (backup, config, certs)
 
@@ -96,31 +97,31 @@ Logs → Sanitization → Multi-Factor Correlation → Auto-Action → Auto-Heal
    ├─ PostgreSQL (eventos estructurados)
    ├─ Auditd (syscalls)
    └─ Docker (container events)
-   
+
 2. SANITIZATION (Claim 1)
    ├─ Pattern matching (40+ patrones)
    ├─ Schema validation
    ├─ Command injection detection
    └─ Output: Logs limpios
-   
+
 3. CORRELATION (Claim 2)
    ├─ Multi-source aggregation
    ├─ Temporal correlation (5 min window)
    ├─ Confidence scoring (Bayesian)
    └─ Output: DetectedPattern con confidence
-   
+
 4. DECISION (Cortex)
    ├─ Threshold check (confidence > 0.7)
    ├─ Context awareness (admin ops, DR mode)
    ├─ Guardian validation (ambos confirman)
    └─ Output: Action plan
-   
+
 5. EXECUTION (N8N)
    ├─ Playbook selection
    ├─ Action execution
    ├─ Rollback plan
    └─ Audit logging
-   
+
 6. REGENERATION (Claim 3)
    ├─ Detect corruption
    ├─ Restore from immutable backup
@@ -186,6 +187,7 @@ pub struct DetectedPattern {
 #### Patrones Implementados
 
 **Patrón 1: Credential Stuffing**
+
 ```rust
 // Detecta: 50+ failed logins + successful login desde nueva IP
 if failed_logins > 50 && new_ip_login {
@@ -195,6 +197,7 @@ if failed_logins > 50 && new_ip_login {
 ```
 
 **Patrón 2: Resource Exhaustion**
+
 ```rust
 // Detecta: Memory leak + CPU spike simultáneos
 if has_memory_leak && has_cpu_spike {
@@ -204,6 +207,7 @@ if has_memory_leak && has_cpu_spike {
 ```
 
 **Pendientes (Week 4):**
+
 - Patrón 3: Data Exfiltration
 - Patrón 4: DDoS Detection
 - Patrón 5: Disk Full
@@ -215,17 +219,17 @@ if has_memory_leak && has_cpu_spike {
 loop {
     // 1. Collect events from Prometheus
     let events = prometheus.collect().await?;
-    
+
     // 2. Detect patterns
     let patterns = detector.detect(&events);
-    
+
     // 3. Trigger playbooks (si confidence > 0.7)
     for pattern in patterns {
         if pattern.confidence > 0.7 {
             n8n.trigger_playbook(&pattern).await?;
         }
     }
-    
+
     tokio::time::sleep(Duration::from_secs(30)).await;
 }
 ```
@@ -295,11 +299,11 @@ guardian-alpha/
 pub async fn patrol(&self) -> SecurityEvent {
     loop {
         let events = self.detect_intrusion_signals().await;
-        
+
         for event in events {
             // NO actúa directamente, reporta al Cortex
             self.send_to_cortex(event).await;
-            
+
             // Pero ESTÁ LISTO para actuar si Cortex da orden
             if event.severity == CRITICAL {
                 self.prepare_lockdown_plan().await;
@@ -403,7 +407,7 @@ pub async fn heal_system(&self, corruption: CorruptionReport) {
             self.restore_permissions_policy(corruption.affected_resource).await;
         }
     }
-    
+
     // Siempre notificar al Cortex
     self.notify_cortex("System healed").await;
 }
@@ -567,7 +571,7 @@ sentinel/
 
 ---
 
-##  Guía de Desarrollo
+## Guía de Desarrollo
 
 ### Setup Inicial
 
@@ -673,20 +677,20 @@ MODEL_PATH=/models/isolation_forest.pkl
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn test_credential_stuffing_detection() {
         let detector = PatternDetector::new();
-        
+
         // Crear eventos de prueba
         let events = vec![
             Event { event_type: EventType::FailedLogin, .. },
             // ... 50 más
             Event { event_type: EventType::SuccessfulLoginNewIP, .. },
         ];
-        
+
         let patterns = detector.detect(&events);
-        
+
         assert_eq!(patterns.len(), 1);
         assert_eq!(patterns[0].name, "Credential Stuffing Attack");
         assert!(patterns[0].confidence > 0.9);
@@ -711,15 +715,15 @@ cargo tarpaulin --out Html
 async fn test_end_to_end_flow() {
     // 1. Setup mock Prometheus
     let mock_server = MockServer::start().await;
-    
+
     // 2. Inject malicious events
     mock_server.mock_cpu_spike(0.95).await;
     mock_server.mock_memory_leak(0.05).await;
-    
+
     // 3. Run Cortex
     let cortex = CortexEngine::new(mock_server.url());
     let patterns = cortex.run_once().await.unwrap();
-    
+
     // 4. Assert pattern detected
     assert_eq!(patterns.len(), 1);
     assert_eq!(patterns[0].playbook, "auto_remediation");
@@ -773,18 +777,18 @@ spec:
         app: sentinel-cortex
     spec:
       containers:
-      - name: cortex
-        image: sentinel/cortex:latest
-        env:
-        - name: PROMETHEUS_URL
-          value: "http://prometheus:9090"
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "500m"
-          limits:
-            memory: "512Mi"
-            cpu: "1000m"
+        - name: cortex
+          image: sentinel/cortex:latest
+          env:
+            - name: PROMETHEUS_URL
+              value: "http://prometheus:9090"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "500m"
+            limits:
+              memory: "512Mi"
+              cpu: "1000m"
 ```
 
 ---
@@ -819,7 +823,7 @@ spec:
 
 ---
 
-##  Roadmap de Desarrollo
+## Roadmap de Desarrollo
 
 ### ✅ Completado (Weeks 1-4)
 
@@ -858,13 +862,14 @@ spec:
 ### Estándares de Código
 
 **Rust:**
+
 ```rust
 // ✅ BUENO: Comentarios claros en español
 /// Detecta patrones de credential stuffing
-/// 
+///
 /// # Argumentos
 /// * `events` - Lista de eventos a analizar
-/// 
+///
 /// # Retorna
 /// * `Option<DetectedPattern>` - Patrón detectado o None
 fn detect_credential_stuffing(&self, events: &[Event]) -> Option<DetectedPattern> {
@@ -872,11 +877,11 @@ fn detect_credential_stuffing(&self, events: &[Event]) -> Option<DetectedPattern
     let failed_logins = events.iter()
         .filter(|e| e.event_type == EventType::FailedLogin)
         .count();
-    
+
     // Verificar login desde nueva IP
     let new_ip_login = events.iter()
         .any(|e| e.event_type == EventType::SuccessfulLoginNewIP);
-    
+
     // Si ambas condiciones se cumplen, es credential stuffing
     if failed_logins > 50 && new_ip_login {
         Some(DetectedPattern {
@@ -891,18 +896,19 @@ fn detect_credential_stuffing(&self, events: &[Event]) -> Option<DetectedPattern
 ```
 
 **Python:**
+
 ```python
 # ✅ BUENO: Type hints + docstrings
 def extract_features(events: List[Event]) -> np.ndarray:
     """
     Extrae features numéricas de eventos para ML.
-    
+
     Args:
         events: Lista de eventos a procesar
-        
+
     Returns:
         Array numpy con features normalizadas (0-1)
-        
+
     Ejemplo:
         >>> events = [Event(...), Event(...)]
         >>> features = extract_features(events)
@@ -913,12 +919,12 @@ def extract_features(events: List[Event]) -> np.ndarray:
     for event in events:
         # Extraer timestamp como unix epoch
         timestamp = event.timestamp.timestamp()
-        
+
         # Severity como número (0-3)
         severity = SEVERITY_MAP[event.severity]
-        
+
         features.append([timestamp, severity, ...])
-    
+
     return np.array(features)
 ```
 

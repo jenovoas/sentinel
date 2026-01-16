@@ -1,6 +1,5 @@
 from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
-# import random  <-- YATRA: PROHIBIDO (CAOS)
 import os
 
 # Sentinel Cortex - Verifier DoS PoC
