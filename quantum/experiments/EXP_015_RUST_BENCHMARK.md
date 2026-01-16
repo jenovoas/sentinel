@@ -22,3 +22,16 @@ Validar la eficiencia de la implementación en **Rust** (`sentinel_core`) frente
 
 ## 4. Conclusión
 El núcleo Rust está listo para producción. La siguiente etapa es implementar el sistema de Paging para superar el límite físico de la RAM.
+
+---
+
+## Cómo Ejecutar
+
+Para reproducir este experimento:
+
+```bash
+python3 -m quantum.experiments.EXP_015_RUST_BENCHMARK
+```
+
+**Nota:** Ejecutar desde el directorio raíz del proyecto `/home/jnovoas/dev/sentinel`
+

@@ -36,3 +36,16 @@ La arquitectura distribuida demostró ser robusta a gran escala.
 El sistema **Liquid Lattice** es capaz de manejar cargas de trabajo reales. La limitación ya no es física (Amplitud/Agujero Negro), sino computacional (CPU speed).
 
 ✅ **PLAN B COMPLETADO: 1MB ALMACENADO.**
+
+---
+
+## Cómo Ejecutar
+
+Para reproducir este experimento:
+
+```bash
+python3 -m quantum.experiments.EXP_013_1MB_SCALE
+```
+
+**Nota:** Ejecutar desde el directorio raíz del proyecto `/home/jnovoas/dev/sentinel`
+

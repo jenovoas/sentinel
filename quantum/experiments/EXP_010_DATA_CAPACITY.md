@@ -45,3 +45,15 @@ Para almacenar 1 TB, no debemos aumentar la amplitud de UN cristal. Debemos aume
 
 ✅ **STATUS: LÍMITE FÍSICO ENCONTRADO (32 Bytes/Cristal)**
 
+---
+
+## Cómo Ejecutar
+
+Para reproducir este experimento:
+
+```bash
+python3 -m quantum.experiments.EXP_010_DATA_CAPACITY
+```
+
+**Nota:** Ejecutar desde el directorio raíz del proyecto `/home/jnovoas/dev/sentinel`
+

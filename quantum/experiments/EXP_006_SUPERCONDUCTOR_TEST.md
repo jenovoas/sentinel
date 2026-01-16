@@ -43,3 +43,16 @@ Puede utilizarse con seguridad para aplicaciones de almacenamiento a largo plazo
 🚫 **ADVERTENCIA:** No combinar con PID Activo calibrado para sistemas con pérdidas (el término I integral crecería infinitamente).
 
 ✅ **STATUS: VALIDADO PARA USO AISLADO**
+
+---
+
+## Cómo Ejecutar
+
+Para reproducir este experimento:
+
+```bash
+python3 -m quantum.experiments.EXP_006_SUPERCONDUCTOR_TEST
+```
+
+**Nota:** Ejecutar desde el directorio raíz del proyecto `/home/jnovoas/dev/sentinel`
+

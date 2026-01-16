@@ -99,3 +99,16 @@ El controlador `VimanaController` implementado en el núcleo responde de manera 
 
 ---
 *Fin del Reporte.*
+
+---
+
+## Cómo Ejecutar
+
+Para reproducir este experimento:
+
+```bash
+python3 -m quantum.experiments.EXP_017_VIMANA_LEVITATION
+```
+
+**Nota:** Ejecutar desde el directorio raíz del proyecto `/home/jnovoas/dev/sentinel`
+
