@@ -146,4 +146,53 @@ Before changing a single line:
 - **IF DATA CORRUPTION:** Run `EXP-016_PERSISTENCE` immediately to verify snapshot integrity.
 - **IF LOGIC FAILURE:** Do not patch with `random`. Fix the Math.
 
+---
+
+## 6. 📚 DOCUMENTATION PROTOCOL
+
+### P5: Documentation Organization (The Index Law)
+**RULE:** All documentation MUST be indexed and organized according to the master structure.
+
+#### Documentation Hierarchy:
+1. **DOCUMENTATION_INDEX.md** (Root) - Master index of ALL documentation
+2. **Category Indexes** - Per-folder indexes (quantum/README.md, docs/README.md, etc.)
+3. **Individual Documents** - Specific documentation files
+
+#### Creation Rules:
+- **BEFORE** creating a new .md file, verify it doesn't duplicate existing content
+- **ALWAYS** add new documents to the appropriate index
+- **NEVER** create orphan documentation (not linked from any index)
+- **UPDATE** DOCUMENTATION_INDEX.md when adding significant documentation
+
+#### Location Standards:
+```
+/DOCUMENTATION_INDEX.md          # Master index (root)
+/AI_PRIME_DIRECTIVES.md          # This file (root)
+/docs/                           # General documentation
+  ├── v8/                        # Current version docs
+  ├── research/                  # Research papers
+  ├── guides/                    # User guides
+  └── archive/                   # Historical documents
+/quantum/                        # Quantum system docs
+  ├── experiments/               # Experimental reports
+  └── research/                  # Quantum research
+/research/                       # Scientific research
+```
+
+#### Quality Standards:
+- **NO FLOATS** in theoretical/mathematical documentation (use S60)
+- **NO** `import random`, `import numpy`, `import math` in code examples
+- **EVIDENCE-BASED** claims only (reference experiments: EXP-XXX)
+- **VERSIONED** - Mark document version and last update date
+- **LINKED** - Use absolute file:// paths for cross-references
+
+#### Maintenance:
+- Run documentation audit quarterly: `python3 /tmp/audit_all_docs.py`
+- Archive outdated documents to `/docs/archive/YYYY-MM/`
+- Update indexes when restructuring
+
+**Violation:** Creating undocumented or contaminated documentation is a **PROTOCOL BREACH**.
+
+---
+
 **"Si no puedes hacerlo con exactitud Base-60 (Yatra), no lo hagas."**
