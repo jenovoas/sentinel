@@ -10,6 +10,7 @@
 //! AXIOM I COMPLIANCE: FLOAT = DEATH for physical models
 
 use crate::math::s60::{S60Error, S60};
+use crate::math::s60_math::{fft_s60, q_factor_s60};
 use crate::security::rbac_biological::BiologicalRole;
 use crate::security::soul_verifier_s60::{calculate_lyapunov_s60, chaos_entropy_s60};
 use serde::{Deserialize, Serialize};
@@ -32,6 +33,9 @@ pub struct ProofOfLife {
 
     /// Chaos entropy in Base-60 (range: 0.5-3.5 for living beings)
     pub chaos_entropy: S60,
+
+    /// Q-Factor in Base-60 (signal quality: >10 = clean, <5 = synthetic)
+    pub q_factor: S60,
 
     /// Light response correlation (not implemented, returns 0)
     pub response_correlation: S60,
@@ -139,26 +143,32 @@ impl SoulVerifier {
         // 3. Calculate Shannon entropy in S60
         let entropy = chaos_entropy_s60(rppg_signal);
 
-        // 4. Light correlation (NOT IMPLEMENTED - requires physical sensor)
+        // 4. Calculate Q-Factor (signal quality) in S60
+        // Q > 10 = clean human signal, Q < 5 = synthetic/replay attack
+        let q_factor = self.calculate_q_factor_s60(rppg_signal);
+
+        // 5. Light correlation (NOT IMPLEMENTED - requires physical sensor)
         // Per Axiom II (Radical Honesty): return 0 instead of simulating
         let light_response = S60::ZERO;
 
         tracing::debug!(
-            "Biometric metrics: Lyapunov={}, Entropy={}",
+            "Biometric metrics: Lyapunov={}, Entropy={}, Q-Factor={}",
             lyapunov,
-            entropy
+            entropy,
+            q_factor
         );
 
-        // 5. Compute soul hash (SHA3-512 of signal + nonce)
+        // 6. Compute soul hash (SHA3-512 of signal + nonce)
         let soul_hash_str = self.compute_soul_hash_s60(rppg_signal, &challenge.nonce.to_le_bytes());
 
-        // 6. Role-based validation
+        // 7. Role-based validation
         let role = BiologicalRole::from_soul_hash(&challenge.user_id);
 
-        // 7. Validate ranges (S60 pure, no float conversion)
+        // 8. Validate ranges (S60 pure, no float conversion)
         let min_lyap = S60::from_raw(S60::SCALE_0 / 10); // 0.1
         let max_lyap = S60::from_raw((S60::SCALE_0 * 5) / 2); // 2.5
         let min_entr = S60::from_raw(S60::SCALE_0 / 2); // 0.5
+        let min_q = S60::from_raw(S60::SCALE_0 * 5); // 5.0 (minimum acceptable Q)
 
         if lyapunov < min_lyap || lyapunov > max_lyap {
             tracing::warn!(
@@ -175,14 +185,56 @@ impl SoulVerifier {
             return Err(SoulError::NoLivingSoul);
         }
 
+        if q_factor < min_q {
+            tracing::warn!(
+                "Q-Factor too low: {} (expected >{}). Possible synthetic/replay attack.",
+                q_factor,
+                min_q
+            );
+            return Err(SoulError::NoLivingSoul);
+        }
+
         Ok(ProofOfLife {
             lyapunov_exp: lyapunov,
             chaos_entropy: entropy,
+            q_factor,
             response_correlation: light_response,
             soul_hash: soul_hash_str,
             timestamp: now,
             role,
         })
+    }
+
+    /// Calculate Q-Factor (signal quality) from rPPG signal
+    ///
+    /// Uses FFT to analyze frequency spectrum and compute Q = f₀ / Δf
+    /// Higher Q = cleaner signal (real human)
+    /// Lower Q = noisy signal (synthetic/replay)
+    fn calculate_q_factor_s60(&self, rppg_signal: &[S60]) -> S60 {
+        // Ensure signal length is power of 2 for FFT
+        let signal_len = rppg_signal.len();
+        let fft_len = signal_len.next_power_of_two().min(256); // Cap at 256 for performance
+
+        // Pad or truncate signal to power of 2
+        let mut padded_signal: Vec<S60> = rppg_signal.iter().take(fft_len).copied().collect();
+        while padded_signal.len() < fft_len {
+            padded_signal.push(S60::ZERO);
+        }
+
+        // Perform FFT
+        let spectrum = match fft_s60(&padded_signal) {
+            Ok(spec) => spec,
+            Err(_) => return S60::ZERO, // FFT failed, return 0
+        };
+
+        // Assume sample rate of 60 Hz (typical for rPPG)
+        let sample_rate = S60::from_raw(S60::SCALE_0 * 60);
+
+        // Calculate Q-Factor
+        match q_factor_s60(&spectrum, sample_rate) {
+            Ok(q) => q,
+            Err(_) => S60::ZERO, // Q-Factor calculation failed
+        }
     }
 
     /// Compute SHA3-512 hash of S60 signal (no float conversion)
@@ -235,8 +287,8 @@ mod tests {
         let signal: Vec<S60> = (0..100)
             .map(|i| {
                 // Simple oscillating pattern
-                let base = S60(60 + (i % 40), 0, 0, 0, 0);
-                let variation = S60(0, (i * 7) % 60, 0, 0, 0);
+                let base = S60::new(60 + (i as i32 % 40), 0, 0, 0, 0).unwrap();
+                let variation = S60::new(0, ((i * 7) % 60) as u8, 0, 0, 0).unwrap();
                 base + variation
             })
             .collect();
@@ -264,7 +316,7 @@ mod tests {
         let challenge = verifier.generate_challenge("jnovoas");
 
         // Static signal (no variation)
-        let signal = vec![S60(60, 30, 0, 0, 0); 100];
+        let signal = vec![S60::new(60, 30, 0, 0, 0).unwrap(); 100];
 
         let result = verifier.verify_proof_of_life(&signal, &challenge);
 
@@ -279,7 +331,9 @@ mod tests {
         // Expire challenge
         challenge.timestamp = chrono::Utc::now().timestamp() - 31;
 
-        let signal: Vec<S60> = (0..100).map(|i| S60(60 + (i % 20), 0, 0, 0, 0)).collect();
+        let signal: Vec<S60> = (0..100)
+            .map(|i| S60::new(60 + (i as i32 % 20), 0, 0, 0, 0).unwrap())
+            .collect();
 
         let result = verifier.verify_proof_of_life(&signal, &challenge);
 
@@ -293,7 +347,7 @@ mod tests {
     fn test_soul_hash_deterministic() {
         let verifier = SoulVerifier::new();
 
-        let signal = vec![S60(60, 30, 15, 0, 0); 10];
+        let signal = vec![S60::new(60, 30, 15, 0, 0).unwrap(); 10];
         let nonce = [1, 2, 3, 4, 5, 6, 7, 8];
 
         let hash1 = verifier.compute_soul_hash_s60(&signal, &nonce);

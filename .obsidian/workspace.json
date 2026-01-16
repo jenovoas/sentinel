@@ -1,0 +1,207 @@
+{
+  "main": {
+    "id": "847e1675b5c2dc4f",
+    "type": "split",
+    "children": [
+      {
+        "id": "f9eb7e65db3f8c77",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "fb91e96202626feb",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "docs/archive/legacy/ACCIONES_INMEDIATAS_HOY.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "ACCIONES_INMEDIATAS_HOY"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "27c382c7a3423f49",
+    "type": "split",
+    "children": [
+      {
+        "id": "e566d02f0ac22eb5",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e475e18c0a668633",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Explorador de archivos"
+            }
+          },
+          {
+            "id": "c0806effcdefc191",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Buscar"
+            }
+          },
+          {
+            "id": "63c8ce0e4cb00ab7",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Marcadores"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "bae2d27d07a81cd4",
+    "type": "split",
+    "children": [
+      {
+        "id": "883ca156d3a03018",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "94a703022de8a8e2",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "docs/archive/legacy/ACCIONES_INMEDIATAS_HOY.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Enlaces entrantes de ACCIONES_INMEDIATAS_HOY"
+            }
+          },
+          {
+            "id": "15b90ea14b99dbb1",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "docs/archive/legacy/ACCIONES_INMEDIATAS_HOY.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Enlaces salientes de ACCIONES_INMEDIATAS_HOY"
+            }
+          },
+          {
+            "id": "25ba1ae5ef0fe4b0",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Etiquetas"
+            }
+          },
+          {
+            "id": "c374810f6ea1ba38",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Todas las propiedades"
+            }
+          },
+          {
+            "id": "c598b3d7ea35a2e7",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "docs/archive/legacy/ACCIONES_INMEDIATAS_HOY.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Esquema de ACCIONES_INMEDIATAS_HOY"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Abrir selector rápido": false,
+      "graph:Abrir vista gráfica": false,
+      "canvas:Crear nuevo lienzo": false,
+      "daily-notes:Abrir la nota de hoy": false,
+      "templates:Insertar plantilla": false,
+      "command-palette:Abrir paleta de comandos": false,
+      "bases:Crear nueva base": false
+    }
+  },
+  "active": "fb91e96202626feb",
+  "lastOpenFiles": [
+    "docs/archive/2025-12-21/VICTORIA_TECNICA_LEGAL_20251221.md",
+    "docs/archive/2025-12-21/VALIDACION_EN_VIVO.md",
+    "docs/archive/2025-12-21/RESUMEN_FINAL_DIA_20251221.md",
+    "docs/archive/2025-12-21/RESUMEN_FINAL_20251221_v2.md",
+    "docs/archive/2025-12-21/RESUMEN_FINAL_20251221.md",
+    "docs/archive/2025-12-21/RESULTADOS_VALIDACION_REAL_20251221.md",
+    "docs/archive/2025-12-21/PROXIMOS_PASOS_20251221.md",
+    "docs/archive/2025-12-21/INVENTION_DISCLOSURE_20251221.md",
+    "docs/archive/2025-12-21/PROBLEMAS_INTEGRACION_20251221.md",
+    "docs/archive/2025-12-21/INTEGRACION_STATUS.md",
+    "docs/archive/2025-12-21/ESTADO_INTEGRACION_DOCKER_20251221.md",
+    "docs/archive/2025-12-21/CORRECCION_GRAVEDAD_20251221.md",
+    "docs/archive/2025-12-21/CLASIFICACION_PROBADO_VS_INVESTIGACION.md",
+    "docs/archive/2025-12-21/CONTEXTO_COMPLETO_20251221.md",
+    "docs/archive/2025-12-21/ACTUALIZACION_TERMINOLOGIA_20251221.md",
+    "docs/architecture/README.md",
+    "docs/archive/2025-12-21/ACLARACION_TESTS_SIN_CONTENEDORES.md",
+    "docs/architecture/DIGITAL_HIPPOCAMPUS_WEEK1_PLAN.md"
+  ]
+}
