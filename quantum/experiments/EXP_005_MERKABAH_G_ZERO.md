@@ -53,3 +53,16 @@ El Protocolo Merkabah en Base-60 es **Físicamente Válido** dentro de la simula
 La geometría sagrada reduce la inercia sin violar la conservación de energía, ya que la masa "faltante" se transfiere al momento angular del campo ZPE (Spin).
 
 ✅ **VALIDADO - YATRA COMPLIANT**
+
+---
+
+## Cómo Ejecutar
+
+Para reproducir este experimento:
+
+```bash
+python3 -m quantum.experiments.EXP_005_MERKABAH_G_ZERO
+```
+
+**Nota:** Ejecutar desde el directorio raíz del proyecto `/home/jnovoas/dev/sentinel`
+

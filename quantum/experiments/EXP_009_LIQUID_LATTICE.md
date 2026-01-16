@@ -37,3 +37,16 @@ Supera al ECC discreto por un margen significativo (72% vs 44% de retención).
 Esto sugiere que para sistemas cuánticos ruidosos (NISQ), las correcciones topológicas continuas (tipo fluido) son superiores a las correcciones lógicas discretas (tipo bit).
 
 ✅ **STATUS: NUEVO ESTÁNDAR DE REFERENCIA**
+
+---
+
+## Cómo Ejecutar
+
+Para reproducir este experimento:
+
+```bash
+python3 -m quantum.experiments.EXP_009_LIQUID_LATTICE
+```
+
+**Nota:** Ejecutar desde el directorio raíz del proyecto `/home/jnovoas/dev/sentinel`
+

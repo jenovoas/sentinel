@@ -59,3 +59,16 @@ Su implementación práctica en hardware requeriría materiales de altísimo Q-f
 We demonstrate that an ideal lossless harmonic oscillator ($\gamma = 0$) operating in the S60 numerical field can encode and perfectly recover complex data strings within a single amplitude eigenstate. This represents a zero-entropy information mode — a computational analog to superconductivity. The data remains stable and reversible across simulated temporal evolution ($\Delta t = 1 s$) with absolute fidelity. The experiment defines the upper limit of coherent storage in the Sentinel Cortex lattice and establishes a reference for distributed resonant architectures.
 
 ✅ **VALIDADO - YATRA COMPLIANT**
+
+---
+
+## Cómo Ejecutar
+
+Para reproducir este experimento:
+
+```bash
+python3 -m quantum.experiments.EXP_004_HARMONIC_STORAGE
+```
+
+**Nota:** Ejecutar desde el directorio raíz del proyecto `/home/jnovoas/dev/sentinel`
+
