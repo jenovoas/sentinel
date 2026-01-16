@@ -97,8 +97,9 @@ El número 17 aparece como constante fundamental en 5 sistemas independientes:
 
 **Ecuación:**
 ```python
-if cycle_phase > 0.99 or cycle_phase < 0.01:
-    phase = 0.0  # Quantum Leap
+# cycle_phase es S60 normalizado [0; 0] a [1; 0]
+if cycle_phase > S60(0, 59, 24) or cycle_phase < S60(0, 0, 36):  # >99% o <1%
+    phase = S60(0)  # Quantum Leap
 ```
 
 ### 4. Tetra-Logic Superiority
