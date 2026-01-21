@@ -1,0 +1,81 @@
+{
+  "name": "Daily System Report - Demo",
+  "description": "Reporta estado diario de sistemas. Personaliza con tu webhook de Slack.",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            "everyday"
+          ],
+          "triggerAtHour": 9,
+          "triggerAtMinute": 0
+        }
+      },
+      "id": "trigger",
+      "name": "Every Day at 9 AM",
+      "type": "n8n-nodes-base.cronTrigger",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "return [{\"json\": {\"report\": {\"timestamp\": new Date().toISOString(), \"status\": \"All systems operational\", \"uptime\": \"99.9%\", \"services\": {\"api\": \"healthy\", \"database\": \"healthy\", \"frontend\": \"healthy\"}}}}];"
+      },
+      "id": "build_report",
+      "name": "Build Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://hooks.slack.com/services/YOUR/WEBHOOK/URL",
+        "method": "POST",
+        "contentType": "application/json",
+        "body": "={\n  \"blocks\": [\n    {\n      \"type\": \"header\",\n      \"text\": {\n        \"type\": \"plain_text\",\n        \"text\": \"📊 Sentinel Daily Report\"\n      }\n    },\n    {\n      \"type\": \"section\",\n      \"fields\": [\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Time:*\\n\" + $json.report.timestamp\n        },\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Status:*\\n\" + $json.report.status\n        },\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Uptime:*\\n\" + $json.report.uptime\n        },\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Services:*\\n✅ API, DB, Frontend\"\n        }\n      ]\n    }\n  ]\n}"
+      },
+      "id": "send_slack",
+      "name": "Send to Slack",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        700,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "trigger": {
+      "main": [
+        [
+          {
+            "node": "build_report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "build_report": {
+      "main": [
+        [
+          {
+            "node": "send_slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "pinData": {}
+}

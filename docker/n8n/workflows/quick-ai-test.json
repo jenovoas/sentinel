@@ -1,0 +1,49 @@
+{
+  "name": "Quick AI Test",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "id": "schedule-15m",
+      "name": "Every 15m",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://host.docker.internal:11434/api/tags",
+        "method": "GET"
+      },
+      "id": "check-ollama",
+      "name": "Check Ollama Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [450, 300]
+    }
+  ],
+  "connections": {
+    "Every 15m": {
+      "main": [
+        [
+          {
+            "node": "Check Ollama Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -1,0 +1,206 @@
+# Prometheus Alerting Rules
+# Define condiciones que generarán alertas
+
+groups:
+  - name: host_alerts
+    interval: 30s
+    rules:
+      # CPU alta sostenida
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: cpu
+        annotations:
+          summary: "CPU alta en {{ $labels.instance }}"
+          description: "CPU usage está en {{ $value | humanize }}% por más de 5 minutos"
+
+      # CPU crítica
+      - alert: CriticalCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
+        for: 2m
+        labels:
+          severity: critical
+          component: cpu
+        annotations:
+          summary: "CPU crítica en {{ $labels.instance }}"
+          description: "CPU usage está en {{ $value | humanize }}%"
+
+      # Memoria alta
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          component: memory
+        annotations:
+          summary: "Memoria alta en {{ $labels.instance }}"
+          description: "Uso de memoria está en {{ $value | humanize }}%"
+
+      # Memoria crítica
+      - alert: CriticalMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 95
+        for: 2m
+        labels:
+          severity: critical
+          component: memory
+        annotations:
+          summary: "Memoria crítica en {{ $labels.instance }}"
+          description: "Uso de memoria está en {{ $value | humanize }}%"
+
+      # Disco casi lleno
+      - alert: DiskSpaceLow
+        expr: (1 - (node_filesystem_avail_bytes{fstype!~"tmpfs|fuse.*"} / node_filesystem_size_bytes)) * 100 > 80
+        for: 10m
+        labels:
+          severity: warning
+          component: disk
+        annotations:
+          summary: "Espacio en disco bajo en {{ $labels.instance }}"
+          description: "{{ $labels.mountpoint }} está al {{ $value | humanize }}%"
+
+      # Disco crítico
+      - alert: DiskSpaceCritical
+        expr: (1 - (node_filesystem_avail_bytes{fstype!~"tmpfs|fuse.*"} / node_filesystem_size_bytes)) * 100 > 95
+        for: 5m
+        labels:
+          severity: critical
+          component: disk
+        annotations:
+          summary: "Espacio en disco crítico en {{ $labels.instance }}"
+          description: "{{ $labels.mountpoint }} está al {{ $value | humanize }}%"
+
+  - name: service_alerts
+    interval: 30s
+    rules:
+      # Servicio caído
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Servicio {{ $labels.job }} está caído"
+          description: "{{ $labels.instance }} no responde por más de 1 minuto"
+
+      # API response time alto
+      - alert: HighAPILatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "Latencia alta en API"
+          description: "P95 latency es {{ $value }}s en {{ $labels.job }}"
+# ==============================================================================
+# SLO & Error Budget Rules
+# ==============================================================================
+# SLOs para Sentinel:
+#   - Uptime: 99.9% (máx 43.2 min downtime/mes)
+#   - Error Rate: <1% (max 1 error por 100 requests)
+#   - Latencia P95: <1s
+
+  - name: sentinel_slo_alerts
+    interval: 30s
+    rules:
+      # ===== UPTIME SLO: 99.9% =====
+      # Burn rate rápido: >30x en 2h significa romper SLO en <2h
+      - alert: SLO_Uptime_BurnRateFast
+        expr: |
+          (1 - avg(rate(up{job=~"fastapi|sentinel"}[2h]))) > 0.001 * 30
+        for: 5m
+        labels:
+          severity: critical
+          slo: uptime
+          window: "2h"
+        annotations:
+          summary: "🔴 SLO UPTIME - BURN RATE RÁPIDO"
+          description: |
+            El uptime está quemando error budget rápidamente.
+            Si continúa, romperemos 99.9% SLO en <2 horas.
+            Acción: Investiga por qué los servicios caen.
+
+      # Burn rate lento: >10x en 24h significa romper SLO en ~3 días
+      - alert: SLO_Uptime_BurnRateSlow
+        expr: |
+          (1 - avg(rate(up{job=~"fastapi|sentinel"}[24h]))) > 0.001 * 10
+        for: 15m
+        labels:
+          severity: warning
+          slo: uptime
+          window: "24h"
+        annotations:
+          summary: "🟡 SLO UPTIME - BURN RATE LENTO"
+          description: |
+            El uptime está degradándose.
+            Si continúa, romperemos 99.9% SLO en ~3 días.
+            Error budget restante: {{ $value | humanizePercentage }}
+
+      # ===== ERROR RATE SLO: <1% =====
+      - alert: SLO_ErrorRate_High
+        expr: |
+          sum(rate(sentinel_errors_total[5m])) / 
+          sum(rate(sentinel_requests_total[5m])) > 0.01
+        for: 10m
+        labels:
+          severity: warning
+          slo: error_rate
+        annotations:
+          summary: "🟡 SLO ERROR RATE - EXCEDIDO"
+          description: |
+            Tasa de errores >1%.
+            Error rate actual: {{ $value | humanizePercentage }}
+            Acciones: revisar logs, debugging en backend.
+
+      # ===== LATENCIA SLO: P95 <1s =====
+      - alert: SLO_LatencyHigh
+        expr: |
+          histogram_quantile(0.95, sum(rate(sentinel_request_duration_seconds_bucket[5m])) by (le)) > 1
+        for: 10m
+        labels:
+          severity: warning
+          slo: latency
+        annotations:
+          summary: "🟡 SLO LATENCIA - EXCEDIDO"
+          description: |
+            P95 latencia está >1s.
+            Latencia actual P95: {{ $value }}s
+            Acciones: revisar performance, optimizar queries.
+
+  - name: sentinel_slo_metrics
+    interval: 1m
+    rules:
+      # ===== MÉTRICAS DE SLO PARA DASHBOARDS =====
+      # Disponibilidad horaria
+      - record: slo:availability:hourly
+        expr: avg(rate(up{job=~"fastapi|sentinel"}[1h])) * 100
+
+      # Disponibilidad diaria
+      - record: slo:availability:daily
+        expr: avg(rate(up{job=~"fastapi|sentinel"}[24h])) * 100
+
+      # Disponibilidad mensual
+      - record: slo:availability:monthly
+        expr: avg(rate(up{job=~"fastapi|sentinel"}[30d])) * 100
+
+      # Error rate últimas 5 minutos
+      - record: slo:error_rate:5m
+        expr: |
+          (sum(rate(sentinel_errors_total[5m])) / sum(rate(sentinel_requests_total[5m])) * 100) or vector(0)
+
+      # Error budget restante (vs 99.9%)
+      - record: slo:error_budget:remaining
+        expr: |
+          (0.999 - avg(rate(up{job=~"fastapi|sentinel"}[30d]))) / 0.001 * 100
+
+      # Burn rate 2h
+      - record: slo:burnrate:2h
+        expr: |
+          (1 - avg(rate(up{job=~"fastapi|sentinel"}[2h]))) / 0.001
+
+      # Burn rate 24h
+      - record: slo:burnrate:24h
+        expr: |
+          (1 - avg(rate(up{job=~"fastapi|sentinel"}[24h]))) / 0.001
