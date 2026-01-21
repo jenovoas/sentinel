@@ -3,7 +3,6 @@ Monitoring Orchestration Service - Phase 2
 Integrates metrics collection, anomaly detection, and historical storage
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import logging
 from datetime import datetime
 from typing import Dict, Any, Optional
@@ -77,7 +76,7 @@ class MonitoringOrchestrator:
                 wifi_signal=wifi_info.get("signal"),
                 wifi_connected=wifi_info.get("connected", False),
                 metadata={
-                    "version": "S60(1, 0, 0)",
+                    "version": "1.0",
                     "phase": "2-analytics",
                 },
             )

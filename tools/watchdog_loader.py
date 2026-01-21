@@ -1,4 +1,3 @@
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import time
 import json

@@ -1,4 +1,4 @@
-#  Sentinel Cognitive Security - Complete Implementation Roadmap
+# 🧠 Sentinel Cognitive Security - Complete Implementation Roadmap
 
 ## Vision: Self-Learning, Self-Healing Security System
 
@@ -86,6 +86,24 @@ impl DataIngestionPipeline {
 ---
 
 ## Phase 2A: Sentinel Cortex + Auto-Ingestion (Weeks 1-4)
+
+### Week 1: Foundation + Data Collectors
+
+#### Days 1-2: Project Setup
+- [x] Create Rust workspace
+- [x] Axum web server
+- [x] PostgreSQL config
+- [ ] **Prometheus client** (scrape metrics)
+- [ ] **Redis client** (real-time data)
+- [ ] Observability (tracing, metrics)
+
+#### Days 3-4: Data Ingestion
+- [ ] **PrometheusCollector** (CPU, memory, network)
+- [ ] **PostgresCollector** (events, anomalies, alerts)
+- [ ] **RedisCollector** (cache stats, sessions)
+- [ ] **OllamaCollector** (AI insights, predictions)
+- [ ] **AuditdCollector** (security events)
+- [ ] **DockerCollector** (container metrics)
 
 **Code Example**:
 ```rust
@@ -377,7 +395,7 @@ pub async fn route_event(&self, event: Event) -> Result<()> {
 
 ```
 ┌─────────────────────────────────────────────────┐
-│   Cognitive Intelligence                      │
+│  🧠 Cognitive Intelligence                      │
 │  Auto-learning from all systems                 │
 ├─────────────────────────────────────────────────┤
 │  Data Sources: 6 active                         │
@@ -565,9 +583,9 @@ Hardening checklist:
 ## Summary
 
 **What We're Building**:
--  Self-learning security brain
+- 🧠 Self-learning security brain
 - 🔄 Auto-ingestion from 6+ sources
--  Managed security playbooks
+- 🛡️ Managed security playbooks
 - 🤖 User automation workspace
 - 🏪 Workflow marketplace
 
@@ -577,4 +595,4 @@ Hardening checklist:
 
 **Result**: World's first cognitive security platform
 
-**Let's build this.** 💪
+**Let's build this.** 🚀💪

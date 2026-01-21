@@ -1,348 +1,335 @@
 "use client";
 
-import React, { useState } from "react";
+/**
+ * CognitiveNavBar Component
+ * 
+ * Principios de Diseño Cognitivo Aplicados:
+ * 
+ * 1. JERARQUÍA VISUAL CLARA
+ *    - Logo/Branding en izquierda (primario, familiar)
+ *    - Items principales en centro (acceso rápido)
+ *    - Usuario/Acciones en derecha (secundario)
+ * 
+ * 2. AGRUPACIÓN POR AFINIDAD (Law of Proximity)
+ *    - Dashboard y Analytics juntos (monitoreo)
+ *    - Settings y Logout juntos (configuración personal)
+ * 
+ * 3. FEEDBACK VISUAL INMEDIATO
+ *    - Hover: elevación (shadow), brillo aumenta
+ *    - Active: indicador visual persistente (underline color)
+ *    - Micro-transiciones smooth (300ms)
+ * 
+ * 4. PSICOLOGÍA DEL COLOR
+ *    - CYAN (#22d3ee): Confianza, claridad mental, tech
+ *    - VERDE (#10b981): Éxito, datos healthy, go
+ *    - ÁMBAR (#f59e0b): Alerta, requiere atención
+ *    - ROJO (#ef4444): Peligro, error
+ * 
+ * 5. AFFORDANCIA
+ *    - Cursor: pointer en items clickeables
+ *    - Iconos + texto = reconocimiento inmediato
+ *    - Espaciado generoso (breathing room)
+ * 
+ * 6. CONSISTENCIA
+ *    - Mismo estilo que dashboard (rounded, backdrop-blur)
+ *    - Colores y transiciones consistentes
+ *    - Tamaños y tipografía predecibles
+ */
+
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  LayoutDashboard,
-  Shield,
-  Bell,
-  User,
-  ChevronDown,
-  Settings,
-  LogOut,
-  Lock,
-  Brain,
-  ShieldAlert,
-  Activity,
-  Zap,
-  Globe,
-  Terminal,
-  Server,
-  ChevronRight
-} from "lucide-react";
 
 interface NavItem {
   label: string;
-  href?: string;
+  href: string;
   icon: React.ReactNode;
-  color: string;
-  glow: string;
-  description: string;
-  children?: NavItem[];
+  color: "cyan" | "green" | "amber" | "purple";
+  description?: string; // Tooltip cognitivo
 }
 
 const MAIN_NAV_ITEMS: NavItem[] = [
   {
-    label: "HOME",
-    href: "/",
-    icon: <Globe className="w-4 h-4" />,
-    color: "text-cyan-400",
-    glow: "bg-cyan-400/20",
-    description: "Command Tower Root",
+    label: "Dashboard",
+    href: "/dash-op",
+    icon: (
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+        />
+      </svg>
+    ),
+    color: "cyan",
+    description: "Monitoreo en tiempo real",
   },
   {
-    label: "COGNITIVE",
-    href: "/cognitive",
-    icon: <Zap className="w-4 h-4" />,
-    color: "text-purple-400",
-    glow: "bg-purple-400/20",
-    description: "Merkabah Dimensional Interface",
+    label: "Analytics",
+    href: "/analytics",
+    icon: (
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+        />
+      </svg>
+    ),
+    color: "green",
+    description: "Análisis históricos y tendencias",
   },
   {
-    label: "INTELLIGENCE",
-    icon: <Brain className="w-4 h-4" />,
-    color: "text-purple-400",
-    glow: "bg-purple-400/20",
-    description: "AI & Cognitive Systems",
-    children: [
-      {
-        label: "Cortex AI",
-        href: "/cortex",
-        icon: <Brain className="w-4 h-4" />,
-        color: "text-purple-400",
-        glow: "bg-purple-400/20",
-        description: "Neural Inference Matrix",
-      },
-      {
-        label: "Workspace",
-        href: "/dashboard",
-        icon: <Lock className="w-4 h-4" />,
-        color: "text-cyan-400",
-        glow: "bg-cyan-400/20",
-        description: "Secure Browser & Environment",
-      },
-      {
-        label: "AI Trust",
-        href: "/ai-trust",
-        icon: <Shield className="w-4 h-4" />,
-        color: "text-emerald-400",
-        glow: "bg-emerald-400/20",
-        description: "AI Trust Certification & Hallucination Defense",
-      },
-    ],
+    label: "Alertas",
+    href: "/alerts",
+    icon: (
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+        />
+      </svg>
+    ),
+    color: "amber",
+    description: "Anomalías y eventos críticos",
   },
   {
-    label: "OPERATIONS",
-    icon: <Server className="w-4 h-4" />,
-    color: "text-emerald-400",
-    glow: "bg-emerald-400/20",
-    description: "System Operations & Monitoring",
-    children: [
-      {
-        label: "Ops Matrix",
-        href: "/dash-op",
-        icon: <LayoutDashboard className="w-4 h-4" />,
-        color: "text-emerald-400",
-        glow: "bg-emerald-400/20",
-        description: "Operational Dashboard",
-      },
-      {
-        label: "Watchdog",
-        href: "/watchdog",
-        icon: <ShieldAlert className="w-4 h-4" />,
-        color: "text-orange-400",
-        glow: "bg-orange-400/20",
-        description: "System Health Monitor",
-      },
-      {
-        label: "Telemetry",
-        href: "/monitoring",
-        icon: <Activity className="w-4 h-4" />,
-        color: "text-pink-400",
-        glow: "bg-pink-400/20",
-        description: "Grafana Metrics",
-      },
-      {
-        label: "DevOps",
-        href: "/devops",
-        icon: <Server className="w-4 h-4" />,
-        color: "text-emerald-400",
-        glow: "bg-emerald-400/20",
-        description: "Infrastructure Console",
-      },
-      {
-        label: "DevTools",
-        href: "/devtools",
-        icon: <Terminal className="w-4 h-4" />,
-        color: "text-purple-400",
-        glow: "bg-purple-400/20",
-        description: "Developer Testing Suite",
-      },
-    ],
+    label: "Bases de Datos",
+    href: "/db",
+    icon: (
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M12 3c4.97 0 9 1.79 9 4s-4.03 4-9 4-9-1.79-9-4 4.03-4 9-4zm0 8c4.97 0 9 1.79 9 4s-4.03 4-9 4-9-1.79-9-4 4.03-4 9-4z"
+        />
+      </svg>
+    ),
+    color: "amber",
+    description: "Instancias y consultas activas",
+  },
+  {
+    label: "Reportes",
+    href: "/reports",
+    icon: (
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+        />
+      </svg>
+    ),
+    color: "purple",
+    description: "Reportes y documentación",
   },
 ];
 
-export const CognitiveNavBar: React.FC<{ userEmail?: string; onLogout?: () => void }> = ({
+interface CognitiveNavBarProps {
+  userEmail?: string;
+  onLogout?: () => void;
+}
+
+const getColorClasses = (color: string, isActive: boolean) => {
+  const baseClasses =
+    "transition-all duration-300 relative group text-gray-300 hover:text-white";
+
+  if (isActive) {
+    switch (color) {
+      case "cyan":
+        return `${baseClasses} text-cyan-400 after:absolute after:bottom-[-8px] after:left-0 after:right-0 after:h-1 after:bg-cyan-400 after:rounded-full`;
+      case "green":
+        return `${baseClasses} text-green-400 after:absolute after:bottom-[-8px] after:left-0 after:right-0 after:h-1 after:bg-green-400 after:rounded-full`;
+      case "amber":
+        return `${baseClasses} text-amber-400 after:absolute after:bottom-[-8px] after:left-0 after:right-0 after:h-1 after:bg-amber-400 after:rounded-full`;
+      case "purple":
+        return `${baseClasses} text-purple-400 after:absolute after:bottom-[-8px] after:left-0 after:right-0 after:h-1 after:bg-purple-400 after:rounded-full`;
+      default:
+        return baseClasses;
+    }
+  }
+
+  switch (color) {
+    case "cyan":
+      return `${baseClasses} hover:text-cyan-300`;
+    case "green":
+      return `${baseClasses} hover:text-green-300`;
+    case "amber":
+      return `${baseClasses} hover:text-amber-300`;
+    case "purple":
+      return `${baseClasses} hover:text-purple-300`;
+    default:
+      return baseClasses;
+  }
+};
+
+export const CognitiveNavBar: React.FC<CognitiveNavBarProps> = ({
   userEmail,
   onLogout,
 }) => {
   const pathname = usePathname();
-  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
-
-  const isItemActive = (item: NavItem): boolean => {
-    if (item.href) return pathname === item.href;
-    if (item.children) {
-      return item.children.some(child => pathname === child.href);
-    }
-    return false;
-  };
 
   return (
-    <nav className="sticky top-0 z-[100] w-full border-b border-white/5 bg-slate-950/40 backdrop-blur-3xl shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
-      <div className="max-w-[1700px] mx-auto px-8 py-3">
-        <div className="flex items-center justify-between gap-10">
-          {/* Logo Section */}
+    <nav className="sticky top-0 z-40 w-full border-b border-white/5 bg-slate-950/80 backdrop-blur-xl shadow-lg">
+      <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="flex items-center justify-between gap-8">
+          {/* Logo / Branding - Primario (izquierda) */}
           <Link
             href="/"
-            className="flex items-center gap-4 group transition-all duration-500"
+            className="flex items-center gap-2 group transition-all duration-300 hover:scale-105"
           >
             <div className="relative">
-              <div className="absolute inset-0 bg-cyan-400/30 rounded-xl blur-md opacity-20 group-hover:opacity-60 transition-opacity" />
-              <div className="relative bg-slate-900 border border-white/10 rounded-xl p-2.5 shadow-2xl transition-transform group-hover:rotate-12">
-                <Shield className="w-6 h-6 text-cyan-400" />
+              <div className="absolute inset-0 bg-cyan-400 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity" />
+              <div className="relative bg-gradient-to-br from-cyan-400 to-blue-500 rounded-lg p-2">
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z" />
+                </svg>
               </div>
             </div>
-            <div className="flex flex-col">
-              <span className="text-xl font-black text-white italic tracking-tighter leading-none">SENTINEL</span>
-              <span className="text-[8px] font-black tracking-[0.4em] text-cyan-500 uppercase">Sovereign OS</span>
-            </div>
+            <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent hidden sm:inline">
+              Sentinel
+            </span>
           </Link>
 
-          {/* Main Navigation */}
-          <div className="hidden lg:flex items-center gap-1 bg-white/2 p-1 rounded-2xl border border-white/5">
+          {/* Main Navigation - Centro */}
+          <div className="hidden md:flex items-center gap-1">
             {MAIN_NAV_ITEMS.map((item) => {
-              const isActive = isItemActive(item);
-              const hasSubmenu = item.children && item.children.length > 0;
-
+              const isActive = pathname === item.href;
               return (
-                <div
-                  key={item.label}
-                  className="relative"
-                  onMouseEnter={() => hasSubmenu && setOpenSubmenu(item.label)}
-                  onMouseLeave={() => hasSubmenu && setOpenSubmenu(null)}
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300 ${getColorClasses(item.color, isActive)} hover:bg-white/5`}
+                  title={item.description}
                 >
-                  {hasSubmenu ? (
-                    // Menu item with submenu
-                    <button
-                      className={`relative flex items-center gap-3 px-5 py-2.5 rounded-[14px] transition-all duration-500 group overflow-hidden`}
-                    >
-                      {isActive && (
-                        <motion.div
-                          layoutId="nav-bg"
-                          className="absolute inset-0 bg-white/5 border border-white/10 shadow-[inset_0_0_10px_rgba(255,255,255,0.05)] rounded-[14px]"
-                          transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                        />
-                      )}
+                  {item.icon}
+                  <span className="text-sm font-medium">{item.label}</span>
 
-                      <span className={`relative z-10 transition-colors duration-500 ${isActive ? item.color : "text-gray-500 group-hover:text-gray-300"}`}>
-                        {item.icon}
-                      </span>
-                      <span className={`relative z-10 text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${isActive ? 'text-white' : 'text-gray-500 group-hover:text-gray-300'}`}>
-                        {item.label}
-                      </span>
-                      <ChevronDown className={`relative z-10 w-3 h-3 transition-all duration-300 ${openSubmenu === item.label ? 'rotate-180' : ''} ${isActive ? 'text-white' : 'text-gray-500'}`} />
-
-                      {isActive && (
-                        <motion.div
-                          layoutId="nav-underline"
-                          className={`absolute bottom-1.5 left-5 right-5 h-[1.5px] ${item.color.replace('text', 'bg')} rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)]`}
-                        />
-                      )}
-                    </button>
-                  ) : (
-                    // Regular menu item
-                    <Link
-                      href={item.href!}
-                      className={`relative flex items-center gap-3 px-5 py-2.5 rounded-[14px] transition-all duration-500 group overflow-hidden`}
-                    >
-                      {isActive && (
-                        <motion.div
-                          layoutId="nav-bg"
-                          className="absolute inset-0 bg-white/5 border border-white/10 shadow-[inset_0_0_10px_rgba(255,255,255,0.05)] rounded-[14px]"
-                          transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                        />
-                      )}
-
-                      <span className={`relative z-10 transition-colors duration-500 ${isActive ? item.color : "text-gray-500 group-hover:text-gray-300"}`}>
-                        {item.icon}
-                      </span>
-                      <span className={`relative z-10 text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${isActive ? 'text-white' : 'text-gray-500 group-hover:text-gray-300'}`}>
-                        {item.label}
-                      </span>
-
-                      {isActive && (
-                        <motion.div
-                          layoutId="nav-underline"
-                          className={`absolute bottom-1.5 left-5 right-5 h-[1.5px] ${item.color.replace('text', 'bg')} rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)]`}
-                        />
-                      )}
-
-                      {/* Tooltip */}
-                      <div className="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-lg bg-black/90 border border-white/10 text-[9px] font-black text-white opacity-0 group-hover:opacity-100 transition-all pointer-events-none whitespace-nowrap tracking-widest translate-y-2 group-hover:translate-y-0 z-[110]">
-                        {item.description}
-                      </div>
-                    </Link>
-                  )}
-
-                  {/* Submenu Dropdown */}
-                  <AnimatePresence>
-                    {hasSubmenu && openSubmenu === item.label && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute top-[calc(100%+10px)] left-0 min-w-[240px] bg-slate-950/95 backdrop-blur-3xl border border-white/10 rounded-2xl shadow-2xl py-2 z-[110]"
-                      >
-                        {item.children!.map((child) => {
-                          const isChildActive = pathname === child.href;
-                          return (
-                            <Link
-                              key={child.label}
-                              href={child.href!}
-                              className={`flex items-center gap-3 px-4 py-3 transition-all ${isChildActive
-                                ? 'bg-white/10 text-white'
-                                : 'text-gray-400 hover:text-white hover:bg-white/5'
-                                }`}
-                            >
-                              <span className={isChildActive ? child.color : 'text-gray-500'}>
-                                {child.icon}
-                              </span>
-                              <div className="flex-1">
-                                <p className="text-[10px] font-black uppercase tracking-wider">
-                                  {child.label}
-                                </p>
-                                <p className="text-[8px] text-gray-600 uppercase tracking-widest mt-0.5">
-                                  {child.description}
-                                </p>
-                              </div>
-                              {isChildActive && (
-                                <ChevronRight className="w-3 h-3 text-cyan-400" />
-                              )}
-                            </Link>
-                          );
-                        })}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                  {/* Tooltip Cognitivo (aparece en hover) */}
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 rounded-md bg-slate-900/95 text-xs text-gray-200 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap border border-white/10">
+                    {item.description}
+                  </div>
+                </Link>
               );
             })}
           </div>
 
-          {/* Right Section */}
-          <div className="flex items-center gap-6">
-            <div className="hidden xl:flex items-center gap-3 px-4 py-1.5 bg-black/40 rounded-full border border-white/5 text-[9px] font-black tracking-widest text-gray-500">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              TRUTH_SYNC: ACTIVE
-            </div>
-
-            <button className="relative p-2.5 text-gray-400 hover:text-white transition-all duration-300 hover:bg-white/5 rounded-xl border border-transparent hover:border-white/10">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-2.5 right-2.5 h-1.5 w-1.5 bg-rose-500 rounded-full shadow-[0_0_10px_rgba(244,63,94,0.5)]" />
+          {/* Right Actions - Derecha */}
+          <div className="flex items-center gap-4">
+            {/* Notifications Badge - Psicología: rojo capta atención */}
+            <button className="relative p-2 text-gray-300 hover:text-white transition-colors duration-300 hover:bg-white/5 rounded-lg group">
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                />
+              </svg>
+              <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full animate-pulse" />
             </button>
 
-            <div className="relative group p-1 bg-white/2 rounded-2xl border border-white/5">
-              <button className="flex items-center gap-3 px-3 py-2 rounded-[14px] text-gray-400 hover:text-white transition-all duration-500 hover:bg-white/5">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 flex items-center justify-center text-xs font-black text-white shadow-lg border border-white/20">
-                  {userEmail?.charAt(0).toUpperCase() || "S"}
+            {/* User Menu - Psicología: dropdown pattern familiar */}
+            <div className="relative group">
+              <button className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-300">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-xs font-bold text-white">
+                  {userEmail?.charAt(0).toUpperCase() || "U"}
                 </div>
-                <div className="flex flex-col items-start leading-tight">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white">
-                    {userEmail?.split("@")[0] || "Operator"}
-                  </span>
-                  <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Level 7 Clear</span>
-                </div>
-                <ChevronDown className="w-3 h-3 transition-transform duration-500 group-hover:rotate-180" />
+                <span className="text-sm font-medium hidden sm:inline">
+                  {userEmail?.split("@")[0] || "User"}
+                </span>
+                <svg
+                  className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                  />
+                </svg>
               </button>
 
-              <div className="absolute right-0 top-[calc(100%+10px)] w-56 bg-slate-950/95 backdrop-blur-3xl border border-white/10 rounded-2xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-500 py-3 z-[110] translate-y-2 group-hover:translate-y-0">
-                <DropdownItem icon={<User className="w-4 h-4" />} label="Sovereign Profile" />
-                <DropdownItem icon={<Settings className="w-4 h-4" />} label="Node Settings" />
-                <DropdownItem icon={<Terminal className="w-4 h-4" />} label="Shell Access" />
-                <div className="my-2 border-t border-white/5" />
+              {/* Dropdown Menu - Escondido por defecto */}
+              <div className="absolute right-0 top-full mt-0 w-48 bg-slate-900 border border-white/10 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 py-2">
+                <button className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors">
+                  ⚙️ Preferencias
+                </button>
+                <button className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors">
+                  👤 Mi Perfil
+                </button>
+                <hr className="my-2 border-white/10" />
                 <button
                   onClick={onLogout}
-                  className="w-full text-left px-4 py-2 text-xs font-black text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors flex items-center uppercase tracking-widest"
+                  className="w-full text-left px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
                 >
-                  <LogOut className="w-4 h-4 mr-3" /> Terminate Session
+                  🚪 Logout
                 </button>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Mobile Navigation - Responsivo */}
+        <div className="md:hidden mt-4 flex items-center gap-1 overflow-x-auto pb-2">
+          {MAIN_NAV_ITEMS.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center gap-1 px-3 py-2 rounded-lg whitespace-nowrap transition-all duration-300 ${getColorClasses(item.color, isActive)} hover:bg-white/5`}
+              >
+                {item.icon}
+                <span className="text-xs font-medium">{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </nav>
   );
 };
-
-function DropdownItem({ icon, label }: { icon: React.ReactNode; label: string }) {
-  return (
-    <button className="w-full text-left px-5 py-2.5 text-[10px] font-black text-gray-400 hover:text-white hover:bg-white/5 transition-all flex items-center uppercase tracking-widest uppercase italic">
-      <span className="mr-3 text-cyan-500">{icon}</span>
-      {label}
-    </button>
-  );
-}

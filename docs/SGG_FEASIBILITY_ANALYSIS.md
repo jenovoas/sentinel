@@ -18,7 +18,7 @@ La arquitectura SGG propuesta es técnicamente sólida y ambiciosa, pero requier
 
 ---
 
-## 🏗 Arquitectura Propuesta vs Actual
+## 🏗️ Arquitectura Propuesta vs Actual
 
 ### Arquitectura Actual (Implementada 60%)
 ```
@@ -296,7 +296,7 @@ La arquitectura SGG propuesta es técnicamente sólida y ambiciosa, pero requier
 
 ## 📊 Análisis de Complejidad por Fase
 
-### 1⃣ DESARROLLO
+### 1️⃣ DESARROLLO
 
 #### Complejidad Técnica (1-10)
 | Componente | Complejidad | Justificación |
@@ -325,7 +325,7 @@ La arquitectura SGG propuesta es técnicamente sólida y ambiciosa, pero requier
 
 ---
 
-### 2⃣ IMPLEMENTACIÓN
+### 2️⃣ IMPLEMENTACIÓN
 
 #### Complejidad Operacional (1-10)
 | Componente | Complejidad | Justificación |
@@ -348,7 +348,7 @@ La arquitectura SGG propuesta es técnicamente sólida y ambiciosa, pero requier
 
 ---
 
-### 3⃣ ADMINISTRACIÓN (Usuario Final)
+### 3️⃣ ADMINISTRACIÓN (Usuario Final)
 
 #### Complejidad para Cliente (1-10)
 | Tarea | Complejidad | Frecuencia |
@@ -381,7 +381,7 @@ TIER 3: Emergencias (24/7)
 
 ---
 
-##  Roadmap Recomendado (Ajustado)
+## 🎯 Roadmap Recomendado (Ajustado)
 
 ### ✅ FASE 1: HA Local Sólido (Meses 1-3) - CRÍTICO
 **Objetivo**: Sobrevivir falla de 1 nodo local
@@ -452,7 +452,7 @@ TIER 3: Emergencias (24/7)
 
 ---
 
-## ⚠ Riesgos Identificados
+## ⚠️ Riesgos Identificados
 
 ### Riesgos Técnicos
 | Riesgo | Probabilidad | Impacto | Mitigación |
@@ -560,7 +560,7 @@ TIER 3: Emergencias (24/7)
 
 ---
 
-##  Plan de Acción Inmediato
+## 🚀 Plan de Acción Inmediato
 
 ### Semana 1-2: Validación
 - [ ] Entrevistar 5 clientes potenciales (hospitales, fintechs)
@@ -606,7 +606,7 @@ TIER 3: Emergencias (24/7)
 2. Self-healing completo
 3. Nodos en 4 continentes
 
-###  Objetivo Realista Año 1
+### 🎯 Objetivo Realista Año 1
 - **Clientes**: 5-10 (no 320)
 - **ARR**: $500K-1M (no $77M)
 - **Producto**: HA Local + Cloud Regional (no 5 capas)

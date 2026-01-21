@@ -5,7 +5,7 @@
 
 ---
 
-##  Quick Start (10 Minutes)
+## 🚀 Quick Start (10 Minutes)
 
 ### Prerequisites
 
@@ -308,7 +308,7 @@ Redis HA is working when:
 
 ---
 
-##  Next Steps
+## 🎯 Next Steps
 
 ### Integration with Backend
 

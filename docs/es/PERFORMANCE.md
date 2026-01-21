@@ -6,7 +6,7 @@
 
 ---
 
-##  Executive Summary
+## 🎯 Executive Summary
 
 Sentinel is designed for **high-performance multi-tenant SaaS** with integrated AI capabilities. This document provides real-world performance metrics, resource requirements, and scaling limits for capacity planning.
 
@@ -63,7 +63,7 @@ Sentinel is designed for **high-performance multi-tenant SaaS** with integrated 
 |-------|------|------|---------|---------|-------------|
 | **phi3:mini** | 1.3B | ~2GB | 1-2s | Good | ✅ Yes (current) |
 | **llama3.2:1b** | 1B | ~1.5GB | 0.8-1.5s | Acceptable | ✅ Yes (faster) |
-| **llama3.2:3b** | 3B | ~2.5GB | 2-3s | Very Good | ⚠ Tight fit |
+| **llama3.2:3b** | 3B | ~2.5GB | 2-3s | Very Good | ⚠️ Tight fit |
 | **llama3:8b** | 8B | ~5GB | - | Excellent | ❌ Won't fit |
 
 **Recommendation**: phi3:mini for GTX 1050 (3GB VRAM)
@@ -78,7 +78,7 @@ Sentinel is designed for **high-performance multi-tenant SaaS** with integrated 
 
 ---
 
-##  API Performance
+## 🚀 API Performance
 
 ### Backend (FastAPI)
 
@@ -366,7 +366,7 @@ Sentinel is designed for **high-performance multi-tenant SaaS** with integrated 
 
 ---
 
-##  Performance Tuning Tips
+## 🎯 Performance Tuning Tips
 
 ### Backend Optimization
 

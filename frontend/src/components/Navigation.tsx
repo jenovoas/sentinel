@@ -16,7 +16,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-// import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 interface NavItem {
@@ -34,23 +34,10 @@ export function Navigation() {
     // Navigation items with routes
     const navItems: NavItem[] = [
         {
-            label: "Home",
-            href: "/",
-            icon: "🏠",
-            description: "Landing Page",
-        },
-        {
-            label: "Secure Workspace",
+            label: "Dashboard",
             href: "/dashboard",
             icon: "📊",
-            description: "Browser & Wallet",
-        },
-        {
-            label: "Dash Op",
-            href: "/dash-op",
-            icon: "⚙️",
-            badge: "OPS",
-            description: "Operations Panel",
+            description: "Executive overview",
         },
         {
             label: "AI Playground",
@@ -67,50 +54,16 @@ export function Navigation() {
             description: "Auditd watchdog",
         },
         {
-            label: "Cortex",
-            href: "/cortex",
-            icon: "🧠",
-            badge: "Live",
-            description: "Decision Engine",
-        },
-        {
-            label: "Gamma",
-            href: "/gamma",
-            icon: "⚖️",
-            badge: "HITL",
-            description: "Human validation",
-        },
-        {
             label: "Metrics",
             href: "/metrics",
             icon: "📈",
             description: "Grafana dashboards",
         },
-
         {
             label: "Analytics",
             href: "/analytics",
             icon: "📉",
             description: "Historical data",
-        },
-        {
-            label: "Databases",
-            href: "/db",
-            icon: "🗄️",
-            description: "Instance management",
-        },
-        {
-            label: "Reports",
-            href: "/reports",
-            icon: "📄",
-            description: "System documentation",
-        },
-        {
-            label: "Soul Evolution",
-            href: "/soul-evolution",
-            icon: "🧬",
-            badge: "Identity",
-            description: "Bio-Rhythm History",
         },
     ];
 

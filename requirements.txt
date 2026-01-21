@@ -1,7 +1,0 @@
-ollama
-chromadb
-requests
-psycopg2-binary
-numpy
-psutil
-PyYAML

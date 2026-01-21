@@ -15,7 +15,6 @@ Author: Sentinel Team
 Created: 2025-12-15
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 from datetime import datetime, timedelta

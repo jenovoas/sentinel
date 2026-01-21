@@ -1,10 +1,5 @@
 # Sentinel Quantum - Nivel 2: Conceptos Básicos 🎓
 
-> ⚠️ **LEGACY EDUCATIONAL CONTENT**  
-> Este documento es material educativo del simulador cuántico legacy.  
-> Contiene código numpy/scipy para fines didácticos.  
-> **Para Sentinel v8.0 producción, ver:** [AI_PRIME_DIRECTIVES.md](../AI_PRIME_DIRECTIVES.md)
-
 **Prerequisito**: Haber completado [Nivel 1: Primeros Pasos](GUIA_PASO_A_PASO.md)
 
 ---

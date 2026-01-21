@@ -30,16 +30,3 @@ La optimización ha sido un éxito rotundo. Hemos convertido un sistema que cola
 La latencia aumentó ligeramente debido a los lookups de diccionario, pero la **escalabilidad es ahora prácticamente ilimitada** dentro de la RAM disponible.
 
 ✅ **MEMORIA OPTIMIZADA.**
-
----
-
-## Cómo Ejecutar
-
-Para reproducir este experimento:
-
-```bash
-python3 -m quantum.experiments.EXP_014_SPARSE_MEMORY
-```
-
-**Nota:** Ejecutar desde el directorio raíz del proyecto `/home/jnovoas/dev/sentinel`
-

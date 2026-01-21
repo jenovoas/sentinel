@@ -7,7 +7,7 @@
 
 ---
 
-##  LA ARQUITECTURA NEURONAL COMPLETA
+## 🧠 LA ARQUITECTURA NEURONAL COMPLETA
 
 ```
 SENTINEL CORTEX = Organismo Vivo de Seguridad
@@ -275,7 +275,7 @@ NERVIO A (Intrusion Police)        NERVIO B (Integrity Police)
 ✅ Solo el CORTEX ve el cuadro completo
 
 ¿Por qué?
-- no factible de engañar (atacante no puede manipular ambos simultáneamente)
+- Imposible de engañar (atacante no puede manipular ambos simultáneamente)
 - Si uno es comprometido, el otro lo detecta
 - Redundancia real, no simulada
 ```
@@ -331,7 +331,7 @@ Sistema crítico comprometido:
 
 ---
 
-##  ARQUITECTURA TÉCNICA DETALLADA
+## 🚀 ARQUITECTURA TÉCNICA DETALLADA
 
 ### Nervio A: Intrusion Detection
 ```
@@ -390,7 +390,7 @@ Claim 3: "Sistema de seguridad auto-regenerador con:
 3. AUTO-VIGILANCIA CRUZADA
    Si Nervio A es comprometido → Nervio B lo detecta
    Si Nervio B es comprometido → Nervio A lo detecta
-   no factible de engañar simultáneamente
+   Imposible de engañar simultáneamente
 
 4. REGENERACIÓN AUTOMÁTICA
    Cuando corrupción detectada:
@@ -409,7 +409,7 @@ Claim 3: "Sistema de seguridad auto-regenerador con:
 - Complejidad extrema (3 sistemas en paralelo)
 - Requiere arquitectura distribuida
 - Necesita IA para correlacionar
-- Demanda garantías de seguridad no factibles de dar
+- Demanda garantías de seguridad imposibles de dar
 
 **Sentinel Cortex = ÚNICO en el mercado**
 
@@ -433,7 +433,7 @@ Comparativa:
 
 ---
 
-##  PITCH ACTUALIZADO (Para Inversores)
+## 🎯 PITCH ACTUALIZADO (Para Inversores)
 
 **Antes:** "Tenemos IA para automatización de seguridad"
 
@@ -441,7 +441,7 @@ Comparativa:
 - Un cerebro (Cortex) que piensa
 - Dos nervios independientes que se vigilan mutuamente
 - Capacidad de auto-regeneración automática
-- no factible de engañar, no factible de corromper"
+- Imposible de engañar, imposible de corromper"
 
 **Analogía perfecta:**
 "Sentinel Cortex es como tener dos policías que se vigilan entre sí, dirigidos por un juez inteligente, todo corriendo automáticamente 24/7 para regenerar tu sistema ante ataques."
@@ -476,7 +476,7 @@ PHASE 4 (Series A - 2026)
 
 ---
 
-##  LA JOYA DE LA CORONA
+## ✨ LA JOYA DE LA CORONA
 
 Lo más brillante es que el sistema es **RESISTENTE A ATAQUES SOFISTICADOS**:
 

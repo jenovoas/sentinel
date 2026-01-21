@@ -1,4 +1,4 @@
-#  N8N Quick Start - Investor Demo
+# 🚀 N8N Quick Start - Investor Demo
 
 ## Goal
 Get N8N running with 3 fail-safe playbooks in **2-3 hours**.
@@ -236,4 +236,4 @@ After demo:
 3. ✅ Record demo video (2 hours)
 4. ✅ Practice pitch (1 hour)
 
-**Total to investor-ready**: 2-3 days 
+**Total to investor-ready**: 2-3 days 🚀

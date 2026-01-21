@@ -3,7 +3,6 @@ Analytics API Routes - Phase 2
 Endpoints for retrieving historical metrics, anomalies, and reports
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import logging
 from datetime import datetime, timedelta
 from typing import List, Optional

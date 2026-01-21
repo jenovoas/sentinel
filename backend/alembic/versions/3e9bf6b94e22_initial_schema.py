@@ -5,7 +5,6 @@ Revises:
 Create Date: 2025-12-13 20:45:00.000000
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql

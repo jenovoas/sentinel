@@ -27,14 +27,11 @@
       "@/components/*": [
         "src/components/*"
       ],
-      "@/app/*": [
-        "src/app/*"
+      "@/pages/*": [
+        "src/pages/*"
       ],
       "@/lib/*": [
         "src/lib/*"
-      ],
-      "@/hooks/*": [
-        "src/hooks/*"
       ]
     },
     "allowJs": true,
@@ -49,10 +46,7 @@
     ]
   },
   "include": [
-    "app",
     "src",
-    "components",
-    "lib",
     "next.config.js",
     ".next/types/**/*.ts"
   ],

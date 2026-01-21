@@ -100,7 +100,6 @@ export const useNetworkInfo = () => {
         connection.removeEventListener?.("change", handleChange);
       };
     }
-    return undefined;
   }, []);
 
   return networkInfo;

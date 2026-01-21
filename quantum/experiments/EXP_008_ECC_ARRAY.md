@@ -34,16 +34,3 @@ La arquitectura **Triple-Lattice** es viable para almacenamiento robusto en ento
 Aunque no previene totalmente la degradación de energía (el promedio puede bajar si 2 de 3 celdas sufren ruido simultáneo), **garantiza la persistencia de la información** mucho más allá de los límites de un solo componente.
 
 ✅ **STATUS: ÉXITO ROTUNDO (Resiliencia > 300% vs Single Crystal)**
-
----
-
-## Cómo Ejecutar
-
-Para reproducir este experimento:
-
-```bash
-python3 -m quantum.experiments.EXP_008_ECC_ARRAY
-```
-
-**Nota:** Ejecutar desde el directorio raíz del proyecto `/home/jnovoas/dev/sentinel`
-

@@ -6,7 +6,7 @@
 
 ---
 
-##  Executive Summary
+## 🎯 Executive Summary
 
 Sentinel is **not just another observability platform**. Our security-first architecture combines enterprise-grade hardening with real-time threat detection, making it the **only multi-tenant SaaS platform** with integrated exploit detection and automated response.
 
@@ -15,15 +15,15 @@ Sentinel is **not just another observability platform**. Our security-first arch
 | Feature | Sentinel | Generic Platforms | Advantage |
 |---------|----------|-------------------|-----------|
 | **Exploit Detection** | ✅ Real-time auditd watchdog | ❌ None | Detects 0-days |
-| **Container Hardening** | ✅ Multi-layer confinement | ⚠ Basic | Defense in depth |
+| **Container Hardening** | ✅ Multi-layer confinement | ⚠️ Basic | Defense in depth |
 | **Kernel Hardening** | ✅ sysctl tuning | ❌ Default | Attack surface reduction |
-| **Security Monitoring** | ✅ Automated alerts | ⚠ Manual | Instant response |
+| **Security Monitoring** | ✅ Automated alerts | ⚠️ Manual | Instant response |
 | **AI-Powered Analysis** | ✅ Anomaly explanation | ❌ None | Context-aware |
-| **Multi-Tenancy** | ✅ Database-level RLS | ⚠ App-level | Data isolation |
+| **Multi-Tenancy** | ✅ Database-level RLS | ⚠️ App-level | Data isolation |
 
 ---
 
-##  Security Layers
+## 🛡️ Security Layers
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -164,7 +164,7 @@ type=SYSCALL syscall=open name="/etc/shadow" success=0
 
 ---
 
-##  Container Hardening
+## 🐳 Container Hardening
 
 ### Multi-Layer Confinement
 
@@ -272,7 +272,7 @@ services:
 
 ---
 
-## ⚙ Kernel Hardening (sysctl)
+## ⚙️ Kernel Hardening (sysctl)
 
 ### System Tuning for Security
 
@@ -522,7 +522,7 @@ rate(container_security_violation_total[5m]) > 0
 
 ---
 
-## 🛠 Security Hardening Checklist
+## 🛠️ Security Hardening Checklist
 
 ### Production Deployment
 
@@ -565,7 +565,7 @@ rate(container_security_violation_total[5m]) > 0
 
 ---
 
-##  Quick Start: Security Setup
+## 🚀 Quick Start: Security Setup
 
 ### 1. Install Auditd
 

@@ -1,14 +1,13 @@
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.schemas.auth import Token
 from app.services.user_service import authenticate_user
-from app.auth_utils import create_access_token
+from app.security import create_access_token
 from datetime import timedelta
 
-router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
+router = APIRouter()
 
 @router.post("/login", response_model=Token)
 def login_for_access_token(
