@@ -1,0 +1,201 @@
+{
+  "name": "Alert Enriched Example",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "alert/enriched",
+        "options": {
+          "responseCode": 200,
+          "responseData": "allEntries"
+        }
+      },
+      "id": "webhook_trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://prometheus:9090/api/v1/query",
+        "responseFormat": "json",
+        "options": {
+          "useQueryString": true
+        },
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "100 - (avg(irate(node_cpu_seconds_total{mode=\\\"idle\\\"}[5m])) * 100)"
+            }
+          ]
+        }
+      },
+      "id": "prom_query",
+      "name": "Prometheus CPU",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [560, 180]
+    },
+    {
+      "parameters": {
+        "url": "http://loki:3100/loki/api/v1/query_range",
+        "responseFormat": "json",
+        "options": {
+          "useQueryString": true
+        },
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "{job=\\\"systemd-journal\\\", level=~\\\"error|critical\\\"}"
+            },
+            {
+              "name": "limit",
+              "value": "5"
+            },
+            {
+              "name": "start",
+              "value": "{{(Date.now() - 15*60*1000)}}"
+            },
+            {
+              "name": "end",
+              "value": "{{Date.now()}}"
+            }
+          ]
+        }
+      },
+      "id": "loki_errors",
+      "name": "Loki Last Errors",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [560, 420]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Simplify data for Slack/Email\nconst cpuData = items[0].json.data?.result?.[0]?.value || [null, null];\nconst cpuUsage = Number(cpuData[1] || 0).toFixed(2);\nconst logs = $items('Loki Last Errors', 0, 0).json.data?.result || [];\nconst logLines = logs.flatMap(r => (r.values || []).map(v => v[1]));\nreturn [{ json: {\n  summary: `CPU: ${cpuUsage}%`,\n  logs: logLines.slice(0, 5)\n}}];"
+      },
+      "id": "format_message",
+      "name": "Format Message",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [860, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.SLACK_WEBHOOK_URL}}",
+        "method": "POST",
+        "authentication": "none",
+        "sendBody": true,
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "{\n  \"text\": \"[Sentinel Alert]\n{{ $json.summary }}\n\nLogs:\n{{ $json.logs.join('\\n') }}\"\n}"
+      },
+      "id": "slack_webhook",
+      "name": "Slack Webhook",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1160, 200]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{$env.SMTP_FROM}}",
+        "toEmail": "={{$env.SMTP_TO}}",
+        "subject": "Sentinel Alert: {{ $json.summary }}",
+        "text": "CPU: {{ $json.summary }}\nLogs:\n{{ $json.logs.join('\\n') }}",
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "host": "={{$env.SMTP_HOST}}",
+          "port": "={{$env.SMTP_PORT || 587}}",
+          "secure": "={{$env.SMTP_SECURE || false}}",
+          "authentication": "userPassword",
+          "user": "={{$env.SMTP_USER}}",
+          "password": "={{$env.SMTP_PASS}}"
+        }
+      },
+      "id": "email_smtp",
+      "name": "Email SMTP",
+      "type": "n8n-nodes-base.email",
+      "typeVersion": 2,
+      "position": [1160, 400]
+    },
+    {
+      "parameters": {
+        "statusCode": 200,
+        "responseMode": "lastNode"
+      },
+      "id": "respond_webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1160, 560]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Prometheus CPU",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Loki Last Errors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prometheus CPU": {
+      "main": [
+        [
+          {
+            "node": "Format Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loki Last Errors": {
+      "main": [
+        [
+          {
+            "node": "Format Message",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Format Message": {
+      "main": [
+        [
+          {
+            "node": "Slack Webhook",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email SMTP",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "id": "alert-enriched-example"
+}

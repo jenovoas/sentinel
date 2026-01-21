@@ -1,0 +1,12 @@
+# Configuración de host-metrics
+source:
+  backend_status_url: "http://localhost:8000/api/v1/dashboard/status"
+  sample_interval_seconds: 60
+
+storage:
+  csv_path: "data/metrics.csv"
+  rotate_daily: true
+
+labels:
+  environment: "local"
+  host: "arch-hyprland"

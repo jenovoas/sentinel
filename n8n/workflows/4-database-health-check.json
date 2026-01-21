@@ -1,0 +1,139 @@
+{
+    "name": "Database Health Check",
+    "nodes": [
+        {
+            "parameters": {
+                "rule": {
+                    "interval": [
+                        {
+                            "field": "hours",
+                            "hoursInterval": 6
+                        }
+                    ]
+                }
+            },
+            "name": "Check Every 6 Hours",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1,
+            "position": [
+                250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "url": "http://backend:8000/api/v1/analytics/metrics/recent?limit=1",
+                "options": {}
+            },
+            "name": "Get DB Metrics",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "url": "http://backend:8000/api/v1/health",
+                "options": {}
+            },
+            "name": "Get Health Status",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                450,
+                450
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "const metrics = $input.all()[0].json.samples[0];\nconst health = $input.all()[1].json;\n\nconst dbConnections = metrics.db_connections_active || 0;\nconst dbLocks = metrics.db_locks || 0;\nconst dbSizeMB = (metrics.db_size_bytes / 1024 / 1024).toFixed(2);\n\nconst status = dbLocks > 5 ? '🔴' : dbLocks > 2 ? '🟡' : '🟢';\n\nconst report = {\n  text: `${status} *Database Health Check*\\n\\n` +\n        `*Active Connections:* ${dbConnections}\\n` +\n        `*Locks:* ${dbLocks}\\n` +\n        `*Database Size:* ${dbSizeMB} MB\\n` +\n        `*Backend Status:* ${health.status || 'unknown'}\\n\\n` +\n        `${dbLocks > 5 ? '⚠️ High lock count detected!' : '✅ Database healthy'}\\n\\n` +\n        `_Next check in 6 hours_`\n};\n\nreturn { json: report };"
+            },
+            "name": "Build Health Report",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                650,
+                375
+            ]
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $env.SLACK_WEBHOOK_URL }}",
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "text",
+                            "value": "={{ $json.text }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "name": "Send to Slack",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 3,
+            "position": [
+                850,
+                375
+            ]
+        }
+    ],
+    "connections": {
+        "Check Every 6 Hours": {
+            "main": [
+                [
+                    {
+                        "node": "Get DB Metrics",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Get Health Status",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get DB Metrics": {
+            "main": [
+                [
+                    {
+                        "node": "Build Health Report",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Health Status": {
+            "main": [
+                [
+                    {
+                        "node": "Build Health Report",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Build Health Report": {
+            "main": [
+                [
+                    {
+                        "node": "Send to Slack",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1"
+    }
+}
