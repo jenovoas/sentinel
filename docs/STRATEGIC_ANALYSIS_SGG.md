@@ -1,4 +1,4 @@
-#  Análisis Estratégico: Sentinel Global Defense Grid
+# 🎯 Análisis Estratégico: Sentinel Global Defense Grid
 
 ## Resumen Ejecutivo
 
@@ -26,16 +26,16 @@
 - ✅ **Arquitectura híbrida**: On-prem + Cloud es el futuro
 - ✅ **Patroni + etcd**: Stack probado en producción
 - ✅ **Kill Switch**: Failover automático es enterprise-grade
-- ⚠ **Advertencia**: 4 nodos es costoso para MVP
+- ⚠️ **Advertencia**: 4 nodos es costoso para MVP
 - **Recomendación**: Empezar con 2 nodos (1 on-prem + 1 cloud standby)
 
 **Capa 3: Self-Healing (PXE Boot)**
 - ✅ **Innovador**: Pocos competidores tienen esto
 - ✅ **Nuke & Pave**: Estrategia correcta para compromiso
-- ⚠ **Complejidad**: Requiere SRE senior para implementar
+- ⚠️ **Complejidad**: Requiere SRE senior para implementar
 - **Recomendación**: Implementar en Fase 2, no MVP
 
-###  Puntuación Técnica: 9/10
+### 🎯 Puntuación Técnica: 9/10
 
 **Justificación**: Arquitectura enterprise-grade, bien pensada, escalable. Solo falta simplificar para MVP.
 
@@ -65,7 +65,7 @@
 
 **Ventaja competitiva**: No compites en features, compites en **modelo de negocio** (self-hosted + privacy).
 
-###  Tipo de Inversor Correcto
+### 🎯 Tipo de Inversor Correcto
 
 **❌ NO buscar**:
 - VCs de consumer apps
@@ -120,7 +120,7 @@
 6. **Customer Success Manager**
 7. **Marketing/Growth Lead**
 
-###  Estrategia de Contratación
+### 🎯 Estrategia de Contratación
 
 **Opción A: Full-time (Recomendado post-seed)**
 - Equity: 0.5-2% por ingeniero senior
@@ -325,19 +325,19 @@
 
 ## 8. Riesgos y Mitigación
 
-### ⚠ Riesgo 1: Complejidad de Setup
+### ⚠️ Riesgo 1: Complejidad de Setup
 - **Mitigación**: Crear instalador one-click (Terraform + Ansible)
 - **Timeline**: 2-3 meses
 
-### ⚠ Riesgo 2: Soporte al Cliente
+### ⚠️ Riesgo 2: Soporte al Cliente
 - **Mitigación**: Documentación exhaustiva + community forum
 - **Timeline**: Ongoing
 
-### ⚠ Riesgo 3: Competencia de Datadog
+### ⚠️ Riesgo 3: Competencia de Datadog
 - **Mitigación**: Enfocarse en nicho (self-hosted, privacy)
 - **Timeline**: N/A (diferenciación clara)
 
-### ⚠ Riesgo 4: Escalabilidad del Equipo
+### ⚠️ Riesgo 4: Escalabilidad del Equipo
 - **Mitigación**: Contratar SRE senior primero
 - **Timeline**: Post-seed
 
@@ -387,7 +387,7 @@
 
 ## Conclusión y Recomendación Final
 
-###  Mi Recomendación Estratégica
+### 🎯 Mi Recomendación Estratégica
 
 **Prioridad #1**: **Validación comercial** (pilotos)
 - Sin clientes, no hay inversión
@@ -405,7 +405,7 @@
 - Focus en core value: AI local + HA
 - Timeline: Ahora
 
-###  Path to Success
+### 🚀 Path to Success
 
 ```
 Mes 1: Pilotos (3 empresas)

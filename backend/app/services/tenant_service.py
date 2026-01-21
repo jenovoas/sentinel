@@ -1,4 +1,3 @@
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from sqlalchemy.orm import Session
 from app.models.tenant import Tenant
 from app.schemas import TenantCreate, TenantUpdate

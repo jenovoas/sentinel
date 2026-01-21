@@ -1,9 +1,0 @@
-{
-    "name": "Lockdown",
-    "mode": "restrictive",
-    "risk_threshold": 0.1,
-    "ebpf_policy": "whitelist_only",
-    "ai_intervention": "strict_matching",
-    "shm_telemetry": "critical_only",
-    "description": "Estado de emergencia. Bloqueo total de cualquier actividad no pre-aprobada."
-}

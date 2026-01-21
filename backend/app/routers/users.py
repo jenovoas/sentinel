@@ -9,14 +9,13 @@ This router handles all user-related endpoints, including:
 - User deletion
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.user import User
 from app.schemas import UserCreate, UserUpdate, UserResponse
 from app.services.user_service import create_user as create_user_service, get_users, get_user as get_user_service
-from app.auth_utils import get_current_user
+from app.security import get_current_user
 from typing import List
 
 router = APIRouter(prefix="/api/v1/users", tags=["users"])

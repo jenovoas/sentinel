@@ -1,4 +1,4 @@
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
+import numpy as np
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
 import time

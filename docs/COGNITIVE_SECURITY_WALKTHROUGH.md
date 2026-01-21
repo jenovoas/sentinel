@@ -1,4 +1,4 @@
-#  Cognitive Security Hardening - Walkthrough
+# 🛡️ Cognitive Security Hardening - Walkthrough
 
 ## ✅ Implementation Complete
 
@@ -6,7 +6,7 @@ Successfully implemented **three critical security layers** protecting Sentinel 
 
 ---
 
-##  What Was Built
+## 🎯 What Was Built
 
 ### 1. Telemetry Sanitization (AIOpsDoom Prevention)
 
@@ -47,7 +47,7 @@ Successfully implemented **three critical security layers** protecting Sentinel 
 
 ---
 
-##  Deployment
+## 🚀 Deployment
 
 ```bash
 # 1. Generate auth files
@@ -83,7 +83,7 @@ bash scripts/test-nginx-auth.sh
 1. **"Defends against AI manipulation"** - Blocks adversarial prompt injection
 2. **"Zero log loss"** - Better reliability than Datadog
 3. **"Security-first observability"** - All endpoints authenticated
-4. **"Proven with Disonancia no resuelta testing"** - 50+ tests, 100% block rate
+4. **"Proven with chaos testing"** - 50+ tests, 100% block rate
 
 ---
 

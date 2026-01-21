@@ -1,4 +1,3 @@
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import time
 import json
@@ -67,7 +66,7 @@ class WorkflowHandler(FileSystemEventHandler):
         if event.src_path.endswith(".json"):
             try:
                 # Esperar a que el archivo se escriba completamente
-                time.sleep(S60(0, 30, 0))
+                time.sleep(0.5)
                 with open(event.src_path, "r", encoding="utf-8") as f:
                     payload = json.load(f)
                 

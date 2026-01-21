@@ -1,4 +1,3 @@
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -15,8 +14,7 @@ config = context.config
 
 settings = get_settings()
 # Convert async URL to sync for migrations
-# Use psycopg (v3) instead of psycopg2
-sync_url = settings.database_url.replace("postgresql+asyncpg://", "postgresql+psycopg://")
+sync_url = settings.database_url.replace("postgresql+asyncpg://", "postgresql://")
 config.set_main_option("sqlalchemy.url", sync_url)
 
 # Interpret the config file for Python logging.

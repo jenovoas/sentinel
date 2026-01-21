@@ -14,7 +14,6 @@ Health Check Consumers:
 - Custom watchdog scripts
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from fastapi import APIRouter, Response, status
 from datetime import datetime
 from typing import Dict, Any
@@ -22,9 +21,8 @@ import asyncio
 import asyncpg
 import redis.asyncio as redis
 import httpx
-from time import time
 
-router = APIRouter(prefix="/api/v1")
+router = APIRouter()
 
 # Global state for role management
 app_role = "standby"  # "primary" or "standby"
@@ -32,63 +30,6 @@ accept_requests = False  # Whether to serve client requests
 
 # Startup time for uptime calculation
 startup_time = datetime.now()
-
-
-# ============================================================================
-# BIOLOGICAL STATE - QUANTUM HEARTBEAT
-# ============================================================================
-
-# Global biological state updated by Redis pulse
-biological_state = {
-    "pulse": 60,      # Default 60 BPM
-    "synapse": 0.98,  # Default 98% coherence
-    "last_pulse": 0,
-    "axiones": 0,
-    "disonancia": S60(0, 0, 0)
-}
-
-async def quantum_pulse_listener():
-    """
-    Escucha el 'Latido Cuántico' en Redis y actualiza el estado biológico.
-    Este proceso corre en background sincronizando la coherencia del sistema.
-    """
-    import os
-    import json
-    import redis.asyncio as redis
-    
-    redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-    channel = "sentinel:quantum:pulse"
-    
-    while True:
-        try:
-            r = redis.from_url(redis_url, decode_responses=True)
-            pubsub = r.pubsub()
-            await pubsub.subscribe(channel)
-            
-            async for message in pubsub.listen():
-                if message["type"] == "message":
-                    try:
-                        data = json.loads(message["data"])
-                        # Actualizar estado biológico
-                        biological_state["disonancia"] = data.get("disonancia", S60(0, 0, 0))
-                        biological_state["axiones"] = data.get("axiones_count", 0)
-                        biological_state["clock_coherence"] = data.get("clock_coherence", S60(1, 0, 0)) # Nueva Métrica
-                        biological_state["last_pulse"] = time()
-                        
-                        # Cálculo Biológico (Metáfora de Salud Cuántica)
-                        # Pulse = 60 + (disonancia / 10) -> El sistema se acelera con el ruido
-                        biological_state["pulse"] = round(60 + (biological_state["disonancia"] / 10), 1)
-                        
-                        # Synapse = (S60(1, 0, 0) - Axiones) * Reloj -> La coherencia temporal multiplica la capacidad cognitiva
-                        base_coherence = S60(1, 0, 0) - (biological_state["axiones"] / 200)
-                        final_synapse = base_coherence * biological_state["clock_coherence"]
-                        
-                        biological_state["synapse"] = max(0.42, round(final_synapse, 4)) # Nunca baja del límite de base60 (42)
-                        
-                    except Exception as e:
-                        pass
-        except Exception as e:
-            await asyncio.sleep(5) # Reintentar tras fallo de Redis
 
 
 async def check_database() -> Dict[str, Any]:
@@ -105,26 +46,13 @@ async def check_database() -> Dict[str, Any]:
     try:
         import os
         from time import time
-        from urllib.parse import urlparse
         
-        # Parse DATABASE_URL to get connection parameters
-        database_url = os.getenv(
-            "DATABASE_URL",
-            "postgresql+asyncpg://sentinel_user:sentinel_password@postgres:5432/sentinel_db"
-        )
-        
-        # Remove the asyncpg driver prefix if present
-        if database_url.startswith("postgresql+asyncpg://"):
-            database_url = database_url.replace("postgresql+asyncpg://", "postgresql://")
-        
-        # Parse URL
-        parsed = urlparse(database_url)
-        
-        db_user = parsed.username or "sentinel_user"
-        db_password = parsed.password or "sentinel_password"
-        db_host = parsed.hostname or "postgres"
-        db_port = parsed.port or 5432
-        db_name = parsed.path.lstrip("/") or "sentinel_db"
+        # Get DB config from environment
+        db_host = os.getenv("DATABASE_HOST", "postgres")
+        db_port = int(os.getenv("DATABASE_PORT", "5432"))
+        db_user = os.getenv("DATABASE_USER", "sentinel")
+        db_password = os.getenv("DATABASE_PASSWORD", "REDACTED_PASSWORD")
+        db_name = os.getenv("DATABASE_NAME", "sentinel")
         
         start = time()
         
@@ -307,8 +235,6 @@ async def health_check(response: Response):
     - Role (primary/standby)
     - Uptime
     """
-    import psutil
-    
     # Check all dependencies in parallel
     db_check, redis_check, ollama_check = await asyncio.gather(
         check_database(),
@@ -316,11 +242,6 @@ async def health_check(response: Response):
         check_ollama(),
         return_exceptions=True
     )
-    
-    # System Metrics
-    cpu_usage = psutil.cpu_percent(interval=None)
-    memory = psutil.virtual_memory()
-    memory_usage = memory.percent
     
     # Determine overall health
     # Critical: Database and Redis must be healthy
@@ -336,49 +257,15 @@ async def health_check(response: Response):
     # Calculate uptime
     uptime_seconds = (datetime.now() - startup_time).total_seconds()
     
-    # Add TruthSync check
-    from app.services.truthsync import truthsync_client
-    truthsync_status = await truthsync_client.health_check()
-    
-    # Add Guardian/Security check (Real Process Verification)
-    guardian_active = False
-    try:
-         for proc in psutil.process_iter(['cmdline']):
-             try:
-                 cmd = proc.info.get('cmdline')
-                 if cmd and any('watchdog_service.py' in str(arg) for arg in cmd):
-                     guardian_active = True
-                     break
-             except (psutil.NoSuchProcess, psutil.AccessDenied):
-                 continue
-    except Exception as e:
-         logger.error(f"Error checking watchdog status: {e}")
-         guardian_active = False
-
     health_data = {
         "status": overall_status,
         "timestamp": datetime.now().isoformat(),
         "uptime_seconds": round(uptime_seconds, 2),
-        "cpu_usage": cpu_usage,
-        "memory_usage": memory_usage,
         "role": app_role,
-        "biological": {
-            "pulse": biological_state["pulse"],
-            "synapse": biological_state["synapse"],
-            "last_pulse_delta": round(time() - biological_state["last_pulse"], 2) if biological_state["last_pulse"] > 0 else -1
-        },
         "components": {
             "database": db_check,
             "redis": redis_check,
-            "ollama": ollama_check,
-            "truthsync": {
-                "status": truthsync_status.get("status", "unknown"),
-                "available": truthsync_status.get("status") == "healthy"
-            },
-            "guardian": {
-                "active": guardian_active,
-                "status": "protected" if guardian_active else "unprotected"
-            }
+            "ollama": ollama_check
         }
     }
     

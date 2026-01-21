@@ -1,9 +1,0 @@
-{
-    "name": "Production",
-    "mode": "enforcing",
-    "risk_threshold": 0.7,
-    "ebpf_policy": "block",
-    "ai_intervention": "block_on_risk",
-    "shm_telemetry": "active",
-    "description": "Protección estándar para producción. Bloqueo inmediato de intenciones riesgosas."
-}

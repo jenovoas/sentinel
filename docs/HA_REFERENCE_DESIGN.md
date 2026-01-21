@@ -6,7 +6,7 @@
 
 ---
 
-##  Architecture Overview
+## 🎯 Architecture Overview
 
 ### High-Level Design
 
@@ -667,7 +667,7 @@ curl http://localhost:8000/api/v1/pihole/health
 
 ---
 
-##  Implementation Roadmap
+## 🚀 Implementation Roadmap
 
 ### Week 1: Foundation
 - [x] PostgreSQL HA (Patroni + etcd + HAProxy)

@@ -129,20 +129,10 @@ class LiquidMemory:
                     if self.rust_lattice:
                          self.rust_lattice.inject(data_padded)
                     
-                    # 3. CASCADE BUFFER: Cortex -> SubCortex
-                    # We write to 'cortex_primary'. n8n (SubCortex) should read this.
-                    try:
-                        buf_name = "cortex_primary"
-                        # Persistent buffer for the cascade
-                        if not hasattr(self, 'shared_buffer') or self.shared_buffer is None:
-                             self.shared_buffer = PySharedBuffer(buf_name, 1024 * 1024, create=True)
-                             print(f"🧠 [LiquidMemory] Cascade Buffer '{buf_name}' ACTIVE.")
-                        
-                        # Write header + data
-                        if self.shared_buffer:
-                             self.shared_buffer.write(0, data_padded)
-                    except Exception as e:
-                        print(f"⚠️ Cascade Buffer Error: {e}")
+                    # Also use SHM for the bridge simulation
+                    buf_name = f"liquid_{key_hash[:8].hex()}"
+                    shm = PySharedBuffer(buf_name, len(data_padded), create=True)
+                    shm.write(0, data_padded)
                     
                     # Fallback for INTEGRITY TEST (Keep Python Sync)
                     self.lattice.inject_dual_channel(data_padded, key_hash)

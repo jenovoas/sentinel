@@ -1,4 +1,0 @@
-# Sentinel eBPF Whitelist - Auto-generated
-# UIDs of users that should never be blocked
-0  # root
-1000  # jnovoas

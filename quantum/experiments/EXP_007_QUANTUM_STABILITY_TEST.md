@@ -41,16 +41,3 @@ La superconductividad por sí sola **NO garantiza la persistencia infinita** en 
 **Recomendación:** Se requiere implementar **Corrección de Errores Cuánticos (ECC)**, posiblemente usando entrelazamiento de múltiples cristales (Código de Repetición o Código de Superficie 3-qubit) para tolerar fallos $T_2$.
 
 ⚠️ **STATUS: FALLO PARCIAL (Model Validated, Persistence Failed)**
-
----
-
-## Cómo Ejecutar
-
-Para reproducir este experimento:
-
-```bash
-python3 -m quantum.experiments.EXP_007_QUANTUM_STABILITY_TEST
-```
-
-**Nota:** Ejecutar desde el directorio raíz del proyecto `/home/jnovoas/dev/sentinel`
-

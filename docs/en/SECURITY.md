@@ -6,7 +6,7 @@
 
 ---
 
-##  Executive Summary
+## 🎯 Executive Summary
 
 Sentinel is **not just another observability platform**. Our security-first architecture combines enterprise-grade hardening with real-time threat detection, making it the **only multi-tenant SaaS platform** with integrated exploit detection and automated response.
 
@@ -15,15 +15,15 @@ Sentinel is **not just another observability platform**. Our security-first arch
 | Feature | Sentinel | Generic Platforms | Advantage |
 |---------|----------|-------------------|-----------|
 | **Exploit Detection** | ✅ Real-time auditd watchdog | ❌ None | Detects 0-days |
-| **Container Hardening** | ✅ Multi-layer confinement | ⚠ Basic | Defense in depth |
+| **Container Hardening** | ✅ Multi-layer confinement | ⚠️ Basic | Defense in depth |
 | **Kernel Hardening** | ✅ sysctl tuning | ❌ Default | Attack surface reduction |
-| **Security Monitoring** | ✅ Automated alerts | ⚠ Manual | Instant response |
+| **Security Monitoring** | ✅ Automated alerts | ⚠️ Manual | Instant response |
 | **AI-Powered Analysis** | ✅ Anomaly explanation | ❌ None | Context-aware |
-| **Multi-Tenancy** | ✅ Database-level RLS | ⚠ App-level | Data isolation |
+| **Multi-Tenancy** | ✅ Database-level RLS | ⚠️ App-level | Data isolation |
 
 ---
 
-##  Security Layers
+## 🛡️ Security Layers
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -98,7 +98,7 @@ type=SYSCALL syscall=ptrace pid=1234 target_pid=1
 
 ---
 
-##  Container Hardening
+## 🐳 Container Hardening
 
 ### 5-Layer Security
 
@@ -125,7 +125,7 @@ services:
 
 ---
 
-## ⚙ Kernel Hardening
+## ⚙️ Kernel Hardening
 
 ### sysctl Configuration
 
@@ -231,7 +231,7 @@ ssl_prefer_server_ciphers on;
 
 ---
 
-## 🛠 Quick Start: Security Setup
+## 🛠️ Quick Start: Security Setup
 
 ### 1. Install Auditd
 

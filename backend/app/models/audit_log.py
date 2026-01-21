@@ -3,7 +3,6 @@ Sentinel Audit Log Model - Activity tracking
 SQLAlchemy 2.0 + PostgreSQL UUID support
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import uuid
 from datetime import datetime
 from typing import Optional

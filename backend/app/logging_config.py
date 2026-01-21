@@ -1,36 +1,6 @@
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-import json
 import logging
 import logging.config
 import os
-from datetime import datetime
-
-
-class JsonFormatter(logging.Formatter):
-    """
-    Formateador de logs en formato JSON para Sentinel.
-    """
-    def format(self, record: logging.LogRecord) -> str:
-        log_data = {
-            "timestamp": datetime.utcfromtimestamp(record.created).isoformat(),
-            "level": record.levelname,
-            "logger": record.name,
-            "message": record.getMessage(),
-            "module": record.module,
-            "filename": record.filename,
-            "lineno": record.lineno,
-        }
-        
-        # Incluir Correlation ID si está disponible en el registro
-        if hasattr(record, "correlation_id"):
-            log_data["correlation_id"] = record.correlation_id
-            
-        # Incluir excepciones si existen
-        if record.exc_info:
-            log_data["exception"] = self.formatException(record.exc_info)
-            
-        return json.dumps(log_data)
-
 
 LOGGING_CONFIG = {
     "version": 1,
@@ -42,9 +12,6 @@ LOGGING_CONFIG = {
         "detailed": {
             "format": "%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(funcName)s() - %(message)s",
         },
-        "json": {
-            "()": JsonFormatter,
-        },
     },
     "handlers": {
         "default": {
@@ -53,7 +20,7 @@ LOGGING_CONFIG = {
             "stream": "ext://sys.stderr",
         },
         "file": {
-            "formatter": "json",
+            "formatter": "detailed",
             "class": "logging.handlers.RotatingFileHandler",
             "filename": "logs/sentinel.log",
             "maxBytes": 10485760,  # 10MB
@@ -80,21 +47,21 @@ LOGGING_CONFIG = {
 
 
 def setup_logging(level: str = "INFO"):
-    """Configuración de logging estructurado"""
+    """Setup logging configuration"""
     try:
-        # Asegurar que el directorio de logs existe
+        # Ensure logs directory exists
         os.makedirs("logs", exist_ok=True)
     except (PermissionError, OSError):
-        # Si no se puede crear, deshabilitar el handler de archivo
-        print("⚠️ Advertencia: No se puede escribir en el directorio de logs, desactivando logging en archivo")
+        # If we can't create logs dir, disable file handler
+        print("⚠️ Warning: Cannot write to logs directory, disabling file logging")
         LOGGING_CONFIG["loggers"][""]["handlers"] = ["default"]
 
     try:
         LOGGING_CONFIG["loggers"][""]["level"] = level
         logging.config.dictConfig(LOGGING_CONFIG)
     except ValueError as e:
-        # Fallback a configuración básica
-        print(f"⚠️ Advertencia: Error en la configuración de logs: {e}, usando configuración básica")
+        # If logging config fails, fall back to basic setup
+        print(f"⚠️ Warning: Logging config failed: {e}, using basic logging")
         logging.basicConfig(level=getattr(logging, level, logging.INFO))
 
     return logging.getLogger(__name__)

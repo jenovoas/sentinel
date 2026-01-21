@@ -1,4 +1,3 @@
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from pydantic import BaseModel
 from uuid import UUID
 

@@ -51,7 +51,7 @@ docker-compose restart grafana
 
 ## Security Note
 
-**⚠ IMPORTANT**: `allow_embedding = true` allows Grafana to be embedded in ANY website.
+**⚠️ IMPORTANT**: `allow_embedding = true` allows Grafana to be embedded in ANY website.
 
 **For Production**:
 
