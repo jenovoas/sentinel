@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: sentinel-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      # Basic Auth
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=sentinel_n8n_2024
+
+      # Webhook URL
+      - WEBHOOK_URL=http://localhost:5678/
+
+      # Encryption
+      - N8N_ENCRYPTION_KEY=sentinel_encryption_key_change_in_production
+
+      # Timezone
+      - GENERIC_TIMEZONE=America/Santiago
+      - TZ=America/Santiago
+
+      # Execution
+      - EXECUTIONS_DATA_SAVE_ON_ERROR=all
+      - EXECUTIONS_DATA_SAVE_ON_SUCCESS=all
+      - EXECUTIONS_DATA_SAVE_MANUAL_EXECUTIONS=true
+
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n/workflows:/home/node/.n8n/workflows
+
+    networks:
+      - sentinel-network
+
+volumes:
+  n8n_data:
+    driver: local
+
+networks:
+  sentinel-network:
+    external: true

@@ -1,0 +1,96 @@
+# Patroni Configuration for Primary Node
+scope: sentinel-cluster
+namespace: /db/
+name: postgres-primary
+
+restapi:
+  listen: 0.0.0.0:8008
+  connect_address: postgres-primary:8008
+
+etcd:
+  hosts: etcd:2379
+
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+    postgresql:
+      use_pg_rewind: true
+      use_slots: true
+      parameters:
+        # Performance
+        max_connections: 200
+        shared_buffers: 256MB
+        effective_cache_size: 1GB
+        maintenance_work_mem: 64MB
+        checkpoint_completion_target: 0.9
+        wal_buffers: 16MB
+        default_statistics_target: 100
+        random_page_cost: 1.1
+        effective_io_concurrency: 200
+        work_mem: 2621kB
+        min_wal_size: 1GB
+        max_wal_size: 4GB
+        
+        # Replication
+        wal_level: replica
+        max_wal_senders: 10
+        max_replication_slots: 10
+        hot_standby: on
+        wal_log_hints: on
+        
+        # Logging
+        log_destination: stderr
+        logging_collector: on
+        log_directory: /var/log/postgresql
+        log_filename: postgresql-%Y-%m-%d.log
+        log_rotation_age: 1d
+        log_rotation_size: 100MB
+        log_line_prefix: '%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
+        log_checkpoints: on
+        log_connections: on
+        log_disconnections: on
+        log_duration: off
+        log_lock_waits: on
+
+  initdb:
+    - encoding: UTF8
+    - data-checksums
+
+  pg_hba:
+    - host replication replicator 0.0.0.0/0 md5
+    - host all all 0.0.0.0/0 md5
+
+  users:
+    sentinel:
+      password: ${POSTGRES_PASSWORD}
+      options:
+        - createrole
+        - createdb
+    replicator:
+      password: ${REPLICATION_PASSWORD}
+      options:
+        - replication
+
+postgresql:
+  listen: 0.0.0.0:5432
+  connect_address: postgres-primary:5432
+  data_dir: /var/lib/postgresql/data/pgdata
+  bin_dir: /usr/lib/postgresql/14/bin
+  authentication:
+    replication:
+      username: replicator
+      password: ${REPLICATION_PASSWORD}
+    superuser:
+      username: postgres
+      password: ${POSTGRES_PASSWORD}
+  parameters:
+    unix_socket_directories: /var/run/postgresql
+
+tags:
+    nofailover: false
+    noloadbalance: false
+    clonefrom: false
+    nosync: false

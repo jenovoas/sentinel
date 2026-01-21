@@ -1,0 +1,19 @@
+# Ejemplo de crontab para ingesta y reportes
+# Edita tu crontab con: crontab -e
+# Asegúrate de ajustar la ruta absoluta a tu proyecto
+
+# Variables
+SENTINEL_DIR=/home/jnovoas/sentinel
+VENV_BIN=
+
+# PATH para herramientas (jq, curl)
+PATH=/usr/local/bin:/usr/bin:/bin
+
+# Ingesta cada minuto
+* * * * * bash $SENTINEL_DIR/host-metrics/scripts/ingest.sh >> $SENTINEL_DIR/host-metrics/data/ingest.log 2>&1
+
+# Análisis cada hora
+0 * * * * python $SENTINEL_DIR/host-metrics/scripts/analyze.py --input $SENTINEL_DIR/host-metrics/data/metrics.csv --output $SENTINEL_DIR/host-metrics/reports/analysis.md >> $SENTINEL_DIR/host-metrics/data/analyze.log 2>&1
+
+# Reporte HTML cada hora
+5 * * * * python $SENTINEL_DIR/host-metrics/scripts/report.py --input $SENTINEL_DIR/host-metrics/data/metrics.csv --output $SENTINEL_DIR/host-metrics/reports/report.html >> $SENTINEL_DIR/host-metrics/data/report.log 2>&1
