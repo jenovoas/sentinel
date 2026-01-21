@@ -115,7 +115,7 @@ def clean_doc(filepath):
 
 def main():
     print("🔥 INICIANDO PURIFICACIÓN MASIVA (PROTOCOL YATRA)...")
-    root_dir = Path("/home/jnovoas/sentinel")
+    root_dir = Path("/home/jnovoas/dev/sentinel")
     
     code_count = 0
     doc_count = 0
