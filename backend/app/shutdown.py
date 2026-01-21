@@ -14,7 +14,6 @@ This is critical for HA:
 - Ensures clean state for restart
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import signal
 import sys
 import asyncio

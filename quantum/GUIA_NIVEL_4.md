@@ -1,9 +1,5 @@
 # Sentinel Quantum - Nivel 4: Algoritmos Avanzados 🚀
 
-> ⚠️ **LEGACY EDUCATIONAL CONTENT**  
-> Material educativo legacy con numpy/scipy (NO cálculo core v8.0).  
-> **Para producción Base-60, ver:** [AI_PRIME_DIRECTIVES.md](../AI_PRIME_DIRECTIVES.md)
-
 **Prerequisito**: Haber completado [Nivel 3: Física Real](GUIA_NIVEL_3.md)
 
 ---

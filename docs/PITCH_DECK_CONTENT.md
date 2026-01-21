@@ -1,4 +1,4 @@
-#  Sentinel - Investor Pitch Deck
+# 🎯 Sentinel - Investor Pitch Deck
 
 > **Instrucciones**: Este es el contenido para tu pitch deck. Usa Canva, Google Slides o Pitch para crear las slides visuales.
 
@@ -39,8 +39,8 @@ El Problema: Observability es Prohibitivamente Cara
 
 💰 Datadog: $180,000/año (100 hosts)
 🔒 Datos en la nube (GDPR concerns)
- Vendor lock-in
-⚙ HA cuesta extra ($$$)
+🔗 Vendor lock-in
+⚙️ HA cuesta extra ($$$)
 
 "Necesitamos observability, pero no podemos pagar Datadog"
 - CTO, Series B Startup
@@ -55,7 +55,7 @@ El Problema: Observability es Prohibitivamente Cara
 
 ### Visual
 - Logo Sentinel (centro)
-- 4 iconos alrededor: 💾 (Self-hosted), 🤖 (AI),  (HA), 💰 (Savings)
+- 4 iconos alrededor: 💾 (Self-hosted), 🤖 (AI), 🛡️ (HA), 💰 (Savings)
 
 ### Texto
 ```
@@ -88,7 +88,7 @@ Dashboard en Tiempo Real
 🤖 AI Insights: Anomalías automáticas
 🔒 Security: Auditd kernel-level
 💾 Backups: Enterprise-grade
- SLOs: Availability, Latency, Errors
+🎯 SLOs: Availability, Latency, Errors
 ```
 
 ### Notas del presentador
@@ -187,7 +187,7 @@ Self-hosted       ✅        ❌        ❌        ✅
 AI Local          ✅        ❌        ❌        ❌
 HA Nativa         ✅        💰        💰        ❌
 Costo/host        $8        $31      $100      $0*
-Privacy           ✅        ❌        ❌        ⚠
+Privacy           ✅        ❌        ❌        ⚠️
 All-in-one        ✅        ✅        ✅        ❌
 
 *Grafana gratis pero requiere 5+ tools
@@ -396,4 +396,4 @@ Antes de enviar a VCs, pide feedback a:
 
 ---
 
-¡Éxito Jaime! 
+¡Éxito Jaime! 🚀

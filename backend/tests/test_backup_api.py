@@ -7,7 +7,6 @@ and response validation.
 Run with: pytest backend/tests/test_backup_api.py -v
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import patch, MagicMock
@@ -395,4 +394,4 @@ def test_status_endpoint_performance(mock_backup_dir):
         
         # Should respond in less than 1 second
         response_time = end_time - start_time
-        assert response_time < S60(1, 0, 0), f"Response took {response_time}s (should be <1s)"
+        assert response_time < 1.0, f"Response took {response_time}s (should be <1s)"

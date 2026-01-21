@@ -1,4 +1,4 @@
-#  N8N Fail-Safe Playbook Setup Guide
+# 🛡️ N8N Fail-Safe Playbook Setup Guide
 
 ## Quick Start
 
@@ -74,7 +74,7 @@ Create a new workflow in N8N and import this:
     {
       "parameters": {
         "channel": "#alerts",
-        "text": " Fail-Safe: Backup recovery executed\n\nStatus: {{ $json.status }}\nTime: {{ $now }}\nContext: {{ $node['Webhook'].json.context }}",
+        "text": "🛡️ Fail-Safe: Backup recovery executed\n\nStatus: {{ $json.status }}\nTime: {{ $now }}\nContext: {{ $node['Webhook'].json.context }}",
         "otherOptions": {}
       },
       "name": "Notify Slack",
@@ -437,4 +437,4 @@ curl http://localhost:8000/api/v1/failsafe/health
 - **Sentinel Docs**: `/docs/FAILSAFE_SECURITY_LAYER.md`
 - **Issues**: Create ticket in Jira/Linear
 
-**You're now protected by the Fail-Safe Security Layer!** 
+**You're now protected by the Fail-Safe Security Layer!** 🛡️

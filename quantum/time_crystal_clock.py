@@ -58,26 +58,10 @@ class TimeCrystalClock:
         
         print(f"💎 YATRA CLOCK INIT: Intervalo {self.TICK_INTERVAL_NS} ns, Freq {self.TARGET_FREQ} Hz")
         
-    def tick(self, relativistic_bias=0.0):
+    def tick(self):
         """
         Espera el siguiente pulso sagrado.
         Usa aritmética de enteros para calcular el tiempo de sueño.
-        
-        Args:
-            relativistic_bias (float): 0.0 = Normal. >0.0 = Time Dilation.
-            Simulates gravity well effect on time flow.
-            If bias > 0, the clock 'perceives' time slower, so it sleeps LESS than it should?
-            Or sleeps MORE?
-            Relativity: Time moves SLOWER near mass. 
-            So 1 second local < 1 second vacuum.
-            But here we are 'levitating'/reducing mass. 
-            So we are in 'Low Gravity'. Time should move FASTER relative to ground.
-            
-            Let's say bias is factor of "Reduction". 
-            If Mass -> 0, Time -> Faster.
-            
-            But we want to simulate STRESS on the clock.
-            Let's introduce artificial DRIFT based on bias.
         """
         self.ticks += 1
         
@@ -87,33 +71,9 @@ class TimeCrystalClock:
         # 2. ¿Dónde estamos? (Tiempo Físico Real)
         current_ns = time.perf_counter_ns()
         
-        # Apply Relativistic Warping to PERCEPTION of current time
-        # If bias (levitation) is high, we are "out of sync" with ground time.
-        # Let's say we drift by bias * 1000 ns per tick.
-        if relativistic_bias > 0:
-             # Artificial lag due to frame dragging
-             warp_ns = int(relativistic_bias * 20000) # 20 microsec per 100% power
-             # We hide this warping in the sleep logic?
-             # No, loop creates it.
-             # We just simulate it by pretending current_ns is warped.
-             pass
-
         # 3. Diferencia (Entropía Temporal)
         error_ns = target_ns - current_ns
         
-        # RELATIVISTIC CORRECTION:
-        # If High Power (Levitation), internal clock runs differently.
-        # We simulate this by INJECTING drift into the measurement.
-        if relativistic_bias > 0.0:
-            # Random jitter or constant offset?
-            # Metric Expansion: Time stretches.
-            # We subtract from error (making us think we are late, or early?)
-            # Warp Factor: 2 Seconds at G-Zero (Massive Dilation)
-            warp = int(relativistic_bias * 2_000_000_000) 
-            error_ns -= warp 
-            # DEBUG
-            # print(f"DEBUG: Bias={relativistic_bias:.4f}, Warp={warp}, Error={error_ns}")
-
         if error_ns > 0:
             # Vamos adelantados. Esperar para sincronizar.
             # (El único float inevitable: decirle al OS cuánto dormir en segundos)

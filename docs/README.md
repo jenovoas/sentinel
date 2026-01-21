@@ -1,397 +1,91 @@
-# SENTINEL CORTEX v2.0 - SOVEREIGN SYSTEM
-**⚠ PROPRIETARY & CONFIDENTIAL**
-**COPYRIGHT (C) 2026 JAIME NOVOA. ALL RIGHTS RESERVED.**
+# 📚 Sentinel Documentation Index
 
-> **WARNING:** This repository contains advanced quantum algorithms and cognitive architectures protected by Sovereign Family Law. Unauthorized copying, reverse engineering, or distribution is strictly prohibited.
+## 🎯 Current Focus: Sentinel Cortex Patent & Implementation
 
-## 🔒 SYSTEM STATUS: CLOSED / PRIVATE
-This system is no longer public property. It is the intellectual core of the Novoa Family Sovereignty Project.
+### Active Documents (Use These)
 
-## 🌍 STRATEGIC ACCESS (Public Interface)
-While the *Core* is locked, specific modules may be accessed via the **Strategic Release Protocol** (see `STRATEGIC_RELEASE_PROTOCOL.md`) for commercial or scientific partnership purposes.
+1. **[CORTEX_NARRATIVA_COMPLETA.md](./CORTEX_NARRATIVA_COMPLETA.md)** ⭐⭐⭐
+   - **THE MASTER PITCH** - Complete investor narrative
+   - Cortex + Dos Nervios architecture
+   - 90-second pitch script
+   - Valuation framework ($100M+)
+   - **Status**: READY FOR INVESTORS
 
----
+2. **[CORTEX_DOS_NERVIOS.md](./CORTEX_DOS_NERVIOS.md)** ⭐⭐⭐
+   - **CLAIM 3 ARCHITECTURE** - Technical deep dive
+   - Nervio A: Intrusion Detection Police
+   - Nervio B: Integrity Assurance Police
+   - Auto-regeneration system
+   - **Status**: Patent-ready documentation
 
-### Documentation for Independent Validation
+3. **[SUPERPODERES_CAJA_SEGURA.md](./SUPERPODERES_CAJA_SEGURA.md)** ⭐⭐
+   - Core differentiation narrative
+   - Competitive analysis
+   - Business model (3 revenue streams)
+   - **Status**: Reference for pitch
 
-- **[FOR_RESEARCHERS.md](FOR_RESEARCHERS.md)** - Quick validation guide (2 min)
-- **[VALIDATION_REPORT.md](VALIDATION_REPORT.md)** - Full technical validation (scientific)
-- **[REPRODUCIBILITY_GUIDE.md](REPRODUCIBILITY_GUIDE.md)** - Step-by-step verification
-- **[EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md)** - Deployment summary
-- **validate_system.py** - Automated test suite (9 tests)
-- **validation_results.json** - Machine-readable results
+4. **[NEURAL_ARCHITECTURE.md](./NEURAL_ARCHITECTURE.md)** ⭐
+   - Complete patent documentation (5 claims)
+   - Technical architecture
+   - Use cases and examples
+   - **Status**: Ready for patent filing
 
-### Validated Claims
+5. **[CLAIM_2_DECISION_ENGINE_GUIDE.md](./CLAIM_2_DECISION_ENGINE_GUIDE.md)** ⭐
+   - Step-by-step implementation guide (Weeks 3-4)
+   - Daily tasks with code examples
+   - **Status**: In progress (Week 3)
 
-| Claim | Target | Actual | Evidence |
-|-------|--------|--------|----------|
-| TTE < 10 μs | < 10 μs | 8.12 μs | `bench_final_system.py` |
-| CPU < 1% | < 1% | 0.9% | Process monitoring |
-| RAM < 3 MB | < 3 MB | 2.14 MB | Process monitoring |
-| Real-time Events | Yes | Yes | Live eBPF capture |
-| AI Integration | Yes | Yes | Ollama operational |
+6. **[COGNITIVE_SECURITY_IMPLEMENTATION.md](./COGNITIVE_SECURITY_IMPLEMENTATION.md)** ⭐
+   - Telemetry sanitization implementation
+   - Deployment instructions
+   - Verification tests
+   - **Status**: Completed
 
----
-
-## Quick Start
-
-### Installation
-```bash
-git clone https://github.com/jnovoas/sentinel
-cd sentinel
-sudo ./deploy_semsh.sh
-```
-
-### Launch System
-```bash
-sudo sctl start      # Start all services
-sctl status          # Verify health
-sem                  # Enter semantic shell
-```
+7. **[BRAND_GUIDE.md](./BRAND_GUIDE.md)** ⭐
+   - Sentinel Cortex brand identity
+   - Messaging framework
+   - Visual identity guidelines
+   - **Status**: Active
 
 ---
 
-## Core Documentation
+## 📋 Reference Documents (Context Only)
 
-### Architecture & Design
-- **[DATASHEET.md](DATASHEET.md)** - Executive summary and system overview
-- **[ARCHITECTURE_V2_LIVE_MAP.md](docs/ARCHITECTURE_V2_LIVE_MAP.md)** - System architecture diagram
-- **[SYSTEM_ADMIN_PROTOCOL.md](docs/SYSTEM_ADMIN_PROTOCOL.md)** - AI-DevOps contract (SSAP)
+### Strategic Planning
+- **[COMPLETE_MASTER_PLAN.md](./COMPLETE_MASTER_PLAN.md)** - Original 9-week plan (superseded by Sentinel Cortex roadmap)
+- **[COGNITIVE_SECURITY_ROADMAP_V2.md](./COGNITIVE_SECURITY_ROADMAP_V2.md)** - Phase 2 planning (context)
+- **[COGNITIVE_SECURITY_HARDENING_PLAN.md](./COGNITIVE_SECURITY_HARDENING_PLAN.md)** - Detailed hardening plan (implemented)
 
-### Performance & Optimization
-- **[BENCHMARK_RESULTS_FINAL.md](docs/BENCHMARK_RESULTS_FINAL.md)** - Initial benchmark results
-- **[X86_OPTIMIZATION_RESULTS.md](docs/X86_OPTIMIZATION_RESULTS.md)** - Post-tuning performance analysis
-- **[BENCHMARKS_CONSOLIDATED.md](docs/BENCHMARKS_CONSOLIDATED.md)** - Historical benchmarks
+### Technical Documentation
+- **[HA_DISASTER_RECOVERY.md](./HA_DISASTER_RECOVERY.md)** - High availability setup
+- **[HA_REFERENCE_DESIGN.md](./HA_REFERENCE_DESIGN.md)** - HA architecture
+- **[FAILOVER_ORCHESTRATION.md](./FAILOVER_ORCHESTRATION.md)** - Failover procedures
 
-### User Guides
-- **[SEMSH_SSAP_GUIDE.md](docs/SEMSH_SSAP_GUIDE.md)** - SemSH v0.3 usage guide
-- **[TOOLING_GUIDE.md](docs/TOOLING_GUIDE.md)** - System tools reference
-- **[SECURE_PACKAGING_PROPOSAL.md](docs/SECURE_PACKAGING_PROPOSAL.md)** - SIP package manager
-
-### Implementation Details
-- **[PHASE_3_GUI_PROTOTYPE.md](docs/PHASE_3_GUI_PROTOTYPE.md)** - GUI development
-- **[RINGBUF_MIGRATION.md](guardian-alpha/RINGBUF_MIGRATION.md)** - eBPF ringbuf implementation
+### Business Documents
+- **[SGG_FEASIBILITY_ANALYSIS.md](./SGG_FEASIBILITY_ANALYSIS.md)** - Market analysis
+- **[INVESTOR_PITCH_DECK.md](./INVESTOR_PITCH_DECK.md)** - Pitch deck outline
 
 ---
 
-## Component Reference
+## 🎯 Quick Navigation
 
-### System Control (`sctl`)
-**Location**: `tools/sctl-rs/`  
-**Language**: Rust  
-**Purpose**: Unified system control and monitoring
+### For Development
+→ Start here: **[CLAIM_2_DECISION_ENGINE_GUIDE.md](./CLAIM_2_DECISION_ENGINE_GUIDE.md)**
 
-```bash
-sudo sctl start              # Launch Sentinel services
-sudo sctl stop               # Stop all services
-sudo sctl status             # Health dashboard
-sudo sctl status --json      # Machine-readable output
-sudo sctl tune               # Apply x86_64 optimizations
-```
+### For Patent Filing
+→ Start here: **[NEURAL_ARCHITECTURE.md](./NEURAL_ARCHITECTURE.md)**
 
-**Features**:
-- eBPF LSM detection (via bpftool)
-- Real-time semantic vector reading from SHM
-- CPU/Memory monitoring
-- x86_64 performance tuning (hugepages, governor, affinity)
+### For Investors
+→ Start here: **[NEURAL_GUARD_INTEGRATED_ROADMAP.md](./NEURAL_GUARD_INTEGRATED_ROADMAP.md)**
+
+### For Deployment
+→ Start here: **[COGNITIVE_SECURITY_IMPLEMENTATION.md](./COGNITIVE_SECURITY_IMPLEMENTATION.md)**
 
 ---
 
-### Semantic Shell (`sem`)
-**Location**: `sem_shell.py`  
-**Language**: Python + Ollama  
-**Purpose**: AI-powered command interpretation
+## 📊 Current Status (2025-12-15)
 
-```bash
-sem                          # Launch interactive shell
-```
+### Completed ✅
 
-**Commands**:
-- `health` - System health advisor
-- `review <cmd>` - AI command risk analysis
-- `run <playbook>` - Execute YAML playbook
-- `dashboard` - Vector state visualization
-- `<natural language>` - Convert to bash command
-
-**Example**:
-```bash
- semsh> health
-⚠  [CRITICAL] eBPF LSM is INACTIVE
-   → Suggested Action: sudo sctl start
-
- semsh> review rm -rf /
-🔴 CRITICAL WARNING: Destructive pattern detected!
-
- semsh> run backup_db
-📋 Executing Playbook: backup_critical_db
-   Proceed? [y/N]:
-```
-
----
-
-### Secure Package Manager (`sip`)
-**Location**: `tools/sip-rs/`  
-**Language**: Rust  
-**Purpose**: Cryptographically signed package management
-
-```bash
-sip keygen --out mykey           # Generate Ed25519 keypair
-sip sign --source ./app \        # Sign package
-         --key mykey.priv \
-         --out app.sip
-sip install --package app.sip \  # Install with verification
-            --pubkey mykey.pub
-```
-
-**Security**:
-- Ed25519 digital signatures
-- Semantic intent validation (AI checks intent.json)
-- Supply chain integrity
-
----
-
-### Docker Wrapper (`sdocker`)
-**Location**: `tools/sdocker`  
-**Language**: Python  
-**Purpose**: Safe Docker operations
-
-```bash
-sdocker status               # JSON container metrics
-sdocker safe-restart <svc>   # Validated restart
-sdocker logs <container>     # Safe log access
-```
-
-**Safety Features**:
-- Service whitelist enforcement
-- Dependency checking
-- Impact analysis before restart
-
----
-
-## Playbook System
-
-**Location**: `playbooks/`  
-**Format**: YAML  
-**Execution**: `sem run <playbook_name>`
-
-### Available Playbooks
-
-**backup_db.yaml**
-- Full PostgreSQL backup
-- Disk space verification
-- Integrity checking
-- Automatic rollback on failure
-
-**cleanup_logs.yaml**
-- System log rotation
-- Sentinel log cleanup
-- Space verification
-
-### Creating Playbooks
-
-```yaml
-name: my_playbook
-description: "What this does"
-risk_level: low|medium|high
-steps:
-  - name: step_name
-    cmd: "bash command"
-    failure_msg: "Error message"
-rollback:
-  - cmd: "undo command"
-```
-
----
-
-## Architecture Overview
-
-### Three-Layer Security
-
-```
-┌─────────────────────────────────┐
-│  AI Layer (Cognitive)           │
-│  • Intent interpretation        │
-│  • Self-censorship              │
-│  • Context awareness            │
-└─────────────────────────────────┘
-              ↓
-┌─────────────────────────────────┐
-│  Validation Layer (Relay)       │
-│  • Whitelist enforcement        │
-│  • Signature verification       │
-│  • Pre-execution checks         │
-└─────────────────────────────────┘
-              ↓
-┌─────────────────────────────────┐
-│  Kernel Layer (eBPF LSM)        │
-│  • Syscall interception         │
-│  • Immutable enforcement        │
-│  • Fail-closed policy           │
-└─────────────────────────────────┘
-```
-
-### Data Flow
-
-```
-User Command
-    ↓
-SemSH (AI Interpretation)
-    ↓
-Sentinel Relay (Validation)
-    ↓
-eBPF LSM (Kernel Enforcement)
-    ↓
-TruthSync SHM (Telemetry)
-    ↓
-GUI / sctl (Visualization)
-```
-
----
-
-## Performance Characteristics
-
-### Latency (Post x86 Optimization)
-- **TTE (Time-To-Enforcement)**: 8.71 μs average under load
-- **Process Execution**: 0.57 ms average
-- **P95 Latency**: 49.02 μs
-
-### Resource Usage
-- **CPU Overhead**: 0.0% (event-driven)
-- **Memory (Relay)**: 2.08 MB
-- **Disk (Base System)**: ~2 GB
-
-### Optimization Features
-- CPU Governor: performance mode
-- Hugepages: 10 × 2MB reserved
-- Core Affinity: Relay pinned to CPU 0
-- Compilation: target-cpu=native, AES-NI enabled
-
----
-
-## Development
-
-### Build Requirements
-- **Rust**: 1.70+
-- **Python**: 3.10+
-- **Clang**: 14+
-- **Node.js**: 14+ (for GUI)
-
-### Build Commands
-```bash
-# System tools
-cd tools/sctl-rs && cargo build --release
-cd tools/sip-rs && cargo build --release
-
-# GUI
-cd gui && npm install && npm run tauri build
-
-# eBPF
-cd guardian-alpha && make
-```
-
-### Testing
-```bash
-# System benchmark
-python bench_final_system.py
-
-# SHM latency
-python bench_synapse.py
-
-# Component tests
-sudo sctl start
-sctl status
-sem
-```
-
----
-
-## Troubleshooting
-
-### eBPF LSM shows INACTIVE
-```bash
-# Check if loaded (requires sudo)
-sudo sctl status
-
-# Reload if needed
-sudo sctl stop
-sudo sctl start
-```
-
-### SemSH connection errors
-```bash
-# Verify Ollama is running
-ollama list
-
-# Check PostgreSQL
-docker ps | grep postgres
-
-# Restart services
-sudo sctl restart
-```
-
-### GUI not connecting to backend
-```bash
-# Ensure kernel_pulse is running
-sctl status
-
-# Check SHM permissions
-ls -l /var/run/sentinel/truthsync_shm
-
-# Restart pulse
-sudo pkill -f kernel_pulse
-sudo sctl start
-```
-
----
-
-## Contributing
-
-### Code Style
-- **Rust**: `cargo fmt`
-- **Python**: PEP 8
-- **Shell**: ShellCheck compliant
-
-### Commit Messages
-```
-Feat: Add new feature
-Fix: Bug fix
-Docs: Documentation update
-Perf: Performance improvement
-Refactor: Code refactoring
-```
-
-### Pull Request Process
-1. Fork repository
-2. Create feature branch
-3. Implement changes
-4. Add tests
-5. Update documentation
-6. Submit PR
-
----
-
-## License
-
-[To be defined]
-
----
-
-## Contact
-
-**Author**: jnovoas  
-**Repository**: https://github.com/jnovoas/sentinel  
-**Issues**: GitHub Issues  
-
----
-
-## Acknowledgments
-
-Built upon research from:
-- eBPF/BCC project
-- Cilium security framework
-- Linux kernel LSM subsystem
-- Modern LLM-ops research
-
----
-
-*Last Updated: 2026-01-01*
+**Last Updated**: 2025-12-15  
+**Maintainer**: Sentinel Team

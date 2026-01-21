@@ -39,16 +39,3 @@ La arquitectura **Liquid Lattice Storage** es viable para el Sistema de Archivos
 - **Próximos Pasos:** Optimizar densidad usando *Compresión de Fase* (almacenar en fase y energía) para reducir el conteo de nodos requeridos.
 
 ✅ **SISTEMA LISTO PARA PRODUCCIÓN LIMITADA.**
-
----
-
-## Cómo Ejecutar
-
-Para reproducir este experimento:
-
-```bash
-python3 -m quantum.experiments.EXP_011_LIQUID_CAPACITY
-```
-
-**Nota:** Ejecutar desde el directorio raíz del proyecto `/home/jnovoas/dev/sentinel`
-

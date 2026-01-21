@@ -1,4 +1,3 @@
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import datetime

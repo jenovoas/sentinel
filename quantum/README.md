@@ -1,12 +1,5 @@
 # Sentinel Quantum Simulator - Quick Start Guide
 
-> ⚠️ **LEGACY SIMULATOR DOCUMENTATION**  
-> Este es el simulador cuántico educativo legacy (pre-v8.0).  
-> Usa numpy/scipy para propósitos didácticos.  
-> **Para Sentinel v8.0 producción (Base-60 puro), ver:**  
-> - [AI_PRIME_DIRECTIVES.md](../AI_PRIME_DIRECTIVES.md)  
-> - [SENTINEL_V8_DOCUMENTATION_INDEX.md](../docs/SENTINEL_V8_DOCUMENTATION_INDEX.md)
-
 ## 🚀 Getting Started (Laptop-Safe!)
 
 ### Installation

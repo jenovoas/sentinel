@@ -13,7 +13,6 @@ Environment Variables:
     - ALLOWED_ORIGINS: CORS allowed origins (comma-separated)
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from pydantic_settings import BaseSettings
 import os
 from typing import List
@@ -32,7 +31,7 @@ class Settings(BaseSettings):
     # ============================================================================
     database_url: str = os.getenv(
         "DATABASE_URL", 
-        "postgresql+asyncpg://sentinel:sentinel_trust@localhost:5432/sentinel_core"
+        "postgresql+asyncpg://sentinel_user:sentinel_password@localhost:5432/sentinel_db"
     )
     """PostgreSQL connection string for the application database."""
     
@@ -48,7 +47,7 @@ class Settings(BaseSettings):
     app_name: str = os.getenv("APP_NAME", "Sentinel")
     """Application name displayed in API documentation."""
     
-    app_version: str = os.getenv("APP_VERSION", "1.S60(0, 0, 0)")
+    app_version: str = os.getenv("APP_VERSION", "1.0.0")
     """Application version for API versioning and documentation."""
     
     environment: str = os.getenv("FASTAPI_ENV", "development")
@@ -60,37 +59,10 @@ class Settings(BaseSettings):
     # ============================================================================
     # SECURITY CONFIGURATION
     # ============================================================================
-    # ============================================================================
-    # SECURITY CONFIGURATION
-    # ============================================================================
-    human_in_the_loop_required: bool = True
-    """
-    If True, destructive actions proposed by AI require manual confirmation.
-    Mitigation for 'Adversarial Reward-Hacking' where AI might be tricked 
-    into lowering security defenses.
-    """
-
     secret_key: str = os.getenv(
         "SECRET_KEY", 
         "your-secret-key-change-in-production-min-32-chars-xyz123"
     )
-    
-    def __init__(self, **data):
-        super().__init__(**data)
-        self._validate_security()
-
-    def _validate_security(self):
-        """Perform startup security checks."""
-        # Check for weak SECRET_KEY in production
-        default_key = "your-secret-key-change-in-production-min-32-chars-xyz123"
-        if self.environment == "production":
-            if self.secret_key == default_key:
-                raise ValueError(
-                    "❌ CRITICAL SECURITY ERROR: Default SECRET_KEY detected in production! "
-                    "You MUST set a secure SECRET_KEY environment variable."
-                )
-            if len(self.secret_key) < 32:
-                 raise ValueError("❌ SECURITY ERROR: SECRET_KEY is too short (min 32 chars).")
     """
     JWT signing key for token generation.
     
@@ -132,20 +104,10 @@ class Settings(BaseSettings):
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
     """Logging level (DEBUG/INFO/WARNING/ERROR/CRITICAL)."""
     
-    # ============================================================================
-    # TELEMETRY CONFIGURATION
-    # ============================================================================
-    internal_telemetry_token: str = os.getenv(
-        "INTERNAL_TELEMETRY_TOKEN", 
-        "sentinel-internal-ebpf-key-2025"
-    )
-    """Secret token for validating telemetry source (Guardian Alpha)."""
-    
     class Config:
         """Pydantic configuration for Settings."""
         env_file = ".env"
         case_sensitive = False
-        extra = "ignore"
 
 
 # Global settings instance (singleton pattern)

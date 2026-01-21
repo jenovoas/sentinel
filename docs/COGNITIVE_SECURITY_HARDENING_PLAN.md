@@ -1,4 +1,4 @@
-#  Cognitive Security Hardening - Detailed Implementation Plan
+# 🛡️ Cognitive Security Hardening - Detailed Implementation Plan
 
 ## Executive Summary
 
@@ -304,7 +304,7 @@ echo "✅ Authentication files created:"
 echo "   - docker/nginx/.htpasswd_metrics"
 echo "   - docker/nginx/.htpasswd_logs"
 echo ""
-echo "⚠  Update .env with secure passwords before production!"
+echo "⚠️  Update .env with secure passwords before production!"
 ```
 
 ---
@@ -679,7 +679,7 @@ bash scripts/test-nginx-auth.sh
 
 ---
 
-### Disonancia no resuelta Testing
+### Chaos Testing
 
 **Adversarial Fuzzing**
 
@@ -739,7 +739,7 @@ docker-compose restart nginx
 
 **Week 2: Validation & Documentation**
 - Day 6-7: Automated tests (unit + integration)
-- Day 8: Disonancia no resuelta testing + fuzzing
+- Day 8: Chaos testing + fuzzing
 - Day 9: Documentation (security brief for investors)
 - Day 10: Final review + deployment
 

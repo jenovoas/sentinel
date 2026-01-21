@@ -3,8 +3,7 @@
 **Fecha:** 2026-01-10  
 **Investigador:** Sentinel AI (Arquitecto: J. Novoa)  
 **Estado:** ✅ ÉXITO  
-**Módulo:** `quantum/time_crystal_memory.py`  
-**Script:** [`legacy_time_crystal_memory.py`](file:///home/jnovoas/dev/sentinel/quantum/legacy_time_crystal_memory.py) (líneas 153-184: test de integración)
+**Módulo:** `quantum/time_crystal_memory.py`
 
 ---
 
@@ -34,25 +33,6 @@ La memoria resonante es viable. El sistema no "guarda" el dato; el sistema "cant
 Esto valida el uso de **Time Crystals** como almacenamiento de entropía cero para Sentinel.
 
 ---
-
-## 5. Cómo Ejecutar
-
-Para reproducir este experimento, ejecuta:
-
-```bash
-python3 -m quantum.legacy_time_crystal_memory
-```
-
-**Salida esperada:**
-- Inicialización del Time Crystal Clock (41 Hz)
-- Inyección de dato "SENTINEL-ZPE" en SLOT 2
-- Lectura T+0s mostrando amplitud inicial
-- Control PID activo corrigiendo decay
-- Lectura T+3s mostrando memoria sostenida
-- Mensaje de éxito: "La memoria sobrevivió por bombeo DTC"
-
----
-
 **Próximos Pasos:**
 - Ajustar `pump_energy` dinámicamente basado en feedback loop PID S60.
 - Implementar "Lectura por Interferencia": Leer datos superponiendo ondas en lugar de consultar metadatos.

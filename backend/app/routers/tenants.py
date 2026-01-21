@@ -9,7 +9,6 @@ This router handles all tenant-related endpoints, including:
 - Tenant deletion
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -20,7 +19,7 @@ from app.services.tenant_service import (
     get_tenants,
     get_tenant as get_tenant_service,
 )
-from app.auth_utils import get_current_user
+from app.security import get_current_user
 from typing import List
 
 router = APIRouter(prefix="/api/v1/tenants", tags=["tenants"])

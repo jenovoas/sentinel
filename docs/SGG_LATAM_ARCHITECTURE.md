@@ -6,7 +6,7 @@
 
 ---
 
-##  Resumen Ejecutivo
+## 🎯 Resumen Ejecutivo
 
 **Sentinel Global Grid LATAM (SGG-LATAM)**: Arquitectura de 4 nodos nearshore optimizada para latencia, costos y compliance regional.
 
@@ -21,7 +21,7 @@
 
 ---
 
-## 🏗 Arquitectura de 4 Nodos
+## 🏗️ Arquitectura de 4 Nodos
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -308,7 +308,7 @@ Cliente → CDN → Nodo 3 (Brasil, NEW Primary)
 
 **Impacto**:
 - ❌ Downtime: 2-5 minutos
-- ⚠ Data loss: <15 segundos (async lag)
+- ⚠️ Data loss: <15 segundos (async lag)
 - ✅ Nodo 4: Backup completo disponible
 - 🔧 Acción manual: Rebuild Chile, failback cuando listo
 
@@ -333,7 +333,7 @@ RTO: <15 minutos
 
 **Impacto**:
 - ❌ Downtime: 15 minutos
-- ⚠ Data loss: <24 horas (último backup limpio)
+- ⚠️ Data loss: <24 horas (último backup limpio)
 - ✅ Nodo 4: Immutable, no infectado
 - 🔧 Acción: Self-healing automático (Fase 4)
 
@@ -402,9 +402,9 @@ RTO: <15 minutos
 | Solución | Año 1 | Año 2+ | Latencia | Soberanía |
 |----------|-------|--------|----------|-----------|
 | **SGG LATAM** | **$35K** | **$15K** | **90ms** | ✅ LGPD/INAI |
-| SGG Global | $45K | $30K | 200ms | ⚠ GDPR complejo |
+| SGG Global | $45K | $30K | 200ms | ⚠️ GDPR complejo |
 | Datadog Enterprise | $60K | $60K | N/A | ❌ Cloud-only |
-| Veeam + Monitoring | $45K | $45K | N/A | ⚠ Parcial |
+| Veeam + Monitoring | $45K | $45K | N/A | ⚠️ Parcial |
 | **Ahorro vs Datadog** | **42%** | **75%** | - | - |
 
 ---
@@ -458,7 +458,7 @@ RTO: <15 minutos
 
 ---
 
-##  Compliance y Soberanía
+## 🛡️ Compliance y Soberanía
 
 ### Brasil (LGPD - Lei Geral de Proteção de Dados)
 
@@ -508,7 +508,7 @@ RTO: <15 minutos
 
 ---
 
-##  Roadmap de Implementación
+## 🚀 Roadmap de Implementación
 
 ### Fase 1: HA Local Chile (Meses 1-3) ✅ CRÍTICO
 
@@ -648,7 +648,7 @@ RTO: <15 minutos
 
 ---
 
-##  Go-to-Market LATAM
+## 🎯 Go-to-Market LATAM
 
 ### Estrategia de Entrada
 
@@ -710,4 +710,4 @@ RTO: <15 minutos
 
 ---
 
-**🇨🇱🇧🇷🇲🇽 SENTINEL LATAM = DOMINATION REGIONAL** 
+**🇨🇱🇧🇷🇲🇽 SENTINEL LATAM = DOMINATION REGIONAL** 🚀

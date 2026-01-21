@@ -9,6 +9,7 @@
 ## ⚡ ACCIÓN 1: Compilar eBPF LSM (2 horas)
 
 ### Por qué es crítico
+- Claim 3 vale $8-15M
 - ZERO prior art (HOME RUN)
 - Sin evidencia experimental, claim es débil
 

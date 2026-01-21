@@ -3,7 +3,6 @@ Sentinel Monitoring Models - Historical data, anomalies, security alerts
 Phase 2: Data aggregation for AI analysis (Phase 3)
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import uuid
 from datetime import datetime
 from enum import Enum as PyEnum

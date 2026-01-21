@@ -1,4 +1,3 @@
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from celery import Celery
 from app.config import get_settings
 import logging

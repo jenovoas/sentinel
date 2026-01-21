@@ -6,7 +6,7 @@
 
 ---
 
-##  Overview
+## 🎯 Overview
 
 This document describes **exactly** what happens during failover:
 - Who detects the failure
@@ -17,7 +17,7 @@ This document describes **exactly** what happens during failover:
 
 ---
 
-## 🏗 Architecture Components
+## 🏗️ Architecture Components
 
 ### Detection Layer
 
@@ -182,7 +182,7 @@ T+60s:  Route53 health check fails (second)
 T+70s:  Custom watchdog confirms (6th consecutive failure)
 T+90s:  Route53 health check fails (third - THRESHOLD)
 T+90s:  Cloudflare health check also fails (third)
-T+90s:  ⚠ CONSENSUS REACHED - INITIATE FAILOVER
+T+90s:  ⚠️ CONSENSUS REACHED - INITIATE FAILOVER
 ```
 
 **Decision Engine Activates**:
@@ -473,9 +473,9 @@ curl -X POST https://status.yourdomain.com/api/incidents \
 - ✅ **Pi-hole DNS filtering** (autonomous!)
 
 **What's Degraded**:
-- ⚠ No database replication (single point)
-- ⚠ Slower AI (CPU vs GPU)
-- ⚠ Higher latency (cloud vs local)
+- ⚠️ No database replication (single point)
+- ⚠️ Slower AI (CPU vs GPU)
+- ⚠️ Higher latency (cloud vs local)
 
 **What's Lost**:
 - ❌ On-premise monitoring
@@ -538,7 +538,7 @@ echo "Failback complete!"
 
 ---
 
-##  Client Experience Timeline
+## 🎯 Client Experience Timeline
 
 ### What the Client Sees
 
@@ -721,7 +721,7 @@ docker-compose -f docker-compose-on-prem.yml up -d
 
 ---
 
-##  Next Steps
+## 🎯 Next Steps
 
 1. **Implement health endpoints** (Week 2)
 2. **Set up Vault for secrets** (Week 3)
