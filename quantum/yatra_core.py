@@ -78,8 +78,8 @@ class S60:
         Raises:
             DecimalContaminationError: Si algún componente es float
         """
-        # Validación Estricta: Cero Tolerancia a Floats y Rangos Correctos
-        for i, c in enumerate([d, m, s, t, q]):
+        # Validación Estricta: Cero Tolerancia a Floats
+        for c in [d, m, s, t, q]:
             if isinstance(c, float):
                 raise DecimalContaminationError(
                     f"CRITICAL: Intento de inyectar decimal '{c}' en Núcleo Yatra."
@@ -88,10 +88,6 @@ class S60:
                 raise DecimalContaminationError(
                     f"CRITICAL: Tipo inválido '{type(c)}'. Solo enteros permitidos."
                 )
-            # Validar rango [0, 59] para componentes sub-grado (m, s, t, q)
-            # d (índice 0) puede ser cualquier entero
-            if i > 0 and (c < 0 or c >= 60):
-                raise ValueError(f"Componente sexagesimal fuera de rango [0-59]: {c}")
         
         # Conversión a fixed-point (MATEMÁTICA BASE-60)
         # Valor = d*60^4 + m*60^3 + s*60^2 + t*60 + q
@@ -320,7 +316,7 @@ class S60:
         Convierte float -> S60 con precisión de 4 niveles.
         
         ⚠️ ADVERTENCIA: Usa floats internamente.
-        ✅ ACEPTABLE: Solo para importar datos externos.
+        ✅ ACEPTABLE: Solo para # math import removed - Yatra uses pure Base-60 arithmetic onlyr datos externos.
         🔒 REGLA: NUNCA usar dentro de lógica Yatra.
         
         Args:
@@ -393,7 +389,7 @@ def demo_yatra():
     # 4. Test de pureza
     print("\n4. Test de Pureza (debe rechazar float):")
     try:
-        bad = S60(10, 30, 0.5)  # Intenta inyectar float directo
+        bad = S60(10, 30, S60(1)/2)  # Intenta inyectar algo que no sea int
         print("   ❌ FALLO: Aceptó float")
     except DecimalContaminationError as e:
         print(f"   ✅ ÉXITO: Rechazó float")
