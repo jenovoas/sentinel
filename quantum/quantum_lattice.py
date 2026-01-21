@@ -17,7 +17,6 @@ Propósito: Demostrar resiliencia topológica y propagación de fase.
 
 from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import time
-import math
 import threading
 
 class HexNode:
@@ -41,7 +40,7 @@ class HexNode:
         
         # Resonancia: Si la fase es cercana a mi fase interna (0 mod 2pi), amplifico
         # Aquí simplificamos: pasamos la energía con pequeña pérdida (fricción)
-        transmission_efficiency = 0.95 
+        transmission_efficiency = S60(0, 57, 0) 
         self.energy += input_energy * transmission_efficiency
         self.phase = phase_signal
 
