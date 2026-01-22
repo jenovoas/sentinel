@@ -103,7 +103,22 @@ class Settings(BaseSettings):
     # ============================================================================
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
     """Logging level (DEBUG/INFO/WARNING/ERROR/CRITICAL)."""
-    
+
+    # ============================================================================
+    # VERTEX AI CONFIGURATION
+    # ============================================================================
+    vertex_ai_enabled: bool = os.getenv("VERTEX_AI_ENABLED", "False").lower() == "true"
+    """Master switch for Vertex AI integration. Default: False (Cost Protection)."""
+
+    google_cloud_project: str | None = os.getenv("GOOGLE_CLOUD_PROJECT")
+    """Google Cloud Project ID."""
+
+    google_cloud_location: str = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
+    """Google Cloud Region (e.g., us-central1)."""
+
+    vertex_model_name: str = os.getenv("VERTEX_MODEL_NAME", "gemini-2.5-flash-001")
+    """Vertex AI Model Name (e.g., gemini-2.5-flash-001, gemini-3.0-pro-001)."""
+
     class Config:
         """Pydantic configuration for Settings."""
         env_file = ".env"
