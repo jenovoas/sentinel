@@ -48,3 +48,6 @@ yarn-error.log*
 **/*.tmp
 **/*.temp
 **/.DS_Store
+
+.gemini/
+gha-creds-*.json

@@ -8,11 +8,18 @@ Este documento sirve como el mapa maestro de todo el conocimiento y código func
 - **[AI_PRIME_DIRECTIVES.md](file:///home/jnovoas/dev/sentinel/AI_PRIME_DIRECTIVES.md)** - Los Axiomas Inmutables (YATRA, Preservación, Bio-Centrismo).
 - **[README.md](file:///home/jnovoas/dev/sentinel/README.md)** - Introducción general al sistema.
 - **[ARCHITECTURE.md](file:///home/jnovoas/dev/sentinel/ARCHITECTURE.md)** - Arquitectura de alto nivel.
+- **[agents.md](file:///home/jnovoas/dev/sentinel/agents.md)** - Orquestación de Agentes y Principios.
 
 ## 🧪 Sistemas Cuánticos y YATRA (Base-60)
 - **Directorio: [/quantum](file:///home/jnovoas/dev/sentinel/quantum/)**
   - **[yatra_guard.py](file:///home/jnovoas/dev/sentinel/quantum/yatra_guard.py)** - Defensor activo contra fricción decimal.
+  - **[MHD_SHIELD_TECHNICAL_WHITE_PAPER.md](file:///home/jnovoas/dev/sentinel/quantum/MHD_SHIELD_TECHNICAL_WHITE_PAPER.md)** - Ingeniería de Escudos Plasma.
 - **[TesisResonancia.md](file:///home/jnovoas/dev/sentinel/TesisResonancia.md)** - Fundamentos teóricos de la resonancia cuántica.
+
+## 🛡️ Escudo Planetario y Arquitectura de Red
+- **[PLANETARY_ENERGY_SHIELD.md](file:///home/jnovoas/dev/sentinel/docs/PLANETARY_ENERGY_SHIELD.md)** - La Visión Maestra del Escudo.
+- **[CLUSTER_ARCHITECTURE.md](file:///home/jnovoas/dev/sentinel/docs/CLUSTER_ARCHITECTURE.md)** - Mesh Network y Buffers Distribuidos.
+- **[PHYSICAL_BUFFER_NODE_SPEC.md](file:///home/jnovoas/dev/sentinel/docs/PHYSICAL_BUFFER_NODE_SPEC.md)** - Especificaciones de Hardware del Nodo.
 
 ## 📚 Documentación de Desarrollo y Patentes
 - **Directorio: [/docs](file:///home/jnovoas/dev/sentinel/docs/)**
