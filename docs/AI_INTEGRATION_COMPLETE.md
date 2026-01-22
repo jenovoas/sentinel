@@ -52,11 +52,12 @@
 ### Test de Latencia
 
 **Consulta directa a Ollama**:
+
 ```
 Prompt: "Explica en 1 línea qué es una anomalía de CPU"
 Tiempo: 9.7 segundos
-Respuesta: "Una anomalía de CPU se refiere a cualquier desviación o fallo 
-que afecte su funcionamiento normal, como sobrecalentamiento, problemas 
+Respuesta: "Una anomalía de CPU se refiere a cualquier desviación o fallo
+que afecte su funcionamiento normal, como sobrecalentamiento, problemas
 con el arreglo lógico y temporal (TLB) o errores en la memoria caché."
 ```
 
@@ -89,11 +90,13 @@ http://localhost:8000/api/v1/ai/analyze-anomaly
 ## 🧪 Comandos de Verificación
 
 ### Verificar GPU en Docker
+
 ```bash
 docker run --rm --gpus all nvidia/cuda:12.0.0-base-ubuntu22.04 nvidia-smi
 ```
 
 ### Verificar Ollama
+
 ```bash
 # Ver modelos instalados
 curl http://localhost:11434/api/tags | jq '.models[].name'
@@ -104,6 +107,7 @@ curl -X POST http://localhost:11434/api/generate \
 ```
 
 ### Verificar Backend
+
 ```bash
 # Health check
 curl http://localhost:8000/api/v1/ai/health | jq
@@ -115,6 +119,7 @@ curl -X POST http://localhost:8000/api/v1/ai/query \
 ```
 
 ### Ver logs de Ollama
+
 ```bash
 docker-compose logs -f ollama | grep -i "gpu\|cuda"
 ```
@@ -145,17 +150,21 @@ docker-compose logs -f ollama | grep -i "gpu\|cuda"
 ## 🔄 Próximos Pasos
 
 ### 1. Integrar IA en AnomalyDetector
+
 Modificar `backend/app/services/anomaly_detector.py` para enriquecer anomalías con explicaciones de IA.
 
 ### 2. Mejorar Watchdog de Seguridad
+
 Actualizar `host-metrics/audit-watchdog.sh` para análisis inteligente de eventos.
 
 ### 3. Descargar Modelo Adicional
+
 ```bash
 docker-compose exec ollama ollama pull llama3.2:1b
 ```
 
 ### 4. Crear Dashboards de IA
+
 - Métricas de latencia de IA
 - Uso de VRAM
 - Queries por minuto
@@ -165,6 +174,7 @@ docker-compose exec ollama ollama pull llama3.2:1b
 ## 🐛 Troubleshooting
 
 ### Ollama no detecta GPU
+
 ```bash
 # Verificar NVIDIA Container Toolkit
 nvidia-ctk --version
@@ -177,6 +187,7 @@ sudo systemctl restart docker
 ```
 
 ### Modelo no descarga
+
 ```bash
 # Descargar manualmente
 docker-compose exec ollama ollama pull phi3:mini
@@ -186,6 +197,7 @@ df -h
 ```
 
 ### Backend no conecta con Ollama
+
 ```bash
 # Verificar que Ollama esté corriendo
 docker-compose ps ollama
@@ -201,12 +213,12 @@ docker-compose logs backend | grep -i ollama
 
 ## 📈 Modelos Recomendados para GTX 1050 (3GB)
 
-| Modelo | Tamaño | VRAM | Velocidad | Calidad |
-|--------|--------|------|-----------|---------|
-| ✅ phi3:mini | 1.3B | ~2GB | Rápido | Buena |
-| ✅ llama3.2:1b | 1B | ~1.5GB | Muy rápido | Aceptable |
-| ⚠️ llama3.2:3b | 3B | ~2.5GB | Moderado | Muy buena |
-| ❌ llama3:8b | 8B | ~5GB | - | No cabe |
+| Modelo         | Tamaño | VRAM   | Velocidad  | Calidad   |
+| -------------- | ------ | ------ | ---------- | --------- |
+| ✅ phi3:mini   | 1.3B   | ~2GB   | Rápido     | Buena     |
+| ✅ llama3.2:1b | 1B     | ~1.5GB | Muy rápido | Aceptable |
+| ⚠️ llama3.2:3b | 3B     | ~2.5GB | Moderado   | Muy buena |
+| ❌ llama3:8b   | 8B     | ~5GB   | -          | No cabe   |
 
 ---
 
@@ -217,7 +229,3 @@ docker-compose logs backend | grep -i ollama
 - ✅ Modelo phi3:mini descargado
 - ✅ Backend API funcionando
 - ✅ Host Ollama desactivado
-- ⏳ Pendiente: Integración con AnomalyDetector
-- ⏳ Pendiente: Mejora de watchdog
-
-**Próxima acción**: Integrar IA en detector de anomalías para explicaciones automáticas
