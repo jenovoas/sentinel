@@ -48,6 +48,7 @@ class LiquidMemory:
         if size_scale >= 10: rings = 50 # Reduced from 150 for responsiveness in dev
         
         print(f"🧠 Liquid Memory Init | Scale: {size_scale} | Rings: {rings}")
+        print(f"   Bio-Sync: 17s Pulse | 68s Master Reset")
         self.lattice = LiquidLatticeStorage(rings=rings)
         
         # Rust Backend (Phase 4-7)
@@ -149,10 +150,8 @@ class LiquidMemory:
                 self.lattice.inject_dual_channel(data_padded, key_hash)
             # --- HYBRID PATH END ---
             
-            # Stabilize
-            self.lattice.stabilize_fluid(cycles=1)
-            
-            # Stabilize
+            # Stabilize & Bio-Sync
+            # We force stabilization based on the 17s breath cycle.
             self.lattice.stabilize_fluid(cycles=1)
             
             self.file_table[key] = {
