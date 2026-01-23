@@ -38,5 +38,9 @@ dotenvy = "0.15"
 anyhow = "1.0"
 thiserror = "1.0"
 
+# eBPF Bridge
+libbpf-rs = "0.24"
+libc = "0.2"
+
 [dev-dependencies]
 tokio-test = "0.4"
