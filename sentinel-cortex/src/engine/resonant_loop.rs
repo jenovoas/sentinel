@@ -26,22 +26,23 @@ impl ResonantLoop {
     pub async fn wait_next_pulse(&mut self) -> bool {
         let now = Instant::now();
         let elapsed = now.duration_since(self.cycle_start);
-        
+
         // Calcular tiempo restante para completar el ciclo de 17s
         let remainder = elapsed.as_millis() % self.breath_cycle.as_millis();
         let wait_ms = self.breath_cycle.as_millis() - remainder;
-        
+
         if wait_ms > 0 {
             tracing::debug!("⏳ Resonant Loop: Syncing phase ({}ms)", wait_ms);
             sleep(Duration::from_millis(wait_ms as u64)).await;
         }
 
-        // Verificar si completamos un ciclo maestro (68s)
+        // Verificar si completamos un ciclo maestro (68s) - AXIOMA V: BIO-CENTRISMO
+        // El Salto-17 corrige el drift relativista en este límite.
         let total_elapsed = now.duration_since(self.cycle_start);
         let is_master_reset = total_elapsed >= self.master_cycle;
 
         if is_master_reset {
-            tracing::info!("🌀 MASTER CYCLE RESET (68s): Purging Entropy...");
+            tracing::info!("🌀 MASTER CYCLE RESET (68s): Purging Entropy (Quantum Leap)...");
             self.cycle_start = Instant::now(); // Reset de fase
             true
         } else {

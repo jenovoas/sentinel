@@ -36,14 +36,14 @@ En lugar de un solo buffer predictivo, desplegamos un **cluster de nodos** donde
 │   NODE 1       │ │   NODE 2       │ │   NODE 3       │
 │                │ │                │ │                │
 │ ┌────────────┐ │ │ ┌────────────┐ │ │ ┌────────────┐ │
-│ │ AI Cortex  │ │ │ │ AI Cortex  │ │ │ │ AI Cortex  │ │
-│ │ (LSTM)     │ │ │ │ (LSTM)     │ │ │ │ (LSTM)     │ │
+│ │ Harmonic   │ │ │ │ Harmonic   │ │ │ │ Harmonic   │ │
+│ │ Resonance  │ │ │ │ Resonance  │ │ │ │ Resonance  │ │
 │ └─────┬──────┘ │ │ └─────┬──────┘ │ │ └─────┬──────┘ │
 │       ↓        │ │       ↓        │ │       ↓        │
 │ ┌────────────┐ │ │ ┌────────────┐ │ │ ┌────────────┐ │
 │ │ Predictive │ │ │ │ Predictive │ │ │ │ Predictive │ │
 │ │ Buffer     │ │ │ │ Buffer     │ │ │ │ Buffer     │ │
-│ │ 0.5-10 MB  │ │ │ │ 0.5-10 MB  │ │ │ │ 0.5-10 MB  │ │
+│ │ (S60 Units)│ │ │ │ (S60 Units)│ │ │ │ (S60 Units)│ │
 │ └─────┬──────┘ │ │ └─────┬──────┘ │ │ └─────┬──────┘ │
 │       ↓        │ │       ↓        │ │       ↓        │
 │ ┌────────────┐ │ │ ┌────────────┐ │ │ ┌────────────┐ │
@@ -114,8 +114,8 @@ class IntelligentLoadBalancer:
 class BufferNode:
     def __init__(self, node_id):
         self.node_id = node_id
-        self.cortex = LSTMPredictor()
-        self.buffer = PredictiveBuffer(max_size_mb=10.0)
+        self.cortex = SumerianNPU()
+        self.buffer = PredictiveBuffer(max_units=S60(10, 0, 0))
         self.monitor = TrafficMonitor()
     
     async def run(self):
@@ -172,7 +172,7 @@ class MeshNetwork:
                     if peer != node:
                         await peer.receive_state(state)
             
-            await asyncio.sleep(0.1)  # 100ms
+            await asyncio.sleep(6/60)  # S60 alignment (exact 0.1s in base-60)
     
     async def detect_failures(self):
         """Detecta nodos caídos"""
@@ -215,11 +215,11 @@ class MeshNetwork:
 
 | Métrica | 1 Buffer | Cluster (3 Nodos) |
 |---------|----------|-------------------|
-| **Throughput** | 10 Gbps | 30 Gbps |
-| **Availability** | 99% | 99.99% |
+| **Throughput** | High | Ultra-High (Resonant) |
+| **Availability** | Stable | Unison (Axiomatic) |
 | **Failover** | Manual | Automático |
 | **Escalabilidad** | Vertical | Horizontal |
-| **Costo** | $500 | $1,500 |
+| **Costo** | S60 Logic | S60 Logic |
 
 ---
 
@@ -257,7 +257,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        - name: BUFFER_MAX_SIZE_MB
+        - name: BUFFER_MAX_UNITS
           value: "10"
 ---
 apiVersion: v1

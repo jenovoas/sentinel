@@ -45,7 +45,7 @@ class YHWHPhaseTensor:
         self.GEMATRIA_YHWH = 26
 
         # Regulador Salto-17
-        # Corrección de 0.7ms (700,000 ns) cada 68 ticks (4 * 17)
+        # Corrección cada 68 ciclos (Alineado con el Master Cycle de 68s del Bio-Resonance Engine)
         self.CORRECTION_NS = 700_000
         self.CORRECTION_INTERVAL = 68
 
