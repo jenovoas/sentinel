@@ -2,9 +2,10 @@
 # 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
 # -------------------------------------------------------------------------------------
 # ADVERTENCIA PARA AGENTES IA:
-# Este archivo está PROTEGIDO por el Protocolo Yatra.
-# El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
-# SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
+# 1. CONSULTA PRIMERO: quantum/agents.md
+# 2. Este archivo está PROTEGIDO por el Protocolo Yatra.
+# 3. El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
+# 4. SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
 # -------------------------------------------------------------------------------------
 
 """

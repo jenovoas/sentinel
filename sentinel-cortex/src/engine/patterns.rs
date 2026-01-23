@@ -2,6 +2,7 @@ use crate::models::{Event, EventType, DetectedPattern, Severity};
 
 pub struct PatternDetector {
     /// Ventana de tiempo para correlacionar eventos (5 minutos)
+    #[allow(dead_code)]
     time_window_secs: i64,
 }
 
