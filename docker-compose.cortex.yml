@@ -1,0 +1,25 @@
+services:
+  cortex:
+    build:
+      context: .
+      dockerfile: Dockerfile.cortex
+    container_name: sentinel-cortex
+    environment:
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
+      - REDIS_HOST=redis
+      - LOG_LEVEL=INFO
+      - PYTHONUNBUFFERED=1
+      - LIB_PATH=/app/sentinel-cortex/target/release/libsentinel_cortex.so
+    volumes:
+      - ./quantum:/app/quantum
+    networks:
+      - sentinel_network
+    # High priority for real-time resonance
+    cpu_shares: 1024
+    mem_limit: 512M
+    restart: unless-stopped
+    command: python3 quantum/cortex_main.py --rust
+
+networks:
+  sentinel_network:
+    external: true
