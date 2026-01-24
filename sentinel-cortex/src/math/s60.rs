@@ -73,6 +73,52 @@ impl S60 {
             _value: self._value.abs(),
         }
     }
+
+    /// Convenience: S60::zero()
+    pub fn zero() -> Self {
+        S60::ZERO
+    }
+
+    /// Convenience: S60::one()
+    pub fn one() -> Self {
+        S60::ONE
+    }
+
+    /// Create S60 from integer (e.g., S60::from_int(3) = 3;0,0,0,0)
+    pub fn from_int(i: i32) -> Self {
+        S60 {
+            _value: (i as i64) * S60::SCALE_0,
+        }
+    }
+
+    /// Common constant: 2π (6.283185307... ≈ 6;16,59,27)
+    pub fn two_pi() -> Self {
+        // 2π ≈ 6.283185307
+        // In S60: 6; 16, 59, 27 (approximately)
+        S60::new(6, 16, 59, 27, 0).unwrap()
+    }
+
+    /// Create S60 from base units (tertia)
+    pub fn from_base_units(raw: i64) -> Self {
+        S60 { _value: raw }
+    }
+
+    /// Get components (for display/telemetry)
+    pub fn to_components(&self) -> (i32, u8, u8, u8) {
+        let sign = if self._value < 0 { -1 } else { 1 };
+        let abs_val = self._value.abs();
+
+        let d = (abs_val / S60::SCALE_0) as i32 * sign;
+        let rem_d = abs_val % S60::SCALE_0;
+
+        let m = (rem_d / S60::SCALE_1) as u8;
+        let rem_m = rem_d % S60::SCALE_1;
+
+        let s = (rem_m / S60::SCALE_2) as u8;
+        let t = (rem_m % S60::SCALE_2) as u8;
+
+        (d, m, s, t)
+    }
 }
 
 // FORMATTING (Sexagesimal Output)

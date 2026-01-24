@@ -3,6 +3,10 @@ name = "sentinel-cortex"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "sentinel_cortex"
+crate-type = ["cdylib", "rlib"]
+
 [dependencies]
 # Web server
 axum = "0.7"
@@ -42,9 +46,18 @@ dotenvy = "0.15"
 anyhow = "1.0"
 thiserror = "1.0"
 
+# Lazy static initialization
+lazy_static = "1.4"
+
 # eBPF Bridge
 libbpf-rs = "0.24"
 libc = "0.2"
 
 [dev-dependencies]
 tokio-test = "0.4"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
