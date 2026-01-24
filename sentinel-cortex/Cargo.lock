@@ -1606,6 +1606,7 @@ dependencies = [
  "chrono",
  "dotenvy",
  "hex",
+ "lazy_static",
  "libbpf-rs",
  "libc",
  "redis",

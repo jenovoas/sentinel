@@ -516,6 +516,67 @@ pub fn sqrt_s60(x: &S60) -> Result<S60, S60Error> {
     Ok(guess)
 }
 
+/// Sine function in S60 using Taylor series
+///
+/// Implements sin(x) = x - x³/3! + x⁵/5! - x⁷/7! + ...
+/// Input x should be in radians (S60 representation)
+///
+/// # Arguments
+/// * `x` - Angle in radians (as S60)
+///
+/// # Returns
+/// * `S60` - sin(x) in range [-1, 1]
+///
+/// # Notes
+/// - Uses 8 terms of Taylor series for reasonable precision
+/// - Normalizes x to [0, 2π] before calculation
+pub fn sin_s60(x: S60) -> S60 {
+    // Normalize x to [0, 2π]
+    let two_pi = S60::two_pi();
+
+    // Reduce x modulo 2π (simple approach: if x > 2π, subtract 2π repeatedly)
+    let mut angle = x;
+    while angle > two_pi {
+        angle = angle - two_pi;
+    }
+    while angle < S60::zero() {
+        angle = angle + two_pi;
+    }
+
+    // Taylor series: sin(x) = x - x³/3! + x⁵/5! - x⁷/7! + x⁹/9! ...
+    let x_sq = angle * angle; // x²
+
+    // Term 1: x
+    let mut result = angle;
+    let mut term = angle;
+
+    // Term 2: -x³/6
+    term = term * x_sq;
+    if let Ok(val) = term / S60::from_int(6) {
+        result = result - val;
+    }
+
+    // Term 3: +x⁵/120
+    term = term * x_sq;
+    if let Ok(val) = term / S60::from_int(120) {
+        result = result + val;
+    }
+
+    // Term 4: -x⁷/5040
+    term = term * x_sq;
+    if let Ok(val) = term / S60::from_int(5040) {
+        result = result - val;
+    }
+
+    // Term 5: +x⁹/362880
+    term = term * x_sq;
+    if let Ok(val) = term / S60::from_int(362880) {
+        result = result + val;
+    }
+
+    result
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

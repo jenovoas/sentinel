@@ -1,0 +1,9 @@
+**/target
+**/node_modules
+**/.venv
+**/__pycache__
+**/.git
+*.so
+!quantum/*.so
+*.dll
+*.exe

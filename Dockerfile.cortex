@@ -1,0 +1,49 @@
+# --- Stage 1: Rust Builder ---
+FROM rustlang/rust:nightly-slim as builder
+
+WORKDIR /app
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    make \
+    clang \
+    libelf-dev \
+    zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy Rust project
+COPY sentinel-cortex /app/sentinel-cortex
+WORKDIR /app/sentinel-cortex
+
+# Build release library
+RUN cargo build --release
+
+# --- Stage 2: Python Runtime ---
+FROM python:3.13-slim-bookworm
+
+WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    gcc \
+    libc-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy minimal requirements
+COPY requirements.cortex.txt .
+RUN pip install --no-cache-dir -r requirements.cortex.txt
+
+# Copy Python code
+COPY quantum /app/quantum
+
+# Copy compiled Rust library from Stage 1
+COPY --from=builder /app/sentinel-cortex/target/release/libsentinel_cortex.so /app/sentinel-cortex/target/release/
+
+# Environment variables
+ENV PYTHONPATH=/app
+ENV LIB_PATH=/app/sentinel-cortex/target/release/libsentinel_cortex.so
+
+# Run the Cortex orchestrator
+CMD ["python3", "quantum/cortex_main.py"]

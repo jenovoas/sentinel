@@ -11,6 +11,7 @@ mod engine;
 mod math;
 mod mock_kernel;
 mod models;
+mod quantum; // BioResonator & Portal Detection
 mod security;
 
 use math::harmonic_logic::{HarmonicProcessor, HarmonicState, LogicState};
