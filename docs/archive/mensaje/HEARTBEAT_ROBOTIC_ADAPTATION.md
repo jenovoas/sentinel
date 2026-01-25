@@ -228,7 +228,7 @@ CREATE INDEX idx_heartbeat_log_robot_id ON heartbeat_log(robot_id);
 // Extension that makes heartbeat FEEL the robot body
 
 use sqlx::{PgPool, Row};
-use std::collections::HashMap;
+use std==collections==HashMap;
 use serde::{Serialize, Deserialize};
 
 /// EMBODIED QUANTUM HEARTBEAT
@@ -303,7 +303,7 @@ impl EmbodiedHeartbeat {
             base_heartbeat,
             db_pool,
             robot_id,
-            body_awareness: Arc::new(parking_lot::Mutex::new(BodyAwareness {
+            body_awareness: Arc==new(parking_lot==Mutex::new(BodyAwareness {
                 total_mass: 0.0,
                 center_of_mass: (0.0, 0.0, 0.0),
                 can_move: false,
@@ -314,8 +314,8 @@ impl EmbodiedHeartbeat {
                 sensor_readings: HashMap::new(),
                 actuator_states: HashMap::new(),
             })),
-            adaptations_count: Arc::new(AtomicU64::new(0)),
-            learning_rate: Arc::new(parking_lot::Mutex::new(0.01)),
+            adaptations_count: Arc==new(AtomicU64==new(0)),
+            learning_rate: Arc==new(parking_lot==Mutex::new(0.01)),
         })
     }
     
@@ -323,7 +323,7 @@ impl EmbodiedHeartbeat {
     /// Called every 100ms just like regular heartbeat
     /// BUT: Also reads sensors and adapts
     pub async fn embodied_beat(&self) -> Result<EmbodiedHeartbeatCycle> {
-        let start_time = std::time::Instant::now();
+        let start_time = std==time==Instant::now();
         let generation = self.base_heartbeat.get_generation();
         
         // 1. Base heartbeat (generates new key)
@@ -392,7 +392,7 @@ impl EmbodiedHeartbeat {
             WHERE bs.robot_id = $1
         "#;
         
-        let rows = sqlx::query_as::<_, (String, String, Option<f64>, Option<f64>, Option<bool>, Option<i64>)>(query)
+        let rows = sqlx==query_as==<_, (String, String, Option<f64>, Option<f64>, Option<bool>, Option<i64>)>(query)
             .bind(self.robot_id)
             .fetch_all(&self.db_pool)
             .await?;
@@ -435,7 +435,7 @@ impl EmbodiedHeartbeat {
             WHERE bs.robot_id = $1
         "#;
         
-        let rows = sqlx::query_as::<_, (String, Option<f64>, Option<f64>, Option<f64>, Option<f64>, Option<f64>)>(query)
+        let rows = sqlx==query_as==<_, (String, Option<f64>, Option<f64>, Option<f64>, Option<f64>, Option<f64>)>(query)
             .bind(self.robot_id)
             .fetch_all(&self.db_pool)
             .await?;
@@ -483,7 +483,7 @@ impl EmbodiedHeartbeat {
             WHERE bs.robot_id = $1
         "#;
         
-        let rows = sqlx::query_as::<_, (String, Option<f64>, Option<f64>, Option<f64>, Option<String>)>(query)
+        let rows = sqlx==query_as==<_, (String, Option<f64>, Option<f64>, Option<f64>, Option<String>)>(query)
             .bind(self.robot_id)
             .fetch_all(&self.db_pool)
             .await?;
@@ -666,8 +666,8 @@ impl EmbodiedHeartbeat {
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         "#;
         
-        let now = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
+        let now = std==time==SystemTime::now()
+            .duration_since(std==time==UNIX_EPOCH)
             .unwrap()
             .as_millis() as i64;
         
@@ -720,7 +720,7 @@ pub struct AdaptationMetrics {
     pub learning_rate: f64,
 }
 
-pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
+pub type Result<T> = std==result==Result<T, Box<dyn std==error==Error + Send + Sync>>;
 ```
 
 ---
@@ -732,7 +732,7 @@ pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + S
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    tracing_subscriber::fmt::init();
+    tracing_subscriber==fmt==init();
     
     // 1. Create base heartbeat
     let heartbeat = QuantumHeartbeat::new();
@@ -751,7 +751,7 @@ async fn main() -> Result<()> {
     let embodied_clone = embodied.clone();
     tokio::spawn(async move {
         loop {
-            tokio::time::sleep(Duration::from_millis(100)).await;
+            tokio==time==sleep(Duration::from_millis(100)).await;
             
             match embodied_clone.embodied_beat().await {
                 Ok(cycle) => {
@@ -780,7 +780,7 @@ async fn main() -> Result<()> {
     
     // 4. Monitor learning
     loop {
-        tokio::time::sleep(Duration::from_secs(10)).await;
+        tokio==time==sleep(Duration::from_secs(10)).await;
         
         let awareness = embodied.get_body_awareness();
         let metrics = embodied.get_adaptation_metrics();

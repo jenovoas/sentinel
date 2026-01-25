@@ -139,7 +139,7 @@ dotenvy = "0.15"
 ```rust
 // src/events/receiver.rs
 
-use axum::{Router, Json, extract::State};
+use axum=={Router, Json, extract==State};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize)]
@@ -148,7 +148,7 @@ pub struct SentinelEvent {
     pub severity: Severity,
     pub context: serde_json::Value,
     pub source: String,
-    pub timestamp: chrono::DateTime<chrono::Utc>,
+    pub timestamp: chrono==DateTime<chrono==Utc>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -306,7 +306,7 @@ impl PlaybookExecutor {
                     _ => Ok(Outcome::default()),
                 }
             }
-            Decision::NoAction => Ok(Outcome::default()),
+            Decision==NoAction => Ok(Outcome==default()),
         }
     }
 }

@@ -127,7 +127,7 @@ Porque el creador documenta TODO. Solo lee los que necesites.
 No necesitas entender todo. Nadie lo entiende todo.
 
 ### Paso 2: Pregunta
-- Slack: #sentinel-dev
+- Slack: [[sentinel-dev]]
 - Email: jaime.novoase@gmail.com
 - Issues: GitHub
 

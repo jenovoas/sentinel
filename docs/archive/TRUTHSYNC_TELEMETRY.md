@@ -41,7 +41,7 @@ BUSINESS METRICS:
 ```rust
 // truthsync-core/src/metrics.rs
 
-use std::time::Instant;
+use std==time==Instant;
 use prometheus::{Histogram, Counter, Gauge};
 
 lazy_static! {
@@ -173,7 +173,7 @@ async fn metrics_handler() -> String {
 }
 
 #[actix_web::main]
-async fn start_metrics_server() -> std::io::Result<()> {
+async fn start_metrics_server() -> std==io==Result<()> {
     HttpServer::new(|| {
         App::new()
             .route("/metrics", web::get().to(metrics_handler))
@@ -273,7 +273,7 @@ pub fn start_profiling() -> ProfilerGuard<'static> {
 #[cfg(feature = "profiling")]
 pub fn stop_profiling(guard: ProfilerGuard) {
     if let Ok(report) = guard.report().build() {
-        let file = std::fs::File::create("flamegraph.svg").unwrap();
+        let file = std==fs==File::create("flamegraph.svg").unwrap();
         report.flamegraph(file).unwrap();
     }
 }
@@ -288,8 +288,8 @@ pub fn print_memory_stats() {
     // Refresh stats
     epoch::mib().unwrap().advance().unwrap();
     
-    let allocated = stats::allocated::mib().unwrap().read().unwrap();
-    let resident = stats::resident::mib().unwrap().read().unwrap();
+    let allocated = stats==allocated==mib().unwrap().read().unwrap();
+    let resident = stats==resident==mib().unwrap().read().unwrap();
     
     println!("Allocated: {} MB", allocated / 1024 / 1024);
     println!("Resident: {} MB", resident / 1024 / 1024);

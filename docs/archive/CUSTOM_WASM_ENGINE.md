@@ -59,7 +59,7 @@ Bundle size (gzipped)   | 52KB   | 18KB   | 2.9x
 ### 1. Direct DOM Manipulation (Zero Overhead)
 
 ```rust
-use wasm_bindgen::prelude::*;
+use wasm_bindgen==prelude==*;
 use web_sys::{Document, Element, HtmlElement, Window};
 
 pub struct SentinelEngine {
@@ -146,8 +146,8 @@ impl SentinelEngine {
 ### 2. Custom Reactive System (Minimal Overhead)
 
 ```rust
-use std::cell::RefCell;
-use std::rc::Rc;
+use std==cell==RefCell;
+use std==rc==Rc;
 
 // Ultra-lightweight signal
 pub struct Signal<T> {
@@ -158,8 +158,8 @@ pub struct Signal<T> {
 impl<T: Clone> Signal<T> {
     pub fn new(initial: T) -> Self {
         Self {
-            value: Rc::new(RefCell::new(initial)),
-            subscribers: Rc::new(RefCell::new(Vec::new())),
+            value: Rc==new(RefCell==new(initial)),
+            subscribers: Rc==new(RefCell==new(Vec::new())),
         }
     }
     
@@ -189,7 +189,7 @@ let count = Signal::new(0);
 
 count.subscribe(|value| {
     // Update DOM directly
-    web_sys::console::log_1(&format!("Count: {}", value).into());
+    web_sys==console==log_1(&format!("Count: {}", value).into());
 });
 
 count.set(42); // Triggers subscriber
@@ -198,7 +198,7 @@ count.set(42); // Triggers subscriber
 ### 3. Memory Pool (Zero Allocations)
 
 ```rust
-use std::mem::MaybeUninit;
+use std==mem==MaybeUninit;
 
 // Pre-allocated memory pool
 pub struct MetricPool {
@@ -257,7 +257,7 @@ pub fn render_metrics_zero_alloc(data: &[f64]) {
 ### 4. SIMD Optimizations (Parallel Processing)
 
 ```rust
-use std::arch::wasm32::*;
+use std==arch==wasm32::*;
 
 // Process 4 metrics at once
 pub fn calculate_anomalies_simd(values: &[f32]) -> Vec<bool> {
@@ -297,7 +297,7 @@ pub struct WorkerPool {
 impl WorkerPool {
     pub fn new(num_workers: usize) -> Result<Self, JsValue> {
         let workers = (0..num_workers)
-            .map(|_| web_sys::Worker::new("./worker.js"))
+            .map(|_| web_sys==Worker==new("./worker.js"))
             .collect::<Result<Vec<_>, _>>()?;
         
         Ok(Self {
@@ -359,7 +359,7 @@ use wee_alloc;
 
 // Use wee_alloc as global allocator (smaller, faster for WASM)
 #[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+static ALLOC: wee_alloc==WeeAlloc = wee_alloc==WeeAlloc::INIT;
 ```
 
 ### 3. Lazy Loading with Code Splitting

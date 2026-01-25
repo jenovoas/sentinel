@@ -295,7 +295,7 @@ orchestrator.start()  # Corre en background
 **Características Rust:**
 ```rust
 use yatra_core::S60;
-use std::sync::mpsc::{Sender, Receiver};
+use std==sync==mpsc::{Sender, Receiver};
 
 pub struct QuantumScheduler {
     task_queue: LockFreeQueue<Task>,

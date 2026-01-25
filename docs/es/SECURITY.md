@@ -197,10 +197,10 @@ services:
 
 ```bash
 # /etc/apparmor.d/docker-sentinel-backend
-#include <tunables/global>
+[[include]] <tunables/global>
 
 profile docker-sentinel-backend flags=(attach_disconnected,mediate_deleted) {
-  #include <abstractions/base>
+  [[include]] <abstractions/base>
   
   # Allow network
   network inet tcp,

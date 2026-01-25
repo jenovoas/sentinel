@@ -29,23 +29,23 @@ skinparam sequence {
     ArrowColor DeepSkyBlue
     ActorBorderColor DeepSkyBlue
     LifeLineBorderColor blue
-    LifeLineBackgroundColor #A9DCDF
+    LifeLineBackgroundColor [[A9DCDF]]
     ParticipantBorderColor DeepSkyBlue
     ParticipantBackgroundColor DodgerBlue
     ParticipantFontName Impact
     ParticipantFontSize 14
-    ParticipantFontColor #FFFFFF
+    ParticipantFontColor [[FFFFFF]]
 }
 
 title "CLAIM 3: Cognitive Syscall Interception (The Vagus Nerve)"
 
 actor "Compromised AI / User" as User
-box "User Space (Cortex)" #White
+box "User Space (Cortex)" [[White]]
     participant "Guardian-Alpha\n(Rust Driver)" as Driver
     participant "Decision Engine\n(Cortex)" as Brain
 end box
 
-box "Kernel Space (Linux Ring 0)" #F5F5F5
+box "Kernel Space (Linux Ring 0)" [[F5F5F5]]
     participant "LSM Hook\n(security_task_prctl)" as Hook
     participant "eBPF Map\n(Block Rules)" as Map
     participant "OS Resources\n(File System)" as OS
@@ -119,14 +119,14 @@ title "CLAIM 3: Dual-Guardian Mutual Surveillance Architecture"
 
 package "Sentinel Cortex Organism" {
     
-    component "Shared Memory\n(Atomic Heartbeat)" as Heart <<Memory>> #Yellow
+    component "Shared Memory\n(Atomic Heartbeat)" as Heart <<Memory>> [[Yellow]]
 
-    package "Nerve A: Guardian-Alpha" #LightBlue {
+    package "Nerve A: Guardian-Alpha" [[LightBlue]] {
         [eBPF Sensor] as AlphaSensor
         [Rust Controller] as AlphaCtrl
     }
 
-    package "Nerve B: Guardian-Beta" #LightGreen {
+    package "Nerve B: Guardian-Beta" [[LightGreen]] {
         [Integrity Watchdog] as Watchdog
         [Recovery Manager] as Medic
     }

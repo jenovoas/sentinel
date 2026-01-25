@@ -36,7 +36,7 @@ Password: REDACTED_PASSWORD
 3. Nombre: "Sentinel Bot"
 4. Features → Incoming Webhooks → Activar
 5. Add New Webhook to Workspace
-6. Selecciona canal (ej: #sentinel-alerts)
+6. Selecciona canal (ej: [[sentinel-alerts]])
 7. Copia la URL
 
 **Configurar en n8n**:

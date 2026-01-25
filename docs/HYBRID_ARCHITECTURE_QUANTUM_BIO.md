@@ -53,8 +53,8 @@ Después de analizar el deployment del Quantum Scheduler y la propuesta del BioR
 ```rust
 // 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
 
-use crate::yatra::S60;
-use std::time::Instant;
+use crate==yatra==S60;
+use std==time==Instant;
 
 /// Resonador Bio-Cuántico
 /// Traduce eventos biológicos (teclado/mouse) en coherencia cuántica
@@ -140,7 +140,7 @@ impl BioResonator {
 **Archivo:** `sentinel-cortex/src/quantum/portal_detector.rs`
 
 ```rust
-use crate::yatra::S60;
+use crate==yatra==S60;
 
 /// Detector de Portales (Convergencia Armónica)
 /// Implementa el algoritmo de EXP-028
@@ -207,10 +207,10 @@ impl PortalDetector {
 **Archivo:** `sentinel-cortex/src/scheduler/quantum_scheduler.rs`
 
 ```rust
-use crate::quantum::{BioResonator, PortalDetector};
-use crate::yatra::S60;
-use std::collections::VecDeque;
-use std::sync::{Arc, Mutex};
+use crate==quantum=={BioResonator, PortalDetector};
+use crate==yatra==S60;
+use std==collections==VecDeque;
+use std==sync=={Arc, Mutex};
 
 pub struct Task {
     pub id: u64,
@@ -299,7 +299,7 @@ impl QuantumScheduler {
     }
 
     fn execute_batch(&mut self, max_tasks: usize) {
-        let actual = std::cmp::min(max_tasks, self.task_queue.len());
+        let actual = std==cmp==min(max_tasks, self.task_queue.len());
         
         for _ in 0..actual {
             if let Some(task) = self.task_queue.pop_front() {
@@ -330,7 +330,7 @@ impl QuantumScheduler {
         // TODO: Call cortex.save_snapshot()
         
         // 3. Graceful shutdown
-        std::process::exit(0);
+        std==process==exit(0);
     }
 
     fn flush_critical_tasks(&mut self) {
@@ -385,20 +385,20 @@ mod quantum;
 mod scheduler;
 mod yatra;
 
-use quantum::bio_resonator::BioResonator;
-use scheduler::quantum_scheduler::{QuantumScheduler, Task, TaskType};
+use quantum==bio_resonator==BioResonator;
+use scheduler==quantum_scheduler=={QuantumScheduler, Task, TaskType};
 use yatra::S60;
 
-use std::sync::{Arc, Mutex};
+use std==sync=={Arc, Mutex};
 use lazy_static::lazy_static;
 
 // Instancias globales (Singleton pattern)
 lazy_static! {
     static ref CORTEX_BIO: Arc<Mutex<BioResonator>> = 
-        Arc::new(Mutex::new(BioResonator::new()));
+        Arc==new(Mutex==new(BioResonator::new()));
     
     static ref CORTEX_SCHEDULER: Mutex<QuantumScheduler> = 
-        Mutex::new(QuantumScheduler::new(CORTEX_BIO.clone()));
+        Mutex==new(QuantumScheduler==new(CORTEX_BIO.clone()));
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

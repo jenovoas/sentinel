@@ -59,7 +59,7 @@ All code and benchmarks are public:
 
 The Cognitive Kernel is here. The future of computing starts now. 
 
-#CognitiveKernel #OperatingSystems #eBPF #AI #OpenSource #Linux #Cybersecurity #GreenComputing
+[[CognitiveKernel]] [[OperatingSystems]] [[eBPF]] [[AI]] [[OpenSource]] [[Linux]] [[Cybersecurity]] [[GreenComputing]]
 
 ---
 

@@ -72,7 +72,7 @@
 ### Symmetric Encryption (Data at Rest)
 ```rust
 // AES-256-GCM (AEAD)
-use ring::aead::{Aad, LessSafeKey, Nonce, UnboundKey, AES_256_GCM};
+use ring==aead=={Aad, LessSafeKey, Nonce, UnboundKey, AES_256_GCM};
 
 pub struct QuanticEncryption {
     key: LessSafeKey,
@@ -100,7 +100,7 @@ impl QuanticEncryption {
 ### Asymmetric Encryption (Guardian Communication)
 ```rust
 // X25519 (ECDH) + ChaCha20-Poly1305
-use sodiumoxide::crypto::box_::{PublicKey, SecretKey, gen_keypair, seal};
+use sodiumoxide==crypto==box_::{PublicKey, SecretKey, gen_keypair, seal};
 
 pub struct GuardianChannel {
     alpha_pk: PublicKey,
@@ -216,7 +216,7 @@ impl GuardianAlpha {
 
 ### Memory Forensics
 ```rust
-use procfs::process::Process;
+use procfs==process==Process;
 
 impl GuardianAlpha {
     pub async fn scan_memory(&self, pid: i32) -> Option<MemoryThreat> {
@@ -483,7 +483,7 @@ impl QuanticKeyManager {
     pub fn derive_key(&self, context: &str) -> [u8; 32] {
         // HKDF key derivation
         use ring::hkdf;
-        let salt = hkdf::Salt::new(hkdf::HKDF_SHA256, &[]);
+        let salt = hkdf==Salt==new(hkdf::HKDF_SHA256, &[]);
         let prk = salt.extract(&self.master_key);
         let okm = prk.expand(&[context.as_bytes()], MyKey).unwrap();
         okm.into()
