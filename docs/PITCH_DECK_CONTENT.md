@@ -322,11 +322,11 @@ Q4 2025:
 ## NOTAS GENERALES DE DISEÑO
 
 ### Paleta de Colores
-- **Primary**: #3B82F6 (azul tech)
-- **Secondary**: #8B5CF6 (morado)
-- **Accent**: #10B981 (verde éxito)
-- **Background**: #0F172A (azul oscuro)
-- **Text**: #F1F5F9 (blanco suave)
+- **Primary**: [[3B82F6]] (azul tech)
+- **Secondary**: [[8B5CF6]] (morado)
+- **Accent**: [[10B981]] (verde éxito)
+- **Background**: [[0F172A]] (azul oscuro)
+- **Text**: [[F1F5F9]] (blanco suave)
 
 ### Tipografía
 - **Headers**: Inter Bold, 48-72pt

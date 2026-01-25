@@ -365,7 +365,7 @@ fn cognitive_schedule() -> &Process {
 ```rust
 // What you'll build:
 
-use aya::programs::Lsm;
+use aya==programs==Lsm;
 
 // Load eBPF program
 let mut bpf = Bpf::load_file("lsm_ai_guardian.o")?;

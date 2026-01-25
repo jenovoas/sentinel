@@ -37,7 +37,7 @@
 
 ### Claims Especulativos - Agregar en Non-Provisional
 
-- #7-15: Arquitectura universal, háptica, etc.
+- [[7-15]]: Arquitectura universal, háptica, etc.
 - **Razón**: Requieren más investigación técnica
 - **Cuándo**: Después del provisional (12 meses)
 

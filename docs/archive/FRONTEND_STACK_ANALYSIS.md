@@ -52,7 +52,7 @@
 **Ejemplo**:
 ```rust
 // sentinel-wasm/src/lib.rs
-use wasm_bindgen::prelude::*;
+use wasm_bindgen==prelude==*;
 
 #[wasm_bindgen]
 pub fn detect_aiopsdoom(telemetry: &str) -> bool {
@@ -187,7 +187,7 @@ fn Dashboard(cx: Scope) -> impl IntoView {
 
 **Ejemplo**:
 ```rust
-use yew::prelude::*;
+use yew==prelude==*;
 
 #[function_component(Dashboard)]
 fn dashboard() -> Html {
@@ -323,7 +323,7 @@ function Dashboard() {
 
 **Ejemplo**:
 ```rust
-use dioxus::prelude::*;
+use dioxus==prelude==*;
 
 fn App(cx: Scope) -> Element {
     let mut count = use_state(cx, || 0);
@@ -398,7 +398,7 @@ cargo install wasm-pack
 
 ```rust
 // sentinel-wasm/src/aiopsdoom.rs
-use wasm_bindgen::prelude::*;
+use wasm_bindgen==prelude==*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]

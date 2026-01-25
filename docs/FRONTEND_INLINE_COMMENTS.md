@@ -373,7 +373,7 @@ useEffect(() => {
 const grafanaUrls: Record<MetricTab, string> = {
   // Format: http://localhost:3001/d/{dashboard-id}/{dashboard-name}?params
   overview: "http://localhost:3001/d/sentinel-overview/sentinel-overview?orgId=1&refresh=5s&kiosk",
-  //                                    ^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^  ^^^^^^  ^^^^^^^^^^  ^^^^^
+  //                                    ==============^^ ^==============^  ======  ========^^  ^==^^
   //                                    Dashboard ID     Dashboard Name    Org ID  Auto-refresh Kiosk mode
   
   // orgId=1: Default Grafana organization

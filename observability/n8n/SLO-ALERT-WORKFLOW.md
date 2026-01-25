@@ -60,7 +60,7 @@ Este workflow monitorea alertas de SLOs en Prometheus y envía notificaciones a 
 3. Selecciona workspace
 4. Ve a "Incoming Webhooks"
 5. Click "Add New Webhook to Workspace"
-6. Selecciona canal (ej: #alerts)
+6. Selecciona canal (ej: [[alerts]])
 7. Copia la URL del Webhook
 8. Pega en el Nodo 4 en lugar de `YOUR_SLACK_WEBHOOK_URL`
 

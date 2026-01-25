@@ -1,7 +1,5 @@
 # Sentinel Multi-Site HA Architecture - Reference Design
 
-**Version**: 1.0  
-**Date**: December 15, 2025  
 **Status**: Design Phase - Ready for Implementation
 
 ---
@@ -97,7 +95,7 @@ Data Flow:
   PostgreSQL Primary (on-prem)
     ├─► Streaming Replication → PostgreSQL Replica (on-prem)
     └─► Async Replication → PostgreSQL Standby (cloud)
-  
+
   Backups:
     On-prem → S3/MinIO → Cloud (sync every 6h)
 
@@ -143,13 +141,6 @@ What Still Works:
   ✅ Network connectivity
   ✅ Local services
 
-What Stops:
-  ❌ Centralized monitoring
-  ❌ AI analysis
-  ❌ Alerting
-  ❌ Automation workflows
-  ❌ Dashboard access
-
 Recovery:
   1. Restore cloud site from backups (15-30 min)
   2. Point DNS to cloud
@@ -164,6 +155,7 @@ Recovery:
 ### PostgreSQL HA Cluster
 
 **On-Premise Cluster**:
+
 - [x] Patroni + etcd configured
 - [x] HAProxy load balancer
 - [x] Streaming replication (< 1s lag)
@@ -175,6 +167,7 @@ Recovery:
 - [ ] Alerting (replication lag > 10s)
 
 **Cloud Cluster**:
+
 - [ ] Identical Patroni setup
 - [ ] Async replication from on-premise
 - [ ] Backup sync from S3/MinIO
@@ -182,11 +175,12 @@ Recovery:
 - [ ] Tested failover scenario
 
 **Connection Configuration**:
+
 ```yaml
 # Backend environment variables
-DATABASE_HOST: postgres-haproxy  # Not direct postgres!
-DATABASE_PORT: 5432              # Primary (RW)
-DATABASE_REPLICA_PORT: 5433      # Replica (RO) for analytics
+DATABASE_HOST: postgres-haproxy # Not direct postgres!
+DATABASE_PORT: 5432 # Primary (RW)
+DATABASE_REPLICA_PORT: 5433 # Replica (RO) for analytics
 DATABASE_USER: sentinel
 DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
 DATABASE_NAME: sentinel
@@ -197,6 +191,7 @@ DATABASE_NAME: sentinel
 ### Sentinel Application (Backend + Frontend)
 
 **Containerization**:
+
 - [x] Docker images built
 - [x] Environment-based configuration
 - [ ] Health check endpoints
@@ -206,6 +201,7 @@ DATABASE_NAME: sentinel
 - [ ] Stateless design (session in Redis)
 
 **Configuration Management**:
+
 ```yaml
 # All config from environment/secrets
 - DATABASE_URL (from HAProxy, not direct postgres)
@@ -216,6 +212,7 @@ DATABASE_NAME: sentinel
 ```
 
 **Health Check Endpoints**:
+
 ```python
 # backend/app/routers/health.py
 @router.get("/health")
@@ -242,6 +239,7 @@ async def liveness_check():
 ```
 
 **Deployment Checklist**:
+
 - [ ] Health endpoints implemented
 - [ ] Graceful shutdown (SIGTERM handling)
 - [ ] Database connection pooling (max 20 per instance)
@@ -263,29 +261,30 @@ services:
   redis-master:
     image: redis:7-alpine
     command: redis-server --appendonly yes
-    
+
   redis-replica-1:
     image: redis:7-alpine
     command: redis-server --replicaof redis-master 6379
-    
+
   redis-replica-2:
     image: redis:7-alpine
     command: redis-server --replicaof redis-master 6379
-    
+
   redis-sentinel-1:
     image: redis:7-alpine
     command: redis-sentinel /etc/redis/sentinel.conf
-    
+
   redis-sentinel-2:
     image: redis:7-alpine
     command: redis-sentinel /etc/redis/sentinel.conf
-    
+
   redis-sentinel-3:
     image: redis:7-alpine
     command: redis-sentinel /etc/redis/sentinel.conf
 ```
 
 **Backend Integration**:
+
 ```python
 # Use redis-py with Sentinel support
 from redis.sentinel import Sentinel
@@ -304,6 +303,7 @@ slave = sentinel.slave_for('mymaster', socket_timeout=0.1)
 ```
 
 **Checklist**:
+
 - [ ] Redis Sentinel deployed (3 instances)
 - [ ] Master + 2 replicas configured
 - [ ] Backend uses Sentinel client
@@ -336,6 +336,7 @@ SYNC_FREQUENCY='15'  # minutes
 ```
 
 **Sentinel Integration**:
+
 ```python
 # Sentinel monitors but does NOT control
 @router.get("/pihole/health")
@@ -351,11 +352,12 @@ async def check_pihole_health():
             })
         except Exception as e:
             results.append({"host": pihole, "status": "unreachable", "error": str(e)})
-    
+
     return {"piholes": results, "autonomous": True}
 ```
 
 **Checklist**:
+
 - [ ] 3 Pi-hole instances deployed
 - [ ] Gravity Sync configured and tested
 - [ ] Client DHCP updated with all 3 DNS
@@ -368,6 +370,7 @@ async def check_pihole_health():
 ### Monitoring Stack
 
 **Prometheus Federation**:
+
 ```yaml
 # On-premise Prometheus scrapes local targets
 # Cloud Prometheus scrapes cloud targets
@@ -377,19 +380,19 @@ async def check_pihole_health():
 global:
   external_labels:
     site: on-premise
-    
+
 scrape_configs:
-  - job_name: 'sentinel-backend'
+  - job_name: "sentinel-backend"
     static_configs:
-      - targets: ['backend:8000']
-  
-  - job_name: 'postgres'
+      - targets: ["backend:8000"]
+
+  - job_name: "postgres"
     static_configs:
-      - targets: ['postgres-primary:9187', 'postgres-replica:9187']
-  
-  - job_name: 'pihole'
+      - targets: ["postgres-primary:9187", "postgres-replica:9187"]
+
+  - job_name: "pihole"
     static_configs:
-      - targets: ['pihole1:9617', 'pihole2:9617', 'pihole3:9617']
+      - targets: ["pihole1:9617", "pihole2:9617", "pihole3:9617"]
 
 # Remote write to Thanos (cloud)
 remote_write:
@@ -397,6 +400,7 @@ remote_write:
 ```
 
 **Grafana HA**:
+
 ```yaml
 # Shared PostgreSQL for dashboards/users
 # Session store in Redis
@@ -410,13 +414,14 @@ services:
       - GF_DATABASE_HOST=postgres-haproxy:5432
       - GF_SESSION_PROVIDER=redis
       - GF_SESSION_PROVIDER_CONFIG=addr=redis-sentinel:26379
-      
+
   grafana-2:
     image: grafana/grafana:latest
     # Same config as grafana-1
 ```
 
 **Checklist**:
+
 - [ ] Prometheus on both sites
 - [ ] Thanos for global query
 - [ ] Grafana HA (shared DB + Redis)
@@ -443,7 +448,7 @@ DNS Records:
     - Value: <ON-PREMISE-IP>
     - TTL: 60 seconds
     - Health check: enabled
-    
+
   sentinel.yourdomain.com (Failover)
     - Type: A
     - Value: <CLOUD-IP>
@@ -452,6 +457,7 @@ DNS Records:
 ```
 
 **VPN Between Sites**:
+
 ```bash
 # WireGuard recommended for site-to-site
 
@@ -477,6 +483,7 @@ AllowedIPs = 10.0.0.1/32
 ```
 
 **Checklist**:
+
 - [ ] DNS health checks configured
 - [ ] Failover policy tested
 - [ ] TTL optimized (60s recommended)
@@ -586,18 +593,19 @@ curl http://localhost:8000/api/v1/pihole/health
 
 ### Critical Alerts
 
-| Alert | Condition | Action | Priority |
-|-------|-----------|--------|----------|
-| Site Down | Health check fails 3x | Auto-failover + PagerDuty | P0 |
-| Database Lag | Replication lag > 10s | Alert ops team | P1 |
-| Backup Failed | Any backup failure | Immediate alert | P1 |
-| Pi-hole Down | 2+ Pi-holes unreachable | Alert + investigate | P1 |
-| Disk Space | > 85% on any node | Alert + cleanup | P2 |
-| Memory High | > 90% for 5 min | Alert + investigate | P2 |
+| Alert         | Condition               | Action                    | Priority |
+| ------------- | ----------------------- | ------------------------- | -------- |
+| Site Down     | Health check fails 3x   | Auto-failover + PagerDuty | P0       |
+| Database Lag  | Replication lag > 10s   | Alert ops team            | P1       |
+| Backup Failed | Any backup failure      | Immediate alert           | P1       |
+| Pi-hole Down  | 2+ Pi-holes unreachable | Alert + investigate       | P1       |
+| Disk Space    | > 85% on any node       | Alert + cleanup           | P2       |
+| Memory High   | > 90% for 5 min         | Alert + investigate       | P2       |
 
 ### Dashboards
 
 **1. HA Overview Dashboard**:
+
 - Site status (on-prem vs cloud)
 - Active database primary
 - Replication lag
@@ -605,12 +613,14 @@ curl http://localhost:8000/api/v1/pihole/health
 - DNS health (all 3 Pi-holes)
 
 **2. Failover Dashboard**:
+
 - Failover events timeline
 - RTO/RPO metrics
 - Health check history
 - Traffic routing (on-prem vs cloud)
 
 **3. Component Health**:
+
 - PostgreSQL cluster status
 - Redis Sentinel status
 - Prometheus federation
@@ -622,25 +632,25 @@ curl http://localhost:8000/api/v1/pihole/health
 
 ### On-Premise (One-time + Monthly)
 
-| Item | Cost |
-|------|------|
-| Server (Dell R730, 64GB RAM) | $3,000 (one-time) |
-| UPS (1500VA) | $300 (one-time) |
-| Network switch | $200 (one-time) |
-| **Subtotal** | **$3,500** |
-| Electricity (~500W 24/7) | $50/month |
-| Internet (business, static IP) | $100/month |
-| **Monthly Total** | **$150/month** |
+| Item                           | Cost              |
+| ------------------------------ | ----------------- |
+| Server (Dell R730, 64GB RAM)   | $3,000 (one-time) |
+| UPS (1500VA)                   | $300 (one-time)   |
+| Network switch                 | $200 (one-time)   |
+| **Subtotal**                   | **$3,500**        |
+| Electricity (~500W 24/7)       | $50/month         |
+| Internet (business, static IP) | $100/month        |
+| **Monthly Total**              | **$150/month**    |
 
 ### Cloud (Monthly)
 
-| Item | Cost |
-|------|------|
-| VPS (8 vCPU, 32GB RAM) | $160/month |
-| Block storage (500GB SSD) | $50/month |
-| S3 storage (1TB) | $23/month |
-| Data transfer (500GB/month) | $45/month |
-| **Monthly Total** | **$278/month** |
+| Item                        | Cost           |
+| --------------------------- | -------------- |
+| VPS (8 vCPU, 32GB RAM)      | $160/month     |
+| Block storage (500GB SSD)   | $50/month      |
+| S3 storage (1TB)            | $23/month      |
+| Data transfer (500GB/month) | $45/month      |
+| **Monthly Total**           | **$278/month** |
 
 ### Total Cost
 
@@ -670,42 +680,49 @@ curl http://localhost:8000/api/v1/pihole/health
 ## 🚀 Implementation Roadmap
 
 ### Week 1: Foundation
+
 - [x] PostgreSQL HA (Patroni + etcd + HAProxy)
 - [x] Backup scripts
 - [ ] Test failover scenarios
 - [ ] Document procedures
 
 ### Week 2: Application HA
+
 - [ ] Implement health check endpoints
 - [ ] Add graceful shutdown
 - [ ] Configure connection retry logic
 - [ ] Test backend with DB failover
 
 ### Week 3: Redis HA
+
 - [ ] Deploy Redis Sentinel
 - [ ] Configure backend to use Sentinel
 - [ ] Test Redis failover
 - [ ] Verify session persistence
 
 ### Week 4: Cloud Deployment
+
 - [ ] Provision cloud VPS
 - [ ] Deploy Sentinel stack to cloud
 - [ ] Configure async replication
 - [ ] Set up VPN between sites
 
 ### Week 5: DNS & Monitoring
+
 - [ ] Deploy 3 Pi-hole instances
 - [ ] Configure Gravity Sync
 - [ ] Update client DHCP
 - [ ] Set up DNS failover
 
 ### Week 6: Testing & Validation
+
 - [ ] Full failover drill
 - [ ] Backup/restore test
 - [ ] Load testing
 - [ ] Documentation review
 
 ### Week 7: Production Cutover
+
 - [ ] Final validation
 - [ ] Runbook review
 - [ ] Team training

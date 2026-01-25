@@ -60,10 +60,10 @@ Daño: CERO
 // Sentinel LSM Hook - AI Guardian
 // Bloquea syscalls destructivas ANTES de ejecución
 
-#include <linux/bpf.h>
-#include <linux/fs.h>
-#include <bpf/bpf_helpers.h>
-#include <bpf/bpf_tracing.h>
+[[include]] <linux/bpf.h>
+[[include]] <linux/fs.h>
+[[include]] <bpf/bpf_helpers.h>
+[[include]] <bpf/bpf_tracing.h>
 
 // Mapa de PIDs permitidos (AI agents)
 struct {
@@ -89,9 +89,9 @@ struct {
     __type(value, __u64);
 } stats SEC(".maps");
 
-#define STAT_CHECKS 0
-#define STAT_BLOCKS 1
-#define STAT_ALLOWS 2
+[[define]] STAT_CHECKS 0
+[[define]] STAT_BLOCKS 1
+[[define]] STAT_ALLOWS 2
 
 // LSM Hook: file_open
 // Se ejecuta ANTES de que kernel abra archivo
