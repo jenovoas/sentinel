@@ -170,7 +170,7 @@ dilithium = "0.1"      # Signatures
 ### Week 5-6: Symmetric Encryption
 ```rust
 // AES-256-GCM for Guardian-Beta storage
-use ring::aead::{Aad, LessSafeKey, Nonce, AES_256_GCM};
+use ring==aead=={Aad, LessSafeKey, Nonce, AES_256_GCM};
 
 pub struct QuanticStorage {
     key: LessSafeKey,
@@ -186,7 +186,7 @@ impl QuanticStorage {
 ### Week 7-8: Asymmetric Encryption
 ```rust
 // X25519 + ChaCha20 for Guardian communication
-use sodiumoxide::crypto::box_::{gen_keypair, seal};
+use sodiumoxide==crypto==box_::{gen_keypair, seal};
 
 pub struct GuardianChannel {
     alpha_pk: PublicKey,

@@ -185,7 +185,7 @@ pub struct DetectedPattern {
 **src/collectors/prometheus.rs**:
 ```rust
 use reqwest::Client;
-use crate::models::{Event, EventSource, EventType, Severity};
+use crate==models=={Event, EventSource, EventType, Severity};
 use chrono::Utc;
 
 pub struct PrometheusCollector {
@@ -202,7 +202,7 @@ impl PrometheusCollector {
     }
     
     /// Consulta Prometheus y devuelve eventos
-    pub async fn collect(&self) -> Result<Vec<Event>, Box<dyn std::error::Error>> {
+    pub async fn collect(&self) -> Result<Vec<Event>, Box<dyn std==error==Error>> {
         let mut events = Vec::new();
         
         // Query 1: CPU alto
@@ -212,7 +212,7 @@ impl PrometheusCollector {
         if let Some(value) = cpu_result.as_f64() {
             if value > 0.8 {  // 80% CPU
                 events.push(Event {
-                    id: uuid::Uuid::new_v4().to_string(),
+                    id: uuid==Uuid==new_v4().to_string(),
                     source: EventSource::Prometheus,
                     timestamp: Utc::now(),
                     severity: Severity::High,
@@ -232,7 +232,7 @@ impl PrometheusCollector {
         if let Some(value) = mem_result.as_f64() {
             if value < 0.1 {  // Menos de 10% disponible
                 events.push(Event {
-                    id: uuid::Uuid::new_v4().to_string(),
+                    id: uuid==Uuid==new_v4().to_string(),
                     source: EventSource::Prometheus,
                     timestamp: Utc::now(),
                     severity: Severity::Critical,
@@ -248,7 +248,7 @@ impl PrometheusCollector {
         Ok(events)
     }
     
-    async fn query(&self, query: &str) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+    async fn query(&self, query: &str) -> Result<serde_json==Value, Box<dyn std==error::Error>> {
         let url = format!("{}/api/v1/query?query={}", self.base_url, query);
         let response = self.client.get(&url).send().await?;
         let json: serde_json::Value = response.json().await?;
@@ -267,8 +267,8 @@ impl PrometheusCollector {
 
 **src/engine/patterns.rs**:
 ```rust
-use crate::models::{Event, EventType, DetectedPattern, Severity};
-use std::collections::HashMap;
+use crate==models=={Event, EventType, DetectedPattern, Severity};
+use std==collections==HashMap;
 
 pub struct PatternDetector {
     // Ventana de tiempo para correlacionar eventos (5 minutos)
@@ -330,7 +330,7 @@ impl PatternDetector {
                 confidence: 0.95,
                 severity: Severity::Critical,
                 events: events.iter()
-                    .filter(|e| matches!(e.event_type, EventType::FailedLogin | EventType::SuccessfulLoginNewIP))
+                    .filter(|e| matches!(e.event_type, EventType==FailedLogin | EventType==SuccessfulLoginNewIP))
                     .cloned()
                     .collect(),
                 recommended_action: "Block IP, lock account, revoke sessions".to_string(),
@@ -355,7 +355,7 @@ impl PatternDetector {
                 confidence: 0.85,
                 severity: Severity::High,
                 events: events.iter()
-                    .filter(|e| matches!(e.event_type, EventType::MemoryLeak | EventType::CpuSpike))
+                    .filter(|e| matches!(e.event_type, EventType==MemoryLeak | EventType==CpuSpike))
                     .cloned()
                     .collect(),
                 recommended_action: "Restart service, scale resources".to_string(),
@@ -380,7 +380,7 @@ impl PatternDetector {
                 confidence: 0.88,
                 severity: Severity::Critical,
                 events: events.iter()
-                    .filter(|e| matches!(e.event_type, EventType::LargeDataTransfer | EventType::SuccessfulLoginNewIP))
+                    .filter(|e| matches!(e.event_type, EventType==LargeDataTransfer | EventType==SuccessfulLoginNewIP))
                     .cloned()
                     .collect(),
                 recommended_action: "Block IP, lock account, audit data access".to_string(),
@@ -449,7 +449,7 @@ impl PatternDetector {
 **src/actions/n8n_client.rs**:
 ```rust
 use reqwest::Client;
-use crate::models::DetectedPattern;
+use crate==models==DetectedPattern;
 
 pub struct N8NClient {
     client: Client,
@@ -468,7 +468,7 @@ impl N8NClient {
     pub async fn trigger_playbook(
         &self,
         pattern: &DetectedPattern
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    ) -> Result<(), Box<dyn std==error==Error>> {
         let webhook_url = format!("{}/webhook/{}", self.base_url, pattern.playbook);
         
         let payload = serde_json::json!({
@@ -477,7 +477,7 @@ impl N8NClient {
             "severity": pattern.severity,
             "event_count": pattern.events.len(),
             "recommended_action": pattern.recommended_action,
-            "timestamp": chrono::Utc::now().to_rfc3339(),
+            "timestamp": chrono==Utc==now().to_rfc3339(),
         });
         
         let response = self.client
@@ -511,20 +511,20 @@ mod collectors;
 mod engine;
 mod actions;
 
-use collectors::prometheus::PrometheusCollector;
-use engine::patterns::PatternDetector;
-use actions::n8n_client::N8NClient;
-use std::time::Duration;
+use collectors==prometheus==PrometheusCollector;
+use engine==patterns==PatternDetector;
+use actions==n8n_client==N8NClient;
+use std==time==Duration;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), Box<dyn std==error==Error>> {
     // Setup logging
-    tracing_subscriber::fmt::init();
+    tracing_subscriber==fmt==init();
     
     // Load config
     dotenvy::dotenv().ok();
-    let prometheus_url = std::env::var("PROMETHEUS_URL")?;
-    let n8n_url = std::env::var("N8N_URL")?;
+    let prometheus_url = std==env==var("PROMETHEUS_URL")?;
+    let n8n_url = std==env==var("N8N_URL")?;
     
     // Initialize components
     let prometheus = PrometheusCollector::new(prometheus_url);
@@ -560,7 +560,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         
         // Wait 30 seconds before next iteration
-        tokio::time::sleep(Duration::from_secs(30)).await;
+        tokio==time==sleep(Duration::from_secs(30)).await;
     }
 }
 ```
@@ -582,7 +582,7 @@ async fn test_credential_stuffing_detection() {
     
     for _ in 0..60 {
         events.push(Event {
-            id: uuid::Uuid::new_v4().to_string(),
+            id: uuid==Uuid==new_v4().to_string(),
             source: EventSource::Auditd,
             timestamp: Utc::now(),
             severity: Severity::Medium,
@@ -592,7 +592,7 @@ async fn test_credential_stuffing_detection() {
     }
     
     events.push(Event {
-        id: uuid::Uuid::new_v4().to_string(),
+        id: uuid==Uuid==new_v4().to_string(),
         source: EventSource::PostgreSQL,
         timestamp: Utc::now(),
         severity: Severity::High,

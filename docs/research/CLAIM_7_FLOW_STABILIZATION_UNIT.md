@@ -91,8 +91,8 @@ Speedup:                  83-500x
 ```c
 // ebpf/flow_math.c - Flow Stabilization Unit
 
-#include <linux/bpf.h>
-#include <bpf/bpf_helpers.h>
+[[include]] <linux/bpf.h>
+[[include]] <bpf/bpf_helpers.h>
 
 /* Mapa de métricas de flujo */
 struct {

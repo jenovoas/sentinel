@@ -54,7 +54,7 @@ NEEDED (Neuronal Speed):
 
 ```rust
 use regex::RegexSet;
-use rayon::prelude::*;
+use rayon==prelude==*;
 
 pub struct ClaimExtractor {
     factual_patterns: RegexSet,
@@ -121,7 +121,7 @@ impl TrustScorer {
 ##  Python Integration (PyO3)
 
 ```rust
-use pyo3::prelude::*;
+use pyo3==prelude==*;
 
 #[pyclass]
 pub struct TruthSyncCore {

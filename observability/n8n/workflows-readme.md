@@ -35,7 +35,7 @@ Contraseña: REDACTED_PASSWORD
 4. Workspace: tu workspace
 5. En Features → Incoming Webhooks → Activar
 6. Click "Add New Webhook to Workspace"
-7. Selecciona canal (ej: #alerts)
+7. Selecciona canal (ej: [[alerts]])
 8. Copia la URL (será así: `https://hooks.slack.com/services/T.../B.../XXX`)
 
 ### Paso 2: Usar el webhook en n8n

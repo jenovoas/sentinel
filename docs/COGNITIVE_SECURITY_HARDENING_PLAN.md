@@ -593,9 +593,9 @@ pytest tests/test_telemetry_sanitizer.py -v --cov=app.security.telemetry_sanitiz
 
 **Expected Output**:
 ```
-test_telemetry_sanitizer.py::TestSQLInjection::test_blocks_drop_table PASSED
-test_telemetry_sanitizer.py::TestSQLInjection::test_blocks_delete_from PASSED
-test_telemetry_sanitizer.py::TestCommandInjection::test_blocks_rm_rf PASSED
+test_telemetry_sanitizer.py==TestSQLInjection==test_blocks_drop_table PASSED
+test_telemetry_sanitizer.py==TestSQLInjection==test_blocks_delete_from PASSED
+test_telemetry_sanitizer.py==TestCommandInjection==test_blocks_rm_rf PASSED
 ...
 Coverage: 95%
 ```

@@ -149,8 +149,8 @@ Implementar POC mínimo de eBPF LSM hooks para demostrar viabilidad técnica.
 #### Paso 1: eBPF Program Básico
 ```c
 // ebpf/lsm_poc.c
-#include <linux/bpf.h>
-#include <bpf/bpf_helpers.h>
+[[include]] <linux/bpf.h>
+[[include]] <bpf/bpf_helpers.h>
 
 SEC("lsm/file_open")
 int BPF_PROG(file_open_hook, struct file *file)

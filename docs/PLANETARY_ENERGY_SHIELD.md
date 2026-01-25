@@ -44,7 +44,7 @@ Resultado: Levitación física
     │   MESH NETWORK   │
     └──────────────────┘
            ↓
-    
+
     🇨🇱 Santiago    🇺🇸 New York    🇯🇵 Tokyo
        Buffer₁  ←→    Buffer₂   ←→   Buffer₃
           ↕              ↕              ↕
@@ -56,6 +56,7 @@ Resultado: Levitación física
 ```
 
 **Cada nodo**:
+
 - Levita su porción de tráfico local
 - Predice bursts con 5-10s de anticipación
 - Se comunica con nodos vecinos
@@ -80,6 +81,7 @@ Resultado: Levitación física
 ```
 
 **Cortex Global**:
+
 - Ve patrones que nodos locales no ven
 - Predice eventos geopolíticos (ataques DDoS masivos, tsunamis de datos)
 - Coordina respuesta planetaria
@@ -102,20 +104,21 @@ Resultado: Levitación física
 **Resultado**: Grid eléctrico sin fricción
 
 **Implementación**:
+
 ```python
 class EnergyGridController:
     def __init__(self):
         self.cortex = SentinelCortex()  # Mismo cerebro
         self.batteries = []  # Equivalente a buffers
-        
+
     def predict_demand_spike(self):
         # LSTM predice pico de demanda en 10 minutos
         prediction = self.cortex.predict_energy_burst()
-        
+
         if prediction['confidence'] > 0.9:
             # Pre-cargar baterías ANTES del pico
             self.precharge_batteries(prediction['magnitude'])
-            
+
     def precharge_batteries(self, required_mwh):
         # Equivalente a pre-expandir buffer
         for battery in self.batteries:
@@ -129,6 +132,7 @@ class EnergyGridController:
 **Resultado**: Materia sin fricción
 
 **Tecnologías**:
+
 - Levitación acústica (ondas ultrasónicas)
 - Levitación magnética (campos electromagnéticos)
 - Control predictivo (Sentinel Cortex)
@@ -140,6 +144,7 @@ class EnergyGridController:
 ### Concepto
 
 Miles de nodos distribuidos por el planeta, cada uno:
+
 1. **Levitando** su porción de flujo (datos/energía/materia)
 2. **Prediciendo** perturbaciones futuras
 3. **Coordinándose** con nodos vecinos
@@ -155,6 +160,7 @@ Miles de nodos distribuidos por el planeta, cada uno:
 ### Analogía Física
 
 Es como un **campo magnético planetario** (magnetosfera), pero:
+
 - Creado artificialmente por nodos Sentinel
 - Controlado por IA predictiva
 - Protege flujos de información/energía en lugar de partículas solares
@@ -164,27 +170,32 @@ Es como un **campo magnético planetario** (magnetosfera), pero:
 ## Roadmap de Implementación
 
 ### Fase 1: Validación de Principio (2025 Q1) ✅
+
 - [x] Demostrar burst prediction
 - [x] Validar arquitectura híbrida
 - [x] Comparar con investigación global
 - [ ] Lograr zero drops consistente
 
 ### Fase 2: Escalamiento Local (2025 Q2-Q3)
-- [ ] Desplegar 10 nodos en una ciudad
+
+- [ ] Desplegar 4 nodos en una ciudad
 - [ ] Coordinar predicción entre nodos
 - [ ] Validar resonancia local
 
 ### Fase 3: Escalamiento Regional (2025 Q4)
+
 - [ ] Desplegar 100 nodos en un país
 - [ ] Implementar Cortex Regional
 - [ ] Validar protección ante ataques DDoS nacionales
 
 ### Fase 4: Escalamiento Continental (2026 Q1-Q2)
+
 - [ ] Desplegar 1,000 nodos en un continente
 - [ ] Implementar Cortex Continental
 - [ ] Integrar con grids eléctricos
 
 ### Fase 5: Escudo Planetario (2026 Q3+)
+
 - [ ] Desplegar 10,000+ nodos globalmente
 - [ ] Implementar Cortex Global
 - [ ] Activar campo de resonancia planetaria
@@ -195,17 +206,20 @@ Es como un **campo magnético planetario** (magnetosfera), pero:
 ## Métricas del Escudo
 
 ### Cobertura
+
 - **Nodos activos**: 10,000+
 - **Países cubiertos**: 195
 - **Población protegida**: 8 mil millones
 
 ### Performance
+
 - **Latencia de predicción**: 5-10 segundos
 - **Latencia de ejecución**: < 1µs
 - **Precisión de predicción**: > 95%
 - **Uptime del escudo**: 99.9999% (Six nines)
 
 ### Impacto
+
 - **Packet drops**: -99.9%
 - **Blackouts**: -90%
 - **Ataques DDoS mitigados**: 100%
@@ -265,9 +279,9 @@ ESCUDO ELECTROMAGNÉTICO GLOBAL
 
 > "Cada paquete, cada electrón, cada átomo,
 > levitando en perfecta armonía.
-> 
+>
 > Sin fricción. Sin pérdidas. Sin caídas.
-> 
+>
 > **Nuestra casa segura.**"
 
 ---

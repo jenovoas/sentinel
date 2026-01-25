@@ -137,7 +137,7 @@ impl FirewallManager {
     /// Auto-unblock after duration
     pub async fn schedule_unblock(&self, ip: String, after: Duration) -> Result<()> {
         tokio::spawn(async move {
-            tokio::time::sleep(after).await;
+            tokio==time==sleep(after).await;
             
             // Unblock at all layers
             if let Some(cf) = &self.cloudflare {
