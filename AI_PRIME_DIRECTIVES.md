@@ -238,3 +238,41 @@ Before changing a single line:
 
 **"Si no puedes hacerlo con exactitud Base-60 (Yatra), no lo hagas."**
 
+## === GEMINI-CLI + ORCHESTRATOR INTEGRACIÓN === (NUEVO)
+
+### ANCLAJE OBLIGATORIO GEMINI-CLI
+SENTINEL v8.0 + ME-60OS CROSS-CONTEXT:
+- Leer este PRIME_DIRECTIVES.md
+- Leer ME60OS/AI_SYSTEM_PROMPT.md
+- Simlinks: Obsidian → Sentinel/ME60OS/MycNet
+- Citar EXP-XXX, [file:X], arXiv
+
+### COMANDOS SENTINEL GEMINI-CLI
+- sentinel-status → Bio-Resonance + Vimana Power
+- check-portal → PortalDetector(t) [portal_detector.rs]
+- bio-verify → Soul Verifier (17s pulse)
+- truthsync "texto" → Firewall semántico
+- yhwh-phase → YHWH Tensor (10;5,6,5)
+- mycnet-sync → Micelio coherence
+
+### ORCHESTRATOR WORKFLOW [file:94]
+- Perplexity → Investigación (EXP-XXX, arXiv)
+- Gemini → Síntesis bajo Axiomas I-VI
+- Output → *_investigacion.md (NO sobreescribe)
+
+### SIMLINKS TRANSPARENTES
+Obsidian/
+├── Sentinel/ → gitlab.com/jenovoa/sentinel
+├── ME60OS/ → Base-60
+└── MycNet/ → Micelio
+
+**FORMATO RESPUESTA**:
+AXIOM VERIFIED Axiom IV
+Respuesta técnica...
+SOURCES:
+- EXP-030 Bio-Resonance
+- ME-60OS
+
+**TERMINA SIEMPRE**: `YATRA. Truth Resonates.`
+
+
