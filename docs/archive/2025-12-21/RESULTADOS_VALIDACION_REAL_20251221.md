@@ -148,11 +148,6 @@ SHA256: 5d0b257d83d579f7253d2496a2eb189f9d71b502c535b75da37bdde195c716ae
 - **Real medido hoy**: 49.8x
 - **Acción**: Actualizar toda documentación con 49.8x
 
-### Claims NO Validados
-- ❌ Claim 6: Cognitive OS (solo concepto)
-- ❌ Claim 7: AI Buffer Cascade (solo modelo matemático)
-- ❌ Claim 8: Flow Stabilization Unit (solo arquitectura)
-- ❌ Claim 9: Planetary Resonance (solo visión)
 
 ---
 
