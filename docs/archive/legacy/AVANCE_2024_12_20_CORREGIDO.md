@@ -207,12 +207,6 @@ Protección contra usuario interno malicioso:
 4. **Zero-Trust mTLS** - Arquitectura completa, no solo tecnología
 5. **Insider Threat Protection** - Diseñado para >95% detección
 
-### Valoración IP
-**Basado en análisis previo** (17-Dic-2024):
-- Claim 1 (AIOpsShield): $8-15M
-- Claim 2 (Dual-Lane): $12-20M
-- Claim 3 (Dual-Guardian): $20-41M
-- **Total Portfolio**: $40-76M
 
 **Claim 3 fortalecido con**:
 - Triple-layer defense architecture
@@ -220,30 +214,7 @@ Protección contra usuario interno malicioso:
 - Insider threat protection analysis
 - **Rango conservador**: $25-35M (dentro del rango previo)
 
-**Metodología**: 
-- Comparable patents en cybersecurity: $10-50M
-- Market size addressable: $2B+ (AIOps security)
-- Licensing potential: $100-150M (10+ años)
 
-### Revenue Potential (Sentinel Vault)
-
-**Pricing Model** (por definir):
-- Free: 50 passwords
-- Pro: $5/user/mes
-- Team: $10/user/mes
-- Enterprise: Custom
-
-**Escenario conservador**:
-- 1,000 Pro users × $5/mes = $5K/mes = **$60K/año**
-- 100 Team users (10 users/team) × $10/mes = $10K/mes = **$120K/año**
-- **Total**: $180K/año
-
-**Comparables**:
-- 1Password Business: $8-12/user/mes
-- Bitwarden: $3-5/user/mes
-- HashiCorp Vault: $100-300K/año (enterprise)
-
-**Nota**: Esto es proyección, no revenue actual. Requiere go-to-market strategy.
 
 ---
 

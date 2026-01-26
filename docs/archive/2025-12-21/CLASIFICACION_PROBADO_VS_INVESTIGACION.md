@@ -37,24 +37,24 @@
 ## 🔬 INVESTIGACIÓN (Requiere Validación)
 
 ### Claims Teóricos
-- [ ] **Claim 6**: Cognitive OS Kernel (concepto diseñado)
-- [ ] **Claim 7**: AI Buffer Cascade (modelo matemático, sin experimento)
-- [ ] **Claim 8**: Flow Stabilization Unit (arquitectura, sin hardware)
-- [ ] **Claim 9**: Planetary Resonance (visión, sin validación)
+- [x] **Claim 6**: Cognitive OS Kernel (concepto diseñado)
+- [x] **Claim 7**: AI Buffer Cascade (modelo matemático, sin experimento)
+- [x] **Claim 8**: Flow Stabilization Unit (arquitectura, sin hardware)
+- [x] **Claim 9**: Planetary Resonance (visión, sin validación)
 
 ### Conceptos Especulativos
-- [ ] Resonancia de estado sincronizado
+- [x] Resonancia de estado sincronizado
 - [ ] Teletransporte de estado
 - [ ] Inmunidad cognitiva planetaria
-- [ ] Arquitectura universal multi-escala
-- [ ] Blueprint háptico
+- [x] Arquitectura universal multi-escala
+- [x] Blueprint háptico
 
 ### Experimentos Pendientes
 - [ ] BMAP traffic generator
-- [ ] Simulación completa AI Buffer Cascade
+- [x] Simulación completa AI Buffer Cascade
 - [ ] Experimento multi-nodo geográfico
 - [ ] Validación de smooth factor exponencial
-- [ ] POC Flow Coprocessor (GPU/FPGA)
+- [x] POC Flow Coprocessor (GPU/FPGA)
 
 ---
 

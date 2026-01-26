@@ -76,3 +76,16 @@ Para asegurar la omnipresencia de las directivas y el contexto específico, se h
 ---
 **Fecha de Creación:** 2026-01-22
 **Versión:** 1.1 (Mapa de Agentes Añadido)
+
+## 8. GEMINI-CLI AGENT (Nuevo)
+
+**Trigger**: `gemini-cli` en Obsidian/Sentinel.
+
+**Comandos**:
+- sentinel-status → Layer 0-5 health
+- bio-verify → Axiom V pulse check
+- portal-now → Penta-Resonance gate
+- truthsync → Axiom IV firewall
+
+**Orchestrator Link**: [file:94] → Enriquecimiento papers arXiv.
+

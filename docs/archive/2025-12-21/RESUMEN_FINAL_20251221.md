@@ -52,20 +52,6 @@
 - ✅ Cross-connection memory limits
 - ✅ Valor: $3-7M
 
----
-
-## 💰 VALOR TOTAL IP
-
-**Validado Experimentalmente**: $23-44M
-- Claims 3, 4, 5: $13-24M
-- Claim 6 (PoC): $10-20M
-
-**Diseñado**: $10-22M
-- Claim 7: $5-10M
-- Claims 8, 9: $5-12M
-
-**TOTAL**: **$33-66M** (conservador)  
-**TOTAL**: **$48-96M** (optimista)
 
 ---
 
@@ -102,14 +88,6 @@
 3. ⏳ Enviar emails con executive summary
 4. ⏳ Agendar consultas
 
-### Próximos 30 Días
-5. File provisional patent
-6. Implementar hardening (Phase 1)
-7. Add monitoring (Phase 2)
-8. Begin testing (Phase 3)
-
-### Deadline
-- **Provisional Patent**: Febrero 15, 2026 (55 días)
 
 ---
 

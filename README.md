@@ -54,3 +54,11 @@ python3 master_truth_validation.py
 1. **Truth is Absolute**: 1.0 Truth Score is the target (Axion Mode).
 2. **Silence is Structural**: 53 bytes of padding ensure resonance.
 3. **Sovereignty**: The system runs offline, independent of external clouds.
+
+## 🤖 Gemini-CLI Sentinel
+```bash
+cd ~/Obsidian/Sentinel
+gemini-cli "sentinel-status"
+```
+Requiere PRIME_DIRECTIVES.md cargado.
+
