@@ -23,6 +23,18 @@ fn main() {
     tracing_subscriber::fmt::init();
     tracing::info!("Sentinel Cortex (S60) initializing...");
 
+    // Check for CLI arguments (Semantic Shell Mode)
+    let args: Vec<String> = std::env::args().collect();
+    if args.iter().any(|arg| arg == "--shell") {
+        tracing::info!("Launching Semantic Shell v2.0...");
+        // Use full path invocation to avoid import ambiguity
+        let mut shell = quantum::semantic_shell::SemanticShell::new();
+        if let Err(e) = shell.run() {
+            tracing::error!("Semantic Shell crashed: {}", e);
+        }
+        return;
+    }
+
     // 1. Initialize Harmonic Processor
     let mut processor = HarmonicProcessor::new();
     tracing::info!("Harmonic Processor online. Awaiting signal...");

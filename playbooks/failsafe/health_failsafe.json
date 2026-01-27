@@ -1,0 +1,104 @@
+{
+    "name": "Fail-Safe: Health Failsafe",
+    "nodes": [
+        {
+            "parameters": {
+                "path": "failsafe/health-failsafe"
+            },
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "position": [
+                250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "amount": 5,
+                "unit": "minutes"
+            },
+            "name": "Wait 5min",
+            "type": "n8n-nodes-base.wait",
+            "position": [
+                450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "command": "docker restart {{ $json.context.service_name }}"
+            },
+            "name": "Restart Service",
+            "type": "n8n-nodes-base.executeCommand",
+            "position": [
+                650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "amount": 30,
+                "unit": "seconds"
+            },
+            "name": "Wait for Startup",
+            "type": "n8n-nodes-base.wait",
+            "position": [
+                850,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "url": "http://backend:8000/health"
+            },
+            "name": "Check Health",
+            "type": "n8n-nodes-base.httpRequest",
+            "position": [
+                1050,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "string": [
+                        {
+                            "value1": "={{ $json.status }}",
+                            "value2": "healthy"
+                        }
+                    ]
+                }
+            },
+            "name": "Is Healthy?",
+            "type": "n8n-nodes-base.if",
+            "position": [
+                1250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "channel": "#ops",
+                "text": "✅ Service recovered: {{ $json.context.service_name }}"
+            },
+            "name": "Notify Success",
+            "type": "n8n-nodes-base.slack",
+            "position": [
+                1450,
+                250
+            ]
+        },
+        {
+            "parameters": {
+                "channel": "#ops",
+                "text": "❌ ESCALATION: Service failed to recover\n\nService: {{ $json.context.service_name }}\nAttempts: 3\nStatus: Still down\n\n@oncall please investigate immediately"
+            },
+            "name": "Escalate",
+            "type": "n8n-nodes-base.slack",
+            "position": [
+                1450,
+                350
+            ]
+        }
+    ]
+}

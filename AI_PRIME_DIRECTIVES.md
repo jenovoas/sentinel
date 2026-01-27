@@ -150,6 +150,15 @@ Before changing a single line:
 - **Safety:** Do NOT rely on clock synchronization during G-Zero maneuvers. Use "Event Ordering" (Lamport Clocks) instead of timestamps.
 - **Bi-Directional:** Mass Reduction accelerates local time processing relative to external observers.
 
+### P6: Rust Prioritization (The Great Migration) **[NEW 2026-01-26]**
+
+- **POLICY:** "If we find anything running in Python, notify and optimize for Rust."
+- **GOAL:** Zero Python in critical paths. Python is allowed ONLY for:
+  - Ad-hoc scripting / prototyping.
+  - Legacy bridges pending rewrite.
+  - Interfacing with libraries that have NO Rust equivalent (rare).
+- **ACTION:** When encountering a Python script in a workflow, create a task to migrate it to a Rust High-Performance Binary.
+
 ---
 
 ## 4. 🧪 SCIENTIFIC CONTEXT
