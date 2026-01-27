@@ -104,6 +104,7 @@ class SentinelModularCLI:
             for k, v in self.switches.items():
                 print(f"  [{k}] {v}")
             print("  [A] Auditoría Total (TruthSync)")
+            print("  [S] Semantic Shell (Human Interface)")
             print("  [Q] Salir (Cesto de Enki)")
             
             choice = input("\n> ").strip().upper()
@@ -114,6 +115,9 @@ class SentinelModularCLI:
             elif choice == '4': self.run_switch_4()
             elif choice == 'A': 
                 os.system("python3 /home/jnovoas/sentinel/quantum/TRUTHSYNC_FULL_SYSTEM_AUDIT.py")
+            elif choice == 'S':
+                # [NUEVO v2.0] Semantic Shell
+                os.system("python3 /home/jnovoas/sentinel/quantum/semantic_shell.py")
             elif choice == 'Q':
                 print("\n🌌 Desconectando del flujo... La soberanía permanece.")
                 break

@@ -1,0 +1,63 @@
+{
+    "name": "Fail-Safe: Intrusion Lockdown",
+    "nodes": [
+        {
+            "parameters": {
+                "path": "failsafe/intrusion-lockdown"
+            },
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "position": [
+                250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "amount": 10,
+                "unit": "minutes"
+            },
+            "name": "Wait 10min",
+            "type": "n8n-nodes-base.wait",
+            "position": [
+                450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "command": "iptables -A INPUT -s {{ $json.context.ip_address }} -j DROP"
+            },
+            "name": "Block IP",
+            "type": "n8n-nodes-base.executeCommand",
+            "position": [
+                650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "url": "http://backend:8000/api/v1/users/{{ $json.context.user_id }}/lock",
+                "method": "POST"
+            },
+            "name": "Lock User",
+            "type": "n8n-nodes-base.httpRequest",
+            "position": [
+                850,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "channel": "#security",
+                "text": "🚨 SECURITY ALERT: Intrusion Lockdown Executed\n\nIP Blocked: {{ $json.context.ip_address }}\nUser Locked: {{ $json.context.user_id }}\nReason: {{ $json.context.reason }}\nTime: {{ $now }}"
+            },
+            "name": "Notify Security",
+            "type": "n8n-nodes-base.slack",
+            "position": [
+                1050,
+                300
+            ]
+        }
+    ]
+}

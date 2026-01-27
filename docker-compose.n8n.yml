@@ -10,8 +10,8 @@ services:
     environment:
       # Basic Auth
       - N8N_BASIC_AUTH_ACTIVE=true
-      - N8N_BASIC_AUTH_USER=admin
-      - N8N_BASIC_AUTH_PASSWORD=sentinel_n8n_2024
+      - N8N_BASIC_AUTH_USER=jaime.novoase@gmail.com
+      - N8N_BASIC_AUTH_PASSWORD=Eyedol2119!.
 
       # Webhook URL
       - WEBHOOK_URL=http://localhost:5678/
