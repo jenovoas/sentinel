@@ -18,9 +18,16 @@ import time
 
 # Configuración ligera
 N_MEMBRANES = 1000
-J_COUPLING = 2 * PI_S60 * 1e3
-GAMMA = 2 * PI_S60 * 100
-TIME_MAX = 50e-6
+# S60 Constants (Definitions kept pure)
+J_COUPLING_S60 = 2 * PI_S60 * 1000
+GAMMA_S60 = 2 * PI_S60 * 100
+TIME_MAX_F = 0.00005 # Simulation time (Float allowed for numpy solver)
+
+def to_float(s60_val):
+    """Bridge S60 to Float for Numpy/Physics Engine"""
+    if hasattr(s60_val, '_value'):
+        return s60_val._value / 12960000.0
+    return float(s60_val)
 SEXAGESIMAL_COMPLIANCE = True  # Base-60 is Fundamental
 
 
@@ -40,17 +47,23 @@ def simulate_oracle(question):
             ampl = S60(0, 6, 0)
             # Auto-Squeezing para preguntas de energía
             if "energía" in question.lower() or "potencia" in question.lower():
-                ampl *= 10.0 # 20dB gain 
+                ampl *= 10 # Integer scalar allowed
             
             # MODO MATRIZ PERSONAL (Bio-Feedback)
             if "mi matriz" in question.lower() or "analizar" in question.lower():
                 # Reducir ruido de fondo para captar señales sutiles del usuario
                 if i % 7 == 0: # Resonancia de 7 centros (Chakras)
-                    ampl *= 2.0 
+                    ampl *= 2 
                 else:
-                    ampl *= S60(0, 30, 0)
-                    
-            alpha[i] = ampl * np.exp(1j * (i / N_MEMBRANES) * 2 * PI_S60)
+                    ampl = ampl * S60(0, 30, 0) # Use correct S60 op
+            
+            # Convert ampl (S60) to float for numpy array
+            ampl_f = to_float(ampl)
+            
+            # Phase: (i / N) * 2 * PI
+            phase_f = (i / N_MEMBRANES) * 2 * to_float(PI_S60)
+            
+            alpha[i] = ampl_f * np.exp(1j * phase_f)
 
     # 3. Evolución Analítica Aproximada (Mucho más fría para la CPU)
     # En lugar de resolver EDO paso a paso, usamos la solución de matriz de Toeplitz para cadena 1D
@@ -59,22 +72,29 @@ def simulate_oracle(question):
     
     print("🌊 Evolucionando función de onda...")
     k = np.arange(N_MEMBRANES)
-    eigenvalues = -(GAMMA/2) - 2j * J_COUPLING * np.cos(2 * PI_S60 * k / N_MEMBRANES)
+    
+    # Bridge S60 constants to float for Numpy
+    gamma_f = to_float(GAMMA_S60)
+    j_f = to_float(J_COUPLING_S60)
+    pi_f = to_float(PI_S60)
+    
+    # -(Gamma/2) - 2iJ cos(2pi k / N)
+    eigenvalues = -(gamma_f/2.0) - 2j * j_f * np.cos(2 * pi_f * k / N_MEMBRANES)
     
     # FFT para pasar al espacio de momentos (modos normales)
     alpha_k = np.fft.fft(alpha)
     
     # Evolución temporal exacta en espacio-k
-    alpha_k_t = alpha_k * np.exp(eigenvalues * TIME_MAX)
+    alpha_k_t = alpha_k * np.exp(eigenvalues * TIME_MAX_F)
     
     # IFFT para volver al espacio real
-    alpha_final = np.fft.ifft(alpha_k_t)
+    alpha_final = np.fft.ifft(alpha_k * np.exp(eigenvalues * TIME_MAX_F))
     
     # 4. Análisis
     densities = np.abs(alpha_final)**2
     total_energy = np.sum(densities)
     ipr = np.sum(densities**2) / (total_energy**2 + 1e-20)
-    coherence = S60(1, 0, 0) / (ipr + 1e-9)
+    coherence = 1.0 / (ipr + 1e-9) # Result matches float logic
 
     print(f"\n📊 RESULTADOS:")
     print(f"   Energía Total: {total_energy:.4e}")
@@ -82,7 +102,8 @@ def simulate_oracle(question):
     print(f"   Longitud Coherencia: {coherence:.1f} membranas")
 
     # Interpretación
-    if ipr > S60(0, 6, 0):
+    # Interpretación
+    if ipr > 0.1: # Threshold as float
         tipo = "LOCALIZADO (Apego/Foco)"
         msg = "La energía se ha estancado en nodos específicos. Indica necesidad de soltar o concentración extrema."
     elif ipr < 0.01:
