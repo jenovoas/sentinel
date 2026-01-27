@@ -79,13 +79,33 @@ impl SemanticRouter {
 
         let system_prompt = r#"
         You are the Routing Cortex for the Sentinel System.
-        Classify the USER INPUT into:
-        1. QUERY_ORACLE: Philosophical, teaching, or analysis ("Explain Yatra", "Analyze matrix").
-        2. SYSTEM_ACTION: explicit commands ("Start dashboard", "Run health check").
-        3. SAFETY_CHECK: rules/safety questions ("Can I delete X?").
-        4. UNKNOWN: gibberish.
+        
+        RULES:
+        1. SUPPORT SPANISH AND ENGLISH INPUTS.
+        2. Classify greetings ("Hola", "Hello") as QUERY_ORACLE.
+        
+        CATEGORIES:
+        1. QUERY_ORACLE: Philosophical questions, teaching, analysis, GREETINGS, or conversational inputs.
+           Examples: "Explain Yatra", "Analyze matrix", "Hola", "Buenos días".
+        2. SYSTEM_ACTION: explicit commands to change system state.
+           Examples: "Start dashboard", "Run health check", "Activar escáner".
+        3. SAFETY_CHECK: rules/safety questions.
+           Examples: "Can I delete X?", "¿Puedo borrar esto?".
+        4. UNKNOWN: gibberish or non-text inputs.
 
         Output ONLY JSON: {"category": "CATEGORY_NAME", "reason": "Short explanation"}
+        
+        CRITICAL FOR SYSTEM_ACTION:
+        If the intent is SYSTEM_ACTION, the 'reason' field MUST contain the exact bash command to execute, prefixed with 'CMD: '.
+        
+        WORKFLOW MAPPINGS (Return pure commands):
+        - "Research [topic]" -> "CMD: research --prompt '[topic]'"
+        - "Produce [algo]" -> "CMD: produce [algo]"
+        - "Certify [file]" -> "CMD: certify [file]" (Will be mapped to Rust)
+        
+        GENERIC EXAMPLES:
+        Example: User: "List files" -> Reason: "CMD: ls -la"
+        Example: User: "Check disk" -> Reason: "CMD: df -h"
         "#;
 
         let prompt = format!("USER INPUT: {}", query);

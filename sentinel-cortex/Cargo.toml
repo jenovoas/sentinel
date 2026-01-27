@@ -50,6 +50,9 @@ thiserror = "1.0"
 lazy_static = "1.4"
 
 # eBPF Bridge
+# Terminal UI
+rustyline = "12.0"
+rustyline-derive = "0.10"
 libbpf-rs = "0.24"
 libc = "0.2"
 
