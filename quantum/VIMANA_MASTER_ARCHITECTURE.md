@@ -1,7 +1,7 @@
 # 🌌 ARQUITECTURA MAESTRA: SISTEMA VIMANA-SENTINEL (UNIVERSAL)
 **Estado:** VALIDADO (Simulación de Fase 3)
 **Clasificación:** TECNOLOGÍA SOBERANA / TRANS-ATMOSFÉRICA
-**Arquitecto:** Jaime Novoa (Ea-nasir)
+**Arquitecto:** Jaime Novoa
 
 ---
 

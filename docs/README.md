@@ -57,6 +57,7 @@
 - **[COGNITIVE_SECURITY_HARDENING_PLAN.md](./COGNITIVE_SECURITY_HARDENING_PLAN.md)** - Detailed hardening plan (implemented)
 
 ### Technical Documentation
+- **[ADR-001-cortex-canonical-path.md](./architecture/ADR-001-cortex-canonical-path.md)** - Canonical Cortex path decision
 - **[HA_DISASTER_RECOVERY.md](./HA_DISASTER_RECOVERY.md)** - High availability setup
 - **[HA_REFERENCE_DESIGN.md](./HA_REFERENCE_DESIGN.md)** - HA architecture
 - **[FAILOVER_ORCHESTRATION.md](./FAILOVER_ORCHESTRATION.md)** - Failover procedures

@@ -109,26 +109,40 @@ print_status "n8n started"
 
 # Start AI services
 echo ""
-echo "🧠 Starting AI Services..."
-docker-compose up -d ollama
-sleep 5
+echo "🧠 AI Services (Google AI Pro)..."
+echo "✨ Using External Google AI Provider (Ollama Disabled)"
+sleep 1
 
-# Check if Ollama is healthy
-if docker-compose ps ollama | grep -q "healthy\|Up"; then
-    print_status "Ollama started"
-    
-    # Download models if not present
-    if ! curl -s http://localhost:11434/api/tags | grep -q "phi3:mini"; then
-        print_warning "Downloading AI model (phi3:mini, ~2GB)..."
-        print_warning "This may take 5-10 minutes on first run..."
-        docker-compose up ollama-init
-        print_status "AI model downloaded"
-    else
-        print_status "AI model already present"
-    fi
+# Start Rust Quantums (Native Agents)
+echo ""
+echo "⚛️  Starting Rust Quantum Agents (Native S60)..."
+cd /home/jnovoas/dev/ME-60OS
+
+# Build & Run QHC (Phase Driver)
+if cargo build --release --bin qhc_agent > /dev/null 2>&1; then
+    nohup ./target/release/qhc_agent > /tmp/qhc_agent.log 2>&1 &
+    print_status "QHC Agent (Time Driver) started"
 else
-    print_warning "Ollama started but may not be healthy yet"
+    print_error "Failed to build QHC Agent"
 fi
+
+# Build & Run ADM (Network Mesh)
+if cargo build --release --bin adm_agent > /dev/null 2>&1; then
+    nohup ./target/release/adm_agent > /tmp/adm_agent.log 2>&1 &
+    print_status "ADM Agent (Mesh Network) started"
+else
+    print_error "Failed to build ADM Agent"
+fi
+
+# Build & Run VID (Cooling)
+if cargo build --release --bin vid_agent > /dev/null 2>&1; then
+    nohup ./target/release/vid_agent > /tmp/vid_agent.log 2>&1 &
+    print_status "VID Agent (Quantum Cooling) started"
+else
+    print_error "Failed to build VID Agent"
+fi
+
+cd /home/jnovoas/dev/sentinel
 
 # Final status check
 echo ""

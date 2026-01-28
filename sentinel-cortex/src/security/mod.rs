@@ -1,10 +1,6 @@
 // pub mod rbac_biological; // Missing file
 
 // DEPRECATED: Float-based version (kept for historical reference)
-#[deprecated(
-    since = "7.1.0",
-    note = "Use soul_verifier_s60_production for physical model deployment. This version uses floats which cause thermal noise and precision errors."
-)]
 // pub mod soul_verifier; // Missing file
 
 // S60 validation functions (used by production version)

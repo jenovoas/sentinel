@@ -178,7 +178,7 @@ Each router handles a specific domain of functionality.
 """
 
 # Health endpoints (no prefix - top level)
-app.include_router(health.router, tags=["health"])
+app.include_router(health.router, prefix="/api/v1", tags=["health"])
 
 # API endpoints
 app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["analytics"])
