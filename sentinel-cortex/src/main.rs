@@ -5,10 +5,12 @@
 // AXIOM V (Bio-Resonance): 17s/68s Harmonic Loop.
 
 mod actions;
+mod buffer_system;
 mod collectors;
 mod ebpf_cortex_bridge;
 mod engine;
 mod math;
+mod memory;
 mod mock_kernel;
 mod models;
 mod quantum; // BioResonator & Portal Detection

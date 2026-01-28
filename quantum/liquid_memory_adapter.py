@@ -25,12 +25,22 @@ from quantum.gpu_controller import gpu_controller
 
 # Try importing Rust Core
 try:
-    from quantum.sentinel_core import PySharedBuffer
+    from me60os_core import PySharedBuffer, ResonantLattice
     RUST_AVAILABLE = True
+    print("🧠 Loaded ME-60OS Rust Core (Resonant Integration)")
 except ImportError:
-    print("⚠️ Rust Core Not Found. Falling back to Pure Python.")
-    RUST_AVAILABLE = False
-    PySharedBuffer = None
+    try:
+        from quantum.sentinel_core import PySharedBuffer, RustLattice as ResonantLattice
+        RUST_AVAILABLE = True
+    except ImportError:
+        try:
+            from sentinel_core import PySharedBuffer, RustLattice as ResonantLattice
+            RUST_AVAILABLE = True
+        except ImportError:
+            print("⚠️ Rust Core Not Found. Falling back to Pure Python.")
+            RUST_AVAILABLE = False
+            PySharedBuffer = None
+            ResonantLattice = None
 class LiquidMemory:
     """
     High-Level Interface for Sentinel's Cognitive Memory.
@@ -52,14 +62,14 @@ class LiquidMemory:
         self.lattice = LiquidLatticeStorage(rings=rings)
         
         # Rust Backend (Phase 4-7)
+        # Rust Backend (Phase 4-7)
         self.rust_lattice = None
-        if RUST_AVAILABLE:
+        if RUST_AVAILABLE and ResonantLattice:
             try:
-                from quantum.sentinel_core import RustLattice
-                self.rust_lattice = RustLattice(rings=rings)
+                self.rust_lattice = ResonantLattice(rings=rings)
                 print("🦀 Rust Backend Initialized for Persistence.")
-            except ImportError:
-                print("⚠️ Could not initialize Rust Backend.")
+            except Exception as e:
+                print(f"⚠️ Could not initialize Rust Backend: {e}")
         
         # Virtual File System Table (stored in standard memory for now, 
         # could be stored in lattice header later).

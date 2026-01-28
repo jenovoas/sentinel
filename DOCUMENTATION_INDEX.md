@@ -24,6 +24,7 @@ Este documento sirve como el mapa maestro de todo el conocimiento y código func
 ## 📚 Documentación de Desarrollo y Patentes
 - **Directorio: [/docs](file:///home/jnovoas/dev/sentinel/docs/)**
   - **[README.md](file:///home/jnovoas/dev/sentinel/docs/README.md)** - Índice de documentos activos y de referencia.
+  - **[ADR-001-cortex-canonical-path.md](file:///home/jnovoas/dev/sentinel/docs/architecture/ADR-001-cortex-canonical-path.md)** - Decisión de ruta canónica para Cortex.
   - **[CORTEX_NARRATIVA_COMPLETA.md](file:///home/jnovoas/dev/sentinel/docs/CORTEX_NARRATIVA_COMPLETA.md)** - Narrativa maestra para inversores.
   - **[NEURAL_ARCHITECTURE.md](file:///home/jnovoas/dev/sentinel/docs/NEURAL_ARCHITECTURE.md)** - Documentación completa de patentes.
 
