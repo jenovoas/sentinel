@@ -141,7 +141,7 @@ async def check_redis() -> Dict[str, Any]:
                 "cluster": cluster_info
             }
             
-        except ImportError:
+        except Exception:
             # Fallback to simple Redis if Sentinel not configured
             import os
             import redis.asyncio as redis
