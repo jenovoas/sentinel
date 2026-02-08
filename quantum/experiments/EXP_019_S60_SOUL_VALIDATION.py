@@ -134,31 +134,30 @@ print("\n\n🎲 PARTE 4: Entropía de Shannon (Base-60)")
 print("-" * 60)
 
 def calculate_entropy_s60(signal):
-    """Calcula entropía en Base-60"""
+    """Calcula entropía en Base-60 (Shannon Entropy)"""
     from collections import Counter
+    from quantum.yatra_math import S60Math
     
     # Cuantizar señal en buckets
     buckets = [val.to_base_units() // S60.SCALE_0 for val in signal]
     counts = Counter(buckets)
     
-    total = len(signal)
-    entropy = S60(0, 0, 0, 0, 0)
+    total_len = len(signal)
+    total_len_s60 = S60(total_len)
+    entropy = S60(0)
     
     for count in counts.values():
         if count == 0:
             continue
         
-        # p = count / total
-        p_decimal = count / total
+        # p = count / total (como S60)
+        p = S60(count) / total_len_s60
         
         # H = -sum(p * ln(p))
-        # Aproximación simple
-        import math
-        h_contribution = -p_decimal * math.log(p_decimal) if p_decimal > 0 else 0
+        ln_p = S60Math.ln(p)
+        h_contribution = -(p * ln_p)
         
-        # Convertir a S60
-        h_s60 = S60.from_decimal_degrees_FOR_IMPORT_ONLY(h_contribution)
-        entropy = entropy + h_s60
+        entropy = entropy + h_contribution
     
     return entropy
 
