@@ -95,13 +95,6 @@ impl BioResonator {
         self.coherence.to_base_units()
     }
 
-    /// Get normalized coherence [0.0, 1.0] (for visualization)
-    ///
-    /// NOTE: This uses f64 ONLY for GUI display. Internal logic is S60 pure.
-    pub fn get_coherence_normalized(&self) -> f64 {
-        (self.coherence.to_base_units() as f64) / (S60::ONE.to_base_units() as f64)
-    }
-
     /// Get time since last pulse (ms)
     pub fn time_since_pulse_ms(&self) -> u64 {
         self.last_pulse.elapsed().as_millis() as u64
@@ -196,9 +189,8 @@ mod tests {
             bio.inject_bio_pulse();
 
             if bio.is_portal_open() {
-                // Portal opened - coherence should be >= 90%
-                let norm = bio.get_coherence_normalized();
-                assert!(norm >= 0.9, "Portal opened at {}%", norm * 100.0);
+                // Portal opened - coherence should be >= threshold
+                assert!(bio.coherence >= bio.threshold_portal);
                 break;
             }
         }

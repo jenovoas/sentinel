@@ -93,17 +93,17 @@ pub extern "C" fn cortex_is_pilot_present() -> u8 {
     }
 }
 
-/// Get normalized coherence level [0.0, 1.0]
+/// Get normalized coherence level [0.0, 1.0] (as raw S60 tertia)
 /// For GUI/telemetry display only
 ///
-/// Returns: f64 in range [0.0, 1.0]
+/// Returns: i64 in range [0, 216000] (Tertia)
 ///
 /// # Safety
 /// This function is thread-safe via Mutex.
 #[no_mangle]
-pub extern "C" fn cortex_get_coherence_normalized() -> f64 {
+pub extern "C" fn cortex_get_coherence_normalized() -> i64 {
     let bio = SHARED_BIO.lock().unwrap();
-    bio.get_coherence_normalized()
+    bio.get_coherence_raw()
 }
 
 /// Get time since last pulse (milliseconds)
@@ -146,11 +146,11 @@ pub extern "C" fn scheduler_tick(time_s60_raw: i64) {
     sched.tick(time);
 }
 
-/// Get scheduler efficiency (0.0 to 1.0)
+/// Get scheduler efficiency (raw S60 tertia)
 #[no_mangle]
-pub extern "C" fn scheduler_get_efficiency() -> f64 {
+pub extern "C" fn scheduler_get_efficiency() -> i64 {
     let sched = CORTEX_SCHEDULER.lock().unwrap();
-    sched.get_stats().efficiency
+    sched.get_stats().efficiency.to_base_units()
 }
 
 /// Get total energy saved (can be negative)
