@@ -24,7 +24,12 @@ class S60Math:
     # Constantes Logarítmicas Raw (pre-escaladas por SCALE_0)
     LN2_RAW = 8983187   # ln(2) * SCALE_0
     LN60_RAW = 53062706 # ln(60) * SCALE_0
-    INV_LN2_RAW = 18698485 # (1/ln(2)) * SCALE_0 ≈ 1.442695
+    INV_LN2_RAW = 18698485 # (1/ln(2)) * SCALE_0
+    
+    # Constantes Geométricas Raw
+    # PI / 180 * SCALE_0 ≈ 0.017453... * 12960000 = 226194
+    # Sincronizado con Rust Core (226152) para coherencia cross-context
+    DEG_TO_RAD_FACTOR_RAW = 226152 
     
     @staticmethod
     def _normalize_to_pi_half(angle_s60):
@@ -63,14 +68,14 @@ class S60Math:
         norm_angle, s_sin, _ = S60Math._normalize_to_pi_half(angle_s60)
         
         # Convertir a "radianes internos" (escalados por SCALE_0)
-        x = (norm_angle._value * S60Math.DEG_TO_RAD_FACTOR._value) // S60.SCALE_0
+        x = (norm_angle._value * S60Math.DEG_TO_RAD_FACTOR_RAW) // S60.SCALE_0
         
         res = x
         term = x
         x_sq = (x * x) // S60.SCALE_0  # Cachear x^2
         
-        # Epsilon para early termination (1/1000 de la escala)
-        epsilon = S60.SCALE_0 // 1000
+        # Epsilon para early termination (1/3600 de la escala - S60.SCALE_2)
+        epsilon = S60.SCALE_2
         
         for i in range(1, precision_terms):
             # Próximo término: term * (-x^2) / ((2i)*(2i+1))
@@ -100,13 +105,13 @@ class S60Math:
         """
         norm_angle, _, s_cos = S60Math._normalize_to_pi_half(angle_s60)
         
-        x = (norm_angle._value * S60Math.DEG_TO_RAD_FACTOR._value) // S60.SCALE_0
+        x = (norm_angle._value * S60Math.DEG_TO_RAD_FACTOR_RAW) // S60.SCALE_0
         
         res = S60.SCALE_0
         term = S60.SCALE_0
         x_sq = (x * x) // S60.SCALE_0  # Cachear x^2
         
-        epsilon = S60.SCALE_0 // 1000
+        epsilon = S60.SCALE_2
         
         for i in range(1, precision_terms):
             # Próximo término: term * (-x^2) / ((2i-1)*(2i))
@@ -169,7 +174,7 @@ class S60Math:
         res = S60.SCALE_0
         term = S60.SCALE_0
         
-        epsilon = S60.SCALE_0 // 10000  # Más estricto para exp
+        epsilon = S60.SCALE_3  # Más estricto para exp: 1/60 (S60.SCALE_3)
         
         for i in range(1, precision_terms):
             # Próximo término: term * x / i

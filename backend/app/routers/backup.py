@@ -36,9 +36,9 @@ class BackupFile(BaseModel):
     """Model for a single backup file"""
     filename: str = Field(..., description="Backup filename")
     size_bytes: int = Field(..., description="File size in bytes")
-    size_mb: float = Field(..., description="File size in MB")
+    size_kb: int = Field(..., description="File size in KB")
     created_at: str = Field(..., description="Creation timestamp (ISO format)")
-    age_hours: float = Field(..., description="Age in hours")
+    age_seconds: int = Field(..., description="Age in seconds")
     has_checksum: bool = Field(..., description="Whether SHA256 checksum exists")
     is_encrypted: bool = Field(False, description="Whether backup is encrypted")
 
@@ -46,11 +46,11 @@ class BackupFile(BaseModel):
 class BackupMetrics(BaseModel):
     """Aggregated backup metrics"""
     total_backups: int = Field(..., description="Total number of backups")
-    total_size_mb: float = Field(..., description="Total size of all backups in MB")
-    oldest_backup_age_hours: float = Field(..., description="Age of oldest backup in hours")
-    newest_backup_age_hours: float = Field(..., description="Age of newest backup in hours")
-    average_size_mb: float = Field(..., description="Average backup size in MB")
-    success_rate_24h: float = Field(..., description="Success rate in last 24 hours (0-100)")
+    total_size_kb: int = Field(..., description="Total size of all backups in KB")
+    oldest_backup_age_seconds: int = Field(..., description="Age of oldest backup in seconds")
+    newest_backup_age_seconds: int = Field(..., description="Age of newest backup in seconds")
+    average_size_kb: int = Field(..., description="Average backup size in KB")
+    success_rate_24h_scaled: int = Field(..., description="Success rate in last 24 hours (0-10000 where 10000 = 100%)")
 
 
 class BackupConfig(BaseModel):
@@ -67,7 +67,7 @@ class LastBackup(BaseModel):
     """Information about the last backup"""
     status: str = Field(..., description="Status: success, failed, or unknown")
     time: Optional[str] = Field(None, description="Timestamp of last backup")
-    age_hours: Optional[float] = Field(None, description="Age in hours")
+    age_seconds: Optional[int] = Field(None, description="Age in seconds")
     duration_seconds: Optional[int] = Field(None, description="Duration in seconds")
 
 
@@ -166,9 +166,9 @@ def get_cached_status(cache_key: int) -> Dict[str, Any]:
                 backups.append({
                     "filename": filename,
                     "size_bytes": stat.st_size,
-                    "size_mb": round(stat.st_size / 1024 / 1024, 2),
+                    "size_kb": stat.st_size // 1024,
                     "created_at": datetime.fromtimestamp(stat.st_mtime).isoformat(),
-                    "age_hours": round((time.time() - stat.st_mtime) / 3600, 1),
+                    "age_seconds": int(time.time() - stat.st_mtime),
                     "has_checksum": os.path.exists(f"{backup_file}.sha256"),
                     "is_encrypted": filename.endswith(".enc")
                 })
@@ -220,17 +220,18 @@ def get_cached_status(cache_key: int) -> Dict[str, Any]:
     
     # Calculate metrics
     total_backups = len(backups)
-    total_size_mb = sum(b["size_mb"] for b in backups)
-    oldest_backup_age = max([b["age_hours"] for b in backups]) if backups else 0
-    newest_backup_age = min([b["age_hours"] for b in backups]) if backups else 0
-    success_rate_24h = (success_count_24h / total_count_24h * 100) if total_count_24h > 0 else 100.0
+    total_size_kb = sum(b["size_kb"] for b in backups)
+    oldest_backup_age_s = max([b["age_seconds"] for b in backups]) if backups else 0
+    newest_backup_age_s = min([b["age_seconds"] for b in backups]) if backups else 0
+    # Success rate scaled by 100 for 10000 = 100%
+    success_rate_24h_scaled = (success_count_24h * 10000 // total_count_24h) if total_count_24h > 0 else 10000
     
     # Determine health status
     health = "healthy"
-    if newest_backup_age > 24:
-        health = "warning"  # No backup in 24 hours
-    if newest_backup_age > 48:
-        health = "critical"  # No backup in 48 hours
+    if newest_backup_age_s > 86400: # 24 hours
+        health = "warning"
+    if newest_backup_age_s > 172800: # 48 hours
+        health = "critical"
     if last_backup_status == "failed":
         health = "critical"
     
@@ -239,16 +240,16 @@ def get_cached_status(cache_key: int) -> Dict[str, Any]:
         "last_backup": {
             "status": last_backup_status,
             "time": last_backup_time,
-            "age_hours": newest_backup_age if backups else None,
+            "age_seconds": newest_backup_age_s if backups else None,
             "duration_seconds": last_backup_duration
         },
         "metrics": {
             "total_backups": total_backups,
-            "total_size_mb": round(total_size_mb, 2),
-            "oldest_backup_age_hours": round(oldest_backup_age, 1),
-            "newest_backup_age_hours": round(newest_backup_age, 1),
-            "average_size_mb": round(total_size_mb / total_backups, 2) if total_backups > 0 else 0,
-            "success_rate_24h": round(success_rate_24h, 1)
+            "total_size_kb": total_size_kb,
+            "oldest_backup_age_seconds": oldest_backup_age_s,
+            "newest_backup_age_seconds": newest_backup_age_s,
+            "average_size_kb": total_size_kb // total_backups if total_backups > 0 else 0,
+            "success_rate_24h_scaled": success_rate_24h_scaled
         },
         "backups": backups,
         "config": {
@@ -332,9 +333,9 @@ async def get_backup_history(
                 backups.append(BackupFile(
                     filename=filename,
                     size_bytes=stat.st_size,
-                    size_mb=round(stat.st_size / 1024 / 1024, 2),
+                    size_kb=stat.st_size // 1024,
                     created_at=datetime.fromtimestamp(stat.st_mtime).isoformat(),
-                    age_hours=round((time.time() - stat.st_mtime) / 3600, 1),
+                    age_seconds=int(time.time() - stat.st_mtime),
                     has_checksum=os.path.exists(f"{backup_file}.sha256"),
                     is_encrypted=filename.endswith(".enc")
                 ))

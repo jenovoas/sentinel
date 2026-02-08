@@ -46,8 +46,8 @@ pub struct SchedulerStats {
     pub tasks_forced: u64,
     /// Net energy saved (can be negative)
     pub energy_saved: i64,
-    /// Portal-lock efficiency (0.0 to 1.0)
-    pub efficiency: f64,
+    /// Portal-lock efficiency (S60)
+    pub efficiency: S60,
 }
 
 /// Quantum Scheduler - Adiabatic task execution
@@ -216,9 +216,11 @@ impl QuantumScheduler {
     pub fn get_stats(&self) -> SchedulerStats {
         let total = self.tasks_in_portal + self.tasks_forced;
         let efficiency = if total > 0 {
-            (self.tasks_in_portal as f64) / (total as f64)
+            let num = S60::from_int(self.tasks_in_portal as i32);
+            let den = S60::from_int(total as i32);
+            (num / den).unwrap_or(S60::ZERO)
         } else {
-            0.0
+            S60::ZERO
         };
 
         SchedulerStats {
@@ -292,7 +294,7 @@ mod tests {
         assert_eq!(stats.tasks_in_portal, 0);
         assert_eq!(stats.tasks_forced, 0);
         assert_eq!(stats.energy_saved, 0);
-        assert_eq!(stats.efficiency, 0.0);
+        assert_eq!(stats.efficiency, S60::ZERO);
     }
 
     #[test]

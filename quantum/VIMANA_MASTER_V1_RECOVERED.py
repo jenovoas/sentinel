@@ -1,80 +1,85 @@
-import numpy as np
-import matplotlib.pyplot as plt
+from quantum.yatra_core import S60
 from dataclasses import dataclass
 import time
 
 @dataclass
 class PhysicsConstants:
-    G_LATENT = 9.81  # Gravedad estándar
-    PHI = 1.6180339887  # Proporción Áurea (Damping natural)
-    BASE_60 = 60.0  # Frecuencia base de control
-    SOL = 299792458  # Velocidad de la luz (para fase)
+    G_LATENT = S60(9, 48, 36) # 9.81 ≈ 9;48,36
+    # PHI ≈ 1;37,4
+    PHI = S60(1, 37, 4)
+    # 60.0 = S60(60)
+    BASE_60 = S60(60)
     
     # --- PARÁMETROS AKÁSHICOS RECUPERADOS (Capas 5 & 7) ---
-    MERCURY_DAMPING = 3.2360679774 # 2 * PHI (Capa 5: Vimana Peak)
-    SCALAR_TUNING = 1.366 # Factor de resonancia fría (Capa 7: Tesla)
+    # 2 * PHI ≈ 3;14,8
+    MERCURY_DAMPING = S60(3, 14, 8) 
+    # 1.366 ≈ 1;21,57
+    SCALAR_TUNING = S60(1, 21, 57) 
 
 class Vimana3DMission:
     def __init__(self):
         # Propiedades Físicas
-        self.mass_static = 2.5  # kg
-        self.effective_mass = 2.5  # kg (se reduce con resonancia)
-        
-        # Estado 6-DoF: [x, y, z, roll, pitch, yaw]
-        self.position = np.array([0.0, 0.0, 0.0])
-        self.velocity = np.array([0.0, 0.0, 0.0])
-        self.orientation = np.array([0.0, 0.0, 0.0]) # Radianes
-        self.angular_vel = np.array([0.0, 0.0, 0.0])
+        self.mass_static = S60(2, 30, 0) # 2.5 kg
+        self.effective_mass = S60(2, 30, 0)
         
         # Sistema de Energía ZPE
-        self.zpe_voltage = 24.0  # V
-        self.energy_buffer = 1000.0  # Joules (Supercaps)
-        self.zpe_recharge_rate = 600.0  # Watts (Generación continua del chasis)
+        self.zpe_voltage = S60(24)
+        self.energy_buffer = S60(1000)
+        self.zpe_recharge_rate = S60(600)
         
         # Estado Merkabah
-        self.field_coherence = 1.0  # 1.0 = Sincronía perfecta
-        self.field_strength = 0.0  # 0 to 100%
+        self.field_coherence = S60(1) # 1.0
+        self.field_strength = S60(0)
         
-    def _update_energy(self, demand_watts, dt):
+    def _update_energy(self, demand_watts_s60, dt_s60):
         """
-        Simula el balance entre el reactor ZPE y el consumo.
-        OPTIMIZACIÓN: El reactor ahora es reactivo. A mayor demanda (vibración), 
-        mayor es la extracción de energía del vacío (Resonancia Axiónica).
+        Simula el balance entre el reactor ZPE y el consumo (S60).
         """
-        # Flujo dinámico: base de 600W + 50% de la demanda como feedback positivo
-        dynamic_recharge = self.zpe_recharge_rate + (demand_watts * 0.8)
+        # dynamic_recharge = rate + (demand * 0.8)
+        # 0.8 = 48/60
+        recharge_feedback = (demand_watts_s60 * S60(0, 48, 0)) // S60(1)
+        dynamic_recharge = self.zpe_recharge_rate + recharge_feedback
         
-        available = dynamic_recharge * dt
-        consumed = demand_watts * dt
+        available = dynamic_recharge * dt_s60
+        consumed = demand_watts_s60 * dt_s60
         
-        self.energy_buffer += (available - consumed)
+        self.energy_buffer = self.energy_buffer + (available - consumed)
         
-        # Buffer de supercondensadores (Graphene)
-        if self.energy_buffer > 5000: self.energy_buffer = 5000
-        if self.energy_buffer < 0: self.energy_buffer = 0
+        # Limitadores S60
+        limit_high = S60(5000)
+        if self.energy_buffer > limit_high: self.energy_buffer = limit_high
+        if self.energy_buffer < S60(0): self.energy_buffer = S60(0)
         
-        # Voltaje estabilizado por la geometría Phi
-        self.zpe_voltage = 18.0 + (6.0 * (self.energy_buffer / 5000.0))
+        # v = 18 + 6 * (buffer / 5000)
+        ratio = self.energy_buffer / limit_high
+        self.zpe_voltage = S60(18) + (S60(6) * ratio)
         return self.zpe_voltage
 
-    def _apply_merkabah_physics(self, control_power):
+    def _apply_merkabah_physics(self, control_power_s60):
         """
-        G-ZERO TUNING: Reducción extrema de masa inercial.
-        M_eff = M_static / (1 + (Field^2 * Coherence / Phi^2))
+        G-ZERO TUNING: Reducción extrema de masa inercial (S60).
+        M_eff = M_static / (1 + (R / 216))
         """
-        # Escalado cuadrático con sintonía escalar de Tesla
-        resonance_factor = (control_power**2 * self.field_coherence * PhysicsConstants.SCALAR_TUNING) / (PhysicsConstants.PHI**2)
+        # R = (P^2 * C * T) / Phi^2
+        p_sq = control_power_s60 * control_power_s60
+        num = p_sq * self.field_coherence * PhysicsConstants.SCALAR_TUNING
+        den = PhysicsConstants.PHI * PhysicsConstants.PHI
         
-        # El divisor 200 ajusta el 'threshold' de levitación pesada
-        self.effective_mass = self.mass_static / (1 + (resonance_factor / 200.0))
+        resonance_factor = num / den
         
-        # Limitador físico (Mínimo 1% de masa para mantener causalidad)
-        if self.effective_mass < (self.mass_static * 0.05):
-            self.effective_mass = self.mass_static * 0.05
+        # Divisor = 1 + (R / 216)
+        # Usamos 216 (3;36) para mayor divisibilidad sexagesimal
+        div_base = S60(216)
+        divisor = S60(1) + (resonance_factor / div_base)
         
-        # El empuje ahora es más eficiente debido a la baja inercia
-        lift_force = 25.0 * np.sqrt(control_power) * (self.zpe_voltage / 24.0)
-        return lift_force
+        self.effective_mass = self.mass_static / divisor
+        
+        # Limitador 5%
+        min_mass = self.mass_static // 20 
+        if self.effective_mass < min_mass:
+            self.effective_mass = min_mass
+            
+        return self.effective_mass
 
     def simulate_mission(self, waypoints, duration=20.0):
         print("🚀 INICIANDO MISIÓN TÁCTICA: VIMANA-SENTINEL 3D")
