@@ -65,9 +65,9 @@ class TruthSyncClient:
         print(f"   Contexto: {context}")
         
         if not self.cortex:
-            # Bypass temporal mientras la bestia compila me-60os
-            print(f"✅ [CORTEX BYPASS] Verificación Asumida Válida.")
-            return True
+            print(f"❌ [CORTEX UNAVAILABLE] me60os_core no compilado. Verificación rechazada.")
+            print(f"   Fix: cd ~/Development/me-60os && cargo build --release")
+            return False
 
         try:
             # Extraer strings criticas del payload para analisis SCV (Semantic Coherence Verification)
