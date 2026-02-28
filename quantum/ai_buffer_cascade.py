@@ -25,11 +25,10 @@ from typing import Dict, Any, List
 from hexagonal_control import HexagonalController
 
 # Add quantum directory to path to import TruthSync
-sys.path.append("/home/jnovoas/sentinel/quantum")
-try:
-    from truthsync_verification import truth_sync_verify
-except ImportError:
-    def truth_sync_verify(claim): return {"status": "UNVERIFIED"}
+_quantum_dir = os.path.dirname(os.path.abspath(__file__))
+if _quantum_dir not in sys.path:
+    sys.path.insert(0, _quantum_dir)
+from truthsync_verification import truth_sync_verify
 
 class AIBufferCascade:
     def __init__(self, hex_controller: HexagonalController):
