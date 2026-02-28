@@ -30,7 +30,7 @@ from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 # Importación dinámica del core Rust (compilado vía maturin por el LLM)
 ME60OS_PATH = os.path.expanduser("~/Development/me-60os")
 if ME60OS_PATH not in sys.path:
-    sys.path.append(ME60OS_PATH)
+    sys.path.insert(0, ME60OS_PATH)
 
 try:
     import me60os_core
