@@ -118,10 +118,10 @@ async def check_redis_health() -> dict:
         sentinel = get_sentinel()
         
         # Get master info
-        master_info = sentinel.discover_master('mymaster')
+        master_info = await sentinel.discover_master('mymaster')
         
         # Get replicas info
-        replicas_info = sentinel.discover_slaves('mymaster')
+        replicas_info = await sentinel.discover_slaves('mymaster')
         
         # Check if we can connect to master
         master = await get_redis_master()
@@ -162,11 +162,11 @@ async def test_failover():
     try:
         # 1. Get current master
         sentinel = get_sentinel()
-        master_info = sentinel.discover_master('mymaster')
+        master_info = await sentinel.discover_master('mymaster')
         logger.info(f"Current master: {master_info[0]}:{master_info[1]}")
         
         # 2. Force failover
-        sentinel.sentinel_failover('mymaster')
+        await sentinel.sentinel_failover('mymaster')
         logger.info("Failover triggered...")
         
         # 3. Wait for new master
@@ -174,7 +174,7 @@ async def test_failover():
         await asyncio.sleep(5)
         
         # 4. Get new master
-        new_master_info = sentinel.discover_master('mymaster')
+        new_master_info = await sentinel.discover_master('mymaster')
         logger.info(f"New master: {new_master_info[0]}:{new_master_info[1]}")
         
         # 5. Verify we can still write

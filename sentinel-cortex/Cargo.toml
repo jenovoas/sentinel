@@ -55,7 +55,7 @@ rustyline = "12.0"
 rustyline-derive = "0.10"
 libbpf-rs = "0.24"
 libc = "0.2"
-me60os_core = { path = "../../ME-60OS", package = "me60os" }
+me60os_core = { path = "../../me-60os", package = "me60os" }
 
 [dev-dependencies]
 tokio-test = "0.4"
