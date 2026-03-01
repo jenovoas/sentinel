@@ -1,0 +1,24 @@
+[Unit]
+Description=Sentinel Audit Watchdog — Quantum Scheduled (EXP-029-V2)
+Documentation=https://github.com/sentinel/docs/quantum-scheduler
+After=auditd.service
+Requires=auditd.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /home/jnovoas/sentinel/host-metrics/audit_watchdog_quantum.py
+Restart=always
+RestartSec=5
+User=root
+
+# Límites de recursos (quantum scheduler no debería necesitar más)
+CPUQuota=15%
+MemoryMax=64M
+MemorySwapMax=0
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=audit-watchdog-quantum
+
+[Install]
+WantedBy=multi-user.target

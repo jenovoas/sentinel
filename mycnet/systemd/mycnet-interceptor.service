@@ -1,0 +1,25 @@
+[Unit]
+Description=MycNet Interceptor - Batman-adv Metrics to Redis
+Documentation=https://github.com/jnovoas/sentinel
+After=network.target redis.service
+Wants=network.target
+
+[Service]
+Type=simple
+User=jnovoas
+Group=jnovoas
+ExecStart=/usr/bin/python3 /home/jnovoas/.local/bin/mycnet_interceptor.py --interval 15
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mycnet-interceptor
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
