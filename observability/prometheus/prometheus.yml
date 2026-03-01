@@ -63,4 +63,15 @@ scrape_configs:
         labels:
           service: 'redis-cache'
 
+  # Swarm Enjambre Exporter - Crystal Brain y tareas
+  - job_name: 'swarm_enjambre'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['10.10.10.8:9122']  # fenix
+        labels:
+          node: 'fenix'
+      - targets: ['127.0.0.1:9122']  # sentinel local
+        labels:
+          node: 'sentinel'
+
 # Storage configuration is in command line flags, not here

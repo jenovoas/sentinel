@@ -1,0 +1,123 @@
+{
+  "dashboard": {
+    "title": "SecurePenguin Swarm Dashboard",
+    "uid": "swarm-enjambre",
+    "timezone": "utc",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Tareas Pendientes",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "swarm_tasks_queue",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4}
+      },
+      {
+        "id": 2,
+        "title": "Tareas en Ejecución",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "swarm_tasks_running",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4}
+      },
+      {
+        "id": 3,
+        "title": "Tareas Completadas",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "swarm_tasks_done",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"x": 12, "y": 0, "w": 6, "h": 4}
+      },
+      {
+        "id": 4,
+        "title": "Coherencia del Cristal",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "swarm_crystal_coherence",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 0.5, "color": "yellow"},
+                {"value": 0.8, "color": "green"}
+              ]
+            }
+          }
+        },
+        "gridPos": {"x": 0, "y": 4, "w": 8, "h": 8}
+      },
+      {
+        "id": 5,
+        "title": "Fase del Cristal",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "swarm_crystal_phase",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "none"
+        },
+        "mappingType": 1,
+        "mappings": [
+          {"options": {"0": {"text": "YOD"}, "1": {"text": "HE"}, "2": {"text": "VAV"}, "3": {"text": "HE_2"}}, "type": "value"}
+        ],
+        "gridPos": {"x": 8, "y": 4, "w": 8, "h": 8}
+      },
+      {
+        "id": 6,
+        "title": "Tick del Cristal",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "swarm_crystal_tick",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"x": 0, "y": 12, "w": 12, "h": 8}
+      },
+      {
+        "id": 7,
+        "title": "CPU Frecuencia",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "swarm_system_cpu_freq",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"x": 12, "y": 12, "w": 12, "h": 8}
+      }
+    ],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "10s"
+  }
+}

@@ -70,3 +70,56 @@ class SovereignCrystal:
     def get_amplitude(self):
         """Retorna la energía almacenada actual."""
         return self.amplitude
+
+    def propagate(self):
+        """
+        Propaga energía entre fase y amplitud (acoplamiento interno).
+        Simula la transferencia de energía en el cristal piezoeléctrico.
+        """
+        # Avanza un paso de fase mínimo (1 segundo S60)
+        delta_phase = self.natural_frequency * S60(1, 0, 0)
+        self.phase = self.phase + delta_phase
+
+    def pump_energy(self):
+        """
+        Inyecta energía de compensación (Master Reset: purga entropía).
+        Lleva la amplitud de vuelta al estado soberano base.
+        """
+        sovereign_base = S60(42, 30, 0)   # Base de coherencia soberana
+        if self.amplitude < sovereign_base:
+            boost = sovereign_base - self.amplitude
+            self.amplitude = self.amplitude + boost
+
+    def get_signature(self):
+        """
+        Retorna la firma geométrica actual del cristal:
+        - coherence: cuánto se aproxima a la frecuencia natural (cierre geométrico)
+        - axion_sig: señal axiónica derivada de la fase actual
+
+        Una firma coherente = geometría que CIERRA = afirmación verdadera.
+        Una firma incoherente = geometría que NO CIERRA = anomalía / mentira.
+        """
+        # Coherencia: amplitud normalizada en base-60
+        # Si amplitude >= natural_frequency → coherencia máxima (60°)
+        if self.amplitude >= self.natural_frequency:
+            coherence = S60(60, 0, 0)
+        else:
+            # Proporcional: (amplitude / natural_frequency) * 60
+            # Sin floats: multiplicamos primero, luego dividimos
+            # coherence_raw = amplitude.raw * 60 // natural_frequency.raw
+            try:
+                coh_raw = (self.amplitude.raw * 60) // self.natural_frequency.raw
+                coherence = S60(0)
+                coherence.raw = max(0, coh_raw)
+            except (AttributeError, ZeroDivisionError):
+                coherence = self.amplitude   # fallback: usar amplitud directa
+
+        # Firma axiónica: proyección de la fase actual sobre la frecuencia natural
+        # axion_sig = sin(phase) * amplitude → simplificado: phase mod 60
+        try:
+            phase_mod = S60(int(str(self.phase).split("°")[0]) % 60, 0, 0)
+            axion_sig = phase_mod
+        except Exception:
+            axion_sig = self.phase
+
+        return coherence, axion_sig
