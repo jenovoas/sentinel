@@ -1,0 +1,70 @@
+groups:
+  - name: filesystem_alerts
+    interval: 60s
+    rules:
+
+      - alert: DiskUsageWarning
+        expr: >
+          100 - (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs", mountpoint="/"} /
+                 node_filesystem_size_bytes{fstype!~"tmpfs|overlay|squashfs", mountpoint="/"} * 100) > 70
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disco al {{ $value | printf \"%.1f\" }}% en {{ $labels.instance }}"
+          description: "El filesystem {{ $labels.mountpoint }} en {{ $labels.instance }} supera el 70% de uso."
+
+      - alert: DiskUsageCritical
+        expr: >
+          100 - (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs", mountpoint="/"} /
+                 node_filesystem_size_bytes{fstype!~"tmpfs|overlay|squashfs", mountpoint="/"} * 100) > 85
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "CRITICO: Disco al {{ $value | printf \"%.1f\" }}% en {{ $labels.instance }}"
+          description: "El filesystem {{ $labels.mountpoint }} en {{ $labels.instance }} supera el 85%. Intervenir de inmediato."
+
+      - alert: DiskUsageEmergency
+        expr: >
+          100 - (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs", mountpoint="/"} /
+                 node_filesystem_size_bytes{fstype!~"tmpfs|overlay|squashfs", mountpoint="/"} * 100) > 95
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "EMERGENCIA: Disco al {{ $value | printf \"%.1f\" }}% en {{ $labels.instance }}"
+          description: "Disco casi lleno en {{ $labels.instance }}. Riesgo de corrupcion de datos."
+
+  - name: node_alerts
+    interval: 30s
+    rules:
+
+      - alert: NodeDown
+        expr: up{job=~"node-exporter.*"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Nodo CAIDO: {{ $labels.instance }}"
+          description: "El node-exporter de {{ $labels.instance }} no responde desde hace mas de 2 minutos."
+
+      - alert: HighMemoryUsage
+        expr: >
+          100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "RAM al {{ $value | printf \"%.1f\" }}% en {{ $labels.instance }}"
+          description: "Uso de memoria superior al 90% en {{ $labels.instance }}."
+
+      - alert: HighCpuUsage
+        expr: >
+          100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU al {{ $value | printf \"%.1f\" }}% en {{ $labels.instance }}"
+          description: "CPU sostenido >90% durante 10 minutos en {{ $labels.instance }}."
