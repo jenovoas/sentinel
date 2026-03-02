@@ -1,42 +1,619 @@
 {
   "dashboard": {
-    "title": "Sistema - CPU & Memoria",
+    "title": "SecurePenguin — Servidores y Filesystem",
     "uid": "system-metrics",
-    "tags": ["system", "node"],
+    "tags": [
+      "system",
+      "node",
+      "disk",
+      "filesystem"
+    ],
     "timezone": "browser",
-    "refresh": "10s",
-    "time": {"from": "now-1h", "to": "now"},
+    "refresh": "30s",
+    "time": {
+      "from": "now-3h",
+      "to": "now"
+    },
+    "templating": {
+      "list": [
+        {
+          "name": "node",
+          "label": "Nodo",
+          "type": "query",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "query": "label_values(node_uname_info, instance)",
+          "refresh": 2,
+          "sort": 1,
+          "includeAll": true,
+          "allValue": ".*",
+          "current": {},
+          "hide": 0
+        },
+        {
+          "name": "mountpoint",
+          "label": "Mountpoint",
+          "type": "query",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "query": "label_values(node_filesystem_avail_bytes{instance=~\"$node\", fstype!~\"tmpfs|overlay|squashfs\"}, mountpoint)",
+          "refresh": 2,
+          "sort": 1,
+          "includeAll": true,
+          "allValue": ".*",
+          "current": {},
+          "hide": 0
+        }
+      ]
+    },
     "panels": [
       {
         "id": 1,
-        "gridPos": {"h": 9, "w": 12, "x": 0, "y": 0},
-        "type": "timeseries",
-        "title": "CPU Usage (%)",
-        "datasource": {"type": "prometheus", "uid": "prometheus"},
-        "targets": [{
-          "expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
-          "refId": "A",
-          "legendFormat": "CPU %"
-        }]
+        "gridPos": {
+          "h": 4,
+          "w": 4,
+          "x": 0,
+          "y": 0
+        },
+        "type": "stat",
+        "title": "Nodos UP",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "colorMode": "background",
+          "graphMode": "none"
+        },
+        "targets": [
+          {
+            "expr": "count(up{job=~\"node-exporter.*\"} == 1)",
+            "refId": "A",
+            "legendFormat": "UP"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
+              ]
+            },
+            "mappings": []
+          }
+        }
       },
       {
         "id": 2,
-        "gridPos": {"h": 9, "w": 12, "x": 12, "y": 0},
-        "type": "timeseries",
-        "title": "Memory Usage (GB)",
-        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "gridPos": {
+          "h": 4,
+          "w": 4,
+          "x": 4,
+          "y": 0
+        },
+        "type": "stat",
+        "title": "Nodos DOWN",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "colorMode": "background",
+          "graphMode": "none"
+        },
         "targets": [
           {
-            "expr": "(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / 1024 / 1024 / 1024",
+            "expr": "count(up{job=~\"node-exporter.*\"} == 0) or vector(0)",
             "refId": "A",
-            "legendFormat": "Used"
+            "legendFormat": "DOWN"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "red",
+                  "value": 1
+                }
+              ]
+            },
+            "mappings": []
+          }
+        }
+      },
+      {
+        "id": 3,
+        "gridPos": {
+          "h": 4,
+          "w": 16,
+          "x": 8,
+          "y": 0
+        },
+        "type": "stat",
+        "title": "Estado de Nodos",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "colorMode": "background",
+          "graphMode": "none",
+          "orientation": "horizontal"
+        },
+        "targets": [
+          {
+            "expr": "up{job=~\"node-exporter.*\"}",
+            "refId": "A",
+            "legendFormat": "{{instance}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
+              ]
+            },
+            "mappings": [
+              {
+                "type": "value",
+                "options": {
+                  "0": {
+                    "text": "DOWN"
+                  },
+                  "1": {
+                    "text": "UP"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": 10,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 4
+        },
+        "type": "row",
+        "title": "CPU y Carga del Sistema"
+      },
+      {
+        "id": 11,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 5
+        },
+        "type": "timeseries",
+        "title": "CPU Usage por Nodo (%)",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "targets": [
+          {
+            "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\", instance=~\"$node\"}[5m])) * 100)",
+            "refId": "A",
+            "legendFormat": "{{instance}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 70
+                },
+                {
+                  "color": "red",
+                  "value": 90
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 12,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 5
+        },
+        "type": "timeseries",
+        "title": "Load Average (1m) por Nodo",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "targets": [
+          {
+            "expr": "node_load1{instance=~\"$node\"}",
+            "refId": "A",
+            "legendFormat": "{{instance}} — 1m"
           },
           {
-            "expr": "node_memory_MemAvailable_bytes / 1024 / 1024 / 1024",
+            "expr": "node_load5{instance=~\"$node\"}",
             "refId": "B",
-            "legendFormat": "Available"
+            "legendFormat": "{{instance}} — 5m"
           }
-        ]
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short"
+          }
+        }
+      },
+      {
+        "id": 20,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 13
+        },
+        "type": "row",
+        "title": "Memoria RAM"
+      },
+      {
+        "id": 21,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 14
+        },
+        "type": "timeseries",
+        "title": "RAM Usada por Nodo (GB)",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "targets": [
+          {
+            "expr": "(node_memory_MemTotal_bytes{instance=~\"$node\"} - node_memory_MemAvailable_bytes{instance=~\"$node\"}) / 1024^3",
+            "refId": "A",
+            "legendFormat": "{{instance}} — usada"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "decgbytes"
+          }
+        }
+      },
+      {
+        "id": 22,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 14
+        },
+        "type": "gauge",
+        "title": "RAM % Usada por Nodo",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "targets": [
+          {
+            "expr": "100 * (1 - node_memory_MemAvailable_bytes{instance=~\"$node\"} / node_memory_MemTotal_bytes{instance=~\"$node\"})",
+            "refId": "A",
+            "legendFormat": "{{instance}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 70
+                },
+                {
+                  "color": "red",
+                  "value": 90
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 30,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 22
+        },
+        "type": "row",
+        "title": "Disco y Filesystem"
+      },
+      {
+        "id": 31,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 23
+        },
+        "type": "gauge",
+        "title": "Disco % Usado por Nodo (mountpoint /)",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "showThresholdLabels": true,
+          "showThresholdMarkers": true
+        },
+        "targets": [
+          {
+            "expr": "100 - (node_filesystem_avail_bytes{instance=~\"$node\", mountpoint=\"/\", fstype!~\"tmpfs|overlay\"} / node_filesystem_size_bytes{instance=~\"$node\", mountpoint=\"/\", fstype!~\"tmpfs|overlay\"} * 100)",
+            "refId": "A",
+            "legendFormat": "{{instance}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 70
+                },
+                {
+                  "color": "orange",
+                  "value": 85
+                },
+                {
+                  "color": "red",
+                  "value": 95
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 32,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 23
+        },
+        "type": "timeseries",
+        "title": "Espacio Libre en Disco por Nodo (GB)",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "targets": [
+          {
+            "expr": "node_filesystem_avail_bytes{instance=~\"$node\", mountpoint=~\"$mountpoint\", fstype!~\"tmpfs|overlay|squashfs\"} / 1024^3",
+            "refId": "A",
+            "legendFormat": "{{instance}} — {{mountpoint}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "decgbytes"
+          }
+        }
+      },
+      {
+        "id": 33,
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 31
+        },
+        "type": "table",
+        "title": "Resumen de Filesystem — Todos los Nodos",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "options": {
+          "sortBy": [
+            {
+              "desc": true,
+              "displayName": "% Usado"
+            }
+          ]
+        },
+        "targets": [
+          {
+            "expr": "100 - (node_filesystem_avail_bytes{instance=~\"$node\", fstype!~\"tmpfs|overlay|squashfs\"} / node_filesystem_size_bytes{instance=~\"$node\", fstype!~\"tmpfs|overlay|squashfs\"} * 100)",
+            "refId": "A",
+            "legendFormat": "{{instance}} — {{mountpoint}}",
+            "instant": true
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 70
+                },
+                {
+                  "color": "orange",
+                  "value": 85
+                },
+                {
+                  "color": "red",
+                  "value": 95
+                }
+              ]
+            },
+            "custom": {
+              "displayMode": "color-background"
+            }
+          }
+        }
+      },
+      {
+        "id": 40,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 39
+        },
+        "type": "row",
+        "title": "Red"
+      },
+      {
+        "id": 41,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 40
+        },
+        "type": "timeseries",
+        "title": "Red — Tráfico Entrada (MB/s)",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "targets": [
+          {
+            "expr": "rate(node_network_receive_bytes_total{instance=~\"$node\", device!~\"lo|veth.*|br.*|docker.*|tunl.*|cni.*\"}[5m]) / 1024^2",
+            "refId": "A",
+            "legendFormat": "{{instance}} — {{device}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "MBs"
+          }
+        }
+      },
+      {
+        "id": 42,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 40
+        },
+        "type": "timeseries",
+        "title": "Red — Tráfico Salida (MB/s)",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "targets": [
+          {
+            "expr": "rate(node_network_transmit_bytes_total{instance=~\"$node\", device!~\"lo|veth.*|br.*|docker.*|tunl.*|cni.*\"}[5m]) / 1024^2",
+            "refId": "A",
+            "legendFormat": "{{instance}} — {{device}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "MBs"
+          }
+        }
       }
     ]
   },
