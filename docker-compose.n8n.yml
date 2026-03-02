@@ -5,6 +5,7 @@ services:
     image: n8nio/n8n:latest
     container_name: sentinel-n8n
     restart: unless-stopped
+    userns_mode: keep-id   # Fix: mapeo correcto de UID en Podman rootless
     ports:
       - "5678:5678"
     environment:
@@ -12,6 +13,9 @@ services:
       - N8N_BASIC_AUTH_ACTIVE=true
       - N8N_BASIC_AUTH_USER=jaime.novoase@gmail.com
       - N8N_BASIC_AUTH_PASSWORD=Eyedol2119!.
+
+      # Directorio de datos (debe coincidir con el UID del host en rootless)
+      - N8N_USER_FOLDER=/home/jnovoas/.n8n
 
       # Webhook URL
       - WEBHOOK_URL=http://localhost:5678/
@@ -29,8 +33,7 @@ services:
       - EXECUTIONS_DATA_SAVE_MANUAL_EXECUTIONS=true
 
     volumes:
-      - n8n_data:/home/node/.n8n
-      - ./n8n/workflows:/home/node/.n8n/workflows
+      - n8n_data:/home/jnovoas/.n8n   # Ruta coincide con N8N_USER_FOLDER y UID del host
 
     networks:
       - sentinel-network
