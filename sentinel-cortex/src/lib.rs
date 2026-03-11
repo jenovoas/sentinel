@@ -142,7 +142,7 @@ use quantum::{QuantumScheduler, Task, TaskType};
 #[no_mangle]
 pub extern "C" fn scheduler_tick(time_s60_raw: i64) {
     let mut sched = CORTEX_SCHEDULER.lock().unwrap();
-    let time = S60::from_base_units(time_s60_raw);
+    let time = S60::from_raw(time_s60_raw);
     sched.tick(time);
 }
 
