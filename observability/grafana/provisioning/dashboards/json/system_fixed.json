@@ -1,5 +1,5 @@
 {
-  "title": "SecurePenguin \u2014 Servidores y Filesystem",
+  "title": "SecurePenguin — Servidores y Filesystem",
   "uid": "system-metrics",
   "tags": [
     "system",
@@ -285,12 +285,12 @@
         {
           "expr": "node_load1{instance=~\"$node\"}",
           "refId": "A",
-          "legendFormat": "{{instance}} \u2014 1m"
+          "legendFormat": "{{instance}} — 1m"
         },
         {
           "expr": "node_load5{instance=~\"$node\"}",
           "refId": "B",
-          "legendFormat": "{{instance}} \u2014 5m"
+          "legendFormat": "{{instance}} — 5m"
         }
       ],
       "fieldConfig": {
@@ -328,7 +328,7 @@
         {
           "expr": "(node_memory_MemTotal_bytes{instance=~\"$node\"} - node_memory_MemAvailable_bytes{instance=~\"$node\"}) / 1024^3",
           "refId": "A",
-          "legendFormat": "{{instance}} \u2014 usada"
+          "legendFormat": "{{instance}} — usada"
         }
       ],
       "fieldConfig": {
@@ -480,7 +480,7 @@
         {
           "expr": "node_filesystem_avail_bytes{instance=~\"$node\", mountpoint=~\"$mountpoint\", fstype!~\"tmpfs|overlay|squashfs\"} / 1024^3",
           "refId": "A",
-          "legendFormat": "{{instance}} \u2014 {{mountpoint}}"
+          "legendFormat": "{{instance}} — {{mountpoint}}"
         }
       ],
       "fieldConfig": {
@@ -498,7 +498,7 @@
         "y": 31
       },
       "type": "table",
-      "title": "Resumen de Filesystem \u2014 Todos los Nodos",
+      "title": "Resumen de Filesystem — Todos los Nodos",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -515,7 +515,7 @@
         {
           "expr": "100 - (node_filesystem_avail_bytes{instance=~\"$node\", fstype!~\"tmpfs|overlay|squashfs\"} / node_filesystem_size_bytes{instance=~\"$node\", fstype!~\"tmpfs|overlay|squashfs\"} * 100)",
           "refId": "A",
-          "legendFormat": "{{instance}} \u2014 {{mountpoint}}",
+          "legendFormat": "{{instance}} — {{mountpoint}}",
           "instant": true
         }
       ],
@@ -569,7 +569,7 @@
         "y": 40
       },
       "type": "timeseries",
-      "title": "Red \u2014 Tr\u00e1fico Entrada (MB/s)",
+      "title": "Red — Tráfico Entrada (MB/s)",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -578,7 +578,7 @@
         {
           "expr": "rate(node_network_receive_bytes_total{instance=~\"$node\", device!~\"lo|veth.*|br.*|docker.*|tunl.*|cni.*\"}[5m]) / 1024^2",
           "refId": "A",
-          "legendFormat": "{{instance}} \u2014 {{device}}"
+          "legendFormat": "{{instance}} — {{device}}"
         }
       ],
       "fieldConfig": {
@@ -596,7 +596,7 @@
         "y": 40
       },
       "type": "timeseries",
-      "title": "Red \u2014 Tr\u00e1fico Salida (MB/s)",
+      "title": "Red — Tráfico Salida (MB/s)",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -605,7 +605,7 @@
         {
           "expr": "rate(node_network_transmit_bytes_total{instance=~\"$node\", device!~\"lo|veth.*|br.*|docker.*|tunl.*|cni.*\"}[5m]) / 1024^2",
           "refId": "A",
-          "legendFormat": "{{instance}} \u2014 {{device}}"
+          "legendFormat": "{{instance}} — {{device}}"
         }
       ],
       "fieldConfig": {

@@ -1,3 +1,16 @@
+## [Unreleased]
+
+### Added - Monitoring Stack (2026-03-02)
+- **Firewalld ports** for monitoring: 9100 (node-exporter), 9115 (black to: fenixbox)
+- Applied, centurion, kingu
+
+### Fixed
+- Prometheus connectivity: kingu node-exporter now reachable
+- WireGuard peers: Only kingu has direct peer to sentinel (pending: fenix, centurion)
+
+---
+
+
 # Changelog
 
 All notable changes to the Sentinel project will be documented in this file.

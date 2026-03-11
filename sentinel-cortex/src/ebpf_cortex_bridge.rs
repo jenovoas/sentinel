@@ -136,7 +136,7 @@ impl EbpfBridge {
             builder.add(&map, move |data: &[u8]| -> i32 {
                 if let Some(event) = EbpfBridge::parse_event(data) {
                     if let Some(ref resonant) = buffer {
-                        let entropy = S60::from_base_units(event.entropy.raw_value as i64);
+                        let entropy = S60::from_raw(event.entropy.raw_value as i64);
                         resonant.push(entropy);
                     }
 
