@@ -1,25 +1,21 @@
-# Prometheus Configuration
-# Main configuration file for metrics collection and alerting
+# Prometheus Configuration - Sentinel v2.2
+# Updated: 2026-03-02
 
 global:
-  scrape_interval: 15s # Frecuencia de scraping por defecto
-  evaluation_interval: 15s # Frecuencia de evaluación de reglas
+  scrape_interval: 15s
+  evaluation_interval: 15s
   external_labels:
-    cluster: 'sentinel'
+    cluster: 'securepenguin'
     environment: 'production'
 
-# Alertmanager configuration (optional, para futuro)
 alerting:
   alertmanagers:
     - static_configs:
         - targets: []
-          # - 'alertmanager:9093'
 
-# Archivos de reglas de alerting
 rule_files:
   - '/etc/prometheus/rules/*.yml'
 
-# Configuración de scraping
 scrape_configs:
   # Prometheus self-monitoring
   - job_name: 'prometheus'
@@ -28,50 +24,110 @@ scrape_configs:
         labels:
           service: 'prometheus'
 
-  # Node Exporter - Métricas del host
-  - job_name: 'node-exporter'
+  # Node Exporters - Por nodo via WireGuard VPN
+  - job_name: 'node-exporter-kingu'
+    scrape_interval: 15s
     static_configs:
-      - targets: ['node-exporter:9100']
+      - targets: ['10.10.10.1:9100']
         labels:
-          service: 'host-metrics'
-          instance: 'sentinel-host'
-    metric_relabel_configs:
-      # Mantener solo métricas relevantes para reducir uso de storage
-      - source_labels: [__name__]
-        regex: 'node_(cpu|memory|disk|network|filesystem|load).*'
-        action: keep
+          node: 'kingu'
+          role: 'pdc'
+          network: 'vpn'
 
-  # Backend FastAPI
-  - job_name: 'backend'
+  - job_name: 'node-exporter-sentinel'
+    scrape_interval: 15s
     static_configs:
-      - targets: ['backend:8000']
+      - targets: ['10.10.10.2:9100']
         labels:
-          service: 'backend-api'
-    metrics_path: '/metrics' # Asumiendo que agregaremos endpoint /metrics
+          node: 'sentinel'
+          role: 'bdc'
+          network: 'vpn'
 
-  # PostgreSQL Exporter
+  - job_name: 'node-exporter-centurion'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['10.10.10.3:9100']
+        labels:
+          node: 'centurion'
+          role: 'gateway'
+          network: 'vpn'
+
+  - job_name: 'node-exporter-fenix'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['10.10.10.8:9100']
+        labels:
+          node: 'fenix'
+          role: 'development'
+          network: 'vpn'
+
+  # Database Exporters
   - job_name: 'postgres'
     static_configs:
       - targets: ['postgres-exporter:9187']
         labels:
           service: 'postgres-db'
+          node: 'sentinel'
 
-  # Redis Exporter
   - job_name: 'redis'
     static_configs:
       - targets: ['redis-exporter:9121']
         labels:
           service: 'redis-cache'
+          node: 'sentinel'
 
-  # Swarm Enjambre Exporter - Crystal Brain y tareas
+  # Swarm & Application
   - job_name: 'swarm_enjambre'
     scrape_interval: 5s
     static_configs:
-      - targets: ['10.10.10.8:9122']  # fenix
+      - targets: ['10.10.10.8:9122', '10.10.10.2:9122']
         labels:
-          node: 'fenix'
-      - targets: ['127.0.0.1:9122']  # sentinel local
-        labels:
-          node: 'sentinel'
+          service: 'swarm-exporter'
 
-# Storage configuration is in command line flags, not here
+  - job_name: 'backend'
+    static_configs:
+      - targets: ['backend:8000']
+        labels:
+          service: 'backend-api'
+
+  # Blackbox Exporter
+    scrape_interval: 60s
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - https://pinguinoseguro.cl
+          - http://10.10.10.2:3001
+          - http://10.10.10.2:9090
+          - http://10.10.10.2:5678
+        labels:
+          group: 'http-checks'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: '10.10.10.2:9115'
+# Blackbox Exporter - Updated
+  - job_name: 'blackbox-http'
+    scrape_interval: 60s
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - http://10.10.10.2:3001  # Grafana
+          - http://10.10.10.2:9090  # Prometheus
+          - http://10.10.10.2:5678  # n8n
+          - http://10.10.10.8:80    # fenix web
+        labels:
+          group: 'internal-http'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: '10.10.10.2:9115'

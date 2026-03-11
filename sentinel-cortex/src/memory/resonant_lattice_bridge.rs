@@ -3,9 +3,9 @@
 //! Direct Rust integration with ME-60OS ResonantLattice + PySharedBuffer.
 //! This avoids Python-level bridging and preserves S60-only arithmetic.
 
-use me60os_core::resonant_lattice::ResonantLattice;
+use me60os_core::resonant_matrix::ResonantMatrix as ResonantLattice;
 use me60os_core::shm_bridge::PySharedBuffer;
-use me60os_core::s60::S60 as MeS60;
+use me60os_core::SPA as MeS60;
 
 /// Bridge wrapper for ME-60OS ResonantLattice
 pub struct ResonantLatticeBridge {
