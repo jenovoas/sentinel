@@ -42,9 +42,9 @@ EOF
 echo -e "${NC}"
 
 N8N_URL="http://localhost:5678"
-N8N_API_KEY="REDACTED_N8N_TOKEN"
+N8N_API_KEY="${N8N_API_KEY}"
 N8N_USER="admin"
-N8N_PASSWORD="REDACTED_PASSWORD"
+N8N_PASSWORD="${N8N_PASSWORD}"
 WORKFLOWS_DIR="./docker/n8n/workflows"
 
 echo -e "${CYAN}📋 PASO 1: Verificando que n8n esté corriendo...${NC}"
