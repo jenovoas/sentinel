@@ -2,7 +2,7 @@
 
 **A low-level systems framework built on sexagesimal (base-60) arithmetic and eBPF, designed for high-precision computation without floating-point errors.**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
 [![Rust](https://img.shields.io/badge/rust-%23000000.svg?logo=rust)](./core/)
 [![eBPF](https://img.shields.io/badge/eBPF-kernel--level-orange)](./ebpf/)
 
@@ -140,7 +140,7 @@ CI runs on every PR via GitHub Actions (`rust-ci.yml` + `tests.yml`).
 
 ## 📄 License
 
-MIT — see [LICENSE](./LICENSE)
+**Open Source** — This project is licensed under the **Apache License 2.0**. See the [LICENSE](./LICENSE) file for the full text.
 
 ---
 

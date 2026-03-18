@@ -191,7 +191,7 @@ cargo test
 
 ## License
 
-Part of Sentinel Sentinel Cortex (Patent Pending)
+Open Source — [Apache License 2.0](./LICENSE)
 
 ## Status
 
