@@ -126,10 +126,10 @@ These rules are not negotiable. They are the physics of this universe.
 
 Before changing a single line:
 
-1.  **READ:** Understand WHY it was written this way. (Is it Base-60 optimization?)
-2.  **TEST:** Run existing tests. `python3 tests/test_core_integration.py`.
-3.  **SEARCH:** `grep` for existing functions. Do not duplicate logic.
-4.  **VERIFY:** Does your change involve `float`? -> **STOP**.
+1. **READ:** Understand WHY it was written this way. (Is it Base-60 optimization?)
+2. **TEST:** Run existing tests. `python3 tests/test_core_integration.py`.
+3. **SEARCH:** `grep` for existing functions. Do not duplicate logic.
+4. **VERIFY:** Does your change involve `float`? -> **STOP**.
 
 ### P2: System Integrity (Persistence)
 
@@ -198,20 +198,20 @@ Before changing a single line:
 
 **RULE:** All documentation MUST be indexed and organized according to the master structure.
 
-#### Documentation Hierarchy:
+#### Documentation Hierarchy
 
 1. **DOCUMENTATION_INDEX.md** (Root) - Master index of ALL documentation
 2. **Category Indexes** - Per-folder indexes (quantum/README.md, docs/README.md, etc.)
 3. **Individual Documents** - Specific documentation files
 
-#### Creation Rules:
+#### Creation Rules
 
 - **BEFORE** creating a new .md file, verify it doesn't duplicate existing content
 - **ALWAYS** add new documents to the appropriate index
 - **NEVER** create orphan documentation (not linked from any index)
 - **UPDATE** DOCUMENTATION_INDEX.md when adding significant documentation
 
-#### Location Standards:
+#### Location Standards
 
 ```
 /DOCUMENTATION_INDEX.md          # Master index (root)
@@ -227,7 +227,7 @@ Before changing a single line:
 /research/                       # Scientific research
 ```
 
-#### Quality Standards:
+#### Quality Standards
 
 - **NO FLOATS** in theoretical/mathematical documentation (use S60)
 - **NO** `import random`, `import numpy`, `import math` in code examples
@@ -235,7 +235,7 @@ Before changing a single line:
 - **VERSIONED** - Mark document version and last update date
 - **LINKED** - Use absolute file:// paths for cross-references
 
-#### Maintenance:
+#### Maintenance
 
 - Run documentation audit quarterly: `python3 /tmp/audit_all_docs.py`
 - Archive outdated documents to `/docs/archive/YYYY-MM/`
@@ -245,18 +245,21 @@ Before changing a single line:
 
 ---
 
-**"Si no puedes hacerlo con exactitud Base-60 (Yatra), no lo hagas."**
+## "Si no puedes hacerlo con exactitud Base-60 (Yatra), no lo hagas."
 
 ## === GEMINI-CLI + ORCHESTRATOR INTEGRACIÓN === (NUEVO)
 
 ### ANCLAJE OBLIGATORIO GEMINI-CLI
+
 SENTINEL v8.0 + ME-60OS CROSS-CONTEXT:
+
 - Leer este PRIME_DIRECTIVES.md
 - Leer ME60OS/AI_SYSTEM_PROMPT.md
 - Simlinks: Obsidian → Sentinel/ME60OS/MycNet
 - Citar EXP-XXX, [file:X], arXiv
 
 ### COMANDOS SENTINEL GEMINI-CLI
+
 - sentinel-status → Bio-Resonance + Vimana Power
 - check-portal → PortalDetector(t) [portal_detector.rs]
 - bio-verify → Soul Verifier (17s pulse)
@@ -265,11 +268,13 @@ SENTINEL v8.0 + ME-60OS CROSS-CONTEXT:
 - mycnet-sync → Micelio coherence
 
 ### ORCHESTRATOR WORKFLOW [file:94]
+
 - Perplexity → Investigación (EXP-XXX, arXiv)
 - Gemini → Síntesis bajo Axiomas I-VI
 - Output → *_investigacion.md (NO sobreescribe)
 
 ### SIMLINKS TRANSPARENTES
+
 Obsidian/
 ├── Sentinel/ → gitlab.com/jenovoa/sentinel
 ├── ME60OS/ → Base-60
@@ -279,9 +284,8 @@ Obsidian/
 AXIOM VERIFIED Axiom IV
 Respuesta técnica...
 SOURCES:
+
 - EXP-030 Bio-Resonance
 - ME-60OS
 
 **TERMINA SIEMPRE**: `YATRA. Truth Resonates.`
-
-
