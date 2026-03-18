@@ -36,7 +36,7 @@ OLLAMA_TIMEOUT = int(os.getenv("OLLAMA_TIMEOUT", "60"))
 # Google Vertex AI Config
 GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT")
 GOOGLE_CLOUD_LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
-GOOGLE_MODEL = os.getenv("GOOGLE_MODEL", "gemini-2.0-flash-001")
+GOOGLE_MODEL = os.getenv("GOOGLE_MODEL", "gemini-1.5-flash-latest")
 
 # Initialize Security
 sanitizer = TelemetrySanitizer(enabled=TELEMETRY_SANITIZATION_ENABLED)
@@ -155,49 +155,34 @@ async def query_ollama(query: AIQuery) -> str:
 async def query_google_vertex(query: AIQuery) -> str:
     """Query Google Vertex AI (Gemini) using google-genai SDK"""
     try:
-        from google import genai
-        from google.genai import types
-        
-        # Initialize Client
-        client = genai.Client(
-            vertexai=True,
+        import google.generativeai as genai
+
+        # Configure the SDK to use Vertex AI
+        genai.configure(
             project=GOOGLE_CLOUD_PROJECT,
             location=GOOGLE_CLOUD_LOCATION
         )
-        
+
         # System Instructions
         system_instr = SYSTEM_PROMPTS.get(query.mode, "")
-        
+
+        # Initialize the model with system instructions
+        model = genai.GenerativeModel(
+            model_name=GOOGLE_MODEL,
+            system_instruction=system_instr
+        )
+
         # Generate Content
-        response = client.models.generate_content(
-            model=GOOGLE_MODEL,
-            contents=query.prompt,
-            config=types.GenerateContentConfig(
-                system_instruction=system_instr,
+        response = await model.generate_content_async(
+            query.prompt,
+            generation_config=genai.types.GenerationConfig(
                 max_output_tokens=query.max_tokens,
                 temperature=query.temperature,
             )
         )
-        
-        if not response or not response.candidates:
-            logger.warning(f"⚠️ Google AI returned no candidates. Response: {response}")
-            return "El modelo no devolvió ninguna respuesta (posiblemente bloqueada por filtros de seguridad)."
-            
-        # Aggregate text from all parts of the first candidate
-        full_text = ""
-        candidate = response.candidates[0]
-        if candidate.content and candidate.content.parts:
-            for part in candidate.content.parts:
-                if hasattr(part, 'text') and part.text:
-                    full_text += part.text
-        
-        full_text = full_text.strip()
-        if not full_text:
-            logger.warning(f"⚠️ Google AI candidate has no text part. Finish reason: {candidate.finish_reason}")
-            return "El modelo devolvió una respuesta vacía o sin contenido de texto."
-            
-        return full_text
-        
+
+        return response.text
+
     except ImportError as e:
         logger.error(f"❌ Google GenAI library import failed: {e}")
         raise HTTPException(status_code=500, detail=f"Google GenAI dependencies missing: {e}")
