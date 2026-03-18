@@ -86,7 +86,7 @@ SYSTEM_PROMPT
 CLAUDE.md
 INTERCEPTOR_RESULT.md
 .env*
-!.env.example
+# !.env.example (Removing exception to hide ALL env files)
 **/*PLAN.md
 **/*TODO.md
 **/*TASK.md
