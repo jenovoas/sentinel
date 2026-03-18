@@ -27,6 +27,7 @@ impl ResonanceEngine {
     pub fn verify_pulse(&mut self, timestamp: u64) -> (bool, LogicState) {
         if self.last_pulse_timestamp == 0 {
             self.last_pulse_timestamp = timestamp;
+            self.current_coherence = S60::one();
             return (true, LogicState::Unison);
         }
 
@@ -37,6 +38,7 @@ impl ResonanceEngine {
         let period_s60 = S60::from_int(PULSE_PERIOD_SEC);
 
         let ratio_s60 = interval_s60.div_safe(period_s60).unwrap_or(S60::zero());
+        self.current_coherence = ratio_s60;
 
         let input_state = HarmonicState {
             ratio: ratio_s60,
@@ -51,6 +53,10 @@ impl ResonanceEngine {
         };
 
         (is_valid, verdict)
+    }
+
+    pub fn get_coherence_raw(&self) -> i64 {
+        self.current_coherence.to_raw()
     }
 
     pub fn apply_quantum_correction(&self, system_time_sec: u64) -> S60 {
