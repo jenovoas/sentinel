@@ -86,21 +86,7 @@ def seconds_to_next_portal(resolution: float = 0.05) -> float:
 
 # ── Quantum Buffer y Daemon (EXP-014 + EXP-029-V2 delegado a SOMA) ────────────
 
-class QuantumBuffer(me60os_core.QuantumBuffer):
-    """
-    Buffer de eventos con política de overflow validada en EXP-029-V2.
-    Implementación nativa SOMA Rust.
-    """
-    @property
-    def stats(self) -> dict:
-        total = self.stats_portal + self.stats_overflow
-        eff = (self.stats_portal / total) if total > 0 else 0.0
-        return {
-            "portal": self.stats_portal,
-            "overflow": self.stats_overflow,
-            "dropped": self.stats_dropped,
-            "efficiency": f"{eff:.1%}"
-        }
+QuantumBuffer = me60os_core.QuantumBuffer
 
 
 def QuantumSchedulerDaemon(buffer, process_fn, dt=0.1, name="quantum-daemon"):
