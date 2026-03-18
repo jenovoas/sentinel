@@ -87,7 +87,6 @@ OPENCODE*.md
 CONTEXTO*.md
 PROMPT_GLOBAL_AGENTES.md
 SYSTEM_PROMPT
-CLAUDE.md
 INTERCEPTOR_RESULT.md
 .env*
 # !.env.example (Removing exception to hide ALL env files)
