@@ -2,11 +2,6 @@
 //!
 //! High-performance ring buffer for Quantum/Hardware bridge.
 //! Implements lock-free access for S60 data streams.
-//!
-//! ARCHITECTURE:
-//! - Double-Buffered Rings (Read/Write strict separation)
-//! - Base-60 Alignment (Buffer sizes are multiples of 60)
-//! - Atomic control indices for zero-latency sync
 
 use crate::math::s60::S60;
 use std::cell::UnsafeCell;
@@ -17,7 +12,6 @@ pub const BUFFER_SIZE_S60: usize = 3600; // 60^2 blocks
 const CACHE_LINE_SIZE: usize = 64;
 
 /// Zero-Latency Ring Buffer
-/// Designed for single-producer, single-consumer (SPSC) lock-free access.
 pub struct ResonantBuffer {
     data: Box<[UnsafeCell<S60>]>,
     head: AtomicUsize,               // Write index
@@ -25,8 +19,6 @@ pub struct ResonantBuffer {
     _padding: [u8; CACHE_LINE_SIZE], // Reduce false sharing
 }
 
-// SAFETY: SPSC access pattern assumed.
-// Sync is safe because head/tail are atomic and buffer is fixed size.
 unsafe impl Sync for ResonantBuffer {}
 
 impl ResonantBuffer {
@@ -34,7 +26,7 @@ impl ResonantBuffer {
     pub fn new() -> Self {
         let mut vec = Vec::with_capacity(BUFFER_SIZE_S60);
         for _ in 0..BUFFER_SIZE_S60 {
-            vec.push(UnsafeCell::new(S60::new(0, 0, 0, 0, 0).unwrap()));
+            vec.push(UnsafeCell::new(S60::new(0, 0, 0, 0, 0)));
         }
 
         Self {
@@ -46,41 +38,33 @@ impl ResonantBuffer {
     }
 
     /// Write a single harmonic quantum packet (S60) to the buffer.
-    /// Returns true if successful, false if buffer full (Backpressure).
     pub fn push(&self, value: S60) -> bool {
         let head = self.head.load(Ordering::Relaxed);
         let tail = self.tail.load(Ordering::Acquire);
 
         let next_head = (head + 1) % BUFFER_SIZE_S60;
-
         if next_head == tail {
-            return false; // Full (Harmonic Saturation)
+            return false; // Full
         }
 
-        // Write data
         unsafe {
             *self.data[head].get() = value;
         }
 
-        // Commit write
         self.head.store(next_head, Ordering::Release);
         true
     }
 
     /// Read a single harmonic quantum packet.
-    /// Returns Some(S60) or None if empty.
     pub fn pop(&self) -> Option<S60> {
         let tail = self.tail.load(Ordering::Relaxed);
         let head = self.head.load(Ordering::Acquire);
 
         if tail == head {
-            return None; // Empty (Vacuum State)
+            return None; // Empty
         }
 
-        // Read data
         let value = unsafe { *self.data[tail].get() };
-
-        // Commit read
         let next_tail = (tail + 1) % BUFFER_SIZE_S60;
         self.tail.store(next_tail, Ordering::Release);
 
@@ -99,9 +83,8 @@ impl ResonantBuffer {
         };
 
         // Convert count to percentage S60 (0-60 degrees roughly)
-        // 3600 capacity -> count/60 = degrees
         let degrees = (count as i64 * 60) / BUFFER_SIZE_S60 as i64;
-        S60::new(degrees as i32, 0, 0, 0, 0).unwrap()
+        S60::new(degrees, 0, 0, 0, 0)
     }
 }
 
@@ -119,14 +102,14 @@ mod tests {
 
         let t1 = thread::spawn(move || {
             for i in 0..100 {
-                while !writer_buf.push(S60::new(i, 0, 0, 0, 0).unwrap()) {
+                while !writer_buf.push(S60::new(i as i64, 0, 0, 0, 0)) {
                     // spin
                 }
             }
         });
 
         let t2 = thread::spawn(move || {
-            let mut sum = S60::new(0, 0, 0, 0, 0).unwrap();
+            let mut sum = S60::new(0, 0, 0, 0, 0);
             let mut count = 0;
             while count < 100 {
                 if let Some(val) = reader_buf.pop() {
@@ -141,6 +124,6 @@ mod tests {
         let final_sum = t2.join().unwrap();
 
         // Sum 0..99 = 4950
-        assert_eq!(final_sum.to_base_units() / S60::SCALE_0, 4950);
+        assert_eq!(final_sum.to_raw() / S60::SCALE_0, 4950);
     }
 }

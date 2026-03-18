@@ -1,14 +1,21 @@
-//! # S60 Math Module
+//! # 🛡️ S60 MATH CONSOLIDATION - SENTINEL CORTEX 🛡️
 //!
-//! S60 base-60 arithmetic for the swarm.
+//! Unified math bridge via me60os_core/SPA (60^4 accuracy).
+//! Compliant with YATRA Protocol: ZERO DECIMAL CONTAMINATION.
 
-pub mod s60;
-pub mod s60_legacy;
-pub mod s60_math;
 pub mod harmonic_logic;
 
-pub use s60::{S60, S60Error};
+/// Legacy S60 module bridge
+pub mod s60 {
+    pub use me60os_core::spa::SPA as S60;
+}
 
-// SPA and SPAMath available for modules that need me60os SPA directly
-pub use me60os_core::SPA;
+/// S60 Math function bridge
+pub mod s60_math {
+    pub use me60os_core::spa_math::SPAMath;
+    pub use me60os_core::spa_math::SPAMath as S60Math;
+}
+
+// Global re-exports for the Cortex
+pub use me60os_core::spa::SPA as S60;
 pub use me60os_core::spa_math::SPAMath;

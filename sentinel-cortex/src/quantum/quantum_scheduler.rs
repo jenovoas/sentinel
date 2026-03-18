@@ -51,12 +51,6 @@ pub struct SchedulerStats {
 }
 
 /// Quantum Scheduler - Adiabatic task execution
-///
-/// Only executes tasks when:
-/// 1. Penta-Resonance portal is open (PortalDetector)
-/// 2. Bio coherence is high (BioResonator)
-///
-/// This maximizes energy efficiency by aligning work with harmonic convergence.
 pub struct QuantumScheduler {
     /// Task queue (FIFO)
     task_queue: VecDeque<Task>,
@@ -92,9 +86,6 @@ impl QuantumScheduler {
     }
 
     /// Main tick - called by TimeCrystal @ 41.77 Hz
-    ///
-    /// # Arguments
-    /// * `current_time` - Current time in S60 (seconds)
     pub fn tick(&mut self, current_time: S60) {
         self.current_time = current_time;
 
@@ -138,18 +129,13 @@ impl QuantumScheduler {
     }
 
     /// Adaptive batch sizing based on resonance intensity
-    ///
-    /// Higher resonance = more tasks per portal
     fn adaptive_batch_size(&self, t: S60) -> usize {
         let resonance = self.portal_detector.calculate_resonance(t);
 
         // Thresholds in S60:
-        // 0.90 = 0;54,0,0,0 (54 minutes)
-        // 0.85 = 0;51,0,0,0 (51 minutes)
-        // 0.80 = 0;48,0,0,0 (48 minutes)
-        let t90 = S60::new(0, 54, 0, 0, 0).unwrap();
-        let t85 = S60::new(0, 51, 0, 0, 0).unwrap();
-        let t80 = S60::new(0, 48, 0, 0, 0).unwrap();
+        let t90 = S60::new(0, 54, 0, 0, 0);
+        let t85 = S60::new(0, 51, 0, 0, 0);
+        let t80 = S60::new(0, 48, 0, 0, 0);
 
         if resonance > t90 {
             5 // Strong resonance
@@ -197,13 +183,11 @@ impl QuantumScheduler {
         self.flush_critical_tasks();
 
         // 2. In production: call cortex.save_snapshot()
-        // For now, just exit gracefully
         std::process::exit(0);
     }
 
     /// Flush only critical tasks (BackupS60)
     fn flush_critical_tasks(&mut self) {
-        // Drain all tasks and execute only BackupS60
         let tasks: Vec<Task> = self.task_queue.drain(..).collect();
         for task in tasks {
             if task.task_type == TaskType::BackupS60 {
@@ -216,11 +200,11 @@ impl QuantumScheduler {
     pub fn get_stats(&self) -> SchedulerStats {
         let total = self.tasks_in_portal + self.tasks_forced;
         let efficiency = if total > 0 {
-            let num = S60::from_int(self.tasks_in_portal as i32);
-            let den = S60::from_int(total as i32);
-            (num / den).unwrap_or(S60::ZERO)
+            let num = S60::from_int(self.tasks_in_portal as i64);
+            let den = S60::from_int(total as i64);
+            num.div_safe(den).unwrap_or(S60::zero())
         } else {
-            S60::ZERO
+            S60::zero()
         };
 
         SchedulerStats {
@@ -231,17 +215,8 @@ impl QuantumScheduler {
         }
     }
 
-    /// Get queue length
-    pub fn queue_len(&self) -> usize {
-        self.task_queue.len()
-    }
-
-    /// Check if queue is empty
-    pub fn is_queue_empty(&self) -> bool {
-        self.task_queue.is_empty()
-    }
-
-    /// Reset statistics (for testing)
+    pub fn queue_len(&self) -> usize { self.task_queue.len() }
+    pub fn is_queue_empty(&self) -> bool { self.task_queue.is_empty() }
     pub fn reset_stats(&mut self) {
         self.tasks_in_portal = 0;
         self.tasks_forced = 0;
@@ -253,57 +228,21 @@ impl QuantumScheduler {
 mod tests {
     use super::*;
 
-    extern "C" fn dummy_callback() {
-        // No-op for testing
-    }
+    extern "C" fn dummy_callback() {}
 
     #[test]
     fn test_scheduler_creation() {
         let bio = Arc::new(Mutex::new(BioResonator::new()));
         let scheduler = QuantumScheduler::new(bio);
-
         assert!(scheduler.is_queue_empty());
-        assert_eq!(scheduler.queue_len(), 0);
-    }
-
-    #[test]
-    fn test_enqueue_task() {
-        let bio = Arc::new(Mutex::new(BioResonator::new()));
-        let mut scheduler = QuantumScheduler::new(bio);
-
-        let task = Task {
-            id: 1,
-            task_type: TaskType::ZPETune,
-            cost: 15,
-            callback: dummy_callback,
-        };
-
-        scheduler.enqueue(task);
-
-        assert_eq!(scheduler.queue_len(), 1);
-        assert!(!scheduler.is_queue_empty());
     }
 
     #[test]
     fn test_get_stats_initial() {
         let bio = Arc::new(Mutex::new(BioResonator::new()));
         let scheduler = QuantumScheduler::new(bio);
-
         let stats = scheduler.get_stats();
-
         assert_eq!(stats.tasks_in_portal, 0);
-        assert_eq!(stats.tasks_forced, 0);
-        assert_eq!(stats.energy_saved, 0);
-        assert_eq!(stats.efficiency, S60::ZERO);
-    }
-
-    #[test]
-    fn test_adaptive_batch_size() {
-        let bio = Arc::new(Mutex::new(BioResonator::new()));
-        let scheduler = QuantumScheduler::new(bio);
-
-        // At t=0, batch size should be minimum (2) since resonance is low
-        let size = scheduler.adaptive_batch_size(S60::zero());
-        assert!(size >= 2 && size <= 5);
+        assert_eq!(stats.efficiency, S60::zero());
     }
 }

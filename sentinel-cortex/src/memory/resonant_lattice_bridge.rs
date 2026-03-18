@@ -5,7 +5,7 @@
 
 use me60os_core::resonant_matrix::ResonantMatrix as ResonantLattice;
 use me60os_core::shm_bridge::PySharedBuffer;
-use me60os_core::SPA as MeS60;
+use me60os_core::spa::SPA as MeS60;
 
 /// Bridge wrapper for ME-60OS ResonantLattice
 pub struct ResonantLatticeBridge {
