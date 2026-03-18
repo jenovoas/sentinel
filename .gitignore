@@ -64,14 +64,19 @@ internal/
 .backups/
 .envrc
 
-# AI session file patterns (prevent future exposure)
-GEMINI_*.md
-QWEN_*.md
-OPENCODE_*.md
-CONTEXTO_*.md
-*_TASK.md
-*_RESULT.md
-*_SESSION_RESULT.md
+# AI session and Orchestration (prevent exposure)
+.github/
+AI_PRIME_DIRECTIVES.md
+ANTIGRAVITY.md
+Analiza_mi_visión_del_sistema_research.md
+GEMINI*.md
+QWEN*.md
+OPENCODE*.md
+CONTEXTO*.md
+PROMPT_GLOBAL_AGENTES.md
+SYSTEM_PROMPT
+CLAUDE.md
+INTERCEPTOR_RESULT.md
 internal/
 .gemini/
 .claude/
