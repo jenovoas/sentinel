@@ -4,73 +4,50 @@
 # S60 PID CONTROLLER: CONTROL ADAPTATIVO PARA SISTEMAS FLOQUET
 # -------------------------------------------------------------------------------------
 # Implementación de un controlador Proporcional-Integral-Derivativo (PID)
-# utilizando aritmética pura Base-60 para estabilizar cristales de tiempo.
+# MIGRADO: Utiliza el S60PID nativo de Rust (me60os_core).
 # -------------------------------------------------------------------------------------
 
-from quantum.yatra_core import S60
+import sys
+import os
+from yatra_core import S60
 
+try:
+    from me60os_core import S60PID as RustS60PID, SPA
+    RUST_AVAILABLE = True
+except ImportError as e:
+    print(f"CRITICAL: No se pudo importar la librería nativa Rust me60os_core.so: {e}")
+    sys.exit(1)
+
+# Wrapper compatible para scripts que importen S60PID
 class S60PID:
-    """
-    Controlador PID discreto para mantener variables de estado S60 estables.
-    Ecuación: u(t) = Kp*e(t) + Ki*Integral(e) + Kd*Derivada(e)
-    """
+    """Wrapper para el S60PID nativo de Rust usando tipos S60."""
+    
     def __init__(self, kp, ki, kd, setpoint=S60(0)):
-        """
-        :param kp: Ganancia Proporcional (S60)
-        :param ki: Ganancia Integral (S60)
-        :param kd: Ganancia Derivativa (S60)
-        :param setpoint: Valor objetivo a mantener (S60)
-        """
-        self.kp = kp
-        self.ki = ki
-        self.kd = kd
-        self.setpoint = setpoint
+        kp_raw = kp._value if hasattr(kp, '_value') else kp.to_raw()
+        ki_raw = ki._value if hasattr(ki, '_value') else ki.to_raw()
+        kd_raw = kd._value if hasattr(kd, '_value') else kd.to_raw()
+        setp_raw = setpoint._value if hasattr(setpoint, '_value') else setpoint.to_raw()
         
-        # Estado interno
-        self._prev_error = S60(0)
-        self._integral = S60(0)
+        self._pid = RustS60PID(
+            SPA._from_raw(kp_raw), 
+            SPA._from_raw(ki_raw), 
+            SPA._from_raw(kd_raw), 
+            SPA._from_raw(setp_raw)
+        )
         
     def update(self, measured_value, dt):
-        """
-        Calcula la salida de control u(t) basada en el valor medido actual.
-        :param measured_value: Valor actual del sistema (Input)
-        :param dt: Paso de tiempo (S60)
-        """
-        # 1. Calcular Error
-        error = self.setpoint - measured_value
+        meas_raw = measured_value._value if hasattr(measured_value, '_value') else measured_value.to_raw()
+        dt_raw = dt._value if hasattr(dt, '_value') else dt.to_raw()
         
-        # 2. Término Proporcional
-        p_term = self.kp * error
+        out_spa = self._pid.update(SPA._from_raw(meas_raw), SPA._from_raw(dt_raw))
+        return S60._from_raw(out_spa.to_raw())
         
-        # 3. Término Integral (Acumulación de error en el tiempo)
-        # Integral += error * dt
-        self._integral = self._integral + (error * dt)
-        i_term = self.ki * self._integral
-        
-        # 4. Término Derivativo (Tasa de cambio del error)
-        # Derivada = (error - prev_error) / dt
-        if dt > S60(0):
-            d_error = (error - self._prev_error) / dt
-            d_term = self.kd * d_error
-        else:
-            d_term = S60(0)
-            
-        # Actualizar estado para siguiente ciclo
-        self._prev_error = error
-        
-        # 5. Salida Total
-        output = p_term + i_term + d_term
-        
-        return output
-
     def reset(self):
-        """Reinicia la integral y el error previo."""
-        self._prev_error = S60(0)
-        self._integral = S60(0)
+        self._pid.reset()
 
 if __name__ == "__main__":
-    # PRUEBA DE ESTABILIZACIÓN (UNIT TEST)
-    print("🎛️  TESTING S60 PID CONTROLLER")
+    # PRUEBA DE ESTABILIZACIÓN (UNIT TEST NATIVO)
+    print("🎛️  TESTING S60 PID CONTROLLER (RUST NATIVE)")
     
     # Objetivo: Mantener amplitud en 100
     target = S60(100)
