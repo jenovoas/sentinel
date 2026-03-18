@@ -1,6 +1,6 @@
 from celery import Celery
 from app.config import get_settings
-from app.quantum_scheduler import quantum_gate, T_BIO, T_CYCLE
+from app.quantum_scheduler import T_BIO, T_CYCLE
 import logging
 
 settings = get_settings()
