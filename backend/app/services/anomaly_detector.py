@@ -5,11 +5,12 @@ Implements baseline statistical detection for pre-AI analysis
 
 import logging
 from datetime import datetime, timedelta
+from enum import Enum
+from typing import List, Optional, Dict, Any
 from sqlalchemy import and_, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.monitoring import Anomaly, AnomalyType, SeverityLevel, MetricSample
-
 
 logger = logging.getLogger(__name__)
 
@@ -26,17 +27,23 @@ class DetectionMethod(str, Enum):
 import sys
 from pathlib import Path
 
-# Agregar soporte me-60os (SOMA Rust Core)
+# Try to import me60os_core with multiple fallback paths to resolve import errors
 try:
     import me60os_core
 except ImportError:
-    import sys
-    sys.path.insert(0, str(Path(__file__).parent.parent))
+    # Try parent directory (app/)
+    sys.path.append(str(Path(__file__).parent.parent))
+    # Try project root (backend/)
+    sys.path.append(str(Path(__file__).parent.parent.parent))
+    # Try specific build directory if exists
+    sys.path.append(str(Path(__file__).parent.parent.parent / "build"))
+    
     try:
         import me60os_core
     except ImportError:
-        logger.error("No se pudo importar me60os_core en anomaly_detector")
-        sys.exit(1)
+        logger.error("❌ me60os_core (SOMA Rust) not found in search paths. Anomaly detection will be limited.")
+        # Define a mock or handle missing core to prevent crash
+        me60os_core = None
 
 
 class AnomalyDetector:
@@ -46,6 +53,10 @@ class AnomalyDetector:
     """
 
     def __init__(self, baseline_samples: int = 100, z_score_threshold: float = 3.0):
+        if me60os_core is None:
+            self._core = None
+            logger.warning("AnomalyDetector initialized without Rust Core backend")
+            return
         self._core = me60os_core.AnomalyDetectorCore(baseline_samples, z_score_threshold)
         self._learning_notified = False
 
@@ -61,6 +72,9 @@ class AnomalyDetector:
         memory_total_mb: float = 0,
     ) -> List[Anomaly]:
         
+        if self._core is None:
+            return []
+
         raw_anomalies = self._core.analyze_metrics(
             float(cpu), float(memory), float(network_bytes),
             float(gpu) if gpu is not None else None,

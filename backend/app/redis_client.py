@@ -17,14 +17,22 @@ Usage:
 """
 
 import logging
+import os
 from typing import Optional
 import redis.asyncio as redis
 from redis.asyncio.sentinel import Sentinel
 
 logger = logging.getLogger(__name__)
 
-# Global Sentinel instance
+from app.config import get_settings
+settings = get_settings()
+
+# REDIS_MODE: 'standalone' or 'sentinel'
+REDIS_MODE = os.getenv("REDIS_MODE", "standalone").lower()
+
+# Global instances
 _sentinel: Optional[Sentinel] = None
+_redis_standalone: Optional[redis.Redis] = None
 
 
 def get_sentinel() -> Sentinel:
@@ -60,51 +68,38 @@ def get_sentinel() -> Sentinel:
 
 
 async def get_redis_master() -> redis.Redis:
-    """
-    Get Redis master connection for writes
-    
-    Automatically connects to current master.
-    If master fails, Sentinel will promote a replica and this will
-    automatically connect to the new master.
-    
-    Returns:
-        redis.Redis: Connection to Redis master
-    """
-    sentinel = get_sentinel()
-    
-    # Get master connection
-    # 'mymaster' is the name we configured in sentinel.conf
-    master = sentinel.master_for(
-        'mymaster',
-        socket_timeout=1.0,
-        socket_connect_timeout=1.0,
-        decode_responses=True,
-    )
-    
-    return master
+    """Get Redis connection for writes (master or standalone)"""
+    if REDIS_MODE == "sentinel":
+        sentinel = get_sentinel()
+        return sentinel.master_for(
+            'mymaster',
+            socket_timeout=1.0,
+            socket_connect_timeout=1.0,
+            decode_responses=True,
+        )
+    else:
+        # Standalone mode
+        return redis.from_url(
+            settings.redis_url,
+            decode_responses=True,
+            socket_timeout=1.0,
+            socket_connect_timeout=1.0,
+        )
 
 
 async def get_redis_slave() -> redis.Redis:
-    """
-    Get Redis slave connection for reads
-    
-    Automatically load balances across available replicas.
-    Use this for read-heavy operations to offload master.
-    
-    Returns:
-        redis.Redis: Connection to Redis replica
-    """
-    sentinel = get_sentinel()
-    
-    # Get slave connection (load balanced)
-    slave = sentinel.slave_for(
-        'mymaster',
-        socket_timeout=1.0,
-        socket_connect_timeout=1.0,
-        decode_responses=True,
-    )
-    
-    return slave
+    """Get Redis connection for reads (slave or standalone)"""
+    if REDIS_MODE == "sentinel":
+        sentinel = get_sentinel()
+        return sentinel.slave_for(
+            'mymaster',
+            socket_timeout=1.0,
+            socket_connect_timeout=1.0,
+            decode_responses=True,
+        )
+    else:
+        # In standalone, slave is the same as master
+        return await get_redis_master()
 
 
 async def check_redis_health() -> dict:

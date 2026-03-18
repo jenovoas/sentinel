@@ -11,12 +11,12 @@
 //!
 //! Reference: `implementation_plan.md` (Sentinel v8.0)
 
-use crate::math::s60::S60;
+use me60os_core::spa::SPA;
 use std::fmt;
 
-/// Logic Score: S60[0;0] (Pure Noise) to S60[1;0] (Pure Tonal Unity)
-/// PURE S60: No float contamination
-pub type CoherenceScore = S60;
+/// Logic Score: SPA[0;0] (Pure Noise) to SPA[1;0] (Pure Tonal Unity)
+/// PURE SPA: No float contamination
+pub type CoherenceScore = SPA;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum LogicState {
@@ -31,17 +31,17 @@ pub enum LogicState {
 /// Represents a state in the Harmonic Processor
 #[derive(Debug, Clone, Copy)]
 pub struct HarmonicState {
-    pub ratio: S60,  // Current frequency ratio relative to Root
-    pub phase: S60,  // Phase offset (0-360 degrees)
+    pub ratio: SPA,  // Current frequency ratio relative to Root
+    pub phase: SPA,  // Phase offset (0-360 degrees)
     pub energy: u32, // "Amplitude" or confidence
 }
 
 impl HarmonicState {
     /// Create a new Harmonic State
-    pub fn new(d: i32, m: u8, s: u8) -> Self {
+    pub fn new(d: i64, m: i64, s: i64) -> Self {
         HarmonicState {
-            ratio: S60::new(d, m, s, 0, 0).unwrap_or(S60::ZERO),
-            phase: S60::ZERO,
+            ratio: SPA::new(d, m, s, 0, 0),
+            phase: SPA::zero(),
             energy: 100,
         }
     }
@@ -73,26 +73,27 @@ impl HarmonicState {
 
     /// Evaluate the "Truthiness" (Consonance) of the state
     pub fn evaluate_logic(&self) -> LogicState {
-        // Get raw value for comparison
-        let val = self.ratio.to_base_units();
+        // Get raw value for comparison (SCALE_0 = 12,960,000)
+        let val = self.ratio.to_raw();
 
-        // Constants in raw S60 units
-        let true_val = S60::new(1, 30, 0, 0, 0).unwrap().to_base_units();
-        let maybe_val = S60::new(1, 20, 0, 0, 0).unwrap().to_base_units();
-        let ref_val = S60::new(26, 0, 0, 0, 0).unwrap().to_base_units();
-        let false_val = S60::new(1, 24, 22, 0, 0).unwrap().to_base_units();
+        // Constants in raw SPA units
+        // TRUE: 3/2 = 1.5 = 19,440,000
+        let true_val = SPA::new(1, 30, 0, 0, 0).to_raw();
+        // MAYBE: 4/3 = 1.333... = 17,280,000
+        let maybe_val = SPA::new(1, 20, 0, 0, 0).to_raw();
+        // REFERENCE: 26.0 = 26 * 12,960,000
+        let ref_val = SPA::new(26, 0, 0, 0, 0).to_raw();
+        // FALSE: Tritone 45/32 ≈ 1.40625 = 18,225,000
+        let false_val = SPA::new(1, 24, 22, 30, 0).to_raw();
 
-        // Tolerance window: 3 minutes (0.05) to accommodate integer timestamp quantization
-        // 17s period implies +/- 0.5s error => 0.5/17 = 0.029 deviation.
-        // 1 min (0.016) is too strict. 2 min (0.033) is tight. 3 min (0.05) is safe.
-        let minute = S60::new(0, 1, 0, 0, 0).unwrap();
-        let three = S60::new(3, 0, 0, 0, 0).unwrap();
-        let tolerance = (minute * three).to_base_units();
+        // Tolerance window: 3 minutes (0.05) 
+        // 3min = 3 * 216,000 = 648,000 units
+        let tolerance = 648_000;
 
         if (val - ref_val).abs() < tolerance {
             LogicState::Reference
-        } else if (val - S60::ONE.to_base_units()).abs() < tolerance {
-            // Unison Check
+        } else if (val - SPA::SCALE_0).abs() < tolerance {
+            // Unison Check (1.0)
             LogicState::Unison
         } else if (val - true_val).abs() < tolerance {
             LogicState::True
@@ -124,22 +125,21 @@ impl HarmonicGate for HarmonicState {
     /// True XOR Unison = True
     fn h_xor(a: HarmonicState, b: HarmonicState) -> HarmonicState {
         // Find Max and Min to calculate interval >= 1.0
-        let (max, min) = if a.ratio.to_base_units() >= b.ratio.to_base_units() {
+        let (max, min) = if a.ratio.to_raw() >= b.ratio.to_raw() {
             (a.ratio, b.ratio)
         } else {
             (b.ratio, a.ratio)
         };
 
-        // Interval = Max / Min (S60 / S60 division)
-        let interval = max / min; // returns Result<S60, S60Error>
-        let raw_ratio = interval.unwrap_or(S60::new(1, 0, 0, 0, 0).unwrap());
+        // Interval = Max / Min (SPA division returns SPA directly)
+        let raw_ratio = if min.to_raw() != 0 {
+            max / min
+        } else {
+            SPA::one()
+        };
 
         // Phase Difference
-        let diff_phase = if a.phase.to_base_units() >= b.phase.to_base_units() {
-            a.phase - b.phase
-        } else {
-            b.phase - a.phase
-        };
+        let diff_phase = (a.phase - b.phase).abs();
 
         HarmonicState {
             ratio: raw_ratio,
@@ -156,18 +156,17 @@ impl HarmonicGate for HarmonicState {
         // Keeps T*T=T and T*F=F
         let true_ratio = HarmonicState::logic_true().ratio;
 
+        // Multiply (SPA * SPA result normalized to SCALE_0)
         let product = a.ratio * b.ratio;
         // Divide by 3:2 (Truth reference)
-        let normalized = product / true_ratio;
-        let raw_product = normalized.unwrap_or(S60::ZERO); // Handle division error
+        let raw_product = product / true_ratio;
 
         let phase_sum = a.phase + b.phase;
-        let two = S60::new(2, 0, 0, 0, 0).unwrap();
-        let phase_avg = phase_sum / two;
+        let phase_avg = phase_sum / 2i64;
 
         HarmonicState {
             ratio: raw_product,
-            phase: phase_avg.unwrap_or(S60::ZERO), // Avg phase
+            phase: phase_avg, // Avg phase
             energy: (a.energy + b.energy) / 2,
         }
     }
@@ -177,15 +176,14 @@ impl HarmonicGate for HarmonicState {
     /// Example: (3:2 + 3:2)/2 = 3:2 (True + True = True)
     fn h_or(a: HarmonicState, b: HarmonicState) -> HarmonicState {
         let sum = a.ratio + b.ratio;
-        let two = S60::new(2, 0, 0, 0, 0).unwrap();
-        let avg = sum / two; // S60 division returns Result
+        let avg = sum / 2i64; 
 
         let phase_sum = a.phase + b.phase;
-        let phase_avg = phase_sum / two;
+        let phase_avg = phase_sum / 2i64;
 
         HarmonicState {
-            ratio: avg.unwrap_or(S60::ZERO),
-            phase: phase_avg.unwrap_or(S60::ZERO),
+            ratio: avg,
+            phase: phase_avg,
             energy: std::cmp::max(a.energy, b.energy),
         }
     }
@@ -195,12 +193,12 @@ impl HarmonicGate for HarmonicState {
     /// NOT(3:2) = 2 / (3:2) = 4:3 (Fifth -> Fourth)
     /// NOT(Tritone) -> Inverted Tritone
     fn h_not(a: HarmonicState) -> HarmonicState {
-        let octave = S60::new(2, 0, 0, 0, 0).unwrap();
+        let octave = SPA::new(2, 0, 0, 0, 0);
         let inverse = octave / a.ratio;
 
         HarmonicState {
-            ratio: inverse.unwrap_or(S60::ZERO),
-            phase: a.phase + S60::new(180, 0, 0, 0, 0).unwrap(), // +180 deg phase shift
+            ratio: inverse,
+            phase: a.phase + SPA::new(180, 0, 0, 0, 0), // +180 deg phase shift
             energy: a.energy,
         }
     }
@@ -217,17 +215,8 @@ impl HarmonicGate for HarmonicState {
             _ => 10,
         };
 
-        // Modulator: Add pattern/60 to the ratio?
-        // Or Multiply?
-        // Let's use it as a phase shifter or fine tuner.
-        // Modulate phase by pattern degrees?
-        // Pattern 10 -> 10/60 * 360 deg = 60 deg phase shift?
-        // S60(pattern, 0,0) represents degrees if typically used.
-
-        // Let's simply ADD the pattern as "minutes" to the ratio,
-        // shifting the pitch slightly ("Breathing").
         // Ratio += pattern/60
-        let shift = S60::new(0, pattern as u8, 0, 0, 0).unwrap();
+        let shift = SPA::new(0, pattern as i64, 0, 0, 0);
 
         HarmonicState {
             ratio: a.ratio + shift,
