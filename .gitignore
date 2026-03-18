@@ -65,10 +65,21 @@ internal/
 .envrc
 
 # AI session file patterns (prevent future exposure)
-GEMINI_TASK*.md
+GEMINI_*.md
 QWEN_*.md
-OPENCODE_TASK*.md
+OPENCODE_*.md
 CONTEXTO_*.md
+*_TASK.md
+*_RESULT.md
+*_SESSION_RESULT.md
+internal/
+.gemini/
+.claude/
+.sisyphus/
+.soma/
+.backups/
+.env*
+!.env.example
 
 # State files
 *.s60
