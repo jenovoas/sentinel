@@ -30,6 +30,7 @@ El proyecto **ME-60OS** tiene un sistema de orquestación de agentes completo:
 ### Orquestador Principal
 
 **agent_orchestrator.py** - Gestor central de agentes:
+
 - Carga configuración desde `agents_config.json`
 - Instancia agentes dinámicamente
 - Ejecuta ciclo `tick()` a 41Hz
@@ -289,6 +290,7 @@ class HandoffManager:
 **SOMA v3.0 = SOMA Orchestration + ME-60OS Agent System**
 
 No reescribimos nada de ME-60OS. SOMA se integra como capa superior que:
+
 - Coordina handoffs entre agentes IA externos
 - Usa ME-60OS agents para monitoreo del sistema
 - Sigue ciclo QHC vía qhc-agent

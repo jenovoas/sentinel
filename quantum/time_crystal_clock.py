@@ -15,7 +15,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 try:
-    from quantum.yatra_core import S60
+    from yatra_core import S60
 except ImportError:
     try:
         from yatra_core import S60
@@ -23,6 +23,13 @@ except ImportError:
         # Fallback de emergencia
         print("CRITICAL: Yatra Core missing. Clock running in degraded mode.")
         S60 = None
+
+try:
+    from me60os_core import IsochronousClock
+    RUST_AVAILABLE = True
+except ImportError:
+    print("⚠️ IsochronousClock no encontrado en me-60os_core. Usando versión Python nativa.")
+    RUST_AVAILABLE = False
 
 class TimeCrystalClock:
     """
@@ -39,55 +46,56 @@ class TimeCrystalClock:
     """
     
     def __init__(self):
-        # INTERVALO SAGRADO (Fixed Integer Nanoseconds)
-        # Derivación:
-        # F_Axion = 153.4 MHz
-        # Salto = 17
-        # Tick = (1 / (F_Axion / (17 * 60^3)))
-        # Valor pre-calculado para evitar floats en tiempo de ejecución:
         self.TICK_INTERVAL_NS = 23_939_835
-        
-        # Frecuencia objetivo (Hz) = 1 / (TICK_INTERVAL_NS / 1e9)
-        # TARGET_FREQ ≈ 41.77 Hz
         self.TARGET_FREQ = 1_000_000_000 // self.TICK_INTERVAL_NS  # ~41 Hz
         
-        # Estado Interno (Enteros Puros)
-        self.start_time_ns = time.perf_counter_ns()
+        if RUST_AVAILABLE:
+            self._core_clock = IsochronousClock()
+            print(f"💎 YATRA CLOCK INIT (RUST NATIVE): Intervalo {self.TICK_INTERVAL_NS} ns, Freq {self.TARGET_FREQ} Hz")
+        else:
+            self.start_time_ns = time.perf_counter_ns()
+            self._core_clock = None
+            print(f"💎 YATRA CLOCK INIT (PYTHON FALLBACK): Intervalo {self.TICK_INTERVAL_NS} ns, Freq {self.TARGET_FREQ} Hz")
+            
         self.ticks = 0
         self.drift_history = []
         
-        print(f"💎 YATRA CLOCK INIT: Intervalo {self.TICK_INTERVAL_NS} ns, Freq {self.TARGET_FREQ} Hz")
-        
     def tick(self):
         """
-        Espera el siguiente pulso sagrado.
-        Usa aritmética de enteros para calcular el tiempo de sueño.
+        Espera el siguiente pulso sagrado delegando al SO/Rust.
         """
         self.ticks += 1
         
-        # 1. ¿Dónde deberíamos estar? (Tiempo Platónico Ideal)
-        target_ns = self.start_time_ns + (self.ticks * self.TICK_INTERVAL_NS)
-        
-        # 2. ¿Dónde estamos? (Tiempo Físico Real)
-        current_ns = time.perf_counter_ns()
-        
-        # 3. Diferencia (Entropía Temporal)
-        error_ns = target_ns - current_ns
-        
-        if error_ns > 0:
-            # Vamos adelantados. Esperar para sincronizar.
-            # (El único float inevitable: decirle al OS cuánto dormir en segundos)
-            sleep_sec = error_ns / 1_000_000_000
-            time.sleep(sleep_sec)
-        else:
-            # Vamos atrasados (Drift). No dormimos.
-            # Registramos la magnitud del retraso.
-            drift = abs(error_ns)
-            self.drift_history.append(drift)
+        if self._core_clock:
+            # Delegado al thread::sleep y perf counter de Rust
+            current_before = time.perf_counter_ns()
+            self._core_clock.tick()
+            current_after = time.perf_counter_ns()
             
-            # Mantener historia corta (Un "minuto" de ticks = 60)
+            # Aproximamos el drift midiendo diferencia del sleep OS
+            expected = current_before + self.TICK_INTERVAL_NS
+            drift = abs(current_after - expected)
+        else:
+            target_ns = self.start_time_ns + (self.ticks * self.TICK_INTERVAL_NS)
+            current_ns = time.perf_counter_ns()
+            error_ns = target_ns - current_ns
+            
+            if error_ns > 0:
+                sleep_sec = error_ns / 1_000_000_000
+                time.sleep(sleep_sec)
+                drift = 0
+            else:
+                drift = abs(error_ns)
+                
+        if drift > 0:
+            self.drift_history.append(drift)
             if len(self.drift_history) > 60:
                 self.drift_history.pop(0)
+
+    def get_nanos(self):
+        if self._core_clock:
+            return self._core_clock.get_nanos()
+        return time.perf_counter_ns()
 
     def get_coherence(self):
         """
@@ -97,22 +105,16 @@ class TimeCrystalClock:
             if S60: return S60(1, 0, 0)
             return 100 # Fallback
             
-        # Promedio de drift en ns (División entera)
         avg_drift = sum(self.drift_history) // len(self.drift_history)
-        
-        # Tolerancia: 1% del intervalo (~240,000 ns)
         tolerance = self.TICK_INTERVAL_NS // 100
         
         if avg_drift <= tolerance:
              if S60: return S60(1, 0, 0) # Coherencia Perfecta
              return 100
              
-        # Si hay drift, penalizamos
-        # Penalización lineal: Por cada 'tolerance' extra de drift, perdemos 1 segundo S60
         penalty_units = (avg_drift - tolerance) // tolerance
         
         if S60:
-            # S60(1, 0, 0) es 60 minutos. Restamos minutos.
             remaining_minutes = max(0, 60 - penalty_units)
             return S60(0, remaining_minutes, 0)
         else:
