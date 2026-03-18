@@ -61,6 +61,8 @@ internal/
 .claude/
 .sisyphus/
 .soma/
+.backups/
+.envrc
 
 # AI session file patterns (prevent future exposure)
 GEMINI_TASK*.md
