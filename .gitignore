@@ -52,3 +52,4 @@ yarn-error.log*
 .gemini/
 gha-creds-*.json
 .chroma_db/
+.env.fenix
