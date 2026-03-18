@@ -92,7 +92,7 @@ services:
       - "traefik.http.routers.prometheus.rule=Host(`prometheus.pinguinoseguro.cl`)"
       - "traefik.http.routers.prometheus.entrypoints=websecure"
       - "traefik.http.routers.prometheus.tls.certresolver=powerdns"
-      - "traefik.http.middlewares.monitor-auth.basicauth.users=${TRAEFIK_BASIC_AUTH:-admin:$$2y$$05$$dSKcd.QFwH0t8tzu9fLCNO0AxrI78yBAwn3pSbY90chb4.wN8DEgO}"
+      - "traefik.http.middlewares.monitor-auth.basicauth.users=${TRAEFIK_BASIC_AUTH}"
       - "traefik.http.routers.prometheus.middlewares=monitor-auth"
     deploy:
       resources:
@@ -184,7 +184,7 @@ services:
       - "traefik.http.routers.web.rule=Host(`dev.pinguinoseguro.cl`)"
       - "traefik.http.routers.web.entrypoints=websecure"
       - "traefik.http.routers.web.tls.certresolver=powerdns"
-      - "traefik.http.middlewares.monitor-auth.basicauth.users=${TRAEFIK_BASIC_AUTH:-admin:$$2y$$05$$dSKcd.QFwH0t8tzu9fLCNO0AxrI78yBAwn3pSbY90chb4.wN8DEgO}"
+      - "traefik.http.middlewares.monitor-auth.basicauth.users=${TRAEFIK_BASIC_AUTH}"
       - "traefik.http.routers.web.middlewares=monitor-auth"
     deploy:
       resources:
