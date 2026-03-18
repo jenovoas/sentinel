@@ -3,7 +3,6 @@
 # ==================================================================================
 
 services:
-
   # ── BASE DE DATOS ──────────────────────────────────────────────────────────────
 
   postgres:
@@ -19,7 +18,11 @@ services:
     networks:
       - sentinel_internal
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sentinel_user} -d ${POSTGRES_DB:-sentinel_db}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-sentinel_user} -d ${POSTGRES_DB:-sentinel_db}",
+        ]
       interval: 10s
     deploy:
       resources:
@@ -44,7 +47,7 @@ services:
   # ── CORTEX NATIVO (Axum/Rust) ──────────────────────────────────────────────────
 
   cortex:
-    build: 
+    build:
       context: ./sentinel-cortex
       dockerfile: Dockerfile
     container_name: sentinel-cortex
@@ -72,9 +75,6 @@ services:
         limits:
           memory: 256M
     restart: unless-stopped
-
-  # ── WORKERS CELERY ─────────────────────────────────────────────────────────────
-
 
   # ── OBSERVABILIDAD ─────────────────────────────────────────────────────────────
 
@@ -107,7 +107,7 @@ services:
     volumes:
       - /:/host:ro,rslave
     command:
-      - '--path.rootfs=/host'
+      - "--path.rootfs=/host"
     networks:
       - sentinel_internal
     deploy:
