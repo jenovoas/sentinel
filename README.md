@@ -133,6 +133,14 @@ CI runs on every PR via GitHub Actions (`rust-ci.yml` + `tests.yml`).
 
 ---
 
+## 🎓 External Feedback
+
+> *"Your direction of research sounds promising."*  
+> — Dr. Daniel Mansfield, UNSW Sydney  
+> *(Mathematician who decoded [Plimpton 322](https://en.wikipedia.org/wiki/Plimpton_322), December 2025)*
+
+---
+
 ## 📄 License
 
 MIT — see [LICENSE](./LICENSE)
