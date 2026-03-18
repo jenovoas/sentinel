@@ -1,48 +1,49 @@
 import sys
-import asyncio
 from pathlib import Path
+import time
 
-# Fix path to allow importing app
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent / "app"))
 
-from app.quantum_scheduler import QuantumBuffer, phi
-from app.services.anomaly_detector import AnomalyDetector
+import me60os_core
 
-async def test():
-    print("Testing QuantumBuffer SOMA...")
-    buf = QuantumBuffer(20)
-    # print("Buffer limit:", buf.overflow_limit) # Is this accessible? We'll see.
+def test():
+    print("=== Testing QuantumBuffer SOMA ===")
+    buf = me60os_core.QuantumBuffer(20)
+    print("Buffer is overflowing:", buf.is_overflow)
     buf.push("event1")
     buf.push("event2")
     print("Buffer size:", buf.size)
-    print("Buffer stats:", buf.stats)
+    print("Buffer portal stats:", buf.stats_portal)
     
-    print("Testing phi SOMA...")
-    print("phi(17.0) =", phi(17.0))
-    print("phi(8.5) =", phi(8.5))
+    print("\n=== Testing phi SOMA ===")
+    t_raw = int(round(17.0 * 12_960_000))
+    s60_t = me60os_core.SPA._from_raw(t_raw)
+    phi17 = me60os_core.QuantumSchedulerCore.static_phi(s60_t).to_raw() / 12_960_000.0
+    print("phi(17.0) =", phi17)
+    
+    t_raw = int(round(8.5 * 12_960_000))
+    s60_t = me60os_core.SPA._from_raw(t_raw)
+    phi85 = me60os_core.QuantumSchedulerCore.static_phi(s60_t).to_raw() / 12_960_000.0
+    print("phi(8.5) =", phi85)
 
-    print("Testing AnomalyDetector SOMA...")
-    detector = AnomalyDetector(10, 3.0)
+    print("\n=== Testing AnomalyDetector SOMA ===")
+    detector = me60os_core.AnomalyDetectorCore(10, 3.0)
     
     # Send some normal metrics
     for i in range(10):
-        await detector.analyze_metrics(
-            cpu=50.0, memory=50.0, network_bytes=1000, 
-            gpu=30.0, db_connections=10, db_locks=0, 
-            memory_used_mb=1000, memory_total_mb=4000
+        detector.analyze_metrics(
+            50.0, 50.0, 1000.0, 30.0, 10, 0, 1000.0, 4000.0
         )
-    print("Is learning?", detector._core.is_learning)
+    print("Detector finished learning?", not detector.is_learning)
     
     # Send an anomaly
-    anomalies = await detector.analyze_metrics(
-        cpu=95.0, memory=95.0, network_bytes=5000000, 
-        gpu=99.0, db_connections=80, db_locks=10, 
-        memory_used_mb=3800, memory_total_mb=4000
+    raw_anomalies = detector.analyze_metrics(
+        95.0, 95.0, 5000000.0, 99.0, 80, 10, 3800.0, 4000.0
     )
     
-    print(f"Detected {len(anomalies)} anomalies!")
-    for a in anomalies:
-        print(f"- {a.anomaly_type.name} ({a.severity.name}): {a.title}")
+    print(f"Detected {len(raw_anomalies)} anomalies!")
+    for a in raw_anomalies:
+        print(f"- {a['anomaly_type']} (Severity {a['severity']}): {a['title']}")
 
 if __name__ == "__main__":
-    asyncio.run(test())
+    test()

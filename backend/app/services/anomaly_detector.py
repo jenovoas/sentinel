@@ -5,11 +5,6 @@ Implements baseline statistical detection for pre-AI analysis
 
 import logging
 from datetime import datetime, timedelta
-from typing import Optional, List, Tuple
-from collections import deque
-from enum import Enum
-
-import numpy as np
 from sqlalchemy import and_, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
