@@ -53,3 +53,22 @@ yarn-error.log*
 gha-creds-*.json
 .chroma_db/
 .env.fenix
+
+# Internal — AI session artifacts, ops docs, exploratory research
+internal/
+
+# IDE and framework state
+.claude/
+.sisyphus/
+.soma/
+
+# AI session file patterns (prevent future exposure)
+GEMINI_TASK*.md
+QWEN_*.md
+OPENCODE_TASK*.md
+CONTEXTO_*.md
+
+# State files
+*.s60
+*.bak
+cortex_state.*
