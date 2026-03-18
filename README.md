@@ -27,13 +27,10 @@ The system runs **offline-first**, with no cloud dependencies.
 - eBPF programs running at Ring 0 for real-time base-60 ↔ binary transcoding
 - Low-latency data path between userspace agents and kernel
 
-### `quantum/` — Sexagesimal Math Library (Python)
-- `sovereign_math.py` — Core `S60` type: pure sexagesimal arithmetic
-- `s60_pid.py` — PID controllers using S60 (no float drift)
-- `complex_s60.py` — Complex numbers in base-60
-- `qaoa_s60.py` — Quantum Approximate Optimization Algorithm (QAOA) in S60
-- `vqe_s60.py` — Variational Quantum Eigensolver in S60
-- `quantum_noise_s60.py` — Quantum noise modeling without floating point
+### `quantum/` — Sexagesimal Math Library (Rust · via PyO3)
+- `me60os_core.so` — Núcleo Rust compilado desde me-60os (PyO3 bindings) — S60/U60 nativo sin float
+- `qaoa_s60.py` // `vqe_s60.py` — Wrappers Python sobre el núcleo Rust (QAOA, VQE en S60)
+- `s60_pid.py` // `complex_s60.py` — PID controllers y números complejos en base-60
 
 ### `agents/` — Modular Agent System
 Autonomous agents that operate over the sexagesimal framework:
@@ -58,11 +55,11 @@ Base-60 arithmetic has properties that make it mathematically attractive for exa
 - **Precision-critical domains**: Useful for time, angular measurements, signal processing, and control systems
 
 ```python
-from quantum.sovereign_math import S60
+import me60os_core as s60  # Rust core (PyO3)
 
-# Exact arithmetic — no rounding errors
-result = S60(59) + S60(1)    # = S60(1, 0) — exact carry in base-60
-phase  = S60(0, 30)          # = 0.5 in decimal — exactly representable
+# Aritmética exacta — sin errores de redondeo
+result = s60.S60(59) + s60.S60(1)   # = S60(1,0) — carry exacto en base-60
+phase  = s60.S60(0, 30)         # = 0.5 decimal — representable exacto
 ```
 
 ---
@@ -100,7 +97,7 @@ cargo test
 sentinel/
 ├── core/              # Rust core engine (S60 types, memory structures)
 ├── ebpf/              # eBPF programs for kernel-level translation
-├── quantum/           # Python sexagesimal math library
+├── quantum/           # Rust/PyO3 sexagesimal math library
 ├── agents/            # Modular autonomous agent system
 ├── backend/           # API layer
 ├── frontend/          # Dashboard UI
