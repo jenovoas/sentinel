@@ -149,6 +149,7 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
       - ./observability/grafana/grafana.fenix.ini:/etc/grafana/grafana.ini:ro,z
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro,z
     networks:
       - sentinel_internal
       - proxy

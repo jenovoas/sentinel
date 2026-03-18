@@ -6,7 +6,7 @@
 
 - [x] Aplicar protocolo global de Gemini/Claude en el workspace
 - [x] Crear `tasks/lessons.md` y documentar errores de Podman y Contexto
-- [ ] Validar paneles de Grafana para `sentinel-cortex` y exporters
+- [x] Validar paneles de Grafana para `sentinel-cortex` y exporters (Montaje de provisioning aplicado)
 - [x] **Configuración de Autenticación**
   - [x] Revisar htpasswd para Prometheus / Grafana en Traefik (Añadido middleware `monitor-auth` en compose)
 - [ ] **Siguiente Fase:** Transición a SOMA / Orquestador (por decidir con Usuario)
