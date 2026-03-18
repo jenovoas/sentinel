@@ -59,6 +59,14 @@ services:
         condition: service_healthy
     networks:
       - sentinel_internal
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cortex.rule=Host(`sentinel.pinguinoseguro.cl`)"
+      - "traefik.http.routers.cortex.entrypoints=websecure"
+      - "traefik.http.routers.cortex.tls.certresolver=powerdns"
+      - "traefik.http.services.cortex.loadbalancer.server.port=8000"
+      - "traefik.docker.network=proxy"
     deploy:
       resources:
         limits:
