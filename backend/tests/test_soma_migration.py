@@ -13,7 +13,7 @@ def test():
     buf.push("event1")
     buf.push("event2")
     print("Buffer size:", buf.size)
-    print("Buffer portal stats:", buf.stats_portal)
+    print("Buffer efficiency:", buf.efficiency)
     
     print("\n=== Testing phi SOMA ===")
     t_raw = int(round(17.0 * 12_960_000))
