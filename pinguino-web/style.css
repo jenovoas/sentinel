@@ -1,0 +1,264 @@
+:root {
+    --primary: #00f2ff;
+    --secondary: #7000ff;
+    --accent: #ff00ea;
+    --bg: #050508;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text: #e0e0e0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+/* Background Animations */
+.background-blobs {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    animation: move 20s infinite alternate;
+}
+
+.blob-1 {
+    width: 400px;
+    height: 400px;
+    background: var(--primary);
+    top: -100px;
+    left: -100px;
+}
+
+.blob-2 {
+    width: 300px;
+    height: 300px;
+    background: var(--secondary);
+    bottom: -50px;
+    right: -50px;
+    animation-delay: -5s;
+}
+
+.blob-3 {
+    width: 250px;
+    height: 250px;
+    background: var(--accent);
+    top: 40%;
+    left: 40%;
+    animation-duration: 15s;
+}
+
+@keyframes move {
+    from { transform: translate(0, 0); }
+    to { transform: translate(100px, 100px); }
+}
+
+/* Glassmorphism UI */
+.glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    margin: 20px;
+    position: sticky;
+    top: 20px;
+    z-index: 100;
+}
+
+nav .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+nav ul li a:hover {
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary);
+}
+
+/* Hero Section */
+.hero {
+    height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.hero .content {
+    padding: 60px;
+    max-width: 800px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    line-height: 1.1;
+}
+
+.gradient-text {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.cta-group {
+    margin-top: 40px;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.btn {
+    padding: 15px 35px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+    border: 2px solid transparent;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: var(--bg);
+}
+
+.btn-secondary {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+}
+
+.btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 20px var(--primary);
+}
+
+/* Sections */
+.section {
+    padding: 100px 50px;
+}
+
+h2 {
+    font-size: 2.5rem;
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.card {
+    padding: 40px;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Espiguita Visual */
+.espiguita-content {
+    display: flex;
+    align-items: center;
+    padding: 50px;
+    gap: 50px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.espiguita-visual {
+    width: 150px;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+}
+
+.spike {
+    width: 20px;
+    height: 100px;
+    background: linear-gradient(to top, #ffd700, #ff8c00);
+    border-radius: 10px;
+    position: relative;
+}
+
+.spike::before, .spike::after {
+    content: '';
+    position: absolute;
+    width: 15px;
+    height: 40px;
+    background: #ffd700;
+    border-radius: 50% 50% 0 50%;
+    left: -20px;
+    top: 10px;
+    transform: rotate(-30deg);
+}
+
+.spike::after {
+    left: 20px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(30deg);
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 40px;
+    margin: 50px 20px 20px;
+}
+
+/* Animations */
+.animate-fade-in {
+    animation: fadeIn 1.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

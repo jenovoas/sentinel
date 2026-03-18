@@ -1,0 +1,149 @@
+# ==================================================================================
+# docker-compose.internet.yml — Servicios Públicos del Ecosistema PinguinoSeguro
+# ==================================================================================
+
+version: '3.8'
+
+services:
+
+  # ── PORTAL WEB (Next.js) ──────────────────────────────────────────────────
+
+  pinguino-db:
+    image: docker.io/library/postgres:16-alpine
+    container_name: pinguino-db
+    environment:
+      POSTGRES_USER: pinguino
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: pinguinoseguro
+    volumes:
+      - pinguino_data:/var/lib/postgresql/data
+    networks:
+      - internet_internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pinguino -d pinguinoseguro"]
+      interval: 10s
+    restart: unless-stopped
+
+  pinguino-web:
+    build:
+      context: /home/jnovoas/Desarrollo/pinguinoseguro_web
+      dockerfile: Containerfile
+    container_name: pinguino-web
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_APP_URL=https://pinguinoseguro.cl
+      - DATABASE_URL=postgresql://pinguino:${POSTGRES_PASSWORD}@pinguino-db:5432/pinguinoseguro
+      - PROMETHEUS_URL=http://sentinel-prometheus:9090
+    depends_on:
+      pinguino-db:
+        condition: service_healthy
+    networks:
+      - internet_internal
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pinguino.rule=Host(`pinguinoseguro.cl`) || Host(`www.pinguinoseguro.cl`)"
+      - "traefik.http.routers.pinguino.entrypoints=websecure"
+      - "traefik.http.routers.pinguino.tls.certresolver=powerdns"
+      - "traefik.http.services.pinguino.loadbalancer.server.port=3000"
+      - "traefik.docker.network=proxy"
+    restart: unless-stopped
+
+  # ── PORTFOLIO PERSONAL (Estático) ──────────────────────────────────────────
+
+  portfolio:
+    build:
+      context: /home/jnovoas/Desarrollo/portfolio
+      dockerfile: Dockerfile
+    container_name: jaime-portfolio
+    networks:
+      - internet_internal
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portfolio.rule=Host(`portfolio.pinguinoseguro.cl`)"
+      - "traefik.http.routers.portfolio.entrypoints=websecure"
+      - "traefik.http.routers.portfolio.tls.certresolver=powerdns"
+      - "traefik.http.services.portfolio.loadbalancer.server.port=80"
+      - "traefik.docker.network=proxy"
+    restart: unless-stopped
+
+  # ── LA ESPIGUITA (ERP/API/IoT) ──────────────────────────────────────────────
+
+  laespiguita-db:
+    image: docker.io/library/postgres:16-alpine
+    container_name: laespiguita-db
+    environment:
+      POSTGRES_USER: espiguita
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: laespiguita
+    volumes:
+      - laespiguita_data:/var/lib/postgresql/data
+    networks:
+      - internet_internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U espiguita -d laespiguita"]
+      interval: 10s
+    restart: unless-stopped
+
+  laespiguita-api:
+    build:
+      context: /home/jnovoas/Desarrollo/laespiguita
+      dockerfile: Dockerfile.backend
+    container_name: laespiguita-api
+    environment:
+      - DATABASE_URL=postgres://espiguita:${POSTGRES_PASSWORD}@laespiguita-db:5432/laespiguita
+      - RUST_LOG=info
+      - JWT_SECRET=${SECRET_KEY}
+    depends_on:
+      laespiguita-db:
+        condition: service_healthy
+    networks:
+      - internet_internal
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.espiguita-api.rule=Host(`api-espiguita.pinguinoseguro.cl`)"
+      - "traefik.http.routers.espiguita-api.entrypoints=websecure"
+      - "traefik.http.routers.espiguita-api.tls.certresolver=powerdns"
+      - "traefik.http.services.espiguita-api.loadbalancer.server.port=3000"
+      - "traefik.docker.network=proxy"
+    restart: unless-stopped
+
+  laespiguita-web:
+    build:
+      context: /home/jnovoas/Desarrollo/laespiguita/frontend
+      dockerfile: Dockerfile.frontend
+    container_name: laespiguita-web
+    networks:
+      - internet_internal
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.espiguita-web.rule=Host(`laespiguita.pinguinoseguro.cl`)"
+      - "traefik.http.routers.espiguita-web.entrypoints=websecure"
+      - "traefik.http.routers.espiguita-web.tls.certresolver=powerdns"
+      - "traefik.http.services.espiguita-web.loadbalancer.server.port=80"
+      - "traefik.docker.network=proxy"
+    restart: unless-stopped
+
+  mosquitto:
+    image: docker.io/library/eclipse-mosquitto:latest
+    container_name: laespiguita-mqtt
+    volumes:
+      - ./docker/mosquitto/config:/mosquitto/config:ro,z
+      - ./docker/mosquitto/data:/mosquitto/data:z
+      - ./docker/mosquitto/log:/mosquitto/log:z
+    networks:
+      - internet_internal
+    restart: unless-stopped
+
+volumes:
+  pinguino_data:
+  laespiguita_data:
+
+networks:
+  internet_internal:
+    driver: bridge
+  proxy:
+    external: true
