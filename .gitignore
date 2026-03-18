@@ -74,6 +74,10 @@ internal/
 .sisyphus/
 .soma/
 .backups/
+docs/archive/
+docs/quantum/
+quantum/experiments/
+backend/credentials.json
 AI_PRIME_DIRECTIVES.md
 ANTIGRAVITY.md
 Analiza_mi_visión_del_sistema_research.md
@@ -87,13 +91,14 @@ CLAUDE.md
 INTERCEPTOR_RESULT.md
 .env*
 # !.env.example (Removing exception to hide ALL env files)
-**/*PLAN.md
-**/*TODO.md
-**/*TASK.md
-**/*RESULT.md
-**/*SESSION_RESULT.md
+**/*PLAN*.md
+**/*TODO*.md
+**/*TASK*.md
+**/*RESULT*.md
+**/*SESSION_RESULT*.md
 **/*.bak
 **/*.obsolete
+docs/research/validation/
 
 # State files
 *.s60
