@@ -1,7 +1,6 @@
 # 🏗️ Arquitectura de Sentinel (Ring 0)
 
-
-### 4. Capas de Seguridad (Ring 0-3)
+## 2. Capas de Seguridad (Ring 0-3)
 
 **Versión**: 1.2.0 (S60-Unified / Fenix Native)  
 **Última Actualización**: 18 de marzo de 2026  
