@@ -1,3 +1,5 @@
+# DEPRECATED: Migrated to sentinel-cortex/src/math/s60.rs
+# Este archivo es un proxy/wrapper. La implementación real está en Rust.
 # 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
 # -------------------------------------------------------------------------------------
 # ADVERTENCIA PARA AGENTES IA:
@@ -26,17 +28,21 @@ ZERO = S60(0, 0, 0, 0, 0)
 ONE = S60(1, 0, 0, 0, 0)
 
 # Constantes físicas aproximadas a racionales sexagesimales (Desde Rust directamente)
-PI_S60 = S60Math.PI 
+PI_S60 = S60Math.PI
 # PHI ~ 1; 37, 04, 55, 20
 PHI = S60(1, 37, 4, 55, 20)
+
 
 class SovereignLUT:
     """
     Proxy de compatibilidad redirigido a Rust S60Math.
     """
+
     @classmethod
     def initialize(cls):
-        print("✅ SovereignLUT: Carga de LUT Omitida. Se utiliza Taylor-Series en Rust (S60Math) en O(1) Memory.")
+        print(
+            "✅ SovereignLUT: Carga de LUT Omitida. Se utiliza Taylor-Series en Rust (S60Math) en O(1) Memory."
+        )
         pass
 
     @classmethod
@@ -44,4 +50,7 @@ class SovereignLUT:
         # Utiliza la implementación nativa Rust en lugar de LUT vieja
         return S60Math.sin_cos(angle)
 
-print("✅ SovereignMath: Redirigido exitosamente a YatraCore/Rust S60Math (Pure Integer Mode).")
+
+print(
+    "✅ SovereignMath: Redirigido exitosamente a YatraCore/Rust S60Math (Pure Integer Mode)."
+)
