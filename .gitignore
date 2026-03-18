@@ -64,8 +64,16 @@ internal/
 .backups/
 .envrc
 
-# AI session and Orchestration (prevent exposure)
+# AI, Orchestration and Internal Roadmaps (prevent exposure)
 .github/
+tasks/
+temporal/
+internal/
+.gemini/
+.claude/
+.sisyphus/
+.soma/
+.backups/
 AI_PRIME_DIRECTIVES.md
 ANTIGRAVITY.md
 Analiza_mi_visión_del_sistema_research.md
@@ -77,14 +85,15 @@ PROMPT_GLOBAL_AGENTES.md
 SYSTEM_PROMPT
 CLAUDE.md
 INTERCEPTOR_RESULT.md
-internal/
-.gemini/
-.claude/
-.sisyphus/
-.soma/
-.backups/
 .env*
 !.env.example
+**/*PLAN.md
+**/*TODO.md
+**/*TASK.md
+**/*RESULT.md
+**/*SESSION_RESULT.md
+**/*.bak
+**/*.obsolete
 
 # State files
 *.s60
