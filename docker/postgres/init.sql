@@ -1,6 +1,6 @@
 -- Enable extensions
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
-CREATE EXTENSION IF NOT EXISTS uuid-ossp;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Tenants table
 CREATE TABLE IF NOT EXISTS tenants (
@@ -71,17 +71,9 @@ INSERT INTO tenants (id, name, slug, is_active)
 VALUES ('00000000-0000-0000-0000-000000000000', 'Default Tenant', 'default', true)
 ON CONFLICT (slug) DO NOTHING;
 
--- Create application role with appropriate permissions
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'sentinel_app') THEN
-        CREATE ROLE sentinel_app LOGIN PASSWORD 'sentinel_password';
-    END IF;
-END
-$$;
+-- Grant permissions to sentinel_user (password managed via .env, not hardcoded)
+GRANT CONNECT ON DATABASE sentinel_db TO sentinel_user;
+GRANT USAGE ON SCHEMA public TO sentinel_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO sentinel_user;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO sentinel_user;
 
--- Grant permissions to application role
-GRANT CONNECT ON DATABASE sentinel_db TO sentinel_app;
-GRANT USAGE ON SCHEMA public TO sentinel_app;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO sentinel_app;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO sentinel_app;
