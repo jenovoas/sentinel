@@ -15,7 +15,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-sentinel_db}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro,z
     networks:
       - sentinel_internal
     healthcheck:
@@ -59,12 +59,6 @@ services:
         condition: service_healthy
     networks:
       - sentinel_internal
-      - proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.sentinel.rule=Host(`sentinel.pinguinoseguro.cl`)"
-      - "traefik.http.routers.sentinel.entrypoints=websecure"
-      - "traefik.http.routers.sentinel.tls.certresolver=powerdns"
     deploy:
       resources:
         limits:
@@ -73,24 +67,6 @@ services:
 
   # ── WORKERS CELERY ─────────────────────────────────────────────────────────────
 
-  celery_worker:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile.worker
-    container_name: sentinel-celery-worker
-    environment:
-      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-sentinel_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-sentinel_db}
-      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
-      REDIS_MODE: standalone
-      CELERY_BROKER_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
-      CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD}@redis:6379/1
-    networks:
-      - sentinel_internal
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-    restart: unless-stopped
 
   # ── OBSERVABILIDAD ─────────────────────────────────────────────────────────────
 
@@ -98,7 +74,7 @@ services:
     image: docker.io/prom/prometheus:latest
     container_name: sentinel-prometheus
     volumes:
-      - ./observability/prometheus/prometheus.fenix.yml:/etc/prometheus/prometheus.yml:ro
+      - ./observability/prometheus/prometheus.fenix.yml:/etc/prometheus/prometheus.yml:ro,z
       - prometheus_data:/prometheus
     networks:
       - sentinel_internal
@@ -108,10 +84,60 @@ services:
       - "traefik.http.routers.prometheus.rule=Host(`prometheus.pinguinoseguro.cl`)"
       - "traefik.http.routers.prometheus.entrypoints=websecure"
       - "traefik.http.routers.prometheus.tls.certresolver=powerdns"
+      - "traefik.http.middlewares.monitor-auth.basicauth.users=${TRAEFIK_BASIC_AUTH:-admin:$$2y$$05$$dSKcd.QFwH0t8tzu9fLCNO0AxrI78yBAwn3pSbY90chb4.wN8DEgO}"
+      - "traefik.http.routers.prometheus.middlewares=monitor-auth"
     deploy:
       resources:
         limits:
           memory: 256M
+    restart: unless-stopped
+
+  node-exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: sentinel-node-exporter
+    pid: host
+    volumes:
+      - /:/host:ro,rslave
+    command:
+      - '--path.rootfs=/host'
+    networks:
+      - sentinel_internal
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+    restart: unless-stopped
+
+  postgres-exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:latest
+    container_name: sentinel-postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER:-sentinel_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-sentinel_db}?sslmode=disable"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - sentinel_internal
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+    restart: unless-stopped
+
+  redis-exporter:
+    image: docker.io/oliver006/redis_exporter:latest
+    container_name: sentinel-redis-exporter
+    environment:
+      REDIS_ADDR: "redis://redis:6379"
+      REDIS_PASSWORD: "${REDIS_PASSWORD}"
+    depends_on:
+      - redis
+    networks:
+      - sentinel_internal
+    deploy:
+      resources:
+        limits:
+          memory: 64M
     restart: unless-stopped
 
   grafana:
@@ -122,7 +148,7 @@ services:
       GF_AUTH_ANONYMOUS_ENABLED: "false"
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./observability/grafana/grafana.fenix.ini:/etc/grafana/grafana.ini:ro
+      - ./observability/grafana/grafana.fenix.ini:/etc/grafana/grafana.ini:ro,z
     networks:
       - sentinel_internal
       - proxy
@@ -135,6 +161,26 @@ services:
       resources:
         limits:
           memory: 256M
+    restart: unless-stopped
+
+  web-server:
+    image: docker.io/nginx:alpine
+    container_name: sentinel-web
+    volumes:
+      - /home/jnovoas/www:/usr/share/nginx/html:ro
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web.rule=Host(`dev.pinguinoseguro.cl`)"
+      - "traefik.http.routers.web.entrypoints=websecure"
+      - "traefik.http.routers.web.tls.certresolver=powerdns"
+      - "traefik.http.middlewares.monitor-auth.basicauth.users=${TRAEFIK_BASIC_AUTH:-admin:$$2y$$05$$dSKcd.QFwH0t8tzu9fLCNO0AxrI78yBAwn3pSbY90chb4.wN8DEgO}"
+      - "traefik.http.routers.web.middlewares=monitor-auth"
+    deploy:
+      resources:
+        limits:
+          memory: 64M
     restart: unless-stopped
 
 volumes:

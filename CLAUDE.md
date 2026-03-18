@@ -1,5 +1,8 @@
 # CLAUDE.md — Sentinel
 
+> **[DIRECTIVA MAESTRA YATRA]**
+> **OBLIGATORIO**: Al iniciar cualquier interacción en este repositorio, DEBES leer inmediatamente los archivos `/home/jnovoas/Desarrollo/sentinel/PROMPT_GLOBAL_AGENTES.md` y `/home/jnovoas/Desarrollo/sentinel/tasks/lessons.md` y acatar sus 6 reglas de orquestación, verificación y automejora. Fenix es un entorno de producción Ring-0. Esta es la regla suprema.
+
 ## ¿Qué es Sentinel?
 Plataforma de **observabilidad y monitoreo inteligente** con integración de IA local.
 - Backend: Python (FastAPI + Celery + Alembic)
