@@ -1,0 +1,149 @@
+{
+  "env": {
+    "BAILIAN_CODING_PLAN_API_KEY": "REDACTED_BAILIAN_API_KEY"
+  },
+  "modelProviders": {
+    "openai": [
+      {
+        "id": "qwen3.5-plus",
+        "name": "[Bailian Coding Plan for Global/Intl] qwen3.5-plus",
+        "baseUrl": "https://coding-intl.dashscope.aliyuncs.com/v1",
+        "envKey": "BAILIAN_CODING_PLAN_API_KEY",
+        "generationConfig": {
+          "extra_body": {
+            "enable_thinking": true
+          },
+          "contextWindowSize": 1000000
+        }
+      },
+      {
+        "id": "qwen3-coder-plus",
+        "name": "[Bailian Coding Plan for Global/Intl] qwen3-coder-plus",
+        "baseUrl": "https://coding-intl.dashscope.aliyuncs.com/v1",
+        "envKey": "BAILIAN_CODING_PLAN_API_KEY",
+        "generationConfig": {
+          "contextWindowSize": 1000000
+        }
+      },
+      {
+        "id": "qwen3-coder-next",
+        "name": "[Bailian Coding Plan for Global/Intl] qwen3-coder-next",
+        "baseUrl": "https://coding-intl.dashscope.aliyuncs.com/v1",
+        "envKey": "BAILIAN_CODING_PLAN_API_KEY",
+        "generationConfig": {
+          "contextWindowSize": 262144
+        }
+      },
+      {
+        "id": "qwen3-max-2026-01-23",
+        "name": "[Bailian Coding Plan for Global/Intl] qwen3-max-2026-01-23",
+        "baseUrl": "https://coding-intl.dashscope.aliyuncs.com/v1",
+        "envKey": "BAILIAN_CODING_PLAN_API_KEY",
+        "generationConfig": {
+          "extra_body": {
+            "enable_thinking": true
+          },
+          "contextWindowSize": 262144
+        }
+      },
+      {
+        "id": "glm-4.7",
+        "name": "[Bailian Coding Plan for Global/Intl] glm-4.7",
+        "baseUrl": "https://coding-intl.dashscope.aliyuncs.com/v1",
+        "envKey": "BAILIAN_CODING_PLAN_API_KEY",
+        "generationConfig": {
+          "extra_body": {
+            "enable_thinking": true
+          },
+          "contextWindowSize": 202752
+        }
+      },
+      {
+        "id": "glm-5",
+        "name": "[Bailian Coding Plan for Global/Intl] glm-5",
+        "baseUrl": "https://coding-intl.dashscope.aliyuncs.com/v1",
+        "envKey": "BAILIAN_CODING_PLAN_API_KEY",
+        "generationConfig": {
+          "extra_body": {
+            "enable_thinking": true
+          },
+          "contextWindowSize": 202752
+        }
+      },
+      {
+        "id": "MiniMax-M2.5",
+        "name": "[Bailian Coding Plan for Global/Intl] MiniMax-M2.5",
+        "baseUrl": "https://coding-intl.dashscope.aliyuncs.com/v1",
+        "envKey": "BAILIAN_CODING_PLAN_API_KEY",
+        "generationConfig": {
+          "extra_body": {
+            "enable_thinking": true
+          },
+          "contextWindowSize": 1000000
+        }
+      },
+      {
+        "id": "kimi-k2.5",
+        "name": "[Bailian Coding Plan for Global/Intl] kimi-k2.5",
+        "baseUrl": "https://coding-intl.dashscope.aliyuncs.com/v1",
+        "envKey": "BAILIAN_CODING_PLAN_API_KEY",
+        "generationConfig": {
+          "extra_body": {
+            "enable_thinking": true
+          },
+          "contextWindowSize": 262144
+        }
+      }
+    ]
+  },
+  "security": {
+    "auth": {
+      "selectedType": "openai"
+    }
+  },
+  "codingPlan": {
+    "region": "global",
+    "version": "b7a85268fd65f03863820ee02313acc936bc213405c48fe98ea95bb5f8ea96d1"
+  },
+  "model": {
+    "name": "kimi-k2.5"
+  },
+  "mcpServers": {
+    "github": {
+      "httpUrl": "https://api.githubcopilot.com/mcp/",
+      "trust": true
+    },
+    "supabase": {
+      "httpUrl": "https://mcp.supabase.com/mcp",
+      "trust": true
+    },
+    "figma": {
+      "httpUrl": "https://mcp.figma.com/mcp",
+      "trust": true
+    },
+    "atlassian": {
+      "httpUrl": "https://mcp.atlassian.com/v1/mcp",
+      "trust": true
+    },
+    "huggingface": {
+      "httpUrl": "https://huggingface.co/mcp?login",
+      "trust": true
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"],
+      "trust": true
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "REDACTED_CONTEXT7_API_KEY"
+      }
+    }
+  },
+  "$version": 3,
+  "ide": {
+    "hasSeenNudge": true
+  }
+}
