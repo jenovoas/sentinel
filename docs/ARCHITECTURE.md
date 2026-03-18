@@ -54,9 +54,9 @@ Sentinel es una infraestructura de observabilidad y seguridad **pure-Rust** que 
             │                │                │
             ▼                ▼                ▼
 ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
-│   FRONTEND      │ │ **SENTINEL CORTEX** │ │   AUTOMATIZACIÓN  │
-│   (Next.js)     │ │   **(RUST)**      │ │     (n8n)       │
-│   Puerto 3000   │ │   Puerto 8000     │ │   Puerto 5678     │
+│   FRONTEND DEV  │ │ **SENTINEL CORTEX** │ │   MONITOREO     │
+│  (dev.pinguino) │ │   **(RUST)**      │ │   (Grafana)     │
+│   Puerto 80     │ │   Puerto 8000     │ │   Puerto 3000     │
 └────────┬────────┘ └────────┬────────┘ └────────┬────────┘
          │                   │                   │
          │                   │                   │
