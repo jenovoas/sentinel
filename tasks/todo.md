@@ -2,7 +2,20 @@
 
 *Regla: Escribir plan de acción aquí antes de implementar. Verificar antes de empezar. Seguir progreso estrictamente.*
 
-## Tarea Activa: Integrar Sistema de Cierre Final para Stack Ring 0 en Fenix
+## Tarea Activa: Corregir Discrepancia de Licencia
+
+- [ ] **Investigación**
+  - [ ] Listar archivos de licencia en la raíz
+  - [ ] Revisar menciones de licencia en `README.md`
+  - [ ] Verificar contenido de `LICENSE`
+- [ ] **Ejecución**
+  - [ ] Unificar la licencia en `README.md` y archivos de licencia según la intención del repo
+- [ ] **Verificación**
+  - [ ] Comprobar que no hay discrepancias persistentes
+
+---
+
+## Tareas Anteriores: Integrar Sistema de Cierre Final para Stack Ring 0 en Fenix
 
 - [x] Aplicar protocolo global de Gemini/Claude en el workspace
 - [x] Crear `tasks/lessons.md` y documentar errores de Podman y Contexto

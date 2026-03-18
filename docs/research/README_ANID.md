@@ -2,7 +2,7 @@
 
 **Sovereign Intelligence & Defense Platform**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-green.svg)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/React-18+-blue.svg)](https://react.dev)
@@ -471,11 +471,11 @@ open http://localhost:3001
 
 ## 📄 Licencia y Propiedad Intelectual
 
-**Licencia**: Investigación (ver [LICENSE](LICENSE))
+**Licencia**: Open Source — Apache 2.0 (ver [LICENSE](LICENSE))
 
 **Propiedad Intelectual**:
-- Código base: Open source (componentes no críticos)
-- Innovaciones patentables: Protegidas según normativa ANID
+- Código base: Open Source (Apache 2.0)
+- Innovaciones: Documentadas según normativa ANID
 - Publicaciones: Creative Commons
 
 **Compromiso**:
@@ -700,7 +700,7 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for de
 
 ## 📄 License
 
-Proprietary - See [LICENSE](LICENSE) for details.
+Open Source — See [LICENSE](LICENSE) for details.
 
 ---
 
