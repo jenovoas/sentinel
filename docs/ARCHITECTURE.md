@@ -130,14 +130,11 @@ Es el corazón del sistema, sustituyendo por completo al antiguo backend legado 
 
 ---
 
-## 🌐 Topología de Red (Fenix Cluster)
+## 🌐 Topología de Red (Fenix Sovereign Node)
 
 | Nodo | IP Interna | Función |
 | :--- | :--- | :--- |
-| **Sentinel** | `10.10.10.2` | Maestro NTP / Auth AD / DNS |
-| **Centurion**| `10.10.10.3` | Nodo de Cómputo / App Web |
-| **Kingu**    | `10.10.10.5` | Almacenamiento / Backup |
-| **Fenix**    | `10.10.10.8` | Hub VPN / Proxy / Gateway |
+| **Fenix** | `10.10.10.8` | Orquestador Ring 0 / DNS Master / Proxy / App Host |
 
 **Notas de Conectividad:**
 - **VPN (Wireguard)**: Gateway en `10.100.0.1`.
