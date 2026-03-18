@@ -61,7 +61,7 @@ cargo build --release
 
 # Desplegar el stack completo en producción
 cd ..
-docker-compose -f docker-compose.fenix.yml up -d
+podman-compose -f docker-compose.fenix.yml up -d
 ```
 
 ### Verificación de Salud
