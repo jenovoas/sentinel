@@ -17,32 +17,31 @@ NO MODIFICAR. TODA LÓGICA MATEMÁTICA DEBE VIVIR EN YATRA-CORE.
 """
 
 from yatra_core import S60, DecimalContaminationError
+from yatra_math import S60Math
 
 # Constantes de compatibilidad para scripts antiguos
 # Mapeamos a las versiones puras de Yatra Core si existen, o creamos nuevas puras.
 
-ZERO = S60(0, 0, 0, 0)
-ONE = S60(1, 0, 0, 0)
+ZERO = S60(0, 0, 0, 0, 0)
+ONE = S60(1, 0, 0, 0, 0)
 
-# Constantes físicas aproximadas a racionales sexagesimales
-# PI ~ 3; 8, 29, 44
-PI_S60 = S60(3, 8, 29, 44) 
-# PHI ~ 1; 37, 04
-PHI = S60(1, 37, 4, 0)
+# Constantes físicas aproximadas a racionales sexagesimales (Desde Rust directamente)
+PI_S60 = S60Math.PI 
+# PHI ~ 1; 37, 04, 55, 20
+PHI = S60(1, 37, 4, 55, 20)
 
 class SovereignLUT:
     """
-    Proxy de compatibilidad. 
-    En el futuro, Yatra Core tendrá su propia LUT de enteros.
-    Por ahora, lanzamos error si se intenta usar la vieja LUT contaminada.
+    Proxy de compatibilidad redirigido a Rust S60Math.
     """
     @classmethod
     def initialize(cls):
-        print("⚠️ SovereignLUT (Legacy) desactivada por Protocolo Yatra.")
+        print("✅ SovereignLUT: Carga de LUT Omitida. Se utiliza Taylor-Series en Rust (S60Math) en O(1) Memory.")
         pass
 
     @classmethod
     def get_sin_cos(cls, angle):
-        raise DecimalContaminationError("El uso de trigonometría decimal (LUT antigua) está prohibido. Use navegación vectorial S60.")
+        # Utiliza la implementación nativa Rust en lugar de LUT vieja
+        return S60Math.sin_cos(angle)
 
-print("✅ SovereignMath: Redirigido exitosamente a YatraCore (Pure Integer Mode).")
+print("✅ SovereignMath: Redirigido exitosamente a YatraCore/Rust S60Math (Pure Integer Mode).")

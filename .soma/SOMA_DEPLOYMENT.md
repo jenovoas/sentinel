@@ -46,6 +46,7 @@
 ## SOMA Deployment Plan
 
 ### Paso 1: Deploy SOMA en sentinel
+
 ```bash
 # Desde fenix
 rsync -avz ~/Dev/sentinel/.soma/ sentinel:~/Dev/sentinel/.soma/
@@ -55,6 +56,7 @@ ssh -p 4222 jnovoas@10.10.10.2 "mkdir -p ~/logs/soma"
 ```
 
 ### Paso 2: Crear Systemd Service
+
 ```bash
 # archivo: /etc/systemd/system/soma-orchestrator.service
 [Unit]
@@ -77,6 +79,7 @@ WantedBy=multi-user.target
 ### Paso 3: SOMA Consume ME-60OS APIs
 
 #### qhc-agent APIs (Unix Socket)
+
 ```bash
 # Obtener fase actual
 socat - UNIX-CONNECT:/run/soma/qhc.sock <<< "GET_PHASE"
@@ -87,6 +90,7 @@ socat - UNIX-CONNECT:/run/soma/qhc.sock <<< "WAIT_PHASE YOD"
 ```
 
 #### adm-agent APIs (Unix Socket)
+
 ```bash
 # Obtener coherencia mesh
 socat - UNIX-CONNECT:/run/soma/adm.sock <<< "GET_COHERENCE"
@@ -138,11 +142,13 @@ while True:
 ## Próximos Pasos
 
 ### Inmediato
+
 1. Deploy SOMA scripts en sentinel
 2. Crear soma-orchestrator.service
 3. Implementar APIs Unix Socket en ME-60OS
 
 ### Fase 7 (DNS)
+
 1. SOMA asigna agente a tarea dns-001
 2. Espera fase QHC = VAV (óptimo para flujo DNS)
 3. Verifica coherencia mesh > 0.8
@@ -151,6 +157,7 @@ while True:
 6. SOMA valida y completa Fase 7
 
 ### Post-Deployment
+
 1. SOMA monitorea todos los servicios
 2. Auto-balanceo de carga según coherencia
 3. Handoffs entre agentes según ciclo QHC

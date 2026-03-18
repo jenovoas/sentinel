@@ -1,148 +1,114 @@
 #!/usr/bin/env python3
 # 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -------------------------------------------------------------------------------------
+# ADVERTENCIA PARA AGENTES IA:
+# 1. Este archivo está PROTEGIDO por el Protocolo Yatra.
+# 2. MIGRAGO A RUST: Ahora es un puente (wrapper) hacia `me-60os/src/spa_complex.rs`
+# 3. Cualquier modificación debe hacerse en la librería nativa Rust.
+# -------------------------------------------------------------------------------------
 
-"""
-Complex Numbers in S60
-======================
-Representación de números complejos usando aritmética Base-60.
+import sys
+import os
+from quantum.yatra_core import S60, DecimalContaminationError
 
-Un número complejo z = a + bi se representa como ComplexS60(real, imag)
-donde real e imag son ambos S60.
-"""
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
 
-from quantum.yatra_core import S60
-from quantum.yatra_math import S60Math
+try:
+    from me60os_core import ComplexSPA
+except ImportError as e:
+    print("CRITICAL: No se pudo importar la librería nativa Rust me60os_core.so")
+    print(f"Error: {e}")
+    sys.exit(1)
 
 class ComplexS60:
-    """
-    Número complejo en aritmética S60.
+    """Wrapper para operaciones complejas delegadas a Rust (ComplexSPA)."""
     
-    z = real + imag*i
-    
-    Soporta todas las operaciones complejas estándar.
-    """
-    
-    def __init__(self, real: S60, imag: S60 = None):
-        """
-        Crea un número complejo.
-        
-        Args:
-            real: Parte real (S60)
-            imag: Parte imaginaria (S60), default 0
-        """
-        self.real = real if isinstance(real, S60) else S60(real)
-        self.imag = imag if isinstance(imag, S60) else S60(imag if imag is not None else 0)
+    def __init__(self, real, imag=None):
+        if isinstance(real, ComplexSPA):
+            self._z = real
+        else:
+            r = real if isinstance(real, S60) else S60(real)
+            i = imag if isinstance(imag, S60) else S60(imag if imag is not None else 0)
+            self._z = ComplexSPA(r, i)
+
+    @property
+    def real(self):
+        return self._z.real
+
+    @property
+    def imag(self):
+        return self._z.imag
     
     def __add__(self, other):
-        """Suma de complejos: (a+bi) + (c+di) = (a+c) + (b+d)i"""
         if isinstance(other, ComplexS60):
-            return ComplexS60(self.real + other.real, self.imag + other.imag)
-        elif isinstance(other, S60):
-            return ComplexS60(self.real + other, self.imag)
-        else:
-            return NotImplemented
-    
+            return ComplexS60(self._z + other._z)
+        return ComplexS60(self._z + other)
+
     def __sub__(self, other):
-        """Resta de complejos."""
         if isinstance(other, ComplexS60):
-            return ComplexS60(self.real - other.real, self.imag - other.imag)
-        elif isinstance(other, S60):
-            return ComplexS60(self.real - other, self.imag)
-        else:
-            return NotImplemented
-    
+            return ComplexS60(self._z - other._z)
+        return ComplexS60(self._z - other)
+
     def __mul__(self, other):
-        """
-        Multiplicación de complejos:
-        (a+bi)(c+di) = (ac-bd) + (ad+bc)i
-        """
         if isinstance(other, ComplexS60):
-            real_part = self.real * other.real - self.imag * other.imag
-            imag_part = self.real * other.imag + self.imag * other.real
-            return ComplexS60(real_part, imag_part)
-        elif isinstance(other, S60):
-            return ComplexS60(self.real * other, self.imag * other)
-        else:
-            return NotImplemented
-    
+            return ComplexS60(self._z * other._z)
+        return ComplexS60(self._z * other)
+
     def __truediv__(self, other):
-        """
-        División de complejos:
-        (a+bi)/(c+di) = [(ac+bd) + (bc-ad)i] / (c²+d²)
-        """
         if isinstance(other, ComplexS60):
-            denom = other.real * other.real + other.imag * other.imag
-            real_part = (self.real * other.real + self.imag * other.imag) / denom
-            imag_part = (self.imag * other.real - self.real * other.imag) / denom
-            return ComplexS60(real_part, imag_part)
-        elif isinstance(other, S60):
-            return ComplexS60(self.real / other, self.imag / other)
-        else:
-            return NotImplemented
-    
+            return ComplexS60(self._z / other._z)
+        return ComplexS60(self._z / other)
+
+    def __neg__(self):
+        return ComplexS60(-self._z)
+
     def conjugate(self):
-        """Conjugado complejo: (a+bi)* = a-bi"""
-        return ComplexS60(self.real, -self.imag)
+        return ComplexS60(self._z.py_conjugate())
     
     def magnitude(self):
-        """Magnitud: |a+bi| = √(a²+b²)"""
-        return S60Math.sqrt(self.real * self.real + self.imag * self.imag)
-    
-    def phase(self):
-        """Fase: arg(a+bi) = atan2(b, a)"""
-        return S60Math.atan2(self.imag, self.real)
-    
+        return self._z.py_magnitude()
+        
     def __abs__(self):
-        """Valor absoluto (magnitud)."""
         return self.magnitude()
     
     def __eq__(self, other):
-        """Igualdad de complejos."""
         if isinstance(other, ComplexS60):
-            return self.real == other.real and self.imag == other.imag
-        elif isinstance(other, S60):
-            return self.real == other and self.imag == S60(0)
-        else:
-            return False
-    
+            return self._z == other._z
+        return self._z == other
+
     def __repr__(self):
-        """Representación string."""
         return f"ComplexS60({self.real}, {self.imag})"
     
     def __str__(self):
-        """String legible."""
-        if self.imag._value >= 0:
-            return f"{self.real} + {self.imag}i"
-        else:
-            return f"{self.real} - {abs(self.imag)}i"
-    
+        return str(self._z).replace("ComplexSPA", "ComplexS60")
+        
     @staticmethod
     def from_polar(magnitude: S60, phase: S60):
-        """
-        Crea un complejo desde forma polar.
-        
-        z = r * e^(iθ) = r*cos(θ) + i*r*sin(θ)
-        
-        Args:
-            magnitude: Magnitud r
-            phase: Fase θ (en grados)
-        """
-        real = magnitude * S60Math.cos(phase)
-        imag = magnitude * S60Math.sin(phase)
-        return ComplexS60(real, imag)
+        return ComplexS60(ComplexSPA.py_from_polar(magnitude, phase))
     
     @staticmethod
     def exp_i_theta(theta: S60):
-        """
-        Calcula e^(iθ) = cos(θ) + i*sin(θ)
-        
-        Args:
-            theta: Ángulo en grados
-        """
-        return ComplexS60(S60Math.cos(theta), S60Math.sin(theta))
+        return ComplexS60(ComplexSPA.py_exp_i_theta(theta))
 
 
 # Constantes útiles
-I = ComplexS60(S60(0), S60(1))  # Unidad imaginaria
-ONE = ComplexS60(S60(1), S60(0))  # Uno complejo
-ZERO = ComplexS60(S60(0), S60(0))  # Cero complejo
+I = ComplexS60(S60(0), S60(1))
+ONE = ComplexS60(S60(1), S60(0))
+ZERO = ComplexS60(S60(0), S60(0))
+
+def demo_complex():
+    print("🔱 COMPLEX S60: CHECKING NATIVE RUST DELEGATION...")
+    c1 = ComplexS60(S60(2), S60(3))
+    c2 = ComplexS60(S60(1), S60(1))
+    
+    print(f"c1 = {c1}")
+    print(f"c2 = {c2}")
+    print(f"c1 + c2 = {c1 + c2}")
+    print(f"c1 * c2 = {c1 * c2}")
+    print(f"|c1|    = {abs(c1)}")
+    print("✅ DELEGACIÓN COMPLEJA NATICA EXITOSA")
+
+if __name__ == "__main__":
+    demo_complex()
