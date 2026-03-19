@@ -85,7 +85,8 @@ podman run -d \
 - **Node Exporter:** Métricas de hardware/SO de Fenix.
 - **Promtail:** Recolección de logs de contenedores Podman.
 - **Prometheus:** Agregación y almacenamiento de series temporales.
-- **Neural Guard (Rust):** Motor de correlación en tiempo real (Cortex).
+- **Neural Guard (Rust):** Motor de correlación en tiempo real (Cortex). Integra Acoplamiento Octomecánico para ajustar umbrales según el calor de la CPU (Inercia Termodinámica).
+- **Métrica Clave:** `Effective Load` (S60) — Mide la "masa" computacional del sistema.
 
 Métricas de ruteo global y estado de certificados TLS del nodo Fenix.
 

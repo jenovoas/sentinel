@@ -38,6 +38,7 @@ async fn main() {
         // Collect from all sources
         if let Ok(events) = prom_collector.collect().await { all_events.extend(events); }
         if let Ok(events) = prom_collector.collect_redis_metrics().await { all_events.extend(events); }
+        if let Ok(events) = prom_collector.collect_thermal_metrics().await { all_events.extend(events); }
         if let Ok(events) = loki_collector.collect_logs().await { all_events.extend(events); }
         if let Ok(events) = loki_collector.collect_metrics().await { all_events.extend(events); }
         if let Ok(events) = redis_collector.collect() { all_events.extend(events); }

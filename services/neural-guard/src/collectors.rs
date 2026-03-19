@@ -140,11 +140,10 @@ impl PrometheusCollector {
         for metric in redis_metrics {
             if let Some(value_str) = metric["value"][1].as_str() {
                 if let Ok(memory_bytes) = value_str.parse::<f64>().map(|f| f as u64) {
-                    // El evento se crea siempre, el umbral se aplica en el DecisionEngine
                     events.push(Event {
                         event_type: "redis_memory_usage".to_string(),
                         source: EventSource::Prometheus,
-                        severity: Severity::Info, // La severidad se determina en el motor
+                        severity: Severity::Info,
                         metadata: serde_json::json!({
                             "instance": metric["metric"]["instance"],
                             "used_bytes": memory_bytes,
@@ -154,10 +153,35 @@ impl PrometheusCollector {
                 }
             }
         }
-
         Ok(events)
     }
 
+    pub async fn collect_thermal_metrics(&self) -> Result<Vec<Event>, reqwest::Error> {
+        let mut events = Vec::new();
+        // Query de temperatura (promedio de todos los sensores hwmon)
+        let temp_query = "avg(node_hwmon_temp_celsius)";
+
+        let json = self.http.query("/api/v1/query", temp_query).await?;
+        let results = json["data"]["result"].as_array().cloned().unwrap_or_default();
+
+        for res in results {
+            if let Some(value_str) = res["value"][1].as_str() {
+                if let Ok(temp_c) = value_str.parse::<f64>() {
+                    events.push(Event {
+                        event_type: "cpu_thermal_reading".to_string(),
+                        source: EventSource::NervioCThermal,
+                        severity: Severity::Info,
+                        metadata: serde_json::json!({
+                            "celsius": temp_c,
+                            "scale": "S60_Octomechanical"
+                        }),
+                        ..Default::default()
+                    });
+                }
+            }
+        }
+        Ok(events)
+    }
 }
 
 pub struct PrometheusCollector {
@@ -191,7 +215,7 @@ impl RedisStreamCollector {
                 if let redis::Value::Bulk(mut stream_data) = stream {
                     if let redis::Value::Bulk(messages) = stream_data.pop().unwrap() {
                         for message in messages {
-                            if let redis::Value::Bulk(mut msg_data) = message {
+                            if let redis::Value::Bulk(msg_data) = message {
                                 let msg_id: String = redis::from_redis_value(&msg_data[0])?;
                                 self.last_id = msg_id;
 

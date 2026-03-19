@@ -6,6 +6,7 @@ use uuid::Uuid;
 pub enum EventSource {
     NervioAIntrusion, // Syscalls, memoria, red (Guardian Alpha)
     NervioBIntegrity, // Backups, config, certs (Guardian Beta)
+    NervioCThermal,   // Temperatura y entropía (Octomecánica)
     Prometheus,       // Métricas generales
 }
 

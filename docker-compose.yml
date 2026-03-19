@@ -418,6 +418,8 @@ services:
       - NGINX_5XX_THRESHOLD=10
       - REDIS_MEMORY_THRESHOLD_BYTES=104857600 # 100MB
       - CONTAINER_RESTART_THRESHOLD=3
+      - ENABLE_THERMAL_COUPLING=true
+      - REDIS_URL=redis://redis:6379
     depends_on:
       - prometheus
       - loki
