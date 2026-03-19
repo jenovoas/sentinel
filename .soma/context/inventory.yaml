@@ -11,32 +11,15 @@ nodes:
     fqdn: "fenix.pinguinoseguro.cl"
     ip: "10.10.10.8"
     role: "orchestrator"
-    os: "Ubuntu 24.04"
+    os: "Rocky Linux 9"
     services:
+      - podman
       - traefik
       - powerdns
-      - podman
-    status: "online"
-
-  - id: "sentinel"
-    fqdn: "sentinel.pinguinoseguro.cl"
-    ip: "10.10.10.2"
-    role: "worker"
-    os: "Debian 13 trixie"
-    services:
-      - podman
       - ebpf
       - lsm
       - xdp
     status: "online"
-
-  - id: "nexus"
-    fqdn: "nexus.pinguinoseguro.cl"
-    ip: "10.10.10.3"
-    role: "worker"
-    os: "Debian 13 trixie"
-    services: []
-    status: "offline"
 
 # Contenedores Podman
 containers:
@@ -47,7 +30,7 @@ containers:
     volumes:
       - "/data/postgres:/var/lib/postgresql/data"
     health_check: "pg_isready -U postgres"
-    node: "sentinel"
+    node: "fenix"
 
   - name: "redis"
     image: "redis:7-alpine"
@@ -56,62 +39,62 @@ containers:
     volumes:
       - "/data/redis:/data"
     health_check: "redis-cli ping"
-    node: "sentinel"
+    node: "fenix"
 
   - name: "backend"
     image: "sentinel-backend:latest"
-    status: "pending"
+    status: "running"
     ports: ["8000:8000"]
     depends_on: ["postgres", "redis"]
-    node: "sentinel"
+    node: "fenix"
 
   - name: "frontend"
     image: "sentinel-frontend:latest"
-    status: "pending"
+    status: "running"
     ports: ["3000:3000"]
     depends_on: ["backend"]
-    node: "sentinel"
+    node: "fenix"
 
   - name: "observability"
     image: "sentinel-observability:latest"
-    status: "pending"
+    status: "running"
     ports: ["9090:9090"]
     depends_on: ["postgres", "redis"]
-    node: "sentinel"
+    node: "fenix"
 
   - name: "quantum"
     image: "sentinel-quantum:latest"
-    status: "pending"
+    status: "running"
     ports: ["8080:8080"]
     depends_on: ["postgres"]
-    node: "sentinel"
+    node: "fenix"
 
   - name: "cortex"
     image: "sentinel-cortex:latest"
-    status: "pending"
+    status: "running"
     ports: ["5000:5000"]
     depends_on: ["postgres"]
-    node: "sentinel"
+    node: "fenix"
 
 # Redes
 networks:
   - name: "sentinel-net"
     driver: "bridge"
     subnet: "10.100.0.0/24"
-    nodes: ["sentinel"]
-    status: "pending"
+    nodes: ["fenix"]
+    status: "active"
 
 # Volúmenes
 volumes:
   - name: "postgres-data"
     path: "/data/postgres"
     size: "10G"
-    node: "sentinel"
+    node: "fenix"
 
   - name: "redis-data"
     path: "/data/redis"
     size: "1G"
-    node: "sentinel"
+    node: "fenix"
 
   - name: "ebpf-maps"
     path: "/sys/fs/bpf/sentinel"
@@ -121,7 +104,7 @@ volumes:
   - name: "quantum-state"
     path: "/data/quantum"
     size: "5G"
-    node: "sentinel"
+    node: "fenix"
 
 # Certificados SSL
 certificates:
@@ -132,13 +115,6 @@ certificates:
     expires: "2026-05-26"
     node: "fenix"
     status: "valid"
-
-  - domain: "sentinel.pinguinoseguro.cl"
-    type: "san"
-    issuer: "traefik"
-    expires: "pending"
-    node: "sentinel"
-    status: "pending"
 
 # Reglas de firewall
 firewall:
@@ -152,25 +128,25 @@ firewall:
     source: "10.10.10.0/24"
     port: "5432"
     action: "accept"
-    status: "pending"
+    status: "enabled"
 
   - rule: "allow_redis"
     source: "10.10.10.0/24"
     port: "6379"
     action: "accept"
-    status: "pending"
+    status: "enabled"
 
   - rule: "block_all"
     source: "0.0.0.0/0"
     port: "all"
     action: "drop"
-    status: "pending"
+    status: "enabled"
 
 # Reglas auditd
 auditd:
   config_path: "/etc/audit/auditd.conf"
   rules_path: "/etc/audit/rules.d/sentinel.rules"
-  status: "pending"
+  status: "active"
   rules:
     - category: "ebpf"
       syscall: "bpf"
@@ -205,8 +181,8 @@ systemd:
     description: "Sentinel Auditd Watchdog"
     path: "/etc/systemd/system/sentinel-auditd.service"
     enabled: false
-    watchdog_sec: 30
-    status: "pending"
+    watchdog_sec: 60
+    status: "loaded"
 
 # Configuración DNS
 dns:
@@ -216,7 +192,11 @@ dns:
   api_key: "CHANGEME"
   zone: "pinguinoseguro.cl"
   records:
-    - name: "sentinel"
+    - name: "cortex"
       type: "A"
-      value: "10.10.10.2"
-      status: "pending"
+      value: "10.10.10.8"
+      status: "active"
+    - name: "grafana"
+      type: "A"
+      value: "10.10.10.8"
+      status: "active"
