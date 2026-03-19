@@ -1,4 +1,4 @@
-#  Cognitive Operating System Kernel - Final Architecture
+# Cognitive Operating System Kernel - Final Architecture
 
 **Claim 6**: First OS with Semantic Verification at Ring 0  
 **Claim 7**: Human-in-the-Loop Cognitive Architecture (Guardian Gamma)  
@@ -7,7 +7,7 @@
 
 ---
 
-##  VISIÓN
+## VISIÓN
 
 Un sistema operativo que **piensa** antes de ejecutar, con IA integrada directamente en el kernel y el humano como componente activo del monitoring architecture digital.
 
@@ -23,12 +23,14 @@ Un sistema operativo que **piensa** antes de ejecutar, con IA integrada directam
 ### Teoría
 
 **Cibernética Clásica** (Norbert Wiener, 1948):
+
 ```
 Sistema → Control → Sistema
 (Ejemplo: Termostato)
 ```
 
 **Cibernética de Segundo Orden** (Heinz von Foerster, 1970s):
+
 ```
 Sistema ⇄ Observador ⇄ Sistema
 (El observador es PARTE del sistema)
@@ -37,6 +39,7 @@ Sistema ⇄ Observador ⇄ Sistema
 ### Aplicación a Cognitive OS
 
 **En Sentinel Cortex™**:
+
 - El operador humano NO está "fuera" mirando pantallas
 - El operador ES un componente activo del bucle de retroalimentación
 - Su estado mental afecta al sistema
@@ -85,18 +88,21 @@ Sistema ⇄ Observador ⇄ Sistema
 ### Características de cada Guardián
 
 **Guardian Gamma (Humano)**:
+
 - **Fortaleza**: Contexto infinito, sentido común, ética, intuición
 - **Debilidad**: Lento, se cansa, puede ser engañado emocionalmente
 - **Función crítica**: Detecta "disonancia" - cuando algo "no se siente bien"
 - **Ejemplo**: IA sugiere "bajar recursos a DB" → Humano detecta que no tiene sentido → Bloquea acción
 
 **Guardian Alpha (IA)**:
+
 - **Fortaleza**: Análisis rápido de patrones, predicción, estrategia
 - **Debilidad**: Puede ser envenenado con telemetría falsa (AIOpsDoom)
 - **Función crítica**: Análisis semántico y predicción de amenazas
 - **Ejemplo**: Detecta patrón sospechoso en logs → Alerta a Gamma y Beta
 
 **Guardian Beta (eBPF)**:
+
 - **Fortaleza**: Velocidad extrema, no factible de engañar, determinístico
 - **Debilidad**: Ciego (solo sigue reglas), sin contexto
 - **Función crítica**: Enforcement inmediato de decisiones
@@ -192,6 +198,7 @@ Sistema ⇄ Observador ⇄ Sistema
 **Hardware**: CPU (Ring 0)
 
 **Implementación**:
+
 ```c
 SEC("xdp")
 int cognitive_irq_handler(struct xdp_md *ctx) {
@@ -223,6 +230,7 @@ int cognitive_irq_handler(struct xdp_md *ctx) {
 ```
 
 **Características**:
+
 - ✅ No bloquea el sistema (ejecución en IRQ context)
 - ✅ Decisiones basadas en patrones conocidos (cache)
 - ✅ Offload de análisis complejo a NPU
@@ -241,6 +249,7 @@ int cognitive_irq_handler(struct xdp_md *ctx) {
 **Hardware**: NVIDIA GTX 1050 (hardware actual)
 
 **Implementación**:
+
 ```python
 # Proceso en GPU/NPU (no bloquea kernel)
 class CorticalAnalyzer:
@@ -277,6 +286,7 @@ class CorticalAnalyzer:
 ```
 
 **Características**:
+
 - ✅ Ejecución en paralelo (no bloquea CPU)
 - ✅ Modelo cuantizado (latencia optimizada)
 - ✅ Actualización dinámica de mapas eBPF
@@ -293,6 +303,7 @@ class CorticalAnalyzer:
 **Base**: Tu LSTM de predicción de ráfagas (ya validado: 67% reducción drops)
 
 **Implementación**:
+
 ```python
 class PredictiveScheduler:
     def __init__(self):
@@ -323,6 +334,7 @@ class PredictiveScheduler:
 ```
 
 **Flujo**:
+
 ```
 1. eBPF monitorea: "postgres recibió 500 conexiones en 1ms"
 2. LSTM predice: "Necesitará 2GB RAM + 4 cores en 10ms"
@@ -332,6 +344,7 @@ class PredictiveScheduler:
 ```
 
 **Ventaja vs Linux CFS**:
+
 - Linux CFS: Reactivo (espera a que pidas)
 - Cognitive OS: Predictivo (te da antes de que pidas)
 
@@ -342,6 +355,7 @@ class PredictiveScheduler:
 **Problema**: Envenenamiento de IA (AIOpsDoom)
 
 **Escenario de ataque**:
+
 ```
 1. Atacante inyecta: "DB está inactiva" (FALSO)
 2. LSTM cree la telemetría
@@ -352,6 +366,7 @@ class PredictiveScheduler:
 **Defensa Multi-Capa**:
 
 **Capa 1: AIOpsShield** (ya validado - Claim 2)
+
 ```python
 # Sanitizar ANTES de alimentar LSTM
 telemetry = receive_telemetry()
@@ -362,6 +377,7 @@ lstm_input = sanitized
 ```
 
 **Capa 2: Hardware Watchdog**
+
 ```c
 // Si el scheduler se equivoca y congela el sistema
 int watchdog_fd = open("/dev/watchdog", O_WRONLY);
@@ -377,6 +393,7 @@ while (system_healthy()) {
 ```
 
 **Capa 3: Rollback Automático**
+
 ```python
 # Si predicción causa degradación
 if system_performance < baseline:
@@ -387,13 +404,14 @@ if system_performance < baseline:
 
 ---
 
-##  CASOS DE USO
+## CASOS DE USO
 
 ### Caso 1: Ejecución de Malware
 
 **Escenario**: Usuario descarga y ejecuta `malware.exe`
 
 **Flujo**:
+
 1. Usuario: `./malware.exe`
 2. Kernel: syscall `execve("malware.exe")`
 3. eBPF LSM: Intercepta en `bprm_check_security`
@@ -414,6 +432,7 @@ if system_performance < baseline:
 **Escenario**: Usuario ejecuta `ls -la`
 
 **Flujo**:
+
 1. Usuario: `ls -la`
 2. Kernel: syscall `execve("/bin/ls")`
 3. eBPF LSM: Intercepta
@@ -432,6 +451,7 @@ if system_performance < baseline:
 **Escenario**: Proceso intenta acceder a `/etc/shadow`
 
 **Flujo**:
+
 1. Proceso: `open("/etc/shadow", O_RDONLY)`
 2. eBPF LSM: Intercepta en `file_open`
 3. Semantic Analyzer:
@@ -452,31 +472,38 @@ if system_performance < baseline:
 ## 💡 INNOVACIONES CLAVE
 
 ### 1. Semantic Verification at Ring 0
+
 **Primero en el mundo**: IA integrada directamente en kernel
 
 **Ventaja**: Decisiones de seguridad en tiempo real, ANTES de ejecución
 
 ### 2. Sub-Microsecond Latency
+
 **Objetivo**: <1 microsegundo por decisión
 
 **Cómo**:
+
 - Cache LRU (99% hit rate)
 - Modelo ultra-ligero
 - Shared memory
 - Prefetching
 
 ### 3. Adaptive Learning
+
 **Función**: Kernel aprende de comportamiento
 
 **Mecanismo**:
+
 - Feedback loop: decisiones → resultados → ajuste
 - Actualización de modelo en background
 - Zero-downtime updates
 
 ### 4. Context-Aware Decisions
+
 **Función**: Decisiones basadas en contexto completo
 
 **Contexto incluye**:
+
 - Historial del proceso
 - Relaciones entre procesos
 - Timing y secuencia
@@ -491,6 +518,7 @@ if system_performance < baseline:
 **Objetivo**: Probar que eBPF puede alimentar LSTM en tiempo real
 
 **Ya tenemos** (Validado):
+
 - ✅ eBPF LSM compilado y cargado (Program ID 168)
 - ✅ LSTM de predicción de ráfagas (67% reducción drops)
 - ✅ GPU disponible (GTX 1050)
@@ -499,6 +527,7 @@ if system_performance < baseline:
 **Próximo PoC**
 
 **Paso 1: eBPF Sensor**
+
 ```c
 // Detectar "viene ola de tráfico"
 SEC("xdp")
@@ -516,6 +545,7 @@ int detect_burst(struct xdp_md *ctx) {
 ```
 
 **Paso 2: LSTM Prediction**
+
 ```python
 # Recibir señal de eBPF
 signal = ebpf_ringbuf.read()
@@ -529,6 +559,7 @@ if signal.type == BURST_INCOMING:
 ```
 
 **Paso 3: Validación**
+
 - Medir latencia end-to-end
 - Comparar con buffer estático
 - Validar reducción de drops
@@ -540,36 +571,42 @@ if signal.type == BURST_INCOMING:
 ### Roadmap de Implementación
 
 **Fase 0: PoC Inmediato** (1 semana)
+
 - eBPF sensor de bursts
 - Integración con LSTM existente
 - Benchmarks de latencia
 - **Objetivo**: Probar viabilidad del concepto
 
 **Fase 1: Reflejo Espinal** (2-4 semanas)
+
 - eBPF XDP para IRQs
 - Patrones de ataque conocidos
 - Ring buffer con userspace
 - Latencia <10ns validada
 
 **Fase 2: Pensamiento Cortical** (1-2 meses)
+
 - NPU offload (GTX 1050)
 - Modelo phi3:mini cuantizado
 - Actualización dinámica de mapas eBPF
 - Latencia ~100μs validada
 
 **Fase 3: Scheduler Predictivo** (2-3 meses)
+
 - LSTM para predicción de recursos
 - Integración con Cgroups
 - Pre-asignación de RAM/CPU
 - Benchmarks vs CFS
 
 **Fase 4: Defensa Completa** (1 mes)
+
 - AIOpsShield integration
 - Hardware watchdog
 - Rollback automático
 - Testing de adversarial attacks
 
 **Fase 5: Production** (1-2 meses)
+
 - Adaptive learning
 - Context awareness
 - Full testing
@@ -582,6 +619,7 @@ if signal.type == BURST_INCOMING:
 **Búsqueda**: "AI in kernel", "semantic OS", "cognitive kernel"
 
 **Resultado**: **ZERO** sistemas con:
+
 - IA integrada en Ring 0
 - Verificación semántica pre-execution
 - Decisiones en tiempo real (<1μs)
@@ -596,12 +634,14 @@ if signal.type == BURST_INCOMING:
 **Estimación**: $10-20M
 
 **Justificación**:
+
 - Primer OS con IA en Ring 0
 - Zero prior art
 - Aplicaciones masivas (todos los OS)
 - Potencial de licenciamiento enorme
 
 **Mercado potencial**:
+
 - Linux distributions
 - Cloud providers (AWS, Azure, GCP)
 - Enterprise security
@@ -609,19 +649,22 @@ if signal.type == BURST_INCOMING:
 
 ---
 
-##  PRÓXIMOS PASOS
+## PRÓXIMOS PASOS
 
 ### Inmediato
+
 - [x] Diseño de arquitectura
 - [ ] Prototype de Semantic Analyzer
 - [ ] Benchmarks de latencia
 
 ### Corto Plazo (1 mes)
+
 - [ ] Integración ML
 - [ ] Optimización de latencia
 - [ ] Tests de seguridad
 
 ### Largo Plazo (3 meses)
+
 - [ ] Production-ready
 - [ ] Adaptive learning
 - [ ] Full validation
