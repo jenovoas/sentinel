@@ -1,2 +1,42 @@
+# OS / Build dirs
 /target
+/dist
+/node_modules
+/build
+
+# Rust / Cargo
 Cargo.lock
+
+# Python / Environment
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.DS_Store
+
+# Native Libraries
+*.so
+*.dll
+*.dylib
+
+# IDEs
+.vscode/
+.idea/
+.project
+.pydevproject
+.settings/
+pyrightconfig.json
