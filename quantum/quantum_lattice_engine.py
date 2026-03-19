@@ -12,6 +12,7 @@ import os
 import csv
 import time
 from datetime import datetime
+import json
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
@@ -22,6 +23,13 @@ from time_crystal_clock import TimeCrystalClock
 
 try:
     from me60os_core import ResonantMatrix
+    import redis
+    try:
+        r = redis.Redis(host=os.getenv("REDIS_HOST", "localhost"), port=int(os.getenv("REDIS_PORT", 6379)), decode_responses=True)
+        r.ping()
+        REDIS_AVAILABLE = True
+    except redis.exceptions.ConnectionError:
+        REDIS_AVAILABLE = False
     RUST_AVAILABLE = True
 except ImportError as e:
     print(f"CRITICAL: No se pudo importar la librería nativa Rust me60os_core.so: {e}")
@@ -38,27 +46,20 @@ class QuantumLatticeEngine:
         self.coupling = S60(0, 1, 0)
         self.dt = 1
         self.use_zpe = use_zpe
-        self.log_dir = log_dir
-        self.log_file = self._prepare_log()
+        self.telemetry_channel = "sentinel:telemetry:stream"
         
         node_count = self._matrix.count_nodes()
         print(f"💎 Quantum Lattice Engine Initialized (RUST NATIVE) | {node_count} nodes")
 
-    def _prepare_log(self):
-        if not os.path.exists(self.log_dir):
-            os.makedirs(self.log_dir)
-        filename = f"lattice_run_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
-        path = os.path.join(self.log_dir, filename)
-        with open(path, 'w', newline='') as f:
-            writer = csv.writer(f)
-            writer.writerow(["tick", "energy_total", "coherence", "drift"])
-        print(f"🧾 Logging enabled: {path}")
-        return path
-
     def _log_state(self, tick, energy, coherence, drift):
-        with open(self.log_file, 'a', newline='') as f:
-            writer = csv.writer(f)
-            writer.writerow([tick, str(energy), str(coherence), str(drift)])
+        if REDIS_AVAILABLE:
+            payload = {
+                "tick": tick,
+                "energy_total_raw": energy.to_raw(),
+                "coherence_raw": coherence.to_raw(),
+                "drift_raw": drift.to_raw()
+            }
+            r.publish(self.telemetry_channel, json.dumps(payload))
 
     def inject_pulse(self, energy=S60(1,0,0)):
         """Inyecta pulso de energía en el nodo central (Nodo 0)."""

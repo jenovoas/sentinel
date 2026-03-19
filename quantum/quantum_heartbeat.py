@@ -58,6 +58,7 @@ import redis
 from quantum.yatra_core import S60
 from quantum.sovereign_crystal import SovereignCrystal
 from quantum.truthsync_verification import TruthSyncClient
+from quantum.resonant_lattice_memory import ResonantLatticeMemory
 import threading
 try:
     from quantum.infra_cascade_adapter import InfraCascadeAdapter
@@ -103,6 +104,7 @@ class QuantumHeartbeat:
         # Pilares del stack
         self.crystal = SovereignCrystal()
         self.truthsync = TruthSyncClient()
+        self.memory_lattice = ResonantLatticeMemory(size_slots=30)
 
         # Estado del heartbeat
         self._breath_count = 0          # contador de ciclos 17s
@@ -117,6 +119,7 @@ class QuantumHeartbeat:
             print("🔗 InfraCascadeAdapter backflow thread iniciado")
         else:
             self.adapter = None
+        self.memory_lattice.start()
 
         print("🫀 Quantum Heartbeat iniciado")
         print(f"   breath_cycle = {BREATH_CYCLE_S}s")
@@ -143,6 +146,11 @@ class QuantumHeartbeat:
 
         # 2. Firma geométrica actual
         coherence, axion_sig = self.crystal.get_signature()
+
+        # 2.5. Escribir cadena de control en la memoria resonante
+        control_string = f"HEARTBEAT_PULSE_{self._breath_count}"
+        self.memory_lattice.write(control_string)
+        print(f"   Memory Lattice: Escribiendo '{control_string}' para auditoría.")
 
         print(f"   Coherencia: {coherence} | Firma axiónica: {axion_sig}")
 
@@ -188,6 +196,18 @@ class QuantumHeartbeat:
         # 1. Purga: inyecta energía de compensación al cristal
         self.crystal.pump_energy()
 
+        # 1.5. Auditar Memoria Resonante
+        expected_string = f"HEARTBEAT_PULSE_{self._breath_count}"
+        read_string = self.memory_lattice.read()
+        memory_ok = (read_string == expected_string)
+        
+        if memory_ok:
+            print("   Memory Lattice: ✅ Auditoría de fidelidad PASADA.")
+        else:
+            print(f"   Memory Lattice: ❌ Auditoría de fidelidad FALLIDA. Esperado: '{expected_string}', Obtenido: '{read_string}'")
+            # Una firma axiónica no puede ser válida si la memoria está corrupta
+            verified = False
+
         # 2. XDP Firewall: actualizar modo según firma axiónica
         if axion_sig >= AXION_THRESHOLD and verified:
             self._xdp_set_mode(mode=0)   # 0 = Normal
@@ -202,6 +222,7 @@ class QuantumHeartbeat:
             "agent":      "quantum_heartbeat",
             "event_type": "MASTER_RESET",
             "axion_sig":  str(axion_sig),
+            "memory_audit": "PASSED" if memory_ok else "FAILED",
             "xdp_mode":   "0" if (axion_sig >= AXION_THRESHOLD and verified) else "1",
             "breath_count": str(self._breath_count),
         })
@@ -267,6 +288,7 @@ class QuantumHeartbeat:
         except KeyboardInterrupt:
             print("\n🔴 Heartbeat detenido. Coherencia preservada.")
             self._running = False
+            self.memory_lattice.stop()
 
 
 # ─────────────────────────────────────────── ENTRY POINT ──────────
