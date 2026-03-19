@@ -3,8 +3,12 @@
 **Low-level systems framework implementing base-60 arithmetic at the kernel level, eliminating IEEE 754 rounding errors from the mathematical foundation.**
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
-[![Rust](https://img.shields.io/badge/rust-%23000000.svg?logo=rust)](./sentinel-cortex/)
+[![Rust](https://img.shields.io/badge/rust-%23000000.svg?logo=rust)](./services/neural-guard/)
 [![eBPF](https://img.shields.io/badge/eBPF-kernel--level-orange)](./ebpf/)
+[![Fenix Status](https://img.shields.io/badge/Fenix_Node-ACTIVE-brightgreen?style=for-the-badge&logo=linux)](https://pinguinoseguro.cl)
+
+> [!NOTE]
+> **Nodo Fenix Operativo**: Sentinel ha transicionado a una arquitectura de **Nodo Único (Fenix)** bajo Podman Rootless, consolidando la orquestación Ring 0 y el monitoreo resiliente.
 
 ---
 
@@ -53,15 +57,24 @@ S60 is numerically equivalent to f64 for signal processing while eliminating flo
 
 ```
 sentinel/
-├── sentinel-cortex/   Rust core — S60/U60 types, Ring 0 enforcement, Axum API
-│   └── src/math/      Pure-integer arithmetic: add, sub, mul, div, cmp
-├── ebpf/              LSM hooks — syscall interception, float contamination blocking
+├── services/
+│   └── neural-guard/  Rust Cortex — 🛡️ Decision Engine, Prometheus/Loki/Redis
+├── sentinel-cortex/   Rust core — S60/U60 types, Ring 0 enforcement
+├── ebpf/              LSM hooks — syscall interception, float blocking
 ├── quantum/           Python layer via PyO3 (me60os_core.so, zero-copy)
-│   └── experiments/   EXP-001 through EXP-029 — active experimental program
-├── agents/            Modular agents: Research, Verifier, Publisher, Memory
-├── observability/     Prometheus + Grafana (sexagesimal metrics)
+├── agents/            Modular agents: Research, Verifier, N8N Integration
+├── observability/     Prometheus + Grafana (thermal-aware metrics)
 └── constraints/       YATRA_SPEC.md — the immutable arithmetic contract
 ```
+
+### 🧠 Neural Guard & Octomechanical Coupling
+
+Sentinel represents a leap in defensive systems by integrating **Octomechanical Coupling**:
+- **Thermal Awareness**: Neural Guard queries CPU temperature in real-time.
+- **Dynamic Thresholding**: Thresholds for security alerts (SSH, Redis, Nginx) scale based on the **Computational Mass** (`Effective Load`) of the system.
+- **Resilience**: Hotter environments (high noise/entropy) automatically increase detection tolerance to prevent false positives, while cool, coherent states enable maximum sensitivity.
+
+---
 
 ### Core Type
 
@@ -112,15 +125,15 @@ and can block them at runtime. This is not a style guide — it is a correctness
 
 ## Roadmap
 
-- [x] Ring 0: eBPF LSM hooks, float contamination detection
-- [x] Rust S60/U60 core types with zero-copy IPC via `/dev/shm`
-- [x] PyO3 bridge — Python access with no serialization overhead
-- [x] Prometheus + Grafana observability stack
-- [x] EXP-015: memory/throughput benchmarks (23.6x, ~3,000x)
-- [x] EXP-021/022: numerical equivalence validation (Delta < 0.0001)
-- [ ] Pure S60 `ln()` via Taylor series (closes float bridge in transcendentals)
-- [ ] MycNet: distributed S60 computation across mesh nodes (batman-adv layer)
-- [ ] Formal equivalence proof — S60 as equivalence class relative to IEEE 754
+- [x] **Fenix Sovereignty**: Transition to single-node Podman Rootless orchestrator.
+- [x] **Neural Guard (Rust)**: Deployment of the new memory-safe Decision Engine.
+- [x] **Octomechanical Coupling**: Real-time CPU thermal awareness for dynamic sensitivity.
+- [x] Ring 0: eBPF LSM hooks, float contamination detection.
+- [x] Rust S60/U60 core types with zero-copy IPC via `/dev/shm`.
+- [x] PyO3 bridge — Python access with no serialization overhead.
+- [x] Prometheus + Grafana observability stack.
+- [ ] MycNet: distributed S60 computation across mesh nodes.
+- [ ] Formal equivalence proof — S60 as equivalence class relative to IEEE 754.
 
 ---
 

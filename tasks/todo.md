@@ -4,18 +4,19 @@
   - [x] Ejecutar auditoría empírica del estado de Git e Infraestructura (vía Subagente)
   - [x] Corregir `tasks/lessons.md` con el error de proceso inicial
   - [x] Validar integridad de los nuevos archivos Rust (`engine.rs`, `collectors.rs`, `models.rs`)
-- [ ] **Fase 2: Reestructuración de Neural Guard (Elegancia)** [/]
-  - [ ] Crear estructura de directorio `services/neural-guard/src`
-  - [ ] Generar `Cargo.toml` con dependencias mínimas necesarias
-  - [ ] Migrar archivos `.rs` y `Dockerfile` al contexto del servicio
-  - [ ] **Ajuste YATRA:** Reemplazar `f64` por aritmética entera/SPA en umbrales de `engine.rs`
-  - [ ] Verificar compilación (`cargo check`)
-- [ ] **Fase 3: Documentación de Logros (Diario)** [/]
+- [x] **Fase 2: Reestructuración de Neural Guard (Elegancia)**
+  - [x] Crear estructura de directorio `services/neural-guard/src`
+  - [x] Generar `Cargo.toml` con dependencias mínimas necesarias
+  - [x] Migrar archivos `.rs` y `Dockerfile` al contexto del servicio
+  - [x] **Ajuste YATRA:** Reemplazar `f64` por aritmética entera/SPA en umbrales de `engine.rs`
+  - [x] Verificar compilación (`cargo check`)
+  - [x] **Nexo Térmico:** Integración de Octomecánica y Masa Computacional (Teoría + Código)
+- [x] **Fase 3: Documentación de Logros (Diario)**
   - [x] Actualizar `tasks/diary/2026-03-19.md` con los hallazgos confirmados
-  - [ ] Saneamiento de `GEMINI_TASK_MONITORING.md` para Nodo Único Fenix
-  - [ ] Saneamiento de `ARCHITECTURE.md` para reflejar la transición a Rust
+  - [x] Saneamiento de `GEMINI_TASK_MONITORING.md` para Nodo Único Fenix
+  - [x] Saneamiento de `ARCHITECTURE.md` para reflejar la transición a Rust
 - [ ] **Fase 4: Preparación de Sincronización (Push)** [ ]
-  - [ ] Auditoría de `docker-compose.yml` para asegurar consistencia de rutas
+  - [x] Auditoría de `docker-compose.yml` para asegurar consistencia de rutas
   - [ ] Crear propuesta de commit estructurado
   - [ ] Solicitar validación final para el `git push`
 
