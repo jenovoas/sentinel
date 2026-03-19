@@ -1,0 +1,24 @@
+FROM docker.io/library/rust:1.80 as builder
+
+WORKDIR /app
+COPY . .
+
+# Build release binary
+RUN cargo build --release --bin sentinel-cortex
+
+# Runtime stage - usar imagen slim sin apt-get issues en Rocky Linux
+FROM docker.io/library/debian:bookworm-slim
+
+# Install CA certificates for HTTPS
+RUN apt-get update && apt-get install -y ca-certificates libssl3 && rm -rf /var/lib/apt/lists/*
+
+# Copy binary from builder (nombre correcto del package sentinel-cortex)
+COPY --from=builder /app/target/release/sentinel-cortex /usr/local/bin/sentinel-cortex
+
+# Run as non-root user
+RUN useradd -m -u 1000 sentinel
+USER sentinel
+
+EXPOSE 8000
+
+CMD ["sentinel-cortex"]

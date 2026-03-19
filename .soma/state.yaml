@@ -1,0 +1,224 @@
+# SOMA v2.0: Estado de Orquestación Multi-Agente
+# NOTA: ME-60OS ES el propio sistema Sentinel (no separado)
+
+metadata:
+  version: "2.0.0"
+  last_updated: "2026-02-26T07:00:00Z"
+  s60_timestamp: "S60[2026; 02, 26, 07, 00]"  # Formato qhc-agent
+  schema: "state.v2"
+
+# Proyecto
+project:
+  name: "Sentinel"
+  repo: "/home/jnovoas/Dev/sentinel"
+  node: "sentinel (10.10.10.2)"
+  me60os_status: "ACTIVE"  # Sistema nervioso ME-60OS = Sentinel
+
+# Infraestructura ME-60OS (Sistema Nervioso Sentinel)
+me60os_system:
+  qhc_agent:
+    service: "qhc-agent.service"
+    status: "active"
+    frequency: "1Hz"
+    cycle: "10-5-6-5 (YHWH)"
+  adm_agent:
+    service: "adm-agent.service"
+    status: "active"
+    mesh_coherence: 0.858
+    tq_to_spa: "enabled"
+  vid_agent:
+    service: "vid-agent.service"
+    status: "active"
+    frequency: "10Hz"
+    quantum_cooling: "enabled"
+  audit_cortex_bridge:
+    service: "audit-cortex-bridge.service"
+    status: "active"
+    yhwh_17_throttling: "enabled"
+
+# MycNet - Red Hexagonal (scripts en ~/Dev/sentinel/mycnet/)
+mycnet:
+  status: "scripts_ready"
+  mesh_protocol: "batman-adv"
+  tq_metric: "Transmitter Quality (0-255)"
+  s60_conversion: "adm-agent handles TQ → S60"
+
+# Fases del despliegue Sentinel
+phases:
+  - id: 0
+    name: "repo_sincronizado"
+    status: "completed"
+    completed_at: "2026-02-26T00:00:00Z"
+    completed_at_s60: "S60[2026; 02, 26, 00, 00]"
+    owner: "claude-opus"
+
+  - id: 1
+    name: "dependencias_host"
+    status: "completed"
+    completed_at: "2026-02-26T01:00:00Z"
+    completed_at_s60: "S60[2026; 02, 26, 01, 00]"
+    owner: "claude-opus"
+
+  - id: 2
+    name: "compilar_ebpf"
+    status: "completed"
+    completed_at: "2026-02-26T02:00:00Z"
+    completed_at_s60: "S60[2026; 02, 26, 02, 00]"
+    owner: "claude-opus"
+
+  - id: 3
+    name: "whitelist_lsm"
+    status: "completed"
+    completed_at: "2026-02-26T03:00:00Z"
+    completed_at_s60: "S60[2026; 02, 26, 03, 00]"
+    owner: "claude-opus"
+    details:
+      lsm_program_id: 92
+      whitelist_entries: 235
+
+  - id: 4
+    name: "cargar_ebpf"
+    status: "completed"
+    completed_at: "2026-02-26T04:00:00Z"
+    completed_at_s60: "S60[2026; 02, 26, 04, 00]"
+    owner: "claude-opus"
+    details:
+      ring_zero_active: true
+      policy: "FAIL-CLOSED"
+
+  - id: 5
+    name: "auditd_systemd"
+    status: "completed"
+    completed_at: "2026-02-26T05:00:00Z"
+    completed_at_s60: "S60[2026; 02, 26, 05, 00]"
+    owner: "claude-opus"
+    details:
+      auditd_rules: "/etc/audit/rules.d/sentinel.rules"
+      systemd_services: 3
+      yhwh_17_fix: "applied (100% CPU → 7%)"
+
+  - id: 6
+    name: "levantar_podman"
+    status: "completed"
+    completed_at: "2026-02-26T06:56:00Z"
+    completed_at_s60: "S60[2026; 02, 26, 06, 56]"
+    owner: "claude-opus"
+    details:
+      containers_running: 15
+      containers_healthy: 15
+      services:
+        - "sentinel-postgres"
+        - "sentinel-redis"
+        - "sentinel-backend"
+        - "sentinel-frontend"
+        - "sentinel-nginx"
+        - "sentinel-node-exporter"
+        - "sentinel-prometheus"
+        - "sentinel-loki"
+        - "sentinel-promtail"
+        - "sentinel-postgres-exporter"
+        - "sentinel-redis-exporter"
+        - "sentinel-grafana"
+        - "sentinel-n8n"
+        - "sentinel-celery-worker"
+        - "sentinel-celery-beat"
+
+  - id: 7
+    name: "dns_powerdns"
+    status: "pending"
+    tasks:
+      - id: "dns-001"
+        name: "crear_registro_sentinel"
+        status: "pending"
+        assignee: null
+        qhc_optimal_phase: "VAV"  # Exhalación para flujo DNS
+      - id: "dns-002"
+        name: "validar_resolucion_dns"
+        status: "pending"
+        assignee: null
+        qhc_optimal_phase: "YOD"  # Expansión para verificación
+    owner: null
+
+# Handoffs (pendiente implementar con ME-60OS APIs)
+handoffs:
+  # Handoff Fase 6 → 7 pendiente
+  - id: "pending-6-7"
+    from_phase: 6
+    to_phase: 7
+    status: "pending"
+    from_agent: "claude-opus"
+    to_agent: null
+    required_coherence: 0.8  # Mínimo para DNS ops
+
+# Agentes registrados
+agents:
+  - id: "claude-opus"
+    name: "Claude Opus"
+    role: "orchestrator"
+    node: "fenix"
+    last_seen_s60: "S60[2026; 02, 26, 07, 00]"
+
+  - id: "claude-glm"
+    name: "Claude GLM"
+    role: "worker"
+    node: "fenix"
+    last_seen_s60: "S60[2026; 02, 26, 07, 00]"
+
+  - id: "claude-qwen"
+    name: "Claude Qwen"
+    role: "worker"
+    node: "fenix"
+    last_seen_s60: "S60[2026; 02, 26, 07, 00]"
+
+  - id: "gemini"
+    name: "Gemini CLI"
+    role: "researcher"
+    node: "fenix"
+    last_seen_s60: "S60[2026; 02, 26, 07, 00]"
+
+  - id: "qwen-3.5-plus"
+    name: "Qwen 3.5 Plus"
+    role: "architect"
+    node: "fenix"
+    last_seen_s60: "S60[2026; 02, 26, 07, 00]"
+
+# Eventos recientes (últimos 10)
+events:
+  - id: "evt-007"
+    timestamp: "2026-02-26T06:56:00Z"
+    timestamp_s60: "S60[2026; 02, 26, 06, 56]"
+    type: "phase_completed"
+    phase: 6
+    message: "Contenedores Podman activos (15 servicios)"
+    agent: "claude-opus"
+
+  - id: "evt-006"
+    timestamp: "2026-02-26T05:30:00Z"
+    timestamp_s60: "S60[2026; 02, 26, 05, 30]"
+    type: "system_optimized"
+    message: "Audit-watchdog optimizado con YHWH-17 (100% CPU → 7%)"
+    agent: "claude-opus"
+
+  - id: "evt-005"
+    timestamp: "2026-02-26T05:00:00Z"
+    timestamp_s60: "S60[2026; 02, 26, 05, 00]"
+    type: "phase_completed"
+    phase: 5
+    message: "Auditd + systemd servicios activos"
+    agent: "claude-opus"
+
+# Artefactos (referencias)
+artifacts:
+  ebpf_binary: "~/Dev/sentinel/ebpf/guardian_alpha_lsm.o"
+  lsm_program_id: 92
+  whitelist_map_size: 235
+  containers_status: "/tmp/soma/containers-status.txt"
+  mesh_coherence_s60: "S60[000;51,00,00,00]"  # 0.858
+
+# Ciclo QHC actual (de qhc-agent)
+qhc_current:
+  phase: "VAV"  # Determinado en tiempo real
+  value: 6
+  name: "FLUJO (Exhalación)"
+  coherence: 0.85
+  seconds_to_reset: 61  # Hasta T=68s

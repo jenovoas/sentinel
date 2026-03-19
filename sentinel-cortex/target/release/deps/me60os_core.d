@@ -1,0 +1,36 @@
+/home/jnovoas/Desarrollo/sentinel/sentinel-cortex/target/release/deps/me60os_core.d: /home/jnovoas/Desarrollo/me-60os/src/lib.rs /home/jnovoas/Desarrollo/me-60os/src/isochronous_oscillator.rs /home/jnovoas/Desarrollo/me-60os/src/pai60_lib.rs /home/jnovoas/Desarrollo/me-60os/src/optomechanical.rs /home/jnovoas/Desarrollo/me-60os/src/quantum_core.rs /home/jnovoas/Desarrollo/me-60os/src/s60_pid.rs /home/jnovoas/Desarrollo/me-60os/src/spa.rs /home/jnovoas/Desarrollo/me-60os/src/spa_complex.rs /home/jnovoas/Desarrollo/me-60os/src/spa_math.rs /home/jnovoas/Desarrollo/me-60os/src/time_crystal.rs /home/jnovoas/Desarrollo/me-60os/src/hexagonal_control.rs /home/jnovoas/Desarrollo/me-60os/src/soma/mod.rs /home/jnovoas/Desarrollo/me-60os/src/soma/quantum_scheduler.rs /home/jnovoas/Desarrollo/me-60os/src/soma/anomaly_detector.rs /home/jnovoas/Desarrollo/me-60os/src/resonant_matrix.rs /home/jnovoas/Desarrollo/me-60os/src/adm.rs /home/jnovoas/Desarrollo/me-60os/src/agent_manager.rs /home/jnovoas/Desarrollo/me-60os/src/bci.rs /home/jnovoas/Desarrollo/me-60os/src/bio.rs /home/jnovoas/Desarrollo/me-60os/src/buffer_system.rs /home/jnovoas/Desarrollo/me-60os/src/cortex.rs /home/jnovoas/Desarrollo/me-60os/src/ebpf_cortex_bridge.rs /home/jnovoas/Desarrollo/me-60os/src/neural_memory.rs /home/jnovoas/Desarrollo/me-60os/src/physics.rs /home/jnovoas/Desarrollo/me-60os/src/qhc.rs /home/jnovoas/Desarrollo/me-60os/src/resonant_loop.rs /home/jnovoas/Desarrollo/me-60os/src/scheduler.rs /home/jnovoas/Desarrollo/me-60os/src/scv.rs /home/jnovoas/Desarrollo/me-60os/src/guardian_lsm.rs /home/jnovoas/Desarrollo/me-60os/src/shm_bridge.rs
+
+/home/jnovoas/Desarrollo/sentinel/sentinel-cortex/target/release/deps/libme60os_core.so: /home/jnovoas/Desarrollo/me-60os/src/lib.rs /home/jnovoas/Desarrollo/me-60os/src/isochronous_oscillator.rs /home/jnovoas/Desarrollo/me-60os/src/pai60_lib.rs /home/jnovoas/Desarrollo/me-60os/src/optomechanical.rs /home/jnovoas/Desarrollo/me-60os/src/quantum_core.rs /home/jnovoas/Desarrollo/me-60os/src/s60_pid.rs /home/jnovoas/Desarrollo/me-60os/src/spa.rs /home/jnovoas/Desarrollo/me-60os/src/spa_complex.rs /home/jnovoas/Desarrollo/me-60os/src/spa_math.rs /home/jnovoas/Desarrollo/me-60os/src/time_crystal.rs /home/jnovoas/Desarrollo/me-60os/src/hexagonal_control.rs /home/jnovoas/Desarrollo/me-60os/src/soma/mod.rs /home/jnovoas/Desarrollo/me-60os/src/soma/quantum_scheduler.rs /home/jnovoas/Desarrollo/me-60os/src/soma/anomaly_detector.rs /home/jnovoas/Desarrollo/me-60os/src/resonant_matrix.rs /home/jnovoas/Desarrollo/me-60os/src/adm.rs /home/jnovoas/Desarrollo/me-60os/src/agent_manager.rs /home/jnovoas/Desarrollo/me-60os/src/bci.rs /home/jnovoas/Desarrollo/me-60os/src/bio.rs /home/jnovoas/Desarrollo/me-60os/src/buffer_system.rs /home/jnovoas/Desarrollo/me-60os/src/cortex.rs /home/jnovoas/Desarrollo/me-60os/src/ebpf_cortex_bridge.rs /home/jnovoas/Desarrollo/me-60os/src/neural_memory.rs /home/jnovoas/Desarrollo/me-60os/src/physics.rs /home/jnovoas/Desarrollo/me-60os/src/qhc.rs /home/jnovoas/Desarrollo/me-60os/src/resonant_loop.rs /home/jnovoas/Desarrollo/me-60os/src/scheduler.rs /home/jnovoas/Desarrollo/me-60os/src/scv.rs /home/jnovoas/Desarrollo/me-60os/src/guardian_lsm.rs /home/jnovoas/Desarrollo/me-60os/src/shm_bridge.rs
+
+/home/jnovoas/Desarrollo/sentinel/sentinel-cortex/target/release/deps/libme60os_core.rlib: /home/jnovoas/Desarrollo/me-60os/src/lib.rs /home/jnovoas/Desarrollo/me-60os/src/isochronous_oscillator.rs /home/jnovoas/Desarrollo/me-60os/src/pai60_lib.rs /home/jnovoas/Desarrollo/me-60os/src/optomechanical.rs /home/jnovoas/Desarrollo/me-60os/src/quantum_core.rs /home/jnovoas/Desarrollo/me-60os/src/s60_pid.rs /home/jnovoas/Desarrollo/me-60os/src/spa.rs /home/jnovoas/Desarrollo/me-60os/src/spa_complex.rs /home/jnovoas/Desarrollo/me-60os/src/spa_math.rs /home/jnovoas/Desarrollo/me-60os/src/time_crystal.rs /home/jnovoas/Desarrollo/me-60os/src/hexagonal_control.rs /home/jnovoas/Desarrollo/me-60os/src/soma/mod.rs /home/jnovoas/Desarrollo/me-60os/src/soma/quantum_scheduler.rs /home/jnovoas/Desarrollo/me-60os/src/soma/anomaly_detector.rs /home/jnovoas/Desarrollo/me-60os/src/resonant_matrix.rs /home/jnovoas/Desarrollo/me-60os/src/adm.rs /home/jnovoas/Desarrollo/me-60os/src/agent_manager.rs /home/jnovoas/Desarrollo/me-60os/src/bci.rs /home/jnovoas/Desarrollo/me-60os/src/bio.rs /home/jnovoas/Desarrollo/me-60os/src/buffer_system.rs /home/jnovoas/Desarrollo/me-60os/src/cortex.rs /home/jnovoas/Desarrollo/me-60os/src/ebpf_cortex_bridge.rs /home/jnovoas/Desarrollo/me-60os/src/neural_memory.rs /home/jnovoas/Desarrollo/me-60os/src/physics.rs /home/jnovoas/Desarrollo/me-60os/src/qhc.rs /home/jnovoas/Desarrollo/me-60os/src/resonant_loop.rs /home/jnovoas/Desarrollo/me-60os/src/scheduler.rs /home/jnovoas/Desarrollo/me-60os/src/scv.rs /home/jnovoas/Desarrollo/me-60os/src/guardian_lsm.rs /home/jnovoas/Desarrollo/me-60os/src/shm_bridge.rs
+
+/home/jnovoas/Desarrollo/me-60os/src/lib.rs:
+/home/jnovoas/Desarrollo/me-60os/src/isochronous_oscillator.rs:
+/home/jnovoas/Desarrollo/me-60os/src/pai60_lib.rs:
+/home/jnovoas/Desarrollo/me-60os/src/optomechanical.rs:
+/home/jnovoas/Desarrollo/me-60os/src/quantum_core.rs:
+/home/jnovoas/Desarrollo/me-60os/src/s60_pid.rs:
+/home/jnovoas/Desarrollo/me-60os/src/spa.rs:
+/home/jnovoas/Desarrollo/me-60os/src/spa_complex.rs:
+/home/jnovoas/Desarrollo/me-60os/src/spa_math.rs:
+/home/jnovoas/Desarrollo/me-60os/src/time_crystal.rs:
+/home/jnovoas/Desarrollo/me-60os/src/hexagonal_control.rs:
+/home/jnovoas/Desarrollo/me-60os/src/soma/mod.rs:
+/home/jnovoas/Desarrollo/me-60os/src/soma/quantum_scheduler.rs:
+/home/jnovoas/Desarrollo/me-60os/src/soma/anomaly_detector.rs:
+/home/jnovoas/Desarrollo/me-60os/src/resonant_matrix.rs:
+/home/jnovoas/Desarrollo/me-60os/src/adm.rs:
+/home/jnovoas/Desarrollo/me-60os/src/agent_manager.rs:
+/home/jnovoas/Desarrollo/me-60os/src/bci.rs:
+/home/jnovoas/Desarrollo/me-60os/src/bio.rs:
+/home/jnovoas/Desarrollo/me-60os/src/buffer_system.rs:
+/home/jnovoas/Desarrollo/me-60os/src/cortex.rs:
+/home/jnovoas/Desarrollo/me-60os/src/ebpf_cortex_bridge.rs:
+/home/jnovoas/Desarrollo/me-60os/src/neural_memory.rs:
+/home/jnovoas/Desarrollo/me-60os/src/physics.rs:
+/home/jnovoas/Desarrollo/me-60os/src/qhc.rs:
+/home/jnovoas/Desarrollo/me-60os/src/resonant_loop.rs:
+/home/jnovoas/Desarrollo/me-60os/src/scheduler.rs:
+/home/jnovoas/Desarrollo/me-60os/src/scv.rs:
+/home/jnovoas/Desarrollo/me-60os/src/guardian_lsm.rs:
+/home/jnovoas/Desarrollo/me-60os/src/shm_bridge.rs:

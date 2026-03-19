@@ -1,0 +1,14 @@
+/home/jnovoas/Desarrollo/sentinel/sentinel-cortex/target/debug/deps/pyo3_build_config-9fd12d65c4806956.d: /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pyo3-build-config-0.23.5/src/lib.rs /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pyo3-build-config-0.23.5/src/errors.rs /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pyo3-build-config-0.23.5/src/impl_.rs /home/jnovoas/Desarrollo/sentinel/sentinel-cortex/target/debug/build/pyo3-build-config-3577f621a3a04655/out/pyo3-build-config-file.txt /home/jnovoas/Desarrollo/sentinel/sentinel-cortex/target/debug/build/pyo3-build-config-3577f621a3a04655/out/pyo3-build-config.txt
+
+/home/jnovoas/Desarrollo/sentinel/sentinel-cortex/target/debug/deps/libpyo3_build_config-9fd12d65c4806956.rlib: /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pyo3-build-config-0.23.5/src/lib.rs /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pyo3-build-config-0.23.5/src/errors.rs /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pyo3-build-config-0.23.5/src/impl_.rs /home/jnovoas/Desarrollo/sentinel/sentinel-cortex/target/debug/build/pyo3-build-config-3577f621a3a04655/out/pyo3-build-config-file.txt /home/jnovoas/Desarrollo/sentinel/sentinel-cortex/target/debug/build/pyo3-build-config-3577f621a3a04655/out/pyo3-build-config.txt
+
+/home/jnovoas/Desarrollo/sentinel/sentinel-cortex/target/debug/deps/libpyo3_build_config-9fd12d65c4806956.rmeta: /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pyo3-build-config-0.23.5/src/lib.rs /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pyo3-build-config-0.23.5/src/errors.rs /home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pyo3-build-config-0.23.5/src/impl_.rs /home/jnovoas/Desarrollo/sentinel/sentinel-cortex/target/debug/build/pyo3-build-config-3577f621a3a04655/out/pyo3-build-config-file.txt /home/jnovoas/Desarrollo/sentinel/sentinel-cortex/target/debug/build/pyo3-build-config-3577f621a3a04655/out/pyo3-build-config.txt
+
+/home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pyo3-build-config-0.23.5/src/lib.rs:
+/home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pyo3-build-config-0.23.5/src/errors.rs:
+/home/jnovoas/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pyo3-build-config-0.23.5/src/impl_.rs:
+/home/jnovoas/Desarrollo/sentinel/sentinel-cortex/target/debug/build/pyo3-build-config-3577f621a3a04655/out/pyo3-build-config-file.txt:
+/home/jnovoas/Desarrollo/sentinel/sentinel-cortex/target/debug/build/pyo3-build-config-3577f621a3a04655/out/pyo3-build-config.txt:
+
+# env-dep:CARGO_PKG_VERSION=0.23.5
+# env-dep:OUT_DIR=/home/jnovoas/Desarrollo/sentinel/sentinel-cortex/target/debug/build/pyo3-build-config-3577f621a3a04655/out
