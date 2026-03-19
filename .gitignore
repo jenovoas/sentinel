@@ -40,3 +40,10 @@ coverage.xml
 .pydevproject
 .settings/
 pyrightconfig.json
+
+# AI Agents (contienen API keys)
+.claude/
+.gemini/
+.cline/
+.agents/
+.opencode/
