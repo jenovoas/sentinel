@@ -20,7 +20,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.561.0",
-    "next": "14.0.4",
+    "next": "15.5.14",
     "postcss": "^8.4.32",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.3.1",
