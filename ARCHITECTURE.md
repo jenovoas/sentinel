@@ -71,3 +71,18 @@ control_signal = pid.update(error, dt)
 - `quantum/qaoa_s60.py`: QAOA (Quantum Approximate Optimization Algorithm) en S60
 - `quantum/vqe_s60.py`: VQE (Variational Quantum Eigensolver) en S60
 - `quantum/quantum_noise_s60.py`: Modelado de ruido cuántico sin punto flotante
+
+## 5. Neural Guard (Cortex Rust)
+
+El componente `neural-guard` (ubicado en `services/neural-guard`) actúa como el sistema inmunológico de Fenix.
+
+### Características Principales:
+- **Lenguaje:** Rust (Seguridad de memoria garantizada).
+- **Aritmética:** Cumplimiento estricto de **Base-60 (YATRA)**. Prohibido el uso de floats en la lógica de decisión.
+- **Fuentes de Datos:** Loki (Logs), Prometheus (Métricas) y Redis Streams (Eventos de infraestructura).
+- **Automatización:** Integración con n8n para la ejecución de playbooks de mitigación.
+
+### Axiomas de Defensa:
+1. **Correlación Temporal:** Los eventos se analizan en ventanas de tiempo precisas.
+2. **Decisión Autónoma:** Capacidad de disparar alertas y contramedidas sin intervención humana basada en umbrales verificados.
+3. **Transparencia:** Cada decisión se documenta y se notifica vía Slack/n8n.

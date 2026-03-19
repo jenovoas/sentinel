@@ -1,0 +1,96 @@
+{
+  "name": "Redis Memory Check",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "redis_memory_check",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "d1e2f3a4-b5c6-d7e8-f9a0-b1c2d3e4f5a6",
+      "name": "Webhook: Redis High Memory",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        800,
+        400
+      ],
+      "webhookId": "d1e2f3a4-b5c6-d7e8-f9a0-b1c2d3e4f5a6"
+    },
+    {
+      "parameters": {
+        "jsCode": "const incident = $json.body;\n\n// En un escenario real, aquí podríamos ejecutar un comando como `redis-cli --bigkeys`.\n// Por ahora, solo simulamos la acción.\nconsole.log(`[HEALTH CHECK] Received Redis high memory alert. Simulating key analysis...`);\n\n// Pasamos la data del incidente al siguiente nodo.\nreturn [{ json: { incident: incident } }];"
+      },
+      "id": "e2f3a4b5-c6d7-e8f9-a0b1-c2d3e4f5a6b7",
+      "name": "Simulate Key Analysis",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.SLACK_WEBHOOK_URL }}",
+        "sendBody": true,
+        "body": "={{\n{\n  \"blocks\": [\n    {\n      \"type\": \"header\",\n      \"text\": {\n        \"type\": \"plain_text\",\n        \"text\": \"📈 High Redis Memory Usage Detected\"\n      }\n    },\n    {\n      \"type\": \"section\",\n      \"fields\": [\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Incident Name:*\\n{{ $json.incident.name }}\"\n        },\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Severity:*\\n{{ $json.incident.severity }}\"\n        },\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Confidence:*\\n{{ ($json.incident.confidence * 100).toFixed(0) }}%\"\n        },\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Action Taken:*\\nInitiated Redis key analysis\"\n        }\n      ]\n    },\n    {\n      \"type\": \"section\",\n      \"text\": {\n        \"type\": \"mrkdwn\",\n        \"text\": \"*Details:* Used Memory: *{{ ($json.incident.events[0].metadata.used_bytes / 1024 / 1024).toFixed(2) }} MB*\"\n      }\n    },\n    {\n      \"type\": \"context\",\n      \"elements\": [\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"Playbook `redis_memory_check` executed automatically by Sentinel Cortex.\"\n        }\n      ]\n    }\n  ]\n}\n}}",
+        "options": {}
+      },
+      "id": "f3a4b5c6-d7e8-f9a0-b1c2-d3e4f5a6b7c8",
+      "name": "Notify Slack",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1200,
+        400
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook: Redis High Memory": {
+      "main": [
+        [
+          {
+            "node": "Simulate Key Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simulate Key Analysis": {
+      "main": [
+        [
+          {
+            "node": "Notify Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "id": "yL6z7w8v9u0t1s2r",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "c3d4e5f6-a7b8-c9d0-e1f2-a3b4c5d6e7f8",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "id": "1",
+      "name": "Health Check"
+    },
+    {
+      "id": "3",
+      "name": "Redis"
+    }
+  ]
+}

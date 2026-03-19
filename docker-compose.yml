@@ -411,11 +411,18 @@ services:
     container_name: sentinel-neural-guard
     environment:
       - PROMETHEUS_URL=http://prometheus:9090
+      - LOKI_URL=http://loki:3100
       - N8N_URL=http://n8n:5678
       - RUST_LOG=info
+      - SSH_BRUTEFORCE_THRESHOLD=5
+      - NGINX_5XX_THRESHOLD=10
+      - REDIS_MEMORY_THRESHOLD_BYTES=104857600 # 100MB
+      - CONTAINER_RESTART_THRESHOLD=3
     depends_on:
       - prometheus
+      - loki
       - n8n
+      - redis # Explicit dependency for the stream collector
     networks:
       - sentinel_network
     restart: unless-stopped

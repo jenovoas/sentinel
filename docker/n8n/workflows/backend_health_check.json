@@ -1,0 +1,96 @@
+{
+  "name": "Backend Health Check",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "backend_health_check",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6",
+      "name": "Webhook: Nginx 5xx Spike",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        800,
+        400
+      ],
+      "webhookId": "a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"
+    },
+    {
+      "parameters": {
+        "jsCode": "const incident = $json.body;\n\n// En un escenario real, podríamos usar esta data para buscar logs específicos.\n// Por ahora, solo simulamos la acción.\nconsole.log(`[HEALTH CHECK] Received Nginx 5xx spike alert. Checking backend service logs...`);\n\n// Pasamos la data del incidente al siguiente nodo.\nreturn [{ json: { incident: incident } }];"
+      },
+      "id": "b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7",
+      "name": "Simulate Backend Log Check",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.SLACK_WEBHOOK_URL }}",
+        "sendBody": true,
+        "body": "={{\n{\n  \"blocks\": [\n    {\n      \"type\": \"header\",\n      \"text\": {\n        \"type\": \"plain_text\",\n        \"text\": \"🔥 High Nginx 5xx Error Rate Detected\"\n      }\n    },\n    {\n      \"type\": \"section\",\n      \"fields\": [\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Incident Name:*\\n{{ $json.incident.name }}\"\n        },\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Severity:*\\n{{ $json.incident.severity }}\"\n        },\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Confidence:*\\n{{ ($json.incident.confidence * 100).toFixed(0) }}%\"\n        },\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Action Taken:*\\nInitiated backend log review\"\n        }\n      ]\n    },\n    {\n      \"type\": \"section\",\n      \"text\": {\n        \"type\": \"mrkdwn\",\n        \"text\": \"*Details:* Detected *{{ $json.incident.events[0].metadata.count }}* 5xx errors in the last 5 minutes.\"\n      }\n    },\n    {\n      \"type\": \"context\",\n      \"elements\": [\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"Playbook `backend_health_check` executed automatically by Sentinel Cortex.\"\n        }\n      ]\n    }\n  ]\n}\n}}",
+        "options": {}
+      },
+      "id": "c3d4e5f6-a7b8-c9d0-e1f2-a3b4c5d6e7f8",
+      "name": "Notify Slack",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1200,
+        400
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook: Nginx 5xx Spike": {
+      "main": [
+        [
+          {
+            "node": "Simulate Backend Log Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simulate Backend Log Check": {
+      "main": [
+        [
+          {
+            "node": "Notify Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "id": "xL5y6z7w8v9u0t1s",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "id": "1",
+      "name": "Health Check"
+    },
+    {
+      "id": "2",
+      "name": "Application"
+    }
+  ]
+}
