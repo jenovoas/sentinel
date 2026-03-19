@@ -1,0 +1,40 @@
+{
+  "mcpServers": {
+    "github": {
+      "httpUrl": "https://api.githubcopilot.com/mcp/",
+      "trust": true
+    },
+    "supabase": {
+      "httpUrl": "https://mcp.supabase.com/mcp",
+      "trust": true
+    },
+    "figma": {
+      "httpUrl": "https://mcp.figma.com/mcp",
+      "trust": true
+    },
+    "atlassian": {
+      "httpUrl": "https://mcp.atlassian.com/v1/mcp",
+      "trust": true
+    },
+    "huggingface": {
+      "httpUrl": "https://huggingface.co/mcp?login",
+      "trust": true
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"],
+      "trust": true
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "ctx7sk-ff69f33e-cb7a-468f-8145-c98414031be9"
+      }
+    }
+  },
+  "$version": 3,
+  "ide": {
+    "hasSeenNudge": true
+  }
+}
