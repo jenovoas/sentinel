@@ -35,3 +35,17 @@
 - [x] Aplicar protocolo global de Gemini/Claude en el workspace
 - [x] Crear `tasks/lessons.md` y documentar errores de Podman
 - [x] Configuración de Autenticación Traefik (Fenix)
+
+---
+
+## Próximos Hitos Estratégicos (Roadmap)
+
+- [ ] **Simulación Térmica Controlada**: Desplegar el entorno de simulación para validar la respuesta de `neural-guard` ante variaciones artificiales de calor.
+- [ ] **Transición a SOMA**: Migración del orquestador actual al sistema SOMA para gestión avanzada de recursos sexagesimales.
+- [ ] **Refinamiento de Inercia Cuántica**: Ajustar la fórmula de `ThermalGovernor` con métricas de carga real en el Nodo Fenix.
+- [ ] **MycNet Mesh**: Implementación experimental de computación S60 distribuida.
+- [ ] **Prueba de Equivalencia Formal**: Documentación matemática sobre S60 vs IEEE 754.
+
+---
+
+*YATRA. Truth Resonates.*
