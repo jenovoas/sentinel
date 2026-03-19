@@ -70,6 +70,7 @@ sentinel/
 ### 🧠 Neural Guard & Octomechanical Coupling
 
 Sentinel represents a leap in defensive systems by integrating **Octomechanical Coupling**:
+
 - **Thermal Awareness**: Neural Guard queries CPU temperature in real-time.
 - **Dynamic Thresholding**: Thresholds for security alerts (SSH, Redis, Nginx) scale based on the **Computational Mass** (`Effective Load`) of the system.
 - **Resilience**: Hotter environments (high noise/entropy) automatically increase detection tolerance to prevent false positives, while cool, coherent states enable maximum sensitivity.

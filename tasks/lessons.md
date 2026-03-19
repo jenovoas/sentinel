@@ -27,6 +27,7 @@ Falta de validación previa de dependencias físicas fuera del docker build cont
 
 **La Regla de Oro (Prevención):**
 Para binarios Rust en arquitectura mono-repo separada donde un crate depende de un path externo, considerar:
+
 1. Compilar nativamente `cargo build --release` y copiar el binario precompilado (`COPY target/release/bin` en una imagen Alpine/Debian-slim). **<- Este enfoque es el recomendado y el más rápido.**
 2. Jamás intentar un build multistage sin auditar antes dónde apuntan los `path=` del `Cargo.toml`.
 
@@ -42,10 +43,11 @@ Priorizar la "ayuda rápida" sobre el rigor investigativo. El agente ignoró que
 
 **La Regla de Oro (Prevención):**
 **NUNCA** confiar en un documento descriptivo como fuente de verdad absoluta sin validación física. Antes de proponer cambios, el agente **DEBE** realizar un "Mapeo de Verdad":
-1.  **Validación de Procesos:** `podman ps --all` para ver la realidad del host.
-2.  **Validación de Red:** `ip addr` y `podman network ls` para confirmar segmentos (ej. VPN 10.100.0.x).
-3.  **Validación de Ruteo:** `podman inspect` para mapear labels de Traefik y dominios reales.
-4.  **Separación de Dominios:** Mantener la documentación de Sentinel puramente técnica y separada de proyectos de clientes o agencias externas.
+
+1. **Validación de Procesos:** `podman ps --all` para ver la realidad del host.
+2. **Validación de Red:** `ip addr` y `podman network ls` para confirmar segmentos (ej. VPN 10.100.0.x).
+3. **Validación de Ruteo:** `podman inspect` para mapear labels de Traefik y dominios reales.
+4. **Separación de Dominios:** Mantener la documentación de Sentinel puramente técnica y separada de proyectos de clientes o agencias externas.
 
 ---
 
@@ -58,6 +60,7 @@ Uso de placeholders o fallbacks hardcodeados en `docker-compose.yml` para el mid
 Falta de una variable de entorno dedicada y un procedimiento claro para generar hashes compatibles con Apache/Traefik sin depender de herramientas externas no instaladas (como `htpasswd`).
 
 **La Regla de Oro (Prevención):**
+
 1. **SIEMPRE** usar variables de entorno (ej: `TRAEFIK_BASIC_AUTH`) para definir usuarios de BasicAuth en las etiquetas de Traefik.
 2. **NUNCA** dejar el hash en claro o como fallback en el archivo compose.
 3. Para generar hashes compatibles sin `htpasswd`, usar `openssl`:

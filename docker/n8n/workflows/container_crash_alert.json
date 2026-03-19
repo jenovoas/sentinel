@@ -1,0 +1,96 @@
+{
+  "name": "Container Crash Alert",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "container_crash_alert",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "e1f2a3b4-c5d6-e7f8-a9b0-c1d2e3f4a5b6",
+      "name": "Webhook: Container Crash",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        800,
+        400
+      ],
+      "webhookId": "e1f2a3b4-c5d6-e7f8-a9b0-c1d2e3f4a5b6"
+    },
+    {
+      "parameters": {
+        "jsCode": "const incident = $json.body;\nconst serviceName = incident.events[0]?.metadata?.service || 'unknown service';\nconst restartCount = incident.events[0]?.metadata?.restarts || 0;\n\n// En un escenario real, aquí podríamos ejecutar `docker logs <serviceName>`\nconsole.log(`[CRASH ALERT] Container '${serviceName}' is in a crash loop (${restartCount} restarts). Simulating log retrieval...`);\n\n// Pasamos la data del incidente y los datos extraídos al siguiente nodo.\nreturn [{ json: { incident, serviceName, restartCount } }];"
+      },
+      "id": "f2a3b4c5-d6e7-f8a9-b0c1-d2e3f4a5b6c7",
+      "name": "Simulate Log Retrieval",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.SLACK_WEBHOOK_URL }}",
+        "sendBody": true,
+        "body": "={{\n{\n  \"blocks\": [\n    {\n      \"type\": \"header\",\n      \"text\": {\n        \"type\": \"plain_text\",\n        \"text\": \"CRITICAL: Container Crash Loop Detected 💥\"\n      }\n    },\n    {\n      \"type\": \"section\",\n      \"fields\": [\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Incident Name:*\\n{{ $json.incident.name }}\"\n        },\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Severity:*\\n{{ $json.incident.severity }}\"\n        },\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Confidence:*\\n{{ ($json.incident.confidence * 100).toFixed(0) }}%\"\n        },\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Action Taken:*\\nSimulated log retrieval\"\n        }\n      ]\n    },\n    {\n      \"type\": \"section\",\n      \"text\": {\n        \"type\": \"mrkdwn\",\n        \"text\": \"*Service:* `{{ $json.serviceName }}`\\n*Restart Count:* *{{ $json.restartCount }}*\"\n      }\n    },\n    {\n      \"type\": \"section\",\n      \"text\": {\n        \"type\": \"mrkdwn\",\n        \"text\": \"> {{ $json.incident.recommended_action }}\"\n      }\n    },\n    {\n      \"type\": \"context\",\n      \"elements\": [\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"Playbook `container_crash_alert` executed automatically by Sentinel Cortex.\"\n        }\n      ]\n    }\n  ]\n}\n}}",
+        "options": {}
+      },
+      "id": "a3b4c5d6-e7f8-a9b0-c1d2-e3f4a5b6c7d8",
+      "name": "Notify Slack",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1200,
+        400
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook: Container Crash": {
+      "main": [
+        [
+          {
+            "node": "Simulate Log Retrieval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simulate Log Retrieval": {
+      "main": [
+        [
+          {
+            "node": "Notify Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "id": "zL7y8x9w0v1u2t3s",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "d3e4f5a6-b7c8-d9e0-f1a2-b3c4d5e6f7a8",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "id": "1",
+      "name": "Health Check"
+    },
+    {
+      "id": "4",
+      "name": "Container"
+    }
+  ]
+}
