@@ -15,9 +15,13 @@ Método:
 import sys
 import os
 import math
-sys.path.append('/home/jnovoas/dev/sentinel')
 
-from quantum.yatra_core import S60
+# Detectar la raíz del proyecto (Sentinel) de forma dinámica
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if project_root not in sys.path:
+    sys.path.append(project_root)
+
+from quantum.yatra_core import S60, DecimalContaminationError
 
 print("🔧 DEBUG: Lyapunov S60 vs Float")
 print("=" * 60)
