@@ -75,29 +75,27 @@ podman run -d \
 
 ---
 
-## FASE 3: Monitoreo de Servicios Ring 0
+## 0. Resumen Ejecutivo (Nodo Único Fenix)
 
-### 3.1 Sentinel Cortex (Rust)
+**Fenix** es el único nodo de producción actual. Todos los servicios Ring 0 y de infraestructura se consolidan en este host bajo Podman.
 
-Métricas nativas de la orquestación S60 y ciclo de 17s.
-- Target: `sentinel-cortex:8000/metrics`
 
-### 3.2 Infraestructura (Postgres / Redis)
+### Arquitectura de Monitoreo
 
-- **Postgres Exporter**: Métricas de base de datos `sentinel_db`.
-- **Redis Exporter**: Métricas de caché y latencia.
-
-### 3.3 Traefik Gateway
+- **Node Exporter:** Métricas de hardware/SO de Fenix.
+- **Promtail:** Recolección de logs de contenedores Podman.
+- **Prometheus:** Agregación y almacenamiento de series temporales.
+- **Neural Guard (Rust):** Motor de correlación en tiempo real (Cortex).
 
 Métricas de ruteo global y estado de certificados TLS del nodo Fenix.
 
 ---
 
-## FASE 4: Dashboards Críticos
+### 1.2 Dashboards Críticos en Grafana
 
-1. **Fenix Sovereign Guard**: Estado vital del nodo (System Load, I/O, Error Rate).
-2. **Ring 0 Operations**: Tiempos de respuesta de Cortex y salud del motor Base-60.
-3. **Infrastructure Health**: Estado del ruteo y certificados TLS.
+1. **Fenix Infrastructure:** Salud del nodo (CPU, RAM, Disk, Load).
+2. **Sentinel Core (Ring 0):** Estado del Cortex (`neural-guard`), latencia de respuesta de IA y uso de memoria S60.
+3. **Pinguino Web & ERP:** Disponibilidad y latencia de servicios públicos.
 
 ---
 
