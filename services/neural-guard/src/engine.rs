@@ -1,16 +1,25 @@
 use crate::models::{CorrelatedIncident, Event, Severity};
+use crate::patterns::{
+    ContainerCrashLoopPattern, NginxErrorSpikePattern, Pattern, PatternContext, RedisMemoryPattern,
+    SshBruteForcePattern,
+};
 use std::collections::VecDeque;
 use me60os_core::spa::SPA;
 use me60os_core::physics::ResonantPhysics;
 
 pub struct DecisionEngine {
     event_buffer: VecDeque<Event>,
+    patterns: Vec<Box<dyn Pattern>>,
     time_window: chrono::Duration,
+
+    // Configuration for patterns
     ssh_bruteforce_threshold: usize,
     nginx_5xx_threshold: u64,
     redis_memory_threshold_bytes: u64,
     container_restart_threshold: i64,
     enable_thermal_coupling: bool,
+
+    // S60 Physics state
     baseline_load: SPA,
 }
 
@@ -34,6 +43,13 @@ impl DecisionEngine {
 
         Self {
             event_buffer: VecDeque::with_capacity(1000),
+            patterns: vec![
+                Box::new(SshBruteForcePattern),
+                Box::new(NginxErrorSpikePattern),
+                Box::new(RedisMemoryPattern),
+                Box::new(ContainerCrashLoopPattern),
+                // To add a new pattern, just add a new `Box::new(...)` here.
+            ],
             time_window: chrono::Duration::try_minutes(5).unwrap_or_default(),
             ssh_bruteforce_threshold: threshold,
             nginx_5xx_threshold: nginx_threshold,
@@ -121,6 +137,14 @@ impl DecisionEngine {
         // Como no tenemos logs de Auditd aún, simulamos con métricas
         let high_cpu = self.event_buffer.iter().any(|e| e.event_type == "high_cpu_usage");
         let high_net = self.event_buffer.iter().any(|e| e.event_type == "high_network_traffic"); // A implementar
+        // Create a context for the patterns to use
+        let context = PatternContext {
+            event_buffer: &self.event_buffer,
+            ssh_bruteforce_threshold: ssh_threshold,
+            nginx_5xx_threshold: nginx_threshold,
+            redis_memory_threshold_bytes: redis_threshold,
+            container_restart_threshold: restart_threshold,
+        };
 
         if high_cpu && high_net {
             incidents.push(CorrelatedIncident {
@@ -177,6 +201,10 @@ impl DecisionEngine {
                         n8n_playbook: "backend_health_check".to_string(),
                     });
                 }
+        // Iterate over all registered patterns and check for incidents
+        for pattern in &self.patterns {
+            if let Some(incident) = pattern.check(&context) {
+                incidents.push(incident);
             }
         }
 
@@ -185,6 +213,8 @@ impl DecisionEngine {
         let redis_mem_events: Vec<_> = self.event_buffer.iter()
             .filter(|e| e.event_type == "redis_memory_usage")
             .collect();
+        // Note: Pattern 1 (DDoS) was not fully implemented. It can be added
+        // as a new struct implementing the `Pattern` trait when ready.
 
         if let Some(last_event) = redis_mem_events.last() {
             if let Some(used_bytes) = last_event.metadata["used_bytes"].as_u64() {

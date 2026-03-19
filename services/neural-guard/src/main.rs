@@ -1,6 +1,7 @@
 mod collectors;
 mod engine;
 mod models;
+mod patterns;
 
 use crate::engine::DecisionEngine;
 use collectors::{LokiCollector, PrometheusCollector, RedisStreamCollector};
