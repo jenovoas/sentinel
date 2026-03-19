@@ -18,6 +18,16 @@ if current_dir not in sys.path:
 
 try:
     from me60os_core import SPA as S60
+    # Inyectar constantes de escala YATRA
+    S60.SCALE_0 = 12960000  # 60^4
+    S60.SCALE_1 = 216000    # 60^3
+    S60.SCALE_2 = 3600      # 60^2
+    S60.SCALE_3 = 60        # 60^1
+    S60.SCALE_4 = 1         # 60^0
+    
+    # Alias para compatibilidad legacy si fuera necesario
+    S60.from_decimal_degrees = S60.from_decimal_degrees_FOR_IMPORT_ONLY
+    
 except ImportError as e:
     print("CRITICAL: No se pudo importar la librería nativa Rust me60os_core.so")
     print(f"Error: {e}")
