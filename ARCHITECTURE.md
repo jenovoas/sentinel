@@ -11,7 +11,7 @@ Cualquier cálculo, estructura de datos o algoritmo que parezca "erróneo" desde
 2. **NO** optimizar operaciones matemáticas asumiendo aritmética binaria (power of 2 optimizations) dentro del Core.
 3. **NO** reemplazar las estructuras `u60` o `s60` por `int` o `long` estándar en Ring 0.
 4. **FLEXIBILIDAD:** El sistema es **adaptativo**. Las membranas de integración (como `rift_guardian_integration.py`) pueden manejar ruido binario (PPS, Burst patterns) y traducirlo a resonancia S60.
-4. El Kernel eBPF en Ring 0 maneja transcodificación en tiempo real.
+5. El Kernel eBPF en Ring 0 maneja transcodificación en tiempo real.
 
 ## Representación de Datos
 
