@@ -14,10 +14,13 @@ Desplegar el stack unificado de Sentinel en el servidor **fenix** (Rocky Linux 9
 ## ESTADO DE AUDITORÍA (RESUELTO)
 
 ### ✅ Sustitución de FastAPI
+
 El backend legacy en Python ha sido eliminado. Toda la lógica de orquestación, API de telemetría y salud se gestiona ahora a través de **sentinel-cortex** con el servidor **Axum**.
 
 ### ✅ Optimización de Infraestructura
+
 - **eBPF Guardian**: Integrado y activo en el kernel.
+
 ### 2. Servicios del Ecosistema
 
 | Servicio | Puerto Interno | Dominio Externo |
@@ -30,6 +33,7 @@ El backend legacy en Python ha sido eliminado. Toda la lógica de orquestación,
 | **Prometheus** | 9090 | `prometheus.pinguinoseguro.cl` |
 
 ### 3. Flujo de Despliegue (CI/CD Local)
+
 - **Traefik**: Labels configuradas para enrutamiento seguro a `sentinel.pinguinoseguro.cl`.
 - **Exporters**: Prometheus configurado para monitorizar el Cortex nativo.
 
@@ -38,16 +42,19 @@ El backend legacy en Python ha sido eliminado. Toda la lógica de orquestación,
 ## 🚀 Despliegue en Fenix
 
 ### Paso 1 — Pre-condiciones
+
 - [x] Red `proxy` de Podman existente.
 - [x] Volúmenes de datos (`postgres_data`, `redis_data`, etc.) creados.
 
 ### 🌍 Topología Seleccionada
+
 - **Nodo Maestro**: Fenix (`10.10.10.8`)
 - **Acceso SSH**: `ssh -p 4222 jnovoas@10.10.10.8`
 - **Red VPN (wg0)**: `10.100.0.1` (Gateway)
 - **Runtime**: Podman rootless (Rocky Linux 9)
 
 ### Paso 2 — Levantamiento de Servicios
+
 1. `podman-compose -f docker-compose.fenix.yml up -d postgres redis`
 2. `podman-compose -f docker-compose.fenix.yml up -d cortex` (Binario Rust con loop de 17s).
 3. `podman-compose -f docker-compose.fenix.yml up -d prometheus grafana n8n`
