@@ -3,6 +3,7 @@
 **Objetivo:** Crear un sistema estandarizado para agregar sitios de clientes en minutos, con CI/CD automatizado, SSL, backups y monitoreo incluidos.
 
 **Stack:**
+
 - **Traefik** (reverse proxy + SSL automático)
 - **Podman/Docker** (contenedores)
 - **GitLab CI** o **GitHub Actions** (opcional: CI/CD)

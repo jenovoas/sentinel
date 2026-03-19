@@ -21,6 +21,42 @@ pub trait Pattern: Send + Sync {
 
 // --- Pattern Implementations ---
 
+/// **Pattern 1: Potential DDoS Attack**
+/// Correlates high network traffic with high system CPU usage.
+pub struct DdosPattern;
+impl Pattern for DdosPattern {
+    fn check(&self, context: &PatternContext) -> Option<CorrelatedIncident> {
+        let high_cpu = context
+            .event_buffer
+            .iter()
+            .any(|e| e.event_type == "high_cpu_usage");
+
+        let high_net = context
+            .event_buffer
+            .iter()
+            .any(|e| e.event_type == "high_network_traffic");
+
+        if high_cpu && high_net {
+            let relevant_events: Vec<Event> = context
+                .event_buffer
+                .iter()
+                .filter(|e| e.event_type == "high_cpu_usage" || e.event_type == "high_network_traffic")
+                .cloned()
+                .collect();
+
+            return Some(CorrelatedIncident {
+                name: "Potential DDoS Attack".to_string(),
+                confidence: 0.75,
+                severity: Severity::Critical,
+                events: relevant_events,
+                recommended_action: "Activate network firewall rules and rate limiting.".to_string(),
+                n8n_playbook: "ddos_mitigation".to_string(),
+            });
+        }
+        None
+    }
+}
+
 /// **Pattern 2: SSH Brute-Force Attack**
 /// Detects multiple failed logins correlated with high CPU usage.
 pub struct SshBruteForcePattern;

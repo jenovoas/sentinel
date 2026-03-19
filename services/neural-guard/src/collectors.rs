@@ -240,6 +240,32 @@ impl RedisStreamCollector {
                 }
             }
         }
+
+        // Query for high network traffic (e.g., > 10 MB/s)
+        let net_query = "rate(node_network_receive_bytes_total{device!~'lo'}[1m]) > 10 * 1024 * 1024";
+        let net_json = self.http.query("/api/v1/query", net_query).await?;
+        let net_alerts = net_json["data"]["result"].as_array().cloned().unwrap_or_default();
+
+        for alert in net_alerts {
+            if let Some(value_str) = alert["value"][1].as_str() {
+                if let Ok(value_float) = value_str.parse::<f64>() {
+                    if value_float > 0.0 {
+                        events.push(Event {
+                            event_type: "high_network_traffic".to_string(),
+                            source: EventSource::Prometheus,
+                            severity: Severity::High,
+                            metadata: serde_json::json!({
+                                "host": alert["metric"]["instance"],
+                                "device": alert["metric"]["device"],
+                                "value_bytes_per_sec": value_float,
+                                "description": "Network traffic over 10MB/s."
+                            }),
+                            ..Default::default()
+                        });
+                    }
+                }
+            }
+        }
         Ok(events)
     }
 }

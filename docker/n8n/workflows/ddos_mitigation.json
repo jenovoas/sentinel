@@ -1,0 +1,96 @@
+{
+  "name": "DDoS Mitigation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ddos_mitigation",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "g1h2i3j4-k5l6-m7n8-o9p0-q1r2s3t4u5v6",
+      "name": "Webhook: DDoS Attack",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        800,
+        400
+      ],
+      "webhookId": "g1h2i3j4-k5l6-m7n8-o9p0-q1r2s3t4u5v6"
+    },
+    {
+      "parameters": {
+        "jsCode": "const incident = $json.body;\n\n// In a real-world scenario, this would interact with a firewall API (Cloudflare, Nginx, etc.)\n// to apply rate-limiting rules or block suspicious IPs.\nconsole.log(`[MITIGATION] Simulating activation of rate limiting and firewall rules for potential DDoS.`);\n\n// Pass the incident data to the next node.\nreturn [{ json: { incident: incident } }];"
+      },
+      "id": "h2i3j4k5-l6m7-n8o9-p0q1-r2s3t4u5v6w7",
+      "name": "Simulate Rate Limiting",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.SLACK_WEBHOOK_URL }}",
+        "sendBody": true,
+        "body": "={{\n{\n  \"blocks\": [\n    {\n      \"type\": \"header\",\n      \"text\": {\n        \"type\": \"plain_text\",\n        \"text\": \"CRITICAL: Potential DDoS Attack Detected 🛡️\"\n      }\n    },\n    {\n      \"type\": \"section\",\n      \"fields\": [\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Incident Name:*\\n{{ $json.incident.name }}\"\n        },\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Severity:*\\n{{ $json.incident.severity }}\"\n        },\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Confidence:*\\n{{ ($json.incident.confidence * 100).toFixed(0) }}%\"\n        },\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Action Taken:*\\nSimulated Rate Limiting\"\n        }\n      ]\n    },\n    {\n      \"type\": \"section\",\n      \"text\": {\n        \"type\": \"mrkdwn\",\n        \"text\": \"> {{ $json.incident.recommended_action }}\"\n      }\n    },\n    {\n      \"type\": \"context\",\n      \"elements\": [\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"Playbook `ddos_mitigation` executed automatically by Sentinel Cortex.\"\n        }\n      ]\n    }\n  ]\n}\n}}",
+        "options": {}
+      },
+      "id": "i3j4k5l6-m7n8-o9p0-q1r2-s3t4u5v6w7x8",
+      "name": "Notify Slack",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1200,
+        400
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook: DDoS Attack": {
+      "main": [
+        [
+          {
+            "node": "Simulate Rate Limiting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simulate Rate Limiting": {
+      "main": [
+        [
+          {
+            "node": "Notify Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "id": "aL8b9c0d1e2f3g4h",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "e4f5a6b7-c8d9-e0f1-a2b3-c4d5e6f7a8b9",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "id": "1",
+      "name": "Security"
+    },
+    {
+      "id": "5",
+      "name": "DDoS"
+    }
+  ]
+}
