@@ -1,28 +1,36 @@
-## Tarea Activa: Unificación de Nodo Único (Fenix)
+# Tarea Activa: Documentación, Preparación de Push y Análisis de Planificación (ID: 20260319-A)
 
-- [ ] **Saneamiento Doc Informativa** [/]
-  - [ ] Reescribir `GEMINI_TASK_MONITORING.md` para nodo único Fenix (Solo Sentinel)
-  - [ ] Corregir `ARCHITECTURE.md` (Solo Sentinel Core)
-  - [ ] Limpiar `FENIX_DEPLOY_PLAN.md` (Solo infraestructura base)
-
-- [ ] **Investigación**
-  - [ ] Listar archivos de licencia en la raíz
-  - [ ] Revisar menciones de licencia en `README.md`
-  - [ ] Verificar contenido de `LICENSE`
-- [ ] **Ejecución**
-  - [ ] Unificar la licencia en `README.md` y archivos de licencia según la intención del repo
-- [ ] **Verificación**
-  - [ ] Comprobar que no hay discrepancias persistentes
+- [x] **Fase 1: Auditoría y Saneamiento de Base**
+  - [x] Ejecutar auditoría empírica del estado de Git e Infraestructura (vía Subagente)
+  - [x] Corregir `tasks/lessons.md` con el error de proceso inicial
+  - [x] Validar integridad de los nuevos archivos Rust (`engine.rs`, `collectors.rs`, `models.rs`)
+- [ ] **Fase 2: Reestructuración de Neural Guard (Elegancia)** [/]
+  - [ ] Crear estructura de directorio `services/neural-guard/src`
+  - [ ] Generar `Cargo.toml` con dependencias mínimas necesarias
+  - [ ] Migrar archivos `.rs` y `Dockerfile` al contexto del servicio
+  - [ ] **Ajuste YATRA:** Reemplazar `f64` por aritmética entera/SPA en umbrales de `engine.rs`
+  - [ ] Verificar compilación (`cargo check`)
+- [ ] **Fase 3: Documentación de Logros (Diario)** [/]
+  - [x] Actualizar `tasks/diary/2026-03-19.md` con los hallazgos confirmados
+  - [ ] Saneamiento de `GEMINI_TASK_MONITORING.md` para Nodo Único Fenix
+  - [ ] Saneamiento de `ARCHITECTURE.md` para reflejar la transición a Rust
+- [ ] **Fase 4: Preparación de Sincronización (Push)** [ ]
+  - [ ] Auditoría de `docker-compose.yml` para asegurar consistencia de rutas
+  - [ ] Crear propuesta de commit estructurado
+  - [ ] Solicitar validación final para el `git push`
 
 ---
 
-## Tareas Anteriores: Integrar Sistema de Cierre Final para Stack Ring 0 en Fenix
+## Log de Logros Diarios (Verificados)
+
+- [x] Confirmación de Dominio `pinguinoseguro.cl` activo con SSL
+- [x] Verificación de commit `cbbe6e1` (Resonant Lattice Memory)
+- [x] Implementación inicial de lógica de correlación en Rust (`engine.rs`)
+
+---
+
+## Tareas Históricas
 
 - [x] Aplicar protocolo global de Gemini/Claude en el workspace
-- [x] Crear `tasks/lessons.md` y documentar errores de Podman y Contexto
-- [x] Validar paneles de Grafana para `sentinel-cortex` y exporters (Montaje de provisioning aplicado)
-- [x] **Configuración de Autenticación**
-  - [x] Generar hash real y actualizar `.env`
-  - [x] Limpiar etiquetas en `docker-compose.fenix.yml`
-  - [x] Verificar con `podman-compose config`
-- [ ] **Siguiente Fase:** Transición a SOMA / Orquestador (por decidir con Usuario)
+- [x] Crear `tasks/lessons.md` y documentar errores de Podman
+- [x] Configuración de Autenticación Traefik (Fenix)

@@ -4,9 +4,9 @@ use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum EventSource {
-    NervioA_Intrusion, // Syscalls, memoria, red (Guardian Alpha)
-    NervioB_Integrity, // Backups, config, certs (Guardian Beta)
-    Prometheus,        // Métricas generales
+    NervioAIntrusion, // Syscalls, memoria, red (Guardian Alpha)
+    NervioBIntegrity, // Backups, config, certs (Guardian Beta)
+    Prometheus,       // Métricas generales
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash)]

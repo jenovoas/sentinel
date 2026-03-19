@@ -3,6 +3,7 @@
 *Regla: Después de CUALQUIER corrección del usuario, actualizar este archivo con el patrón y una regla para no repetir el error.*
 
 ## [2026-03-18] Error de Permisos en Volúmenes Podman Rootless (SELinux)
+
 **El Error:**
 Al levantar Prometheus y PostgreSQL en `docker-compose.fenix.yml`, los contenedores entraron en crash-loop (CPU >174% o denegación de inicialización) por errores de tipo `permission denied` (ej: `open /etc/prometheus/prometheus.yml: permission denied`).
 
@@ -17,6 +18,7 @@ Rocky Linux 9 (Fenix) usa SELinux en modo enforcing. En Podman rootless, montar 
 ---
 
 ## [2026-03-18] Contexto de Construcción Cruzado en Dockerfiles (me-60os)
+
 **El Error:**
 Compilar `sentinel-cortex` en Podman falló porque `Cargo.toml` apuntaba a `../../me-60os`, el cual estaba fuera del contexto de Docker (que solo veía `./sentinel-cortex`).
 
@@ -31,6 +33,7 @@ Para binarios Rust en arquitectura mono-repo separada donde un crate depende de 
 ---
 
 ## [2026-03-18] Error de Soberanía Documental y Alucinación Operacional
+
 **El Error:**
 Llevar a cabo modificaciones en la documentación y proponer planes de monitoreo/despliegue basándose en archivos obsoletos (ej: `GEMINI_TASK_MONITORING.md` de febrero) sin realizar primero una auditoría empírica del sistema (`podman ps`, `ip addr`). Esto llevó a la "alucinación" de un clúster de 4 nodos (Kingu, Centurion, Sentinel, Fenix) que ya no existía en el entorno productivo.
 
@@ -47,6 +50,7 @@ Priorizar la "ayuda rápida" sobre el rigor investigativo. El agente ignoró que
 ---
 
 ## [2026-03-18] Configuración de BasicAuth en Traefik vía Entorno
+
 **El Error:**
 Uso de placeholders o fallbacks hardcodeados en `docker-compose.yml` para el middleware de autenticación (`basicauth.users`), lo que dificulta la gestión de secretos y puede exponer credenciales por defecto.
 

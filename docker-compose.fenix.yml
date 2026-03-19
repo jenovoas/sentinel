@@ -192,6 +192,33 @@ services:
           memory: 64M
     restart: unless-stopped
 
+  # ── MOTOR DE DEFENSA (Rust) ────────────────────────────────────────────────────
+
+  neural-guard:
+    build:
+      context: ./services/neural-guard
+    container_name: sentinel-neural-guard
+    environment:
+      - PROMETHEUS_URL=http://prometheus:9090
+      - LOKI_URL=http://loki:3100
+      - N8N_URL=http://n8n:5678
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
+      - RUST_LOG=info
+      - SSH_BRUTEFORCE_THRESHOLD=5
+      - NGINX_5XX_THRESHOLD=10
+      - REDIS_MEMORY_THRESHOLD_BYTES=104857600
+      - CONTAINER_RESTART_THRESHOLD=3
+    depends_on:
+      - prometheus
+      - redis
+    networks:
+      - sentinel_internal
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   redis_data:
