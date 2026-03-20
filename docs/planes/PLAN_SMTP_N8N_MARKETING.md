@@ -3,6 +3,7 @@
 **Objetivo:** Configurar infraestructura de email marketing propia para Pinguino Seguro y clientes, con n8n para automatización.
 
 **Stack:**
+
 - **n8n** (automatización workflow, open source)
 - **Postfix** o **Mailgun API** (envío SMTP)
 - **Traefik** (reverse proxy con SSL)
@@ -21,6 +22,7 @@ Internet → Traefik (443) → n8n (5678)
 ```
 
 **Subdominios:**
+
 - `n8n.pinguinoseguro.cl` → Interfaz web n8n
 - `mail.pinguinoseguro.cl` → Servidor SMTP (opcional si usas Postfix local)
 
@@ -257,6 +259,7 @@ EOF
 **Configuración:**
 
 **Nodo 1: Webhook**
+
 - Method: POST
 - Path: `/webhook/bienvenida`
 - Authentication: None (o agregar header API key)
@@ -271,6 +274,7 @@ EOF
 ```
 
 **Nodo 3: Mailgun**
+
 - Credentials: Agregar Mailgun API Key
 - From Email: `noreply@mg.pinguinoseguro.cl`
 - From Name: `Pinguino Seguro`
@@ -285,6 +289,7 @@ EOF
   ```
 
 **Nodo 4: Respond to Webhook**
+
 - Status Code: 200
 - Body: `{"status": "email enviado"}`
 
@@ -313,10 +318,12 @@ curl -X POST https://n8n.pinguinoseguro.cl/webhook/bienvenida \
 ```
 
 **Configuración Wait:**
+
 - Amount: 3
 - Unit: Days
 
 **Mailgun Recordatorio:**
+
 - Subject: `¿Ya revisaste nuestra propuesta?`
 - Body: Template personalizado
 
@@ -380,6 +387,7 @@ podman logs -f n8n
 ### 7.2 Métricas de Mailgun
 
 Dashboard → Analytics:
+
 - Emails enviados
 - Tasa de apertura
 - Bounces/rechazos
@@ -467,6 +475,7 @@ crontab -e
 
 **Trigger:** Cron (1er día del mes)
 **Contenido:**
+
 - Nuevas features lanzadas
 - Tips de seguridad
 - Cliente destacado del mes
