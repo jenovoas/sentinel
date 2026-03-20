@@ -1,0 +1,28 @@
+[Unit]
+Description=Monitor de Sitios Críticos - Pinguino Seguro
+Documentation=file:///home/jnovoas/Desarrollo/sentinel/docs/POST_MORTEM_2026_03_20_PINGUINOSEGURO_DOWN.md
+After=network-online.target traefik.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/monitor-sitios.sh
+WorkingDirectory=/home/jnovoas/Desarrollo/sentinel
+
+# Environment
+Environment=TELEGRAM_BOT_TOKEN=
+Environment=TELEGRAM_CHAT_ID=
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=pinguino-monitor
+
+# Security
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/var/log /tmp
+
+[Install]
+WantedBy=multi-user.target
