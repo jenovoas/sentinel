@@ -44,25 +44,25 @@ class ResonantCrystal:
         self.amplitude = initial_amplitude
         self.coupling_factor = 50  # Cuán fuertemente se acopla a los vecinos (de 1000)
 
-    def update(self, neighbors):
+    def calculate_next_phase(self, current_phase, neighbor_phases):
         """
-        Actualiza la fase del cristal basándose en la fase promedio de sus vecinos.
-        Intenta alinearse con sus vecinos para aumentar la coherencia.
+        Calcula la nueva fase del cristal para el siguiente paso de tiempo.
+        La lógica es determinista y se basa únicamente en los estados de entrada.
         """
-        if not neighbors:
-            return
+        if not neighbor_phases:
+            return current_phase
 
         # Calcular la diferencia de fase promedio con los vecinos
         total_phase_diff = 0
-        for neighbor in neighbors:
-            total_phase_diff += s60_diff(self.phase, neighbor.phase)
+        for neighbor_phase in neighbor_phases:
+            total_phase_diff += s60_diff(current_phase, neighbor_phase)
         
-        avg_phase_diff = total_phase_diff // len(neighbors)
+        avg_phase_diff = total_phase_diff // len(neighbor_phases)
 
         # Ajustar la fase propia para acercarse a la de los vecinos
         # El ajuste es proporcional al factor de acoplamiento.
         adjustment = (avg_phase_diff * self.coupling_factor) // 1000
-        self.phase = s60_add(self.phase, adjustment)
+        return s60_add(current_phase, adjustment)
 
     def __repr__(self):
         return f"Crystal(P:{self.phase}, A:{self.amplitude})"
@@ -77,14 +77,20 @@ class LiquidLattice:
 
     def step(self):
         """Simula un paso de tiempo en la red."""
-        # Hacemos una copia para que todas las actualizaciones se basen en el estado anterior
-        old_states = [c.phase for c in self.crystals]
+        # 1. Tomar una instantánea del estado actual (fundamental para la simulación correcta)
+        old_phases = [c.phase for c in self.crystals]
+        new_phases = [0] * len(self.crystals)
 
+        # 2. Calcular todas las nuevas fases basándose únicamente en el estado anterior
         for i, crystal in enumerate(self.crystals):
             # Los vecinos son el cristal anterior y el siguiente en la red (circular)
-            prev_neighbor = self.crystals[(i - 1 + len(self.crystals)) % len(self.crystals)]
-            next_neighbor = self.crystals[(i + 1) % len(self.crystals)]
-            crystal.update([prev_neighbor, next_neighbor])
+            prev_neighbor_phase = old_phases[(i - 1 + len(old_phases)) % len(old_phases)]
+            next_neighbor_phase = old_phases[(i + 1) % len(old_phases)]
+            new_phases[i] = crystal.calculate_next_phase(old_phases[i], [prev_neighbor_phase, next_neighbor_phase])
+
+        # 3. Aplicar el nuevo estado a toda la red de forma atómica
+        for i, crystal in enumerate(self.crystals):
+            crystal.phase = new_phases[i]
 
     def get_coherence(self):
         """
@@ -115,6 +121,7 @@ def run_simulation():
     lattice = LiquidLattice(num_crystals=10)
     num_steps = 100
     coherence_history = []
+    phase_history = []
 
     # 1. Simular estado inicial estable
     print("Estabilizando la red...")
@@ -129,6 +136,7 @@ def run_simulation():
     for i in range(num_steps):
         coherence_history.append(lattice.get_coherence())
         lattice.step()
+        phase_history.append([c.phase for c in lattice.crystals])
         if i % 10 == 0:
             print(f"  Paso {i}: Coherencia = {coherence_history[-1]:.3f}")
 
@@ -157,6 +165,30 @@ def run_simulation():
     output_path = "resonant_lattice_coherence.png"
     plt.savefig(output_path)
     print(f"📈 Gráfico guardado en: {output_path}")
+
+    # 5. Visualizar la fase de cada cristal a lo largo del tiempo (NUEVO)
+    fig2, ax2 = plt.subplots(figsize=(12, 7))
+
+    # Transponemos los datos para que el tiempo esté en el eje X
+    phase_history_np = np.array(phase_history).T
+
+    im = ax2.imshow(phase_history_np, aspect='auto', cmap='twilight_shifted', interpolation='nearest')
+
+    ax2.set_title("Evolución de la Fase de Cada Cristal en el Tiempo", fontsize=16, color='white')
+    ax2.set_xlabel("Pasos de Simulación", fontsize=12, color='gray')
+    ax2.set_ylabel("Índice del Cristal", fontsize=12, color='gray')
+
+    # Añadir una barra de color para la fase
+    cbar = fig2.colorbar(im, ax=ax2)
+    cbar.set_label('Fase (0 a 36000)', color='gray')
+    cbar.ax.yaxis.set_tick_params(color='gray')
+    plt.setp(plt.getp(cbar.ax.yaxis, 'ticklabels'), color='gray')
+
+    fig2.tight_layout()
+
+    output_path_phases = "resonant_lattice_phases.png"
+    plt.savefig(output_path_phases)
+    print(f"📈 Gráfico de fases guardado en: {output_path_phases}")
 
 if __name__ == "__main__":
     run_simulation()
