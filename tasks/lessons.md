@@ -67,3 +67,20 @@ Falta de una variable de entorno dedicada y un procedimiento claro para generar 
    `openssl passwd -apr1 <password>`
 4. Formato en `.env`: `USUARIO:HASH` (ej: `admin:$apr1$1URqO8Xv$...`).
 5. En `docker-compose.yml`, referenciar simplemente como `${VARIABLE}`.
+
+---
+
+## [2026-03-19] Refactorización de Macros SQLx a Runtime y Tipado Decimal (YATRA)
+
+**El Error:**
+Intentar mantener la sintaxis de macros SQLx (ej: id as "id!") al migrar a consultas en tiempo de ejecución (sqlx::query_as), o fallar al importar traits necesarios para operaciones con Decimal.
+
+**La Causa:**
+1. Desconocimiento de que los sufijos ! y ? son parseados exclusivamente por el macro-procesador de SQLx.
+2. rust_decimal::Decimal requiere que el trait ToPrimitive esté en el scope para usar métodos de conversión (to_f64, to_i64).
+
+**La Regla de Oro (Prevención):**
+1. **Runtime Mapping**: Al usar query_as, los nombres de las columnas SQL deben coincidir exactamente con los nombres de los campos del struct (sin decoradores de macro).
+2. **FromRow**: Todo struct usado en query_as DEBE derivar sqlx::FromRow.
+3. **Decimal Traits**: Si se opera con Decimal para cumplir con el protocolo YATRA, SIEMPRE importar rust_decimal::prelude::ToPrimitive.
+4. **Verificación**: Siempre ejecutar cargo check inmediatamente tras una migración de macros.

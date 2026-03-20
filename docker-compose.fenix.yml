@@ -172,24 +172,71 @@ services:
           memory: 256M
     restart: unless-stopped
 
-  web-server:
+  # ── SITIOS WEB ADICIONALES ───────────────────────────────────────────────────
+
+  portfolio_web:
     image: docker.io/nginx:alpine
-    container_name: sentinel-web
+    container_name: sentinel-portfolio-web
     volumes:
-      - /home/jnovoas/www:/usr/share/nginx/html:ro
+      - /home/jnovoas/Desarrollo/portfolio:/usr/share/nginx/html:ro,z
     networks:
       - proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.web.rule=Host(`dev.pinguinoseguro.cl`)"
-      - "traefik.http.routers.web.entrypoints=websecure"
-      - "traefik.http.routers.web.tls.certresolver=powerdns"
-      - "traefik.http.middlewares.monitor-auth.basicauth.users=${TRAEFIK_BASIC_AUTH}"
-      - "traefik.http.routers.web.middlewares=monitor-auth"
+      - "traefik.http.routers.portfolio.rule=Host(`portfolio.pinguinoseguro.cl`)"
+      - "traefik.http.routers.portfolio.entrypoints=websecure"
+      - "traefik.http.routers.portfolio.tls.certresolver=powerdns"
+      - "traefik.docker.network=proxy"
     deploy:
       resources:
         limits:
           memory: 64M
+    restart: unless-stopped
+
+  laespiguita_web:
+    image: docker.io/nginx:alpine
+    container_name: sentinel-laespiguita-web
+    volumes:
+      - /home/jnovoas/Desarrollo/laespiguita:/usr/share/nginx/html:ro,z
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.laespiguita.rule=Host(`laespiguita.pinguinoseguro.cl`)"
+      - "traefik.http.routers.laespiguita.entrypoints=websecure"
+      - "traefik.http.routers.laespiguita.tls.certresolver=powerdns"
+      - "traefik.docker.network=proxy"
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+    restart: unless-stopped
+
+  # ── AUTOMATIZACIÓN ───────────────────────────────────────────────────────────
+
+  n8n:
+    image: docker.io/n8nio/n8n:latest
+    container_name: sentinel-n8n
+    environment:
+      - N8N_HOST=n8n.pinguinoseguro.cl
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://n8n.pinguinoseguro.cl/
+      - GENERIC_TIMEZONE=America/Santiago
+      - TZ=America/Santiago
+    networks:
+      - sentinel_internal
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.rule=Host(`n8n.pinguinoseguro.cl`)"
+      - "traefik.http.routers.n8n.entrypoints=websecure"
+      - "traefik.http.routers.n8n.tls.certresolver=powerdns"
+      - "traefik.http.services.n8n.loadbalancer.server.port=5678"
+      - "traefik.docker.network=proxy"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
     restart: unless-stopped
 
   # ── MOTOR DE DEFENSA (Rust) ────────────────────────────────────────────────────
