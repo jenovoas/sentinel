@@ -89,20 +89,23 @@ inject_workflow() {
     # n8n espera un JSON con "name", "nodes", "connections", "active", etc.
     local workflow_json=$(cat "$json_file")
     
-    # Hacer POST a la API de n8n
-    # La API endpoint es: POST /api/v1/workflows
-    local response=$(curl -s -X POST \
+    # Hacer POST a la API de n8n y capturar el código de estado HTTP
+    http_code=$(curl -s -o /dev/null -w "%{http_code}" \
+        -X POST \
         -H "Content-Type: application/json" \
         -d "$workflow_json" \
-        "${N8N_URL}/api/v1/workflows" 2>&1 || echo '{"error":"curl_failed"}')
+        "${N8N_URL}/api/v1/workflows")
     
-    # Verificar si fue exitoso (la API devuelve el workflow creado con ID)
-    if echo "$response" | grep -q '"id"'; then
-        local workflow_id=$(echo "$response" | grep -o '"id":"[^"]*"' | head -1 | cut -d'"' -f4)
-        echo -e "${GREEN}   ✅ Workflow creado exitosamente (ID: $workflow_id)${NC}"
+    # Verificar si fue exitoso (201 Created) o si ya existía y fue actualizado (200 OK)
+    # n8n devuelve 200 OK si el workflow se actualiza.
+    if [ "$http_code" -eq 201 ]; then
+        echo -e "${GREEN}   ✅ Workflow creado exitosamente (HTTP 201).${NC}"
+        return 0
+    elif [ "$http_code" -eq 200 ]; then
+        echo -e "${YELLOW}   ℹ️  Workflow ya existía o fue actualizado (HTTP 200).${NC}"
         return 0
     else
-        echo -e "${YELLOW}   ⚠️  Respuesta de API: $(echo "$response" | head -c 100)...${NC}"
+        echo -e "${RED}   ❌ Error al inyectar workflow. Código HTTP: $http_code${NC}"
         return 1
     fi
 }

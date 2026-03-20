@@ -190,18 +190,20 @@ pub struct PrometheusCollector {
 
 pub struct RedisStreamCollector {
     client: redis::Client,
+    http: HttpCollector,
     last_id: String,
 }
 
 impl RedisStreamCollector {
-    pub fn new(redis_url: &str) -> RedisResult<Self> {
+    pub fn new(redis_url: &str, prometheus_url: &str) -> RedisResult<Self> {
         Ok(Self {
             client: redis::Client::open(redis_url)?,
+            http: HttpCollector::new(prometheus_url.to_string()),
             last_id: "0-0".to_string(), // Start from the beginning of the stream
         })
     }
 
-    pub fn collect(&mut self) -> RedisResult<Vec<Event>> {
+    pub async fn collect(&mut self) -> Result<Vec<Event>, Box<dyn std::error::Error>> {
         let mut con = self.client.get_connection()?;
         let result: redis::Value = con.xread(
             &["swarm:infra:log"],

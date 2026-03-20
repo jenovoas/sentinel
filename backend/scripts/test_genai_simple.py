@@ -1,47 +1,63 @@
-
+#!/usr/bin/env python3
 import sys
 import os
-from google import genai
+import asyncio
 
-def test_gemini():
-    print("🤖 Iniciando prueba de Google GenAI SDK...")
+try:
+    import vertexai
+    from vertexai.generative_models import GenerativeModel
+    from google.api_core import exceptions as google_exceptions
+except ImportError:
+    print("❌ ERROR: La librería 'google-cloud-aiplatform' no está instalada.")
+    print("   Por favor, ejecute: pip install google-cloud-aiplatform")
+    sys.exit(1)
 
-    # Intentamos detectar el Project ID de las variables de entorno comunes
-    # Si no existen, el cliente intentará usar ADC (Application Default Credentials)
+async def test_gemini():
+    print("🤖 Iniciando prueba de conexión con Google Vertex AI SDK...")
+    print("-" * 50)
+
     project_id = os.getenv("GOOGLE_CLOUD_PROJECT") or os.getenv("PROJECT_ID")
     location = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
 
     try:
-        if project_id:
-            print(f"📍 Configurando cliente para Vertex AI (Proyecto: {project_id}, Región: {location})")
-            # La configuración ahora es a nivel de módulo
-            genai.configure(project=project_id, location=location)
-        else:
-            print("⚠️ No se detectó GOOGLE_CLOUD_PROJECT explícito.")
-            print("🔄 Intentando inicialización automática (buscando credenciales por defecto)...")
-            # Si tienes configurado 'gcloud auth application-default login', esto funcionará automáticamente
-            genai.configure(location=location)
+        if not project_id:
+            print("❌ ERROR: GOOGLE_CLOUD_PROJECT no está configurado.")
+            sys.exit(1)
 
-        # Nombre del modelo: 'gemini-1.5-flash-latest' es rápido y eficiente para pruebas
-        model_name = "gemini-1.5-flash-latest"
-        model = genai.GenerativeModel(model_name)
+        print(f"📍 Configurando para Vertex AI (Proyecto: {project_id}, Región: {location})")
+        vertexai.init(project=project_id, location=location)
 
-        print(f"⚡ Enviando prompt a {model_name}...")
+        model_name = os.getenv("GOOGLE_MODEL", "gemini-2.5-pro")
+        model = GenerativeModel(model_name)
 
-        response = model.generate_content("Explica brevemente qué es la computación cuántica en una sola frase.")
+        print(f"✅ Cliente configurado. Modelo: {model_name}")
+        print("⚡ Enviando prompt de prueba...")
 
-        print("\n✅ RESPUESTA RECIBIDA:")
-        print("-" * 50)
-        print(response.text)
-        print("-" * 50)
+        prompt = "Eres un experto en seguridad de sistemas. Dame 3 consejos clave para proteger un servidor Linux en producción."
+        response = await model.generate_content_async(prompt)
 
+        print("\n" + "="*15 + " RESPUESTA DE GEMINI " + "="*15)
+        print(response.text.strip())
+        print("=" * 50)
+        print("\n✅ Prueba completada exitosamente.")
+
+    except google_exceptions.NotFound as e:
+        print("\n❌ ERROR: Modelo no encontrado (404 Not Found).")
+        print(f"   El modelo '{model_name}' no existe o no está disponible en la región '{location}'.")
+        print("\n💡 POSIBLES SOLUCIONES:")
+        print("   1. Confirma que el nombre del modelo es exacto.")
+        print("   2. Verifica que el proyecto y la región sean correctos.")
+        print("   3. Asegúrate que el proyecto esté en la allowlist si el modelo es privado.")
+    except google_exceptions.PermissionDenied as e:
+        print("\n❌ ERROR: Permiso denegado (403 Forbidden).")
+        print(f"   Detalles: {e}")
+        print("\n💡 POSIBLES SOLUCIONES:")
+        print("   1. Asegúrate de que la API de Vertex AI ('vertexai.googleapis.com') esté habilitada.")
+        print("   2. Verifica que la cuenta de servicio o tus credenciales (ADC) tengan el rol 'Vertex AI User'.")
     except Exception as e:
-        print("\n❌ ERROR:")
-        print(f"No se pudo conectar con Gemini. Detalles: {e}")
-        print("\n💡 SUGERENCIA:")
-        print("Si es un error de autenticación, asegúrate de haber ejecutado:")
-        print("  gcloud auth application-default login")
-        print("O configura la variable GOOGLE_CLOUD_PROJECT en tu entorno.")
+        print("\n❌ ERROR INESPERADO DURANTE LA PRUEBA:")
+        print(f"   Tipo: {type(e).__name__}")
+        print(f"   Detalles: {e}")
 
 if __name__ == "__main__":
-    test_gemini()
+    asyncio.run(test_gemini())

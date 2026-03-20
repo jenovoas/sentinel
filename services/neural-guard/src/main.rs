@@ -20,9 +20,9 @@ async fn main() {
     let redis_url = std::env::var("REDIS_URL").expect("REDIS_URL variable de entorno no encontrada");
 
     // 2. Inicializar componentes
-    let prom_collector = PrometheusCollector::new(prometheus_url);
+    let prom_collector = PrometheusCollector::new(prometheus_url.clone());
     let loki_collector = LokiCollector::new(loki_url);
-    let mut redis_collector = RedisStreamCollector::new(&redis_url).expect("Failed to connect to Redis");
+    let mut redis_collector = RedisStreamCollector::new(&redis_url, &prometheus_url).expect("Failed to connect to Redis");
     let mut engine = DecisionEngine::new();
     let n8n_client = reqwest::Client::new();
 
@@ -42,7 +42,7 @@ async fn main() {
         if let Ok(events) = prom_collector.collect_thermal_metrics().await { all_events.extend(events); }
         if let Ok(events) = loki_collector.collect_logs().await { all_events.extend(events); }
         if let Ok(events) = loki_collector.collect_metrics().await { all_events.extend(events); }
-        if let Ok(events) = redis_collector.collect() { all_events.extend(events); }
+        if let Ok(events) = redis_collector.collect().await { all_events.extend(events); }
 
         for event in all_events {
             tracing::warn!(?event, "Nuevo evento recibido");

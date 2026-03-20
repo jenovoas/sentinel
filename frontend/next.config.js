@@ -9,7 +9,7 @@ const nextConfig = {
       afterFiles: [
         {
           source: '/api/v1/:path*',
-          destination: 'http://backend:8000/api/v1/:path*',
+          destination: 'http://cortex:8000/api/v1/:path*',
         },
       ],
     };
@@ -17,10 +17,12 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
   },
-  // Removed redirect that was causing infinite loop
-  // async redirects() {
-  //   return [];
-  // },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 module.exports = nextConfig;

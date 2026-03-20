@@ -20,6 +20,13 @@
   - [x] Crear propuesta de commit estructurado
   - [x] Solicitar validación final para el `git push`
 
+- [/] **Fase 5: Restauración Crítica y Alineación Protocolo YATRA (2026-03-20)**
+  - [x] Identificar desajuste de rutas en `docker-compose.fenix.yml` (`neural-guard`)
+  - [x] Crear backups `.bak` de archivos de configuración antes de intervenir
+  - [x] Restaurar y re-habilitar el stack completo en Fenix (con `neural-guard` corregido)
+  - [/] Validar resolución DNS y funcionalidad de `cortex.pinguinoseguro.cl`
+  - [ ] Actualizar `tasks/lessons.md` con las correcciones de esta sesión
+
 ---
 
 ## Log de Logros Diarios (Verificados)

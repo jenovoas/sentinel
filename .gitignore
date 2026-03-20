@@ -1,69 +1,16 @@
-# OS / Build dirs
-/target
-/dist
-/node_modules
-/build
-
-# Rust / Cargo
-Cargo.lock
-
-# Python / Environment
+# Security: Ignore sensitive files
+vertex-key.json
 .env
+
+# IDE and OS files
+.idea/
+.vscode/
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
-.Python
-env/
-venv/
-.venv/
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.coverage
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.log
-.DS_Store
 
-# Native Libraries
-*.so
-*.dll
-*.dylib
+# Build artifacts
+/target/
 
-# IDEs
-.vscode/
-.idea/
-.project
-.pydevproject
-.settings/
-pyrightconfig.json
-
-# AI Agents (contienen API keys)
-.claude/
-.gemini/
-.cline/
-.agents/
-.opencode/
-
-# Credenciales y secretos
-*.pem
-*.key
-id_rsa*
-id_ed25519*
-*.credentials.json
-credentials.json
-
-# Backups y temporales
-*.bak
-*.backup*
-*.old
-*~
-bienvenida_cliente.json
-ayuda_*.json
-
-# Kubernetes secrets
-**/k8s/**/secrets.yaml
-**/kubernetes/**/secrets.yaml
+# Local data
+postgres_data/
+redis_data/

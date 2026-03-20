@@ -97,14 +97,7 @@ const formatBytes = (bytes: number) => {
   return `${value.toFixed(value >= 10 ? 0 : 1)} ${units[i]}`;
 };
 
-const formatDuration = (seconds: number) => {
-  if (!Number.isFinite(seconds)) return "-";
-  if (seconds < 60) return `${seconds.toFixed(seconds >= 10 ? 0 : 1)}s`;
-  const minutes = seconds / 60;
-  if (minutes < 60) return `${minutes.toFixed(minutes >= 10 ? 0 : 1)}m`;
-  const hours = minutes / 60;
-  return `${hours.toFixed(hours >= 10 ? 0 : 1)}h`;
-};
+
 
 // ============ Components ============
 
@@ -200,7 +193,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [state, setState] = useState<FetchState>({ loading: true });
   const [notes, setNotes] = useState<NotesState>({ text: "" });
-  const { history, anomalies, storage, normalizeNetworkPercent, anomaliesByMetric } = useAnalytics();
+  const { anomalies, storage } = useAnalytics();
   const { modal, open, close } = useDetailModal();
 
   const API_REFRESH_MS = 15000;
@@ -249,8 +242,6 @@ export default function DashboardPage() {
   }, [notes]);
 
   const { data, loading, error } = state;
-  const activeQueries = data?.db_activity ?? [];
-  const repo = data?.repo_activity;
 
   const computeIssues = (data?: DashboardData) => {
     if (!data) return [] as string[];

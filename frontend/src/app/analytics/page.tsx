@@ -315,7 +315,7 @@ export default function AnalyticsPage() {
                       </span>
                     </div>
                     <p className="text-xs text-gray-400">
-                      Valor: {a.value != null ? a.value.toFixed(2) : 'N/A'}%
+                      Valor: {a.metricValue != null ? a.metricValue.toFixed(2) : 'N/A'}%
                     </p>
                   </div>
                 ))}

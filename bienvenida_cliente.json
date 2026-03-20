@@ -1,0 +1,81 @@
+{
+  "name": "Bienvenida Nuevo Cliente",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "bienvenida",
+        "options": {}
+      },
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ],
+      "webhookId": "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8"
+    },
+    {
+      "parameters": {
+        "fromEmail": "n8n@pinguinoseguro.cl",
+        "toEmail": "{{$json.body.email}}",
+        "subject": "¡Bienvenido a Pinguino Seguro, {{$json.body.nombre}}!",
+        "html": "<h1>¡Hola {{$json.body.nombre}}!</h1><p>Gracias por confiar en Pinguino Seguro para la infraestructura de <strong>{{$json.body.empresa}}</strong>.</p><p>Estamos listos para comenzar.</p><p>Saludos,<br>El equipo de Pinguino Seguro</p>"
+      },
+      "name": "Send Welcome Email",
+      "type": "n8n-nodes-base.sendEmail",
+      "typeVersion": 1,
+      "position": [
+        650,
+        300
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-credentials",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "responseCode": 200,
+        "data": "{\n  \"status\": \"email de bienvenida enviado con éxito\"\n}",
+        "options": {}
+      },
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        850,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send Welcome Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Welcome Email": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {}
+}

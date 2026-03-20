@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
 
         // Forward request to backend (use Docker service name)
-        const backendUrl = "http://backend:8000";
+    const backendUrl = "http://cortex:8000";
         console.log(`[AI Proxy] Forwarding to ${backendUrl}/api/v1/ai/query`);
         console.log(`[AI Proxy] Body:`, body);
 
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
     try {
-        const backendUrl = "http://backend:8000";
+    const backendUrl = "http://cortex:8000";
         const response = await fetch(`${backendUrl}/api/v1/ai/health`);
         const data = await response.json();
         return NextResponse.json(data);

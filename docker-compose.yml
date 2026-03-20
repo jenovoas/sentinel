@@ -69,9 +69,9 @@ services:
       # Google Vertex AI Configuration
       AI_PROVIDER: google # Switched from ollama
       GOOGLE_APPLICATION_CREDENTIALS: /app/credentials.json
-      GOOGLE_CLOUD_PROJECT: gen-lang-client-0933512124
+      GOOGLE_CLOUD_PROJECT: project-0bf4483e-0425-4e55-bdc # Correct project for the new service account
       GOOGLE_CLOUD_LOCATION: us-central1
-      GOOGLE_MODEL: gemini-2.0-flash-001
+      GOOGLE_MODEL: gemini-2.5-pro # Versión correcta confirmada por el operador.
     ports:
       - "8000:8000"
     depends_on:
@@ -81,7 +81,7 @@ services:
         condition: service_healthy
     volumes:
       - ./backend:/app
-      - /home/jnovoas/.config/gcloud/application_default_credentials.json:/app/credentials.json:ro
+      - ./vertex-key.json:/app/credentials.json:ro # Use the new service account key
     networks:
       - sentinel_network
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
@@ -391,16 +391,8 @@ services:
     restart: "no" # Solo ejecuta una vez
 
   # ========================================
-  # AI STACK - Local LLM with Ollama
-  # ========================================
-
-  # ========================================
   # AI STACK - External Providers (Google AI)
   # ========================================
-
-  # Ollama Removed to save resources - using Google AI Pro
-  # ollama: ...
-  # ollama-init: ...
 
   # ========================================
   # SENTINEL CORTEX - DECISION ENGINE

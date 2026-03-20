@@ -17,7 +17,7 @@ pub struct DecisionEngine {
     nginx_5xx_threshold: u64,
     redis_memory_threshold_bytes: u64,
     container_restart_threshold: i64,
-    traffic_drop_threshold: f64,
+    traffic_drop_threshold: u64,
     enable_thermal_coupling: bool,
 
     // S60 Physics state
@@ -40,8 +40,8 @@ impl DecisionEngine {
         let restart_threshold_str = std::env::var("CONTAINER_RESTART_THRESHOLD").unwrap_or_else(|_| "3".to_string());
         let restart_threshold = restart_threshold_str.parse::<i64>().unwrap_or(3);
 
-        let traffic_threshold_str = std::env::var("TRAFFIC_DROP_THRESHOLD_RPS").unwrap_or_else(|_| "0.1".to_string());
-        let traffic_threshold = traffic_threshold_str.parse::<f64>().unwrap_or(0.1);
+        let traffic_threshold_str = std::env::var("TRAFFIC_DROP_THRESHOLD_RPS").unwrap_or_else(|_| "100".to_string());
+        let traffic_threshold = traffic_threshold_str.parse::<u64>().unwrap_or(100);
 
         let enable_thermal = std::env::var("ENABLE_THERMAL_COUPLING").map(|v| v == "true").unwrap_or(false);
 

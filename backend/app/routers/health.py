@@ -177,46 +177,6 @@ async def check_redis() -> Dict[str, Any]:
         }
 
 
-async def check_ollama() -> Dict[str, Any]:
-    """
-    Check Ollama AI service
-    
-    Returns:
-        dict: {
-            "status": "healthy" | "unhealthy" | "disabled",
-            "latency_ms": float,
-            "error": str (if unhealthy)
-        }
-    """
-    try:
-        import os
-        from time import time
-        
-        ollama_url = os.getenv("OLLAMA_URL", "http://ollama:11434")
-        
-        start = time()
-        
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            response = await client.get(f"{ollama_url}/api/tags")
-            response.raise_for_status()
-            
-        latency = (time() - start) * 1000
-        
-        return {
-            "status": "healthy",
-            "latency_ms": round(latency, 2),
-            "enabled": True
-        }
-        
-    except Exception as e:
-        # Ollama is optional, so we don't fail health check if it's down
-        return {
-            "status": "disabled",
-            "error": str(e),
-            "enabled": False
-        }
-
-
 @router.get("/health")
 async def health_check(response: Response):
     """
@@ -236,20 +196,16 @@ async def health_check(response: Response):
     - Uptime
     """
     # Check all dependencies in parallel
-    db_check, redis_check, ollama_check = await asyncio.gather(
+    db_check, redis_check = await asyncio.gather(
         check_database(),
         check_redis(),
-        check_ollama(),
-        return_exceptions=True
     )
     
     # Determine overall health
     # Critical: Database and Redis must be healthy
-    # Optional: Ollama can be disabled
-    
     critical_healthy = (
-        db_check.get("status") == "healthy" and
-        redis_check.get("status") == "healthy"
+        isinstance(db_check, dict) and db_check.get("status") == "healthy" and
+        isinstance(redis_check, dict) and redis_check.get("status") == "healthy"
     )
     
     overall_status = "healthy" if critical_healthy else "unhealthy"
@@ -264,8 +220,6 @@ async def health_check(response: Response):
         "role": app_role,
         "components": {
             "database": db_check,
-            "redis": redis_check,
-            "ollama": ollama_check
         }
     }
     
@@ -322,7 +276,7 @@ async def readiness_check(response: Response):
         "accept_requests": accept_requests,
         "dependencies": {
             "database": db_check.get("status"),
-            "redis": redis_check.get("status")
+            "redis": redis_check.get("status"),
         }
     }
     
@@ -423,11 +377,11 @@ async def prometheus_metrics():
     - Uptime
     """
     # Check all components
-    db_check, redis_check, ollama_check = await asyncio.gather(
+    db_check, redis_check, ollama_check, vertex_check = await asyncio.gather(
         check_database(),
         check_redis(),
         check_ollama(),
-        return_exceptions=True
+        check_google_vertex(),
     )
     
     uptime = (datetime.now() - startup_time).total_seconds()
@@ -438,7 +392,6 @@ async def prometheus_metrics():
     # Health status (1 = healthy, 0 = unhealthy)
     metrics.append(f'sentinel_health{{component="database"}} {1 if db_check.get("status") == "healthy" else 0}')
     metrics.append(f'sentinel_health{{component="redis"}} {1 if redis_check.get("status") == "healthy" else 0}')
-    metrics.append(f'sentinel_health{{component="ollama"}} {1 if ollama_check.get("status") == "healthy" else 0}')
     
     # Latencies
     if "latency_ms" in db_check:

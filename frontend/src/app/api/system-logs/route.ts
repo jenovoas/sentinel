@@ -35,7 +35,6 @@ export async function GET(request: Request) {
       return NextResponse.json({ ok: true, logs: [], summary });
     }
 
-    const header = lines[0].split(",");
     const dataLines = lines.slice(1);
 
     // Parsear y filtrar logs

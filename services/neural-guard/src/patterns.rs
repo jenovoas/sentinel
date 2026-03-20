@@ -9,6 +9,24 @@ pub struct PatternContext<'a> {
     pub nginx_5xx_threshold: u64,
     pub redis_memory_threshold_bytes: u64,
     pub container_restart_threshold: i64,
+    pub traffic_drop_threshold: u64,
+}
+
+/// **Pattern 6: Traffic Drop Detected**
+/// Detects a sudden drop in network traffic (e.g., service interruption).
+pub struct TrafficDropPattern;
+impl Pattern for TrafficDropPattern {
+    fn check(&self, context: &PatternContext) -> Option<CorrelatedIncident> {
+        let net_events: Vec<_> = context
+            .event_buffer
+            .iter()
+            .filter(|e| e.event_type == "high_network_traffic")
+            .collect();
+
+        // This is a simplified logic: if we don't see high traffic when we expect it, or if a metric is low
+        // For now, it mirrors other patterns until the user defines specific "low traffic" events.
+        None
+    }
 }
 
 /// A trait for any correlation pattern. Each pattern is a self-contained

@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sudo tee:*)",
+      "Bash(sudo sed:*)",
+      "Read(//proc/sys/vm/**)",
+      "Bash(sudo sysctl:*)",
+      "Bash(rpm -q zram-generator)",
+      "Bash(lsmod)",
+      "Bash(sudo dnf:*)",
+      "Read(//home/jnovoas/Desarrollo/sentinel/**)",
+      "Bash(sudo systemctl:*)",
+      "Read(//proc/**)"
+    ],
+    "additionalDirectories": [
+      "/etc/systemd"
+    ]
+  }
+}
