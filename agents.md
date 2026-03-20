@@ -19,6 +19,7 @@ La orquestación de agentes se rige por los siguientes principios, derivados de 
 ### 2.3. Conservación de Energía (Zero-Copy)
 - **Memoria Sacra:** Se debe minimizar la copia de datos entre agentes y módulos. Priorizar el uso de `SharedBuffer` (/dev/shm) para IPC.
 - **Orquestación en Python:** Python se utiliza exclusivamente para la orquestación, mientras que las tareas de procesamiento pesado se delegan a componentes Rust (`sentinel_core`).
+- **FENIX CPU-Only:** El servidor Fenix no tiene GPU. AI inference usa Ollama CPU-only con modelo phi3:mini.
 
 ### 2.4. Tetra-Lógica (Verdad Armónica)
 - **Decisiones por Resonancia:** Las decisiones de orquestación, como la asignación de tareas o la resolución de conflictos entre agentes, deben basarse en la minimización de la entropía acústica (`SumerianNPU`), utilizando los estados de Unison, True y False armónicos.
@@ -37,7 +38,7 @@ La orquestación de agentes se rige por los siguientes principios, derivados de 
 La orquestación de agentes se sitúa en la Capa 2 de la arquitectura, principalmente en el directorio `quantum/`.
 
 - **`cortex_main.py`:** Orquestador principal, encargado del manejo de señales y el guardado/carga automático del estado. Aquí es donde se define la lógica central de cómo los agentes interactúan y se coordinan.
-- **`gpu_controller.py`:** Controla la latencia y la comunicación con la GPU, lo que puede influir en la asignación de tareas a agentes que requieran recursos de GPU.
+- **`gpu_controller.py`:** Controla la latencia y comunicación. En Fenix (CPU-only), maneja fallback a CPU para inferencia AI.
 - **`liquid_memory_adapter.py`:** Interfaz entre el `Rust Core` y las aplicaciones Python de los agentes, facilitando la comunicación `zero-copy`.
 
 ## 4. Orquestación Temporal (Layer 3: TimeCrystal Maestro)

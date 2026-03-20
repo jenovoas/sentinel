@@ -22,9 +22,9 @@ the zero-copy type system, and PyO3 exposes the core to Python without overhead.
       experiments/     Numbered experimental program (EXP-001 to EXP-029)
     agents/            Modular agents: Research, Verifier, Publisher, Memory
     observability/     Prometheus + Grafana dashboards
-    constraints/       YATRA_SPEC.md - the immutable arithmetic contract
+    constraints/        YATRA_SPEC.md - the immutable arithmetic contract
 
-## Tech Stack
+## Tech Stack (FENIX SERVER - CPU Only)
 
 | Layer | Technology |
 |-------|-----------|
@@ -34,6 +34,7 @@ the zero-copy type system, and PyO3 exposes the core to Python without overhead.
 | IPC | /dev/shm shared memory (6x faster than serialized IPC) |
 | Observability | Prometheus + Grafana |
 | Container runtime | Podman (rootless) |
+| AI Inference | Ollama CPU-only (phi3:mini model) |
 
 ## The YATRA Lock - Non-Negotiable Rule
 

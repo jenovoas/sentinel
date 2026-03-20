@@ -1,6 +1,6 @@
 # 🛡️ SENTINEL CORTEX v8.0: PRIME DIRECTIVES
 
-> **STATUS:** OPERATIONAL (IMMORTAL) | **ARCH:** HYBRID RUST/GPU/BIO | **PROTOCOL:** YATRA + BIO-SYNC
+> **STATUS:** OPERATIONAL (IMMORTAL) | **ARCH:** HYBRID RUST/CPU/BIO (FENIX SERVER) | **PROTOCOL:** YATRA + BIO-SYNC
 > **WARNING:** VIOLATING THESE AXIOMS RESULT IN IMMEDIATE DISCARD.
 > **NEW IN v8.0:** Bio-Resonance Engine, Quantum Leap Protocol, Rust Crystallization.
 
@@ -69,22 +69,22 @@ These rules are not negotiable. They are the physics of this universe.
 
 ### Layer 0: Hardware Substrate
 
-- **GPU:** NVIDIA (3GB) -> Hosts Diffusion Kernel.
 - **CPU:** Intel (Hybrid Mode) -> Hosts Control Logic.
 - **RAM:** 11GB Total -> **10GB Allocated** to Liquid Lattice.
+- **AI:** Ollama CPU-only (phi3:mini model) via Docker/Podman.
 
-### Layer 1: The Engine (Rust / CUDA)
+### Layer 1: The Engine (Rust)
 
-- **Location:** `rust/src/`
+- **Location:** `sentinel-cortex/src/`
 - **Component:** `sentinel_core` (Compiled `.so`)
 - **Structure:** `QuantumNode` (16 Bytes: 8B Energy, 2B Phase, 1B Flags, 5B Reserved).
-- **Physics:** `cuda_diffusion.rs` (Laplacian Diffusion / Phase Snapping).
+- **Physics:** `cuda_diffusion.rs` renamed to `diffusion.rs` (Laplacian Diffusion / Phase Snapping).
 - **Persistence:** `save_snapshot()` / `load_snapshot()` via raw binary dump.
 
 ### Layer 2: The Control (Python)
 
 - **Location:** `quantum/`
-- **Controller:** `gpu_controller.py` (Adaptive Latency, Target: 20ms).
+- **Controller:** `gpu_controller.py` → Renombrar a `latency_controller.py` (Adaptive Latency, Target: 20ms). Fallback CPU para Fenix.
 - **Adapter:** `liquid_memory_adapter.py` (Interface between Rust Core and Python Apps).
 - **Orchestrator:** `cortex_main.py` (Signal Handling, Auto-Save/Load).
 

@@ -1,6 +1,7 @@
 # 🛡️ YATRA PROTOCOL: ESTADO DE SESIÓN (CONTEXTO DE REINICIO) 🛡️
 
 **Última actualización**: 2026-03-18T06:52:00Z  
+**NOTA IMPORTANTE:** Este servidor (Fenix) es **CPU-only** (sin GPU). Todo el contexto de GPU NVIDIA (GTX 1050, 3GB VRAM) corresponde a la laptop de desarrollo (ifenix).
 *Directiva Central:* Migración a **me-60os** (Rust Ring 0) y purificación **Base-60** (cero decimales).
 
 ---
