@@ -1,6 +1,17 @@
 #!/bin/bash
 set -euo pipefail
 
+# --- Trap para limpieza en caso de error ---
+cleanup() {
+  log_warn "Ocurrió un error. Revirtiendo cambios..."
+  if [ -d "$SITIO_DIR" ]; then
+    log_warn "Eliminando directorio incompleto: $SITIO_DIR"
+    rm -rf "$SITIO_DIR"
+  fi
+  # Podríamos añadir limpieza de DNS o crontab aquí si fuera necesario
+}
+trap cleanup ERR
+
 # Colores para output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -13,7 +24,7 @@ log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
 # Validar argumentos
-if [ $# -lt 3 ]; then
+if [[ $# -lt 3 ]]; then
   echo "Uso: $0 <nombre-cliente> <dominio> <tipo-stack>"
   echo ""
   echo "Ejemplo:"
@@ -29,6 +40,20 @@ fi
 CLIENTE_SLUG="$1"
 DOMINIO="$2"
 STACK_TYPE="$3"
+
+# --- Validaciones de Seguridad y Prerrequisitos ---
+
+# 1. Prevenir Path Traversal
+if [[ "$CLIENTE_SLUG" =~ (\.\.|/) ]]; then
+  log_error "Nombre de cliente inválido. No puede contener '..' o '/'."
+fi
+
+# 2. Validar que los comandos externos existan
+for cmd in openssl sed curl crontab podman-compose; do
+  if ! command -v "$cmd" &> /dev/null; then
+    log_error "Comando requerido no encontrado: $cmd. Por favor, instálalo."
+  fi
+done
 
 # Directorio base
 CLIENTES_DIR="$HOME/clientes"
@@ -111,13 +136,7 @@ fi
 log_info "🐳 Levantando contenedores..."
 cd "$SITIO_DIR"
 
-if command -v podman-compose &> /dev/null; then
-  podman-compose up -d
-elif command -v docker-compose &> /dev/null; then
-  docker-compose up -d
-else
-  log_error "Ni podman-compose ni docker-compose encontrados"
-fi
+podman-compose up -d
 
 # Esperar a que el contenedor arranque
 log_info "⏳ Esperando 10 segundos a que el servicio inicie..."
@@ -127,7 +146,7 @@ sleep 10
 if podman ps --filter "name=${CLIENTE_SLUG}" --format "{{.Names}}" | grep -q "$CLIENTE_SLUG"; then
   log_info "✅ Contenedor $CLIENTE_SLUG corriendo"
 else
-  log_error "❌ Contenedor no se levantó. Revisar logs: podman logs ${CLIENTE_SLUG}-web"
+  log_error "❌ El contenedor no se levantó. Revisa los logs con: podman logs ${CLIENTE_SLUG}-web"
 fi
 
 # Paso 7: Configurar backup automático
@@ -168,7 +187,7 @@ log_info "✅ Backup configurado (diario 3 AM)"
 # Paso 8: Verificar acceso HTTPS
 log_info "🔒 Verificando HTTPS..."
 sleep 5
-
+# Usamos -k para ignorar errores de certificado temporalmente mientras se genera
 HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -k "https://$DOMINIO" || echo "000")
 
 if [ "$HTTP_CODE" == "200" ] || [ "$HTTP_CODE" == "302" ] || [ "$HTTP_CODE" == "301" ]; then
@@ -207,3 +226,6 @@ echo "   Detener:       cd $SITIO_DIR && podman-compose down"
 echo "   Backup manual: $SITIO_DIR/backup.sh"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Desactivar el trap si todo salió bien
+trap - ERR
