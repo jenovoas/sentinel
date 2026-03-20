@@ -8,7 +8,12 @@ cleanup() {
     log_warn "Eliminando directorio incompleto: $SITIO_DIR"
     rm -rf "$SITIO_DIR"
   fi
-  # Podríamos añadir limpieza de DNS o crontab aquí si fuera necesario
+  # Limpieza de entrada de crontab si se agregó
+  if [ -n "${CRON_ADDED:-}" ]; then
+    log_warn "Removiendo entrada de crontab..."
+    crontab -l | grep -v "$SITIO_DIR/backup.sh" | crontab -
+  fi
+  # Nota: La limpieza de DNS requeriría lógica adicional con pdnsutil
 }
 trap cleanup ERR
 
@@ -43,17 +48,32 @@ STACK_TYPE="$3"
 
 # --- Validaciones de Seguridad y Prerrequisitos ---
 
-# 1. Prevenir Path Traversal
-if [[ "$CLIENTE_SLUG" =~ (\.\.|/) ]]; then
-  log_error "Nombre de cliente inválido. No puede contener '..' o '/'."
+# 1. Prevenir Path Traversal (validación estricta)
+if [[ "$CLIENTE_SLUG" =~ (\.\.|/|\\) ]]; then
+  log_error "Nombre de cliente inválido. No puede contener '..', '/' o '\\'."
 fi
 
-# 2. Validar que los comandos externos existan
+# 2. Validar formato del slug (solo letras, números, guiones bajos y guiones)
+if [[ ! "$CLIENTE_SLUG" =~ ^[a-z0-9_-]+$ ]]; then
+  log_error "Nombre de cliente inválido. Solo se permiten letras minúsculas, números, guiones bajos y guiones."
+fi
+
+# 3. Validar formato de dominio (previene inyección de dominios maliciosos)
+if [[ ! "$DOMINIO" =~ ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$ ]]; then
+  log_error "Dominio inválido. Formato esperado: ejemplo.cl o sub.ejemplo.com"
+fi
+
+# 4. Validar que los comandos externos existan
 for cmd in openssl sed curl crontab podman-compose; do
   if ! command -v "$cmd" &> /dev/null; then
     log_error "Comando requerido no encontrado: $cmd. Por favor, instálalo."
   fi
 done
+
+# 5. Validar que no se ejecuta como root (seguridad)
+if [[ $EUID -eq 0 ]]; then
+  log_error "No ejecutar como root. Este script debe ejecutarse como usuario normal."
+fi
 
 # Directorio base
 CLIENTES_DIR="$HOME/clientes"
@@ -149,40 +169,50 @@ else
   log_error "❌ El contenedor no se levantó. Revisa los logs con: podman logs ${CLIENTE_SLUG}-web"
 fi
 
-# Paso 7: Configurar backup automático
+# Paso 7: Configurar backup automático (sin credenciales hardcoded)
 log_info "💾 Configurando backup automático..."
 cat > "$SITIO_DIR/backup.sh" <<'BACKUP_EOF'
 #!/bin/bash
-BACKUP_DIR="$HOME/clientes/backups/{{CLIENTE_SLUG}}"
+set -euo pipefail
+
+# Cargar credenciales desde .env (NO están en el script)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/.env"
+
+BACKUP_DIR="$HOME/clientes/backups/${CLIENTE_SLUG}"
 DATE=$(date +%Y%m%d_%H%M%S)
 mkdir -p "$BACKUP_DIR"
 
 # Backup de archivos
-tar -czf "$BACKUP_DIR/files_$DATE.tar.gz" -C "{{SITIO_DIR}}" .
+tar -czf "$BACKUP_DIR/files_$DATE.tar.gz" -C "$SITIO_DIR" .
 
 # Backup de base de datos (si existe)
-if podman ps --filter "name={{CLIENTE_SLUG}}-db" --format "{{.Names}}" | grep -q "{{CLIENTE_SLUG}}-db"; then
-  podman exec {{CLIENTE_SLUG}}-db mysqldump -u root -p{{DB_ROOT_PASSWORD}} {{CLIENTE_SLUG}}_wp \
+if podman ps --filter "name=${CLIENTE_SLUG}-db" --format "{{.Names}}" | grep -q "${CLIENTE_SLUG}-db"; then
+  # Leer credenciales desde variables de entorno
+  podman exec ${CLIENTE_SLUG}-db mysqldump -u root -p"${DB_ROOT_PASSWORD}" ${CLIENTE_SLUG}_wp \
     | gzip > "$BACKUP_DIR/db_$DATE.sql.gz"
 fi
 
 # Cleanup: mantener últimos 30 backups
-ls -t "$BACKUP_DIR"/files_*.tar.gz | tail -n +31 | xargs -r rm
-ls -t "$BACKUP_DIR"/db_*.sql.gz | tail -n +31 | xargs -r rm
+ls -t "$BACKUP_DIR"/files_*.tar.gz 2>/dev/null | tail -n +31 | xargs -r rm
+ls -t "$BACKUP_DIR"/db_*.sql.gz 2>/dev/null | tail -n +31 | xargs -r rm
 
 echo "Backup completado: $BACKUP_DIR"
 BACKUP_EOF
 
-# Reemplazar variables en backup.sh
-sed -i "s|{{CLIENTE_SLUG}}|$CLIENTE_SLUG|g" "$SITIO_DIR/backup.sh"
-sed -i "s|{{SITIO_DIR}}|$SITIO_DIR|g" "$SITIO_DIR/backup.sh"
-sed -i "s|{{DB_ROOT_PASSWORD}}|$DB_ROOT_PASSWORD|g" "$SITIO_DIR/backup.sh"
+# Hacer ejecutable el backup
 chmod +x "$SITIO_DIR/backup.sh"
+chmod 600 "$SITIO_DIR/backup.sh"
 
-# Agregar a crontab
-(crontab -l 2>/dev/null; echo "0 3 * * * $SITIO_DIR/backup.sh") | crontab -
-
-log_info "✅ Backup configurado (diario 3 AM)"
+# Agregar a crontab (previniendo duplicación)
+CRON_ENTRY="0 3 * * * $SITIO_DIR/backup.sh"
+if ! crontab -l 2>/dev/null | grep -qF "$SITIO_DIR/backup.sh"; then
+  (crontab -l 2>/dev/null | grep -v '^$'; echo "$CRON_ENTRY") | crontab -
+  CRON_ADDED="true"
+  log_info "✅ Backup configurado (diario 3 AM)"
+else
+  log_warn "⚠️  Entrada de backup ya existe en crontab (omitiendo)"
+fi
 
 # Paso 8: Verificar acceso HTTPS
 log_info "🔒 Verificando HTTPS..."
@@ -197,7 +227,24 @@ else
   log_warn "    Puede tardar hasta 2 minutos en obtener certificado SSL"
 fi
 
-# Paso 9: Resumen final
+# Paso 9: Verificación de seguridad
+log_info "🔐 Verificando configuración de seguridad..."
+
+# Verificar permisos del archivo .env
+ENV_PERMS=$(stat -c "%a" "$SITIO_DIR/.env" 2>/dev/null || echo "000")
+if [ "$ENV_PERMS" == "600" ]; then
+  log_info "✅ .env con permisos seguros (600)"
+else
+  log_warn "⚠️  .env tiene permisos inseguros ($ENV_PERMS). Corrigiendo..."
+  chmod 600 "$SITIO_DIR/.env"
+fi
+
+# Verificar que backup.sh no tenga credenciales hardcoded
+if grep -qE "(PASSWORD|SECRET|KEY)=" "$SITIO_DIR/backup.sh" 2>/dev/null; then
+  log_error "❌ backup.sh contiene credenciales hardcoded. Esto es una vulnerabilidad crítica."
+fi
+
+# Paso 10: Resumen final
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 log_info "🎉 ¡Sitio creado exitosamente!"
@@ -213,8 +260,9 @@ if [ "$STACK_TYPE" == "wordpress" ]; then
   echo "🔑 Credenciales WordPress:"
   echo "   Base de datos: ${CLIENTE_SLUG}_wp"
   echo "   Usuario DB:    ${CLIENTE_SLUG}_user"
-  echo "   Password DB:   (ver archivo .env)"
+  echo "   Password DB:   (ver archivo .env con permisos 600)"
   echo ""
+  echo "   ⚠️  IMPORTANTE: NUNCA compartas el archivo .env"
   echo "   Configurar WordPress en: https://$DOMINIO/wp-admin/install.php"
   echo ""
 fi
@@ -225,6 +273,10 @@ echo "   Reiniciar:     cd $SITIO_DIR && podman-compose restart"
 echo "   Detener:       cd $SITIO_DIR && podman-compose down"
 echo "   Backup manual: $SITIO_DIR/backup.sh"
 echo ""
+echo "🔒 Seguridad:"
+echo "   - .env con permisos restrictivos (600)"
+echo "   - backup.sh sin credenciales hardcoded"
+echo "   - Crontab configurado sin duplicación"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 # Desactivar el trap si todo salió bien
