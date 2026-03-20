@@ -47,3 +47,23 @@ pyrightconfig.json
 .cline/
 .agents/
 .opencode/
+
+# Credenciales y secretos
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+*.credentials.json
+credentials.json
+
+# Backups y temporales
+*.bak
+*.backup*
+*.old
+*~
+bienvenida_cliente.json
+ayuda_*.json
+
+# Kubernetes secrets
+**/k8s/**/secrets.yaml
+**/kubernetes/**/secrets.yaml
