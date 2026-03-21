@@ -16,10 +16,10 @@ Este dossier técnico proporciona un análisis exhaustivo del Sistema Sentinel/M
 
 El sistema Sentinel/ME60OS se compone de los siguientes componentes principales:
 
-1.  **Kernel:** ME60OS Core (41Hz)
-2.  **Engine:** Sentinel CLI (Rust)
-3.  **Agentes:** `sentinel_research`, `sentinel_cli`, `sentinel_quantum`, `sentinel_factory`
-4.  **Memorias:** RAG (Vector Store), Neural Memory (SNN), Resonant Memory (Liquid Lattice)
+1. **Kernel:** ME60OS Core (41Hz)
+2. **Engine:** Sentinel CLI (Rust)
+3. **Agentes:** `sentinel_research`, `sentinel_cli`, `sentinel_quantum`, `sentinel_factory`
+4. **Memorias:** RAG (Vector Store), Neural Memory (SNN), Resonant Memory (Liquid Lattice)
 
 ### 2.1 Kernel ME60OS Core (41Hz)
 
@@ -37,9 +37,9 @@ Los agentes son componentes autónomos que ejecutan tareas específicas.
 
 Este agente se encarga de la investigación, con capacidades para:
 
-*   Búsqueda estándar con Gemini 2.0
-*   Investigación profunda con lectura de PDFs y Perplexity
-*   Optimización de código Rust
+* Búsqueda estándar con Gemini 2.0
+* Investigación profunda con lectura de PDFs y Perplexity
+* Optimización de código Rust
 
 **Ejemplo de uso:**
 
@@ -101,10 +101,10 @@ El sistema utiliza una arquitectura triple para la gestión de la información:
 
 #### 2.4.1 RAG (Retrieval-Augmented Generation) - Vector Store
 
-*   **Motor:** 100% Rust (Candle Framework).
-*   **Modelo:** `all-MiniLM-L6-v2`.
-*   **Almacenamiento:** Archivo JSON local en `~/.sentinel_memory.json`.
-*   **Vectores:** 384 dimensiones.
+* **Motor:** 100% Rust (Candle Framework).
+* **Modelo:** `all-MiniLM-L6-v2`.
+* **Almacenamiento:** Archivo JSON local en `~/.sentinel_memory.json`.
+* **Vectores:** 384 dimensiones.
 
 El RAG permite la búsqueda semántica en la bóveda de conocimiento. El uso de `all-MiniLM-L6-v2` indica un equilibrio entre precisión y eficiencia.
 
@@ -119,23 +119,23 @@ sentinel memory query "Principio de Bernoulli"
 
 #### 2.4.2 Neural Memory (SNN - Spiking Neural Network)
 
-*   **Motor:** S60 Cortex (Rust).
-*   **Modelo:** Spiking Neural Network (SNN) basada en neuronas LIF (Leaky Integrate-and-Fire).
-*   **Aritmética:** Base-60 pura (S60).
-*   **Persistencia:** Liquid Persistence mediante `mmap` a disco (`.crystal` files).
-*   **Integración:** eBPF.
-*   **Daemon:** `pai_neural_daemon` (Polls kernel events).
+* **Motor:** S60 Cortex (Rust).
+* **Modelo:** Spiking Neural Network (SNN) basada en neuronas LIF (Leaky Integrate-and-Fire).
+* **Aritmética:** Base-60 pura (S60).
+* **Persistencia:** Liquid Persistence mediante `mmap` a disco (`.crystal` files).
+* **Integración:** eBPF.
+* **Daemon:** `pai_neural_daemon` (Polls kernel events).
 
 La Neural Memory implementa una red neuronal de disparo, un tipo de red que imita más de cerca el funcionamiento del cerebro biológico. La aritmética S60 pura sugiere una representación numérica no estándar que puede tener implicaciones en la eficiencia y precisión. La persistencia líquida mediante `mmap` permite el acceso rápido a la memoria desde el disco. La integración con eBPF permite la monitorización y manipulación del kernel en tiempo real.
 
 #### 2.4.3 Resonant Memory (Liquid Lattice)
 
-*   **Estructura:** Red de Cristales Resonantes (Lattice).
-*   **Componente Base:** `ResonantCrystal` (Oscilador piezoeléctrico virtual).
-*   **Frecuencia:** Sintonizada a Plimpton 322 Fila 12 (Resonancia Axiónica).
-*   **Aritmética:** S60 Fixed-Point (Rust).
-*   **Implementación:** `resonant_crystal.rs`, `resonant_lattice.rs`.
-*   **Física:** Control de inercia y reducción de masa efectiva.
+* **Estructura:** Red de Cristales Resonantes (Lattice).
+* **Componente Base:** `ResonantCrystal` (Oscilador piezoeléctrico virtual).
+* **Frecuencia:** Sintonizada a Plimpton 322 Fila 12 (Resonancia Axiónica).
+* **Aritmética:** S60 Fixed-Point (Rust).
+* **Implementación:** `resonant_crystal.rs`, `resonant_lattice.rs`.
+* **Física:** Control de inercia y reducción de masa efectiva.
 
 La Resonant Memory es un componente intrigante. La sintonización a Plimpton 322 y la referencia a la resonancia axiónica sugieren una conexión con conceptos de física teórica y resonancia. El control de inercia y la reducción de masa efectiva son conceptos que podrían estar relacionados con la manipulación de campos gravitacionales o la modificación de propiedades de materiales.
 
@@ -156,8 +156,8 @@ El sistema Sentinel se integra con Neovim, permitiendo el acceso a sus funciones
 
 El protocolo Cortex Flow define el orden de consulta de la información:
 
-1.  **L0 (Local):** Búsqueda en la bóveda de Obsidian.
-2.  **L1 (Global):** Investigación profunda si los datos locales son insuficientes.
+1. **L0 (Local):** Búsqueda en la bóveda de Obsidian.
+2. **L1 (Global):** Investigación profunda si los datos locales son insuficientes.
 
 Esto indica una priorización de la información local y una búsqueda externa solo cuando es necesario.
 
@@ -165,19 +165,19 @@ Esto indica una priorización de la información local y una búsqueda externa s
 
 La automatización de la producción de YouTube se basa en la capacidad de procesar notas y convertirlas en videos. Este proceso probablemente incluye:
 
-1.  Análisis del contenido de las notas
-2.  Generación de guiones
-3.  Selección de imágenes y videos
-4.  Edición y montaje
-5.  Publicación
+1. Análisis del contenido de las notas
+2. Generación de guiones
+3. Selección de imágenes y videos
+4. Edición y montaje
+5. Publicación
 
 ### 4.3 Memorias
 
 La arquitectura de memoria triple es un aspecto central del sistema Sentinel. Cada tipo de memoria tiene un propósito específico:
 
-*   **RAG (Vector Store):** Almacenamiento y recuperación de información basada en similitud semántica.
-*   **Neural Memory (SNN):** Aprendizaje y adaptación basada en la actividad neuronal.
-*   **Resonant Memory (Liquid Lattice):** Almacenamiento y manipulación de información basada en resonancia y principios físicos no convencionales.
+* **RAG (Vector Store):** Almacenamiento y recuperación de información basada en similitud semántica.
+* **Neural Memory (SNN):** Aprendizaje y adaptación basada en la actividad neuronal.
+* **Resonant Memory (Liquid Lattice):** Almacenamiento y manipulación de información basada en resonancia y principios físicos no convencionales.
 
 La combinación de estos tres tipos de memoria podría permitir al sistema Sentinel manejar información de forma flexible y adaptativa.
 
@@ -197,10 +197,10 @@ El output `Quantum Core: |+> Superposition` sugiere un estado de superposición 
 
 El sistema Sentinel/ME60OS se utiliza en el proyecto `truthsync`.
 
-*   **status:** UNISON
-*   **score:** 1.0
-*   **agent:** `sentinel_research` (Rust)
-*   **timestamp:** 2026-01-28T07:46:32.329275146-03:00
+* **status:** UNISON
+* **score:** 1.0
+* **agent:** `sentinel_research` (Rust)
+* **timestamp:** 2026-01-28T07:46:32.329275146-03:00
 
 El estado UNISON y el score de 1.0 sugieren una alta precisión o confianza en los resultados.
 
@@ -245,13 +245,13 @@ Este hack se utiliza en `quantum/liquid_memory_adapter.py` para solucionar un pr
 
 El plan de evolución de `sentinel_research` incluye:
 
-1.  Búsqueda web profunda con Perplexity
-2.  Análisis de PDFs
-3.  Generación de prompts
-4.  Resúmenes y extracción de información
-5.  Respuestas a preguntas complejas
-6.  Integración con otras herramientas y APIs
-7.  Optimización del rendimiento
+1. Búsqueda web profunda con Perplexity
+2. Análisis de PDFs
+3. Generación de prompts
+4. Resúmenes y extracción de información
+5. Respuestas a preguntas complejas
+6. Integración con otras herramientas y APIs
+7. Optimización del rendimiento
 
 ## X. ANÁLISIS DEL HARDWARE
 
@@ -259,11 +259,11 @@ La referencia a "cristales" en varios componentes del sistema sugiere el uso de 
 
 ## XI. POSIBLES MEJORAS Y ÁREAS DE INVESTIGACIÓN
 
-*   **Cuantificación de la Resonancia:** Investigar la relación entre la frecuencia de 41Hz y los fenómenos naturales o biológicos. Cuantificar la "resonancia axiónica" y su impacto en el sistema.
-*   **Optimización de la Neural Memory:** Explorar diferentes arquitecturas de SNN y algoritmos de aprendizaje para mejorar el rendimiento y la precisión.
-*   **Análisis de Seguridad:** Evaluar la seguridad del sistema, especialmente en lo que respecta a la manipulación del kernel mediante eBPF. Identificar posibles vulnerabilidades y desarrollar estrategias de mitigación.
-*   **Desarrollo de Hardware:** Investigar la viabilidad de implementar la Resonant Memory utilizando hardware real. Explorar el uso de materiales exóticos o dispositivos cuánticos para mejorar el rendimiento.
-*   **Formalización de la Dinámica de Inercia Variable:** Desarrollar un modelo matemático riguroso para la Dinámica de Inercia Variable (VID) y su impacto en el sistema.
+* **Cuantificación de la Resonancia:** Investigar la relación entre la frecuencia de 41Hz y los fenómenos naturales o biológicos. Cuantificar la "resonancia axiónica" y su impacto en el sistema.
+* **Optimización de la Neural Memory:** Explorar diferentes arquitecturas de SNN y algoritmos de aprendizaje para mejorar el rendimiento y la precisión.
+* **Análisis de Seguridad:** Evaluar la seguridad del sistema, especialmente en lo que respecta a la manipulación del kernel mediante eBPF. Identificar posibles vulnerabilidades y desarrollar estrategias de mitigación.
+* **Desarrollo de Hardware:** Investigar la viabilidad de implementar la Resonant Memory utilizando hardware real. Explorar el uso de materiales exóticos o dispositivos cuánticos para mejorar el rendimiento.
+* **Formalización de la Dinámica de Inercia Variable:** Desarrollar un modelo matemático riguroso para la Dinámica de Inercia Variable (VID) y su impacto en el sistema.
 
 ## XII. CONCLUSIONES
 
