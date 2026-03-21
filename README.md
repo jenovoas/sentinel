@@ -2,7 +2,7 @@
 
 **Low-level systems framework implementing base-60 arithmetic at the kernel level, eliminating IEEE 754 rounding errors from the mathematical foundation.**
 
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
+[![License: Apache 2.0](https.img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
 [![Rust](https://img.shields.io/badge/rust-%23000000.svg?logo=rust)](./services/neural-guard/)
 [![eBPF](https://img.shields.io/badge/eBPF-kernel--level-orange)](./ebpf/)
 [![Fenix Status](https://img.shields.io/badge/Fenix_Node-ACTIVE-brightgreen?style=for-the-badge&logo=linux)](https://pinguinoseguro.cl)
@@ -12,145 +12,115 @@
 
 ---
 
-## The Problem
+## Fases del Proyecto
 
-IEEE 754 floating-point is broken for a specific class of fractions.
-In binary: `1/3`, `1/6`, `1/12`, `1/60` are all non-terminating — they accumulate drift across computation chains.
+Este repositorio contiene la infraestructura y el código para el proyecto Sentinel en sus diferentes etapas. Es crucial entender cada contexto:
 
-Base-60 (sexagesimal) is divisible by 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30.
-These fractions are **exact**. Babylonian astronomers used this for 2,000 years of positional calculation without error accumulation.
-**Plimpton 322** (1800 BCE), decoded by Dr. Daniel Mansfield (UNSW, 2021), proves exact sexagesimal computation
-was understood and applied 4,000 years ago.
+1.  **Entorno de Desarrollo Local (PoC Inicial):**
+    *   **Ubicación:** Principalmente en `docker-compose.yml` (desarrollo) y el directorio `backend/`.
+    *   **Stack:** Python (FastAPI), Celery, Nginx.
+    *   **Propósito:** Fue la prueba de concepto original para validar las ideas del proyecto. Contiene la integración inicial con la IA de Google. **No se usa en producción.**
 
-Sentinel asks: can this foundation be implemented in modern systems software?
+2.  **Producción Fase 1 (Nodo Único Fenix):**
+    *   **Ubicación:** `docker-compose.fenix.yml` y los directorios `sentinel-cortex/` y `services/neural-guard/`.
+    *   **Stack:** **Rust (Axum)**, Podman, Traefik. El backend de Python fue reemplazado por un binario nativo (`sentinel-cortex`).
+    *   **Propósito:** Es el **entorno de producción actual**. Un único servidor robusto que corre el núcleo del sistema.
+
+3.  **Arquitectura Objetivo Fase 2 (Cluster Multi-Nodo):**
+    *   **Ubicación:** Documentado en `docs/00_vision_y_arquitectura_global/`.
+    *   **Stack:** Se expandirá a un clúster de múltiples nodos (ej. Kingu, Centurion), posiblemente usando tecnologías de mesh-networking como MycNet.
+    *   **Propósito:** Es la **visión a futuro del proyecto**, buscando una computación distribuida y de alta disponibilidad.
 
 ---
 
-## Benchmark Results
+## El Problema: La Deriva del Punto Flotante
 
-### Memory Efficiency (EXP-015)
+IEEE 754 (el estándar para números de punto flotante) tiene problemas de precisión con fracciones comunes en sistemas binarios, como `1/3`, `1/6`, `1/12`, y `1/60`. Estas se convierten en números periódicos que acumulan errores de redondeo en cadenas de cálculo largas.
 
-| Implementation | Memory per node | Throughput | Capacity in 11 GB RAM |
+La Base-60 (sexagesimal), usada por los astrónomos babilonios durante 2,000 años, es divisible por 1, 2, 3, 4, 5, 6, 10, 12, 15, 20 y 30. Esto permite que esas fracciones sean **exactas**. Sentinel explora cómo implementar esta robustez matemática en el software de sistemas moderno.
+
+---
+
+## Resultados de Benchmarks
+
+### Eficiencia de Memoria (EXP-015)
+
+| Implementación | Memoria por nodo | Throughput | Capacidad en 11 GB RAM |
 |---|---|---|---|
-| Python sparse lattice | ~377 bytes | ~0.04M nodes/s | ~0.4 GB payload |
-| **Rust S60 native** | **16.00 bytes** | **~120M nodes/s** | **~10 GB payload** |
-| **Factor** | **23.6x smaller** | **~3,000x faster** | **25x more** |
+| Python sparse lattice | ~377 bytes | ~0.04M nodos/s | ~0.4 GB payload |
+| **Rust S60 nativo** | **16.00 bytes** | **~120M nodos/s** | **~10 GB payload** |
+| **Factor** | **23.6x más pequeño** | **~3,000x más rápido** | **25x más** |
 
-The 23.6x memory reduction is structural: Python object overhead (dict + refcounting + GC) accounts
-for ~361 of the 377 bytes. Rust `#[repr(packed)]` eliminates all of it — 16 bytes is purely S60 payload.
+### Equivalencia Numérica (EXP-021/022)
 
-### Numerical Equivalence (EXP-021/022)
+Comparación de S60 vs. f64 con 1,000 señales y 300 muestras:
 
-S60 arithmetic vs f64 — 1,000 signals x 300 samples, entropy source: `/dev/urandom`
-
-| Metric | Lyapunov Exponent | Shannon Entropy |
+| Métrica | Divergencia Media (Lyapunov) | Divergencia Media (Shannon) |
 |---|---|---|
-| Mean divergence (S60 vs f64) | **< 0.0001** | **< 0.0001** |
-| Signals within Delta < 0.1 threshold | **100%** | **100%** |
-| Failed signals | **0** | **0** |
+| S60 vs f64 | **< 0.0001** | **< 0.0001** |
 
-S60 is numerically equivalent to f64 for signal processing while eliminating float representation.
+S60 demuestra ser numéricamente equivalente a f64 para procesamiento de señales, pero eliminando la representación de punto flotante.
 
 ---
 
-## Architecture
+## Arquitectura Actual (Fenix)
 
 ```
 sentinel/
+├── sentinel-cortex/   Rust Cortex — 🛡️ Servidor Axum, API y motor de decisiones.
 ├── services/
-│   └── neural-guard/  Rust Cortex — 🛡️ Decision Engine, Prometheus/Loki/Redis
-├── sentinel-cortex/   Rust core — S60/U60 types, Ring 0 enforcement
-├── ebpf/              LSM hooks — syscall interception, float blocking
-├── quantum/           Python layer via PyO3 (me60os_core.so, zero-copy)
-├── agents/            Modular agents: Research, Verifier, N8N Integration
-├── observability/     Prometheus + Grafana (thermal-aware metrics)
-└── constraints/       YATRA_SPEC.md — the immutable arithmetic contract
+│   └── neural-guard/  (Legacy) Lógica de defensa ahora integrada en Cortex.
+├── ebpf/              Hooks de Kernel — Interceptación de syscalls, bloqueo de floats.
+├── quantum/           Capa de Python vía PyO3 (me60os_core.so, zero-copy).
+├── observability/     Prometheus + Grafana (métricas con conciencia térmica).
+└── constraints/       YATRA_SPEC.md — El contrato inmutable de la aritmética.
 ```
 
-### 🧠 Neural Guard & Octomechanical Coupling
+### 🧠 Neural Guard y Acoplamiento Octomecánico
 
-Sentinel represents a leap in defensive systems by integrating **Octomechanical Coupling**:
+Sentinel integra el **Acoplamiento Octomecánico**:
 
-- **Thermal Awareness**: Neural Guard queries CPU temperature in real-time.
-- **Dynamic Thresholding**: Thresholds for security alerts (SSH, Redis, Nginx) scale based on the **Computational Mass** (`Effective Load`) of the system.
-- **Resilience**: Hotter environments (high noise/entropy) automatically increase detection tolerance to prevent false positives, while cool, coherent states enable maximum sensitivity.
+- **Conciencia Térmica**: El sistema consulta la temperatura de la CPU en tiempo real.
+- **Umbrales Dinámicos**: Las alertas de seguridad se ajustan basadas en la **Masa Computacional** del sistema (carga efectiva). Entornos más "calientes" (con más carga/entropía) se vuelven menos sensibles para evitar falsos positivos.
 
 ---
 
-### Core Type
-
-```rust
-// S60: 5-component fixed-point, 16 bytes packed, no floats
-#[repr(packed)]
-pub struct S60 {
-    degrees: i16,
-    minutes: u8,
-    seconds: u8,
-    centiseconds: u8,
-    milliseconds: u8,
-    // padding: 10 bytes
-}
-```
-
-Zero allocation on the heap. Cache-line friendly. Deterministic layout across architectures.
-
----
-
-## Quick Start
+## Quick Start (Desarrollo)
 
 ```bash
-# Build Rust core
+# Construir el núcleo de Rust
 cd sentinel-cortex && cargo build --release
 
-# Build PyO3 extension (requires me-60os repo)
+# Construir la extensión PyO3 (requiere el repo me-60os)
 cd ../me-60os && cargo build --release --features extension-module
 cp target/release/libme60os_core.so ../sentinel/quantum/
 
-# Run memory benchmark
-cd sentinel/quantum && python3 experiments/EXP_015_MEMORY_THROUGHPUT.py
-
-# Run numerical equivalence validation
+# Ejecutar benchmarks (desde el directorio sentinel/quantum)
+python3 experiments/EXP_015_MEMORY_THROUGHPUT.py
 python3 experiments/EXP_022_ENTROPY_VALIDATION.py
 ```
 
 ---
 
-## The YATRA Lock
+## El Contrato YATRA
 
-**No `f32` or `f64` in base-60 logic — ever.**
-
-The eBPF layer enforces this at the kernel level: LSM hooks detect float-contaminated syscall patterns
-and can block them at runtime. This is not a style guide — it is a correctness invariant.
+**No usar `f32` o `f64` en la lógica de base-60.** Esta regla es reforzada a nivel de kernel por ganchos de eBPF que pueden detectar y bloquear syscalls "contaminados" con punto flotante.
 
 ---
 
 ## Roadmap
 
-- [x] **Fenix Sovereignty**: Transition to single-node Podman Rootless orchestrator.
-- [x] **Neural Guard (Rust)**: Deployment of the new memory-safe Decision Engine.
-- [x] **Octomechanical Coupling**: Real-time CPU thermal awareness for dynamic sensitivity.
-- [x] Ring 0: eBPF LSM hooks, float contamination detection.
-- [x] Rust S60/U60 core types with zero-copy IPC via `/dev/shm`.
-- [x] PyO3 bridge — Python access with no serialization overhead.
-- [x] Prometheus + Grafana observability stack.
-- [ ] MycNet: distributed S60 computation across mesh nodes.
-- [ ] Formal equivalence proof — S60 as equivalence class relative to IEEE 754.
+- [x] **Soberanía Fenix**: Transición a orquestador de nodo único con Podman.
+- [x] **Neural Guard (Rust)**: Despliegue del nuevo motor de decisiones seguro.
+- [x] **Acoplamiento Octomecánico**: Sensibilidad dinámica basada en la temperatura de la CPU.
+- [x] **Ring 0**: Hooks de eBPF para detectar contaminación de punto flotante.
+- [x] **Puente PyO3**: Acceso desde Python al núcleo Rust sin sobrecarga de serialización.
+- [x] Stack de observabilidad con Prometheus + Grafana.
+- [ ] **MycNet**: Computación S60 distribuida entre nodos de un mesh.
+- [ ] **Prueba de Equivalencia Formal**: Demostración matemática de S60 como una clase de equivalencia a IEEE 754.
 
 ---
 
-## Research
+## Licencia
 
-See [RESEARCH.md](./RESEARCH.md) for the full experimental program narrative,
-methodology, benchmark numbers, honest limitations, and open problems.
-
----
-
-## License
-
-Apache 2.0 — see [LICENSE](./LICENSE)
-
----
-
-## Related
-
-- [ME-60OS](https://gitlab.com/jenovoa) — Rust/PyO3 core library (me60os_core.so)
+Apache 2.0 — ver [LICENSE](./LICENSE)
