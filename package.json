@@ -1,0 +1,7 @@
+{
+	"dependencies": {
+		"remotion": "^4.0.438",
+		"@remotion/player": "^4.0.438",
+		"@remotion/cli": "^4.0.438"
+	}
+}

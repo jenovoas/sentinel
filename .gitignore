@@ -1,7 +1,12 @@
 # Security: Ignore sensitive files
 vertex-key.json
 .env
+.env.*
+.env
+.env.fenix
+.env.example
 *.env*
+sentinel-cortex/.env.example
 
 # Claude Code local config (contiene permisos, IPs internas)
 .claude/
