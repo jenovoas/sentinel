@@ -4,7 +4,7 @@ mod models;
 mod patterns;
 
 use crate::engine::DecisionEngine;
-use collectors::{LokiCollector, PrometheusCollector, RedisStreamCollector};
+use collectors::{LokiCollector, NervioBCollector, PrometheusCollector, RedisStreamCollector};
 use std::time::Duration;
 
 #[tokio::main]
@@ -23,6 +23,7 @@ async fn main() {
     let prom_collector = PrometheusCollector::new(prometheus_url.clone());
     let loki_collector = LokiCollector::new(loki_url);
     let mut redis_collector = RedisStreamCollector::new(&redis_url, &prometheus_url).expect("Failed to connect to Redis");
+    let nervio_b_collector = NervioBCollector::new(prometheus_url.clone());
     let mut engine = DecisionEngine::new();
     let n8n_client = reqwest::Client::new();
 
@@ -43,6 +44,8 @@ async fn main() {
         if let Ok(events) = loki_collector.collect_logs().await { all_events.extend(events); }
         if let Ok(events) = loki_collector.collect_metrics().await { all_events.extend(events); }
         if let Ok(events) = redis_collector.collect().await { all_events.extend(events); }
+        if let Ok(events) = nervio_b_collector.collect().await { all_events.extend(events); }
+        if let Ok(events) = loki_collector.collect_auditd().await { all_events.extend(events); }
 
         for event in all_events {
             tracing::warn!(?event, "Nuevo evento recibido");

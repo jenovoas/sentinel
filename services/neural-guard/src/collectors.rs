@@ -89,6 +89,58 @@ impl LokiCollector {
         }
         Ok(events)
     }
+
+    /// Nervio A: consulta Loki por eventos de auditd (sudo y acceso a archivos sensibles).
+    /// Independiente de Nervio B — no comparte estado ni conoce sus resultados.
+    pub async fn collect_auditd(&self) -> Result<Vec<Event>, reqwest::Error> {
+        let mut events = Vec::new();
+
+        // Sudo commands ejecutados
+        let sudo_query = r#"{job="systemd-journal"} |= "sudo:" |= "COMMAND""#;
+        let json = self.http.query("/loki/api/v1/query_range", sudo_query).await?;
+        if let Some(streams) = json["data"]["result"].as_array() {
+            for stream in streams {
+                if let Some(values) = stream["values"].as_array() {
+                    for value_pair in values {
+                        events.push(Event {
+                            event_type: "sudo_command_executed".to_string(),
+                            source: EventSource::NervioAIntrusion,
+                            severity: Severity::Medium,
+                            metadata: serde_json::json!({
+                                "log_entry": value_pair[1],
+                                "labels": stream["stream"],
+                            }),
+                            ..Default::default()
+                        });
+                    }
+                }
+            }
+        }
+
+        // Acceso a archivos sensibles vía auditd
+        let sensitive_query = r#"{job="systemd-journal"} |= "type=PATH" |~ "/etc/passwd|/etc/shadow|/.ssh""#;
+        let json = self.http.query("/loki/api/v1/query_range", sensitive_query).await?;
+        if let Some(streams) = json["data"]["result"].as_array() {
+            for stream in streams {
+                if let Some(values) = stream["values"].as_array() {
+                    for value_pair in values {
+                        events.push(Event {
+                            event_type: "sensitive_file_access".to_string(),
+                            source: EventSource::NervioAIntrusion,
+                            severity: Severity::High,
+                            metadata: serde_json::json!({
+                                "log_entry": value_pair[1],
+                                "labels": stream["stream"],
+                            }),
+                            ..Default::default()
+                        });
+                    }
+                }
+            }
+        }
+
+        Ok(events)
+    }
 }
 
 pub struct LokiCollector {
@@ -268,6 +320,63 @@ impl RedisStreamCollector {
                 }
             }
         }
+        Ok(events)
+    }
+}
+
+/// Nervio B: consulta Prometheus para verificar integridad del sistema.
+/// Detecta servicios caídos y disco crítico. Independiente de Nervio A.
+pub struct NervioBCollector {
+    http: HttpCollector,
+}
+
+impl NervioBCollector {
+    pub fn new(prometheus_url: String) -> Self {
+        Self { http: HttpCollector::new(prometheus_url) }
+    }
+
+    pub async fn collect(&self) -> Result<Vec<Event>, reqwest::Error> {
+        let mut events = Vec::new();
+
+        // Query 1: Servicios caídos (up == 0)
+        let json = self.http.query("/api/v1/query", "up == 0").await?;
+        if let Some(results) = json["data"]["result"].as_array() {
+            for res in results {
+                events.push(Event {
+                    event_type: "service_down".to_string(),
+                    source: EventSource::NervioBIntegrity,
+                    severity: Severity::Critical,
+                    metadata: serde_json::json!({
+                        "job": res["metric"]["job"],
+                        "instance": res["metric"]["instance"],
+                    }),
+                    ..Default::default()
+                });
+            }
+        }
+
+        // Query 2: Disco > 90% usado
+        let disk_query = "(node_filesystem_size_bytes{fstype!~\"tmpfs|overlay\"} - node_filesystem_avail_bytes{fstype!~\"tmpfs|overlay\"}) / node_filesystem_size_bytes{fstype!~\"tmpfs|overlay\"} > 0.9";
+        let json = self.http.query("/api/v1/query", disk_query).await?;
+        if let Some(results) = json["data"]["result"].as_array() {
+            for res in results {
+                let usage = res["value"][1].as_str()
+                    .and_then(|s| s.parse::<f64>().ok())
+                    .unwrap_or(0.0);
+                events.push(Event {
+                    event_type: "disk_usage_critical".to_string(),
+                    source: EventSource::NervioBIntegrity,
+                    severity: Severity::High,
+                    metadata: serde_json::json!({
+                        "mountpoint": res["metric"]["mountpoint"],
+                        "instance": res["metric"]["instance"],
+                        "usage_percent": (usage * 100.0) as u64,
+                    }),
+                    ..Default::default()
+                });
+            }
+        }
+
         Ok(events)
     }
 }

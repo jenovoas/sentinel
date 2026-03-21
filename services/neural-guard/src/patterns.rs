@@ -1,4 +1,4 @@
-use crate::models::{CorrelatedIncident, Event, Severity};
+use crate::models::{CorrelatedIncident, Event, EventSource, Severity};
 use std::collections::{HashMap, VecDeque};
 
 /// The context required for a pattern to make a decision.
@@ -203,5 +203,98 @@ impl Pattern for ContainerCrashLoopPattern {
             }
         }
         None
+    }
+}
+
+/// **Pattern 7: Intrusion Detected (Nervio A)**
+/// Se activa cuando hay acceso a archivos sensibles O (failed_login + sudo en misma ventana).
+pub struct NervioAIntrusionPattern;
+impl Pattern for NervioAIntrusionPattern {
+    fn check(&self, context: &PatternContext) -> Option<CorrelatedIncident> {
+        let nervio_a: Vec<_> = context.event_buffer.iter()
+            .filter(|e| matches!(e.source, EventSource::NervioAIntrusion))
+            .collect();
+
+        let has_sensitive = nervio_a.iter().any(|e| e.event_type == "sensitive_file_access");
+        let failed_count = nervio_a.iter().filter(|e| e.event_type == "failed_login").count();
+        let has_sudo = nervio_a.iter().any(|e| e.event_type == "sudo_command_executed");
+
+        if has_sensitive || (failed_count > context.ssh_bruteforce_threshold && has_sudo) {
+            Some(CorrelatedIncident {
+                name: "Intrusion Detected (Nervio A)".to_string(),
+                confidence: 0.88,
+                severity: Severity::Critical,
+                events: nervio_a.into_iter().cloned().collect(),
+                recommended_action: "Audit active sessions. Review /var/log/auth.log and auditd.".to_string(),
+                n8n_playbook: "nervio_a_intrusion_alert".to_string(),
+            })
+        } else {
+            None
+        }
+    }
+}
+
+/// **Pattern 8: Integrity Violation (Nervio B)**
+/// Se activa cuando hay servicios caídos o disco crítico reportado por Prometheus.
+pub struct NervioBIntegrityPattern;
+impl Pattern for NervioBIntegrityPattern {
+    fn check(&self, context: &PatternContext) -> Option<CorrelatedIncident> {
+        let nervio_b: Vec<_> = context.event_buffer.iter()
+            .filter(|e| matches!(e.source, EventSource::NervioBIntegrity))
+            .collect();
+
+        let service_down = nervio_b.iter().any(|e| e.event_type == "service_down");
+        let disk_critical = nervio_b.iter().any(|e| e.event_type == "disk_usage_critical");
+
+        if service_down || disk_critical {
+            Some(CorrelatedIncident {
+                name: "Integrity Violation (Nervio B)".to_string(),
+                confidence: 0.92,
+                severity: Severity::Critical,
+                events: nervio_b.into_iter().cloned().collect(),
+                recommended_action: "Check: podman ps, df -h, service logs.".to_string(),
+                n8n_playbook: "nervio_b_integrity_alert".to_string(),
+            })
+        } else {
+            None
+        }
+    }
+}
+
+/// **Pattern 9: Coordinated Attack — Cross-Nervio Correlation**
+/// Se activa SOLO cuando Nervio A Y Nervio B reportan alta severidad simultáneamente.
+/// Confidence 0.98: la correlación cruzada independiente es casi certeza de ataque coordinado.
+pub struct CrossNervioPattern;
+impl Pattern for CrossNervioPattern {
+    fn check(&self, context: &PatternContext) -> Option<CorrelatedIncident> {
+        let high_a = context.event_buffer.iter().any(|e|
+            matches!(e.source, EventSource::NervioAIntrusion) &&
+            matches!(e.severity, Severity::High | Severity::Critical)
+        );
+        let high_b = context.event_buffer.iter().any(|e|
+            matches!(e.source, EventSource::NervioBIntegrity) &&
+            matches!(e.severity, Severity::High | Severity::Critical)
+        );
+
+        if high_a && high_b {
+            let events: Vec<Event> = context.event_buffer.iter()
+                .filter(|e|
+                    matches!(e.source, EventSource::NervioAIntrusion | EventSource::NervioBIntegrity) &&
+                    matches!(e.severity, Severity::High | Severity::Critical)
+                )
+                .cloned()
+                .collect();
+
+            Some(CorrelatedIncident {
+                name: "Coordinated Attack — Cross-Nervio Correlation".to_string(),
+                confidence: 0.98,
+                severity: Severity::Critical,
+                events,
+                recommended_action: "LOCKDOWN: Intrusion + integrity breach simultaneous. Isolate node.".to_string(),
+                n8n_playbook: "intrusion_lockdown".to_string(),
+            })
+        } else {
+            None
+        }
     }
 }

@@ -1,6 +1,7 @@
 use crate::models::{CorrelatedIncident, Event, Severity};
 use crate::patterns::{
-    ContainerCrashLoopPattern, DdosPattern, NginxErrorSpikePattern, Pattern, PatternContext, TrafficDropPattern,
+    ContainerCrashLoopPattern, CrossNervioPattern, DdosPattern, NginxErrorSpikePattern,
+    NervioAIntrusionPattern, NervioBIntegrityPattern, Pattern, PatternContext, TrafficDropPattern,
     RedisMemoryPattern, SshBruteForcePattern,
 };
 use std::collections::VecDeque;
@@ -54,7 +55,10 @@ impl DecisionEngine {
                 Box::new(RedisMemoryPattern),
                 Box::new(ContainerCrashLoopPattern),
                 Box::new(TrafficDropPattern),
-                // To add a new pattern, just add a new `Box::new(...)` here.
+                // Dos Nervios: detectores independientes + correlación cruzada
+                Box::new(NervioAIntrusionPattern),
+                Box::new(NervioBIntegrityPattern),
+                Box::new(CrossNervioPattern), // Va último: escala cuando ambos nervios confirman
             ],
             time_window: chrono::Duration::try_minutes(5).unwrap_or_default(),
             ssh_bruteforce_threshold: threshold,
