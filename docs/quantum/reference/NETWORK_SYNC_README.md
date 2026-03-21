@@ -161,7 +161,7 @@ Los módulos ya están instalados en Sentinel. No requiere instalación adiciona
 
 ```bash
 cd ~/dev/sentinel
-docker-compose up -d redis
+podman-compose up -d redis
 ```
 
 #### Opción 2: Redis Standalone
@@ -430,8 +430,8 @@ Received: 0
 
 1. **Redis no corriendo**
    ```bash
-   redis-cli ping
-   # Si falla: docker-compose up -d redis
+redis-cli ping
+# Si falla: podman-compose up -d redis
    ```
 
 2. **Cluster name diferente**

@@ -53,21 +53,21 @@ docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
 
 ```bash
 cd /home/jnovoas/sentinel
-docker-compose up -d ollama
-docker-compose logs -f ollama
+podman-compose up -d ollama
+podman-compose logs -f ollama
 
 # Verificar que detecta GPU
-docker-compose exec ollama nvidia-smi
+podman-compose exec ollama nvidia-smi
 ```
 
 ### Paso 4: Descargar Modelos
 
 ```bash
 # Ejecutar model loader
-docker-compose up ollama-init
+podman-compose up ollama-init
 
 # Ver progreso
-docker-compose logs -f ollama-init
+podman-compose logs -f ollama-init
 ```
 
 ## Alternativa: Sin GPU
@@ -75,7 +75,7 @@ docker-compose logs -f ollama-init
 Si prefieres no instalar el toolkit, puedes usar Ollama sin GPU:
 
 ```yaml
-# En docker-compose.yml, comentar la sección deploy:
+# En podman-compose.yml, comentar la sección deploy:
     restart: unless-stopped
     # GPU support for NVIDIA GTX 1050 (3GB VRAM)
     # deploy:
@@ -89,7 +89,7 @@ Si prefieres no instalar el toolkit, puedes usar Ollama sin GPU:
 
 Luego:
 ```bash
-docker-compose up -d ollama
+podman-compose up -d ollama
 ```
 
 ## Recomendación

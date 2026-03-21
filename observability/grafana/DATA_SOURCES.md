@@ -174,8 +174,8 @@ Si quieres consultar directamente la API de Sentinel (sin pasar por Prometheus):
 
 1. **Instalar plugin**:
 ```bash
-docker-compose exec grafana grafana cli plugins install marcusolsson-json-datasource
-docker-compose restart grafana
+podman-compose exec grafana grafana cli plugins install marcusolsson-json-datasource
+podman-compose restart grafana
 ```
 
 2. **Descomentar en datasources.yml**:
@@ -193,7 +193,7 @@ docker-compose restart grafana
 
 3. **Reiniciar Grafana**:
 ```bash
-docker-compose restart grafana
+podman-compose restart grafana
 ```
 
 ---

@@ -527,7 +527,7 @@ docker start sentinel-postgres-primary
 # (In test environment, not production!)
 
 # 1. Stop all on-premise services
-docker-compose down
+podman-compose down
 
 # 2. Wait for DNS failover (90-120s)
 # 3. Verify cloud site takes over
@@ -569,7 +569,7 @@ docker exec sentinel-postgres-primary psql -U sentinel -c \
 
 ```bash
 # 1. Stop Sentinel completely
-docker-compose down
+podman-compose down
 
 # 2. Verify DNS still works
 nslookup google.com 192.168.1.10
@@ -581,7 +581,7 @@ nslookup ads.google.com 192.168.1.10
 # Should return 0.0.0.0 (blocked)
 
 # 4. Restart Sentinel
-docker-compose up -d
+podman-compose up -d
 
 # 5. Verify Sentinel can monitor Pi-holes
 curl http://localhost:8000/api/v1/pihole/health

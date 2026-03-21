@@ -63,7 +63,7 @@ Agregar configuración de Ollama en `backend/app/config.py`.
 ### 1. Verificar Servicio Ollama
 ```bash
 # Esperar a que Ollama esté listo
-docker-compose logs -f ollama
+podman-compose logs -f ollama
 
 # Verificar que responde
 curl http://localhost:11434/api/tags
@@ -74,10 +74,10 @@ curl http://localhost:11434/api/tags
 ### 2. Descargar Modelos
 ```bash
 # Ejecutar ollama-init
-docker-compose up ollama-init
+podman-compose up ollama-init
 
 # Ver progreso
-docker-compose logs -f ollama-init
+podman-compose logs -f ollama-init
 
 # Verificar modelos descargados
 curl http://localhost:11434/api/tags | jq '.models[].name'
@@ -86,7 +86,7 @@ curl http://localhost:11434/api/tags | jq '.models[].name'
 ### 3. Probar Endpoint de IA
 ```bash
 # Reiniciar backend con nuevos cambios
-docker-compose restart backend
+podman-compose restart backend
 
 # Probar health check
 curl http://localhost:8000/api/v1/ai/health | jq
@@ -131,7 +131,7 @@ curl -X POST "http://localhost:8000/api/v1/ai/analyze-anomaly?title=CPU%20Spike&
 AI_ENABLED=false
 
 # Reiniciar backend
-docker-compose restart backend
+podman-compose restart backend
 ```
 
 ### Cambiar Modelo
@@ -140,7 +140,7 @@ docker-compose restart backend
 OLLAMA_MODEL=llama3.2:1b
 
 # Reiniciar backend
-docker-compose restart backend
+podman-compose restart backend
 ```
 
 ---

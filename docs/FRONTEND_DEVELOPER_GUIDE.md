@@ -604,8 +604,8 @@ const getStatusColor = (status: Status) => {
 
 ```bash
 # Solution: Rebuild Docker image
-docker-compose build frontend
-docker-compose up -d frontend
+podman-compose build frontend
+podman-compose up -d frontend
 ```
 
 #### 2. Hydration errors
@@ -620,10 +620,10 @@ Solution: Use `mounted` state pattern (see Common Patterns)
 
 ```typescript
 // Check if backend is running
-docker-compose ps backend
+podman-compose ps backend
 
 // Check backend logs
-docker-compose logs backend | tail -50
+podman-compose logs backend | tail -50
 
 // Test endpoint directly
 curl http://localhost:8000/api/v1/analytics/statistics?hours=24
@@ -634,7 +634,7 @@ curl http://localhost:8000/api/v1/analytics/statistics?hours=24
 ```bash
 # Clear Next.js cache
 rm -rf frontend/.next
-docker-compose restart frontend
+podman-compose restart frontend
 ```
 
 ### Debugging Tools

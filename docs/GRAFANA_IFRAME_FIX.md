@@ -30,7 +30,7 @@ org_role = Viewer
 
 ### Step 2: Mount Configuration in Docker
 
-Update `docker-compose.yml`:
+Update `podman-compose.yml`:
 
 ```yaml
 grafana:
@@ -41,7 +41,7 @@ grafana:
 ### Step 3: Restart Grafana
 
 ```bash
-docker-compose restart grafana
+podman-compose restart grafana
 ```
 
 ### Step 4: Verify

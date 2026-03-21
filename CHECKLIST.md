@@ -123,7 +123,7 @@
 
 ### Services Status
 ```bash
-docker-compose ps
+podman-compose ps
 ```
 
 ### View Metrics

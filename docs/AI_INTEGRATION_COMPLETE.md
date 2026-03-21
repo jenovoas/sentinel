@@ -121,7 +121,7 @@ curl -X POST http://localhost:8000/api/v1/ai/query \
 ### Ver logs de Ollama
 
 ```bash
-docker-compose logs -f ollama | grep -i "gpu\|cuda"
+podman-compose logs -f ollama | grep -i "gpu\|cuda"
 ```
 
 ---

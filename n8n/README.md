@@ -41,13 +41,13 @@ Password: REDACTED_PASSWORD
 
 **Configurar en n8n**:
 ```bash
-# Opción 1: En docker-compose.yml
+# Opción 1: En podman-compose.yml
 n8n:
   environment:
     - SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
 
 # Luego reiniciar
-docker-compose restart n8n
+podman-compose restart n8n
 ```
 
 ### 3. Importar Workflows

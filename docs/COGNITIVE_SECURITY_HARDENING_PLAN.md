@@ -709,21 +709,21 @@ If issues arise during deployment:
 ```bash
 # In .env
 TELEMETRY_SANITIZATION_ENABLED=false
-docker-compose restart backend
+podman-compose restart backend
 ```
 
 **2. Revert Loki Config**
 ```bash
 # Remove unordered_writes from loki-config.yml
 git checkout observability/loki/loki-config.yml
-docker-compose restart loki
+podman-compose restart loki
 ```
 
 **3. Remove Nginx Auth**
 ```bash
 # Comment out auth_basic directives
 sed -i 's/auth_basic/#auth_basic/g' docker/nginx/nginx-observability.conf
-docker-compose restart nginx
+podman-compose restart nginx
 ```
 
 ---

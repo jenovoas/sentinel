@@ -57,17 +57,9 @@ bash scripts/setup-observability-auth.sh
 nano .env  # Change OBSERVABILITY_*_PASSWORD
 
 # 3. Deploy
-docker-compose build backend
-docker-compose up -d
-```
-
----
-
-## 🧪 Verification
-
-```bash
-# Test sanitizer
-docker-compose exec backend pytest tests/test_telemetry_sanitizer.py -v
+podman-compose build backend
+podman-compose up -d
+podman-compose exec backend pytest tests/test_telemetry_sanitizer.py -v
 
 # Test Loki ordering
 python scripts/test-loki-ordering.py

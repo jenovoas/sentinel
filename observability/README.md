@@ -77,7 +77,7 @@ observability/
 #### Iniciar todo el stack:
 
 ```bash
-docker-compose up -d
+podman-compose up -d
 ```
 
 #### Acceder a las interfaces:
@@ -90,21 +90,21 @@ docker-compose up -d
 #### Ver logs de un servicio:
 
 ```bash
-docker-compose logs -f prometheus
-docker-compose logs -f loki
-docker-compose logs -f promtail
+podman-compose logs -f prometheus
+podman-compose logs -f loki
+podman-compose logs -f promtail
 ```
 
 #### Detener el stack:
 
 ```bash
-docker-compose down
+podman-compose down
 ```
 
 #### Detener y limpiar datos:
 
 ```bash
-docker-compose down -v  # ⚠️ Elimina todos los datos!
+podman-compose down -v  # ⚠️ Elimina todos los datos!
 ```
 
 ### 📊 Dashboards Pre-configurados
@@ -154,7 +154,7 @@ Edita `prometheus/rules/alerts.yml` y agrega reglas.
 1. Diseña en Grafana UI
 2. Exporta como JSON
 3. Guarda en `grafana/provisioning/dashboards/json/`
-4. Reinicia Grafana: `docker-compose restart grafana`
+4. Reinicia Grafana: `podman-compose restart grafana`
 
 #### Ajustar retención:
 
@@ -257,7 +257,7 @@ curl http://localhost:9100/metrics
 
 ```bash
 # Verificar Promtail
-docker-compose logs promtail
+podman-compose logs promtail
 
 # Verificar que journald es accesible
 journalctl -n 10

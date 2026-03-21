@@ -20,7 +20,7 @@
 
 ```bash
 # One-liner to verify everything is running
-docker-compose ps && curl -s http://localhost:8000/api/v1/health | jq '.status'
+podman-compose ps && curl -s http://localhost:8000/api/v1/health | jq '.status'
 ```
 
 Expected output:
@@ -66,10 +66,10 @@ celery: true
 **Cause**: Frontend not compiled or port conflict
 **Solution**: 
 ```bash
-docker-compose logs frontend | grep -E "error|Error"
+podman-compose logs frontend | grep -E "error|Error"
 # If stuck, rebuild:
-docker-compose build frontend
-docker-compose restart frontend
+podman-compose build frontend
+podman-compose restart frontend
 ```
 
 ### Issue: Dashboard API returns 500 errors
@@ -77,11 +77,11 @@ docker-compose restart frontend
 **Solution**:
 ```bash
 # Check backend logs
-docker-compose logs backend --tail=50
+podman-compose logs backend --tail=50
 
 # If GPU errors, that's OK (gracefully handled)
 # If DB connection error, verify postgres is running:
-docker-compose exec postgres psql -U sentinel_user -d sentinel_db -c "SELECT 1"
+podman-compose exec postgres psql -U sentinel_user -d sentinel_db -c "SELECT 1"
 ```
 
 ## Maintenance Tasks
@@ -95,7 +95,7 @@ docker-compose exec postgres psql -U sentinel_user -d sentinel_db -c "SELECT 1"
 - Review git activity in dashboard repo section
 - Archive old logs if needed:
   ```bash
-  docker-compose exec backend sh -c "find logs/ -mtime +7 -delete"
+  podman-compose exec backend sh -c "find logs/ -mtime +7 -delete"
   ```
 
 ### Monthly
@@ -107,19 +107,19 @@ docker-compose exec postgres psql -U sentinel_user -d sentinel_db -c "SELECT 1"
 
 ```bash
 # Start all services
-docker-compose up -d
+podman-compose up -d
 
 # Restart specific service (e.g., backend)
-docker-compose restart backend
+podman-compose restart backend
 
 # Rebuild and restart
-docker-compose build backend && docker-compose up -d backend
+podman-compose build backend && podman-compose up -d backend
 
 # View live logs
-docker-compose logs -f backend
+podman-compose logs -f backend
 
 # Full system restart
-docker-compose down && docker-compose up -d
+podman-compose down && podman-compose up -d
 
 # Clean old containers/images (WARNING: destructive)
 docker system prune -a
@@ -136,7 +136,7 @@ docker system prune -a
 ### Check DB Health
 ```bash
 # Connect to database
-docker-compose exec postgres psql -U sentinel_user -d sentinel_db
+podman-compose exec postgres psql -U sentinel_user -d sentinel_db
 
 # Quick queries
 SELECT count(*) FROM users;
@@ -173,16 +173,16 @@ const HISTORY_SIZE = 120; // Change from 60 to 120 samples (~30min)
 - [ ] Frontend loading at http://localhost:3000/dash-op?
 - [ ] Metrics updating every 15 seconds?
 - [ ] Can click circular stats to open graphs?
-- [ ] No errors in `docker-compose logs`?
+- [ ] No errors in `podman-compose logs`?
 - [ ] Database connection shows in health check?
 
 ## Support
 
 For issues not covered here:
-1. Check logs: `docker-compose logs backend`
-2. Verify containers: `docker-compose ps`
-3. Restart service: `docker-compose restart backend`
-4. Full rebuild: `docker-compose build && docker-compose up -d`
+1. Check logs: `podman-compose logs backend`
+2. Verify containers: `podman-compose ps`
+3. Restart service: `podman-compose restart backend`
+4. Full rebuild: `podman-compose build && podman-compose up -d`
 
 ## Version Info
 

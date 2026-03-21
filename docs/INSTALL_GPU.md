@@ -25,15 +25,9 @@ docker run --rm --gpus all nvidia/cuda:12.0.0-base-ubuntu22.04 nvidia-smi
 
 # 6. Iniciar Ollama con GPU
 cd /home/jnovoas/sentinel
-docker-compose up -d ollama
-docker-compose up ollama-init
-```
-
-## Verificación
-
-```bash
-# Ver logs de Ollama
-docker-compose logs ollama | grep -i gpu
+podman-compose up -d ollama
+podman-compose up ollama-init
+podman-compose logs ollama | grep -i gpu
 
 # Debería mostrar: "GPU detected: NVIDIA GeForce GTX 1050"
 ```

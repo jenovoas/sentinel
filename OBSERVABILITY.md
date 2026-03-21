@@ -202,20 +202,20 @@ Para sesiones de desarrollo donde no necesitas toda la observabilidad ni n8n:
 
 1) Levantar solo core app:
 ```bash
-docker-compose up -d backend frontend nginx redis postgres
+podman-compose up -d backend frontend nginx redis postgres
 ```
 
 2) Apagar observabilidad y automatización cuando no se usan:
 ```bash
-docker-compose stop grafana prometheus loki promtail node-exporter n8n
+podman-compose stop grafana prometheus loki promtail node-exporter n8n
 ```
 
 3) Rehabilitar observabilidad/n8n bajo demanda:
 ```bash
-docker-compose up -d grafana prometheus loki promtail node-exporter n8n
+podman-compose up -d grafana prometheus loki promtail node-exporter n8n
 ```
 
-Tip: Si prefieres automatizar, crea un `docker-compose.override.yml` con profiles `observability` y `automation`, y arranca con `COMPOSE_PROFILES=observability,automation docker-compose up -d` solo cuando lo necesites.
+Tip: Si prefieres automatizar, crea un `podman-compose.override.yml` con profiles `observability` y `automation`, y arranca con `COMPOSE_PROFILES=observability,automation podman-compose up -d` solo cuando lo necesites.
 
 ### Migración Completa
 Cuando estés listo para deprecar CSV:
@@ -236,10 +236,10 @@ Cuando estés listo para deprecar CSV:
 
 **Prometheus no scrapes métricas:**
 - Verificar targets en http://localhost:9090/targets
-- Revisar logs: `docker-compose logs prometheus`
+- Revisar logs: `podman-compose logs prometheus`
 
 **Loki no recibe logs:**
-- Verificar Promtail: `docker-compose logs promtail`
+- Verificar Promtail: `podman-compose logs promtail`
 - Verificar journald: `journalctl -n 10`
 
 **Grafana muestra "No data":**

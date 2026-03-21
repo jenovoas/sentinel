@@ -9,7 +9,7 @@
 ### Prompt 1.1: Health Check Completo del Nodo Fenix
 
 ```
-Realiza un health check completo del nodo Fenix. Analiza el `docker-compose.fenix.yml`, el `inventory.yaml` y los logs recientes de Podman. Genera un reporte en markdown que incluya:
+Realiza un health check completo del nodo Fenix. Analiza el `podman-compose -f docker-compose.fenix.yml`, el `inventory.yaml` y los logs recientes de Podman. Genera un reporte en markdown que incluya:
 1.  Estado de cada contenedor (running, degraded, stopped).
 2.  Consumo de recursos (CPU/RAM) por contenedor.
 3.  Alertas activas en Prometheus (`prometheus.fenix.yml`).
@@ -20,7 +20,7 @@ Realiza un health check completo del nodo Fenix. Analiza el `docker-compose.feni
 ### Prompt 1.2: Auditoría de Seguridad Rápida
 
 ```
-Actúa como un analista de seguridad. Revisa la configuración de `firewalld` en `CONTEXTO_REINICIO.md` y las labels de Traefik en `docker-compose.fenix.yml`. Identifica y lista posibles vectores de ataque o configuraciones inseguras, y sugiere mitigaciones específicas para un entorno de producción en Rocky Linux 9.
+Actúa como un analista de seguridad. Revisa la configuración de `firewalld` en `CONTEXTO_REINICIO.md` y las labels de Traefik en `podman-compose -f docker-compose.fenix.yml`. Identifica y lista posibles vectores de ataque o configuraciones inseguras, y sugiere mitigaciones específicas para un entorno de producción en Rocky Linux 9.
 ```
 
 ---
@@ -90,7 +90,7 @@ He intentado desplegar un nuevo servicio y ha fallado. Aquí están los logs de 
 
 [pegar logs de error aquí]
 
-Analiza los logs, compáralos con el `docker-compose.fenix.yml` y el `inventory.yaml`, y dame un diagnóstico preciso del problema y los comandos exactos para solucionarlo.
+Analiza los logs, compáralos con el `podman-compose -f docker-compose.fenix.yml` y el `inventory.yaml`, y dame un diagnóstico preciso del problema y los comandos exactos para solucionarlo.
 ```
 
 ### Prompt 4.2: Simulación de Desastre y Plan de Recuperación

@@ -88,7 +88,7 @@ observability/
 observability-start.sh            ✅ Script de inicio
 OBSERVABILITY.md                  ✅ Guía completa
 .env.example                      ✅ Variables de entorno
-docker-compose.yml                ✅ 5 servicios agregados
+podman-compose.yml                ✅ 5 servicios agregados
 README.md                         ✅ Actualizado
 ```
 
@@ -227,9 +227,9 @@ Fase 4: ⏳ Deprecar CSV cuando estés listo
 
 ### Servicios no inician
 ```bash
-docker-compose logs prometheus
-docker-compose logs loki
-docker-compose restart grafana
+podman-compose logs prometheus
+podman-compose logs loki
+podman-compose restart grafana
 ```
 
 ### No aparecen métricas
@@ -238,7 +238,7 @@ docker-compose restart grafana
 3. Si está DOWN, revisar logs
 
 ### No aparecen logs
-1. Verificar Promtail: `docker-compose logs promtail`
+1. Verificar Promtail: `podman-compose logs promtail`
 2. Verificar journald: `journalctl -n 10`
 3. Puede tardar 1-2 minutos en aparecer
 
@@ -267,7 +267,7 @@ app.mount("/metrics", metrics_app)
 
 ### Fase 3: Alertmanager
 ```yaml
-# docker-compose.yml
+# podman-compose.yml
 alertmanager:
   image: prom/alertmanager
   ports:

@@ -292,8 +292,7 @@ cd "$SITIO_DIR"
 
 if command -v podman-compose &> /dev/null; then
   podman-compose up -d
-elif command -v docker-compose &> /dev/null; then
-  docker-compose up -d
+# docker-compose fallback removed - use podman-compose only on Fenix
 else
   log_error "Ni podman-compose ni docker-compose encontrados"
 fi

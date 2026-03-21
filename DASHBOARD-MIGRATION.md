@@ -38,7 +38,7 @@ He creado **"Sentinel - Operational Dashboard"** con las siguientes secciones:
 
 1. Reinicia Grafana para cargar el nuevo dashboard:
    ```bash
-   docker-compose restart grafana
+   podman-compose restart grafana
    ```
 
 2. Espera 10 segundos y abre:

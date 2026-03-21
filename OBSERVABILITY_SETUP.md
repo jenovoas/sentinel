@@ -171,18 +171,18 @@ observability/
 
 **n8n no responde**:
 ```bash
-docker-compose restart n8n
+podman-compose restart n8n
 ```
 
 **Prometheus no carga reglas**:
 ```bash
-docker-compose restart prometheus
+podman-compose restart prometheus
 # Verifica: http://localhost:9090/alerts
 ```
 
 **Grafana no ve dashboards**:
 ```bash
-docker-compose restart grafana
+podman-compose restart grafana
 # Espera 30 segundos y recarga
 ```
 

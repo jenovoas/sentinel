@@ -120,7 +120,7 @@ https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXX
 - En n8n, click "Execute Workflow" para probar manualmente
 
 **Errores de conexión:**
-- Verifica que Prometheus está running: `docker-compose ps`
+- Verifica que Prometheus está running: `podman-compose ps`
 - URL debe ser `http://prometheus:9090` (desde dentro del contenedor)
 
 ---

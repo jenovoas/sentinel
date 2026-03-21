@@ -119,7 +119,7 @@ git commit -m "docs: update API documentation for users endpoint"
 **Before creating a PR:**
 1. Create feature branch from `develop`
 2. Make your changes with good commits
-3. Test locally with `docker-compose`
+3. Test locally with `podman-compose`
 4. Update documentation if needed
 
 **PR Template:**
@@ -149,7 +149,7 @@ How was this tested?
 ```python
 # Use pytest for all tests
 # Location: tests/ directory
-# Run: docker-compose exec backend pytest
+# Run: podman-compose exec backend pytest
 
 import pytest
 from app.models import User
@@ -168,7 +168,7 @@ def test_create_user(db_session):
 ```typescript
 // Use vitest/jest for component testing
 // Location: __tests__/ or adjacent to component
-// Run: docker-compose exec frontend npm test
+// Run: podman-compose exec frontend npm test
 
 import { render, screen } from '@testing-library/react';
 import { UserCard } from '@/components/UserCard';
@@ -235,23 +235,23 @@ describe('UserCard', () => {
 ```bash
 # First time setup
 cd /home/jnovoas/sentinel
-docker-compose build
-docker-compose up -d
+podman-compose build
+podman-compose up -d
 
 # Backend development
-docker-compose exec backend bash
+podman-compose exec backend bash
 pip install -r requirements.txt
 pytest
 
 # Frontend development
-docker-compose exec frontend bash
+podman-compose exec frontend bash
 npm install
 npm run dev
 
 # Check code quality
-docker-compose exec backend black app/
-docker-compose exec backend mypy app/
-docker-compose exec frontend npm run lint
+podman-compose exec backend black app/
+podman-compose exec backend mypy app/
+podman-compose exec frontend npm run lint
 ```
 
 ## Debugging
@@ -259,25 +259,25 @@ docker-compose exec frontend npm run lint
 ### Backend
 ```bash
 # View logs
-docker-compose logs -f backend
+podman-compose logs -f backend
 
 # Shell access
-docker-compose exec backend bash
+podman-compose exec backend bash
 
 # Python debugger
-docker-compose exec backend python -m pdb app/main.py
+podman-compose exec backend python -m pdb app/main.py
 
 # Query database
-docker-compose exec postgres psql -U sentinel_user -d sentinel_db
+podman-compose exec postgres psql -U sentinel_user -d sentinel_db
 ```
 
 ### Frontend
 ```bash
 # View logs
-docker-compose logs -f frontend
+podman-compose logs -f frontend
 
 # Node shell
-docker-compose exec frontend bash
+podman-compose exec frontend bash
 
 # Browser DevTools (automatic in development)
 ```
@@ -285,7 +285,7 @@ docker-compose exec frontend bash
 ### Database
 ```bash
 # Connect to PostgreSQL
-docker-compose exec postgres psql -U sentinel_user -d sentinel_db
+podman-compose exec postgres psql -U sentinel_user -d sentinel_db
 
 # Common queries
 \dt                    # List tables
@@ -336,23 +336,23 @@ SELECT * FROM users;  # Query data
 
 ```bash
 # Code formatting
-docker-compose exec backend black app/
-docker-compose exec frontend npm run format
+podman-compose exec backend black app/
+podman-compose exec frontend npm run format
 
 # Linting
-docker-compose exec backend flake8 app/
-docker-compose exec frontend npm run lint
+podman-compose exec backend flake8 app/
+podman-compose exec frontend npm run lint
 
 # Type checking
-docker-compose exec backend mypy app/
-docker-compose exec frontend npm run type-check
+podman-compose exec backend mypy app/
+podman-compose exec frontend npm run type-check
 
 # Testing
-docker-compose exec backend pytest
-docker-compose exec frontend npm test
+podman-compose exec backend pytest
+podman-compose exec frontend npm test
 
 # All checks
-docker-compose exec backend black app/ && mypy app/ && flake8 app/
+podman-compose exec backend black app/ && mypy app/ && flake8 app/
 ```
 
 ## Getting Help

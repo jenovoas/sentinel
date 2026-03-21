@@ -463,7 +463,7 @@ watch -n 1 'docker stats --no-stream'
 watch -n 1 nvidia-smi
 
 # Database stats
-docker-compose exec postgres psql -U sentinel_user -d sentinel_db \
+podman-compose exec postgres psql -U sentinel_user -d sentinel_db \
   -c "SELECT * FROM pg_stat_activity;"
 ```
 

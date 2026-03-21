@@ -683,10 +683,10 @@ curl http://localhost:8000/api/v1/analytics/statistics?hours=1 | jq '.cpu.mean'
 ### Monitor Celery Tasks
 ```bash
 # Check Celery beat schedule
-docker-compose logs celery_beat | grep "collect-metrics"
+podman-compose logs celery_beat | grep "collect-metrics"
 
 # Check worker execution
-docker-compose logs celery_worker | grep "Metrics collected"
+podman-compose logs celery_worker | grep "Metrics collected"
 ```
 
 ### Trigger Test Anomaly
@@ -740,18 +740,18 @@ backend/
 ## 📞 TROUBLESHOOTING
 
 ### "No metrics being collected"
-1. Check Celery worker status: `docker-compose logs celery_worker`
+1. Check Celery worker status: `podman-compose logs celery_worker`
 2. Verify Redis connection: `redis-cli PING`
-3. Check Celery Beat: `docker-compose logs celery_beat | grep collect-metrics`
+3. Check Celery Beat: `podman-compose logs celery_beat | grep collect-metrics`
 
 ### "Database migration failed"
 1. Check current migration: `alembic current`
-2. Review error logs: `docker-compose logs postgres`
+2. Review error logs: `podman-compose logs postgres`
 3. If needed, downgrade: `alembic downgrade -1`
 
 ### "Anomaly detection not working"
 1. Verify detector has learned: Check logs for "Baseline stats updated"
-2. Monitor detection: Check `docker-compose logs celery_worker` for anomaly messages
+2. Monitor detection: Check `podman-compose logs celery_worker` for anomaly messages
 3. Create artificial spike: Run `stress-ng` on system
 
 ---

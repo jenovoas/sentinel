@@ -118,7 +118,7 @@ DNS A Records creados para `pinguinoseguro.cl`:
 ### Media Prioridad (FASE 2 & 3) — PENDIENTES
 
 3. **Hardening Fenix** — Despliegue dockerizado del stack Sentinel (FastAPI, Redis, PostgreSQL).
-2. **Monitoreo extendido** — Node Exporter en kingu/centurion, dashboards Grafana multi-nodo (ver `GEMINI_TASK_MONITORING.md`).
+2. **Monitoreo extendido** — Node Exporter en Fenix, dashboards Grafana para nodo único (ver `GEMINI_TASK_MONITORING.md`).
 
 ---
 

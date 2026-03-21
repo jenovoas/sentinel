@@ -37,7 +37,7 @@
 - **Estado**: ✅ Healthy
 - **Conexión**:
   ```bash
-  docker-compose exec postgres psql -U sentinel_user -d sentinel_db
+  podman-compose exec postgres psql -U sentinel_user -d sentinel_db
   ```
 
 ### 4. Redis
@@ -46,7 +46,7 @@
 - **Estado**: ✅ Healthy
 - **Conexión**:
   ```bash
-  docker-compose exec redis redis-cli
+  podman-compose exec redis redis-cli
   ```
 
 ---
@@ -160,27 +160,27 @@
 
 ### Ver estado de todos los servicios
 ```bash
-docker-compose ps
+podman-compose ps
 ```
 
 ### Ver logs de un servicio específico
 ```bash
-docker-compose logs -f backend
-docker-compose logs -f frontend
-docker-compose logs -f grafana
+podman-compose logs -f backend
+podman-compose logs -f frontend
+podman-compose logs -f grafana
 ```
 
 ### Reiniciar un servicio
 ```bash
-docker-compose restart backend
-docker-compose restart prometheus
+podman-compose restart backend
+podman-compose restart prometheus
 ```
 
 ### Acceder a un contenedor
 ```bash
-docker-compose exec backend bash
-docker-compose exec postgres psql -U sentinel_user -d sentinel_db
-docker-compose exec redis redis-cli
+podman-compose exec backend bash
+podman-compose exec postgres psql -U sentinel_user -d sentinel_db
+podman-compose exec redis redis-cli
 ```
 
 ### Verificar métricas desde la API
@@ -258,7 +258,7 @@ Para verificar que todo está funcionando:
 
 ```bash
 # 1. Ver estado de servicios
-docker-compose ps
+podman-compose ps
 
 # 2. Probar API
 curl http://localhost:8000/api/v1/health

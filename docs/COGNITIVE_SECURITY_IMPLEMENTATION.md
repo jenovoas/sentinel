@@ -64,7 +64,7 @@ All three critical security layers have been implemented to protect Sentinel's c
 - `scripts/test-nginx-auth.sh` - Test Nginx authentication
 
 **Files Modified**:
-- `docker-compose.yml` - Added ports 9091 (Prometheus) and 3101 (Loki)
+- `podman-compose.yml` - Added ports 9091 (Prometheus) and 3101 (Loki)
 - `.env.example` - Added authentication credentials
 
 **Security Features**:
@@ -108,14 +108,14 @@ OBSERVABILITY_LOGS_PASSWORD=<strong-password-here>
 
 ```bash
 # Rebuild backend (new dependencies)
-docker-compose build backend
+podman-compose build backend
 
 # Restart all services
-docker-compose down
-docker-compose up -d
+podman-compose down
+podman-compose up -d
 
 # Verify services are running
-docker-compose ps
+podman-compose ps
 ```
 
 ---
@@ -126,7 +126,7 @@ docker-compose ps
 
 ```bash
 # Run unit tests
-docker-compose exec backend pytest tests/test_telemetry_sanitizer.py -v
+podman-compose exec backend pytest tests/test_telemetry_sanitizer.py -v
 
 # Expected: All 50+ tests pass
 ```
@@ -164,7 +164,7 @@ bash scripts/test-nginx-auth.sh
 
 ```bash
 # View security logs
-docker-compose exec backend tail -f /app/logs/security.log
+podman-compose exec backend tail -f /app/logs/security.log
 
 # Look for:
 # [WARNING] 🚨 Blocked malicious prompt: ...
@@ -199,7 +199,7 @@ If issues arise:
 TELEMETRY_SANITIZATION_ENABLED=false
 
 # Restart backend
-docker-compose restart backend
+podman-compose restart backend
 ```
 
 ### Revert Loki Config
@@ -209,7 +209,7 @@ docker-compose restart backend
 git checkout observability/loki/loki-config.yml
 
 # Restart Loki
-docker-compose restart loki
+podman-compose restart loki
 ```
 
 ### Remove Nginx Auth
@@ -219,7 +219,7 @@ docker-compose restart loki
 sed -i 's/auth_basic/#auth_basic/g' docker/nginx/nginx-observability.conf
 
 # Restart Nginx
-docker-compose restart nginx
+podman-compose restart nginx
 ```
 
 ---
@@ -274,7 +274,7 @@ When presenting to investors, highlight:
 
 ```bash
 # Install dependencies
-docker-compose exec backend pip install -r requirements.txt
+podman-compose exec backend pip install -r requirements.txt
 ```
 
 ### Issue: Nginx returns 500 error
@@ -293,7 +293,7 @@ Grafana uses internal Docker network, so it bypasses Nginx auth. If it fails:
 
 ```bash
 # Check Grafana datasource configuration
-docker-compose exec grafana cat /etc/grafana/provisioning/datasources/datasources.yml
+podman-compose exec grafana cat /etc/grafana/provisioning/datasources/datasources.yml
 
 # Ensure it points to internal URLs:
 # - http://prometheus:9090 (NOT localhost:9091)

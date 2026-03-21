@@ -71,7 +71,7 @@ Antes de activar los workflows, configura la variable de entorno para Slack:
 2. Agrega: `SLACK_WEBHOOK_URL` = `tu_webhook_url_de_slack`
 
 #### Opción B: Configurar en Docker Compose
-Edita `docker-compose.yml`:
+Edita `podman-compose.yml`:
 ```yaml
 n8n:
   environment:
@@ -80,7 +80,7 @@ n8n:
 
 Luego reinicia n8n:
 ```bash
-docker-compose restart n8n
+podman-compose restart n8n
 ```
 
 ### Paso 4: Activar el Workflow
@@ -188,10 +188,10 @@ const networkRX = (sample.network_bytes_recv / 1024 / 1024).toFixed(2);
 
 ```bash
 # Ver logs de n8n
-docker-compose logs -f n8n
+podman-compose logs -f n8n
 
 # Filtrar solo errores
-docker-compose logs n8n | grep ERROR
+podman-compose logs n8n | grep ERROR
 ```
 
 ### Verificar Estado de Workflows
@@ -220,7 +220,7 @@ curl -s http://localhost:5678/api/v1/workflows | jq '.data[] | {name, active}'
 **Problema**: `Error: connect ECONNREFUSED`
 
 **Soluciones**:
-1. Verifica que el backend esté corriendo: `docker-compose ps backend`
+1. Verifica que el backend esté corriendo: `podman-compose ps backend`
 2. Usa `http://backend:8000` en lugar de `http://localhost:8000` (dentro de Docker)
 3. Verifica la URL del endpoint en la API docs: http://localhost:8000/docs
 
@@ -357,10 +357,10 @@ _View detailed analytics: http://localhost:3001_
 
 Si tienes problemas:
 
-1. Revisa los logs: `docker-compose logs n8n`
+1. Revisa los logs: `podman-compose logs n8n`
 2. Verifica la documentación oficial: https://docs.n8n.io
 3. Prueba los endpoints manualmente: http://localhost:8000/docs
-4. Revisa el estado de servicios: `docker-compose ps`
+4. Revisa el estado de servicios: `podman-compose ps`
 
 ---
 

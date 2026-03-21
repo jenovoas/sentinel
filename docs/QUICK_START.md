@@ -64,7 +64,7 @@ Once started, access Sentinel at:
 ### 1. Check Services
 
 ```bash
-docker-compose ps
+podman-compose ps
 ```
 
 All services should show "Up" status.
@@ -134,14 +134,14 @@ Should return AI response within 1-10 seconds.
 
 ```bash
 # Check logs
-docker-compose logs SERVICE_NAME
+podman-compose logs SERVICE_NAME
 
 # Restart specific service
-docker-compose restart SERVICE_NAME
+podman-compose restart SERVICE_NAME
 
 # Full restart
-docker-compose down
-docker-compose up -d
+podman-compose down
+podman-compose up -d
 ```
 
 ### AI not working?
@@ -151,10 +151,10 @@ docker-compose up -d
 curl http://localhost:11434/api/tags
 
 # Re-download model
-docker-compose exec ollama ollama pull phi3:mini
+podman-compose exec ollama ollama pull phi3:mini
 
 # Restart Ollama
-docker-compose restart ollama
+podman-compose restart ollama
 ```
 
 ### High memory usage?
@@ -163,7 +163,7 @@ docker-compose restart ollama
 # Check resource usage
 docker stats
 
-# Limit Ollama memory (edit docker-compose.yml)
+# Limit Ollama memory (edit podman-compose.yml)
 # Add under ollama service:
 #   deploy:
 #     resources:
@@ -178,8 +178,8 @@ docker stats
 For production deployment with High Availability:
 
 1. **Read HA docs**: [docs/HA_REFERENCE_DESIGN.md](HA_REFERENCE_DESIGN.md)
-2. **Deploy PostgreSQL HA**: `docker-compose -f docker-compose-ha.yml up -d`
-3. **Deploy Redis HA**: `docker-compose -f docker-compose-redis-ha.yml up -d`
+2. **Deploy PostgreSQL HA**: `podman-compose -f podman-compose-ha.yml up -d`
+3. **Deploy Redis HA**: `podman-compose -f podman-compose-redis-ha.yml up -d`
 4. **Configure DNS failover**: See [docs/FAILOVER_ORCHESTRATION.md](FAILOVER_ORCHESTRATION.md)
 5. **Set up monitoring**: Configure Prometheus alerts
 6. **Test failover**: Run `./scripts/test-redis-failover.sh`
