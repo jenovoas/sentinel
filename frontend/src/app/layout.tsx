@@ -1,17 +1,8 @@
-/**
- * Root Layout - Applies to all pages
- * 
- * This layout wraps all pages and provides:
- * - Global navigation sidebar
- * - Consistent styling
- * - Font configuration
- * - Metadata
- */
-
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navigation } from "@/components/Navigation";
+import { WipModal } from "@/components/WipModal";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,11 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* Global Navigation Sidebar */}
+        <WipModal />
         <Navigation />
-
-        {/* Page Content */}
-        <main>{children}</main>
+        <main style={{ paddingTop: "72px" }}>{children}</main>
       </body>
     </html>
   );

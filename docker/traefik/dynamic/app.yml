@@ -1,0 +1,29 @@
+http:
+  routers:
+    pinguinoseguro-router:
+      rule: "Host(`pinguinoseguro.cl`) || Host(`www.pinguinoseguro.cl`)"
+      entryPoints:
+        - web
+      middlewares:
+        - https-redirect
+      service: pinguinoseguro-service
+
+    pinguinoseguro-https:
+      rule: "Host(`pinguinoseguro.cl`) || Host(`www.pinguinoseguro.cl`)"
+      entryPoints:
+        - websecure
+      service: pinguinoseguro-service
+      tls:
+        certResolver: myresolver
+
+  middlewares:
+    https-redirect:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+  services:
+    pinguinoseguro-service:
+      loadBalancer:
+        servers:
+          - url: "http://10.88.0.10:3000"
