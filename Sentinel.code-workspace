@@ -1,0 +1,15 @@
+{
+  "folders": [
+    {
+      "path": "/home/jnovoas/Desarrollo/sentinel"
+    },
+    {
+      "name": "OAS-proxy",
+      "type": "proxy",
+      "path": "/home/jnovoas/Desarrollo/sentinel/OAS-proxy"
+    }
+  ],
+  "settings": {
+    "cloudcode.workspace.type": "apigee"
+  }
+}
