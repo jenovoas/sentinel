@@ -1,6 +1,13 @@
 # Security: Ignore sensitive files
 vertex-key.json
 .env
+*.env*
+
+# Claude Code local config (contiene permisos, IPs internas)
+.claude/
+
+# Backups locales
+.backups/
 
 # IDE and OS files
 .idea/
