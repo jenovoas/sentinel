@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 // src/security/soul_verifier_s60.rs
 //! Base-60 implementations of Soul Verifier mathematical functions
 //!
@@ -24,10 +25,9 @@ pub fn calculate_lyapunov_s60(signal: &[S60]) -> S60 {
         if d1 > threshold {
             let ratio = d2.div_safe(d1).unwrap_or(S60::zero());
             if ratio > S60::zero() {
-                if let ln_ratio = SPAMath::ln(ratio) {
-                    sum_div = sum_div + ln_ratio.abs();
-                    count += 1;
-                }
+                let ln_ratio = SPAMath::ln(ratio);
+                sum_div = sum_div + ln_ratio.abs();
+                count += 1;
             }
         }
     }

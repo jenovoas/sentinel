@@ -29,10 +29,12 @@ cp docker/n8n/workflows/slo-alert.json docker/n8n/workflows/slo-alert-copy.json
 ```
 
 ## Variables de entorno
+
 - `N8N_URL` (default: http://localhost:5678)
 - `N8N_API_KEY` (default: vacío)
 - `WORKFLOWS_DIR` (default: docker/n8n/workflows)
 
 ## Nota
+
 - Si n8n responde `"request/body must have required property 'settings'"`, asegúrate de que el JSON incluya al menos `name`, `nodes`, `connections` y `settings`.
 - No envíes `active` en el POST inicial; es de solo lectura.

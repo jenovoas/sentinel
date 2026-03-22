@@ -7,6 +7,9 @@
       "name": "OAS-proxy",
       "type": "proxy",
       "path": "/home/jnovoas/Desarrollo/sentinel/OAS-proxy"
+    },
+    {
+      "path": "../obsidian"
     }
   ],
   "settings": {

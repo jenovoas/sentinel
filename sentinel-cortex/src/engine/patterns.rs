@@ -1,4 +1,5 @@
 use crate::models::{Event, EventType, DetectedPattern, Severity};
+use crate::math::s60::S60;
 
 pub struct PatternDetector {
     /// Ventana de tiempo para correlacionar eventos (5 minutos)
@@ -44,7 +45,7 @@ impl PatternDetector {
         if failed_logins > 50 && new_ip_login {
             return Some(DetectedPattern {
                 name: "Credential Stuffing Attack".to_string(),
-                confidence: 0.95,
+                confidence: S60::from_decimal_for_import_only(0.95),
                 severity: Severity::Critical,
                 events: events.iter()
                     .filter(|e| matches!(e.event_type, EventType::FailedLogin | EventType::SuccessfulLoginNewIP))
@@ -69,7 +70,7 @@ impl PatternDetector {
         if has_memory_leak && has_cpu_spike {
             return Some(DetectedPattern {
                 name: "Resource Exhaustion".to_string(),
-                confidence: 0.85,
+                confidence: S60::from_decimal_for_import_only(0.85),
                 severity: Severity::High,
                 events: events.iter()
                     .filter(|e| matches!(e.event_type, EventType::MemoryLeak | EventType::CpuSpike))

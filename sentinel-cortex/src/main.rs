@@ -9,11 +9,13 @@ mod mock_kernel;
 mod models;
 mod quantum;
 mod security;
+mod metrics;
 
 use axum::{routing::get, Json, Router};
 use math::harmonic_logic::{HarmonicProcessor, HarmonicState};
 use security::bio_resonance::ResonanceEngine;
 use security::soul_verifier_s60_production::BiometricVerifier;
+use metrics::{MetricsRepository, PrometheusRepository, MetricsSnapshot};
 use serde::Serialize;
 use std::sync::{Arc, Mutex};
 use std::{net::SocketAddr, time::Duration};
@@ -23,11 +25,12 @@ use tokio::time::sleep;
 struct HealthStatus {
     status: String,
     version: String,
-    resonance_coherence: i64,
+    metrics: MetricsSnapshot,
 }
 
 struct AppState {
     resonance: Arc<Mutex<ResonanceEngine>>,
+    metrics: Arc<dyn MetricsRepository>,
 }
 
 #[tokio::main]
@@ -49,8 +52,10 @@ async fn main() {
     // Initialize core components
     let resonance = Arc::new(Mutex::new(ResonanceEngine::new()));
     let processor = Arc::new(Mutex::new(HarmonicProcessor::new()));
+    let metrics = Arc::new(PrometheusRepository::new());
     let state = Arc::new(AppState {
         resonance: resonance.clone(),
+        metrics: metrics.clone() as Arc<dyn MetricsRepository>,
     });
 
     // 1. Start Bio-Resonance Engine (17s Pulse) in a background task
@@ -99,10 +104,13 @@ async fn main() {
 async fn health_handler(
     axum::extract::State(state): axum::extract::State<Arc<AppState>>,
 ) -> Json<HealthStatus> {
-    let res = state.resonance.lock().unwrap();
     Json(HealthStatus {
         status: "OK".to_string(),
         version: env!("CARGO_PKG_VERSION").to_string(),
-        resonance_coherence: res.get_coherence_raw(),
+        metrics: MetricsSnapshot {
+            coherence: state.metrics.get_bio_coherence().to_raw(),
+            efficiency: state.metrics.get_scheduler_efficiency().to_raw(),
+            timestamp_s60: 0, // Placeholder
+        },
     })
 }

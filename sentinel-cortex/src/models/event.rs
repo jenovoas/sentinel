@@ -1,5 +1,6 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use crate::math::s60::S60;
 
 /// Evento normalizado de cualquier fuente
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -50,11 +51,10 @@ pub enum EventType {
     SlowResponse,
 }
 
-/// Patrón de ataque detectado
 #[derive(Debug, Clone, Serialize)]
 pub struct DetectedPattern {
     pub name: String,
-    pub confidence: f32,  // 0.0 - 1.0
+    pub confidence: S60,  // Protocolo YATRA (S60)
     pub severity: Severity,
     pub events: Vec<Event>,
     pub recommended_action: String,

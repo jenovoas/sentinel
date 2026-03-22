@@ -19,7 +19,8 @@ pub enum Intent {
 #[derive(Serialize)]
 struct GeminiRequest {
     contents: Vec<Content>,
-    generationConfig: GenerationConfig,
+    #[serde(rename = "generationConfig")]
+    generation_config: GenerationConfig,
 }
 
 #[derive(Serialize)]

@@ -287,6 +287,8 @@ services:
       - N8N_HOST=n8n.pinguinoseguro.cl
       - N8N_PROTOCOL=https
       - WEBHOOK_URL=https://n8n.pinguinoseguro.cl/
+      - N8N_EDITOR_BASE_URL=https://n8n.pinguinoseguro.cl/
+      - N8N_SECURE_COOKIE=true
       - GENERIC_TIMEZONE=America/Santiago
       - TZ=America/Santiago
       # # --- Configuración SMTP (Fase 2) - Comentado temporalmente para depuración ---

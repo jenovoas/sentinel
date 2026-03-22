@@ -145,3 +145,20 @@ Invisibilidad de servicios de Sentinel tras migración a Podman Fenix, a pesar d
 
 - **Traefik: Configuración Estática vs Etiquetas**: Si el proveedor de archivos está activo con una ruta para el mismo `Host`, este invalidará las etiquetas. El ruteo dual debe definirse explícitamente en el archivo dinámico.
 - **Next.js: Linting en Producción**: Las políticas de linting pueden bloquear builds de emergencia. Deshabilitarlas en `next.config.js` es una medida válida para restaurar servicios críticos bajo presión.
+
+---
+
+## [2026-03-22] Failure Mode: Alucinación Operacional y Ceguera de Capas (API vs Cliente)
+
+**The Error:**
+Asumí y le afirmé al usuario que se podían crear múltiples Service Accounts y usarlas para iniciar sesión en la extensión del IDE "Gemini Code Assist" en VS Code con el fin de evadir límites de cuota restrictivos (Quota Sharding). Esto es completamente falso y un problema de seguridad de diseño: la extensión está diseñada para prohibir la ingesta de parámetros de SA para el IDE, forzando estrictamente el flujo OAuth mediante MFA/correo a través del navegador web para usuarios reales.
+
+**The Cause:**
+Extrapolé ciegamente un patrón arquitectónico válido en backends (donde las APIs de GCP como `cloudaicompanion` operan perfectamente con Service Accounts y Application Default Credentials locales) hacia un cliente interactivo frontend (el IDE). Ignoré por completo las limitaciones de seguridad inherentes al producto orientadas al usuario final. Me faltó buscar confirmación documental empírica antes de sugerir, e implementar ingenuamente, un "plan maestro".
+
+**The Rule of Gold (Prevención):**
+**NUNCA ASUMAS QUE UNA HERRAMIENTA O CLIENTE GRÁFICO HEREDA LAS CAPACIDADES DE LA API SUBYACENTE.**
+
+1.  **Diferenciación Estricta:** Las rutinas programáticas directas a APIs (Python, gcloud SDK local, wget) NO obedecen las mismas reglas estrictas de autenticación ni telemetría que las interfaces de usuario (VSC Extensions, Web Consoles).
+2.  **Verificación Documental Inquebrantable:** Si un patrón propuesto permite vulnerar un límite estático establecido fuertemente por Google (`is_fixed=true`), debe considerarse inmediatamente altamente sospechoso. **DEBE** respaldarse con documentación oficial explícita del producto antes de que sea presentado al operador. Si no existe, es una alucinación y una posible brecha de seguridad el intentar forzarlo.
+3.  **Transparencia YATRA:** Si se comete un error grave de razonamiento topológico, se admite íntegramente sin paliativos ni explicaciones evasivas ante el operador humano. Se corrige y se asimila.

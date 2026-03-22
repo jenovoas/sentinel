@@ -676,70 +676,21 @@ Cuando limpies código contaminado, documenta:
 
 ---
 
-## CONVENCIONES DE NOMENCLATURA Y PROYECTOS LEGACY 🏷️
+## NOMENCLATURA DEL PROYECTO Y ARQUITECTURA DEL NÚCLEO 🏷️
 
-### Proyectos Contaminados (NO USAR)
+### Nomenclatura Oficial
 
-Los siguientes nombres corresponden a **proyectos legacy contaminados** que deben ser reemplazados:
+- **Nombre del Proyecto:** `Sentinel`. Este es el nombre global y canónico del proyecto.
+- **Componente Interno Principal:** `ME-60OS`. Este término se refiere al núcleo del sistema operativo de base-60, no al proyecto en su totalidad.
+- **Términos Obsoletos:** Nombres como `YATRA`, `Sovereign` y otros de origen mitológico son considerados legacy. Evita su uso en nuevo código o documentación y prioriza una terminología técnica y clara.
 
-**❌ PROHIBIDO USAR:**
+### Arquitectura del Núcleo Matemático (Python-Rust Bridge)
 
-- `Sentinel` (proyecto contaminado)
-- `YATRA` (proyecto contaminado)
-- `Sentinel AI`
-- `Sentinel Cortex`
-- `YATRA-S60`
-- `Sentinel Sovereign`
-- Cualquier referencia a "Sovereign" en contexto de nombres de proyecto
-- **Nombres Mitológicos**: Queda estrictamente prohibido el uso de nombres mitológicos para componentes, funciones o variables (ej. Gaia, Chronos, etc.). Solo se permite terminología técnica exacta.
-
-### Nomenclatura Correcta (ME-60OS)
-
-**✅ USAR SIEMPRE:**
-
-- `ME-60OS` (nombre del proyecto)
-- `ME-60OS S60` (sistema de aritmética)
-- `ME-60OS Development Team`
-- `ME-60OS Research Lab`
-- `Sexagesimal Field` o `$\mathbb{S}_{60}$` (campo matemático)
-- `Base-60` o `Sexagesimal` (sistema numérico)
-
-### Regla de Reemplazo Automático
-
-Cuando encuentres documentación o código con nombres legacy:
-
-| Legacy (Contaminado)              | Reemplazo (Limpio)         |
-| --------------------------------- | -------------------------- |
-| `Sentinel AI`                     | `ME-60OS Development Team` |
-| `Sentinel Cortex`                 | `ME-60OS`                  |
-| `YATRA-S60`                       | `ME-60OS S60`              |
-| `Sentinel Sovereign Research Lab` | `ME-60OS Research Lab`     |
-| `Sovereign Sexagesimal Field`     | `Sexagesimal Field`        |
-| `yatra_core`                      | `s60_fixedpoint`           |
-| `yatra_math`                      | `s60_math`                 |
-
-### Protocolo de Limpieza
-
-1. **DETENER** - No integrar código/documentación con nombres legacy
-2. **REPORTAR** - Listar todas las ocurrencias de nombres contaminados
-3. **REEMPLAZAR** - Usar tabla de reemplazo automático
-4. **VERIFICAR** - Confirmar que no quedan referencias legacy
-
-### Ejemplo de Limpieza
-
-**Antes (Contaminado)**:
-
-```python
-from quantum.s60_fixedpoint import S60
-# Sentinel Cortex implementation
-```
-
-**Después (Limpio)**:
-
-```python
-from quantum.s60_fixedpoint import S60
-# ME-60OS implementation
-```
+Es de vital importancia entender la siguiente arquitectura para no introducir errores:
+- La implementación **canónica y única** de la aritmética sexagesimal (`S60`) reside en el "crate" de Rust `me60os_core`, que se compila en el binario `me60os_core.so`.
+- El archivo `quantum/yatra_core.py` **NO es la implementación legacy**. Es un **puente de compatibilidad (wrapper)** que importa la lógica de Rust (`from me60os_core import SPA as S60`) y la expone a otros scripts de Python que aún no han sido migrados.
+- **NO MODIFIQUES `yatra_core.py`** para cambiar la lógica matemática. Cualquier cambio debe hacerse en el código fuente de Rust (señalado como `me-60os/src/spa.rs` en la cabecera del archivo).
+- El objetivo del proyecto es migrar toda la lógica crítica a Rust. Prioriza siempre el uso de la implementación de Rust cuando sea posible.
 
 ---
 

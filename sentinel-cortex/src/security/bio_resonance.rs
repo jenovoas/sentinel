@@ -7,6 +7,7 @@ use crate::math::harmonic_logic::{HarmonicProcessor, HarmonicState, LogicState};
 use me60os_core::spa::SPA as S60;
 
 const PULSE_PERIOD_SEC: i64 = 17;
+#[allow(dead_code)]
 const CYCLE_DURATION_SEC: i64 = 68;
 
 pub struct ResonanceEngine {
@@ -55,10 +56,12 @@ impl ResonanceEngine {
         (is_valid, verdict)
     }
 
+    #[allow(dead_code)]
     pub fn get_coherence_raw(&self) -> i64 {
         self.current_coherence.to_raw()
     }
 
+    #[allow(dead_code)]
     pub fn apply_quantum_correction(&self, system_time_sec: u64) -> S60 {
         let remainder = system_time_sec % CYCLE_DURATION_SEC as u64;
         let remainder_s60 = S60::from_int(remainder as i64);

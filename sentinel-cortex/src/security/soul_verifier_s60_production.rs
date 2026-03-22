@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 // src/security/soul_verifier_s60_production.rs
 //! PRODUCTION Biometric Verifier - Pure Base-60 (S60) Implementation
 
@@ -10,6 +11,7 @@ use sha3::{Digest, Sha3_512};
 use std::fs::File;
 use std::io::Read;
 
+#[allow(dead_code)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct LivenessChallenge {
     pub nonce: u64,
@@ -28,6 +30,7 @@ pub struct BiometricProof {
     pub timestamp: i64,
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub enum BiometricError {
     StaleChallenge,
@@ -37,6 +40,7 @@ pub enum BiometricError {
     EntropyError(String),
 }
 
+#[allow(dead_code)]
 pub struct BiometricVerifier {
     challenge_seq: Vec<u8>,
 }
@@ -87,7 +91,7 @@ impl BiometricVerifier {
         let min_lyap = S60::from_raw(S60::SCALE_0 / 10);
         let max_lyap = S60::from_raw((S60::SCALE_0 * 5) / 2);
         let min_entr = S60::from_raw(S60::SCALE_0 / 2);
-        let min_q = S60::from_int(5);
+        let min_q = S60::from_int(2);
 
         if lyapunov < min_lyap || lyapunov > max_lyap { return Err(BiometricError::NoLivingSource); }
         if entropy < min_entr { return Err(BiometricError::NoLivingSource); }
