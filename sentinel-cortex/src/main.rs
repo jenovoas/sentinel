@@ -68,11 +68,17 @@ async fn main() {
             sleep(Duration::from_secs(1)).await;
             tick += 1;
 
+            // Decay entropy every second
+            {
+                let mut res = resonance_task.lock().unwrap();
+                res.tick_entropy();
+            }
+
             if tick % 17 == 0 {
                 let mut res = resonance_task.lock().unwrap();
                 let (valid, coherence) = res.verify_pulse(tick);
                 tracing::info!(
-                    "PULSE (T={}): Valid={}, Coherence={:?}",
+                    "PULSE CHECK (T={}): Valid={}, Coherence={:?}",
                     tick,
                     valid,
                     coherence
@@ -88,13 +94,40 @@ async fn main() {
         }
     });
 
-    // 2. Setup Axum Router
+    // 2. Start Redis Pulse Subscriber (Remote Bio-Sync)
+    let redis_resonance = resonance.clone();
+    tokio::spawn(async move {
+        let redis_url = std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://127.0.0.1:6379".to_string());
+        match redis::Client::open(redis_url) {
+            Ok(client) => {
+                match client.get_async_pubsub().await {
+                    Ok(mut pubsub) => {
+                        let _ = pubsub.subscribe("sentinel:bio_pulse").await;
+                        tracing::info!("📡 Remote Bio-Sync Active: Subscribed to 'sentinel:bio_pulse'");
+                        
+                        let mut stream = pubsub.on_message();
+                        use futures_util::StreamExt; // We might need to add this
+                        
+                        while let Some(msg) = stream.next().await {
+                            let mut res = redis_resonance.lock().unwrap();
+                            res.inject_pulse(0);
+                            tracing::info!("💖 Bio-Pulse received from SENTINEL_MEDIA");
+                        }
+                    }
+                    Err(e) => tracing::error!("Failed to open Redis PubSub: {}", e),
+                }
+            }
+            Err(e) => tracing::error!("Failed to connect to Redis: {}", e),
+        }
+    });
+
+    // 3. Setup Axum Router
     let app = Router::new()
         .route("/health", get(health_handler))
         .layer(tower_http::trace::TraceLayer::new_for_http())
         .with_state(state);
 
-    // 3. Start Server
+    // 4. Start Server
     let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
     tracing::info!("Listening on {}", addr);
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();

@@ -79,34 +79,42 @@ impl SemanticRouter {
         }
 
         let system_prompt = r#"
-        You are the Routing Cortex for the Sentinel System.
+        You are the Routing Cortex for the Sentinel System (v8.0).
+        Your mission is to classify user intent with maximum precision and resonant alignment.
         
         RULES:
-        1. SUPPORT SPANISH AND ENGLISH INPUTS.
-        2. Classify greetings ("Hola", "Hello") as QUERY_ORACLE.
+        1. FULL MULTILINGUAL SUPPORT: Respond in the language of the user (Spanish/English).
+        2. RESONANCE AWARENESS: Classify greetings as QUERY_ORACLE.
+        3. ADIABATIC THINKING: Before outputting JSON, perform a mental validation of safety.
         
         CATEGORIES:
-        1. QUERY_ORACLE: Philosophical questions, teaching, analysis, GREETINGS, or conversational inputs.
-           Examples: "Explain Yatra", "Analyze matrix", "Hola", "Buenos días".
-        2. SYSTEM_ACTION: explicit commands to change system state.
-           Examples: "Start dashboard", "Run health check", "Activar escáner".
-        3. SAFETY_CHECK: rules/safety questions.
-           Examples: "Can I delete X?", "¿Puedo borrar esto?".
-        4. UNKNOWN: gibberish or non-text inputs.
+        1. QUERY_ORACLE: Philosophical, teaching, analysis, greetings. 
+           Example: "Explícame Yatra", "Hola", "What is the matrix?".
+        2. SYSTEM_ACTION: Explicit commands to change state or perform tasks.
+           Example: "Scan vault", "Research quantum gravity", "Inicia el dashboard".
+        3. SAFETY_CHECK: Inquiries about rules, permissions, or potential deletions.
+           Example: "¿Puedo borrar esto?", "Is it safe to run X?".
+        4. UNKNOWN: Non-text, gibberish.
 
-        Output ONLY JSON: {"category": "CATEGORY_NAME", "reason": "Short explanation"}
+        OUTPUT FORMAT (STRICT JSON ONLY):
+        {
+          "category": "CATEGORY_NAME",
+          "reason": "Short explanation of your choice",
+          "thought": "Internal reasoning step (Plan-and-Solve approach)",
+          "command": "CMD: [bash command]" // REQUIRED IF SYSTEM_ACTION
+        }
         
-        CRITICAL FOR SYSTEM_ACTION:
-        If the intent is SYSTEM_ACTION, the 'reason' field MUST contain the exact bash command to execute, prefixed with 'CMD: '.
+        DEEP RESEARCH MAPPINGS (Critical):
+        - If the user asks to "Research [topic]" or "Investiga [tema]":
+          CMD: sentinel research --prompt "[topic]" --deep --intuicion
+        - If the user asks to "Produce [content]" or "Producción":
+          CMD: sentinel factory --shorts --longform
+        - If the user asks for a codebase refactor/fix:
+          CMD: sentinel research --prompt "Refactor this code" --deep
         
-        WORKFLOW MAPPINGS (Return pure commands):
-        - "Research [topic]" -> "CMD: research --prompt '[topic]'"
-        - "Produce [algo]" -> "CMD: produce [algo]"
-        - "Certify [file]" -> "CMD: certify [file]" (Will be mapped to Rust)
-        
-        GENERIC EXAMPLES:
-        Example: User: "List files" -> Reason: "CMD: ls -la"
-        Example: User: "Check disk" -> Reason: "CMD: df -h"
+        GENERIC COMMANDS:
+        - "List files" -> CMD: ls -la
+        - "Check health" -> CMD: sentinel status --rust
         "#;
 
         let prompt = format!("USER INPUT: {}", query);
@@ -158,7 +166,16 @@ impl SemanticRouter {
 
         if let Ok(val) = serde_json::from_str::<serde_json::Value>(clean_text) {
              let cat = val["category"].as_str().unwrap_or("UNKNOWN");
-             let reason = val["reason"].as_str().unwrap_or("No reason").to_string();
+             
+             // If SYSTEM_ACTION, prioritize the 'command' field if it exists
+             let output = if cat == "SYSTEM_ACTION" {
+                 val["command"].as_str()
+                     .or_else(|| val["reason"].as_str())
+                     .unwrap_or("CMD: unknown")
+                     .to_string()
+             } else {
+                 val["reason"].as_str().unwrap_or("No reason").to_string()
+             };
 
              let intent = match cat {
                  "QUERY_ORACLE" => Intent::Oracle,
@@ -166,7 +183,7 @@ impl SemanticRouter {
                  "SAFETY_CHECK" => Intent::SafetyCheck,
                  _ => Intent::Unknown,
              };
-             (intent, reason)
+             (intent, output)
         } else {
             (Intent::Unknown, "Invalid JSON from AI".to_string())
         }

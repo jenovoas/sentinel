@@ -14,6 +14,7 @@ pub struct ResonanceEngine {
     npu: HarmonicProcessor,
     last_pulse_timestamp: u64,
     current_coherence: S60,
+    entropy_rate: S60,
 }
 
 impl ResonanceEngine {
@@ -21,61 +22,65 @@ impl ResonanceEngine {
         ResonanceEngine {
             npu: HarmonicProcessor::new(),
             last_pulse_timestamp: 0,
-            current_coherence: S60::one(),
+            current_coherence: S60::zero(), // Start at zero, require "Charging"
+            entropy_rate: S60::from_raw(S60::SCALE_0 / 100), // 1% decay per tick
         }
     }
 
-    pub fn verify_pulse(&mut self, timestamp: u64) -> (bool, LogicState) {
-        if self.last_pulse_timestamp == 0 {
-            self.last_pulse_timestamp = timestamp;
+    /// Explicitly inject a biological pulse (Human activity)
+    pub fn inject_pulse(&mut self, _timestamp: u64) {
+        let bonus = S60::from_raw(S60::SCALE_0 / 10); // +10% coherence per pulse
+        let new_coherence = self.current_coherence + bonus;
+        
+        // Clamp to 1.0
+        if new_coherence > S60::one() {
             self.current_coherence = S60::one();
-            return (true, LogicState::Unison);
+        } else {
+            self.current_coherence = new_coherence;
         }
+        
+        tracing::debug!("PULSE INJECTED. New Coherence: {:?}", self.current_coherence);
+    }
 
-        let interval = timestamp.saturating_sub(self.last_pulse_timestamp);
-        self.last_pulse_timestamp = timestamp;
+    /// Decay coherence (Entropy)
+    pub fn tick_entropy(&mut self) {
+        if self.current_coherence > S60::zero() {
+            let next = self.current_coherence - self.entropy_rate;
+            if next < S60::zero() {
+                self.current_coherence = S60::zero();
+            } else {
+                self.current_coherence = next;
+            }
+        }
+    }
 
-        let interval_s60 = S60::from_int(interval as i64);
-        let period_s60 = S60::from_int(PULSE_PERIOD_SEC);
+    /// Check if the system is "Coherent" enough to execute (Portal check)
+    pub fn is_coherent(&self) -> bool {
+        // Portal opens at 90% (S60: 54/60)
+        let threshold = S60::new(0, 54, 0, 0, 0); 
+        self.current_coherence >= threshold
+    }
 
-        let ratio_s60 = interval_s60.div_safe(period_s60).unwrap_or(S60::zero());
-        self.current_coherence = ratio_s60;
-
+    pub fn verify_pulse(&mut self, timestamp: u64) -> (bool, LogicState) {
+        // Base verification logic using HarmonicProcessor
         let input_state = HarmonicState {
-            ratio: ratio_s60,
+            ratio: self.current_coherence,
             phase: S60::zero(),
             energy: 100,
         };
 
         let verdict = self.npu.process_signal(input_state);
         let is_valid = match verdict {
-            LogicState::Unison | LogicState::True | LogicState::Reference => true,
+            LogicState::Unison | LogicState::True | LogicState::Reference => self.is_coherent(),
             _ => false,
         };
 
+        self.last_pulse_timestamp = timestamp;
         (is_valid, verdict)
     }
 
-    #[allow(dead_code)]
     pub fn get_coherence_raw(&self) -> i64 {
         self.current_coherence.to_raw()
-    }
-
-    #[allow(dead_code)]
-    pub fn apply_quantum_correction(&self, system_time_sec: u64) -> S60 {
-        let remainder = system_time_sec % CYCLE_DURATION_SEC as u64;
-        let remainder_s60 = S60::from_int(remainder as i64);
-        let duration_s60 = S60::from_int(CYCLE_DURATION_SEC);
-
-        let cycle_phase = remainder_s60.div_safe(duration_s60).unwrap_or(S60::zero());
-
-        let threshold_high = S60::from_raw(99 * S60::SCALE_0 / 100);
-        let threshold_low = S60::from_raw(S60::SCALE_0 / 100);
-
-        if cycle_phase > threshold_high || cycle_phase < threshold_low {
-            return S60::zero();
-        }
-        cycle_phase
     }
 }
 

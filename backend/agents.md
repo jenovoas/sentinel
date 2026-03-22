@@ -5,10 +5,12 @@
 ## 1. 🛡️ DIRECTIVAS CRÍTICAS
 
 ### 🎭 AXIOMA II: HONESTIDAD RADICAL (Logs)
+
 - **LOGS:** Los logs deben ser reales. No ocultes errores 500.
 - **ESTADO:** Reporta el estado de salud real de los contenedores (`healthcheck.sh`).
 
 ### ⚡ AXIOMA III: RUST CORE DELEGATION
+
 - **ROL DE PYTHON:** Python es SOLO para orquestación (mover datos, APIs, coordinar).
 - **CÁLCULO PESADO:** Si tienes que calcular algo complejo, llama al `sentinel_core` (Rust) o usa `quantum` libs. NO lo implementes en Python puro si es intensivo.
 
