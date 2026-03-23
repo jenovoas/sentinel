@@ -1,14 +1,14 @@
 # Guardian-Alpha eBPF LSM Build System
 
 CLANG ?= clang
-LLVM_STRIP ?= llvm-strip-19
+LLVM_STRIP ?= llvm-strip
 BPFTOOL ?= bpftool
 
 ARCH := $(shell uname -m | sed 's/x86_64/x86/' | sed 's/aarch64/arm64/')
 INCLUDES := -I/usr/include/$(ARCH)-linux-gnu
 
-TARGET := guardian_alpha_lsm
-OBJECT := $(TARGET).o
+TARGET := guardian_cognitive
+OBJECT := $(TARGET).bpf.o
 
 .PHONY: all clean load unload test
 

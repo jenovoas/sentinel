@@ -16,6 +16,7 @@ mod math;
 mod quantum;
 mod buffer_system;
 mod memory;
+pub mod concentrator;
 
 use lazy_static::lazy_static;
 use quantum::BioResonator;

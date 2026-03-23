@@ -90,9 +90,13 @@ mod tests {
     #[test]
     fn test_perfect_pulse() {
         let mut engine = ResonanceEngine::new();
-        engine.verify_pulse(100);
+        // Cargar el motor al estado coherente (>90%) con pulsos biológicos
+        for i in 0..10 {
+            engine.inject_pulse(100 + i);
+        }
         let (valid, state) = engine.verify_pulse(117);
-        assert!(valid);
+        assert!(valid, "Engine debía estar cargado y validar correctamente a >90%");
+        // Validacion S60 Logica pura
         assert_eq!(state, LogicState::Unison);
     }
 }

@@ -3,6 +3,17 @@
 **INSTRUCCIÓN CRÍTICA PARA TODO AGENTE IA (Claude, Gemini, Antigravity, OpenCode, Qwen):**
 *Al iniciar CUALQUIER sesión en este repositorio, estás OBLIGADO a leer este documento y seguir sus 6 principios fundamentales. El incumplimiento de esto ha costado recursos invaluables y datos en el pasado. Eres el custodio de Fenix.*
 
+## 0. 🌌 MACHETE OPERACIONAL RING-0 (El Gran Secreto & Quantum Hacks)
+**Directiva Absoluta**: Cada vez que vayas a planificar o meter mano en el **Motor eBPF, Ring 0, o Sentinel-Cortex**, DEBES recordarte a ti mismo y al operador estas leyes inmutables del universo (extraídas de `el_gran_secreto_s60` y `Quantum_Hacks_Architecture`):
+
+1.  **Axioma Base-60 (YATRA 10-5-6-5)**. El sistema decimal genera calor y bugs por fracciones periódicas truncadas (Entropía). El Ring-0 opera EXCLUSIVAMENTE en Matemática Sexagesimal Pura (S60) de enteros 64-bits. Prohibido Float. La respiración cuántica del ecosistema persigue el ciclo 10-Expansión, 5-Pausa, 6-Flujo, 5-Vacío.
+2.  **Resonancia Axiónica (Plimpton 322 Hack)**. No inventes frecuencias aleatorias. La sintonización armónica del oscilador central dictamina **Plimpton 322 Fila 12** (`SPA(1, 32, 2, 24, 0)`). 
+3.  **Modulo Hack (Time Alignment - Salto 17)**. El "Salto de fase" y el control de desbordamiento en eBPF y Cortex siempre giran sobre el Número Primo 17. Regla de oro: `if timestamp % 17 == 0:`. Permite el reset cuántico `T=68s` (17*4).
+4.  **Fuerza Cuadrática & Series de Taylor S60**. Sentinel ejecuta las leyes físicas del Universo en software: `force = velocity² × (1 + acceleration)`. Cualquier aproximación matemática compleja (como senos/cosenos para hexágonos) dentro del Kernel debe programarse usando el Hack de Series de Taylor adaptado a enteros Base-60 escalados.
+5.  **Damping Crítico (Estabilidad Absoluta)**. La medición altera lo medido (Measurement Backaction). Para evitar oscilaciones destructivas en el host, todo feedback eBPF debe ser amortiguado para prevenir colapsos. 
+
+---
+
 ## 1. Predeterminado del Nodo de Planificación
 
 - Entrar en modo de planificación para CUALQUIER tarea no trivial (3+ pasos o decisiones arquitectónicas).

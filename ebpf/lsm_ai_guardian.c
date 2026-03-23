@@ -2,12 +2,15 @@
 // ME-60OS AI Guardian v2.0 - Ring Buffer Integrated
 // Ring 0 -> Cortex Telemetry Channel
 
-#include <linux/bpf.h>
-#include <linux/fs.h>
-#include <linux/path.h>
+#include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
+#include <bpf/bpf_core_read.h>
 #include "cortex_events.h"
+
+#ifndef EPERM
+#define EPERM 1
+#endif
 
 #define PATH_MAX 256
 #define ALLOW_AI 1
@@ -66,8 +69,8 @@ static __always_inline void calculate_s60_entropy(struct s60_entropy_t *e, __u64
 }
 
 // Helper para enviar evento
-static __always_inline void emit_cortex_event(void *ctx, __u32 type, char *data, __u32 pid) {
-    struct cortex_event_t *event;
+static __always_inline void emit_cortex_event(void *ctx, __u32 type, __u8 severity, __u32 pid) {
+    struct cortex_event *event;
     
     // Reservar espacio en Ring Buffer
     event = bpf_ringbuf_reserve(&cortex_ringbuf, sizeof(*event), 0);
@@ -75,18 +78,20 @@ static __always_inline void emit_cortex_event(void *ctx, __u32 type, char *data,
         return; // Ring buffer lleno o error
     }
     
-    // Poblar datos
-    event->timestamp = bpf_ktime_get_ns();
+    __u64 ts = bpf_ktime_get_ns();
+    event->timestamp_ns = ts;
     event->pid = pid;
-    event->type = type;
-    event->cpu_id = bpf_get_smp_processor_id();
-    
-    // Copiar payload (seguro)
-    __builtin_memcpy(event->payload, data, sizeof(event->payload));
+    event->event_type = type;
+    event->severity = severity;
     
     // Calcular Entropía Local
-    calculate_s60_entropy(&event->entropy, event->timestamp);
+    struct s60_entropy_t entropy_local;
+    calculate_s60_entropy(&entropy_local, ts);
+    event->entropy_signal = entropy_local.raw_value;
     
+    // Limpiar padding
+    __builtin_memset(event->reserved, 0, sizeof(event->reserved));
+
     // Enviar a Cortex
     bpf_ringbuf_submit(event, 0);
 }
@@ -111,16 +116,14 @@ int BPF_PROG(ai_guardian_open, struct file *file)
          __u64 *policy = bpf_map_lookup_elem(&ai_whitelist, path);
          if (!policy || *policy != ALLOW_AI) {
              // Bloqueo y Evento de Seguridad
-             emit_cortex_event(file, EVENT_TYPE_OPEN, path, pid);
+             emit_cortex_event(file, EVENT_FILE_BLOCKED, SEVERITY_HIGH, pid);
              return -EPERM;
          }
     }
     
-    // Si NO es bloqueo, enviamos evento muestreado (ej: cada N eventos) 
-    // para alimentar la red neuronal del Cortex con "normalidad".
-    // Por simplicidad, enviamos todo para AI agents.
+    // Si NO es bloqueo, enviamos evento muestreado
     if (is_ai) {
-        emit_cortex_event(file, EVENT_TYPE_OPEN, path, pid);
+        emit_cortex_event(file, EVENT_FILE_ALLOWED, SEVERITY_LOW, pid);
     }
     
     return 0;
@@ -137,13 +140,14 @@ int BPF_PROG(ai_guardian_exec, struct linux_binprm *bprm)
     if (ret < 0) return 0;
     
     // Siempre reportar ejecuciones al Cortex (alta prioridad)
-    emit_cortex_event(bprm, EVENT_TYPE_EXEC, path, pid);
+    emit_cortex_event(bprm, EVENT_EXEC_ALLOWED, SEVERITY_MEDIUM, pid);
     
     // Lógica de Bloqueo para AI Agents
     __u8 *is_ai = bpf_map_lookup_elem(&ai_agents, &pid);
     if (is_ai && *is_ai == 1) {
          __u64 *policy = bpf_map_lookup_elem(&ai_whitelist, path);
          if (!policy || *policy != ALLOW_AI) {
+             emit_cortex_event(bprm, EVENT_EXEC_BLOCKED, SEVERITY_CRITICAL, pid);
              return -EPERM;
          }
     }

@@ -1,0 +1,51 @@
+openapi: 3.0.3
+info:
+  title: Sentinel Cortex API (Hub Fénix)
+  description: Capa de exposición exterior para el enjambre cognitivo de Sentinel y telemetría de ring-0 operando bajo normativa YATRA.
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:8000
+    description: Cortex Local API
+paths:
+  /health:
+    get:
+      summary: Health Check y Status de Resonancia
+      operationId: getHealth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                  version:
+                    type: string
+                    example: "0.1.0"
+                  metrics:
+                    $ref: '#/components/schemas/MetricsSnapshot'
+  /api/v1/telemetry:
+    get:
+      summary: WebSocket Event Stream (Telemetría eBPF)
+      description: Conexión Upgrade a WebSocket para el streaming nativo a 5Hz de la telemetría S60 (Latido del Cortex). Únicamente clientes autorizados (Tauri) deben consumir este canal.
+      operationId: streamTelemetry
+      responses:
+        '101':
+          description: Switching Protocols to WebSocket.
+components:
+  schemas:
+    MetricsSnapshot:
+      type: object
+      properties:
+        coherence:
+          type: integer
+          description: Raw S60 pulse value from biological resonance engine.
+        efficiency:
+          type: integer
+          description: Quantum Scheduler mathematical operational density.
+        timestamp_s60:
+          type: integer
+          description: Current base-60 temporal snapshot representation.

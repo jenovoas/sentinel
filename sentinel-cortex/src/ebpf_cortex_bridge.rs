@@ -8,37 +8,25 @@ use tokio::sync::mpsc;
 
 // Mirroring C structs from cortex_events.h
 // #[repr(C)] ensures C-compatible memory layout
-#[repr(C)]
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub struct S60Entropy {
-    pub raw_value: u64,
-    pub degree: u8,
-    pub minute: u8,
-    pub second: u8,
-    pub tertia: u8,
-    pub stability: u8,
-}
-
-#[allow(dead_code)]
-#[repr(C)]
+// Matching the 32-byte struct cortex_event from cortex_events.h
+#[repr(C, packed)]
 #[derive(Debug, Clone, Copy)]
 pub struct CortexEventRaw {
-    pub timestamp: u64,
+    pub timestamp_ns: u64,
+    pub event_type: u32,
     pub pid: u32,
-    pub type_: u32,
-    pub entropy: S60Entropy,
-    pub payload: [u8; 64],
-    pub cpu_id: u32,
+    pub entropy_signal: u64,
+    pub severity: u8,
+    pub _reserved: [u8; 7],
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CortexEvent {
-    pub timestamp: u64,
+    pub timestamp_ns: u64,
     pub pid: u32,
     pub event_type: String,
-    pub entropy: S60Entropy,
-    pub payload: String,
-    pub cpu_id: u32,
+    pub entropy_s60_raw: u64,
+    pub severity: u8,
 }
 
 #[allow(dead_code)]
@@ -69,7 +57,6 @@ impl EbpfBridge {
         self
     }
 
-    // Function to parse raw bytes from ringbuf into CortexEvent
     pub fn parse_event(data: &[u8]) -> Option<CortexEvent> {
         if data.len() < std::mem::size_of::<CortexEventRaw>() {
             return None;
@@ -78,26 +65,25 @@ impl EbpfBridge {
         let raw: CortexEventRaw =
             unsafe { std::ptr::read_unaligned(data.as_ptr() as *const CortexEventRaw) };
 
-        // Convert C string in payload to Rust String
-        let payload_str = String::from_utf8_lossy(&raw.payload)
-            .trim_matches(char::from(0))
-            .to_string();
-
-        let event_type = match raw.type_ {
-            1 => "EXEC".to_string(),
-            2 => "OPEN".to_string(),
-            3 => "NET".to_string(),
-            4 => "BIO".to_string(),
+        let event_type = match raw.event_type {
+            1 => "FILE_BLOCKED".to_string(), // EVENT_FILE_BLOCKED
+            2 => "EXEC_BLOCKED".to_string(),
+            3 => "FILE_ALLOWED".to_string(),
+            4 => "EXEC_ALLOWED".to_string(),
+            5 => "NETWORK_BURST".to_string(),
+            6 => "NETWORK_NORMAL".to_string(),
+            7 => "SYSTEM_METRIC".to_string(),
+            8 => "BIO_PULSE".to_string(),
+            9 => "QHC_RESET".to_string(),
             _ => "UNKNOWN".to_string(),
         };
 
         Some(CortexEvent {
-            timestamp: raw.timestamp,
+            timestamp_ns: raw.timestamp_ns,
             pid: raw.pid,
             event_type,
-            entropy: raw.entropy,
-            payload: payload_str,
-            cpu_id: raw.cpu_id,
+            entropy_s60_raw: raw.entropy_signal,
+            severity: raw.severity,
         })
     }
 
@@ -136,7 +122,7 @@ impl EbpfBridge {
             builder.add(&map, move |data: &[u8]| -> i32 {
                 if let Some(event) = EbpfBridge::parse_event(data) {
                     if let Some(ref resonant) = buffer {
-                        let entropy = S60::from_raw(event.entropy.raw_value as i64);
+                        let entropy = S60::from_raw(event.entropy_s60_raw as i64);
                         resonant.push(entropy);
                     }
 
