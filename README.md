@@ -2,13 +2,15 @@
 
 **Low-level systems framework implementing base-60 arithmetic at the kernel level, eliminating IEEE 754 rounding errors from the mathematical foundation.**
 
-[![License: Apache 2.0](https.img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
 [![Rust](https://img.shields.io/badge/rust-%23000000.svg?logo=rust)](./services/neural-guard/)
 [![eBPF](https://img.shields.io/badge/eBPF-kernel--level-orange)](./ebpf/)
 [![Fenix Status](https://img.shields.io/badge/Fenix_Node-ACTIVE-brightgreen?style=for-the-badge&logo=linux)](https://pinguinoseguro.cl)
 
 > [!NOTE]
 > **Nodo Fenix Operativo**: Sentinel ha transicionado a una arquitectura de **Nodo Único (Fenix)** bajo Podman Rootless, consolidando la orquestación Ring 0 y el monitoreo resiliente.
+
+---
 
 ---
 

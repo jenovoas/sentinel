@@ -22,6 +22,7 @@
 ## 🚀 Inicio Rápido
 
 ### 1. Acceder a n8n
+
 ```
 http://localhost:5678
 Usuario: admin
@@ -31,7 +32,8 @@ Password: REDACTED_PASSWORD
 ### 2. Configurar Slack Webhook
 
 **Crear webhook**:
-1. Ve a https://api.slack.com/apps
+
+1. Ve a <https://api.slack.com/apps>
 2. Create New App → From scratch
 3. Nombre: "Sentinel Bot"
 4. Features → Incoming Webhooks → Activar
@@ -40,6 +42,7 @@ Password: REDACTED_PASSWORD
 7. Copia la URL
 
 **Configurar en n8n**:
+
 ```bash
 # Opción 1: En podman-compose.yml
 n8n:
@@ -53,6 +56,7 @@ podman-compose restart n8n
 ### 3. Importar Workflows
 
 Para cada workflow:
+
 1. En n8n: **New** → **Workflow**
 2. Menú (⋮) → **Import from File**
 3. Selecciona el archivo JSON
@@ -63,15 +67,18 @@ Para cada workflow:
 ## 📊 Detalles de Cada Workflow
 
 ### 1️⃣ Daily SLO Report
+
 **Qué hace**: Envía un reporte diario con estadísticas de las últimas 24 horas
 
 **Incluye**:
+
 - CPU promedio y pico
 - Memoria promedio y pico
 - Cantidad de anomalías detectadas
 - Estado general del sistema
 
 **Ejemplo de mensaje**:
+
 ```
 📊 *Sentinel Daily Report*
 
@@ -93,9 +100,11 @@ Para cada workflow:
 ---
 
 ### 2️⃣ High CPU Alert
+
 **Qué hace**: Monitorea el uso de CPU cada 5 minutos y alerta si supera el 80%
 
 **Incluye**:
+
 - Porcentaje exacto de CPU
 - Uso de memoria actual
 - Timestamp del evento
@@ -106,9 +115,11 @@ Para cada workflow:
 ---
 
 ### 3️⃣ Anomaly Detector
+
 **Qué hace**: Detecta anomalías críticas cada 15 minutos
 
 **Incluye**:
+
 - Lista de hasta 5 anomalías más recientes
 - Tipo de anomalía
 - Hora de detección
@@ -119,15 +130,18 @@ Para cada workflow:
 ---
 
 ### 4️⃣ Database Health Check
+
 **Qué hace**: Verifica la salud de PostgreSQL cada 6 horas
 
 **Incluye**:
+
 - Conexiones activas
 - Cantidad de locks
 - Tamaño de la base de datos
 - Estado del backend
 
 **Indicadores**:
+
 - 🟢 Healthy: locks ≤ 2
 - 🟡 Warning: locks 3-5
 - 🔴 Critical: locks > 5
@@ -135,9 +149,11 @@ Para cada workflow:
 ---
 
 ### 5️⃣ Weekly Summary
+
 **Qué hace**: Genera un resumen ejecutivo semanal cada lunes
 
 **Incluye**:
+
 - Estadísticas de 7 días
 - CPU: promedio, pico, mínimo
 - Memoria: promedio, pico
@@ -145,6 +161,7 @@ Para cada workflow:
 - Evaluación de salud del sistema
 
 **Evaluación**:
+
 - ✅ Excellent: 0 anomalías críticas
 - 🟡 Good: 1-4 anomalías críticas
 - 🔴 Needs Attention: 5+ anomalías críticas
@@ -152,15 +169,18 @@ Para cada workflow:
 ---
 
 ### 6️⃣ Memory Warning Alert
+
 **Qué hace**: Alerta cuando el uso de memoria es alto
 
 **Incluye**:
+
 - Porcentaje de memoria
 - GB usados / GB totales
 - CPU actual
 - Severidad del problema
 
 **Umbrales**:
+
 - 🟡 WARNING: memoria > 85%
 - 🔴 CRITICAL: memoria > 95%
 
@@ -223,7 +243,7 @@ Si no tienes Slack configurado aún:
 
 ## ✅ Checklist de Implementación
 
-- [ ] Acceder a n8n (http://localhost:5678)
+- [ ] Acceder a n8n (<http://localhost:5678>)
 - [ ] Crear Slack webhook
 - [ ] Configurar `SLACK_WEBHOOK_URL`
 - [ ] Importar los 6 workflows
@@ -236,9 +256,9 @@ Si no tienes Slack configurado aún:
 
 ## 📞 Recursos
 
-- **n8n UI**: http://localhost:5678
-- **API Docs**: http://localhost:8000/docs
-- **Grafana**: http://localhost:3001
+- **n8n UI**: <http://localhost:5678>
+- **API Docs**: <http://localhost:8000/docs>
+- **Grafana**: <http://localhost:3001>
 - **Guía Completa**: `/home/jnovoas/sentinel/n8n/WORKFLOWS_GUIDE.md`
 
 ---
