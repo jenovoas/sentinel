@@ -8,6 +8,7 @@
 ## Plan de Implementación Híbrido
 
 ### **Fase 1-4: MinIO (Validación Rápida - 7 días)**
+
 - Setup mesh batman-adv
 - Storage distribuido con MinIO (EC 4+2)
 - Validación convergencia y resiliencia
@@ -16,6 +17,7 @@
 ## Inventario y costos
 
 ### 2.1 Hardware mínimo (4 nodos iniciales)
+
 - **4× PCs viejas** (reutilización, costo $0)
   - CPU: Dual-core+ (Intel/AMD post-2010)
   - RAM: 4GB mínimo (8GB ideal para Ceph)
@@ -25,6 +27,7 @@
 - Cables Ethernet Cat5e/Cat6
 
 **Estimación costo**
+
 - PCs: $0 (reutilización)
 - Switch: ~$20-30 USD
 - Cables: ~$10 USD
@@ -33,6 +36,7 @@
 **Escalado futuro**: 6-8 nodos cuando consigas más PCs estables
 
 ### **Fase 5: Ceph (Full Micelio - 8 días)**
+
 - Migración MinIO → Ceph
 - Auto-reparación nativa (CRUSH)
 - Integración S60 + YHWH modulation

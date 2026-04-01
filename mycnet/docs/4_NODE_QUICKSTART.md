@@ -8,14 +8,16 @@
 
 ## 📋 Hardware Requerido
 
-### Por nodo (x4):
+### Por nodo (x4)
+
 - **CPU**: Dual-core+ (Intel/AMD post-2010)
 - **RAM**: 4GB mínimo (8GB ideal)
 - **Storage**: HDD 500GB+ o SSD 128GB+
 - **Red**: Ethernet Gigabit
 - **OS**: Ubuntu Server 22.04 LTS
 
-### Red:
+### Red
+
 - Switch Gigabit Ethernet (5 puertos mínimo)
 - Cables Ethernet Cat5e/Cat6
 
@@ -33,6 +35,7 @@
 ```
 
 **Características**:
+
 - Cada nodo: 2-3 vecinos
 - Tolerancia: 1 nodo muerto (25%)
 - Rutas múltiples entre cualquier par
@@ -241,17 +244,20 @@ Cuando consigas más PCs:
 
 ## 📝 Troubleshooting
 
-### **Vecinos no aparecen**:
+### **Vecinos no aparecen**
+
 - Verificar firewall: `sudo ufw disable` (temporal)
 - Verificar interfaz física: `ip link show eth0`
 - Revisar logs: `sudo journalctl -u batman-adv`
 
-### **MinIO no inicia**:
+### **MinIO no inicia**
+
 - Verificar puertos: `sudo netstat -tlnp | grep 9000`
 - Revisar logs: `sudo journalctl -u minio -f`
 - Verificar conectividad: `ping n2` desde n1
 
-### **Latencia alta**:
+### **Latencia alta**
+
 - Verificar switch (no usar WiFi)
 - Revisar colas: `tc -s qdisc show dev bat0`
 - Medir baseline: `ping -c 100 10.10.0.12`
