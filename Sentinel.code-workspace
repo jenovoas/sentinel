@@ -4,12 +4,19 @@
       "path": "/home/jnovoas/Desarrollo/sentinel"
     },
     {
-      "name": "OAS-proxy",
-      "type": "proxy",
-      "path": "/home/jnovoas/Desarrollo/sentinel/OAS-proxy"
+      "path": "../sentinel_media"
     },
     {
-      "path": "../obsidian"
+      "path": "../pinguinoseguro_web"
+    },
+    {
+      "path": "../me-60os"
+    },
+    {
+      "path": "../portfolio"
+    },
+    {
+      "path": "../sentinel-cubepath"
     }
   ],
   "settings": {
