@@ -14,6 +14,13 @@
 
 ---
 
+## 0.5 TIER-0 SLA FREEZE (Pinguino Seguro & La Espiguita)
+**Línea Roja Operativa**: `pinguinoseguro.cl` y `laespiguita.cl` están sujetos a contratos de servicio (SLA) con penalización financiera real por caída. 
+- Queda **ESTRICTAMENTE PROHIBIDO** alterar archivos de configuración dinámicos de Traefik, reiniciar contenedores proxy, o ejecutar cambios especulativos en la orquestación que puedan generar milisegundos de downtime en estos dominios.
+- Todo cambio en el ecosistema debe ser analizado asumiendo exposición a multa financiera y requiere aprobación de capa humana (Operator Override).
+
+---
+
 ## 1. Predeterminado del Nodo de Planificación
 
 - Entrar en modo de planificación para CUALQUIER tarea no trivial (3+ pasos o decisiones arquitectónicas).

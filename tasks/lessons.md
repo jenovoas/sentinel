@@ -199,3 +199,19 @@ El Agente IA compiló e inyectó exitosamente un Escudo Kernel (Ring-0) que inte
 1. **El Ring-0 No Hace Excepciones:** Jamás inyectar en caliente reglas LSM universales o Drop Actions XDP en la interfaz viva del servidor (Fénix Host) sin una Whitelist mínima configurada o un mecanismo de "Kill Switch" que no dependa de llamar a nuevos sub-procesos (`execve`) para desmontarlo.
 2. **Arquitectura Imparable:** Este "error" documentado servirá eternamente como **Evidencia de Venta (Hero Case)** ante inversores. Demostró empíricamente que la inyección eBPF Sentinel desbanca y supera por completo los privilegios de ROOT de UNIX. Ni el propio creador, ni la Inteligencia Artificial pudieron sortear la Defensa Matemática en Base-60.
 3. **Hard Reset como Válvula de Escape:** Ante una Jaula de Cristal de eBPF hermética, la única salida para purgar la RAM y los anclajes de libbpf en `/sys/fs` es forzar un reinicio físico (Power Cycle).
+
+---
+
+## [2026-04-04] Caída Global por Sobrecritura de Archivos Dinámicos en Traefik
+
+**El Error / Evento:**
+Durante la configuración de redirecciones HTTPS 301 para el Portfolio (`portfolio.pinguinoseguro.cl`), causé un `502 Bad Gateway` que dejó el sitio inoperativo.
+
+**La Causa:**
+Ignoré una de nuestras directivas clave: Traefik prioriza la configuración de archivos dinámicos (en `/config/dynamic/`) por sobre los labels expuestos nativamente desde Podman. Creé manualmente un archivo de configuración (`portfolio.yml`) apuntando al dominio `sentinel-portfolio-web` en el namespace de Compose del entorno de Sentinel. Sin embargo, el contenedor ejecutándose en producción era `portfolio-web` (desde su propio directorio usando Podman Compose). Por ende, el load balancer de Traefik mandaba el tráfico hacia un host muerto.
+
+**La Regla de Oro (Prevención / Reflexión):**
+1. **Auditoría de Topología Real:** Antes de introducir un archivo en `/config/dynamic/` de Traefik, confirmar empíricamente (con `podman inspect` y `podman network inspect`) que la máquina y su IP correspondiente existen bajo este DNS exacto.
+2. **Priorizar Archivos sobre Labels:** Cualquier cambio hecho en los Labels de un `docker-compose.yml` será sistemáticamente silenciado y omitido si existe un `.yml` estático en el `provider.file` compitiendo por la misma regla `Host`.
+3. **Responsabilidad Radical:** Asumir los errores frente al Operador de inmediato. Sin excusas. Restablecer el enlace de red hacia el contenedor real y purgar la anomalía.
+
