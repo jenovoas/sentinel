@@ -25,6 +25,7 @@
   - [x] Crear backups `.bak` de archivos de configuración antes de intervenir
   - [x] Restaurar y re-habilitar el stack completo en Fenix (con `neural-guard` corregido)
   - [/] Validar resolución DNS y funcionalidad de `cortex.pinguinoseguro.cl`
+  - [/] **Recuperar configuración WireGuard para Laptop (Solicitud Usuario)**
   - [ ] Actualizar `tasks/lessons.md` con las correcciones de esta sesión
 
 ---
@@ -54,5 +55,3 @@
 - [ ] **Prueba de Equivalencia Formal**: Documentación matemática sobre S60 vs IEEE 754.
 
 ---
-
-*YATRA. Truth Resonates.*
