@@ -11,7 +11,8 @@ Handles all security-related functionality including:
 from datetime import datetime, timedelta
 from typing import Optional
 
-from jose import JWTError, jwt
+import jwt
+from jwt.exceptions import InvalidTokenError as JWTError
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -88,13 +89,11 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     
     to_encode.update({"exp": expire})
     
-    encoded_jwt = jwt.encode(
+    return jwt.encode(
         to_encode,
         settings.secret_key,
         algorithm=settings.algorithm
     )
-    
-    return encoded_jwt
 
 
 def create_refresh_token(data: dict) -> str:
@@ -113,13 +112,11 @@ def create_refresh_token(data: dict) -> str:
     )
     to_encode.update({"exp": expire, "type": "refresh"})
     
-    encoded_jwt = jwt.encode(
+    return jwt.encode(
         to_encode,
         settings.secret_key,
         algorithm=settings.algorithm
     )
-    
-    return encoded_jwt
 
 
 # ============================================================================

@@ -47,8 +47,6 @@ redis==5.2.1
 PyJWT==2.12.1
 # Password hashing with bcrypt
 bcrypt==5.0.0
-# Python-Jose library for JWT handling (alternative to PyJWT)
-python-jose[cryptography]==3.5.0
 # Password utilities
 passlib[bcrypt]==1.7.4
 
