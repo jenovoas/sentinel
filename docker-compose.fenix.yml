@@ -221,8 +221,8 @@ services:
     image: docker.io/grafana/promtail:3.0.0
     container_name: sentinel-promtail
     volumes:
-      - /var/log:/var/log:ro,z
-      - /run/log/journal:/run/log/journal:ro,z
+      - /var/log:/var/log:ro
+      - /run/log/journal:/run/log/journal:ro
       - ./observability/promtail/config.yml:/etc/promtail/config.yml:ro,z
     networks:
       - sentinel_internal
