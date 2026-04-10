@@ -14,6 +14,7 @@ Environment Variables:
 """
 
 from pydantic_settings import BaseSettings
+from pydantic import Field
 import os
 from typing import List
 
@@ -59,10 +60,7 @@ class Settings(BaseSettings):
     # ============================================================================
     # SECURITY CONFIGURATION
     # ============================================================================
-    secret_key: str = os.getenv(
-        "SECRET_KEY", 
-        "your-secret-key-change-in-production-min-32-chars-xyz123"
-    )
+    secret_key: str = Field(..., min_length=32)
     """
     JWT signing key for token generation.
     
