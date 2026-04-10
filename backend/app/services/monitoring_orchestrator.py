@@ -69,6 +69,7 @@ class MonitoringOrchestrator:
                 db_connections_active=db_stats_info.get("connections_active", 0),
                 db_locks=db_stats_info.get("locks", 0),
                 db_size_bytes=db_stats_info.get("db_size_bytes", 0),
+                api_latency_ms=snapshot.get("db_health", {}).get("latency_ms"),
                 gpu_percent=snapshot.get("gpu", {}).get("percent"),
                 gpu_memory_percent=snapshot.get("gpu", {}).get("memory_percent"),
                 gpu_temperature=snapshot.get("gpu", {}).get("temperature"),

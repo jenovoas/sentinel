@@ -81,6 +81,7 @@ class MetricSample(Base):
     db_connections_active: Mapped[int] = mapped_column(Integer, nullable=False)
     db_locks: Mapped[int] = mapped_column(Integer, nullable=False)
     db_size_bytes: Mapped[int] = mapped_column(Integer, nullable=False)
+    api_latency_ms: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
 
     # Metadata for AI analysis
     context_metadata: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
