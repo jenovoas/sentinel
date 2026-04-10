@@ -1,0 +1,1 @@
+# rm docs/ARCHITECTURE.md
