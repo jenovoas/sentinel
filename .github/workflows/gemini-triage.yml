@@ -58,7 +58,7 @@ jobs:
       - name: 'Run Gemini issue analysis'
         id: 'gemini_analysis'
         if: |-
-          ${{ steps.get_labels.outputs.available_labels != '' }}
+          ${{ steps.get_labels.outputs.available_labels != '' && (secrets.GEMINI_API_KEY || secrets.GOOGLE_API_KEY || vars.GCP_WIF_PROVIDER) }}
         uses: 'google-github-actions/run-gemini-cli@v0' # ratchet:exclude
         env:
           GITHUB_TOKEN: '' # Do NOT pass any auth tokens here since this runs on untrusted inputs
@@ -79,22 +79,7 @@ jobs:
           use_vertex_ai: '${{ vars.GOOGLE_GENAI_USE_VERTEXAI }}'
           upload_artifacts: '${{ vars.UPLOAD_ARTIFACTS }}'
           workflow_name: 'gemini-triage'
-          settings: |-
-            {
-              "model": {
-                "maxSessionTurns": 25
-              },
-              "telemetry": {
-                "enabled": true,
-                "target": "local",
-                "outfile": ".gemini/telemetry.log"
-              },
-              "tools": {
-                "core": [
-                  "run_shell_command(echo)"
-                ]
-              }
-            }
+          settings: '{"model":{"maxSessionTurns":25},"telemetry":{"enabled":true,"target":"local","outfile":".gemini/telemetry.log"},"tools":{"core":["run_shell_command(echo)"]}}'
           prompt: '/gemini-triage'
 
   label:
