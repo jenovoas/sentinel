@@ -8,3 +8,4 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     user_id: UUID | None = None
     tenant_id: UUID | None = None
+    username: str | None = None

@@ -16,6 +16,8 @@ from .auth import (
     create_refresh_token,
     get_current_user,
     get_current_active_user,
+    get_current_user_model,
+    get_current_admin_user,
     oauth2_scheme,
     pwd_context,
 )
@@ -30,6 +32,8 @@ __all__ = [
     "create_refresh_token",
     "get_current_user",
     "get_current_active_user",
+    "get_current_user_model",
+    "get_current_admin_user",
     "oauth2_scheme",
     "pwd_context",
 ]

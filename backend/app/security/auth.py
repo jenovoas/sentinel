@@ -16,10 +16,12 @@ from jwt.exceptions import InvalidTokenError as JWTError
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
 from app.database import get_db
+from app.models.user import User, UserRole
 from app.schemas.auth import TokenData
 
 settings = get_settings()
@@ -188,6 +190,38 @@ async def get_current_active_user(
     return current_user
 
 
+async def get_current_user_model(
+    token_data: TokenData = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+) -> User:
+    """
+    Fetch the full user model from the database using the token data.
+    """
+    query = select(User).where(User.username == token_data.username)
+    result = await db.execute(query)
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    return user
+
+
+async def get_current_admin_user(
+    current_user: User = Depends(get_current_user_model)
+) -> User:
+    """
+    Restricts access to users with the ADMIN role.
+    """
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The user does not have enough privileges"
+        )
+    return current_user
+
+
 __all__ = [
     "get_password_hash",
     "verify_password",
@@ -195,6 +229,8 @@ __all__ = [
     "create_refresh_token",
     "get_current_user",
     "get_current_active_user",
+    "get_current_user_model",
+    "get_current_admin_user",
     "oauth2_scheme",
     "pwd_context",
 ]

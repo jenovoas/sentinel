@@ -14,13 +14,16 @@ Health Check Consumers:
 - Custom watchdog scripts
 """
 
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, Response, status, Depends
 from datetime import datetime
 from typing import Dict, Any
 import asyncio
 import asyncpg
 import redis.asyncio as redis
 import httpx
+
+from app.security import get_current_admin_user
+from app.models.user import User
 
 router = APIRouter()
 
@@ -48,20 +51,20 @@ async def check_database() -> Dict[str, Any]:
         from time import time
         
         # Get DB config from environment
-        db_host = os.getenv("DATABASE_HOST", "postgres")
-        db_port = int(os.getenv("DATABASE_PORT", "5432"))
-        db_user = os.getenv("DATABASE_USER", "sentinel")
-        db_password = os.getenv("DATABASE_PASSWORD", "REDACTED_PASSWORD")
-        db_name = os.getenv("DATABASE_NAME", "sentinel")
+        db_host = os.getenv("POSTGRES_HOST", "localhost")
+        db_port = os.getenv("POSTGRES_PORT", "5432")
+        db_user = os.getenv("POSTGRES_USER", "postgres")
+        db_pass = os.getenv("POSTGRES_PASSWORD", "postgres")
+        db_name = os.getenv("POSTGRES_DB", "sentinel")
         
         start = time()
         
-        # Create connection
+        # Connection using asyncpg
         conn = await asyncpg.connect(
+            user=db_user,
+            password=db_pass,
             host=db_host,
             port=db_port,
-            user=db_user,
-            password=db_password,
             database=db_name,
             timeout=5.0  # 5 second timeout
         )
@@ -220,6 +223,7 @@ async def health_check(response: Response):
         "role": app_role,
         "components": {
             "database": db_check,
+            "redis": redis_check,
         }
     }
     
@@ -314,19 +318,18 @@ async def liveness_check():
 
 
 @router.post("/promote")
-async def promote_to_primary(response: Response):
+async def promote_to_primary(
+    response: Response,
+    current_user: User = Depends(get_current_admin_user)
+):
     """
     Promote this instance to primary role
     
     Used during failover to switch standby to primary
     
-    This endpoint should be protected (authentication required)
+    This endpoint is protected (authentication and admin required)
     """
     global app_role, accept_requests
-    
-    # TODO: Add authentication check
-    # if not is_authorized(request):
-    #     raise HTTPException(status_code=401)
     
     app_role = "primary"
     accept_requests = True
@@ -340,17 +343,18 @@ async def promote_to_primary(response: Response):
 
 
 @router.post("/demote")
-async def demote_to_standby(response: Response):
+async def demote_to_standby(
+    response: Response,
+    current_user: User = Depends(get_current_admin_user)
+):
     """
     Demote this instance to standby role
     
     Used during failback to return to standby mode
     
-    This endpoint should be protected (authentication required)
+    This endpoint is protected (authentication and admin required)
     """
     global app_role, accept_requests
-    
-    # TODO: Add authentication check
     
     app_role = "standby"
     accept_requests = False
@@ -369,19 +373,11 @@ async def prometheus_metrics():
     Prometheus metrics endpoint
     
     Exposes metrics in Prometheus format for scraping
-    
-    Metrics include:
-    - Health check results
-    - Dependency latencies
-    - Role status
-    - Uptime
     """
-    # Check all components
-    db_check, redis_check, ollama_check, vertex_check = await asyncio.gather(
+    # Check components
+    db_check, redis_check = await asyncio.gather(
         check_database(),
         check_redis(),
-        check_ollama(),
-        check_google_vertex(),
     )
     
     uptime = (datetime.now() - startup_time).total_seconds()
