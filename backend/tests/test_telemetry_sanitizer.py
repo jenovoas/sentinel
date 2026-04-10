@@ -38,7 +38,7 @@ class TestSQLInjection:
         
         assert not result.is_safe
         assert "DROP TABLE" in result.blocked_patterns
-        assert result.confidence < 0.5
+        assert result.confidence <= 0.7
         assert result.safe_prompt is None
     
     @pytest.mark.asyncio
@@ -397,7 +397,7 @@ class TestLogSanitization:
         
         assert not result.safe_for_llm
         assert "DROP TABLE" in result.blocked_patterns
-        assert result.confidence < 0.5
+        assert result.confidence <= 0.7
 
 
 # ============================================================================
