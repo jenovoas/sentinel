@@ -19,16 +19,16 @@ CONN_THRESHOLD = 50   # connections
 ACTIVE_QUERY_LIMIT = 6
 
 
-async def _fetch_one(query: str) -> Any:
+async def _fetch_one(query: str, params: Dict[str, Any] | None = None) -> Any:
     async with engine.connect() as conn:
-        result = await conn.execute(text(query))
+        result = await conn.execute(text(query), params or {})
         row = result.fetchone()
         return row[0] if row else None
 
 
-async def _fetch_dict(query: str) -> Dict[str, Any]:
+async def _fetch_dict(query: str, params: Dict[str, Any] | None = None) -> Dict[str, Any]:
     async with engine.connect() as conn:
-        result = await conn.execute(text(query))
+        result = await conn.execute(text(query), params or {})
         row = result.fetchone()
         if row:
             return dict(row._mapping)
