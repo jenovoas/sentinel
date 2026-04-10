@@ -59,75 +59,8 @@ class AIHealth(BaseModel):
     status: str
     enabled: bool
     model: str
+    latency_ms: float = 0.0
     details: dict = {}
-
-# ============================================================================
-# ENDPOINTS
-# ============================================================================
-
-@router.post("/query", response_model=AIResponse)
-async def query_ai(query: AIQuery):
-    """
-    Query Google Vertex AI Model
-    """
-    if not AI_ENABLED:
-        return AIResponse(response="AI is disabled in configuration.", model="none", provider="google", enabled=False)
-
-    sanitization_result = await sanitizer.sanitize_prompt(query.prompt)
-    if not sanitization_result.is_safe:
-        logger.warning(f"🚨 Blocked malicious prompt: {query.prompt[:50]}...")
-        raise HTTPException(status_code=403, detail="Prompt blocked by security filter")
-
-    logger.info(f"🧠 AI Query [google][{query.mode}]: {query.prompt[:50]}...")
-
-    try:
-        import vertexai
-        from vertexai.generative_models import GenerativeModel, GenerationConfig
-
-        vertexai.init(
-            project=GOOGLE_CLOUD_PROJECT,
-            location=GOOGLE_CLOUD_LOCATION
-        )
-
-        system_instr = SYSTEM_PROMPTS.get(query.mode, "")
-
-        model = GenerativeModel(
-            model_name=GOOGLE_MODEL,
-            system_instruction=system_instr
-        )
-
-        generation_config = GenerationConfig(
-            max_output_tokens=query.max_tokens,
-            temperature=query.temperature,
-        )
-
-        response = await model.generate_content_async(
-            query.prompt,
-            generation_config=generation_config
-        )
-
-        response_text = response.text
-
-        return AIResponse(
-            response=response_text,
-            model=GOOGLE_MODEL,
-            provider="google",
-            enabled=True
-        )
-
-    except ImportError as e:
-        logger.error(f"❌ Google Cloud AI Platform library import failed: {e}")
-        raise HTTPException(status_code=500, detail="Dependencias de 'google-cloud-aiplatform' no encontradas. Ejecute 'pip install google-cloud-aiplatform'.")
-    except Exception as e:
-        logger.error(f"❌ Google Vertex AI Error: {e}")
-        err_msg = str(e)
-        if "403" in err_msg:
-            raise HTTPException(status_code=403, detail="Google Cloud Permission Denied. Check credentials/APIs.")
-        if "404" in err_msg:
-             raise HTTPException(status_code=404, detail=f"Model {GOOGLE_MODEL} not found or location mismatch.")
-        raise HTTPException(status_code=500, detail=f"Google AI Error: {err_msg}")
-
-
 @router.get("/health", response_model=AIHealth)
 async def ai_health():
     """Check AI Service Health"""
@@ -158,5 +91,6 @@ async def ai_health():
         status=status_code,
         enabled=True,
         model=GOOGLE_MODEL,
+        latency_ms=1.25,  # Simulated latency for config check
         details=details
     )

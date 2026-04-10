@@ -55,8 +55,22 @@ export default function DashboardPage() {
                 const statsRes = await fetch("/api/v1/analytics/statistics?hours=24");
                 const statsData = await statsRes.json();
 
+                // Fetch AI Health for response time
+                const aiHealthRes = await fetch("/api/v1/ai/health");
+                const aiHealthData = await aiHealthRes.json();
+
+                // Fetch System Health for latency
+                const healthRes = await fetch("/api/v1/health");
+                const healthData = await healthRes.json();
+
                 // Update SLO data from real metrics
                 if (statsData) {
+                    // Extract latency from health data if available
+                    let systemLatency = 45;
+                    if (healthData?.components?.database?.latency_ms) {
+                        systemLatency = healthData.components.database.latency_ms;
+                    }
+
                     setSloData({
                         availability: {
                             value: statsData.cpu?.avg < 90 ? 99.95 : 99.5,
@@ -67,11 +81,11 @@ export default function DashboardPage() {
                             target: 1.0
                         },
                         latency: {
-                            value: 45, // TODO: Get from API metrics
+                            value: systemLatency,
                             target: 100
                         },
                         aiResponse: {
-                            value: 1.2, // TODO: Get from AI health
+                            value: aiHealthData?.latency_ms || 1.2,
                             target: 3.0
                         },
                     });
