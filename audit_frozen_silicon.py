@@ -1,6 +1,5 @@
 import subprocess
 import hashlib
-import sys
 
 files_to_check = {
     "docs/S60_HARDWARE_SPEC.md": "b4619bc6efd3549def46794c12463cdf82f3f51963de567c84b9c8d4937b72e8",
