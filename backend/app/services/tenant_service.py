@@ -1,19 +1,23 @@
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.tenant import Tenant
 from app.schemas import TenantCreate, TenantUpdate
 
-def get_tenant(db: Session, tenant_id: int):
-    return db.query(Tenant).filter(Tenant.id == tenant_id).first()
+async def get_tenant(db: AsyncSession, tenant_id: str):
+    result = await db.execute(select(Tenant).where(Tenant.id == tenant_id))
+    return result.scalars().first()
 
-def get_tenant_by_slug(db: Session, slug: str):
-    return db.query(Tenant).filter(Tenant.slug == slug).first()
+async def get_tenant_by_slug(db: AsyncSession, slug: str):
+    result = await db.execute(select(Tenant).where(Tenant.slug == slug))
+    return result.scalars().first()
 
-def get_tenants(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(Tenant).offset(skip).limit(limit).all()
+async def get_tenants(db: AsyncSession, skip: int = 0, limit: int = 100):
+    result = await db.execute(select(Tenant).offset(skip).limit(limit))
+    return result.scalars().all()
 
-def create_tenant(db: Session, tenant: TenantCreate):
-    db_tenant = Tenant(**tenant.dict())
+async def create_tenant(db: AsyncSession, tenant: TenantCreate):
+    db_tenant = Tenant(**tenant.model_dump())
     db.add(db_tenant)
-    db.commit()
-    db.refresh(db_tenant)
+    await db.commit()
+    await db.refresh(db_tenant)
     return db_tenant
