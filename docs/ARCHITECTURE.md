@@ -1,138 +1,138 @@
-# 🏗️ Arquitectura de Sentinel (Ring 0)
+# Dashboard Refactored - SOLID Architecture
 
-**Versión**: 1.2.0 (S60-Unified / Fenix Native)  
-**Última Actualización**: 18 de marzo de 2026  
-**Entorno de Ejecución**: Podman Rootless (Rocky Linux 9)
-**Estilo Arquitectónico**: Microservicios de bajo nivel con Orquestación en Rust (Cortex™)
-
----
-
-## 🎯 Resumen General
-
-Sentinel es una infraestructura de observabilidad y seguridad **pure-Rust** que combina:
-
-- **Núcleo Cortex™** - Motor de orquestación asíncrono en Rust (Axum + Tokio).
-- **Aritmética Base-60** - Cálculos de alta precisión mediante `me60os_core`.
-- **eBPF Guardian** - Defensa a nivel de Kernel (LSM) en Ring 0.
-- **Stack de Observabilidad** - Prometheus, Loki y Grafana integrados.
-- **Automatización n8n** - Flujos de trabajo para respuesta ante incidentes.
-
----
-
-## 🏛️ Diagrama de Arquitectura de Alto Nivel
+## Estructura Modular
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                          CAPA DE CLIENTE                            │
-│                     (Navegador Web / Dashboard)                      │
-└────────────────────────────┬────────────────────────────────────────┘
-                             │ HTTPS (Traefik)
-                             ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                         TRAEFIK PROXY                                │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐              │
-│  │ Enrutamiento  │  │ TLS 1.3      │  │ Middlewares  │              │
-│  │ Dinámico     │  │ Termination  │  │ de Seguridad │              │
-│  └──────────────┘  └──────────────┘  └──────────────┘              │
-└────────────────────────────┬────────────────────────────────────────┘
-                             │
-            ┌────────────────┼────────────────┐
-            │                │                │
-            ▼                ▼                ▼
-┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
-│   FRONTEND DEV  │ │ **SENTINEL CORTEX** │ │   MONITOREO     │
-│  (dev.pinguino) │ │   **(RUST)**      │ │   (Grafana)     │
-│   Puerto 80     │ │   Puerto 8000     │ │   Puerto 3000     │
-└────────┬────────┘ └────────┬────────┘ └────────┬────────┘
-         │                   │                   │
-         │                   │                   │
-         │         ┌─────────┼─────────┐         │
-         │         │         │         │         │
-         ▼         ▼         ▼         ▼         ▼
-┌─────────────────────────────────────────────────────────┐
-│                   CAPA DE DATOS                          │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │  PostgreSQL  │  │    Redis     │  │  Motor S60   │  │
-│  │  (Persistencia)│  │   (Cache)    │  │ (Matemática) │  │
-│  └──────────────┘  └──────────────┘  └──────────────┘  │
-└─────────────────────────────────────────────────────────┘
-                             │
-                             ▼
-┌─────────────────────────────────────────────────────────┐
-│                CAPA DE OBSERVABILIDAD                    │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │  Prometheus  │  │     Loki     │  │   Grafana    │  │
-│  │  (Métricas)   │  │    (Logs)    │  │ (Dashboards) │  │
-│  └──────────────┘  └──────────────┘  └──────────────┘  │
-└─────────────────────────────────────────────────────────┘
-                             │
-                             ▼
-┌─────────────────────────────────────────────────────────┐
-│                  CAPA DE SEGURIDAD (RING 0)              │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │  eBPF LSM    │  │   Guardian   │  │  Resonancia  │  │
-│  │  (Kernel)    │  │   Watcher    │  │   Harmónica  │  │
-│  └──────────────┘  └──────────────┘  └──────────────┘  │
-└─────────────────────────────────────────────────────────┘
+src/
+├── app/dash-op/
+│   └── page.tsx              # Main dashboard (thin, focused)
+├── components/
+│   ├── StorageCard.tsx       # Reusable storage stats card
+│   └── DetailModal.tsx       # Modal with extensible content
+├── hooks/
+│   └── useAnalytics.ts       # Custom hook for analytics logic
+├── lib/
+│   ├── types.ts              # Shared type definitions
+│   └── api.ts                # API service (data layer)
 ```
 
----
+## Principios SOLID Aplicados
 
-## 🧩 Detalles de los Componentes
+### 1. **Single Responsibility Principle (SRP)**
+- **`AnalyticsAPI`**: Solo responsable de fetches de datos
+- **`useAnalytics`**: Solo maneja estado y lógica de analytics
+- **`StorageCard`**: Solo renderiza una tarjeta de almacenamiento
+- **`DetailModal`**: Solo maneja la presentación del modal
+- **`page.tsx`**: Solo orquesta componentes, no contiene lógica compleja
 
-### 1. Núcleo Cortex™ (Rust)
+### 2. **Open/Closed Principle (OCP)**
+- **`StorageCard`**: Abierta para extensión (props color personalizables)
+- **`DetailModal`**: Abierta para agregar nuevos tipos sin modificar el código existente
+- **`DetailContent`**: Switch extensible para nuevos tipos de detalle
 
-Es el corazón del sistema, sustituyendo por completo al antiguo backend legado en Python.
+```tsx
+// Fácil agregar nuevo tipo sin modificar componente
+case "newType":
+  return <NewContent />;
+```
 
-- **Tecnología**: Rust 1.75+, Axum, Tokio Runtime.
-- **Funciones**:
-  - API de alta concurrencia para el dashboard.
-  - Orquestación de tareas en segundo plano (Resonancia).
-  - Integración nativa con `me60os_core` (Base-60).
-- **Rendimiento**: < 10ms de latencia en endpoints críticos.
+### 3. **Liskov Substitution Principle (LSP)**
+- Componentes siguen interfaces consistentes
+- `StorageCard` siempre renderiza el mismo formato
+- Los hooks retornan estructuras predecibles
 
-### 2. Capa de Datos y Matemática
+### 4. **Interface Segregation Principle (ISP)**
+- Componentes reciben solo props necesarios
+- `StorageCard` no necesita conocer sobre anomalías
+- `DetailModal` no depende de componentes innecesarios
 
-- **PostgreSQL**: Almacenamiento persistente de configuraciones y eventos.
-- **Redis**: Caché de alta velocidad para estados efímeros del sistema.
-- **Motor S60**: Aritmética sexagesimal pura. Sin errores de redondeo IEEE-754.
+```tsx
+// StorageCard: minimal props
+<StorageCard 
+  label={string}
+  value={ReactNode}
+  onClick={() => void}
+  color={colors}
+/>
+```
 
-### 3. Observabilidad
+### 5. **Dependency Inversion Principle (DIP)**
+- `page.tsx` depende de abstracciones (hooks, componentes)
+- No depende de implementaciones concretas
+- `AnalyticsAPI` abstrae los endpoints
 
-- **Prometheus**: Recolección de métricas del sistema y del Cortex.
-- **Loki**: Agregación de logs para un seguimiento forense completo.
-- **Grafana**: Visualización en tiempo real con dashboards específicos para Base-60.
+```tsx
+// page.tsx depende del hook, no de fetch directo
+const { history, anomalies, storage } = useAnalytics();
+```
 
-### 4. Seguridad (eBPF)
+## Ventajas de Esta Arquitectura
 
-- **Guardian LSM**: Políticas de seguridad aplicadas directamente en el Kernel de Linux mediante eBPF.
-- **Monitor de Resonancia**: Verificación de integridad basada en pulsos de 17 segundos.
+### 🔧 **Mantenibilidad**
+- Cada archivo tiene una responsabilidad clara
+- Cambios localizados, sin efectos secundarios
 
----
+### 🧩 **Reutilizabilidad**
+- `StorageCard` usable en otros dashboards
+- `useAnalytics` usable en otros componentes
+- `AnalyticsAPI` usable en cualquier contexto
 
-## 📈 Especificaciones Técnicas
+### 📦 **Testabilidad**
+- Hooks pueden ser testeados aisladamente
+- Componentes son puros
+- API service es mockeable
 
-| Métrica | Objetivo |
-|---------|----------|
-| Latencia de API | < 50ms (P95) |
-| Errores de Flotantes | 0 (Exactitud Base-60) |
-| Latencia de Red eBPF | < 100µs |
-| Ciclo de Sincronización | 17 segundos (Fase Harmónica) |
+###  **Escalabilidad**
+- Agregar nuevas tarjetas: copiar `StorageCard`
+- Agregar nuevo modal: extender `DetailModal`
+- Agregar fetch: agregar método en `AnalyticsAPI`
 
----
+###  **Claridad**
+- El flujo de datos es explícito
+- Fácil ver qué depende de qué
+- Nombres descriptivos
 
-## 🌐 Topología de Red (Fenix Sovereign Node)
+## Flujo de Datos
 
-| Nodo | IP Interna | Función |
-| :--- | :--- | :--- |
-| **Fenix** | `10.10.10.8` | Orquestador Ring 0 / DNS Master / Proxy / App Host |
+```
+page.tsx (Orquestación)
+    ↓
+useAnalytics() (Lógica de estado)
+    ↓
+AnalyticsAPI (Fetches)
+    ↓
+Backend API
 
-**Notas de Conectividad:**
+page.tsx
+    ↓
+<StorageCard /> (Presentación)
+    ↓
+<DetailModal /> (Presentación extendida)
+```
 
-- **VPN (Wireguard)**: Gateway en `10.100.0.1`.
-- **SSH**: Puerto **4222** (Acceso root prohibido).
-- **PowerDNS API**: Accesible solo vía VPN en `http://10.100.0.1:8081`.
+## Ejemplo: Agregar Nueva Funcionalidad
 
----
+### Agregar Nueva Tarjeta
 
-**YATRA. Truth Resonates.**
+1. **Sin refactorización**: Copiar 100+ líneas de código, modificar nombres, duplicar estilos
+
+2. **Con refactorización**:
+```tsx
+<StorageCard
+  label="New Metric"
+  value={newValue}
+  onClick={() => open("new")}
+  color={{...}}
+/>
+```
+
+### Agregar Nuevo Tipo de Detalle
+
+1. **En `DetailModal.tsx`** - agregar case:
+```tsx
+case "newType":
+  return <NewDetailContent {...} />;
+```
+
+2. **Eso es todo** - No necesitas tocar `page.tsx`
+

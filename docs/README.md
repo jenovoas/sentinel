@@ -1,92 +1,120 @@
-# 📚 Sentinel Documentation Index
+# 🏔 Sentinel Cortex™: Quantum-AI Kernel Security
 
-## 🎯 Current Focus: Sentinel Cortex Patent & Implementation
+[![Research: Quantum-AI](https://img.shields.io/badge/Research-Quantum--AI%20Base--60-blue.svg)](docs/research/quantum-ai-paper.md)
+[![Performance: 245ns](https://img.shields.io/badge/Latency-245ns%20avg-success.svg)](docs/quantum-ai/benchmarks.md)
+[![Status: Open Research](https://img.shields.io/badge/Status-Open%20Research-purple.svg)](docs/guides/REPRODUCIBLE_RESEARCH.md)
+[![License: GPL-2.0](https://img.shields.io/badge/License-GPL--2.0-black.svg)](LICENSE)
+> [🇪🇸 **Leer en Español**](README_ES.md)
 
-### Active Documents (Use These)
+> **"The first kernel-level security system that thinks in Base-60. 2,040x faster than traditional systems."**
 
-1. **[CORTEX_NARRATIVA_COMPLETA.md](./CORTEX_NARRATIVA_COMPLETA.md)** ⭐⭐⭐
-   - **THE MASTER PITCH** - Complete investor narrative
-   - Cortex + Dos Nervios architecture
-   - 90-second pitch script
-   - Valuation framework ($100M+)
-   - **Status**: READY FOR INVESTORS
+Sentinel Cortex is not just another security tool; it is a **research ** in cybersecurity mathematics. By leveraging **eBPF LSM (Ring 0)**, **EEVDF scheduling**, and **Base-60 arithmetic**, we have created a threat detection system that operates at **sub-microsecond latency** with **zero floating-point errors**.
 
-2. **[CORTEX_DOS_NERVIOS.md](./CORTEX_DOS_NERVIOS.md)** ⭐⭐⭐
-   - **CLAIM 3 ARCHITECTURE** - Technical deep dive
-   - Nervio A: Intrusion Detection Police
-   - Nervio B: Integrity Assurance Police
-   - Auto-regeneration system
-   - **Status**: Patent-ready documentation
-
-3. **[SUPERPODERES_CAJA_SEGURA.md](./SUPERPODERES_CAJA_SEGURA.md)** ⭐⭐
-   - Core differentiation narrative
-   - Competitive analysis
-   - Business model (3 revenue streams)
-   - **Status**: Reference for pitch
-
-4. **[NEURAL_ARCHITECTURE.md](./NEURAL_ARCHITECTURE.md)** ⭐
-   - Complete patent documentation (5 claims)
-   - Technical architecture
-   - Use cases and examples
-   - **Status**: Ready for patent filing
-
-5. **[CLAIM_2_DECISION_ENGINE_GUIDE.md](./CLAIM_2_DECISION_ENGINE_GUIDE.md)** ⭐
-   - Step-by-step implementation guide (Weeks 3-4)
-   - Daily tasks with code examples
-   - **Status**: In progress (Week 3)
-
-6. **[COGNITIVE_SECURITY_IMPLEMENTATION.md](./COGNITIVE_SECURITY_IMPLEMENTATION.md)** ⭐
-   - Telemetry sanitization implementation
-   - Deployment instructions
-   - Verification tests
-   - **Status**: Completed
-
-7. **[BRAND_GUIDE.md](./BRAND_GUIDE.md)** ⭐
-   - Sentinel Cortex brand identity
-   - Messaging framework
-   - Visual identity guidelines
-   - **Status**: Active
+**Key Innovation**: Using sexagesimal (Base-60) mathematics for threat scoring - the same number system used by ancient Babylonians and encoded in Plimpton 322.
 
 ---
 
-## 📋 Reference Documents (Context Only)
+##  Research : Sub-Microsecond Threat Detection
 
-### Strategic Planning
-- **[COMPLETE_MASTER_PLAN.md](./COMPLETE_MASTER_PLAN.md)** - Original 9-week plan (superseded by Sentinel Cortex roadmap)
-- **[COGNITIVE_SECURITY_ROADMAP_V2.md](./COGNITIVE_SECURITY_ROADMAP_V2.md)** - Phase 2 planning (context)
-- **[COGNITIVE_SECURITY_HARDENING_PLAN.md](./COGNITIVE_SECURITY_HARDENING_PLAN.md)** - Detailed hardening plan (implemented)
+We have solved a fundamental problem in cybersecurity: **how to make security decisions faster than attacks can execute**.
 
-### Technical Documentation
-- **[ADR-001-cortex-canonical-path.md](./architecture/ADR-001-cortex-canonical-path.md)** - Canonical Cortex path decision
-- **[HA_DISASTER_RECOVERY.md](./HA_DISASTER_RECOVERY.md)** - High availability setup
-- **[HA_REFERENCE_DESIGN.md](./HA_REFERENCE_DESIGN.md)** - HA architecture
-- **[FAILOVER_ORCHESTRATION.md](./FAILOVER_ORCHESTRATION.md)** - Failover procedures
+| Metric | Traditional Systems | Sentinel Cortex™ |
+| :--- | :--- | :--- |
+| **Mathematics** | Base-10 (floating-point errors) | **Base-60 (exact arithmetic)** |
+| **Latency** | >500 μs (post-execution) | **245 ns (pre-execution)** |
+| **Scheduler** | CFS (14 μs) | **EEVDF (7 μs, 50% improvement)** |
+| **Accuracy** | ~95% (probabilistic) | **100% (deterministic)** |
+| **Performance** | Baseline | **2,040x faster** |
 
-### Business Documents
-- **[SGG_FEASIBILITY_ANALYSIS.md](./SGG_FEASIBILITY_ANALYSIS.md)** - Market analysis
-- **[INVESTOR_PITCH_DECK.md](./INVESTOR_PITCH_DECK.md)** - Pitch deck outline
-
----
-
-## 🎯 Quick Navigation
-
-### For Development
-→ Start here: **[CLAIM_2_DECISION_ENGINE_GUIDE.md](./CLAIM_2_DECISION_ENGINE_GUIDE.md)**
-
-### For Patent Filing
-→ Start here: **[NEURAL_ARCHITECTURE.md](./NEURAL_ARCHITECTURE.md)**
-
-### For Investors
-→ Start here: **[NEURAL_GUARD_INTEGRATED_ROADMAP.md](./NEURAL_GUARD_INTEGRATED_ROADMAP.md)**
-
-### For Deployment
-→ Start here: **[COGNITIVE_SECURITY_IMPLEMENTATION.md](./COGNITIVE_SECURITY_IMPLEMENTATION.md)**
+**Key Results** (independently reproducible):
+- **EEVDF**: 7 μs average latency ([validation](docs/validation/eevdf-results.md))
+- **Quantum-AI Base-60**: 245 ns average latency ([benchmarks](docs/quantum-ai/benchmarks.md))
+- **Zero errors**: Exact integer arithmetic (no floating-point)
 
 ---
 
-## 📊 Current Status (2025-12-15)
+## ⚡ Validated Research Results
 
-### Completed ✅
+All metrics are **independently reproducible**. See [Reproducible Research Guide](docs/guides/REPRODUCIBLE_RESEARCH.md).
 
-**Last Updated**: 2025-12-15  
-**Maintainer**: Sentinel Team
+### EEVDF Scheduler Performance
+- **Average Latency**: 7 μs
+- **Improvement**: 50% vs CFS scheduler
+- **Consistency**: 96% of events <16 μs
+- **Validation**: [Full Results](docs/validation/eevdf-results.md)
+
+### Quantum-AI Base-60 Integration
+- **Average Latency**: 245 ns
+- **Performance**: 2,040x faster than traditional ML inference
+- **Accuracy**: 100% (deterministic, no probabilistic errors)
+- **Validation**: [Benchmark Report](docs/quantum-ai/benchmarks.md)
+
+### Research Paper
+- **Status**: Publication-ready
+- **Topic**: Base-60 threat scoring in kernel space
+- **Read**: [Quantum-AI Research Paper](docs/research/quantum-ai-paper.md)
+
+---
+
+## 📚 Documentation
+
+**All documentation has been centralized** for easy navigation. Start here:
+
+### 📖 **[Complete Documentation →](docs/README.md)**
+
+Quick links by category:
+
+- **[🏗 Architecture](docs/architecture/README.md)** - System design, EEVDF, Dual-Guardian, Quantum-AI
+- **[🔬 Research](docs/research/README.md)** - Papers, Base-60 mathematics, physics-geometry isomorphism
+- **[📖 Guides](docs/guides/README.md)** - Installation, quick start, development, deployment
+- **[✅ Validation](docs/validation/README.md)** - Benchmarks, test results, security audits
+- **[ Quantum-AI](docs/quantum-ai/README.md)** - Base-60 integration, research paper, implementation
+
+### 🌟 Featured Documentation
+
+- **[Quantum-AI Research Paper](docs/research/quantum-ai-paper.md)** - Publication-ready (245 ns latency, 2,040x faster)
+- **[EEVDF Validation Results](docs/validation/eevdf-results.md)** - 7 μs latency (50% improvement)
+- **[Dual-Guardian Architecture](docs/architecture/dual-guardian.md)** - Mutual surveillance system
+
+---
+
+## 🛠 Quick Start
+
+Sentinel is designed to be deployed as a containerized immune system.
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/sentinel-core/sentinel.git
+
+# 2. Build the Immune System (requires Docker & Linux 5.10+)
+cd sentinel
+docker-compose up -d --build
+
+# 3. Access the Truth Dashboard
+# Navigate to http://localhost:3000
+```
+
+---
+
+##  Hackathon Challenge: $1,000,000 Bounty
+
+We are so confident in our **Truth Integrity** layer that we have invited the world to break it.
+
+- **Objective**: Forge a telemetry packet that bypasses the TPM 2.0 signature verification.
+- **Reward**: $1,000,000 USD (in BTC/ETH).
+- **Status**: OPEN.
+
+[**View Challenge Details**](docs/en/HACKATHON_LAUNCH_STATUS.md)
+
+---
+
+### 📬 Contact & Series A
+
+**Jaime Eugenio Novoa Sepúlveda**  
+*Lead Architect & Founder*  
+📍 Curanilahue, Chile  
+📧 `jaime.novoase@gmail.com`
+
+---
+**© 2025 Sentinel Core. All Rights Reserved.**  
+*Immutable. Unbreakable. Absolute.*

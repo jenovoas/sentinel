@@ -21,8 +21,9 @@ import time
 import sys
 import os
 
+# Fix path for imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from sovereign_math import S60, SovereignLUT
+from sovereign_math import S60, SovereignLUT, S60_from_float
 from optomechanical_simulator import OptomechanicalSystem, MembraneParameters, OpticalParameters
 
 def run_scientific_validation():

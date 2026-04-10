@@ -7,8 +7,8 @@ BPFTOOL ?= bpftool
 ARCH := $(shell uname -m | sed 's/x86_64/x86/' | sed 's/aarch64/arm64/')
 INCLUDES := -I/usr/include/$(ARCH)-linux-gnu
 
-TARGET := guardian_cognitive
-OBJECT := $(TARGET).bpf.o
+TARGET := guardian_alpha_lsm
+OBJECT := $(TARGET).o
 
 .PHONY: all clean load unload test
 
