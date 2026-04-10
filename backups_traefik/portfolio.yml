@@ -1,0 +1,15 @@
+http:
+  routers:
+    portfolio:
+      rule: "Host(`portfolio.pinguinoseguro.cl`)"
+      entryPoints:
+        - "websecure"
+      service: "portfolio-service"
+      tls:
+        certResolver: "powerdns"
+
+  services:
+    portfolio-service:
+      loadBalancer:
+        servers:
+          - url: "http://portfolio-web:80"

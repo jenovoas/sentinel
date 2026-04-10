@@ -1,0 +1,39 @@
+http:
+  routers:
+    laespiguita:
+      rule: "Host(`laespiguita.pinguinoseguro.cl`)"
+      entryPoints:
+        - "websecure"
+      service: "laespiguita-frontend"
+      tls:
+        certResolver: "powerdns"
+      middlewares:
+        - "security-headers"
+
+    laespiguita-api:
+      rule: "Host(`laespiguita.pinguinoseguro.cl`) && PathPrefix(`/api/v1`)"
+      entryPoints:
+        - "websecure"
+      service: "laespiguita-backend"
+      tls:
+        certResolver: "powerdns"
+      middlewares:
+        - "security-headers"
+
+    laespiguita-ws:
+      rule: "Host(`laespiguita.pinguinoseguro.cl`) && PathPrefix(`/ws`)"
+      entryPoints:
+        - "websecure"
+      service: "laespiguita-backend"
+      tls:
+        certResolver: "powerdns"
+
+  services:
+    laespiguita-frontend:
+      loadBalancer:
+        servers:
+          - url: "http://espiguita-frontend:80"
+    laespiguita-backend:
+      loadBalancer:
+        servers:
+          - url: "http://espiguita-backend:3000"

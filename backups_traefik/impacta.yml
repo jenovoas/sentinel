@@ -1,0 +1,27 @@
+http:
+  routers:
+    impacta-api:
+      rule: "Host(`impacta.pinguinoseguro.cl`) && PathPrefix(`/api`)"
+      entryPoints:
+        - "websecure"
+      service: "impacta-api-service"
+      tls:
+        certResolver: "powerdns"
+
+    impacta-web:
+      rule: "Host(`impacta.pinguinoseguro.cl`)"
+      entryPoints:
+        - "websecure"
+      service: "impacta-web-service"
+      tls:
+        certResolver: "powerdns"
+
+  services:
+    impacta-api-service:
+      loadBalancer:
+        servers:
+          - url: "http://impacta_api:4000"
+    impacta-web-service:
+      loadBalancer:
+        servers:
+          - url: "http://impacta_web:80"
