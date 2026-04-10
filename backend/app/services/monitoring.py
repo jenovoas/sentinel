@@ -79,10 +79,13 @@ async def get_active_queries(limit: int = ACTIVE_QUERY_LIMIT) -> List[Dict[str, 
 
 
 async def get_db_health() -> Dict[str, Any]:
+    import time
+    start = time.perf_counter()
     try:
         async with engine.connect() as conn:
             await conn.execute(text("SELECT 1"))
-        return {"status": "healthy"}
+        latency = (time.perf_counter() - start) * 1000
+        return {"status": "healthy", "latency_ms": round(latency, 2)}
     except Exception as exc:  # pragma: no cover - just safety
         return {"status": "unhealthy", "error": str(exc)}
 

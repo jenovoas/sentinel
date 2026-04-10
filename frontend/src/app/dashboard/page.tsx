@@ -67,7 +67,7 @@ export default function DashboardPage() {
                             target: 1.0
                         },
                         latency: {
-                            value: 45, // TODO: Get from API metrics
+                            value: statsData.latency?.mean || 45,
                             target: 100
                         },
                         aiResponse: {
