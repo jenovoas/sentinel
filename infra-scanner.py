@@ -69,8 +69,8 @@ class InfraScanner:
         """Escanea info básica del hardware/OS y actualiza el Hash del nodo."""
         try:
             # Obtener IP (asumiendo eth0 o similar con ruta por defecto)
-            ip_cmd = "ip route get 1.1.1.1 | awk -F'src ' 'NR==1{split($2,a,\" \");print a[1]}'"
-            ip_pub = subprocess.check_output(ip_cmd, shell=True).decode().strip()
+            ip_output = subprocess.check_output(["ip", "route", "get", "1.1.1.1"], text=True)
+            ip_pub = ip_output.split('src')[1].split()[0] if 'src' in ip_output else 'unknown'
             
             # Obtener uptime
             with open('/proc/uptime', 'r') as f:
@@ -114,8 +114,9 @@ class InfraScanner:
         for svc in self.expected_services:
             # Verificamos si es un servicio systemd
             try:
-                cmd = f"systemctl is-active {svc} || systemctl is-active {svc}.service"
-                result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+                result = subprocess.run(["systemctl", "is-active", svc], capture_output=True, text=True)
+                if result.returncode != 0:
+                    result = subprocess.run(["systemctl", "is-active", f"{svc}.service"], capture_output=True, text=True)
                 is_active = result.returncode == 0
                 state = "active" if is_active else "inactive"
                 
