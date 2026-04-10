@@ -185,6 +185,57 @@ class InfraScanner:
             print(f"⚠️ Error escaneando podman (¿requiere sudo?): {e}")
             
         return containers_state
+
+    def _update_redis_state(self, key_svc: str, current: dict, timestamp: str):
+        """Actualiza el Hash del servicio en Redis."""
+        mapping = {
+            "type": current.get("type", "unknown"),
+            "state": current.get("state", "unknown"),
+            "restarts": current.get("restarts", "0"),
+            "expected": current.get("expected", "unknown"),
+            "last_check": timestamp
+        }
+        if "image" in current: mapping["image"] = current["image"]
+        if "name" in current: mapping["container_name"] = current["name"]
+
+        self.redis.hset(key_svc, mapping=mapping)
+
+    def _detect_event(self, key_svc: str, current: dict, prev_state: str, prev_restarts: str, timestamp: str) -> str:
+        """Determina si ha ocurrido un evento relevante."""
+        current_state = current.get("state", "unknown")
+        current_restarts = current.get("restarts", "0")
+        event_type = None
+
+        if prev_state and prev_state != current_state:
+            event_type = "STATE_CHANGE"
+        elif prev_restarts and prev_restarts != current_restarts:
+            event_type = "CONTAINER_RESTART"
+        elif not prev_state and current_state != "unknown":
+            event_type = "SERVICE_DISCOVERED"
+
+        if current_state != "running" and current_state != "active" and current.get("expected") in ["running", "active"]:
+            if event_type != "STATE_CHANGE":
+                last_alert = self.redis.hget(key_svc, "last_alert")
+                if not last_alert or int(timestamp) - int(last_alert) > 3600:
+                    event_type = "SERVICE_DOWN_ALERT"
+                    self.redis.hset(key_svc, "last_alert", timestamp)
+
+        return event_type
+
+    def _log_event(self, name: str, event_type: str, current: dict, prev_state: str, timestamp: str):
+        """Registra un evento en la bitácora de Redis Stream."""
+        log_entry = {
+            "node": NODE_NAME,
+            "agent": "infra-scanner",
+            "event_type": event_type,
+            "service": name,
+            "old_state": str(prev_state),
+            "new_state": current.get("state", "unknown"),
+            "restarts": str(current.get("restarts", "0")),
+            "timestamp": timestamp
+        }
+        self.redis.xadd(STREAM_LOG, log_entry)
+        print(f"📝 Bitácora: [{NODE_NAME}] {name} -> {event_type} ({log_entry['new_state']})")
         
     def audit_and_report(self, states: dict):
         """
@@ -197,57 +248,17 @@ class InfraScanner:
             key_svc = f"swarm:infra:svc:{NODE_NAME}:{name}"
             
             # Obtener estado anterior
-            prev_state_str = self.redis.hget(key_svc, "state")
-            prev_restarts_str = self.redis.hget(key_svc, "restarts")
-            
-            current_state = current.get("state", "unknown")
-            current_restarts = current.get("restarts", "0")
+            prev_state = self.redis.hget(key_svc, "state")
+            prev_restarts = self.redis.hget(key_svc, "restarts")
             
             # Actualizar Hash en Redis
-            mapping = {
-                "type": current.get("type", "unknown"),
-                "state": current_state,
-                "restarts": current_restarts,
-                "expected": current.get("expected", "unknown"),
-                "last_check": timestamp
-            }
-            if "image" in current: mapping["image"] = current["image"]
-            if "name" in current: mapping["container_name"] = current["name"]
-            
-            self.redis.hset(key_svc, mapping=mapping)
+            self._update_redis_state(key_svc, current, timestamp)
             
             # Analizar desviaciones para la bitácora
-            event_type = None
-            
-            if prev_state_str and prev_state_str != current_state:
-                event_type = "STATE_CHANGE"
-            elif prev_restarts_str and prev_restarts_str != current_restarts:
-                event_type = "CONTAINER_RESTART"
-            elif not prev_state_str and current_state != "unknown":
-                event_type = "SERVICE_DISCOVERED"
-                
-            if current_state != "running" and current_state != "active" and current.get("expected") in ["running", "active"]:
-                if event_type != "STATE_CHANGE":  # Para no duplicar eventos si ya detectamos el cambio
-                    # Solo enviar evento de fallo intermitentemente (no spam)
-                    last_alert = self.redis.hget(key_svc, "last_alert")
-                    if not last_alert or int(timestamp) - int(last_alert) > 3600:
-                        event_type = "SERVICE_DOWN_ALERT"
-                        self.redis.hset(key_svc, "last_alert", timestamp)
+            event_type = self._detect_event(key_svc, current, prev_state, prev_restarts, timestamp)
             
             if event_type:
-                # Escribir en la bitácora S60 (Stream)
-                log_entry = {
-                    "node": NODE_NAME,
-                    "agent": "infra-scanner",
-                    "event_type": event_type,
-                    "service": name,
-                    "old_state": str(prev_state_str),
-                    "new_state": current_state,
-                    "restarts": str(current_restarts),
-                    "timestamp": timestamp
-                }
-                self.redis.xadd(STREAM_LOG, log_entry)
-                print(f"📝 Bitácora: [{NODE_NAME}] {name} -> {event_type} ({current_state})")
+                self._log_event(name, event_type, current, prev_state, timestamp)
 
 
     def run_scan(self):
