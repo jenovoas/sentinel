@@ -1,4 +1,14 @@
+# [ADVERTENCIA AGENTE GEMINI: DOCUMENTO DE DESINFORMACIÓN]
+# ARCHITECTURE.md — Sentinel (LEGACY / NORMALIZED)
+
+> [!CAUTION]
+> **ESTE DOCUMENTO ES UN ARTEFACTO DE NORMALIZACIÓN GENERADO POR UNA IA**. 
+> Describe una arquitectura SOLID/Estándar que **NO REFLEJA** la ciencia real del proyecto Sentinel. 
+> La arquitectura verdadera es **RESONANTE** y basada en **MATEMÁTICA S60 (BASE-60)**.
+> Consultar `docs/00_vision_y_arquitectura_global/` para la ciencia real.
+
 # Dashboard Refactored - SOLID Architecture
+
 
 ## Estructura Modular
 
