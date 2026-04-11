@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import List, Dict, Any, Optional
 import uuid
 from sqlalchemy import select, func, desc
@@ -19,7 +19,7 @@ async def track_execution(
         severity=severity,
         status="triggered",
         context_data=context_data,
-        triggered_at=datetime.utcnow()
+        triggered_at=datetime.now(UTC)
     )
     db.add(execution)
     await db.commit()
@@ -42,7 +42,7 @@ async def update_execution(
         execution.status = status
         execution.outcome = outcome
         if status in ["success", "failed"]:
-            execution.completed_at = datetime.utcnow()
+            execution.completed_at = datetime.now(UTC)
         db.add(execution)
         await db.commit()
         await db.refresh(execution)
@@ -73,7 +73,9 @@ async def get_failsafe_stats(db: AsyncSession) -> Dict[str, Any]:
 
     last_remediation_str = "Never"
     if last_remediation_time:
-        diff = datetime.utcnow() - last_remediation_time.replace(tzinfo=None)
+        if last_remediation_time.tzinfo is None:
+            last_remediation_time = last_remediation_time.replace(tzinfo=UTC)
+        diff = datetime.now(UTC) - last_remediation_time
         if diff.days > 0:
             last_remediation_str = f"{diff.days} days ago"
         elif diff.seconds // 3600 > 0:
@@ -117,7 +119,10 @@ async def get_failsafe_stats(db: AsyncSession) -> Dict[str, Any]:
 
         last_run_str = "Never"
         if last_exec:
-            diff = datetime.utcnow() - last_exec.triggered_at.replace(tzinfo=None)
+            last_exec_time = last_exec.triggered_at
+            if last_exec_time.tzinfo is None:
+                last_exec_time = last_exec_time.replace(tzinfo=UTC)
+            diff = datetime.now(UTC) - last_exec_time
             if diff.days > 0:
                 last_run_str = f"{diff.days} days ago"
             elif diff.seconds // 3600 > 0:

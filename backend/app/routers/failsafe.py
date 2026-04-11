@@ -10,7 +10,7 @@ Events are queued and sent to N8N webhooks with proper authentication.
 from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends
 from pydantic import BaseModel, Field
 from typing import Literal, Optional, Dict, Any
-from datetime import datetime
+from datetime import datetime, UTC
 import httpx
 import os
 import logging
@@ -102,7 +102,7 @@ async def send_to_n8n(playbook: str, event_data: Dict[str, Any], execution_id: u
                 json={
                     **event_data,
                     "execution_id": str(execution_id),
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "source": "sentinel",
                 },
                 headers={
