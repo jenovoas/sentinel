@@ -7,13 +7,21 @@ Acts as the bridge between Sentinel and automated remediation.
 Events are queued and sent to N8N webhooks with proper authentication.
 """
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks
-from pydantic import BaseModel, Field
-from typing import Literal, Optional, Dict, Any
-from datetime import datetime
-import httpx
+import uuid
 import os
 import logging
+from datetime import datetime
+from typing import Literal, Optional, Dict, Any
+
+import httpx
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends
+from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.database import get_db, AsyncDatabaseSession
+from app.services.failsafe_service import FailSafeService
+from app.models.failsafe import FailSafeStatus
+from app.schemas.failsafe import FailSafeStatusResponse
 
 router = APIRouter(prefix="/api/v1/failsafe", tags=["fail-safe"])
 logger = logging.getLogger(__name__)
@@ -72,13 +80,14 @@ PLAYBOOK_WEBHOOKS = {
 # HELPER FUNCTIONS
 # ============================================================================
 
-async def send_to_n8n(playbook: str, event_data: Dict[str, Any]) -> bool:
+async def send_to_n8n(playbook: str, event_data: Dict[str, Any], execution_id: uuid.UUID) -> bool:
     """
-    Send event to N8N webhook
+    Send event to N8N webhook and update database status
     
     Args:
         playbook: Playbook name
         event_data: Event context and metadata
+        execution_id: Database record ID to update
         
     Returns:
         True if successful, False otherwise
@@ -87,6 +96,10 @@ async def send_to_n8n(playbook: str, event_data: Dict[str, Any]) -> bool:
     
     if not webhook_url:
         logger.error(f"Unknown playbook: {playbook}")
+        async with AsyncDatabaseSession() as db:
+            await FailSafeService.update_execution_status(
+                db, execution_id, FailSafeStatus.FAILED, f"Unknown playbook: {playbook}"
+            )
         return False
     
     try:
@@ -97,6 +110,7 @@ async def send_to_n8n(playbook: str, event_data: Dict[str, Any]) -> bool:
                     **event_data,
                     "timestamp": datetime.utcnow().isoformat(),
                     "source": "sentinel",
+                    "execution_id": str(execution_id),
                 },
                 headers={
                     "Authorization": f"Bearer {N8N_WEBHOOK_TOKEN}",
@@ -104,15 +118,26 @@ async def send_to_n8n(playbook: str, event_data: Dict[str, Any]) -> bool:
                 }
             )
             
-            if response.status_code == 200:
-                logger.info(f"✓ Sent event to {playbook} playbook")
-                return True
-            else:
-                logger.error(f"✗ N8N webhook failed: {response.status_code}")
-                return False
+            async with AsyncDatabaseSession() as db:
+                if response.status_code == 200:
+                    logger.info(f"✓ Sent event to {playbook} playbook")
+                    await FailSafeService.update_execution_status(
+                        db, execution_id, FailSafeStatus.SUCCESS, "Playbook triggered successfully"
+                    )
+                    return True
+                else:
+                    logger.error(f"✗ N8N webhook failed: {response.status_code}")
+                    await FailSafeService.update_execution_status(
+                        db, execution_id, FailSafeStatus.FAILED, f"N8N error: {response.status_code}"
+                    )
+                    return False
                 
     except Exception as e:
         logger.error(f"✗ Error sending to N8N: {e}")
+        async with AsyncDatabaseSession() as db:
+            await FailSafeService.update_execution_status(
+                db, execution_id, FailSafeStatus.FAILED, f"Exception: {str(e)}"
+            )
         return False
 
 
@@ -123,7 +148,8 @@ async def send_to_n8n(playbook: str, event_data: Dict[str, Any]) -> bool:
 @router.post("/trigger")
 async def trigger_failsafe(
     event: FailSafeEvent,
-    background_tasks: BackgroundTasks
+    background_tasks: BackgroundTasks,
+    db: AsyncSession = Depends(get_db)
 ):
     """
     Trigger a fail-safe playbook
@@ -133,17 +159,24 @@ async def trigger_failsafe(
     - A critical event needs automated response
     - Primary systems fail to respond
     
-    The event is queued and sent to N8N after the specified wait time.
+    The event is recorded in the database and sent to N8N in the background.
     """
     try:
-        # Log the trigger
+        # Create database record
+        execution = await FailSafeService.create_execution(
+            db=db,
+            playbook=event.playbook,
+            triggered_by=event.triggered_by,
+            severity=event.severity,
+            context_data=event.context
+        )
+
         logger.warning(
             f"🛡️ Fail-safe triggered: {event.playbook} "
-            f"(severity: {event.severity}, wait: {event.wait_time_minutes}m)"
+            f"(severity: {event.severity}, execution_id: {execution.id})"
         )
         
-        # In production, you'd queue this with Redis/Celery
-        # For now, send immediately in background
+        # Send to N8N in background
         background_tasks.add_task(
             send_to_n8n,
             event.playbook,
@@ -153,14 +186,15 @@ async def trigger_failsafe(
                 "context": event.context,
                 "triggered_by": event.triggered_by,
                 "wait_time_minutes": event.wait_time_minutes,
-            }
+            },
+            execution.id
         )
         
         return {
             "status": "queued",
+            "execution_id": execution.id,
             "playbook": event.playbook,
             "message": f"Fail-safe playbook '{event.playbook}' queued for execution",
-            "wait_time_minutes": event.wait_time_minutes,
         }
         
     except Exception as e:
@@ -171,82 +205,25 @@ async def trigger_failsafe(
         )
 
 
-@router.get("/status")
-async def get_failsafe_status():
+@router.get("/status", response_model=FailSafeStatusResponse)
+async def get_failsafe_status(db: AsyncSession = Depends(get_db)):
     """
     Get fail-safe layer status
     
     Returns:
         - Active playbooks
         - Recent executions
-        - Success rates
+        - Success rates (real data from database)
     """
-    # TODO: Implement proper tracking with database
-    # For now, return mock data
-    
-    return {
-        "status": "active",
-        "last_auto_remediation": "2 hours ago",
-        "active_playbooks": 6,
-        "success_rate_30d": 98.5,
-        "total_executions": 147,
-        "playbooks": [
-            {
-                "name": "backup_recovery",
-                "display_name": "Backup Recovery",
-                "status": "idle",
-                "last_run": "3 days ago",
-                "last_outcome": "success",
-                "execution_count": 12,
-                "success_rate": 100.0,
-            },
-            {
-                "name": "intrusion_lockdown",
-                "display_name": "Intrusion Lockdown",
-                "status": "idle",
-                "last_run": "2 hours ago",
-                "last_outcome": "success - Blocked 3 IPs",
-                "execution_count": 45,
-                "success_rate": 97.8,
-            },
-            {
-                "name": "health_failsafe",
-                "display_name": "Health Failsafe",
-                "status": "idle",
-                "last_run": "Never",
-                "last_outcome": None,
-                "execution_count": 0,
-                "success_rate": 0.0,
-            },
-            {
-                "name": "integrity_check",
-                "display_name": "Backup Integrity Check",
-                "status": "idle",
-                "last_run": "1 day ago",
-                "last_outcome": "success - All backups valid",
-                "execution_count": 30,
-                "success_rate": 100.0,
-            },
-            {
-                "name": "offboarding",
-                "display_name": "Secure Offboarding",
-                "status": "idle",
-                "last_run": "5 days ago",
-                "last_outcome": "success - 12 accesses revoked",
-                "execution_count": 8,
-                "success_rate": 100.0,
-            },
-            {
-                "name": "auto_remediation",
-                "display_name": "Anomaly Auto-Remediation",
-                "status": "idle",
-                "last_run": "6 hours ago",
-                "last_outcome": "success - Killed runaway process",
-                "execution_count": 52,
-                "success_rate": 96.2,
-            },
-        ]
-    }
+    try:
+        status_data = await FailSafeService.get_failsafe_status(db)
+        return status_data
+    except Exception as e:
+        logger.error(f"Error getting fail-safe status: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to retrieve fail-safe status"
+        )
 
 
 @router.get("/playbooks")
