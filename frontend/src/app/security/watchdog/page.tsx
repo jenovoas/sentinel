@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"; // Note: The original used Button from badge, let's fix to Badge
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
@@ -23,154 +23,154 @@ export default function SecurityWatchdogPage() {
     const [threatsDetected, setThreatsDetected] = useState(0);
     const [eventsToday, setEventsToday] = useState(0);
     const [mounted, setMounted] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    useEffect(() => {
-        // TODO: Fetch real auditd events from backend
-        // For now, using mock data
-        const mockEvents: AuditEvent[] = [
-            {
-                id: "1",
-                timestamp: new Date(Date.now() - 1000 * 60 * 5),
-                type: "execve",
-                severity: "low",
-                description: "Process execution: /usr/bin/python3",
-                action: "Logged",
-                user: "www-data",
-                process: "python3",
-            },
-            {
-                id: "2",
-                timestamp: new Date(Date.now() - 1000 * 60 * 15),
-                type: "open",
-                severity: "low",
-                description: "File access: /etc/passwd",
-                action: "Logged",
-                user: "root",
-                process: "systemd",
-            },
-            {
-                id: "3",
-                timestamp: new Date(Date.now() - 1000 * 60 * 30),
-                type: "chmod",
-                severity: "medium",
-                description: "Permission change: /tmp/script.sh",
-                action: "Logged",
-                user: "jnovoas",
-                process: "chmod",
-            },
-        ];
+    const fetchEvents = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/security/alerts?limit=20`);
+            if (!response.ok) {
+                throw new Error("Failed to fetch security alerts");
+            }
+            const data = await response.json();
 
-        setEvents(mockEvents);
-        setEventsToday(mockEvents.length);
-        setThreatsDetected(0);
-    }, []);
+            // Map backend SecurityAlertResponse to frontend AuditEvent
+            const mappedEvents: AuditEvent[] = data.map((alert: any) => ({
+                id: alert.id,
+                timestamp: new Date(alert.detected_at),
+                type: alert.alert_type,
+                severity: alert.severity,
+                description: alert.description,
+                action: alert.is_investigated ? "Investigated" : "Pending",
+                user: alert.context_data?.user || "N/A",
+                process: alert.local_process || "N/A",
+            }));
 
-    const getSeverityColor = (severity: AuditEvent["severity"]) => {
-        switch (severity) {
-            case "critical":
-                return "bg-rose-500/20 text-rose-400 border-rose-500/30";
-            case "high":
-                return "bg-orange-500/20 text-orange-400 border-orange-500/30";
-            case "medium":
-                return "bg-amber-500/20 text-amber-400 border-amber-500/30";
-            case "low":
-                return "bg-slate-500/20 text-slate-400 border-slate-500/30";
+            setEvents(mappedEvents);
+
+            // Calculate some stats
+            const criticalCount = mappedEvents.filter(e => e.severity === 'critical' || e.severity === 'high').length;
+            setThreatsDetected(criticalCount);
+
+            const today = new Date().toDateString();
+            const todayEvents = mappedEvents.filter(e => new Date(e.timestamp).toDateString() === today).length;
+            setEventsToday(todayEvents);
+
+            if (criticalCount > 0) {
+                setSecurityStatus("critical");
+            } else if (mappedEvents.length > 5) {
+                setSecurityStatus("warning");
+            } else {
+                setSecurityStatus("secure");
+            }
+
+            setError(null);
+        } catch (err: any) {
+            console.error("Error fetching events:", err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
         }
     };
 
-    const getStatusColor = (status: typeof securityStatus) => {
-        switch (status) {
-            case "secure":
-                return "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
-            case "warning":
-                return "text-amber-400 bg-amber-500/10 border-amber-500/20";
+    useEffect(() => {
+        if (mounted) {
+            fetchEvents();
+            // Refresh every 30 seconds
+            const interval = setInterval(fetchEvents, 30000);
+            return () => clearInterval(interval);
+        }
+    }, [mounted]);
+
+    const getSeverityColor = (severity: string) => {
+        switch (severity) {
             case "critical":
-                return "text-rose-400 bg-rose-500/10 border-rose-500/20";
+                return "bg-rose-500/10 text-rose-500 border-rose-500/20";
+            case "high":
+                return "bg-orange-500/10 text-orange-500 border-orange-500/20";
+            case "medium":
+                return "bg-amber-500/10 text-amber-500 border-amber-500/20";
+            default:
+                return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
+        }
+    };
+
+    const getStatusColor = () => {
+        switch (securityStatus) {
+            case "critical":
+                return "text-rose-500";
+            case "warning":
+                return "text-amber-500";
+            default:
+                return "text-emerald-500";
         }
     };
 
     return (
-        <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-gray-100">
-            <div
-                className="absolute inset-0 opacity-50 blur-3xl bg-[radial-gradient(circle_at_20%_20%,rgba(239,68,68,0.12),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(249,115,22,0.12),transparent_30%)]"
-                aria-hidden
-            />
-
-            <div className="relative mx-auto max-w-7xl px-6 py-10">
-                {/* Header */}
-                <header className="mb-8">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm uppercase tracking-[0.25em] text-rose-200/70">Sentinel Security</p>
-                            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-white">
-                                Auditd Watchdog
+        <main className="min-h-screen bg-black text-white p-8 font-sans selection:bg-rose-500/30">
+            <div className="max-w-7xl mx-auto">
+                <header className="mb-12 flex items-center justify-between">
+                    <div>
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="h-8 w-1 bg-rose-600 rounded-full" />
+                            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+                                SECURITY WATCHDOG
                             </h1>
-                            <p className="text-gray-300 mt-2 max-w-2xl">
-                                Real-time kernel-level security monitoring with exploit detection
-                            </p>
                         </div>
-                        <Link href="/dashboard">
-                            <Button variant="outline">← Back to Dashboard</Button>
-                        </Link>
+                        <p className="text-gray-400 flex items-center gap-2">
+                            <span className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
+                            Active kernel-level exploit detection
+                        </p>
                     </div>
+                    <Link href="/dashboard">
+                        <Badge variant="outline" className="px-4 py-2 hover:bg-white/5 cursor-pointer transition-colors">
+                            ← Back to Dashboard
+                        </Badge>
+                    </Link>
                 </header>
 
-                {/* Security Status Hero */}
-                <div className={`mb-8 rounded-2xl border p-6 ${getStatusColor(securityStatus)}`}>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <div className="flex items-center gap-3 mb-2">
-                                <span className="text-4xl">🔒</span>
-                                <h2 className="text-2xl font-semibold">
-                                    {securityStatus === "secure" && "Security Status: SECURE"}
-                                    {securityStatus === "warning" && "Security Warning"}
-                                    {securityStatus === "critical" && "Critical Security Alert"}
-                                </h2>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+                    {/* Status Card */}
+                    <Card className="bg-white/5 backdrop-blur-xl border-white/10">
+                        <CardContent className="pt-6">
+                            <p className="text-sm font-medium text-gray-400 mb-1">Security Status</p>
+                            <div className="flex items-center gap-2">
+                                <p className={`text-3xl font-bold ${getStatusColor()}`}>
+                                    {securityStatus.toUpperCase()}
+                                </p>
+                                {securityStatus === "secure" && <span>🛡️</span>}
                             </div>
-                            <p className="text-sm opacity-80">
-                                Last scan: {mounted ? new Date().toLocaleTimeString() : "--:--:--"} • All systems monitored
-                            </p>
-                        </div>
-                        <div className="text-right">
-                            <p className="text-3xl font-bold">{threatsDetected}</p>
-                            <p className="text-sm opacity-80">Threats Detected (24h)</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Stats Grid */}
-                <div className="grid gap-4 md:grid-cols-4 mb-8">
-                    <Card className="bg-white/5 backdrop-blur-xl border-white/10">
-                        <CardContent className="p-6">
-                            <p className="text-sm text-gray-400 mb-1">Events Today</p>
-                            <p className="text-3xl font-semibold text-cyan-400">{eventsToday}</p>
-                            <p className="text-xs text-gray-500 mt-1">All logged</p>
+                            <p className="text-xs text-gray-500 mt-1">Real-time protection active</p>
                         </CardContent>
                     </Card>
 
+                    {/* Threats Detected */}
                     <Card className="bg-white/5 backdrop-blur-xl border-white/10">
-                        <CardContent className="p-6">
-                            <p className="text-sm text-gray-400 mb-1">Exploits Blocked</p>
-                            <p className="text-3xl font-semibold text-emerald-400">0</p>
-                            <p className="text-xs text-gray-500 mt-1">Last 7 days</p>
+                        <CardContent className="pt-6">
+                            <p className="text-sm font-medium text-gray-400 mb-1">Critical Threats</p>
+                            <p className="text-3xl font-semibold text-rose-500">{threatsDetected}</p>
+                            <p className="text-xs text-gray-500 mt-1">Last 24 hours</p>
                         </CardContent>
                     </Card>
 
+                    {/* Events Today */}
                     <Card className="bg-white/5 backdrop-blur-xl border-white/10">
-                        <CardContent className="p-6">
-                            <p className="text-sm text-gray-400 mb-1">Syscalls Monitored</p>
-                            <p className="text-3xl font-semibold text-purple-400">4</p>
-                            <p className="text-xs text-gray-500 mt-1">execve, open, ptrace, chmod</p>
+                        <CardContent className="pt-6">
+                            <p className="text-sm font-medium text-gray-400 mb-1">Events Today</p>
+                            <p className="text-3xl font-semibold text-white">{eventsToday}</p>
+                            <p className="text-xs text-gray-500 mt-1">Auditd syscall logs</p>
                         </CardContent>
                     </Card>
 
+                    {/* Compliance */}
                     <Card className="bg-white/5 backdrop-blur-xl border-white/10">
-                        <CardContent className="p-6">
-                            <p className="text-sm text-gray-400 mb-1">Compliance</p>
+                        <CardContent className="pt-6">
+                            <p className="text-sm font-medium text-gray-400 mb-1">Compliance</p>
                             <p className="text-3xl font-semibold text-amber-400">95%</p>
                             <p className="text-xs text-gray-500 mt-1">SOC 2 ready</p>
                         </CardContent>
@@ -187,16 +187,33 @@ export default function SecurityWatchdogPage() {
                                         <span className="text-rose-400">🛡️</span>
                                         Auditd Events
                                     </CardTitle>
-                                    <Badge variant="outline" className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20">
-                                        Real-time
-                                    </Badge>
+                                    <div className="flex items-center gap-2">
+                                        {loading && <span className="text-xs text-gray-500 animate-pulse">Refreshing...</span>}
+                                        <Badge variant="outline" className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20">
+                                            Real-time
+                                        </Badge>
+                                    </div>
                                 </div>
                                 <CardDescription>Kernel-level syscall monitoring</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-3">
-                                    {events.length === 0 ? (
-                                        <p className="text-sm text-gray-400 text-center py-8">No events detected</p>
+                                    {error ? (
+                                        <div className="text-center py-8">
+                                            <p className="text-sm text-rose-400 mb-2">Error loading events</p>
+                                            <p className="text-xs text-gray-500">{error}</p>
+                                            <Badge
+                                                variant="outline"
+                                                className="mt-4 cursor-pointer hover:bg-white/10"
+                                                onClick={() => fetchEvents()}
+                                            >
+                                                Retry
+                                            </Badge>
+                                        </div>
+                                    ) : events.length === 0 ? (
+                                        <p className="text-sm text-gray-400 text-center py-8">
+                                            {loading ? "Loading events..." : "No events detected"}
+                                        </p>
                                     ) : (
                                         events.map((event) => (
                                             <div
