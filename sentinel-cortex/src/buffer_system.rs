@@ -1,4 +1,4 @@
-//! # 🛡️ ZERO-LATENCY BUFFER SYSTEM - SENTINEL CORTEX 🛡️
+// src/buffer_system/resonant_buffer.rs! # 🛡️ ZERO-LATENCY BUFFER SYSTEM - SENTINEL CORTEX 🛡️
 //!
 //! High-performance ring buffer for Quantum/Hardware bridge.
 //! Implements lock-free access for S60 data streams.

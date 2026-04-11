@@ -1,4 +1,5 @@
-//! # 🛡️ SENTINEL CORTEX — Módulo de Matemática Soberana 🛡️
+// src/math/s60.rs
+//!! # 🛡️ SENTINEL CORTEX — Módulo de Matemática Soberana 🛡️
 //!
 //! S60: Aritmética sexagesimal interna del Cortex (60^3 / Tertia).
 //! SCALE_0 = 216,000. Tipo soberano para el Soul Verifier y BCI.
