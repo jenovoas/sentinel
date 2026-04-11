@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from typing import List, Dict, Any, Optional
 from sqlalchemy import select, func, desc
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -20,7 +20,7 @@ class FailSafeService:
             severity=severity,
             status=FailSafeStatus.TRIGGERED,
             context_data=context_data,
-            started_at=datetime.utcnow()
+            started_at=datetime.now(UTC)
         )
         db.add(execution)
         await db.commit()
@@ -41,7 +41,7 @@ class FailSafeService:
         if execution:
             execution.status = status
             execution.outcome = outcome
-            execution.finished_at = datetime.utcnow()
+            execution.finished_at = datetime.now(UTC)
             await db.commit()
             await db.refresh(execution)
         return execution
@@ -63,7 +63,7 @@ class FailSafeService:
         total_executions = total_exec_result.scalar() or 0
 
         # Success rate (last 30 days)
-        thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+        thirty_days_ago = datetime.now(UTC) - timedelta(days=30)
         recent_stats_result = await db.execute(
             select(
                 func.count(FailSafeExecution.id).label("total"),
@@ -85,7 +85,7 @@ class FailSafeService:
         last_remediation_str = "Never"
         if last_remediation_dt:
             # Simple relative time for now, or just ISO string
-            diff = datetime.utcnow() - last_remediation_dt
+            diff = datetime.now(UTC) - last_remediation_dt
             if diff.days > 0:
                 last_remediation_str = f"{diff.days} days ago"
             elif diff.seconds // 3600 > 0:
@@ -121,7 +121,7 @@ class FailSafeService:
 
             last_run_str = "Never"
             if stats["last_run"]:
-                diff = datetime.utcnow() - stats["last_run"]
+                diff = datetime.now(UTC) - stats["last_run"]
                 if diff.days > 0:
                     last_run_str = f"{diff.days} days ago"
                 elif diff.seconds // 3600 > 0:

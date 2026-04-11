@@ -10,7 +10,7 @@ Events are queued and sent to N8N webhooks with proper authentication.
 import uuid
 import os
 import logging
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import Literal, Optional, Dict, Any
 
 import httpx
@@ -108,7 +108,7 @@ async def send_to_n8n(playbook: str, event_data: Dict[str, Any], execution_id: u
                 webhook_url,
                 json={
                     **event_data,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "source": "sentinel",
                     "execution_id": str(execution_id),
                 },
