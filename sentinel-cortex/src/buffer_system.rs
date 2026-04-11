@@ -26,7 +26,7 @@ impl ResonantBuffer {
     pub fn new() -> Self {
         let mut vec = Vec::with_capacity(BUFFER_SIZE_S60);
         for _ in 0..BUFFER_SIZE_S60 {
-            vec.push(UnsafeCell::new(S60::new(0, 0, 0, 0, 0)));
+            vec.push(UnsafeCell::new(S60::zero()));
         }
 
         Self {
@@ -84,7 +84,7 @@ impl ResonantBuffer {
 
         // Convert count to percentage S60 (0-60 degrees roughly)
         let degrees = (count as i64 * 60) / BUFFER_SIZE_S60 as i64;
-        S60::new(degrees, 0, 0, 0, 0)
+        S60::from_int(degrees as i32)
     }
 }
 
@@ -102,14 +102,14 @@ mod tests {
 
         let t1 = thread::spawn(move || {
             for i in 0..100 {
-                while !writer_buf.push(S60::new(i as i64, 0, 0, 0, 0)) {
+                while !writer_buf.push(S60::from_int(i)) {
                     // spin
                 }
             }
         });
 
         let t2 = thread::spawn(move || {
-            let mut sum = S60::new(0, 0, 0, 0, 0);
+            let mut sum = S60::zero();
             let mut count = 0;
             while count < 100 {
                 if let Some(val) = reader_buf.pop() {

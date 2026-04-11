@@ -152,8 +152,8 @@ async fn health_handler(
         status: "OK".to_string(),
         version: env!("CARGO_PKG_VERSION").to_string(),
         metrics: MetricsSnapshot {
-            coherence: state.metrics.get_bio_coherence().to_raw(),
-            efficiency: state.metrics.get_scheduler_efficiency().to_raw(),
+            coherence: state.metrics.get_bio_coherence().to_base_units(),
+            efficiency: state.metrics.get_scheduler_efficiency().to_base_units(),
             timestamp_s60: 0, // Placeholder
         },
     })
@@ -202,7 +202,7 @@ pub struct SentinelStatusResponse {
     pub ring_status: String,
     pub xdp_firewall: String,
     pub lsm_cognitive: String,
-    pub s60_resonance: f64,
+    pub s60_resonance: i64,
 }
 
 pub async fn sentinel_status_handler(
@@ -212,7 +212,7 @@ pub async fn sentinel_status_handler(
         ring_status: "SEALED".into(),
         xdp_firewall: "ACTIVE_0_LATENCY".into(),
         lsm_cognitive: "INTERCEPT_ENABLED".into(),
-        s60_resonance: state.metrics.get_bio_coherence().to_raw(),
+        s60_resonance: state.metrics.get_bio_coherence().to_base_units(),
     })
 }
 

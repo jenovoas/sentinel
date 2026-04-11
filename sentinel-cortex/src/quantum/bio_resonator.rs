@@ -26,9 +26,9 @@ impl BioResonator {
     pub fn new() -> Self {
         BioResonator {
             coherence: S60::zero(),
-            decay_factor: S60::new(0, 0, 5, 0, 0),
-            pulse_gain: S60::new(0, 5, 0, 0, 0),
-            threshold_portal: S60::new(0, 54, 0, 0, 0),
+            decay_factor: S60::new(0, 0, 5, 0, 0).unwrap(),
+            pulse_gain: S60::new(0, 5, 0, 0, 0).unwrap(),
+            threshold_portal: S60::new(0, 54, 0, 0, 0).unwrap(),
             last_pulse: Instant::now(),
             dead_man_threshold_ms: 30_000,
         }
@@ -53,7 +53,7 @@ impl BioResonator {
 
     pub fn is_portal_open(&self) -> bool { self.coherence >= self.threshold_portal }
     pub fn is_pilot_present(&self) -> bool { self.last_pulse.elapsed().as_millis() < self.dead_man_threshold_ms as u128 }
-    pub fn get_coherence_raw(&self) -> i64 { self.coherence.to_raw() }
+    pub fn get_coherence_raw(&self) -> i64 { self.coherence.to_base_units() }
     pub fn time_since_pulse_ms(&self) -> u64 { self.last_pulse.elapsed().as_millis() as u64 }
     pub fn reset(&mut self) { self.coherence = S60::zero(); }
 }

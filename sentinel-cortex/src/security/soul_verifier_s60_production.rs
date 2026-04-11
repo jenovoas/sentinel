@@ -2,8 +2,8 @@
 // src/security/soul_verifier_s60_production.rs
 //! PRODUCTION Biometric Verifier - Pure Base-60 (S60) Implementation
 
-use crate::math::S60;
-use crate::math::SPAMath;
+use crate::math::s60::S60;
+use me60os_core::spa_math::SPAMath;
 use me60os_core::spa::SPAError as S60Error;
 use crate::security::soul_verifier_s60::{calculate_lyapunov_s60, chaos_entropy_s60, calculate_q_factor_s60};
 use serde::{Deserialize, Serialize};
@@ -109,7 +109,7 @@ impl BiometricVerifier {
 
     fn compute_biometric_hash_s60(&self, rppg: &[S60], nonce: &[u8]) -> String {
         let mut hasher = Sha3_512::new();
-        for val in rppg { hasher.update(val.to_raw().to_le_bytes()); }
+        for val in rppg { hasher.update(val.to_base_units().to_le_bytes()); }
         hasher.update(nonce);
         hex::encode(hasher.finalize())
     }

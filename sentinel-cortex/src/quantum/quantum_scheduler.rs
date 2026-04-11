@@ -133,9 +133,9 @@ impl QuantumScheduler {
         let resonance = self.portal_detector.calculate_resonance(t);
 
         // Thresholds in S60:
-        let t90 = S60::new(0, 54, 0, 0, 0);
-        let t85 = S60::new(0, 51, 0, 0, 0);
-        let t80 = S60::new(0, 48, 0, 0, 0);
+        let t90 = S60::from_raw(54 * S60::SCALE_1);
+        let t85 = S60::from_raw(51 * S60::SCALE_1);
+        let t80 = S60::from_raw(48 * S60::SCALE_1);
 
         if resonance > t90 {
             5 // Strong resonance
@@ -200,9 +200,12 @@ impl QuantumScheduler {
     pub fn get_stats(&self) -> SchedulerStats {
         let total = self.tasks_in_portal + self.tasks_forced;
         let efficiency = if total > 0 {
-            let num = S60::from_int(self.tasks_in_portal as i64);
-            let den = S60::from_int(total as i64);
-            num.div_safe(den).unwrap_or(S60::zero())
+            let num = S60::from_int(self.tasks_in_portal as i32);
+            let den = S60::from_int(total as i32);
+            match num / den {
+                Ok(val) => val,
+                Err(_) => S60::zero(),
+            }
         } else {
             S60::zero()
         };

@@ -1,21 +1,18 @@
-//! # 🛡️ S60 MATH CONSOLIDATION - SENTINEL CORTEX 🛡️
+//! # 🛡️ SENTINEL CORTEX — Módulo de Matemática Soberana 🛡️
 //!
-//! Unified math bridge via me60os_core/SPA (60^4 accuracy).
-//! Compliant with YATRA Protocol: ZERO DECIMAL CONTAMINATION.
+//! S60: Aritmética sexagesimal interna del Cortex (60^3 / Tertia).
+//! SCALE_0 = 216,000. Tipo soberano para el Soul Verifier y BCI.
+//!
+//! harmonic_logic opera con SPA (me60os_core) directamente.
+//! Ambos dominios son válidos y NO deben mezclarse sin bridge.
+//!
+//! YATRA Protocolo: CERO CONTAMINACIÓN DECIMAL.
 
+/// Lógica armónica — usa SPA de me60os_core directamente
 pub mod harmonic_logic;
 
-/// Legacy S60 module bridge
-pub mod s60 {
-    pub use me60os_core::spa::SPA as S60;
-}
+/// Tipo S60: Aritmética sexagesimal soberana del Cortex (60^3)
+pub mod s60;
 
-/// S60 Math function bridge
-pub mod s60_math {
-    pub use me60os_core::spa_math::SPAMath;
-    pub use me60os_core::spa_math::SPAMath as S60Math;
-}
-
-// Global re-exports for the Cortex
-pub use me60os_core::spa::SPA as S60;
-pub use me60os_core::spa_math::SPAMath;
+/// Funciones matemáticas S60: ln, entropy, fft, sqrt, sin
+pub mod s60_math;
