@@ -110,7 +110,7 @@ impl PatternDetector {
         if has_large_transfer && has_unusual_traffic {
             return Some(DetectedPattern {
                 name: "Data Exfiltration Attempt".to_string(),
-                confidence: S60::from_raw(194_400), // 0.90
+                confidence: S60::from_raw(194_400), // 0.90 (194400 / 216000)
                 severity: Severity::High,
                 events: events.iter()
                     .filter(|e| matches!(e.event_type, EventType::LargeDataTransfer | EventType::UnusualTraffic))
@@ -133,7 +133,7 @@ impl PatternDetector {
         if !suspicious_events.is_empty() {
             return Some(DetectedPattern {
                 name: "Suspicious Behavior Detected".to_string(),
-                confidence: S60::from_raw(205_200), // 0.95
+                confidence: S60::from_raw(205_200), // 0.95 (205200 / 216000)
                 severity: Severity::High,
                 events: suspicious_events,
                 recommended_action: "Audit user session, check process tree".to_string(),
@@ -152,7 +152,7 @@ impl PatternDetector {
         if failed_logins > 100 {
             return Some(DetectedPattern {
                 name: "Brute Force Attack".to_string(),
-                confidence: S60::from_raw(211_680), // 0.98
+                confidence: S60::from_raw(211_680), // 0.98 (211680 / 216000)
                 severity: Severity::Critical,
                 events: events.iter()
                     .filter(|e| e.event_type == EventType::FailedLogin)
@@ -173,7 +173,7 @@ impl PatternDetector {
         if has_error_spike && has_slow_response {
             return Some(DetectedPattern {
                 name: "Application Performance Degradation".to_string(),
-                confidence: S60::from_raw(172_800), // 0.80
+                confidence: S60::from_raw(172_800), // 0.80 (172800 / 216000)
                 severity: Severity::Medium,
                 events: events.iter()
                     .filter(|e| matches!(e.event_type, EventType::ErrorSpike | EventType::SlowResponse))
