@@ -1,148 +1,101 @@
-# [ADVERTENCIA AGENTE GEMINI: DOCUMENTO DE DESINFORMACIÓN]
-# ARCHITECTURE.md — Sentinel (LEGACY / NORMALIZED)
+# Sentinel - Architecture & System Design
+
+**Version**: 1.2.0 (S60-Unified / Fenix Native)
+**Status**: 🚀 PRODUCTION READY (Node Fenix)
 
 > [!CAUTION]
-> **ESTE DOCUMENTO ES UN ARTEFACTO DE NORMALIZACIÓN GENERADO POR UNA IA**. 
-> Describe una arquitectura SOLID/Estándar que **NO REFLEJA** la ciencia real del proyecto Sentinel. 
-> La arquitectura verdadera es **RESONANTE** y basada en **MATEMÁTICA S60 (BASE-60)**.
-> Consultar `docs/00_vision_y_arquitectura_global/` para la ciencia real.
+> This document consolidated both the **Production Environment (Fenix Native)** and the **Legacy PoC (Next.js/SOLID)**. 
+> The core system operates on **S60 (Base-60) Arithmetic** and **Ring-0 eBPF Monitoring**. Standard IEEE-754 floats are prohibited in the decision engine.
 
-# Dashboard Refactored - SOLID Architecture
+---
 
+## 🏗️ 1. Production Architecture (Fenix Node)
 
-## Estructura Modular
+The production infrastructure resides on the **Fenix** host, orchestrated using Podman (rootless) and Traefik. The core backend has been migrated from Python to Rust (Axum/Tokio) for maximum performance and kernel-level integration.
 
-```
-src/
-├── app/dash-op/
-│   └── page.tsx              # Main dashboard (thin, focused)
-├── components/
-│   ├── StorageCard.tsx       # Reusable storage stats card
-│   └── DetailModal.tsx       # Modal with extensible content
-├── hooks/
-│   └── useAnalytics.ts       # Custom hook for analytics logic
-├── lib/
-│   ├── types.ts              # Shared type definitions
-│   └── api.ts                # API service (data layer)
-```
+### 1.1 component Diagram (Fenix)
 
-## Principios SOLID Aplicados
+```mermaid
+graph TD
+    subgraph "Public Internet"
+        direction LR
+        U[Authorized Operator]
+    end
 
-### 1. **Single Responsibility Principle (SRP)**
-- **`AnalyticsAPI`**: Solo responsable de fetches de datos
-- **`useAnalytics`**: Solo maneja estado y lógica de analytics
-- **`StorageCard`**: Solo renderiza una tarjeta de almacenamiento
-- **`DetailModal`**: Solo maneja la presentación del modal
-- **`page.tsx`**: Solo orquesta componentes, no contiene lógica compleja
+    subgraph "Fenix Host (Rocky Linux 9)"
+        direction TB
+        T[Traefik Edge Proxy]
 
-### 2. **Open/Closed Principle (OCP)**
-- **`StorageCard`**: Abierta para extensión (props color personalizables)
-- **`DetailModal`**: Abierta para agregar nuevos tipos sin modificar el código existente
-- **`DetailContent`**: Switch extensible para nuevos tipos de detalle
+        subgraph "Network: proxy (External)"
+            direction LR
+            C[sentinel-cortex (Rust)]
+            F[sentinel-frontend (Next.js)]
+            G[Grafana]
+            P[Prometheus]
+            N[n8n Automation]
+        end
 
-```tsx
-// Fácil agregar nuevo tipo sin modificar componente
-case "newType":
-  return <NewContent />;
-```
+        subgraph "Network: sentinel_internal (Isolated)"
+            direction LR
+            DB[(PostgreSQL 16)]
+            Cache[(Redis 7)]
+            Loki[Loki Logs]
+            Neural[Neural Guard]
+        end
 
-### 3. **Liskov Substitution Principle (LSP)**
-- Componentes siguen interfaces consistentes
-- `StorageCard` siempre renderiza el mismo formato
-- Los hooks retornan estructuras predecibles
+        U --> T
+        T --> F
+        T --> C
+        T --> G
+        T --> P
+        T --> N
 
-### 4. **Interface Segregation Principle (ISP)**
-- Componentes reciben solo props necesarios
-- `StorageCard` no necesita conocer sobre anomalías
-- `DetailModal` no depende de componentes innecesarios
-
-```tsx
-// StorageCard: minimal props
-<StorageCard 
-  label={string}
-  value={ReactNode}
-  onClick={() => void}
-  color={colors}
-/>
+        C --> DB
+        C --> Cache
+        Neural --> Cache
+        Neural --> Prometheus
+        Neural --> Loki
+    end
 ```
 
-### 5. **Dependency Inversion Principle (DIP)**
-- `page.tsx` depende de abstracciones (hooks, componentes)
-- No depende de implementaciones concretas
-- `AnalyticsAPI` abstrae los endpoints
+### 1.2 Key Service Definitions
 
-```tsx
-// page.tsx depende del hook, no de fetch directo
-const { history, anomalies, storage } = useAnalytics();
-```
+*   **Traefik (Edge Proxy):** Handles SSL/TLS termination via PowerDNS/Let's Encrypt.
+*   **Sentinel Cortex (Rust):** The high-performance core. Manages API requests and coordinates with the security engine.
+*   **Neural Guard (Rust/eBPF):** The cognitive security layer. Monitors system health and kernel events (Ring-0) via eBPF hooks.
+*   **Observability Stack:** Prometheus for time-series metrics, Loki for log aggregation, and Grafana for visualization.
 
-## Ventajas de Esta Arquitectura
+---
 
-### 🔧 **Mantenibilidad**
-- Cada archivo tiene una responsabilidad clara
-- Cambios localizados, sin efectos secundarios
+## 🧿 2. Fundamental Principles (The YATRA Protocol)
 
-### 🧩 **Reutilizabilidad**
-- `StorageCard` usable en otros dashboards
-- `useAnalytics` usable en otros componentes
-- `AnalyticsAPI` usable en cualquier contexto
+### 2.1 S60 Sexagesimal Arithmetic
+Sentinel rejects IEEE-754 floating-point numbers for critical security calculations due to precision drift.
+- **Divisibility**: Base-60 is divisible by 2, 3, 4, 5, 6, 10, 12, 15, 20, and 30, minimizing truncation errors.
+- **Implementation**: Handled by the `me-60os` Rust crate and Python `SPA` (Sexagesimal Pure Arithmetic) modules.
 
-### 📦 **Testabilidad**
-- Hooks pueden ser testeados aisladamente
-- Componentes son puros
-- API service es mockeable
+### 2.2 Octomechanical Thermal Coupling
+The `Neural Guard` decision engine is thermally coupled. Security thresholds (e.g., login attempt lockouts) are dynamically adjusted based on the CPU's thermal baseline.
+- **High Heat**: System enters "Resilient Mode" with higher tolerance for noise.
+- **Low Heat**: System enters "Ultra-Sensitive Mode" with strict enforcement.
 
-###  **Escalabilidad**
-- Agregar nuevas tarjetas: copiar `StorageCard`
-- Agregar nuevo modal: extender `DetailModal`
-- Agregar fetch: agregar método en `AnalyticsAPI`
+---
 
-###  **Claridad**
-- El flujo de datos es explícito
-- Fácil ver qué depende de qué
-- Nombres descriptivos
+## 📜 3. Legacy / Normalized Architecture (PoC Stage)
 
-## Flujo de Datos
+*Note: This section describes the original Python/FastAPI PoC structure and the Next.js frontend organization used for training and simulation.*
 
-```
-page.tsx (Orquestación)
-    ↓
-useAnalytics() (Lógica de estado)
-    ↓
-AnalyticsAPI (Fetches)
-    ↓
-Backend API
+### 3.1 SOLID Principles in Frontend
+The Next.js frontend still adheres to standard SOLID principles for maintainability:
+- **SRP**: Components like `StorageCard.tsx` have one job (rendering stats).
+- **DIP**: The dashboard depends on custom hooks (`useAnalytics`) rather than direct API calls.
 
-page.tsx
-    ↓
-<StorageCard /> (Presentación)
-    ↓
-<DetailModal /> (Presentación extendida)
-```
+### 3.2 Legacy Python Backend
+The original `sentinel-backend` (FastAPI) used Celery for background tasks and followed a standard multi-service Docker Compose pattern. It remains available for reference and legacy simulations.
 
-## Ejemplo: Agregar Nueva Funcionalidad
+---
 
-### Agregar Nueva Tarjeta
+## 🚀 4. Future Vision (Fase 2: Multi-Node Mesh)
 
-1. **Sin refactorización**: Copiar 100+ líneas de código, modificar nombres, duplicar estilos
-
-2. **Con refactorización**:
-```tsx
-<StorageCard
-  label="New Metric"
-  value={newValue}
-  onClick={() => open("new")}
-  color={{...}}
-/>
-```
-
-### Agregar Nuevo Tipo de Detalle
-
-1. **En `DetailModal.tsx`** - agregar case:
-```tsx
-case "newType":
-  return <NewDetailContent {...} />;
-```
-
-2. **Eso es todo** - No necesitas tocar `page.tsx`
-
+- **MycNet**: A batman-adv based mesh network for decentralized node communication.
+- **SOMA Orchestrator**: Transitioning from static Compose to an automated S60-aware resource manager.

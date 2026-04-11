@@ -1,33 +1,27 @@
-.PHONY: help up down build restart logs shell clean health test db-check
-
+.PHONY: help up down build restart logs shell clean health certify ps
+ 
 help:
-	@echo "Sentinel - Multi-tenant SaaS Platform"
-	@echo "======================================"
+	@echo "Sentinel - Plataforma SaaS Multi-tenant (Protocolo YATRA)"
+	@echo "=========================================================="
 	@echo ""
-	@echo "Available commands:"
+	@echo "Comandos disponibles:"
 	@echo ""
-	@echo "  make up              - Start all services"
-	@echo "  make down            - Stop all services"
-	@echo "  make build           - Build all containers"
-	@echo "  make rebuild         - Rebuild containers without cache"
-	@echo "  make restart         - Restart all services"
-	@echo "  make restart-backend - Restart backend service only"
-	@echo "  make logs            - View logs from all services"
-	@echo "  make logs-backend    - View backend logs"
-	@echo "  make logs-frontend   - View frontend logs"
-	@echo "  make logs-worker     - View Celery worker logs"
-	@echo "  make logs-db         - View database logs"
-	@echo "  make shell-backend   - Open shell in backend container"
-	@echo "  make shell-frontend  - Open shell in frontend container"
-	@echo "  make shell-db        - Open PostgreSQL shell"
-	@echo "  make db-backup       - Backup database"
-	@echo "  make health          - Check service health"
-	@echo "  make db-check        - Run local DB import/connection/health checks"
-	@echo "  make db-migrate      - Run Alembic migrations (backend container)"
-	@echo "  make clean           - Stop services and remove volumes"
-	@echo "  make test-api        - Test API endpoints"
-	@echo "  make ps              - Show running containers"
+	@echo "  make up              - Iniciar todos los servicios (Podman)"
+	@echo "  make down            - Detener todos los servicios"
+	@echo "  make build           - Construir todas las imágenes"
+	@echo "  make restart         - Reiniciar todos los servicios"
+	@echo "  make logs            - Ver logs de todos los servicios"
+	@echo "  make shell-cortex    - Abrir terminal en el contenedor Cortex"
+	@echo "  make health          - Verificar salud de los servicios"
+	@echo "  make certify         - Ejecutar certificación aritmética S60"
+	@echo "  make clean           - Limpiar servicios y volúmenes"
+	@echo "  make ps              - Listar contenedores activos"
 	@echo ""
+
+certify:
+	@echo "🧪 Ejecutando Certificación de Integridad Aritmética S60..."
+	cargo run --release -p sentinel-cortex --bin certify_s60
+
 
 up:
 	@echo "🚀 Starting Full Sentinel Stack (Infrastructure + Backend + UI + Observability)..."

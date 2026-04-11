@@ -1,278 +1,104 @@
-# 🚀 Servicios Activos de Sentinel
+# 🚀 Servicios Activos de Sentinel (Producción Fenix)
 
-**Última actualización**: 14 de Diciembre, 2025  
-**Estado**: 🟢 12/12 servicios funcionando
-
----
-
-## 📋 Servicios Principales
-
-### 1. Frontend (Next.js)
-- **URL**: http://localhost:3000
-- **Descripción**: Aplicación web principal
-- **Puerto**: 3000
-- **Estado**: ✅ Activo
-
-### 2. Backend API (FastAPI)
-- **URL**: http://localhost:8000
-- **Documentación**: http://localhost:8000/docs
-- **Redoc**: http://localhost:8000/redoc
-- **Puerto**: 8000
-- **Estado**: ✅ Healthy
-- **Endpoints principales**:
-  - `/api/v1/health` - Health check
-  - `/api/v1/analytics/*` - Analytics y métricas
-  - `/api/v1/users/*` - Gestión de usuarios
-  - `/api/v1/tenants/*` - Gestión de tenants
+**Última actualización**: 11 de Abril, 2026
+**Estado**: 🟢 OPERATIVO (Axioma S60)
+**Infraestructura**: Podman Rootless (Rocky Linux 9)
 
 ---
 
-## 🗄️ Bases de Datos y Cache
+## 📋 Servicios de Núcleo (Core)
 
-### 3. PostgreSQL
-- **Host**: localhost:5432
-- **Database**: sentinel_db
-- **Usuario**: sentinel_user
-- **Password**: sentinel_password
-- **Estado**: ✅ Healthy
-- **Conexión**:
-  ```bash
-  podman-compose exec postgres psql -U sentinel_user -d sentinel_db
-  ```
+### 1. Sentinel Cortex (Rust/Axum)
+- **URL**: <https://cortex.pinguinoseguro.cl/api>
+- **Descripción**: Motor principal asíncrono. Gestiona la lógica de negocio y la integración eBPF.
+- **Estado**: ✅ Activo (Ring-0 Enabled)
+- **Endpoints Clave**:
+  - `/api/health` - Salud del sistema S60.
+  - `/api/metrics` - Exportador nativo de Prometheus.
 
-### 4. Redis
-- **Host**: localhost:6379
-- **Descripción**: Cache y message broker
-- **Estado**: ✅ Healthy
-- **Conexión**:
-  ```bash
-  podman-compose exec redis redis-cli
-  ```
+### 2. Dashboard UI (Next.js)
+- **URL**: <https://cortex.pinguinoseguro.cl>
+- **Descripción**: Interfaz de control y visualización de la malla Sentinel.
+- **Estado**: ✅ Activo
 
 ---
 
-## 📊 Observabilidad (Monitoring Stack)
+## 🗄️ Persistencia y Mensajería
 
-### 5. Grafana
-- **URL**: http://localhost:3001
-- **Usuario**: admin
-- **Password**: REDACTED_PASSWORD
-- **Puerto**: 3001
-- **Estado**: ✅ Activo
-- **Dashboards disponibles**:
-  - Host Metrics Overview
-  - System Logs
-  - SLO & Error Budget
+### 3. PostgreSQL 16 (Relational DB)
+- **Container**: `sentinel-postgres`
+- **Uso**: Configuración, auditoría persistente y gestión de tenants.
+- **Estado**: ✅ Healthy
 
-### 6. Prometheus
-- **URL**: http://localhost:9090
-- **Descripción**: Métricas time-series
-- **Puerto**: 9090
-- **Estado**: ✅ Activo
-- **Endpoints útiles**:
-  - `/targets` - Estado de targets
-  - `/alerts` - Alertas activas
-  - `/graph` - Query interface
+### 4. Redis 7 (Cache & Streams)
+- **Container**: `sentinel-redis`
+- **Uso**: Message broker para eventos eBPF y caché de alta velocidad.
+- **Estado**: ✅ Healthy
 
-### 7. Loki
-- **URL**: http://localhost:3100
-- **Descripción**: Agregación de logs
-- **Puerto**: 3100
-- **Estado**: ✅ Activo
-- **API**: http://localhost:3100/ready
+---
 
-### 8. Node Exporter
-- **URL**: http://localhost:9100
-- **Descripción**: Métricas del host (CPU, memoria, disco, red)
-- **Puerto**: 9100
-- **Estado**: ✅ Activo
-- **Métricas**: http://localhost:9100/metrics
+## 📊 Stack de Observabilidad
 
-### 9. PostgreSQL Exporter
-- **URL**: http://localhost:9187
-- **Descripción**: Métricas de PostgreSQL
-- **Puerto**: 9187
+### 5. Grafana (Visualización)
+- **URL**: <https://grafana.pinguinoseguro.cl>
+- **Descripción**: Centro de mando para métricas térmicas y de seguridad.
 - **Estado**: ✅ Activo
-- **Métricas**: http://localhost:9187/metrics
 
-### 10. Redis Exporter
-- **URL**: http://localhost:9121
-- **Descripción**: Métricas de Redis
-- **Puerto**: 9121
+### 6. Prometheus (Time Series)
+- **URL**: <https://prometheus.pinguinoseguro.cl>
+- **Descripción**: Recolección de métricas de Cortex, Neural Guard y exporters del sistema.
 - **Estado**: ✅ Activo
-- **Métricas**: http://localhost:9121/metrics
+
+### 7. Loki (Logs)
+- **Host**: `sentinel-loki:3100` (Agregado en Grafana)
+- **Descripción**: Almacenamiento distribuido de logs de contenedores y sistema.
+- **Estado**: ✅ Activo
+
+---
+
+## 🛡️ Seguridad y Cognición
+
+### 8. Neural Guard (Decision Engine)
+- **Container**: `sentinel-neural-guard`
+- **Descripción**: Nervio cognitivo que ajusta umbrales de seguridad basado en carga térmica y eventos de red.
+- **Estado**: ✅ Activo (Thermal Coupling ON)
 
 ---
 
 ## 🤖 Automatización
 
-### 11. n8n
-- **URL**: http://localhost:5678
-- **Usuario**: admin
-- **Password**: REDACTED_PASSWORD
-- **Puerto**: 5678
-- **Estado**: ✅ Healthy
-- **Descripción**: Workflow automation platform
-- **Uso**: Crear workflows para reportes automáticos, alertas, integraciones
-
----
-
-## 🔀 Proxy y Load Balancer
-
-### 12. Nginx
-- **HTTP**: http://localhost:80
-- **HTTPS**: https://localhost:443
-- **Puerto HTTP**: 80
-- **Puerto HTTPS**: 443
-- **Estado**: ✅ Healthy
-- **Descripción**: Reverse proxy con rate limiting
-
----
-
-## 🔧 Servicios en Background
-
-### Celery Worker
-- **Descripción**: Procesamiento asíncrono de tareas
+### 9. n8n (Workflow Automation)
+- **URL**: <https://n8n.pinguinoseguro.cl>
+- **Descripción**: Orquestación de respuestas ante incidentes y reportes automáticos.
 - **Estado**: ✅ Activo
-- **Tareas**:
-  - Recolección de métricas (cada 15s)
-  - Limpieza de datos antiguos (diario)
-  - Health checks (cada 60s)
 
-### Celery Beat
-- **Descripción**: Scheduler de tareas periódicas
+---
+
+## 🌐 Sitios Web Adicionales
+
+### 10. Portfolio Pinguino Seguro
+- **URL**: <https://portfolio.pinguinoseguro.cl>
 - **Estado**: ✅ Activo
-- **Schedule**:
-  - `collect-metrics`: cada 15 segundos
-  - `cleanup-old-metrics`: diario a medianoche
-  - `cleanup-old-audit-logs`: diario a las 2 AM
-  - `health-check`: cada 60 segundos
 
-### Promtail
-- **Puerto**: 9080
-- **Descripción**: Collector de logs para Loki
+### 11. La Espiguita (ERP/Landing)
+- **URL**: <https://laespiguita.pinguinoseguro.cl>
 - **Estado**: ✅ Activo
-- **Fuentes**: journald, Docker containers
 
 ---
 
-## 📝 Comandos Útiles
+## 🔧 Comandos de Supervisión (Fenix)
 
-### Ver estado de todos los servicios
 ```bash
-podman-compose ps
-```
+# Verificar estado global
+podman ps --all
 
-### Ver logs de un servicio específico
-```bash
-podman-compose logs -f backend
-podman-compose logs -f frontend
-podman-compose logs -f grafana
-```
+# Ver logs del motor Cortex
+podman logs -f sentinel-cortex
 
-### Reiniciar un servicio
-```bash
-podman-compose restart backend
-podman-compose restart prometheus
-```
-
-### Acceder a un contenedor
-```bash
-podman-compose exec backend bash
-podman-compose exec postgres psql -U sentinel_user -d sentinel_db
-podman-compose exec redis redis-cli
-```
-
-### Verificar métricas desde la API
-```bash
-# Métricas recientes
-curl http://localhost:8000/api/v1/analytics/metrics/recent | jq
-
-# Estadísticas de las últimas 24 horas
-curl "http://localhost:8000/api/v1/analytics/statistics?hours=24" | jq
-
-# Anomalías detectadas
-curl "http://localhost:8000/api/v1/analytics/anomalies?hours=24" | jq
+# Ejecutar certificación de integridad aritmética S60
+cargo run --release -p sentinel-cortex --bin certify_s60
 ```
 
 ---
 
-## 🎯 Accesos Rápidos (Copiar y Pegar)
-
-```
-Frontend:           http://localhost:3000
-API Backend:        http://localhost:8000
-API Docs:           http://localhost:8000/docs
-Grafana:            http://localhost:3001  (admin / REDACTED_PASSWORD)
-Prometheus:         http://localhost:9090
-n8n:                http://localhost:5678  (admin / REDACTED_PASSWORD)
-PostgreSQL:         localhost:5432         (sentinel_user / sentinel_password)
-Redis:              localhost:6379
-```
-
----
-
-## 📊 Resumen de Puertos
-
-| Puerto | Servicio | Acceso |
-|--------|----------|--------|
-| 3000 | Frontend | Web UI |
-| 3001 | Grafana | Dashboards |
-| 3100 | Loki | Logs API |
-| 5432 | PostgreSQL | Database |
-| 5678 | n8n | Automation |
-| 6379 | Redis | Cache |
-| 8000 | Backend | REST API |
-| 9090 | Prometheus | Metrics |
-| 9100 | Node Exporter | Host metrics |
-| 9121 | Redis Exporter | Redis metrics |
-| 9187 | PostgreSQL Exporter | DB metrics |
-| 80 | Nginx HTTP | Proxy |
-| 443 | Nginx HTTPS | Proxy SSL |
-
----
-
-## 🔐 Credenciales
-
-### Grafana
-- Usuario: `admin`
-- Password: `REDACTED_PASSWORD`
-
-### n8n
-- Usuario: `admin`
-- Password: `REDACTED_PASSWORD`
-
-### PostgreSQL
-- Usuario: `sentinel_user`
-- Password: `sentinel_password`
-- Database: `sentinel_db`
-
-### Redis
-- Sin password (localhost only)
-
----
-
-## ✅ Verificación Rápida
-
-Para verificar que todo está funcionando:
-
-```bash
-# 1. Ver estado de servicios
-podman-compose ps
-
-# 2. Probar API
-curl http://localhost:8000/api/v1/health
-
-# 3. Probar Prometheus
-curl http://localhost:9090/-/healthy
-
-# 4. Probar Loki
-curl http://localhost:3100/ready
-
-# 5. Ver métricas recientes
-curl http://localhost:8000/api/v1/analytics/metrics/recent | jq '.count'
-```
-
----
-
-**Nota**: Todos los servicios están configurados para reinicio automático en caso de fallo.
+**Nota**: Todos los accesos están protegidos vía Traefik con autenticación BasicAuth o TLS según configuración.

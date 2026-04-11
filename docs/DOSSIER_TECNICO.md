@@ -1,4 +1,4 @@
-# 🧠 Dossier Técnico: Arquitectura Sentinel/YATRA
+# 🧠 Dossier Técnico: Arquitectura Sentinel
 
 **Para:** Nuevo Arquitecto de Software  
 **De:** Agente `sentinel_research`  
