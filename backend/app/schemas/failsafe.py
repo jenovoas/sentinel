@@ -1,10 +1,12 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
+from pydantic import BaseModel
+from typing import List, Optional
 from datetime import datetime
 from ..models.failsafe import FailSafeStatus
 
+
 class PlaybookStatusSchema(BaseModel):
     """Status of a playbook execution"""
+
     name: str
     display_name: str
     status: str
@@ -13,8 +15,10 @@ class PlaybookStatusSchema(BaseModel):
     execution_count: int = 0
     success_rate: float = 0.0
 
+
 class FailSafeStatusResponse(BaseModel):
     """Aggregated status of the fail-safe layer"""
+
     status: str
     last_auto_remediation: Optional[str] = None
     active_playbooks: int
@@ -22,8 +26,10 @@ class FailSafeStatusResponse(BaseModel):
     total_executions: int
     playbooks: List[PlaybookStatusSchema]
 
+
 class FailSafeExecutionSchema(BaseModel):
     """Schema for a single execution record"""
+
     id: str
     playbook: str
     status: FailSafeStatus

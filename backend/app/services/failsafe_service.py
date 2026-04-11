@@ -1,9 +1,10 @@
 import uuid
 from datetime import datetime, timedelta, UTC
-from typing import List, Dict, Any, Optional
+from typing import Dict, Any, Optional
 from sqlalchemy import select, func, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..models.failsafe import FailSafeExecution, FailSafeStatus
+
 
 class FailSafeService:
     @staticmethod
@@ -12,7 +13,7 @@ class FailSafeService:
         playbook: str,
         triggered_by: str,
         severity: str,
-        context_data: Optional[Dict[str, Any]] = None
+        context_data: Optional[Dict[str, Any]] = None,
     ) -> FailSafeExecution:
         execution = FailSafeExecution(
             playbook=playbook,
@@ -20,7 +21,7 @@ class FailSafeService:
             severity=severity,
             status=FailSafeStatus.TRIGGERED,
             context_data=context_data,
-            started_at=datetime.now(UTC)
+            started_at=datetime.now(UTC),
         )
         db.add(execution)
         await db.commit()
@@ -32,7 +33,7 @@ class FailSafeService:
         db: AsyncSession,
         execution_id: uuid.UUID,
         status: FailSafeStatus,
-        outcome: Optional[str] = None
+        outcome: Optional[str] = None,
     ) -> Optional[FailSafeExecution]:
         result = await db.execute(
             select(FailSafeExecution).where(FailSafeExecution.id == execution_id)
@@ -67,7 +68,9 @@ class FailSafeService:
         recent_stats_result = await db.execute(
             select(
                 func.count(FailSafeExecution.id).label("total"),
-                func.count(FailSafeExecution.id).filter(FailSafeExecution.status == FailSafeStatus.SUCCESS).label("success")
+                func.count(FailSafeExecution.id)
+                .filter(FailSafeExecution.status == FailSafeStatus.SUCCESS)
+                .label("success"),
             ).where(FailSafeExecution.started_at >= thirty_days_ago)
         )
         recent_stats = recent_stats_result.mappings().first()
@@ -101,7 +104,9 @@ class FailSafeService:
             pb_result = await db.execute(
                 select(
                     func.count(FailSafeExecution.id).label("count"),
-                    func.count(FailSafeExecution.id).filter(FailSafeExecution.status == FailSafeStatus.SUCCESS).label("success"),
+                    func.count(FailSafeExecution.id)
+                    .filter(FailSafeExecution.status == FailSafeStatus.SUCCESS)
+                    .label("success"),
                     func.max(FailSafeExecution.started_at).label("last_run"),
                     # Get the outcome of the last run
                 ).where(FailSafeExecution.playbook == pb["name"])
@@ -112,7 +117,10 @@ class FailSafeService:
             if stats["last_run"]:
                 outcome_result = await db.execute(
                     select(FailSafeExecution.outcome, FailSafeExecution.status)
-                    .where(FailSafeExecution.playbook == pb["name"], FailSafeExecution.started_at == stats["last_run"])
+                    .where(
+                        FailSafeExecution.playbook == pb["name"],
+                        FailSafeExecution.started_at == stats["last_run"],
+                    )
                     .limit(1)
                 )
                 last_run_data = outcome_result.mappings().first()
@@ -135,15 +143,17 @@ class FailSafeService:
             if stats["count"] > 0:
                 pb_success_rate = (stats["success"] / stats["count"]) * 100
 
-            playbook_stats.append({
-                "name": pb["name"],
-                "display_name": pb["display_name"],
-                "status": "idle",  # Could be dynamic if we check active ones
-                "last_run": last_run_str,
-                "last_outcome": last_outcome,
-                "execution_count": stats["count"],
-                "success_rate": pb_success_rate,
-            })
+            playbook_stats.append(
+                {
+                    "name": pb["name"],
+                    "display_name": pb["display_name"],
+                    "status": "idle",  # Could be dynamic if we check active ones
+                    "last_run": last_run_str,
+                    "last_outcome": last_outcome,
+                    "execution_count": stats["count"],
+                    "success_rate": pb_success_rate,
+                }
+            )
 
         return {
             "status": "active",
@@ -151,5 +161,5 @@ class FailSafeService:
             "active_playbooks": len(PLAYBOOKS),
             "success_rate_30d": round(success_rate_30d, 1),
             "total_executions": total_executions,
-            "playbooks": playbook_stats
+            "playbooks": playbook_stats,
         }

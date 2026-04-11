@@ -17,6 +17,7 @@ from app.database import Base
 
 class FailSafeStatus(str, PyEnum):
     """Status of a playbook execution"""
+
     IDLE = "idle"
     WAITING = "waiting"
     TRIGGERED = "triggered"
@@ -26,13 +27,14 @@ class FailSafeStatus(str, PyEnum):
 
 class FailSafeExecution(Base):
     """Historical record of fail-safe playbook executions"""
+
     __tablename__ = "failsafe_executions"
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         primary_key=True,
         default=uuid.uuid4,
-        server_default=func.gen_random_uuid()
+        server_default=func.gen_random_uuid(),
     )
 
     # Playbook details
@@ -41,7 +43,7 @@ class FailSafeExecution(Base):
         Enum(FailSafeStatus, name="failsafe_status_enum"),
         default=FailSafeStatus.TRIGGERED,
         nullable=False,
-        index=True
+        index=True,
     )
 
     # Trigger info
@@ -50,14 +52,10 @@ class FailSafeExecution(Base):
 
     # Timing
     started_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        nullable=False,
-        index=True
+        DateTime(timezone=True), server_default=func.now(), nullable=False, index=True
     )
     finished_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True),
-        nullable=True
+        DateTime(timezone=True), nullable=True
     )
 
     # Context and Outcome

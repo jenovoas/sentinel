@@ -37,24 +37,31 @@ N8N_WEBHOOK_TOKEN = os.getenv("N8N_WEBHOOK_TOKEN", "")
 # MODELS
 # ============================================================================
 
+
 class FailSafeEvent(BaseModel):
     """Event to trigger fail-safe playbook"""
+
     playbook: Literal[
         "backup_recovery",
-        "intrusion_lockdown", 
+        "intrusion_lockdown",
         "health_failsafe",
         "integrity_check",
         "offboarding",
-        "auto_remediation"
+        "auto_remediation",
     ]
     severity: Literal["low", "medium", "high", "critical"]
     context: Dict[str, Any] = Field(..., description="Event-specific context")
-    triggered_by: str = Field(..., description="What triggered this (e.g., 'backup_failed')")
-    wait_time_minutes: int = Field(default=10, description="How long to wait before triggering")
+    triggered_by: str = Field(
+        ..., description="What triggered this (e.g., 'backup_failed')"
+    )
+    wait_time_minutes: int = Field(
+        default=10, description="How long to wait before triggering"
+    )
 
 
 class PlaybookStatus(BaseModel):
     """Status of a playbook execution"""
+
     playbook: str
     status: Literal["idle", "waiting", "triggered", "success", "failed"]
     last_run: Optional[str] = None
@@ -80,20 +87,23 @@ PLAYBOOK_WEBHOOKS = {
 # HELPER FUNCTIONS
 # ============================================================================
 
-async def send_to_n8n(playbook: str, event_data: Dict[str, Any], execution_id: uuid.UUID) -> bool:
+
+async def send_to_n8n(
+    playbook: str, event_data: Dict[str, Any], execution_id: uuid.UUID
+) -> bool:
     """
     Send event to N8N webhook and update database status
-    
+
     Args:
         playbook: Playbook name
         event_data: Event context and metadata
         execution_id: Database record ID to update
-        
+
     Returns:
         True if successful, False otherwise
     """
     webhook_url = PLAYBOOK_WEBHOOKS.get(playbook)
-    
+
     if not webhook_url:
         logger.error(f"Unknown playbook: {playbook}")
         async with AsyncDatabaseSession() as db:
@@ -101,7 +111,7 @@ async def send_to_n8n(playbook: str, event_data: Dict[str, Any], execution_id: u
                 db, execution_id, FailSafeStatus.FAILED, f"Unknown playbook: {playbook}"
             )
         return False
-    
+
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.post(
@@ -115,23 +125,29 @@ async def send_to_n8n(playbook: str, event_data: Dict[str, Any], execution_id: u
                 headers={
                     "Authorization": f"Bearer {N8N_WEBHOOK_TOKEN}",
                     "Content-Type": "application/json",
-                }
+                },
             )
-            
+
             async with AsyncDatabaseSession() as db:
                 if response.status_code == 200:
                     logger.info(f"✓ Sent event to {playbook} playbook")
                     await FailSafeService.update_execution_status(
-                        db, execution_id, FailSafeStatus.SUCCESS, "Playbook triggered successfully"
+                        db,
+                        execution_id,
+                        FailSafeStatus.SUCCESS,
+                        "Playbook triggered successfully",
                     )
                     return True
                 else:
                     logger.error(f"✗ N8N webhook failed: {response.status_code}")
                     await FailSafeService.update_execution_status(
-                        db, execution_id, FailSafeStatus.FAILED, f"N8N error: {response.status_code}"
+                        db,
+                        execution_id,
+                        FailSafeStatus.FAILED,
+                        f"N8N error: {response.status_code}",
                     )
                     return False
-                
+
     except Exception as e:
         logger.error(f"✗ Error sending to N8N: {e}")
         async with AsyncDatabaseSession() as db:
@@ -145,20 +161,21 @@ async def send_to_n8n(playbook: str, event_data: Dict[str, Any], execution_id: u
 # API ENDPOINTS
 # ============================================================================
 
+
 @router.post("/trigger")
 async def trigger_failsafe(
     event: FailSafeEvent,
     background_tasks: BackgroundTasks,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Trigger a fail-safe playbook
-    
+
     This endpoint is called by Sentinel when:
     - An alert is not acknowledged in time
     - A critical event needs automated response
     - Primary systems fail to respond
-    
+
     The event is recorded in the database and sent to N8N in the background.
     """
     try:
@@ -168,14 +185,14 @@ async def trigger_failsafe(
             playbook=event.playbook,
             triggered_by=event.triggered_by,
             severity=event.severity,
-            context_data=event.context
+            context_data=event.context,
         )
 
         logger.warning(
             f"🛡️ Fail-safe triggered: {event.playbook} "
             f"(severity: {event.severity}, execution_id: {execution.id})"
         )
-        
+
         # Send to N8N in background
         background_tasks.add_task(
             send_to_n8n,
@@ -187,21 +204,20 @@ async def trigger_failsafe(
                 "triggered_by": event.triggered_by,
                 "wait_time_minutes": event.wait_time_minutes,
             },
-            execution.id
+            execution.id,
         )
-        
+
         return {
             "status": "queued",
             "execution_id": execution.id,
             "playbook": event.playbook,
             "message": f"Fail-safe playbook '{event.playbook}' queued for execution",
         }
-        
+
     except Exception as e:
         logger.error(f"Error triggering fail-safe: {e}")
         raise HTTPException(
-            status_code=500,
-            detail=f"Failed to trigger fail-safe: {str(e)}"
+            status_code=500, detail=f"Failed to trigger fail-safe: {str(e)}"
         )
 
 
@@ -209,7 +225,7 @@ async def trigger_failsafe(
 async def get_failsafe_status(db: AsyncSession = Depends(get_db)):
     """
     Get fail-safe layer status
-    
+
     Returns:
         - Active playbooks
         - Recent executions
@@ -221,8 +237,7 @@ async def get_failsafe_status(db: AsyncSession = Depends(get_db)):
     except Exception as e:
         logger.error(f"Error getting fail-safe status: {e}")
         raise HTTPException(
-            status_code=500,
-            detail="Failed to retrieve fail-safe status"
+            status_code=500, detail="Failed to retrieve fail-safe status"
         )
 
 
@@ -230,7 +245,7 @@ async def get_failsafe_status(db: AsyncSession = Depends(get_db)):
 async def list_playbooks():
     """
     List all available fail-safe playbooks
-    
+
     Returns:
         List of playbooks with descriptions
     """
@@ -241,42 +256,72 @@ async def list_playbooks():
                 "name": "Backup Recovery",
                 "description": "Retry failed backups with verification and multi-channel notification",
                 "trigger": "Backup fails + no acknowledge in 15 minutes",
-                "actions": ["Retry backup", "Verify integrity", "Notify team", "Create ticket"],
+                "actions": [
+                    "Retry backup",
+                    "Verify integrity",
+                    "Notify team",
+                    "Create ticket",
+                ],
             },
             {
                 "id": "intrusion_lockdown",
                 "name": "Intrusion Lockdown",
                 "description": "Automatically block malicious IPs and lock compromised accounts",
                 "trigger": "Critical security event + no response in 10 minutes",
-                "actions": ["Block IP", "Lock account", "Revoke sessions", "Notify security"],
+                "actions": [
+                    "Block IP",
+                    "Lock account",
+                    "Revoke sessions",
+                    "Notify security",
+                ],
             },
             {
                 "id": "health_failsafe",
                 "name": "Health Failsafe",
                 "description": "Auto-restart failed services and switch to standby nodes",
                 "trigger": "Health check fails + no response in 5 minutes",
-                "actions": ["Verify failure", "Restart service", "Monitor recovery", "Escalate"],
+                "actions": [
+                    "Verify failure",
+                    "Restart service",
+                    "Monitor recovery",
+                    "Escalate",
+                ],
             },
             {
                 "id": "integrity_check",
                 "name": "Backup Integrity Check",
                 "description": "Daily validation of backup integrity and RPO compliance",
                 "trigger": "Scheduled daily at 2 AM",
-                "actions": ["Verify checksums", "Check RPO", "Test restore", "Generate report"],
+                "actions": [
+                    "Verify checksums",
+                    "Check RPO",
+                    "Test restore",
+                    "Generate report",
+                ],
             },
             {
                 "id": "offboarding",
                 "name": "Secure Offboarding",
                 "description": "Complete access revocation for departing users",
                 "trigger": "User marked for offboarding + no completion in 2 hours",
-                "actions": ["Disable account", "Revoke keys", "Remove groups", "Audit trail"],
+                "actions": [
+                    "Disable account",
+                    "Revoke keys",
+                    "Remove groups",
+                    "Audit trail",
+                ],
             },
             {
                 "id": "auto_remediation",
                 "name": "Anomaly Auto-Remediation",
                 "description": "Automatically fix detected anomalies (CPU, memory, disk)",
                 "trigger": "AI detects anomaly + confidence > 95% + no response in 5 min",
-                "actions": ["Verify anomaly", "Identify cause", "Apply fix", "Monitor impact"],
+                "actions": [
+                    "Verify anomaly",
+                    "Identify cause",
+                    "Apply fix",
+                    "Monitor impact",
+                ],
             },
         ]
     }
