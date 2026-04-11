@@ -7,13 +7,18 @@ Acts as the bridge between Sentinel and automated remediation.
 Events are queued and sent to N8N webhooks with proper authentication.
 """
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends
 from pydantic import BaseModel, Field
 from typing import Literal, Optional, Dict, Any
 from datetime import datetime
 import httpx
 import os
 import logging
+import uuid
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.database import get_db
+from app.services.failsafe_service import track_execution, update_execution, get_failsafe_stats
 
 router = APIRouter(prefix="/api/v1/failsafe", tags=["fail-safe"])
 logger = logging.getLogger(__name__)
@@ -72,13 +77,14 @@ PLAYBOOK_WEBHOOKS = {
 # HELPER FUNCTIONS
 # ============================================================================
 
-async def send_to_n8n(playbook: str, event_data: Dict[str, Any]) -> bool:
+async def send_to_n8n(playbook: str, event_data: Dict[str, Any], execution_id: uuid.UUID) -> bool:
     """
     Send event to N8N webhook
     
     Args:
         playbook: Playbook name
         event_data: Event context and metadata
+        execution_id: ID of the execution record in database
         
     Returns:
         True if successful, False otherwise
@@ -95,6 +101,7 @@ async def send_to_n8n(playbook: str, event_data: Dict[str, Any]) -> bool:
                 webhook_url,
                 json={
                     **event_data,
+                    "execution_id": str(execution_id),
                     "timestamp": datetime.utcnow().isoformat(),
                     "source": "sentinel",
                 },
@@ -123,7 +130,8 @@ async def send_to_n8n(playbook: str, event_data: Dict[str, Any]) -> bool:
 @router.post("/trigger")
 async def trigger_failsafe(
     event: FailSafeEvent,
-    background_tasks: BackgroundTasks
+    background_tasks: BackgroundTasks,
+    db: AsyncSession = Depends(get_db)
 ):
     """
     Trigger a fail-safe playbook
@@ -136,12 +144,21 @@ async def trigger_failsafe(
     The event is queued and sent to N8N after the specified wait time.
     """
     try:
-        # Log the trigger
+        # 1. Log the trigger
         logger.warning(
             f"🛡️ Fail-safe triggered: {event.playbook} "
             f"(severity: {event.severity}, wait: {event.wait_time_minutes}m)"
         )
         
+        # 2. Track in database
+        execution = await track_execution(
+            db=db,
+            playbook=event.playbook,
+            triggered_by=event.triggered_by,
+            severity=event.severity,
+            context_data=event.context
+        )
+
         # In production, you'd queue this with Redis/Celery
         # For now, send immediately in background
         background_tasks.add_task(
@@ -153,11 +170,13 @@ async def trigger_failsafe(
                 "context": event.context,
                 "triggered_by": event.triggered_by,
                 "wait_time_minutes": event.wait_time_minutes,
-            }
+            },
+            execution.id
         )
         
         return {
             "status": "queued",
+            "execution_id": str(execution.id),
             "playbook": event.playbook,
             "message": f"Fail-safe playbook '{event.playbook}' queued for execution",
             "wait_time_minutes": event.wait_time_minutes,
@@ -172,7 +191,7 @@ async def trigger_failsafe(
 
 
 @router.get("/status")
-async def get_failsafe_status():
+async def get_failsafe_status(db: AsyncSession = Depends(get_db)):
     """
     Get fail-safe layer status
     
@@ -181,72 +200,41 @@ async def get_failsafe_status():
         - Recent executions
         - Success rates
     """
-    # TODO: Implement proper tracking with database
-    # For now, return mock data
+    try:
+        stats = await get_failsafe_stats(db)
+        return stats
+    except Exception as e:
+        logger.error(f"Error getting fail-safe status: {e}")
+        # Fallback to some default structure if DB fails, but with real error logging
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch fail-safe status: {str(e)}"
+        )
+
+
+@router.post("/execution/{execution_id}/update")
+async def update_execution_status(
+    execution_id: uuid.UUID,
+    status: Literal["success", "failed", "triggered", "waiting"],
+    outcome: Optional[str] = None,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Update the status of a fail-safe execution
     
-    return {
-        "status": "active",
-        "last_auto_remediation": "2 hours ago",
-        "active_playbooks": 6,
-        "success_rate_30d": 98.5,
-        "total_executions": 147,
-        "playbooks": [
-            {
-                "name": "backup_recovery",
-                "display_name": "Backup Recovery",
-                "status": "idle",
-                "last_run": "3 days ago",
-                "last_outcome": "success",
-                "execution_count": 12,
-                "success_rate": 100.0,
-            },
-            {
-                "name": "intrusion_lockdown",
-                "display_name": "Intrusion Lockdown",
-                "status": "idle",
-                "last_run": "2 hours ago",
-                "last_outcome": "success - Blocked 3 IPs",
-                "execution_count": 45,
-                "success_rate": 97.8,
-            },
-            {
-                "name": "health_failsafe",
-                "display_name": "Health Failsafe",
-                "status": "idle",
-                "last_run": "Never",
-                "last_outcome": None,
-                "execution_count": 0,
-                "success_rate": 0.0,
-            },
-            {
-                "name": "integrity_check",
-                "display_name": "Backup Integrity Check",
-                "status": "idle",
-                "last_run": "1 day ago",
-                "last_outcome": "success - All backups valid",
-                "execution_count": 30,
-                "success_rate": 100.0,
-            },
-            {
-                "name": "offboarding",
-                "display_name": "Secure Offboarding",
-                "status": "idle",
-                "last_run": "5 days ago",
-                "last_outcome": "success - 12 accesses revoked",
-                "execution_count": 8,
-                "success_rate": 100.0,
-            },
-            {
-                "name": "auto_remediation",
-                "display_name": "Anomaly Auto-Remediation",
-                "status": "idle",
-                "last_run": "6 hours ago",
-                "last_outcome": "success - Killed runaway process",
-                "execution_count": 52,
-                "success_rate": 96.2,
-            },
-        ]
-    }
+    This is typically called by N8N after a playbook completes.
+    """
+    try:
+        execution = await update_execution(db, execution_id, status, outcome)
+        if not execution:
+            raise HTTPException(status_code=404, detail="Execution not found")
+
+        return {"status": "updated", "execution_id": str(execution_id)}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating execution: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/playbooks")
