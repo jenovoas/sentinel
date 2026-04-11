@@ -44,7 +44,7 @@ def run_experiment_012():
     for i, energy_raw, phase_raw in hologram:
         # Añadir ruido aleatorio pequeño (+- 0.5 grados)
         # S(0.5) ~ S60(0, 30, 0)
-        noise = S60(0)
+        noise = S60(0, 30, 0)
         new_phase = S60._from_raw(phase_raw) + noise
         lattice._matrix.set_node_state(i, S60._from_raw(energy_raw), new_phase)
         
