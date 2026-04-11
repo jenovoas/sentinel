@@ -51,7 +51,13 @@ services:
       context: ./sentinel-cortex
       dockerfile: Dockerfile
     container_name: sentinel-cortex
-    shm_size: 256mb
+    shm_size: 512mb
+    privileged: true
+    cap_add:
+      - SYS_ADMIN
+      - BPF
+      - PERFMON
+      - NET_ADMIN
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-sentinel_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-sentinel_db}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
@@ -63,6 +69,8 @@ services:
     networks:
       - sentinel_internal
       - proxy
+    volumes:
+      - /sys/fs/bpf:/sys/fs/bpf:rw
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.cortex-api.rule=Host(`cortex.pinguinoseguro.cl`) && PathPrefix(`/api`)"
@@ -75,7 +83,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 512M
     restart: unless-stopped
 
   frontend:
@@ -317,6 +325,32 @@ services:
       resources:
         limits:
           memory: 1024M
+    restart: unless-stopped
+
+  # ── NERVIO COGNITIVO (Neural Guard) ─────────────────────────────────────────
+
+  neural-guard:
+    build:
+      context: .
+      dockerfile: services/neural-guard/Dockerfile
+    container_name: sentinel-neural-guard
+    environment:
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
+      - PROMETHEUS_URL=http://sentinel-prometheus:9090
+      - LOKI_URL=http://sentinel-loki:3100
+      - N8N_URL=https://n8n.pinguinoseguro.cl
+      - RUST_LOG=info
+    depends_on:
+      - redis
+      - prometheus
+      - loki
+    networks:
+      - sentinel_internal
+      - proxy
+    deploy:
+      resources:
+        limits:
+          memory: 256M
     restart: unless-stopped
 
 volumes:
