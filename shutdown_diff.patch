@@ -1,0 +1,18 @@
+--- backend/app/shutdown.py
++++ backend/app/shutdown.py
+@@ -20,6 +20,7 @@
+
+ from app.logging_config import setup_logging
+ from app.database import close_db
++from app.redis_client import close_redis
+
+ # Setup logger
+ logger = setup_logging("INFO")
+@@ -98,7 +99,7 @@
+
+         # Step 4: Close Redis connections
+-        # TODO: Add Redis cleanup when implemented
+         logger.info("📦 Closing Redis connections...")
++        await close_redis()
+
+         # Step 5: Flush logs

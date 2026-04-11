@@ -33,6 +33,8 @@ REDIS_MODE = os.getenv("REDIS_MODE", "standalone").lower()
 # Global instances
 _sentinel: Optional[Sentinel] = None
 _redis_standalone: Optional[redis.Redis] = None
+_master: Optional[redis.Redis] = None
+_slave: Optional[redis.Redis] = None
 
 
 def get_sentinel() -> Sentinel:
@@ -69,9 +71,14 @@ def get_sentinel() -> Sentinel:
 
 async def get_redis_master() -> redis.Redis:
     """Get Redis connection for writes (master or standalone)"""
+    global _master
+
+    if _master is not None:
+        return _master
+
     if REDIS_MODE == "sentinel":
         sentinel = get_sentinel()
-        return sentinel.master_for(
+        _master = sentinel.master_for(
             'mymaster',
             socket_timeout=1.0,
             socket_connect_timeout=1.0,
@@ -79,19 +86,25 @@ async def get_redis_master() -> redis.Redis:
         )
     else:
         # Standalone mode
-        return redis.from_url(
+        _master = redis.from_url(
             settings.redis_url,
             decode_responses=True,
             socket_timeout=1.0,
             socket_connect_timeout=1.0,
         )
+    return _master
 
 
 async def get_redis_slave() -> redis.Redis:
     """Get Redis connection for reads (slave or standalone)"""
+    global _slave
+
+    if _slave is not None:
+        return _slave
+
     if REDIS_MODE == "sentinel":
         sentinel = get_sentinel()
-        return sentinel.slave_for(
+        _slave = sentinel.slave_for(
             'mymaster',
             socket_timeout=1.0,
             socket_connect_timeout=1.0,
@@ -99,7 +112,29 @@ async def get_redis_slave() -> redis.Redis:
         )
     else:
         # In standalone, slave is the same as master
-        return await get_redis_master()
+        _slave = await get_redis_master()
+    return _slave
+
+
+async def close_redis():
+    """
+    Close Redis connections gracefully.
+
+    Should be called during application shutdown.
+    """
+    global _master, _slave, _sentinel
+
+    if _master is not None:
+        await _master.aclose()
+        logger.info("✅ Redis master connection closed")
+
+    if _slave is not None and _slave is not _master:
+        await _slave.aclose()
+        logger.info("✅ Redis slave connection closed")
+
+    _master = None
+    _slave = None
+    _sentinel = None
 
 
 async def check_redis_health() -> dict:
@@ -206,5 +241,8 @@ if __name__ == "__main__":
         # Check health
         health = await check_redis_health()
         print(f"Redis health: {health}")
+
+        # Cleanup
+        await close_redis()
     
     asyncio.run(main())

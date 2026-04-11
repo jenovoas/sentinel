@@ -1,0 +1,20 @@
+--- backend/app/main.py
++++ backend/app/main.py
+@@ -34,6 +34,7 @@
+ from app.config import get_settings, get_allowed_origins
+ from app.logging_config import setup_logging
+ from app.database import init_db, close_db, check_db_connection
++from app.redis_client import close_redis
+ from app.routers import health, users, tenants, dashboard, analytics, ai, auth, backup, failsafe
+ from app.shutdown import setup_signal_handlers  # Graceful shutdown
+
+@@ -82,6 +83,10 @@
+     # Important for clean shutdown and preventing connection leaks
+     await close_db()
++
++    # Close all Redis connections
++    await close_redis()
++    logger.info("✅ Redis connections closed")
+
+
+ # ============================================================================

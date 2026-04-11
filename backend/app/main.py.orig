@@ -33,7 +33,6 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from app.config import get_settings, get_allowed_origins
 from app.logging_config import setup_logging
 from app.database import init_db, close_db, check_db_connection
-from app.redis_client import close_redis
 from app.routers import health, users, tenants, dashboard, analytics, ai, auth, backup, failsafe
 from app.shutdown import setup_signal_handlers  # Graceful shutdown
 
@@ -49,11 +48,11 @@ logger = setup_logging(settings.log_level)
 async def lifespan(app: FastAPI):
     """
     Application lifespan context manager.
-    
+
     Handles startup and shutdown events for the application:
     - Startup: Initialize database, create tables, verify connections
     - Shutdown: Clean up resources gracefully
-    
+
     This replaces the deprecated @app.on_event decorators.
     Called automatically by FastAPI.
     """
@@ -61,40 +60,36 @@ async def lifespan(app: FastAPI):
     # STARTUP - Runs once when the application starts
     # ========================================================================
     logger.info("🚀 Starting Sentinel API...")
-    
+
     # Create logs directory
     os.makedirs("logs", exist_ok=True)
-    
+
     # Initialize database (create tables, extensions)
     # This is async and uses asyncpg driver
     await init_db()
     logger.info("✅ Database initialized (using asyncpg driver)")
-    
+
     # Verify database connectivity
     db_status = await check_db_connection()
     if db_status.get("db_connection", False):
         logger.info(f"✅ Database connection verified")
     else:
         logger.error(f"❌ Database connection failed: {db_status.get('error', 'Unknown error')}")
-    
+
     # Setup graceful shutdown handlers
     setup_signal_handlers(app)
     logger.info("✅ Graceful shutdown handlers configured")
-    
+
     yield  # Application runs here
-    
+
     # ========================================================================
     # SHUTDOWN - Runs once when the application stops
     # ========================================================================
     logger.info("👋 Shutting down Sentinel API...")
-    
+
     # Close all database connections
     # Important for clean shutdown and preventing connection leaks
     await close_db()
-
-    # Close all Redis connections
-    await close_redis()
-    logger.info("✅ Redis connections closed")
 
 
 # ============================================================================
@@ -139,7 +134,7 @@ app.add_middleware(
 async def log_requests(request: Request, call_next):
     """
     Middleware to log all HTTP requests.
-    
+
     Logs HTTP method, path, and response status code.
     Useful for debugging and monitoring API usage.
     """
@@ -156,14 +151,14 @@ async def log_requests(request: Request, call_next):
 async def general_exception_handler(request: Request, exc: Exception):
     """
     Global exception handler for unhandled exceptions.
-    
+
     Catches any exception not caught by more specific handlers and returns
     a safe error response without leaking internal details.
-    
+
     Args:
         request: The HTTP request that caused the error
         exc: The exception that was raised
-        
+
     Returns:
         JSONResponse with 500 status code
     """
@@ -204,10 +199,10 @@ app.include_router(failsafe.router)  # Fail-Safe Security Layer
 async def root():
     """
     Root endpoint for API information.
-    
+
     Returns basic information about the API and links to documentation.
     Useful for health checks and verifying the API is running.
-    
+
     Returns:
         dict: API information including version and docs link
     """
@@ -226,7 +221,7 @@ async def root():
 if __name__ == "__main__":
     """
     Entry point for running the application directly.
-    
+
     Not recommended for production. Use:
         uvicorn app.main:app --host 0.0.0.0 --port 8000
     """

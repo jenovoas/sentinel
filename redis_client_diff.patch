@@ -1,0 +1,92 @@
+--- backend/app/redis_client.py
++++ backend/app/redis_client.py
+@@ -29,10 +29,13 @@
+ # Global instances
+ _sentinel: Optional[Sentinel] = None
+ _redis_standalone: Optional[redis.Redis] = None
++_master: Optional[redis.Redis] = None
++_slave: Optional[redis.Redis] = None
+
+
+ def get_sentinel() -> Sentinel:
+-    """
++    """
+     Get or create Redis Sentinel instance
+
+     Sentinel monitors Redis master and automatically handles failover.
+@@ -62,37 +65,71 @@
+
+ async def get_redis_master() -> redis.Redis:
+     """Get Redis connection for writes (master or standalone)"""
++    global _master
++
++    if _master is not None:
++        return _master
++
+     if REDIS_MODE == "sentinel":
+         sentinel = get_sentinel()
+-        return sentinel.master_for(
++        _master = sentinel.master_for(
+             'mymaster',
+             socket_timeout=1.0,
+             socket_connect_timeout=1.0,
+             decode_responses=True,
+         )
+     else:
+         # Standalone mode
+-        return redis.from_url(
++        _master = redis.from_url(
+             settings.redis_url,
+             decode_responses=True,
+             socket_timeout=1.0,
+             socket_connect_timeout=1.0,
+         )
++    return _master
+
+
+ async def get_redis_slave() -> redis.Redis:
+     """Get Redis connection for reads (slave or standalone)"""
++    global _slave
++
++    if _slave is not None:
++        return _slave
++
+     if REDIS_MODE == "sentinel":
+         sentinel = get_sentinel()
+-        return sentinel.slave_for(
++        _slave = sentinel.slave_for(
+             'mymaster',
+             socket_timeout=1.0,
+             socket_connect_timeout=1.0,
+             decode_responses=True,
+         )
+     else:
+         # In standalone, slave is the same as master
+-        return await get_redis_master()
++        _slave = await get_redis_master()
++    return _slave
++
++
++async def close_redis():
++    """
++    Close Redis connections gracefully.
++
++    Should be called during application shutdown.
++    """
++    global _master, _slave, _sentinel
++
++    if _master is not None:
++        await _master.aclose()
++        logger.info("✅ Redis master connection closed")
++        _master = None
++
++    if _slave is not None:
++        if _slave is not _master:  # Only close if it's a different connection
++            await _slave.aclose()
++            logger.info("✅ Redis slave connection closed")
++        _slave = None
++
++    _sentinel = None
+
+
+ async def check_redis_health() -> dict:
