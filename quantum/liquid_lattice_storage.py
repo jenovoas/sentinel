@@ -72,7 +72,7 @@ class LiquidLatticeStorage(QuantumLatticeEngine):
     def _s60_to_bytes(self, val: S60) -> bytes:
         try:
             # Reconstituir el entero original desde SPA
-            encoded_int = (val._value) // S60.SCALE_0 
+            encoded_int = val.to_base_units()
             
             length = encoded_int & 0xFF
             data_int = encoded_int >> 8
@@ -136,8 +136,18 @@ class LiquidLatticeStorage(QuantumLatticeEngine):
         self._matrix.inject(payload)
 
     def retrieve_dual_channel(self) -> Tuple[bytes, bytes]:
-        # Pendiente de recuperar nodos individuales por getter
-        return b'', b''
+        hologram = self._matrix.get_hologram()
+        rec_a = b''
+        rec_b = b''
+
+        for _, energy_raw, phase_raw in hologram:
+            energy = S60._from_raw(energy_raw)
+            phase = S60._from_raw(phase_raw)
+
+            rec_a += self._s60_to_bytes(energy)
+            rec_b += bytes([self._phase_to_byte(phase)])
+
+        return rec_a, rec_b
 
     def retrieve_holograph(self) -> bytes:
         """Todavía requiere que se extraigan las amplitudes directas desde Rust."""
