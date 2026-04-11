@@ -201,7 +201,7 @@ mod tests {
 
     fn mock_event(event_type: EventType) -> Event {
         Event {
-            id: "test".to_string(),
+            id: format!("test-{}", event_type as u32),
             source: EventSource::Auditd,
             timestamp: Utc::now(),
             severity: Severity::Medium,
