@@ -1,5 +1,5 @@
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, MagicMock
 import jwt
 from fastapi import HTTPException, status
@@ -14,7 +14,7 @@ settings = get_settings()
 async def test_get_current_user_valid_token():
     # Setup
     username = "testuser"
-    payload = {"sub": username, "exp": datetime.utcnow() + timedelta(minutes=30)}
+    payload = {"sub": username, "exp": datetime.now(timezone.utc) + timedelta(minutes=30)}
     token = jwt.encode(payload, settings.secret_key, algorithm=settings.algorithm)
 
     # Execute
@@ -27,7 +27,7 @@ async def test_get_current_user_valid_token():
 @pytest.mark.asyncio
 async def test_get_current_user_missing_sub():
     # Setup
-    payload = {"exp": datetime.utcnow() + timedelta(minutes=30)}
+    payload = {"exp": datetime.now(timezone.utc) + timedelta(minutes=30)}
     token = jwt.encode(payload, settings.secret_key, algorithm=settings.algorithm)
 
     # Execute & Verify
@@ -52,7 +52,10 @@ async def test_get_current_user_invalid_token():
 async def test_get_current_user_expired_token():
     # Setup
     username = "testuser"
-    payload = {"sub": username, "exp": datetime.utcnow() - timedelta(minutes=30)}
+    # To test expiration, we can't just subtract time because jwt.encode might
+    # use numeric timestamps and jwt.decode might handle them differently if they are naïve/aware.
+    # But usually exp is a timestamp.
+    payload = {"sub": username, "exp": int((datetime.now(timezone.utc) - timedelta(minutes=30)).timestamp())}
     token = jwt.encode(payload, settings.secret_key, algorithm=settings.algorithm)
 
     # Execute & Verify
