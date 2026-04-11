@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 from datetime import datetime
 from ..models.failsafe import FailSafeStatus
@@ -39,5 +39,4 @@ class FailSafeExecutionSchema(BaseModel):
     finished_at: Optional[datetime] = None
     outcome: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

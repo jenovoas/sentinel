@@ -46,7 +46,7 @@ redis==5.2.1
 # JWT token generation and validation
 PyJWT==2.12.1
 # Password hashing with bcrypt
-bcrypt==5.0.0
+bcrypt==3.2.2
 # Password utilities
 passlib[bcrypt]==1.7.4
 
