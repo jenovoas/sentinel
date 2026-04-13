@@ -1,0 +1,41 @@
+## traefik.yml — Configuración Estática Fenix
+## Reconstruido: 2026-04-13
+
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+log:
+  level: INFO
+
+api:
+  dashboard: false
+  insecure: false
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  websecure:
+    address: ":443"
+
+certificatesResolvers:
+  myresolver:
+    acme:
+      email: admin@pinguinoseguro.cl
+      storage: /etc/traefik/acme/acme.json
+      tlsChallenge: {}
+
+providers:
+  docker:
+    endpoint: "unix:///run/user/1000/podman/podman.sock"
+    exposedByDefault: false
+    network: proxy
+  file:
+    directory: /config/dynamic
+    watch: true
