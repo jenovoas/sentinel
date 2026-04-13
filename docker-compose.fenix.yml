@@ -245,45 +245,7 @@ services:
 
   # ── SITIOS WEB ADICIONALES ───────────────────────────────────────────────────
 
-  portfolio_web:
-    image: docker.io/nginx:1.25-alpine
-    container_name: sentinel-portfolio-web
-    volumes:
-      - /home/jnovoas/Desarrollo/portfolio:/usr/share/nginx/html:ro,z
-    networks:
-      - proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.portfolio.rule=Host(`portfolio.pinguinoseguro.cl`)"
-      - "traefik.http.routers.portfolio.entrypoints=websecure"
-      - "traefik.http.routers.portfolio.tls.certresolver=powerdns"
-      - "traefik.http.services.portfolio.loadbalancer.server.port=80"
-      - "traefik.docker.network=proxy"
-    deploy:
-      resources:
-        limits:
-          memory: 64M
-    restart: unless-stopped
 
-  laespiguita_web:
-    image: docker.io/nginx:1.25-alpine
-    container_name: sentinel-laespiguita-web
-    volumes:
-      - /home/jnovoas/Desarrollo/laespiguita:/usr/share/nginx/html:ro,z
-    networks:
-      - proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.laespiguita.rule=Host(`laespiguita.pinguinoseguro.cl`)"
-      - "traefik.http.routers.laespiguita.entrypoints=websecure"
-      - "traefik.http.routers.laespiguita.tls.certresolver=powerdns"
-      - "traefik.http.services.laespiguita.loadbalancer.server.port=80"
-      - "traefik.docker.network=proxy"
-    deploy:
-      resources:
-        limits:
-          memory: 64M
-    restart: unless-stopped
 
   # ── AUTOMATIZACIÓN ───────────────────────────────────────────────────────────
 

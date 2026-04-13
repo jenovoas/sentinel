@@ -215,3 +215,25 @@ Ignoré una de nuestras directivas clave: Traefik prioriza la configuración de 
 2. **Priorizar Archivos sobre Labels:** Cualquier cambio hecho en los Labels de un `docker-compose.yml` será sistemáticamente silenciado y omitido si existe un `.yml` estático en el `provider.file` compitiendo por la misma regla `Host`.
 3. **Responsabilidad Radical:** Asumir los errores frente al Operador de inmediato. Sin excusas. Restablecer el enlace de red hacia el contenedor real y purgar la anomalía.
 
+---
+
+## [2026-04-13] Purga de Infraestructura y Tormenta de Alertas (Fase Fénix)
+
+**El Error / Evento:**
+Una purga accidental eliminó toda la infraestructura de producción (Traefik, Sentinel, SLA Apps). Durante el proceso de restauración, se enfrentaron dos bloqueos críticos:
+1.  **Timeouts de Build**: Errores `EIDLETIMEOUT` y `ETXTBSY` en Podman al construir imágenes de Node.js.
+2.  **Tormenta de Alertas (Cascading Failure)**: Al levantar parcialmente el Core, `neural-guard` detectó servicios caídos (normal durante el arranque) y disparó un bucle infinito de incidentes críticos, saturando los recursos y las APIs de Google/n8n, lo que impidió finalizar la construcción del frontend.
+
+**La Causa:**
+1.  **Inestabilidad de Red/FS en Podman**: Las imágenes Alpine y versiones antiguas de npm no gestionan bien las condiciones de carrera de archivos en Podman rootless.
+2.  **Acoplamiento Prematuro de Observabilidad**: Iniciar el motor de respuesta a incidentes (`neural-guard`) antes de que los exportadores (`redis-exporter`, `promtail`) y la red interna estuvieran totalmente sincronizados.
+3.  **Rutas Relativas**: Los montajes de volumen con rutas relativas (`./config`) fallaron cuando los comandos se ejecutaron desde directorios de orquestación centralizados en lugar de los subdirectorios del proyecto.
+
+**La Regla de Oro (Prevención / Reflexión):**
+1.  **Optimización de Dockerfiles**: Usar imágenes `-slim` en lugar de `-alpine` para Node.js en Podman. Forzar `npm install -g npm@latest` y aumentar reintentos (`fetch-retries`) para mitigar inestabilidad de red.
+2.  **Secuencia de Arranque Segura (Kill Switch)**: En situaciones de recuperación (DR), **SIEMPRE** mantener deshabilitado el motor de respuesta automática (`neural-guard`) hasta que el 100% de los targets de Prometheus estén en estado `UP`.
+3.  **Soberanía de Rutas Absolutas**: En archivos `podman-compose.yml` productivos, preferir rutas absolutas (o variables de entorno de base) para evitar fallos de montaje por contexto de ejecución (`CWD`).
+4.  **Etiquetado SELinux (:z)**: No olvidar NUNCA el flag `:z` en montajes de configuración para evitar errores de `Permission Denied` silenciosos.
+
+---
+
