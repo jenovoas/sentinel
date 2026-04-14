@@ -112,3 +112,93 @@ AttributeError: module 'bcrypt' has no attribute '__about__'
 2026-04-10 05:22:10,329 - app.security.telemetry_sanitizer - WARNING - telemetry_sanitizer.py:170 - sanitize_prompt() - Blocked malicious prompt: Error: DROP TABLE users...
 2026-04-10 05:22:39,748 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
 2026-04-10 05:22:39,753 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
+2026-04-14 15:53:23,993 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-04-14 15:53:24,020 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-04-14 15:53:24,025 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-04-14 15:53:24,028 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-04-14 15:53:24,124 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-04-14 15:53:24,126 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-04-14 15:53:24,128 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-04-14 15:53:24,130 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-04-14 15:53:24,137 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-04-14 15:53:24,141 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?limit=10&offset=0 "HTTP/1.1 200 OK"
+2026-04-14 15:53:24,157 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-04-14 15:53:24,160 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?limit=5&offset=0 "HTTP/1.1 200 OK"
+2026-04-14 15:53:24,162 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-04-14 15:53:24,165 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?limit=5&offset=5 "HTTP/1.1 200 OK"
+2026-04-14 15:53:24,169 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-04-14 15:53:24,171 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?limit=1000 "HTTP/1.1 422 Unprocessable Entity"
+2026-04-14 15:53:24,173 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-04-14 15:53:24,175 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?offset=-1 "HTTP/1.1 422 Unprocessable Entity"
+2026-04-14 15:53:24,180 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 15:53:24,183 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 200 OK"
+2026-04-14 15:53:24,187 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 15:53:24,189 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 200 OK"
+2026-04-14 15:53:24,193 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 15:53:24,195 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 408 Request Timeout"
+2026-04-14 15:53:24,210 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-04-14 15:53:24,214 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs?lines=10 "HTTP/1.1 200 OK"
+2026-04-14 15:53:24,218 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-04-14 15:53:24,221 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs "HTTP/1.1 200 OK"
+2026-04-14 15:53:24,225 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-04-14 15:53:24,227 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs?lines=10000 "HTTP/1.1 422 Unprocessable Entity"
+2026-04-14 15:53:24,230 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/config
+2026-04-14 15:53:24,233 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/config "HTTP/1.1 200 OK"
+2026-04-14 15:53:24,237 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/config
+2026-04-14 15:53:24,239 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/config "HTTP/1.1 500 Internal Server Error"
+2026-04-14 15:53:24,252 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/health
+2026-04-14 15:53:24,255 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/health "HTTP/1.1 200 OK"
+2026-04-14 15:53:24,261 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-04-14 15:53:24,264 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-04-14 15:53:24,266 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/config
+2026-04-14 15:53:24,268 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/config "HTTP/1.1 200 OK"
+2026-04-14 15:53:24,270 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-04-14 15:53:24,275 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history "HTTP/1.1 200 OK"
+2026-04-14 15:53:24,278 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-04-14 15:53:24,280 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs "HTTP/1.1 200 OK"
+2026-04-14 15:53:24,284 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-04-14 15:53:24,286 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-04-14 15:53:24,302 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-04-14 15:53:24,304 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs "HTTP/1.1 200 OK"
+2026-04-14 15:53:24,311 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-04-14 15:53:24,313 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-04-14 15:54:31,407 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 15:54:31,412 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 200 OK"
+2026-04-14 15:54:31,416 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 15:54:31,418 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 200 OK"
+2026-04-14 15:55:54,336 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 15:55:54,341 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
+2026-04-14 15:55:54,422 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 15:55:54,425 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
+2026-04-14 15:55:54,435 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 15:55:54,437 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
+2026-04-14 15:55:54,447 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 15:55:54,449 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
+2026-04-14 15:57:30,549 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 15:57:30,554 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
+2026-04-14 15:57:30,637 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 15:57:30,639 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
+2026-04-14 15:57:30,648 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 15:57:30,650 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
+2026-04-14 15:57:30,660 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 15:57:30,662 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
+2026-04-14 15:58:08,035 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 15:58:08,039 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
+2026-04-14 15:58:08,122 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 15:58:08,124 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
+2026-04-14 15:59:05,821 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 15:59:05,826 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
+2026-04-14 15:59:05,910 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 15:59:05,913 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
+2026-04-14 15:59:57,053 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 15:59:57,059 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
+2026-04-14 15:59:57,140 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 15:59:57,143 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
+2026-04-14 16:00:30,037 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 16:00:30,042 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
+2026-04-14 16:00:30,123 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 16:00:30,125 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
+2026-04-14 16:00:30,134 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 16:00:30,137 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
+2026-04-14 16:00:30,145 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-04-14 16:00:30,148 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"

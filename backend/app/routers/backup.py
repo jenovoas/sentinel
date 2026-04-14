@@ -364,24 +364,50 @@ async def trigger_backup():
     """
     try:
         # Get project root (assuming backend is in backend/ directory)
-        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        backup_script = os.path.join(project_root, "scripts", "backup", "backup.sh")
+        # backend/app/routers/backup.py -> backend/app/routers -> backend/app -> backend -> repository_root
+        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+        backup_script_rel = os.path.join("scripts", "backup", "backup.sh")
+        backup_script = os.path.join(project_root, backup_script_rel)
         
-        if not os.path.exists(backup_script):
+        # Security: Resolve absolute paths and validate
+        abs_script_path = os.path.abspath(backup_script)
+        abs_project_root = os.path.abspath(project_root)
+        expected_path = os.path.join(abs_project_root, "scripts", "backup", "backup.sh")
+
+        if abs_script_path != expected_path:
+            raise HTTPException(
+                status_code=403,
+                detail="Unauthorized script path: security validation failed"
+            )
+
+        if not os.path.exists(abs_script_path):
             raise HTTPException(
                 status_code=404,
-                detail=f"Backup script not found: {backup_script}"
+                detail="Backup script not found"
+            )
+
+        # Ensure the script is executable
+        if not os.access(abs_script_path, os.X_OK):
+            raise HTTPException(
+                status_code=403,
+                detail="Backup script is not executable"
+            )
+
+        # Security: Check if the script is world-writable
+        if os.stat(abs_script_path).st_mode & 0o002:
+            raise HTTPException(
+                status_code=403,
+                detail="Security error: Backup script is world-writable"
             )
         
         # Execute backup script
         result = subprocess.run(
-            [backup_script],
+            [abs_script_path],
             capture_output=True,
             text=True,
             timeout=300,  # 5 minute timeout
             cwd=project_root
         )
-        
         status = "success" if result.returncode == 0 else "failed"
         message = "Backup completed successfully" if result.returncode == 0 else "Backup failed"
         
@@ -394,6 +420,8 @@ async def trigger_backup():
             message=message,
             output=result.stdout[-500:] if result.stdout else result.stderr[-500:]
         )
+    except HTTPException:
+        raise
     except subprocess.TimeoutExpired:
         raise HTTPException(
             status_code=408,
