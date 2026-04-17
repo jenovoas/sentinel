@@ -50,21 +50,21 @@ services:
       dockerfile: backend/Dockerfile
     container_name: sentinel-backend
     environment:
-      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://${POSTGRES_USER:-sentinel_user}:${POSTGRES_PASSWORD:-REDACTED_PASSWORD}@postgres:5432/${POSTGRES_DB:-sentinel_db}}
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
-      FASTAPI_ENV: ${FASTAPI_ENV:-development}
-      SECRET_KEY: ${SECRET_KEY:-your-secret-key-change-in-production-min-32-chars-xyz123}
-      ALGORITHM: ${ALGORITHM:-HS256}
-      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
-      REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS:-7}
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:8000,http://frontend:3000}
-      CELERY_BROKER_URL: ${CELERY_BROKER_URL:-redis://redis:6379/0}
-      CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND:-redis://redis:6379/1}
-      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379/0
+      FASTAPI_ENV: development
+      SECRET_KEY: ${SECRET_KEY}
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      REFRESH_TOKEN_EXPIRE_DAYS: 7
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:8000,http://frontend:3000
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      LOG_LEVEL: INFO
       # Explicit DB vars for health check
-      DATABASE_USER: ${POSTGRES_USER:-sentinel_user}
-      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-REDACTED_PASSWORD}
-      DATABASE_NAME: ${POSTGRES_DB:-sentinel_db}
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_NAME: ${POSTGRES_DB}
       DATABASE_HOST: postgres
       # Google Vertex AI Configuration
       AI_PROVIDER: google # Switched from ollama
@@ -100,16 +100,16 @@ services:
       dockerfile: backend/Dockerfile.worker
     container_name: sentinel-celery-worker
     environment:
-      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://${POSTGRES_USER:-sentinel_user}:${POSTGRES_PASSWORD:-REDACTED_PASSWORD}@postgres:5432/${POSTGRES_DB:-sentinel_db}}
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
-      CELERY_BROKER_URL: ${CELERY_BROKER_URL:-redis://redis:6379/0}
-      CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND:-redis://redis:6379/1}
-      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      LOG_LEVEL: INFO
     depends_on:
       - postgres
       - redis
     volumes:
-      - ./backend:/app
+      - ./backend:/app:z
     networks:
       - sentinel_network
     command: celery -A app.celery_app worker --loglevel=info --concurrency=4
@@ -122,16 +122,16 @@ services:
       dockerfile: backend/Dockerfile.beat
     container_name: sentinel-celery-beat
     environment:
-      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://${POSTGRES_USER:-sentinel_user}:${POSTGRES_PASSWORD:-REDACTED_PASSWORD}@postgres:5432/${POSTGRES_DB:-sentinel_db}}
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
-      CELERY_BROKER_URL: ${CELERY_BROKER_URL:-redis://redis:6379/0}
-      CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND:-redis://redis:6379/1}
-      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      LOG_LEVEL: INFO
     depends_on:
       - postgres
       - redis
     volumes:
-      - ./backend:/app
+      - ./backend:/app:z
     networks:
       - sentinel_network
     command: celery -A app.celery_app beat --loglevel=info
@@ -351,11 +351,11 @@ services:
       N8N_BASIC_AUTH_ACTIVE: ${N8N_BASIC_AUTH_ACTIVE:-true}
       N8N_BASIC_AUTH_USER: ${N8N_USER:-admin}
       N8N_BASIC_AUTH_PASSWORD: ${N8N_PASSWORD:-REDACTED_PASSWORD}
-      N8N_HOST: ${N8N_HOST:-localhost}
+      N8N_HOST: n8n.pinguinoseguro.cl
       N8N_PORT: 5678
-      N8N_PROTOCOL: http
-      WEBHOOK_URL: http://localhost:5678/
-      N8N_EDITOR_BASE_URL: http://localhost:5678/
+      N8N_PROTOCOL: https
+      WEBHOOK_URL: https://n8n.pinguinoseguro.cl/
+      N8N_EDITOR_BASE_URL: https://n8n.pinguinoseguro.cl/
       EXECUTIONS_DATA_PRUNE: true
       EXECUTIONS_DATA_MAX_AGE: 168
       # 🔓 EDUCATIVO: Permite API calls sin API Key (solo con Basic Auth)
