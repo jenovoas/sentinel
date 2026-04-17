@@ -31,6 +31,7 @@
 #define EVENT_SYSTEM_METRIC     7   /* Métrica del sistema (bio-resonancia) */
 #define EVENT_BIO_PULSE         8   /* Señal de pulso biológico (17s) */
 #define EVENT_QHC_RESET         9   /* Reset cuántico T=68s */
+#define EVENT_FLOAT_CONTAMINATION 10 /* Binario fuera de whitelist S60-safe */
 
 /* ─────────────────────────────── NIVELES DE SEVERIDAD (S60) ───────────── */
 

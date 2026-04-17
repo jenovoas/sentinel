@@ -96,8 +96,8 @@ services:
   # Celery Worker
   celery_worker:
     build:
-      context: .
-      dockerfile: backend/Dockerfile.worker
+      context: ..
+      dockerfile: sentinel/backend/Dockerfile.worker
     container_name: sentinel-celery-worker
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
@@ -108,8 +108,6 @@ services:
     depends_on:
       - postgres
       - redis
-    volumes:
-      - ./backend:/app:z
     networks:
       - sentinel_network
     command: celery -A app.celery_app worker --loglevel=info --concurrency=4
@@ -118,8 +116,8 @@ services:
   # Celery Beat (Scheduler)
   celery_beat:
     build:
-      context: .
-      dockerfile: backend/Dockerfile.beat
+      context: ..
+      dockerfile: sentinel/backend/Dockerfile.beat
     container_name: sentinel-celery-beat
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
@@ -130,8 +128,6 @@ services:
     depends_on:
       - postgres
       - redis
-    volumes:
-      - ./backend:/app:z
     networks:
       - sentinel_network
     command: celery -A app.celery_app beat --loglevel=info

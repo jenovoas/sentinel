@@ -1,20 +1,33 @@
+# Stage 1: Build me60os_core.so for Python 3.11
+FROM python:3.11-slim AS rust-builder
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl build-essential pkg-config libssl-dev libelf-dev zlib1g-dev clang \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+WORKDIR /build/me-60os
+COPY me-60os/ .
+
+RUN cargo build --release --features extension-module && \
+    cp target/release/libme60os_core.so /me60os_core.so
+
+# Stage 2: Final runtime image
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
+    curl libelf1 zlib1g \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements
-COPY backend/requirements.txt .
-
-# Install Python dependencies
+COPY sentinel/backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY backend/app/ ./app/
+# Copy application code first, then overwrite .so with the Python 3.11 build
+COPY sentinel/backend/app/ ./app/
+COPY --from=rust-builder /me60os_core.so ./app/me60os_core.so
 
-# Run Celery worker
 CMD ["celery", "-A", "app.celery_app", "worker", "--loglevel=info", "--concurrency=4"]
