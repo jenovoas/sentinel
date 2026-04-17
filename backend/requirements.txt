@@ -4,19 +4,19 @@
 # ============================================================================
 
 # Web Framework
-fastapi==0.135.1
-uvicorn[standard]==0.42.0
+fastapi==0.136.0
+uvicorn[standard]==0.44.0
 prometheus-fastapi-instrumentator==7.1.0
 watchdog==6.0.0
-requests==2.33.0
+requests==2.33.1
 
 # ============================================================================
 # DATABASE (SQLAlchemy 2.0 with Async Support)
 # ============================================================================
 # SQLAlchemy 2.0 - Modern ORM with async/await
-sqlalchemy==2.0.48
+sqlalchemy==2.0.49
 # Async extensions for SQLAlchemy
-sqlalchemy[asyncio]==2.0.48
+sqlalchemy[asyncio]==2.0.49
 # PostgreSQL async driver (asyncpg - 3-5x faster than psycopg2)
 asyncpg==0.31.0
 # Synchronous driver for migrations
@@ -28,7 +28,7 @@ alembic==1.18.4
 # DATA VALIDATION
 # ============================================================================
 # Pydantic 2.0 - Data validation with Python type hints
-pydantic==2.12.5
+pydantic==2.13.1
 # Settings management from environment variables
 pydantic-settings==2.13.1
 
@@ -36,9 +36,9 @@ pydantic-settings==2.13.1
 # ASYNC TASK QUEUE
 # ============================================================================
 # Celery - Distributed task queue
-celery==5.6.2
+celery==5.6.3
 # Redis client for Celery broker and caching
-redis==5.2.1
+redis==7.4.0
 
 # ============================================================================
 # AUTHENTICATION & SECURITY
@@ -54,7 +54,7 @@ passlib[bcrypt]==1.7.4
 # ENVIRONMENT & UTILITIES
 # ============================================================================
 # Load environment variables from .env files
-python-dotenv==1.0.1
+python-dotenv==1.2.2
 # Async HTTP client for AI integration
 httpx==0.28.1
 # Form data parsing for FastAPI
@@ -62,9 +62,9 @@ python-multipart==0.0.26
 # Email validation
 email-validator==2.3.0
 # Scientific computing for anomaly detection
-numpy==1.26.4
+numpy==2.4.4
 # System metrics
-psutil==5.9.8
+psutil==7.2.2
 # GPU monitoring
 GPUtil==1.4.0
 nvidia-ml-py3==7.352.0
@@ -74,11 +74,11 @@ nvidia-ml-py3==7.352.0
 # ============================================================================
 pytest==9.0.3
 pytest-asyncio==1.3.0
-pytest-cov==7.0.0
+pytest-cov==7.1.0
 
 # ============================================================================
 # VERTEX AI INTEGRATION
 # ============================================================================
-google-cloud-aiplatform==1.142.0
-google-auth==2.49.1
-google-genai==1.68.0
+google-cloud-aiplatform==1.148.0
+google-auth==2.49.2
+google-genai==1.73.1
