@@ -16,13 +16,21 @@
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
 
-/* Whitelist map (same as before) */
+/* Whitelist map — compartido con Alpha (pin en /sys/fs/bpf/sentinel/whitelist_map) */
 struct {
   __uint(type, BPF_MAP_TYPE_HASH);
   __uint(max_entries, 10000);
   __type(key, char[256]);
   __type(value, __u8);
 } whitelist_map SEC(".maps");
+
+/* AI agents marcados desde userspace. Sin entrada = passthrough. */
+struct {
+  __uint(type, BPF_MAP_TYPE_HASH);
+  __uint(max_entries, 1024);
+  __type(key, __u32);
+  __type(value, __u8);
+} cognitive_ai_agents SEC(".maps");
 
 /* Events map (same as before) */
 struct {
@@ -120,6 +128,11 @@ int BPF_PROG(guardian_cognitive, struct linux_binprm *bprm, int ret) {
   const char *filename;
   __u32 pid = bpf_get_current_pid_tgid() >> 32;
   __u32 uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
+
+  // 0. Passthrough para procesos no-AI (kill-switch safety)
+  __u8 *is_ai = bpf_map_lookup_elem(&cognitive_ai_agents, &pid);
+  if (!is_ai || *is_ai == 0)
+    return 0;
 
   filename = BPF_CORE_READ(bprm, filename);
 
