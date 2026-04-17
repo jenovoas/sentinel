@@ -8,9 +8,9 @@ tokio = { version = "1.36", features = ["full"] }
 reqwest = { version = "0.12", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { version = "0.4.38", features = ["serde"] }
 uuid = { version = "1.7", features = ["v4", "serde"] }
-redis = { version = "0.24", features = ["tokio-comp"] }
+redis = { version = "0.32", features = ["tokio-comp"] }
 me60os_core = { path = "../../../me-60os", package = "me60os" }
 tracing = "0.1"
 tracing-subscriber = "0.3"
