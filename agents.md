@@ -2,7 +2,7 @@
 
 ## 1. Contexto y Propósito
 
-Este documento describe la orquestación de agentes dentro del sistema SENTINEL v8.0, adheriéndose estrictamente a las directivas de `@AI_PRIME_DIRECTIVES.md` y la arquitectura definida en `@ARCHITECTURE.md`. El propósito es asegurar que la interacción y colaboración de los agentes se realice de manera armónica, eficiente y sin introducir entropía en el sistema.
+Este documento describe la orquestación de agentes dentro del sistema SENTINEL, adheriéndose estrictamente a las directivas de `@AI_PRIME_DIRECTIVES.md` y la arquitectura definida en `@ARCHITECTURE.md`. El propósito es asegurar que la interacción y colaboración de los agentes se realice de manera armónica, eficiente y sin introducir entropía en el sistema.
 
 ## 2. Principios de Orquestación
 
