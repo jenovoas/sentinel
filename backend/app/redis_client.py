@@ -109,6 +109,21 @@ async def check_redis_health() -> dict:
     Returns:
         dict: Health status including master info and replica count
     """
+    if REDIS_MODE != "sentinel":
+        try:
+            master = await get_redis_master()
+            await master.ping()
+            return {
+                "status": "healthy",
+                "mode": "standalone"
+            }
+        except Exception as e:
+            logger.error(f"Redis standalone health check failed: {e}")
+            return {
+                "status": "unhealthy",
+                "error": str(e)
+            }
+
     try:
         sentinel = get_sentinel()
         
@@ -136,7 +151,7 @@ async def check_redis_health() -> dict:
         }
         
     except Exception as e:
-        logger.error(f"Redis health check failed: {e}")
+        logger.error(f"Redis sentinel health check failed: {e}")
         return {
             "status": "unhealthy",
             "error": str(e)

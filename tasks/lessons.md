@@ -237,3 +237,20 @@ Una purga accidental eliminó toda la infraestructura de producción (Traefik, S
 
 ---
 
+## [2026-04-17] Fallos de Salud en Backend (Redis Sentinel vs Standalone) y Upstreams Nginx
+
+**El Error:**
+Los contenedores `sentinel-backend` y `sentinel-nginx` marcaban estado `unhealthy` (warning en el IDE). El backend fallaba al conectar a Redis Sentinel (inexistente) y Nginx fallaba al conectar al upstream `localhost:8000`.
+
+**La Causa:**
+1.  **Backend (Redis)**: La lógica de `check_redis_health` intentaba contactar a un cluster Sentinel (`redis-sentinel-1`) incluso si la aplicación estaba configurada en modo `standalone`. Esto causaba un error de resolución de nombres que invalidaba el health check.
+2.  **Backend (Database)**: El health check de la base de datos buscaba `POSTGRES_HOST`, pero en `docker-compose.yml` se usaba `DATABASE_HOST`. Al no encontrarlo, usaba `localhost` y fallaba.
+3.  **Nginx**: El archivo `nginx.conf` definía upstreams usando `localhost`, lo cual apunta al propio contenedor de Nginx en una red tipo bridge, en lugar de apuntar a los servicios `backend` y `frontend` de la red de Podman.
+
+**La Regla de Oro (Prevención):**
+1.  **Condicionales de Salud**: Los health checks de componentes (Redis, DB) deben ser conscientes del modo de operación (`standalone` vs `cluster`) y usar las mismas variables de entorno que el resto de la aplicación (`DATABASE_HOST` vs `POSTGRES_HOST`).
+2.  **DNS de Red Interna**: En entornos de contenedores (Compose/Podman), los upstreams de proxies (Nginx/Traefik) DEBEN usar los nombres de servicio definidos en el archivo compose, NUNCA `localhost` (a menos que compartan namespace de red).
+3.  **Transparencia de Status**: Los routers de salud (`health.py`) deben propagar fielmente el estado de los componentes internos. Si un componente devuelve `unhealthy`, el endpoint de salud debe reflejarlo y retornar `503`.
+
+---
+

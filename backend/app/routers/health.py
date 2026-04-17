@@ -50,12 +50,12 @@ async def check_database() -> Dict[str, Any]:
         import os
         from time import time
         
-        # Get DB config from environment
-        db_host = os.getenv("POSTGRES_HOST", "localhost")
-        db_port = os.getenv("POSTGRES_PORT", "5432")
-        db_user = os.getenv("POSTGRES_USER", "postgres")
-        db_pass = os.getenv("POSTGRES_PASSWORD", "postgres")
-        db_name = os.getenv("POSTGRES_DB", "sentinel")
+        # Get DB config from environment (consistent with docker-compose.yml)
+        db_host = os.getenv("DATABASE_HOST", os.getenv("POSTGRES_HOST", "localhost"))
+        db_port = os.getenv("DATABASE_PORT", os.getenv("POSTGRES_PORT", "5432"))
+        db_user = os.getenv("DATABASE_USER", os.getenv("POSTGRES_USER", "postgres"))
+        db_pass = os.getenv("DATABASE_PASSWORD", os.getenv("POSTGRES_PASSWORD", "postgres"))
+        db_name = os.getenv("DATABASE_NAME", os.getenv("POSTGRES_DB", "sentinel"))
         
         start = time()
         
@@ -134,13 +134,13 @@ async def check_redis() -> Dict[str, Any]:
             if value != "ok":
                 raise Exception("Redis set/get test failed")
             
-            # Get cluster info from Sentinel
+            # Get cluster info
             cluster_info = await check_redis_health()
             
             return {
-                "status": "healthy",
+                "status": cluster_info.get("status", "healthy"),
                 "latency_ms": round(latency, 2),
-                "mode": "sentinel",
+                "mode": cluster_info.get("mode", "sentinel"),
                 "cluster": cluster_info
             }
             
