@@ -33,6 +33,23 @@
 #define EVENT_QHC_RESET         9   /* Reset cuántico T=68s */
 #define EVENT_FLOAT_CONTAMINATION 10 /* Binario fuera de whitelist S60-safe */
 
+/* ─── Guardian-Gamma (meta-vigilancia) ─────────────────────────────────────── */
+#define EVENT_GAMMA_PEER_MISSING    11 /* Pin desapareció de /sys/fs/bpf/ */
+#define EVENT_GAMMA_DETACH_ATTEMPT  12 /* bpf(BPF_PROG_DETACH) sobre un peer */
+#define EVENT_GAMMA_MAP_TAMPER      13 /* Modificación sospechosa a map peer */
+#define EVENT_GAMMA_PEER_VANISHED   14 /* bpf_prog_put observado sobre peer */
+#define EVENT_GAMMA_PEER_SILENT     15 /* Ringbuffer peer sin eventos >QHC */
+#define EVENT_GAMMA_INCONSISTENCY   16 /* Decisiones contradictorias entre peers */
+#define EVENT_GAMMA_PEER_UNLOADED   17 /* Prog ya no aparece en bpftool prog list */
+#define EVENT_GAMMA_HEARTBEAT       18 /* Gamma alive — pulso cada BIO_PULSE */
+
+/* ─── Códigos de peer Guardian (reservado[0] del cortex_event) ─────────────── */
+#define GUARDIAN_CODE_ALPHA     1
+#define GUARDIAN_CODE_COGNITIVE 2
+#define GUARDIAN_CODE_AI        3
+#define GUARDIAN_CODE_FLOAT     4
+#define GUARDIAN_CODE_GAMMA     5
+
 /* ─────────────────────────────── NIVELES DE SEVERIDAD (S60) ───────────── */
 
 /* Mapeados a valores SPA raw (SCALE_0 = 12,960,000):

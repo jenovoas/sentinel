@@ -76,6 +76,7 @@ impl MockKernelGenerator {
                 event_type,
                 entropy_s60_raw: entropy_sim.raw_value,
                 severity: 1, // mock
+                guardian_code: 0,
             };
 
             // Enviar evento (Simulando Ring Buffer push)

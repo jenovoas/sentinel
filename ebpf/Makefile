@@ -18,11 +18,12 @@ LSM_OBJS := guardian_alpha_lsm.o lsm_ai_guardian.o ai_guardian.o guardian_cognit
 XDP_OBJS := burst_sensor.o xdp_firewall.o
 TC_OBJS  := tc_firewall.o
 KPROBE_OBJS := init_kprobe.o
+META_OBJS := guardian_gamma.o
 
-ALL_BPF_OBJS := $(LSM_OBJS) $(XDP_OBJS) $(TC_OBJS) $(KPROBE_OBJS)
+ALL_BPF_OBJS := $(LSM_OBJS) $(XDP_OBJS) $(TC_OBJS) $(KPROBE_OBJS) $(META_OBJS)
 
 # ─── Userspace binaries ───────────────────────────────────────────────────────
-BPF_BINS  := event_monitor loader lsm_loader lsm_attach attacher
+BPF_BINS  := event_monitor loader lsm_loader lsm_attach attacher gamma_watchdog
 MISC_BINS := benchmark_exec
 
 ALL_BINS := $(BPF_BINS) $(MISC_BINS)
@@ -61,7 +62,16 @@ load-tc: $(TC_OBJS)
 	sudo tc qdisc add dev eth0 clsact 2>/dev/null || true
 	sudo tc filter add dev eth0 ingress bpf da obj tc_firewall.o sec tc
 
-load-all: load-lsm load-xdp load-tc
+load-gamma: $(META_OBJS)
+	# Gamma se carga DESPUÉS de los otros Guardians (necesita sus prog_id)
+	sudo mkdir -p /sys/fs/bpf/sentinel
+	sudo bpftool prog loadall guardian_gamma.o /sys/fs/bpf/sentinel/gamma \
+		autoattach pinmaps /sys/fs/bpf/sentinel
+
+unload-gamma:
+	sudo rm -rf /sys/fs/bpf/sentinel/gamma
+
+load-all: load-lsm load-xdp load-tc load-gamma
 
 unload-lsm:
 	sudo rm -f /sys/fs/bpf/guardian_alpha_lsm \
@@ -76,7 +86,7 @@ unload-xdp:
 unload-tc:
 	sudo tc qdisc del dev eth0 clsact 2>/dev/null || true
 
-unload-all: unload-lsm unload-xdp unload-tc
+unload-all: unload-gamma unload-lsm unload-xdp unload-tc
 
 # ─── Misc ─────────────────────────────────────────────────────────────────────
 clean:

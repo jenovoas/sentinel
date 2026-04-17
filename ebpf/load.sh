@@ -43,7 +43,38 @@ else
     warn "tc_firewall.o no encontrado — saltando"
 fi
 
+# ─── Gamma (meta-vigilancia, cargar al final) ─────────────────────────────────
+echo -e "\n${BOLD}── Meta-Guardian (Gamma) ─────────────────────────────────${NC}"
+if [ -f guardian_gamma.o ]; then
+    sudo mkdir -p /sys/fs/bpf/sentinel
+    if sudo bpftool prog loadall guardian_gamma.o /sys/fs/bpf/sentinel/gamma \
+         autoattach pinmaps /sys/fs/bpf/sentinel 2>/dev/null; then
+        ok "guardian_gamma cargado (kprobes activos)"
+    else
+        err "fallo al cargar guardian_gamma"
+    fi
+
+    # Lanzar watchdog userspace
+    if [ -x ./gamma_watchdog ]; then
+        sudo mkdir -p /var/log/sentinel /var/run/sentinel
+        sudo pkill -f gamma_watchdog 2>/dev/null || true
+        sudo nohup ./gamma_watchdog \
+            >>/var/log/sentinel/gamma.ndjson 2>>/var/log/sentinel/gamma.err &
+        echo $! | sudo tee /var/run/sentinel/gamma.pid >/dev/null
+        sleep 0.5
+        if sudo kill -0 "$(cat /var/run/sentinel/gamma.pid)" 2>/dev/null; then
+            ok "gamma_watchdog activo (pid=$(cat /var/run/sentinel/gamma.pid))"
+        else
+            err "gamma_watchdog no arrancó — ver /var/log/sentinel/gamma.err"
+        fi
+    else
+        warn "gamma_watchdog binario no encontrado — ejecuta 'make'"
+    fi
+else
+    warn "guardian_gamma.o no encontrado — saltando"
+fi
+
 # ─── Estado final ─────────────────────────────────────────────────────────────
 echo -e "\n${BOLD}── Estado ────────────────────────────────────────────────${NC}"
-sudo bpftool prog list | grep -E "lsm|xdp|tc" | awk '{print "  " $0}' || warn "sin programas eBPF activos"
+sudo bpftool prog list | grep -E "lsm|xdp|tc|kprobe" | awk '{print "  " $0}' || warn "sin programas eBPF activos"
 echo ""

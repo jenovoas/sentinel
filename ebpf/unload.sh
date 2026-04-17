@@ -6,6 +6,24 @@ IFACE=eth0
 ok()   { echo -e "${GREEN}✅ $*${NC}"; }
 warn() { echo -e "${YELLOW}⚠️  $*${NC}"; }
 
+echo -e "\n${BOLD}── Gamma (descargar PRIMERO para no disparar falsos PEER_VANISHED) ──${NC}"
+# Matar watchdog userspace antes que los pins del kernel
+if [ -f /var/run/sentinel/gamma.pid ]; then
+    PID=$(cat /var/run/sentinel/gamma.pid)
+    sudo kill -TERM "$PID" 2>/dev/null && ok "gamma_watchdog (pid=$PID) terminado"
+    sudo rm -f /var/run/sentinel/gamma.pid
+else
+    sudo pkill -f gamma_watchdog 2>/dev/null && ok "gamma_watchdog terminado (pkill)"
+fi
+if [ -d /sys/fs/bpf/sentinel/gamma ]; then
+    sudo rm -rf /sys/fs/bpf/sentinel/gamma && ok "gamma kernel pins eliminados"
+fi
+# Limpiar maps pineados de Gamma (LIBBPF_PIN_BY_NAME → /sys/fs/bpf/<name>)
+sudo rm -f /sys/fs/bpf/known_peer_prog_ids \
+           /sys/fs/bpf/gamma_heartbeat \
+           /sys/fs/bpf/rate_limit \
+           /sys/fs/bpf/events 2>/dev/null || true
+
 echo -e "\n${BOLD}── LSM pins ──────────────────────────────────────────────${NC}"
 for prog in guardian_alpha_lsm lsm_ai_guardian ai_guardian guardian_cognitive float_detector; do
     pin="/sys/fs/bpf/$prog"

@@ -27,6 +27,10 @@ pub struct CortexEvent {
     pub event_type: String,
     pub entropy_s60_raw: u64,
     pub severity: u8,
+    /// Guardian emisor (solo relevante para eventos Gamma 11-18).
+    /// Codificado por Guardian-Gamma en _reserved[0]:
+    /// 1=alpha, 2=cognitive, 3=ai, 4=float, 5=gamma. 0 = no aplica.
+    pub guardian_code: u8,
 }
 
 #[allow(dead_code)]
@@ -66,17 +70,30 @@ impl EbpfBridge {
             unsafe { std::ptr::read_unaligned(data.as_ptr() as *const CortexEventRaw) };
 
         let event_type = match raw.event_type {
-            1 => "FILE_BLOCKED".to_string(), // EVENT_FILE_BLOCKED
-            2 => "EXEC_BLOCKED".to_string(),
-            3 => "FILE_ALLOWED".to_string(),
-            4 => "EXEC_ALLOWED".to_string(),
-            5 => "NETWORK_BURST".to_string(),
-            6 => "NETWORK_NORMAL".to_string(),
-            7 => "SYSTEM_METRIC".to_string(),
-            8 => "BIO_PULSE".to_string(),
-            9 => "QHC_RESET".to_string(),
-            _ => "UNKNOWN".to_string(),
+            1  => "FILE_BLOCKED".to_string(),
+            2  => "EXEC_BLOCKED".to_string(),
+            3  => "FILE_ALLOWED".to_string(),
+            4  => "EXEC_ALLOWED".to_string(),
+            5  => "NETWORK_BURST".to_string(),
+            6  => "NETWORK_NORMAL".to_string(),
+            7  => "SYSTEM_METRIC".to_string(),
+            8  => "BIO_PULSE".to_string(),
+            9  => "QHC_RESET".to_string(),
+            10 => "FLOAT_CONTAMINATION".to_string(),
+            11 => "GAMMA_PEER_MISSING".to_string(),
+            12 => "GAMMA_DETACH_ATTEMPT".to_string(),
+            13 => "GAMMA_MAP_TAMPER".to_string(),
+            14 => "GAMMA_PEER_VANISHED".to_string(),
+            15 => "GAMMA_PEER_SILENT".to_string(),
+            16 => "GAMMA_INCONSISTENCY".to_string(),
+            17 => "GAMMA_PEER_UNLOADED".to_string(),
+            18 => "GAMMA_HEARTBEAT".to_string(),
+            _  => "UNKNOWN".to_string(),
         };
+
+        // _reserved[0] transporta guardian_code cuando el emisor es Gamma
+        // (float_detector también lo usa con semántica compatible: 0).
+        let guardian_code = raw._reserved[0];
 
         Some(CortexEvent {
             timestamp_ns: raw.timestamp_ns,
@@ -84,6 +101,7 @@ impl EbpfBridge {
             event_type,
             entropy_s60_raw: raw.entropy_signal,
             severity: raw.severity,
+            guardian_code,
         })
     }
 
