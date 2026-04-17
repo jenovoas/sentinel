@@ -4,6 +4,26 @@
 
 ---
 
+## ⚙️ Operations & Deployment
+
+**[01_produccion_actual_fenix/CONTENEDORES_Y_PERSISTENCIA.md](01_produccion_actual_fenix/CONTENEDORES_Y_PERSISTENCIA.md)** (Actualizado 2026-04-17)
+- Guía operativa de Podman rootless en nodo Fénix.
+- Diagnóstico de Health Checks (Redis/Nginx).
+- Configuración de persistencia con Systemd y Linger.
+
+**[PODMAN_MIGRATION.md](PODMAN_MIGRATION.md)**
+- Estrategia de perfiles (Minimal/Backend/Full).
+- Optimización de recursos.
+
+**[HA_DISASTER_RECOVERY.md](HA_DISASTER_RECOVERY.md)**
+- Plan maestro de recuperación ante desastres.
+- Arquitectura de alta disponibilidad.
+
+**[INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md)**
+- Guía paso a paso para nuevos despliegues.
+
+---
+
 ##  START HERE: Visual Guide
 
 **The Trinity Diagram** - Understand everything in one image:
