@@ -9,7 +9,10 @@ updates:
       frontend-deps:
         patterns:
           - "*"
-
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch", "version-update:semver-minor"]
+    
   - package-ecosystem: "pip"
     directory: "/backend"
     schedule:
@@ -29,3 +32,13 @@ updates:
       rust-deps:
         patterns:
           - "*"
+    # Excluimos las carpetas de investigación para que no den avisos de seguridad
+    ignore:
+      - dependency-name: "*"
+        directories:
+          - "/docs/research"
+          - "/internal/exploratory"
+          - "/experiments"
+          - "/backups_traefik"
+          - "/temporal"
+          - "/history"
