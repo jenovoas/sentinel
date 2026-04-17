@@ -52,10 +52,13 @@ def to_float(v, default=0.0):
 def main():
     args = parse_args()
     rows = load_rows(args.input)
-    cpu = [to_float(r.get("cpu_percent", 0)) for r in rows]
-    mem = [to_float(r.get("mem_percent", 0)) for r in rows]
-    gpu = [to_float(r.get("gpu_percent", 0)) for r in rows]
-    wifi = [to_float(r.get("wifi_signal", 0)) for r in rows]
+
+    cpu, mem, gpu, wifi = [], [], [], []
+    for r in rows:
+        cpu.append(to_float(r.get("cpu_percent", 0)))
+        mem.append(to_float(r.get("mem_percent", 0)))
+        gpu.append(to_float(r.get("gpu_percent", 0)))
+        wifi.append(to_float(r.get("wifi_signal", 0)))
 
     html = HTML_TMPL.format(
         cpu_avg=round(mean(cpu), 2) if cpu else 0,
