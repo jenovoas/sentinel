@@ -65,7 +65,7 @@ limits_config:
   unordered_writes: true
   
   # Enforce metric name validation
-  enforce_metric_name: false
+  # enforce_metric_name is not supported in this version
 
 # Configuración de compactación
 compactor:

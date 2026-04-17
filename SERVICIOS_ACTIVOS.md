@@ -1,103 +1,58 @@
 # 🚀 Servicios Activos de Sentinel (Producción Fenix)
 
-**Última actualización**: 13 de Abril, 2026
-**Estado**: 🟢 OPERATIVO (Reconstrucción Fase Fenix Completada)
+**Última actualización**: 17 de Abril, 2026
+**Estado**: 🟢 OPERATIVO (Estabilización Post-Conflicto de Puertos Completada)
 **Infraestructura**: Podman Rootless (Rocky Linux 9)
 
 ---
 
 ## 📋 Servicios de Núcleo (Core)
 
-### 1. Sentinel Cortex (Rust/Axum)
+### 1. Sentinel Cortex (Backend FastAPI)
 - **URL**: <https://cortex.pinguinoseguro.cl/api>
-- **Descripción**: Motor principal asíncrono. Gestiona la lógica de negocio y la integración eBPF.
-- **Estado**: ✅ Activo (Ring-0 Enabled)
-- **Endpoints Clave**:
-  - `/api/health` - Salud del sistema S60.
-  - `/api/metrics` - Exportador nativo de Prometheus.
-
-### 2. Dashboard UI (Next.js)
-- **URL**: <https://cortex.pinguinoseguro.cl>
-- **Descripción**: Interfaz de control y visualización de la malla Sentinel.
+- **Puerto Interno (Host)**: `8000`
 - **Estado**: ✅ Activo
 
----
+### 2. Dashboard UI (Next.js)
+- **Puerto Host**: `3030`
+- **Descripción**: Interfaz de control y visualización.
+- **Estado**: ✅ Activo
 
-## 🗄️ Persistencia y Mensajería
-
-### 3. PostgreSQL 16 (Relational DB)
-- **Container**: `sentinel-postgres`
-- **Uso**: Configuración, auditoría persistente y gestión de tenants.
-- **Estado**: ✅ Healthy
-
-### 4. Redis 7 (Cache & Streams)
-- **Container**: `sentinel-redis`
-- **Uso**: Message broker para eventos eBPF y caché de alta velocidad.
-- **Estado**: ✅ Healthy
+### 3. Nginx Gateway (Sentinel Proxy)
+- **Puerto Host**: `8082`
+- **Estado**: ✅ Activo (Proxy hacia Frontend/Backend en localhost)
 
 ---
 
 ## 📊 Stack de Observabilidad
 
 ### 5. Grafana (Visualización)
-- **URL**: <https://grafana.pinguinoseguro.cl>
-- **Descripción**: Centro de mando para métricas térmicas y de seguridad.
+- **Puerto Host**: `3011` (Interno contenedor: 3005)
 - **Estado**: ✅ Activo
 
-### 6. Prometheus (Time Series)
-- **URL**: <https://prometheus.pinguinoseguro.cl>
-- **Descripción**: Recolección de métricas de Cortex, Neural Guard y exporters del sistema.
-- **Estado**: ✅ Activo
-
-### 7. Loki (Logs)
-- **Host**: `sentinel-loki:3100` (Agregado en Grafana)
-- **Descripción**: Almacenamiento distribuido de logs de contenedores y sistema.
+### 12. Uptime Kuma (PinguinoSeguro)
+- **Puerto Host**: `3002`
 - **Estado**: ✅ Activo
 
 ---
 
-## 🛡️ Seguridad y Cognición
+## 🛠️ Procedimientos de Mantenimiento de Infraestructura
 
-### 8. Neural Guard (Decision Engine)
-- **Container**: `sentinel-neural-guard`
-- **Descripción**: Nervio cognitivo que ajusta umbrales de seguridad basado en carga térmica y eventos de red.
-- **Estado**: ✅ Activo (Thermal Coupling ON)
-
----
-
-## 🤖 Automatización
-
-### 9. n8n (Workflow Automation)
-- **URL**: <https://n8n.pinguinoseguro.cl>
-- **Descripción**: Orquestación de respuestas ante incidentes y reportes automáticos.
-- **Estado**: ✅ Activo
-
----
-
-## 🌐 Sitios Web Adicionales
-
-### 10. Portfolio Pinguino Seguro
-- **URL**: <https://portfolio.pinguinoseguro.cl>
-- **Estado**: ✅ Activo
-
-### 11. La Espiguita (ERP/Landing)
-- **URL**: <https://laespiguita.pinguinoseguro.cl>
-- **Estado**: ✅ Activo
-
----
-
-## 🔧 Comandos de Supervisión (Fenix)
-
+### ⚠️ Reseteo de Red (En caso de "Address already in use")
+Si un contenedor falla al arrancar alegando que el puerto está ocupado pero `netstat` no muestra culpables claros, ejecutar:
 ```bash
-# Verificar estado global
-podman ps --all
+# 1. Detener todos los pods
+podman pod stop --all
 
-# Ver logs del motor Cortex
-podman logs -f sentinel-cortex
+# 2. Eliminar procesos de red huérfanos (RootlessPort)
+killall -9 rootlessport
 
-# Ejecutar certificación de integridad aritmética S60
-cargo run --release -p sentinel-cortex --bin certify_s60
+# 3. Reiniciar el stack
+podman-compose up -d
 ```
+
+### 🛡️ Arquitectura de Comunicación en el Pod
+**IMPORTANTE**: Dentro del Pod `pod_sentinel`, los servicios **DEBEN** comunicarse vía `localhost:<puerto>` (ej: Nginx -> `localhost:8000`). El uso de nombres de servicio de Docker-Compose no es confiable dentro de un mismo Pod Rootless.
 
 ---
 
