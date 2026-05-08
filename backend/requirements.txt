@@ -58,7 +58,7 @@ python-dotenv==1.0.1
 # Async HTTP client for AI integration
 httpx==0.28.1
 # Form data parsing for FastAPI
-python-multipart==0.0.26
+python-multipart==0.0.27
 # Email validation
 email-validator==2.3.0
 # Scientific computing for anomaly detection
