@@ -30,7 +30,7 @@ alembic==1.18.4
 # Pydantic 2.0 - Data validation with Python type hints
 pydantic==2.12.5
 # Settings management from environment variables
-pydantic-settings==2.13.1
+pydantic-settings==2.14.2
 
 # ============================================================================
 # ASYNC TASK QUEUE
