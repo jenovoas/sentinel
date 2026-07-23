@@ -17,7 +17,10 @@ CONTEXTO: Preparación para migración gradual de f64 a S60 en Soul Verifier
 
 import sys
 import os
-sys.path.append('/home/jnovoas/dev/sentinel')
+# REVIEW: path absoluto reemplazado por relativo al proyecto
+_project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+if _project_root not in sys.path:
+    sys.path.insert(0, _project_root)
 
 from quantum.yatra_core import S60
 import math
@@ -117,7 +120,8 @@ def calculate_lyapunov_s60(signal):
                         ln_s60 = S60.from_decimal_degrees_FOR_IMPORT_ONLY(ln_val)
                         sum_div = sum_div + ln_s60
                         count += 1
-            except:
+            # REVIEW: bare except reemplazado por Exception (división por cero, math.log(0), etc.)
+            except Exception:
                 continue
     
     if count == 0:

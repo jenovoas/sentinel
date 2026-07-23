@@ -13,7 +13,8 @@ Provides easy imports for all quantum simulators.
 """
 
 # Version info
-__version__ = "1.S60(0, 0, 0)"
+# REVIEW: versión corregida (antes era "1.S60(0,0,0)" — string literal inválido)
+__version__ = "1.0.0"
 __author__ = "Jaime Novoa"
 __project__ = "Sentinel Cortex™"
 

@@ -53,4 +53,20 @@
 ## Notas de Operación (YATRA)
 - OBLIGATORIO: No purgar volúmenes de datos (`postgres_data`, `redis_data`).
 - Asegurar que el archivo `.env` sea accesible por las unidades de systemd.
-- Usar rutas absolutas en las unidades si es necesario.
+## Tarea: Diagnóstico y Sincronización Git
+
+## Estado Inicial
+- El repositorio `sentinel` tiene 15 cambios pendientes (14 en `quantum/` en staged y `tasks/todo.md` modificado).
+- Los cambios no se han guardado en un commit local, por lo que `git push` no envía nada nuevo todavía.
+
+## Plan de Acción
+- [x] Inspeccionar el estado detallado de los 15 archivos pendientes (`git status -s`).
+- [ ] Incluir `tasks/todo.md` en el stage junto con el módulo `quantum/`.
+- [ ] Realizar commit con un mensaje descriptivo y estructurado (Conventional Commits).
+- [ ] Realizar `git push origin main` para sincronizar con GitHub.
+- [ ] Verificar el resultado empíricamente.
+
+## Notas de Operación (YATRA)
+- Mantener la sobriedad y seguir el principio de impacto mínimo.
+
+

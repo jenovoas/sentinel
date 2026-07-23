@@ -36,6 +36,8 @@ class AIBufferCascade:
         self.memory_kernel = self._init_non_markovian_kernel()
         self.akashic_records = {}  # Estado histórico: timestamp (S60) -> data
     
+    # REVIEW: tau_c default seguro (S60 es Copy/immutable, no hay mutación).
+    #         Si en el futuro S60 cambiara a referencia, usar: tau_c: Optional[S60] = None
     def _init_non_markovian_kernel(self, tau_c=S60(1, 0, 0)):  # Increased tau_c for simulation visibility
         """Kernel Ornstein-Uhlenbeck para optomecánica (S60 Pure)"""
         def kernel(t: S60, s: S60, tau_c=tau_c) -> S60:

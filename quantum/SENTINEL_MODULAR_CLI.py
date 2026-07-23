@@ -22,9 +22,13 @@ import time
 import json
 from datetime import datetime
 
-# Rutas para importar módulos de Sentinel
-sys.path.append("/home/jnovoas/sentinel/quantum")
-sys.path.append("/home/jnovoas/sentinel/backend")
+# REVIEW: paths absolutos reemplazados por relativos al proyecto
+_QUANTUM_DIR = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_ROOT = os.path.abspath(os.path.join(_QUANTUM_DIR, '..'))
+if _QUANTUM_DIR not in sys.path:
+    sys.path.insert(0, _QUANTUM_DIR)
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
 
 try:
     from truthsync_verification import truth_sync_verify
@@ -53,7 +57,8 @@ class SentinelModularCLI:
     def run_switch_1(self):
         """Pilar 1: Integridad de la Trinidad (Coherencia Real)."""
         print("\033[1;34m\n[SWITCH 1] Auditando Trinidad (Cristal de Tiempo)...\033[0m")
-        status_file = "/home/jnovoas/sentinel/quantum/perpetual_engine_status.json"
+        # REVIEW: path absoluto reemplazado por relativo
+        status_file = os.path.join(_QUANTUM_DIR, "perpetual_engine_status.json")
         
         if os.path.exists(status_file):
             try:
@@ -79,15 +84,18 @@ class SentinelModularCLI:
     def run_switch_2(self):
         """Pilar 2: Escáner de Resonancia (Quantum Watchdog)."""
         print("\033[1;34m\n[SWITCH 2] Escáner de Resonancia (Interferometría)...\033[0m")
-        target = "/home/jnovoas/sentinel/quantum/RESONANT_ARCH_SPECS.md"
+        # REVIEW: paths absolutos reemplazados por relativos
+        target = os.path.join(_QUANTUM_DIR, "RESONANT_ARCH_SPECS.md")
+        scanner = os.path.join(_QUANTUM_DIR, "quantum_scanner.py")
         print(f"👁️ Escaneando Manifiesto: {target}")
-        os.system(f"python3 /home/jnovoas/sentinel/quantum/quantum_scanner.py {target}")
+        os.system(f"python3 {scanner} {target}")
 
     def run_switch_3(self):
         """Pilar 3: Sovereign Matrix (Lattice)."""
         print("\033[1;34m\n[SWITCH 3] Red Hexagonal (Vimana Lattice)...\033[0m")
         print("🕸️ Iniciando Simulación de Resiliencia de Red...")
-        os.system("python3 /home/jnovoas/sentinel/quantum/quantum_lattice.py")
+        # REVIEW: path absoluto reemplazado por relativo
+        os.system(f"python3 {os.path.join(_QUANTUM_DIR, 'quantum_lattice.py')}")
 
     def run_switch_4(self):
         """Pilar 4: Motor Perpetuo (Dashboard)."""

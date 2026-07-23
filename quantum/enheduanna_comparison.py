@@ -66,29 +66,30 @@ def enheduanna_signature_pattern() -> Dict:
     # Based on her known mathematical work
     pattern = []
     
+    # REVIEW: cada loop usa su propia variable para evitar shadowing de i
     # Pattern 1: Multiples of 60 (her base system)
-    for i in range(10):
-        pattern.append((i * 6) % 60)  # Every 6th (Inanna's number)
+    for i1 in range(10):
+        pattern.append((i1 * 6) % 60)  # Every 6th (Inanna's number)
     
     # Pattern 2: Lunar cycles (30)
-    for i in range(10):
-        pattern.append((i * 3) % 60)  # Every 3rd (30/10)
+    for i2 in range(10):
+        pattern.append((i2 * 3) % 60)  # Every 3rd (30/10)
     
     # Pattern 3: Sacred 7
-    for i in range(10):
-        pattern.append((i * 7) % 60)  # Every 7th
+    for i3 in range(10):
+        pattern.append((i3 * 7) % 60)  # Every 7th
     
     # Pattern 4: Temple hymns (42)
-    for i in range(10):
-        pattern.append((i * 42) % 60)
+    for i4 in range(10):
+        pattern.append((i4 * 42) % 60)
     
     # Pattern 5: Astronomical (12 zodiac)
-    for i in range(10):
-        pattern.append((i * 12) % 60)
+    for i5 in range(10):
+        pattern.append((i5 * 12) % 60)
     
     # Pattern 6: Inanna (6)
-    for i in range(10):
-        pattern.append((i * 6) % 60)
+    for i6 in range(10):
+        pattern.append((i6 * 6) % 60)
     
     return {
         'name': 'Enheduanna',

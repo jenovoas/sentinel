@@ -87,10 +87,11 @@ class HexagonalController:
         """Resumen del estado de la red sin visualización decimal."""
         shield = "UP" if self._ctrl.plasma_shield_active else "DOWN"
         
+        # REVIEW: bare except reemplazado por Exception específico
         try:
            phase_0_spa = self._ctrl.get_node_phase(0)
            phase_0 = S60._from_raw(phase_0_spa.to_raw())
-        except:
+        except Exception:
            phase_0 = "ERROR"
            
         print(f"\n📋 DIAGNÓSTICO LATTICE (NATIVE):")

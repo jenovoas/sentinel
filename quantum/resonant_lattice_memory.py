@@ -68,8 +68,9 @@ class ResonantLatticeMemory:
 
     def _amplitude_to_char(self, amp: S60) -> str:
         """Convierte una amplitud S60 de vuelta a un carácter."""
-        # Redondea al entero más cercano para manejar micro-fluctuaciones
-        char_code = int(amp.to_float() + 0.5)
+        # REVIEW: to_float() no existe en SPA Rust nativo. Se usa to_raw() / SCALE_0.
+        SCALE_0_F = 12_960_000.0
+        char_code = int(amp.to_raw() / SCALE_0_F + 0.5)
         if 0 <= char_code <= 255:
             return chr(char_code)
         return '?' # Carácter de error si la amplitud es inválida
@@ -91,7 +92,9 @@ class ResonantLatticeMemory:
             
             # Inicializa el cristal y el PID para este slot
             self.lattice[i] = SovereignCrystal(name=f"Cell-{i}")
-            self.lattice[i].transduce_pulse(target_amp.to_float() * 1000) # Pulso inicial
+            # REVIEW: to_float() no existe. to_raw() * 1000 / SCALE_0 = ord(char) * 1000
+            pulse_val = target_amp.to_raw() // 12_960  # SCALE_0 / 1000 = 12960
+            self.lattice[i].transduce_pulse(pulse_val)
             
             initial_amp = self.lattice[i].get_amplitude()
             self.target_amplitudes[i] = initial_amp

@@ -18,6 +18,9 @@ import csv
 import os
 import sys
 import glob
+
+# REVIEW: SCALE_0_F para conversión S60→float solo en frontera Prometheus
+SCALE_0_F = 12_960_000.0
 import threading
 import asyncio
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -122,10 +125,11 @@ class TelemetryBridge:
         drift_s60 = S60._from_raw(int(row['drift_raw']))
         
         # 1. Update Metrics
-        # La conversión a float se hace en el último momento, solo para Prometheus.
-        REGISTRY.set("sentinel_energy_total", energy_s60.to_float())
-        REGISTRY.set("sentinel_coherence_ratio", coherence_s60.to_float())
-        REGISTRY.set("sentinel_drift_seconds", drift_s60.to_float())
+        # REVIEW: to_float() no existe en SPA Rust nativo. Se usa to_raw() / SCALE_0.
+        #         Conversión a float solo en frontera Prometheus.
+        REGISTRY.set("sentinel_energy_total", energy_s60.to_raw() / SCALE_0_F)
+        REGISTRY.set("sentinel_coherence_ratio", coherence_s60.to_raw() / SCALE_0_F)
+        REGISTRY.set("sentinel_drift_seconds", drift_s60.to_raw() / SCALE_0_F)
         REGISTRY.inc("sentinel_ticks_total")
         
         # 2. AIOps Shield Sanitization (Simulada sobre el contenido raw)

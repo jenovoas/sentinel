@@ -227,6 +227,7 @@ class SentinelRiftDetector:
         n_times = len(states)
         phonon_populations = [[S60(0) for _ in range(n_times)] for _ in range(self.core.N)]
         
+        # REVIEW: renombrado inner loop variables para evitar shadowing de t,i del outer loop
         for t in range(n_times):
             for i in range(self.core.N):
                 phonon_populations[i][t] = self.core.measure_phonon_number(states[t], i)
@@ -234,9 +235,9 @@ class SentinelRiftDetector:
         # Detect incoherent jumps (Rift proxy)
         rift_detected = False
         rift_pairs = []
-        for i in range(self.core.N):
-            for t in range(1, n_times):
-                if s60_abs(phonon_populations[i][t] - phonon_populations[i][t-1]) > threshold:
+        for i2 in range(self.core.N):
+            for t2 in range(1, n_times):
+                if s60_abs(phonon_populations[i2][t2] - phonon_populations[i2][t2-1]) > threshold:
                     rift_detected = True
                     rift_pairs.append((i, t))
         

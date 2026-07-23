@@ -222,11 +222,12 @@ class NetworkTimeCrystal:
 
         self.running = False
 
+        # REVIEW: bare except reemplazado por Exception específico
         if self.pubsub:
             try:
                 self.pubsub.unsubscribe(self.sync_channel)
                 self.pubsub.close()
-            except:
+            except Exception:
                 pass
 
         if self.listen_thread:

@@ -8,6 +8,9 @@
 #   1. Python Sparse Lattice (EXP-014)
 #   2. Rust Sentinel Core (Phase 4)
 # -----------------------------------------------------------------------------
+# REVIEW: Se corrigió shadowing de variables temporales t0/t1 que invalidaba
+#         la comparación de velocidad (ver sección COMPARISON).
+# -----------------------------------------------------------------------------
 
 import sys
 import os
@@ -52,9 +55,10 @@ def run_benchmark():
     data_size = 1_000_000 * 16
     payload = secrets.token_bytes(data_size)
     
-    t0 = time.time()
+    # REVIEW: usar variables específicas para evitar shadowing con Test 2
+    t0_rust = time.time()
     count = rust_lattice.inject(payload)
-    t1 = time.time()
+    t1_rust = time.time()
     
     end_snap = tracemalloc.take_snapshot()
     tracemalloc.stop()
@@ -66,10 +70,12 @@ def run_benchmark():
     # But `active_memory_usage()` from Rust can tell us.
     
     rust_mem_reported = rust_lattice.active_memory_usage()
+    rust_time = t1_rust - t0_rust
+    rust_throughput = count / rust_time
     
     print(f"   Nodes Created: {count}")
-    print(f"   Time: {t1 - t0:.4f}s")
-    print(f"   Throughput: {count / (t1 - t0) / 1_000_000:.2f} M Nodes/s")
+    print(f"   Time: {rust_time:.4f}s")
+    print(f"   Throughput: {rust_throughput / 1_000_000:.2f} M Nodes/s")
     print(f"   Rust Reported Memory: {rust_mem_reported / 1024**2:.2f} MB")
     print(f"   Bytes per Node: {rust_mem_reported / count:.2f} B")
     
@@ -85,19 +91,21 @@ def run_benchmark():
     # 10k nodes * 16 bytes = 160 KB
     py_payload = secrets.token_bytes(10_000 * 16)
     
-    t0 = time.time()
+    t0_py = time.time()
     py_lattice.inject_holograph(py_payload)
-    t1 = time.time()
+    t1_py = time.time()
     
     current, peak = tracemalloc.get_traced_memory()
     tracemalloc.stop()
     
     py_mem = current
     py_count = len(py_lattice.nodes)
+    py_time = t1_py - t0_py
+    py_throughput = py_count / py_time
     
     print(f"   Nodes Created: {py_count}")
-    print(f"   Time: {t1 - t0:.4f}s")
-    print(f"   Throughput: {py_count / (t1 - t0) / 1_000_000:.2f} M Nodes/s")
+    print(f"   Time: {py_time:.4f}s")
+    print(f"   Throughput: {py_throughput / 1_000_000:.2f} M Nodes/s")
     print(f"   Python Memory: {py_mem / 1024**2:.2f} MB")
     print(f"   Bytes per Node: {py_mem / py_count:.2f} B")
     
@@ -105,15 +113,9 @@ def run_benchmark():
     # COMPARISON
     # ---------------------------------------------------------
     ratio_mem = (py_mem / py_count) / (rust_mem_reported / count)
-    ratio_speed = (count / (t1 - t0)) / (py_count / (t1 - t0)) # Actually time is diff variable
-    
-    rust_speed = count / (t1 - t0)
-    py_speed = py_count / (t1 - t0) # t1 is overwritten! Ah, I used separate t0/t1 blocks.
-    # Wait, variable scope in Python.
-    # t1-t0 refers to the last block.
-    # Need to store speeds.
-    
-    ratio_speed_val = rust_speed / py_speed
+    # REVIEW: Antes usaba t0/t1 del último bloque (Python) para ambos cálculos.
+    #         Ahora usa rust_time y py_time separados.
+    ratio_speed_val = rust_throughput / py_throughput
     
     print("-" * 60)
     print(f"🚀 RESULTS:")
