@@ -53,23 +53,21 @@
 ## Notas de Operación (YATRA)
 - OBLIGATORIO: No purgar volúmenes de datos (`postgres_data`, `redis_data`).
 - Asegurar que el archivo `.env` sea accesible por las unidades de systemd.
-## Tarea: Diagnóstico y Sincronización Git
+## Tarea: Restauración de Especificación de Hardware S60
 
 ## Estado Inicial
-- El repositorio `sentinel` tenía 15 cambios pendientes (14 en `quantum/` y `tasks/todo.md`).
-- El intento de commit falló por falta de configuración de identidad de usuario en Git (`user.name` y `user.email`).
+- El documento `docs/S60_HARDWARE_SPEC.md` había sido eliminado en un commit anterior.
+- Tras auditar el historial de Git, fue recuperado desde el commit `76c17070` y se encuentra staged.
 
 ## Plan de Acción
-- [x] Inspeccionar el estado detallado de los 15 archivos pendientes (`git status -s`).
-- [x] Identificar causa raíz del fallo de sincronización (falta de identidad de usuario `user.name` / `user.email` en git config).
-- [x] Configurar la identidad global de usuario en Git (`Jnovoas <jnovoas@github.com>`).
-- [x] Incluir `tasks/todo.md` en el stage junto con los módulos de `quantum/`.
-- [x] Realizar commit `feat(quantum): update quantum core modules and task plan`.
-- [x] Ejecutar `git push origin main` hacia GitHub.
-- [x] Verificar empíricamente que la rama local y remota están sincronizadas y el working tree está limpio.
+- [x] Auditar e identificar el commit con la versión pura de `docs/S60_HARDWARE_SPEC.md`.
+- [x] Restaurar el archivo al directorio de trabajo.
+- [x] Realizar commit y push de `docs/S60_HARDWARE_SPEC.md`.
+- [x] Verificar empíricamente que el estado de Git quede limpio.
 
 ## Notas de Operación (YATRA)
-- Se cumplieron los 6 principios del protocolo YATRA: diagnóstico de causa raíz sin parche superficial, verificación empírica completa del push y estado final limpio.
+- Documentación preservada según especificación de arquitectura Sovereign S60.
+
 
 
 
