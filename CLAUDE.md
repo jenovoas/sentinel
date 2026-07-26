@@ -72,3 +72,35 @@ in sentinel-cortex/src/math/. If one does not exist yet, open an issue - do not 
 - sentinel-cortex/src/math/: the core S60 type implementation
 - quantum/experiments/EXP_015_MEMORY_THROUGHPUT.py: benchmark (23.6x memory reduction)
 - RESEARCH.md: scientific narrative of the experimental program
+
+## Governance (ITIL 4 / ISO 20000‑1 / ISO 27001)
+
+- `governance/itil/service-strategy.md` – Service Strategy
+- `governance/itil/service-design.md` – Service Design
+- `governance/iso27001/statement-of-applicability.md` – SoA
+- `governance/iso20000/service-management-system.md` – SMS
+- `governance/iso27001/risk-treatment-plan.md` – RTP
+- `governance/policies/information-security-policy.md` – InfoSec Policy
+- `governance/policies/access-control-policy.md` – Access Control
+- `governance/policies/incident-management-policy.md` – Incident Management
+- `governance/policies/change-management-policy.md` – Change Management
+- `governance/compliance/matrix.md` – Compliance matrix
+- `governance/compliance/evidence-index.md` – Evidence index
+- `governance/compliance/internal-audit-plan.md` – Internal audit plan
+- `governance/compliance/management-review-agenda.md` – Management review agenda
+- `governance/kpi/dashboard.md` – KPI dashboard
+- `governance/continuous-improvement/kaizen-log.md` – Kaizen log
+
+## Translation Initiative (English → Spanish)
+
+- Master list of all Markdown files with language guess: `ENGLISH_MD_LIST.md`
+- Opencode memory (auto‑updated): `.opencode/memory.md`
+- Current priority: translate the “core” docs first (README, CLAUDE, CONTRIBUTING, RESEARCH, YATRA_SPEC, EXPERIMENTS, etc.)
+
+## Key Constraints (updated)
+
+- No floats in S60 logic (YATRA Lock)
+- No new VMs / cloud instances – everything runs as rootless Podman containers on the single FENIX node
+- Experiments numbered sequentially; EXP‑023/024/025 intentionally omitted
+- `internal/` is git‑ignored – exploratory work lives there
+- All new/updated documentation must be added to the translation backlog (see `ENGLISH_MD_LIST.md`)

@@ -68,6 +68,22 @@
 ## Notas de Operación (YATRA)
 - Documentación preservada según especificación de arquitectura Sovereign S60.
 
+## Tarea: Limpieza de Skills y MCP para Economía de Tokens
 
+## Estado Inicial
+- En `~/.gemini/config/skills/` existen 26 habilidades (Skills) de GCP/DataCloud (BigQuery, Dataflow, Composer, Dataproc, dbt, Lakehouse, etc.) inyectando miles de tokens en el prompt global en cada turno.
+- En `~/.gemini/config/mcp_config.json` hay 3 servidores MCP (`notebooks`, `visualization`, `context`).
+- En `~/.gemini/config/plugins/` existe 1 plugin (`googlecloudtools.datacloud_telemetry`).
 
+## Plan de Acción
+- [x] Auditar inventario completo de skills, plugins y servidores MCP activos.
+- [x] Trasladar skills de GCP no relacionados con Sentinel a `~/.gemini/config/skills_disabled/` (conservando solo `accidental-data-loss-prevention`, `managing-python-dependencies`, `skill-repair` y `react-doctor`).
+- [x] Desactivar/desplazar plugin `googlecloudtools.datacloud_telemetry` a `~/.gemini/config/plugins_disabled/`.
+- [x] Respaldar y deshabilitar/limpiar servidores MCP innecesarios en `~/.gemini/config/mcp_config.json`.
+- [x] Validar que la estructura quede limpia y documentar el ahorro de tokens generado.
 
+- [x] Removidos esquemas y servidor MCP de `notebooks` (junto con `visualization` y `context`) hacia `~/.gemini/antigravity-ide/mcp_disabled/`.
+
+## Notas de Operación (YATRA)
+- Mantener copia de seguridad en `_disabled` para fácil restauración si se requiere en el futuro.
+- Preservar las skills del workspace (`.agents/skills/react-doctor`).
