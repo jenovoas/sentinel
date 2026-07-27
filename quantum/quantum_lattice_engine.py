@@ -23,7 +23,14 @@ from time_crystal_clock import TimeCrystalClock
 
 try:
     from me60os_core import ResonantMatrix
+
+    # Avoid namespace package collision with local "redis/" directory by temporarily filtering sys.path
+    import sys
+    _orig_sys_path = sys.path[:]
+    sys.path = [p for p in sys.path if p not in ("", ".", os.getcwd(), "/app")]
     import redis
+    sys.path = _orig_sys_path
+
     try:
         r = redis.Redis(host=os.getenv("REDIS_HOST", "localhost"), port=int(os.getenv("REDIS_PORT", 6379)), decode_responses=True)
         r.ping()

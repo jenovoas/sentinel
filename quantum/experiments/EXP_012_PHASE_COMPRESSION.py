@@ -40,21 +40,26 @@ def run_experiment_012():
     
     # 4. Introduce Artificial Noise (Drift)
     print("\n🌪️ Inyectando Ruido de Fase (Simulando Deriva)...")
-    for node in lattice.nodes:
+    hologram = lattice._matrix.get_hologram()
+    for idx, amplitude_raw, phase_raw in hologram:
         # Añadir ruido aleatorio pequeño (+- 0.5 grados)
         # S(0.5) ~ S60(0, 30, 0)
         noise = S60(0, 30, 0)
-        node.phase += noise
+        energy = S60._from_raw(amplitude_raw)
+        phase = S60._from_raw(phase_raw) + noise
+        lattice._matrix.set_node_state(idx, energy, phase)
         
     # Check Phase drift before stabilization
     # Just inspect Node 0
-    print(f"   [Debug] Node 0 Phase (Noisy): {lattice.nodes[0].phase}")
+    h0_noisy = lattice._matrix.get_hologram()[0]
+    print(f"   [Debug] Node 0 Phase (Noisy): {S60._from_raw(h0_noisy[2])}")
 
     # 5. Quantum Snapping Stabilization
     print("\n🌊 Ejecutando 'Sector Snapping' (Corrección de Errores)...")
     lattice.stabilize_fluid(cycles=5, snap_phase=True)
     
-    print(f"   [Debug] Node 0 Phase (Snapped): {lattice.nodes[0].phase}")
+    h0_snapped = lattice._matrix.get_hologram()[0]
+    print(f"   [Debug] Node 0 Phase (Snapped): {S60._from_raw(h0_snapped[2])}")
 
     # 6. Retrieval
     print("\n🔍 Recuperando Dual-Channel...")
@@ -114,7 +119,6 @@ def run_experiment_012():
     
     # Re-Inject
     print("\n🔄 Re-Injecting with Carrier Wave padding (Req: Energy > Phase)...")
-    lattice.nodes = [] # Reset? No, just clear
     # Better: New lattice
     lattice = LiquidLatticeStorage(rings=3)
     
@@ -124,8 +128,11 @@ def run_experiment_012():
     lattice.inject_dual_channel(msg_a_padded, msg_b)
     
     # Noise again
-    for node in lattice.nodes:
-        node.phase += S60(0, 30, 0)
+    hologram = lattice._matrix.get_hologram()
+    for idx, amplitude_raw, phase_raw in hologram:
+        energy = S60._from_raw(amplitude_raw)
+        phase = S60._from_raw(phase_raw) + S60(0, 30, 0)
+        lattice._matrix.set_node_state(idx, energy, phase)
         
     lattice.stabilize_fluid(cycles=5, snap_phase=True)
     

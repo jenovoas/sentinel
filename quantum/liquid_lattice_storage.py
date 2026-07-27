@@ -71,15 +71,13 @@ class LiquidLatticeStorage(QuantumLatticeEngine):
 
     def _s60_to_bytes(self, val: S60) -> bytes:
         try:
-            # Reconstituir el entero original desde SPA
-            encoded_int = (val._value) // S60.SCALE_0 
-            
+            encoded_int = val.to_base_units()
             length = encoded_int & 0xFF
             data_int = encoded_int >> 8
-            if length == 0: return b''
-            return data_int.to_bytes(length, byteorder='big')
-        except:
-            return b''
+            if length == 0: return b""
+            return data_int.to_bytes(length, byteorder="big")
+        except Exception as e:
+            return b""
 
     def _byte_to_phase(self, val_byte: int) -> S60:
         sector_idx = S60(val_byte)
@@ -136,16 +134,50 @@ class LiquidLatticeStorage(QuantumLatticeEngine):
         self._matrix.inject(payload)
 
     def retrieve_dual_channel(self) -> Tuple[bytes, bytes]:
-        # Pendiente de recuperar nodos individuales por getter
-        return b'', b''
+        hologram = self._matrix.get_hologram()
+        payload_a_parts = []
+        payload_b_parts = []
+
+        last_active = -1
+        for idx, amplitude_raw, phase_raw in hologram:
+            if amplitude_raw > 0 or phase_raw > 0:
+                last_active = idx
+
+        if last_active == -1:
+            return b"", b""
+
+        for idx, amplitude_raw, phase_raw in hologram:
+            if idx > last_active:
+                break
+
+            energy_s60 = S60._from_raw(amplitude_raw)
+            chunk_a = self._s60_to_bytes(energy_s60)
+            payload_a_parts.append(chunk_a)
+
+            phase_s60 = S60._from_raw(phase_raw)
+            byte_val = self._phase_to_byte(phase_s60)
+            payload_b_parts.append(bytes([byte_val]))
+
+        return b"".join(payload_a_parts), b"".join(payload_b_parts)
 
     def retrieve_holograph(self) -> bytes:
         """Todavía requiere que se extraigan las amplitudes directas desde Rust."""
         return b''
 
     def stabilize_fluid(self, cycles=5, snap_phase=True):
-        print(f"🌊 Stabilizing Fluid (Rust Native Mode, {cycles} cycles)...")
-        self._matrix.stabilize(cycles)
+        if snap_phase:
+            print("🔮 Executing Phase Snapping (Anisotropic/Discrete Mode)...")
+            hologram = self._matrix.get_hologram()
+            for idx, amplitude_raw, phase_raw in hologram:
+                if amplitude_raw > 0 or phase_raw > 0:
+                    energy = S60._from_raw(amplitude_raw)
+                    phase = S60._from_raw(phase_raw)
+                    byte_val = self._phase_to_byte(phase)
+                    snapped_phase = self._byte_to_phase(byte_val)
+                    self._matrix.set_node_state(idx, energy, snapped_phase)
+        else:
+            print(f"🌊 Stabilizing Fluid (Rust Native Mode, {cycles} cycles)...")
+            self._matrix.stabilize(cycles)
 
     def verify_integrity(self, original_hash: str) -> bool:
         return True
