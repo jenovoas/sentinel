@@ -2,9 +2,9 @@
 
 ## Premisa Correcta
 
-**SOMA NO es un motor Base-60** — eso es ME-60OS.
+**SOMA NO es un motor Base-60** — eso es sentinel.
 
-**SOMA es el ORQUESTADOR** que usa ME-60OS como infraestructura subyacente.
+**SOMA es el ORQUESTADOR** que usa sentinel como infraestructura subyacente.
 
 ## Stack Integrado (No Duplicado)
 
@@ -12,7 +12,7 @@
 ┌─────────────────────────────────────────────────────────────────┐
 │                    SOMA (Orquestador)                      │
 │  • Contratos entre fases                                   │
-│  • Handoffs atómicos                                       │
+│  • Handoffs                                      │
 │  • Coordinación de tareas                                  │
 │  • Validación de artefactos                                 │
 └───────────────┬─────────────────────────────────────────────┘

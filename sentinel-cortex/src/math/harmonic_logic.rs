@@ -86,9 +86,15 @@ impl HarmonicState {
         // FALSE: Tritone 45/32 ≈ 1.40625 = 18,225,000
         let false_val = SPA::new(1, 24, 22, 30, 0).to_raw();
 
-        // Tolerance window: 3 minutes (0.05) 
-        // 3min = 3 * 216,000 = 648,000 units
-        let tolerance = 648_000;
+        // Bug 1.5 fix: el comentario original ("3 minutes (0.05) / 3*216,000 = 648,000")
+        // confundía dos escalas: en `sentinel-cortex/s60.rs` SCALE_0=216,000 (60³),
+        // pero ESTE archivo (harmonic_logic.rs) usa `me60os_core::spa::SPA` cuya
+        // SCALE_0=12,960,000 (60⁴). Aquí `tolerance=648,000` se interpreta como
+        // 648,000 / 12,960,000 = 0.05 abstracto (5% de margen armónico), NO como
+        // "3 minutos de arco" (que sería en grados-sexagesimales tradicionales).
+        // El 0.05 final sigue siendo el valor deseado; el comentario/console log
+        // anterior era la confusión típica de IA que mezcló contextos.
+        let tolerance = 648_000; // 5% abstracto en escala SPA (60⁴)
 
         if (val - ref_val).abs() < tolerance {
             LogicState::Reference

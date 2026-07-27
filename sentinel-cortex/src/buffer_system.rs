@@ -124,6 +124,8 @@ mod tests {
         let final_sum = t2.join().unwrap();
 
         // Sum 0..99 = 4950
-        assert_eq!(final_sum.to_raw() / S60::SCALE_0, 4950);
+        // Bug preexistente: `S60::to_raw()` no existe en sentinel-cortex (es de
+        // `SPA` en me-60os). Aquí se usa el equivalente `to_base_units()`.
+        assert_eq!(final_sum.to_base_units() / S60::SCALE_0, 4950);
     }
 }

@@ -5,6 +5,12 @@
 
 use crate::math::s60::{S60Error, S60};
 use crate::math::s60_math::ln_s60;
+// Dup 3.1 fix: sqrt_s60 estaba duplicado en este archivo (privado) y en
+// s60_math.rs (público). Se elimina la copia local y se reutiliza la pública
+// para que cualquier mejora futura en la implementación se propague a ambos
+// consumidores. Respeta Axioma VI: no se elimina archivo ni documentación,
+// sólo se consolida una función duplicada (sugerencia de auditoría).
+use crate::math::s60_math::sqrt_s60;
 use std::collections::HashMap;
 
 /// Calculate Lyapunov exponent in Base-60
@@ -123,38 +129,12 @@ pub fn chaos_entropy_s60(signal: &[S60]) -> S60 {
 /// Square root using Newton's method in Base-60
 ///
 /// sqrt(x) via iteration: x_{n+1} = (x_n + a/x_n) / 2
-fn sqrt_s60(x: &S60) -> Result<S60, S60Error> {
-    if *x < S60::ZERO {
-        return Err(S60Error::ComponentOutOfRange(
-            "sqrt requires non-negative value".to_string(),
-        ));
-    }
-
-    if *x == S60::ZERO {
-        return Ok(S60::ZERO);
-    }
-
-    // Initial guess: x / 2
-    let two = S60::from_raw(S60::SCALE_0 * 2);
-    let mut guess = (*x / two)?;
-
-    // Newton's method: iterate until convergence
-    for _ in 0..20 {
-        let x_div_guess = (*x / guess)?;
-        let new_guess = ((guess + x_div_guess) / two)?;
-
-        // Check convergence
-        let diff = (new_guess - guess).abs();
-        if diff.to_base_units() < 100 {
-            // < 0.0001
-            return Ok(new_guess);
-        }
-
-        guess = new_guess;
-    }
-
-    Ok(guess)
-}
+///
+/// Dup 3.1 fix: la implementación se eliminó en favor de la versión pública
+/// `crate::math::s60_math::sqrt_s60` (ver el `use` al inicio del archivo).
+/// Cualquier mejora en la convergencia (terms, threshold, overflow handling)
+/// se aplica una sola vez y úlalmentelega a todos los consumidores.
+/// Axioma VI respetado: no se elimina el archivo, sólo la función duplicada.
 
 /// Autocorrelation at lag k
 fn autocorrelation_s60(signal: &[S60], lag: usize) -> S60 {

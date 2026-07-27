@@ -36,7 +36,7 @@ handoff:
 
   # Estado al momento del handoff
   state_snapshot:
-    phases: [...]
+    phase [...]
     tasks: [...]
     artifacts: [...]
 

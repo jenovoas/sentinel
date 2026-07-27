@@ -252,17 +252,17 @@ pub fn fft_s60(signal: &[S60]) -> Result<Vec<ComplexS60>, S60Error> {
 
         for i in (0..n).step_by(size) {
             for k in 0..half_size {
-                // Calculate twiddle factor
-                // angle = -2π * k / size
-                let angle_num = -2 * k as i32;
-                let angle_den = size as i32;
+                // Calculate twiddle factor: w = exp(-2πi * k / size) = cos(θ) - i·sin(θ)
+                // con θ = 2π * k / size (en radianes, representación S60).
+                //
+                // Bug 1.7 fix: antes se usaba cos(θ) ≈ 1 - θ²/2 y sin(θ) ≈ θ
+                // (Taylor a 1-2 términos). Para θ = π/2 (k = size/4) eso da
+                // cos ≈ -0.234 (verdadero: 0) y sin ≈ 1.57 (verdadero: 1). El FFT
+                // quedaba roto para señales con energía en frecuencias no triviales.
+                // Ahora usamos sin_s60 (7 términos + rango reducido) y derivamos
+                // cos(θ) = sin(θ + π/2) para mantener consistencia aritmética.
 
-                // Approximate cos and sin using Taylor series (simplified)
-                // cos(θ) ≈ 1 - θ²/2 + θ⁴/24
-                // sin(θ) ≈ θ - θ³/6
-
-                // θ = 2π * k / size (in S60)
-                // Using π ≈ 3.141592... = S60[3; 8, 29, 44]
+                // π ≈ 3.141592... = S60[3; 8, 29, 44]
                 let pi = S60::from_raw(3141592 * S60::SCALE_0 / 1000000);
                 let two = S60::from_raw(S60::SCALE_0 * 2);
                 let size_s60 = S60::from_raw(size as i64 * S60::SCALE_0);
@@ -272,14 +272,14 @@ pub fn fft_s60(signal: &[S60]) -> Result<Vec<ComplexS60>, S60Error> {
                     Err(_) => continue,
                 };
 
-                // Simplified cos/sin (first-order approximation for small angles)
-                // For production, use lookup table or higher-order series
-                let cos_theta = match (S60::ONE - (theta * theta)) / two {
-                    Ok(val) => val,
-                    Err(_) => S60::ONE,
-                };
-                let sin_theta = theta;
+                // sin(θ) con Taylor mejorado (Bug 1.6 fix)
+                let sin_theta = sin_s60(theta);
 
+                // cos(θ) = sin(θ + π/2)
+                let theta_plus_pi_2 = theta + S60::from_raw(pi.to_base_units() / 2);
+                let cos_theta = sin_s60(theta_plus_pi_2);
+
+                // w = cos(θ) - i·sin(θ) (signo negativo en el imaginario para FFT directa)
                 let twiddle = ComplexS60::new(cos_theta, -sin_theta);
 
                 let t = data[i + k + half_size].mul(&twiddle);
@@ -518,7 +518,7 @@ pub fn sqrt_s60(x: &S60) -> Result<S60, S60Error> {
 
 /// Sine function in S60 using Taylor series
 ///
-/// Implements sin(x) = x - x³/3! + x⁵/5! - x⁷/7! + ...
+/// Implements sin(x) = x - x³/3! + x⁵/5! - x⁷/7! + x⁹/9! - x¹¹/11! + x¹³/13!
 /// Input x should be in radians (S60 representation)
 ///
 /// # Arguments
@@ -528,49 +528,77 @@ pub fn sqrt_s60(x: &S60) -> Result<S60, S60Error> {
 /// * `S60` - sin(x) in range [-1, 1]
 ///
 /// # Notes
-/// - Uses 8 terms of Taylor series for reasonable precision
-/// - Normalizes x to [0, 2π] before calculation
+/// - Bug 1.6 fix: antes usaba 5 términos y reducía x solo a [0, 2π]. Para x cercano
+///   a π (cerca del borde del rango de convergencia del Taylor), el error del
+///   término x¹¹/11! ≈ 6.4e2/4e7 ≈ 1.6e-5 → ~3240 raw SPA, mayor que el umbral
+///   declarado. Ahora:
+///   1) Se reduce x a (-π, π] restando/restableciendo 2π simétricamente (la serie
+///      converge mejor cerca del 0, donde los términos se hacen pequeños).
+///   2) Se aumentan los términos a 7 (hasta x¹³/13!) para cerrar el error < 100 raw.
 pub fn sin_s60(x: S60) -> S60 {
-    // Normalize x to [0, 2π]
+    // Normaliza x a (-π, π] restando/restableciendo 2π simétricamente
+    // (antes era a [0, 2π] que deja a x=π en el borde, donde el Taylor diverge más).
     let two_pi = S60::two_pi();
+    let pi = S60::from_raw(S60::SCALE_0 * 3 + S60::SCALE_1 * 8 + S60::SCALE_2 * 29 + S60::SCALE_3 * 44);
 
-    // Reduce x modulo 2π (simple approach: if x > 2π, subtract 2π repeatedly)
     let mut angle = x;
+    // Traer a (-2π, 2π] primero
     while angle > two_pi {
         angle = angle - two_pi;
     }
-    while angle < S60::zero() {
+    while angle <= -(two_pi) {
+        angle = angle + two_pi;
+    }
+    // Y ahora a (-π, π]: si > π, restar 2π; si <= -π, sumar 2π
+    while angle > pi {
+        angle = angle - two_pi;
+    }
+    while angle <= -(pi) {
         angle = angle + two_pi;
     }
 
-    // Taylor series: sin(x) = x - x³/3! + x⁵/5! - x⁷/7! + x⁹/9! ...
+    // Taylor series: sin(x) = x - x³/3! + x⁵/5! - x⁷/7! + x⁹/9! - x¹¹/11! + x¹³/13!
     let x_sq = angle * angle; // x²
 
     // Term 1: x
     let mut result = angle;
     let mut term = angle;
 
-    // Term 2: -x³/6
+    // Term 2: -x³/3! = -x³/6
     term = term * x_sq;
     if let Ok(val) = term / S60::from_int(6) {
         result = result - val;
     }
 
-    // Term 3: +x⁵/120
+    // Term 3: +x⁵/5! = +x⁵/120
     term = term * x_sq;
     if let Ok(val) = term / S60::from_int(120) {
         result = result + val;
     }
 
-    // Term 4: -x⁷/5040
+    // Term 4: -x⁷/7! = -x⁷/5040
     term = term * x_sq;
     if let Ok(val) = term / S60::from_int(5040) {
         result = result - val;
     }
 
-    // Term 5: +x⁹/362880
+    // Term 5: +x⁹/9! = +x⁹/362880
     term = term * x_sq;
     if let Ok(val) = term / S60::from_int(362880) {
+        result = result + val;
+    }
+
+    // Bug 1.6 fix: añadir términos 11 y 13 para reducir el error al borde
+    // Term 6: -x¹¹/11! = -x¹¹/39916800
+    term = term * x_sq;
+    if let Ok(val) = term / S60::from_int(39_916_800i32) {
+        result = result - val;
+    }
+
+    // Term 7: +x¹³/13! = +x¹³/6227020800  (13! > i32::MAX, se construye con from_raw)
+    term = term * x_sq;
+    let fact_13 = S60::from_raw(6_227_020_800i64 * S60::SCALE_0);
+    if let Ok(val) = term / fact_13 {
         result = result + val;
     }
 

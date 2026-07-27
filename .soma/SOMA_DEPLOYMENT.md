@@ -52,7 +52,7 @@
 rsync -avz ~/Dev/sentinel/.soma/ sentinel:~/Dev/sentinel/.soma/
 
 # Crear directorio de logs
-ssh -p 4222 jnovoas@10.10.10.2 "mkdir -p ~/logs/soma"
+ssh -p 4222 xxxxxx@10.10.10.2 "mkdir -p ~/logs/soma"
 ```
 
 ### Paso 2: Crear Systemd Service
@@ -66,7 +66,7 @@ Requires=me60os-qhc-agent.service me60os-adm-agent.service
 
 [Service]
 Type=simple
-User=jnovoas
+User=xxxxxx
 WorkingDirectory=/home/jnovoas/Dev/sentinel/.soma
 ExecStart=/usr/bin/python3 soma_orchestrator.py
 Restart=always

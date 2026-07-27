@@ -1,77 +1,77 @@
-# Contributing to Sentinel
+# Contribuir a Sentinel
 
-Guidelines for the development team to maintain code quality and consistency.
+Guía para el equipo de desarrollo que mantiene la calidad y la consistencia del código.
 
-## Code Standards
+## Estándares de Código
 
 ### Python (Backend)
 
-**All Python code must:**
-- Follow PEP 8 style guide
-- Include type hints for function parameters and returns
-- Have comprehensive docstrings (Google style)
-- Be commented where logic is not obvious
-- Pass linting without warnings
+**Todo el código Python debe:**
+- Seguir la guía de estilo **PEP 8**
+- Incluir *type hints* en parámetros y valores de retorno
+- Tener *docstrings* exhaustivas (estilo Google)
+- Comentar donde la lógica no sea obvia
+- Pasar el *linting* sin advertencias
 
-**Docstring Format:**
+**Formato de docstring:**
 ```python
-def create_user(email: str, password: str, tenant_id: str) -> User:
+def crear_usuario(email: str, password: str, tenant_id: str) -> User:
     """
-    Create a new user in a tenant.
-    
-    This function handles user creation with password hashing and
-    associates the user with the specified tenant.
-    
+    Crea un nuevo usuario en un tenant.
+
+    Esta función maneja la creación de usuarios con hash de contraseña y
+    asocia el usuario al tenant especificado.
+
     Args:
-        email: User's email address (must be unique within tenant)
-        password: Plain text password (will be hashed)
-        tenant_id: ID of the tenant this user belongs to
-        
+        email: Correo del usuario (debe ser único dentro del tenant)
+        password: Contraseña en texto plano (se hasheará)
+        tenant_id: ID del tenant al que pertenece el usuario
+
     Returns:
-        User: The created user object
-        
+        User: El objeto usuario creado
+
     Raises:
-        ValueError: If email already exists in tenant
-        
+        ValueError: Si el email ya existe en el tenant
+
     Example:
-        user = create_user("john@example.com", "password123", tenant_id)
+        user = crear_usuario("juan@ejemplo.com", "password123", tenant_id)
     """
     pass
 ```
 
-**Comment Guidelines:**
+**Guía de comentarios:**
 ```python
-# ✅ Good: Explains WHY
-# We use connection pooling with recycle to avoid "connection lost" errors
-# after database restarts or idle timeouts
+# ✅ Bueno: Explica el POR QUÉ
+# Usamos connection pooling con recycle para evitar errores "connection lost"
+# tras reinicios de la BD o timeouts de inactividad
 
-# ❌ Bad: Explains WHAT (code already does this)
+# ❌ Malo: Explica el QUÉ (el código ya lo hace)
 # conn_pool = get_connection_pool()
 ```
 
 ### TypeScript/JavaScript (Frontend)
 
-**All frontend code must:**
-- Use TypeScript (no plain JS)
-- Include type definitions
-- Have JSDoc comments for components
-- Use functional components
-- Follow React best practices
+**Todo el código frontend debe:**
+- Usar **TypeScript** (nada de JS plano)
+- Incluir definiciones de tipos
+- Tener comentarios JSDoc en componentes
+- Usar *functional components*
+- Seguir *best practices* de React
 
-**Component Format:**
+**Formato de componente:**
 ```typescript
 /**
- * UserCard component.
- * 
- * Displays user information in a card layout with edit and delete actions.
- * 
- * @param user - The user object to display
- * @param onEdit - Callback when edit button is clicked
- * @param onDelete - Callback when delete button is clicked
- * @returns React component
- * 
+ * Componente UserCard.
+ *
+ * Muestra la información del usuario en una tarjeta con acciones de editar y borrar.
+ *
+ * @param user - Objeto usuario a mostrar
+ * @param onEdit - Callback al hacer clic en editar
+ * @param onDelete - Callback al hacer clic en borrar
+ * @returns Componente React
+ *
  * @example
- * <UserCard 
+ * <UserCard
  *   user={userData}
  *   onEdit={handleEdit}
  *   onDelete={handleDelete}
@@ -86,256 +86,256 @@ export function UserCard({
 }
 ```
 
-### SQL & Database
+### SQL y Base de Datos
 
-**Database changes must:**
-- Include migration explanation
-- Be backwards compatible when possible
-- Include comments for RLS policies
-- Document the business logic
+**Los cambios en BD deben:**
+- Incluir explicación de la migración
+- Ser retrocompatibles cuando sea posible
+- Comentar políticas RLS
+- Documentar la lógica de negocio
 
-## Git Workflow
+## Flujo de Trabajo Git
 
-### Branches
-- `main` - Production-ready code only
-- `develop` - Integration branch
-- Feature branches: `feature/description`
-- Bugfix branches: `bugfix/issue-number`
-- Hotfix branches: `hotfix/urgent-issue`
+### Ramas
+- `main` — Solo código listo para producción
+- `develop` — Rama de integración
+- *Feature branches*: `feature/descripcion`
+- *Bugfix branches*: `bugfix/numero-issue`
+- *Hotfix branches*: `hotfix/issue-urgente`
 
 ### Commits
 ```bash
-# Good commit messages
-git commit -m "feat: add user authentication with JWT"
-git commit -m "fix: resolve database connection timeout"
-git commit -m "docs: update API documentation for users endpoint"
+# Buenos mensajes de commit
+git commit -m "feat: añadir autenticación de usuario con JWT"
+git commit -m "fix: resolver timeout de conexión a base de datos"
+git commit -m "docs: actualizar documentación de API para endpoint usuarios"
 
-# Format: [type]: [short description]
-# Types: feat, fix, docs, style, refactor, perf, test, chore
+# Formato: [tipo]: [descripción corta]
+# Tipos: feat, fix, docs, style, refactor, perf, test, chore
 ```
 
 ### Pull Requests
 
-**Before creating a PR:**
-1. Create feature branch from `develop`
-2. Make your changes with good commits
-3. Test locally with `podman-compose`
-4. Update documentation if needed
+**Antes de crear un PR:**
+1. Crear rama feature desde `develop`
+2. Hacer cambios con buenos commits
+3. Probar localmente con `podman-compose`
+4. Actualizar documentación si es necesario
 
-**PR Template:**
+**Plantilla de PR:**
 ```markdown
-## Description
-What changes does this PR make?
+## Descripción
+¿Qué cambios hace este PR?
 
-## Type of Change
-- [ ] New feature
-- [ ] Bug fix
-- [ ] Documentation update
-- [ ] Performance improvement
+## Tipo de Cambio
+- [ ] Nueva funcionalidad
+- [ ] Corrección de bug
+- [ ] Actualización de documentación
+- [ ] Mejora de rendimiento
 
-## Testing
-How was this tested?
+## Pruebas
+¿Cómo se probó esto?
 
-## Checklist
-- [ ] Code follows project standards
-- [ ] Documentation is updated
-- [ ] Tests are added/updated
-- [ ] No console errors/warnings
+## Lista de verificación
+- [ ] El código sigue los estándares del proyecto
+- [ ] La documentación está actualizada
+- [ ] Se añadieron/actualizaron tests
+- [ ] Sin errores/advertencias en consola
 ```
 
-## Testing Requirements
+## Requisitos de Pruebas
 
-### Backend Tests
+### Tests Backend
 ```python
-# Use pytest for all tests
-# Location: tests/ directory
-# Run: podman-compose exec backend pytest
+# Usar pytest para todos los tests
+# Ubicación: directorio tests/
+# Ejecutar: podman-compose exec backend pytest
 
 import pytest
 from app.models import User
 
-def test_create_user(db_session):
-    """Test user creation with valid data."""
-    user = User(email="test@example.com", username="testuser")
+def test_crear_usuario(db_session):
+    """Test creación de usuario con datos válidos."""
+    user = User(email="test@ejemplo.com", username="testuser")
     db_session.add(user)
     db_session.commit()
-    
+
     assert user.id is not None
-    assert user.email == "test@example.com"
+    assert user.email == "test@ejemplo.com"
 ```
 
-### Frontend Tests
+### Tests Frontend
 ```typescript
-// Use vitest/jest for component testing
-// Location: __tests__/ or adjacent to component
-// Run: podman-compose exec frontend npm test
+// Usar vitest/jest para test de componentes
+// Ubicación: __tests__/ o adyacente al componente
+// Ejecutar: podman-compose exec frontend npm test
 
 import { render, screen } from '@testing-library/react';
 import { UserCard } from '@/components/UserCard';
 
 describe('UserCard', () => {
-  it('displays user information correctly', () => {
+  it('muestra la información del usuario correctamente', () => {
     render(<UserCard user={mockUser} />);
     expect(screen.getByText(mockUser.email)).toBeInTheDocument();
   });
 });
 ```
 
-## Documentation
+## Documentación
 
 ### README.md
-- Keep updated with major changes
-- Include new endpoints
-- Document new features
-- Update command examples if they change
+- Mantener actualizado con cambios mayores
+- Incluir nuevos endpoints
+- Documentar nuevas funcionalidades
+- Actualizar ejemplos de comandos si cambian
 
-### Code Comments
-- Explain business logic and decisions
-- Document non-obvious algorithms
-- Note workarounds with reasons
-- Link to related issues or docs
+### Comentarios en Código
+- Explicar lógica de negocio y decisiones
+- Documentar algoritmos no obvios
+- Anotar *workarounds* con razones
+- Enlazar a issues o docs relacionados
 
 ### Docstrings
-- Every public function/class must have docstrings
-- Include parameters, returns, raises
-- Add examples for complex usage
+- Cada función/clase pública debe tener docstrings
+- Incluir parámetros, retornos, excepciones
+- Añadir ejemplos para uso complejo
 
-## Performance Considerations
+## Consideraciones de Rendimiento
 
 ### Backend
-- Use `pool_pre_ping=True` for connections
-- Implement pagination for list endpoints
-- Cache frequently accessed data in Redis
-- Use Celery for long-running tasks
-- Monitor query performance with `echo=True` in dev
+- Usar `pool_pre_ping=True` para conexiones
+- Implementar paginación en endpoints de lista
+- Cachear datos frecuentes en Redis
+- Usar Celery para tareas largas
+- Monitorizar rendimiento de consultas con `echo=True` en dev
 
 ### Frontend
-- Use React.memo for expensive components
-- Implement lazy loading for routes
-- Optimize images with next/image
-- Minimize bundle size
-- Use Suspense for async components
+- Usar `React.memo` para componentes costosos
+- Implementar *lazy loading* para rutas
+- Optimizar imágenes con next/image
+- Minimizar tamaño de bundle
+- Usar Suspense para componentes async
 
-## Security Checklist
+## Lista de Verificación de Seguridad
 
-### Before Each Release
-- [ ] No hardcoded secrets in code
-- [ ] All user inputs validated
-- [ ] SQL injection protection via ORM
-- [ ] CORS properly configured
-- [ ] Rate limiting enabled
-- [ ] Passwords hashed (never stored plain)
-- [ ] JWT secrets rotated if needed
-- [ ] Dependencies updated
-- [ ] No debug mode in production
-- [ ] HTTPS enforced in production
+### Antes de Cada Release
+- [ ] Sin secretos hardcodeados en código
+- [ ] Todas las entradas de usuario validadas
+- [ ] Protección contra inyección SQL vía ORM
+- [ ] CORS configurado correctamente
+- [ ] Rate limiting habilitado
+- [ ] Contraseñas hasheadas (nunca en plano)
+- [ ] Secretos JWT rotados si es necesario
+- [ ] Dependencias actualizadas
+- [ ] Modo debug desactivado en producción
+- [ ] HTTPS forzado en producción
 
-## Local Development Setup
+## Configuración de Desarrollo Local
 
 ```bash
-# First time setup
+# Primera configuración
 cd /home/jnovoas/sentinel
 podman-compose build
 podman-compose up -d
 
-# Backend development
+# Desarrollo backend
 podman-compose exec backend bash
 pip install -r requirements.txt
 pytest
 
-# Frontend development
+# Desarrollo frontend
 podman-compose exec frontend bash
 npm install
 npm run dev
 
-# Check code quality
+# Verificar calidad de código
 podman-compose exec backend black app/
 podman-compose exec backend mypy app/
 podman-compose exec frontend npm run lint
 ```
 
-## Debugging
+## Depuración
 
 ### Backend
 ```bash
-# View logs
+# Ver logs
 podman-compose logs -f backend
 
-# Shell access
+# Acceso shell
 podman-compose exec backend bash
 
-# Python debugger
+# Debugger Python
 podman-compose exec backend python -m pdb app/main.py
 
-# Query database
+# Consultar base de datos
 podman-compose exec postgres psql -U sentinel_user -d sentinel_db
 ```
 
 ### Frontend
 ```bash
-# View logs
+# Ver logs
 podman-compose logs -f frontend
 
-# Node shell
+# Shell Node
 podman-compose exec frontend bash
 
-# Browser DevTools (automatic in development)
+# DevTools del navegador (automático en desarrollo)
 ```
 
-### Database
+### Base de Datos
 ```bash
-# Connect to PostgreSQL
+# Conectar a PostgreSQL
 podman-compose exec postgres psql -U sentinel_user -d sentinel_db
 
-# Common queries
-\dt                    # List tables
-\d+ table_name        # Describe table
-SELECT * FROM users;  # Query data
+# Consultas comunes
+\dt                    # Listar tablas
+\d+ nombre_tabla      # Describir tabla
+SELECT * FROM users;  # Consultar datos
 ```
 
-## Common Tasks
+## Tareas Comunes
 
-### Adding an API Endpoint
-1. Create schema in `backend/app/schemas/__init__.py`
-2. Create router in `backend/app/routers/feature.py`
-3. Add route to router with proper docstrings
-4. Include router in `backend/app/main.py`
-5. Update README.md with endpoint info
-6. Write tests for endpoint
+### Añadir un Endpoint de API
+1. Crear schema en `backend/app/schemas/__init__.py`
+2. Crear router en `backend/app/routers/feature.py`
+3. Añadir ruta al router con docstrings adecuados
+4. Incluir router en `backend/app/main.py`
+5. Actualizar README.md con info del endpoint
+6. Escribir tests para el endpoint
 
-### Adding a Database Table
-1. Create model in `backend/app/models/__init__.py`
-2. Add migration (Alembic when implemented)
-3. Update RLS policies if multi-tenant
-4. Document in README.md
+### Añadir una Tabla a la BD
+1. Crear modelo en `backend/app/models/__init__.py`
+2. Añadir migración (Alembic cuando se implemente)
+3. Actualizar políticas RLS si es multi-tenant
+4. Documentar en README.md
 
-### Adding Frontend Component
-1. Create component in `frontend/src/components/`
-2. Add TypeScript types
-3. Write tests
-4. Document with JSDoc
-5. Add to component index/export
+### Añadir Componente Frontend
+1. Crear componente en `frontend/src/components/`
+2. Añadir tipos TypeScript
+3. Escribir tests
+4. Documentar con JSDoc
+5. Añadir a índice/exportación de componentes
 
-## Code Review Guidelines
+## Guías de Code Review
 
-**Reviewers should check:**
-- [ ] Code follows standards
-- [ ] Logic is correct
-- [ ] Tests are adequate
-- [ ] Documentation is complete
-- [ ] No security issues
-- [ ] Performance is acceptable
-- [ ] No breaking changes without discussion
+**Los revisores deben comprobar:**
+- [ ] El código sigue los estándares
+- [ ] La lógica es correcta
+- [ ] Los tests son adecuados
+- [ ] La documentación está completa
+- [ ] Sin problemas de seguridad
+- [ ] El rendimiento es aceptable
+- [ ] Sin breaking changes sin discusión
 
-**Comments should be:**
-- Constructive and helpful
-- Specific with examples
-- Positive and encouraging
+**Los comentarios deben ser:**
+- Constructivos y útiles
+- Específicos con ejemplos
+- Positivos y alentadores
 
-## Tools & Commands
+## Herramientas y Comandos
 
 ```bash
-# Code formatting
+# Formateo de código
 podman-compose exec backend black app/
 podman-compose exec frontend npm run format
 
@@ -351,35 +351,35 @@ podman-compose exec frontend npm run type-check
 podman-compose exec backend pytest
 podman-compose exec frontend npm test
 
-# All checks
+# Todas las comprobaciones
 podman-compose exec backend black app/ && mypy app/ && flake8 app/
 ```
 
-## Getting Help
+## Obtener Ayuda
 
-- **Questions?** Ask in the team channel
-- **Stuck?** Check existing issues/PRs
-- **Bug found?** Create an issue with details
-- **Documentation unclear?** Update it!
+- **¿Preguntas?** Preguntar en el canal del equipo
+- **¿Atascado?** Revisar issues/PRs existentes
+- **¿Bug encontrado?** Crear issue con detalles
+- **¿Documentación poco clara?** ¡Actualízala!
 
-## Final Reminders
+## Recordatorios Finales
 
-✅ **Do:**
-- Write clear, self-documenting code
-- Comment business logic, not obvious code
-- Test your changes before pushing
-- Keep functions small and focused
-- Use meaningful variable names
-- Document as you code
+✅ **Hacer:**
+- Escribir código claro y auto-documentado
+- Comentar lógica de negocio, no código obvio
+- Probar tus cambios antes de pushear
+- Mantener funciones pequeñas y enfocadas
+- Usar nombres de variables significativos
+- Documentar mientras codificas
 
-❌ **Don't:**
-- Commit without understanding changes
-- Leave debug code or console.log
-- Ignore type warnings
-- Mix features in one commit
-- Hardcode values (use config/env)
-- Skip documentation
+❌ **No hacer:**
+- Commit sin entender los cambios
+- Dejar código de debug o console.log
+- Ignorar advertencias de tipos
+- Mezclar features en un solo commit
+- Hardcodear valores (usar config/env)
+- Saltarse la documentación
 
 ---
 
-**Questions?** Ask the team. **Ready to contribute?** Start with an issue!
+**¿Preguntas?** Pregunta al equipo. **¿Listo para contribuir?** ¡Empieza con un issue!

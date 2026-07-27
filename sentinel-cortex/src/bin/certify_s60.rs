@@ -1,4 +1,6 @@
-use me60os::spa::SPA;
+// Bug preexistente: usaba `me60os` pero el crate se importa bajo el alias `me60os_core`
+// (ver Cargo.toml línea 60: `me60os_core = { path = "../../me-60os", package = "me60os" }`).
+use me60os_core::spa::SPA;
 use std::time::Instant;
 
 fn main() {
