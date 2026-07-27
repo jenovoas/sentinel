@@ -33,6 +33,8 @@ REDIS_MODE = os.getenv("REDIS_MODE", "standalone").lower()
 # Global instances
 _sentinel: Optional[Sentinel] = None
 _redis_standalone: Optional[redis.Redis] = None
+_redis_master: Optional[redis.Redis] = None
+_redis_slave: Optional[redis.Redis] = None
 
 
 def get_sentinel() -> Sentinel:
@@ -69,37 +71,83 @@ def get_sentinel() -> Sentinel:
 
 async def get_redis_master() -> redis.Redis:
     """Get Redis connection for writes (master or standalone)"""
+    global _redis_master, _redis_standalone
+
     if REDIS_MODE == "sentinel":
-        sentinel = get_sentinel()
-        return sentinel.master_for(
-            'mymaster',
-            socket_timeout=1.0,
-            socket_connect_timeout=1.0,
-            decode_responses=True,
-        )
+        if _redis_master is None:
+            sentinel = get_sentinel()
+            _redis_master = sentinel.master_for(
+                'mymaster',
+                socket_timeout=1.0,
+                socket_connect_timeout=1.0,
+                decode_responses=True,
+            )
+        return _redis_master
     else:
         # Standalone mode
-        return redis.from_url(
-            settings.redis_url,
-            decode_responses=True,
-            socket_timeout=1.0,
-            socket_connect_timeout=1.0,
-        )
+        if _redis_standalone is None:
+            _redis_standalone = redis.from_url(
+                settings.redis_url,
+                decode_responses=True,
+                socket_timeout=1.0,
+                socket_connect_timeout=1.0,
+            )
+        return _redis_standalone
 
 
 async def get_redis_slave() -> redis.Redis:
     """Get Redis connection for reads (slave or standalone)"""
+    global _redis_slave
+
     if REDIS_MODE == "sentinel":
-        sentinel = get_sentinel()
-        return sentinel.slave_for(
-            'mymaster',
-            socket_timeout=1.0,
-            socket_connect_timeout=1.0,
-            decode_responses=True,
-        )
+        if _redis_slave is None:
+            sentinel = get_sentinel()
+            _redis_slave = sentinel.slave_for(
+                'mymaster',
+                socket_timeout=1.0,
+                socket_connect_timeout=1.0,
+                decode_responses=True,
+            )
+        return _redis_slave
     else:
         # In standalone, slave is the same as master
         return await get_redis_master()
+
+
+async def close_redis() -> None:
+    """Close all active Redis connections and reset global instances."""
+    global _redis_standalone, _redis_master, _redis_slave, _sentinel
+
+    logger.info("📦 Closing Redis connections...")
+
+    if _redis_standalone is not None:
+        try:
+            await _redis_standalone.close()
+            logger.info("✅ Closed standalone Redis connection")
+        except Exception as e:
+            logger.error(f"Error closing standalone Redis connection: {e}")
+        finally:
+            _redis_standalone = None
+
+    if _redis_master is not None:
+        try:
+            await _redis_master.close()
+            logger.info("✅ Closed Sentinel master Redis connection")
+        except Exception as e:
+            logger.error(f"Error closing Sentinel master Redis connection: {e}")
+        finally:
+            _redis_master = None
+
+    if _redis_slave is not None:
+        try:
+            await _redis_slave.close()
+            logger.info("✅ Closed Sentinel slave Redis connection")
+        except Exception as e:
+            logger.error(f"Error closing Sentinel slave Redis connection: {e}")
+        finally:
+            _redis_slave = None
+
+    _sentinel = None
 
 
 async def check_redis_health() -> dict:

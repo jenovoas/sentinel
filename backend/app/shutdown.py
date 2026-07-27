@@ -22,6 +22,7 @@ from typing import Optional
 
 from app.logging_config import setup_logging
 from app.database import close_db
+from app.redis_client import close_redis
 
 # Setup logger
 logger = setup_logging("INFO")
@@ -97,8 +98,12 @@ async def graceful_shutdown():
         await close_db()
         
         # Step 4: Close Redis connections
-        # TODO: Add Redis cleanup when implemented
         logger.info("📦 Closing Redis connections...")
+        try:
+            await close_redis()
+            logger.info("✅ Redis connections closed successfully")
+        except Exception as e:
+            logger.error(f"❌ Error closing Redis connections: {e}")
         
         # Step 5: Flush logs
         logger.info("📝 Flushing logs...")
