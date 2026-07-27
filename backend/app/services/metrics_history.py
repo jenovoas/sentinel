@@ -11,7 +11,6 @@ from sqlalchemy import select, and_, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.monitoring import MetricSample, Anomaly, AnomalyType, SeverityLevel
-from app.services.monitoring import get_dashboard_snapshot
 
 
 logger = logging.getLogger(__name__)
