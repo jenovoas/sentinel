@@ -19,7 +19,6 @@ import math
 import time
 import logging
 import threading
-import functools
 from collections import deque
 from dataclasses import dataclass, field
 from typing import Callable, Any
