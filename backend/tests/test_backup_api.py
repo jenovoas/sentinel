@@ -18,6 +18,13 @@ from app.main import app
 
 client = TestClient(app)
 
+from app.routers.backup import get_cached_status, parse_backup_filename
+
+@pytest.fixture(autouse=True)
+def clear_backup_cache():
+    """Clear the backup status cache before each test"""
+    get_cached_status.cache_clear()
+
 # ============================================================================
 # FIXTURES
 # ============================================================================
@@ -131,9 +138,9 @@ def test_backup_history_endpoint(mock_backup_dir):
         backup = data[0]
         assert "filename" in backup
         assert "size_bytes" in backup
-        assert "size_mb" in backup
+        assert "size_kb" in backup
         assert "created_at" in backup
-        assert "age_hours" in backup
+        assert "age_seconds" in backup
         assert "has_checksum" in backup
 
 
@@ -221,7 +228,7 @@ def test_backup_trigger_timeout(mock_run):
     response = client.post("/api/v1/backup/trigger")
     
     assert response.status_code == 408  # Timeout
-    assert "timeout" in response.json()["detail"].lower()
+    assert "timed out" in response.json()["detail"].lower()
 
 
 # ============================================================================
@@ -286,17 +293,27 @@ def test_backup_config_endpoint():
 
 def test_backup_config_defaults():
     """Test configuration defaults"""
-    # Clear environment variables
-    env_vars = ["BACKUP_DIR", "BACKUP_RETENTION_DAYS", "S3_ENABLED"]
-    with patch.dict(os.environ, {k: "" for k in env_vars}, clear=True):
+    # Clear environment variables safely by deleting them from os.environ
+    env_vars = ["BACKUP_DIR", "BACKUP_RETENTION_DAYS", "S3_ENABLED", "MINIO_ENABLED", "ENCRYPT_ENABLED", "WEBHOOK_ENABLED"]
+    original_values = {v: os.environ.get(v) for v in env_vars}
+
+    for v in env_vars:
+        if v in os.environ:
+            del os.environ[v]
+
+    try:
         response = client.get("/api/v1/backup/config")
-        
         assert response.status_code == 200
         data = response.json()
         
         # Should use defaults
         assert data["retention_days"] == 7
         assert data["s3_enabled"] is False
+    finally:
+        # Restore original values
+        for v, val in original_values.items():
+            if val is not None:
+                os.environ[v] = val
 
 
 # ============================================================================
@@ -395,3 +412,71 @@ def test_status_endpoint_performance(mock_backup_dir):
         # Should respond in less than 1 second
         response_time = end_time - start_time
         assert response_time < 1.0, f"Response took {response_time}s (should be <1s)"
+
+
+# ============================================================================
+# TESTS: parse_backup_filename
+# ============================================================================
+
+def test_parse_backup_filename_valid():
+    """Test parse_backup_filename with valid filenames"""
+    # Standard format
+    dt = parse_backup_filename("sentinel_backup_20251215_163138.sql.gz")
+    assert dt is not None
+    assert dt.year == 2025
+    assert dt.month == 12
+    assert dt.day == 15
+    assert dt.hour == 16
+    assert dt.minute == 31
+    assert dt.second == 38
+
+    # Encrypted format
+    dt_enc = parse_backup_filename("sentinel_backup_20251215_163138.sql.gz.enc")
+    assert dt_enc is not None
+    assert dt_enc.year == 2025
+    assert dt_enc.month == 12
+    assert dt_enc.day == 15
+    assert dt_enc.hour == 16
+    assert dt_enc.minute == 31
+    assert dt_enc.second == 38
+
+    # Additional standard format checks
+    dt_other = parse_backup_filename("my_backup_20260404_082922.sql.gz")
+    assert dt_other is not None
+    assert dt_other.year == 2026
+    assert dt_other.month == 4
+    assert dt_other.day == 4
+    assert dt_other.hour == 8
+    assert dt_other.minute == 29
+    assert dt_other.second == 22
+
+
+def test_parse_backup_filename_invalid():
+    """Test parse_backup_filename with invalid filenames"""
+    # Too few underscores
+    assert parse_backup_filename("sentinel_backup_20251215.sql.gz") is None
+
+    # Non-matching parts
+    assert parse_backup_filename("invalid_file_name_format.sql.gz") is None
+
+    # Invalid hour (25)
+    assert parse_backup_filename("sentinel_backup_20251215_253138.sql.gz") is None
+
+    # Invalid minute (61)
+    assert parse_backup_filename("sentinel_backup_20251215_166138.sql.gz") is None
+
+    # Invalid second (62)
+    assert parse_backup_filename("sentinel_backup_20251215_163162.sql.gz") is None
+
+    # Invalid date (30th of February)
+    assert parse_backup_filename("sentinel_backup_20250230_163138.sql.gz") is None
+
+    # Invalid month (13)
+    assert parse_backup_filename("sentinel_backup_20251315_163138.sql.gz") is None
+
+    # Empty string
+    assert parse_backup_filename("") is None
+
+    # None or non-string (should catch exception and return None gracefully)
+    assert parse_backup_filename(None) is None
+    assert parse_backup_filename(123456) is None

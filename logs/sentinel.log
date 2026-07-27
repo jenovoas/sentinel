@@ -202,3 +202,153 @@ AttributeError: module 'bcrypt' has no attribute '__about__'
 2026-04-14 16:00:30,137 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
 2026-04-14 16:00:30,145 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
 2026-04-14 16:00:30,148 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 500 Internal Server Error"
+2026-07-27 16:28:07,368 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:28:07,396 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:28:07,402 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:28:07,405 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:28:07,489 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:28:07,492 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:28:07,494 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:28:07,497 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:28:07,503 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-07-27 16:28:07,506 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?limit=10&offset=0 "HTTP/1.1 200 OK"
+2026-07-27 16:28:07,521 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-07-27 16:28:07,525 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?limit=5&offset=0 "HTTP/1.1 200 OK"
+2026-07-27 16:28:07,527 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-07-27 16:28:07,530 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?limit=5&offset=5 "HTTP/1.1 200 OK"
+2026-07-27 16:28:07,534 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-07-27 16:28:07,537 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?limit=1000 "HTTP/1.1 422 Unprocessable Entity"
+2026-07-27 16:28:07,539 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-07-27 16:28:07,542 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?offset=-1 "HTTP/1.1 422 Unprocessable Entity"
+2026-07-27 16:28:07,547 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-07-27 16:28:07,550 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 200 OK"
+2026-07-27 16:28:07,554 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-07-27 16:28:07,557 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 200 OK"
+2026-07-27 16:28:07,560 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-07-27 16:28:07,563 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 408 Request Timeout"
+2026-07-27 16:28:07,577 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-07-27 16:28:07,580 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs?lines=10 "HTTP/1.1 200 OK"
+2026-07-27 16:28:07,584 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-07-27 16:28:07,587 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs "HTTP/1.1 200 OK"
+2026-07-27 16:28:07,591 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-07-27 16:28:07,594 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs?lines=10000 "HTTP/1.1 422 Unprocessable Entity"
+2026-07-27 16:28:07,598 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/config
+2026-07-27 16:28:07,601 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/config "HTTP/1.1 200 OK"
+2026-07-27 16:28:07,605 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/config
+2026-07-27 16:28:07,608 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/config "HTTP/1.1 500 Internal Server Error"
+2026-07-27 16:28:07,621 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/health
+2026-07-27 16:28:07,624 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/health "HTTP/1.1 200 OK"
+2026-07-27 16:28:07,629 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:28:07,632 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:28:07,635 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/config
+2026-07-27 16:28:07,637 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/config "HTTP/1.1 200 OK"
+2026-07-27 16:28:07,639 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-07-27 16:28:07,642 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history "HTTP/1.1 200 OK"
+2026-07-27 16:28:07,644 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-07-27 16:28:07,647 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs "HTTP/1.1 200 OK"
+2026-07-27 16:28:07,651 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:28:07,653 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:28:07,666 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-07-27 16:28:07,669 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs "HTTP/1.1 200 OK"
+2026-07-27 16:28:07,675 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:28:07,678 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,159 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:34:42,170 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,175 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:34:42,177 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,183 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:34:42,186 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,189 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:34:42,191 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,198 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-07-27 16:34:42,202 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?limit=10&offset=0 "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,208 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-07-27 16:34:42,212 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?limit=5&offset=0 "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,214 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-07-27 16:34:42,218 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?limit=5&offset=5 "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,223 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-07-27 16:34:42,226 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?limit=1000 "HTTP/1.1 422 Unprocessable Entity"
+2026-07-27 16:34:42,228 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-07-27 16:34:42,231 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?offset=-1 "HTTP/1.1 422 Unprocessable Entity"
+2026-07-27 16:34:42,238 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-07-27 16:34:42,241 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,245 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-07-27 16:34:42,248 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,252 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-07-27 16:34:42,256 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 408 Request Timeout"
+2026-07-27 16:34:42,261 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-07-27 16:34:42,265 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs?lines=10 "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,269 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-07-27 16:34:42,272 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,277 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-07-27 16:34:42,280 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs?lines=10000 "HTTP/1.1 422 Unprocessable Entity"
+2026-07-27 16:34:42,284 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/config
+2026-07-27 16:34:42,289 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/config "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,293 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/config
+2026-07-27 16:34:42,296 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/config "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,300 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/health
+2026-07-27 16:34:42,302 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/health "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,309 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:34:42,312 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,315 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/config
+2026-07-27 16:34:42,318 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/config "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,320 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-07-27 16:34:42,323 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,325 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-07-27 16:34:42,329 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,333 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:34:42,336 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,340 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-07-27 16:34:42,343 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs "HTTP/1.1 200 OK"
+2026-07-27 16:34:42,351 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:34:42,354 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,684 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:36:02,696 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,701 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:36:02,704 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,709 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:36:02,712 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,714 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:36:02,716 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,723 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-07-27 16:36:02,727 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?limit=10&offset=0 "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,733 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-07-27 16:36:02,736 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?limit=5&offset=0 "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,738 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-07-27 16:36:02,741 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?limit=5&offset=5 "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,746 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-07-27 16:36:02,749 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?limit=1000 "HTTP/1.1 422 Unprocessable Entity"
+2026-07-27 16:36:02,751 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-07-27 16:36:02,754 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history?offset=-1 "HTTP/1.1 422 Unprocessable Entity"
+2026-07-27 16:36:02,759 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-07-27 16:36:02,762 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,766 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-07-27 16:36:02,768 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,772 - app.logging_config - INFO - main.py:141 - log_requests() - POST /api/v1/backup/trigger
+2026-07-27 16:36:02,775 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: POST http://testserver/api/v1/backup/trigger "HTTP/1.1 408 Request Timeout"
+2026-07-27 16:36:02,780 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-07-27 16:36:02,783 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs?lines=10 "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,787 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-07-27 16:36:02,789 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,793 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-07-27 16:36:02,796 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs?lines=10000 "HTTP/1.1 422 Unprocessable Entity"
+2026-07-27 16:36:02,799 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/config
+2026-07-27 16:36:02,802 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/config "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,806 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/config
+2026-07-27 16:36:02,808 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/config "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,811 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/health
+2026-07-27 16:36:02,814 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/health "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,819 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:36:02,822 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,824 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/config
+2026-07-27 16:36:02,826 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/config "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,828 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/history
+2026-07-27 16:36:02,831 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/history "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,833 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-07-27 16:36:02,836 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,840 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:36:02,842 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,846 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/logs
+2026-07-27 16:36:02,849 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/logs "HTTP/1.1 200 OK"
+2026-07-27 16:36:02,855 - app.logging_config - INFO - main.py:141 - log_requests() - GET /api/v1/backup/status
+2026-07-27 16:36:02,858 - httpx - INFO - _client.py:1038 - _send_single_request() - HTTP Request: GET http://testserver/api/v1/backup/status "HTTP/1.1 200 OK"
