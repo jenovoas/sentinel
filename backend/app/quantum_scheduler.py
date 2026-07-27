@@ -15,14 +15,10 @@ depende del estado del sistema en el momento de ejecución.
 Resultado validado: 62.9% ahorro energético vs scheduler tradicional.
 """
 
-import math
+import sys
 import time
 import logging
-import threading
-import functools
-from collections import deque
-from dataclasses import dataclass, field
-from typing import Callable, Any
+from pathlib import Path
 
 logger = logging.getLogger("quantum_scheduler")
 
@@ -34,15 +30,10 @@ T_CYCLE = 68.0  # ciclo completo = 4 × T_BIO
 THETA = 0.75  # umbral de portal (75% del pico armónico)
 
 
-import sys
-from pathlib import Path
-
 # Agregar soporte me-60os (SOMA Rust Core)
 try:
     import me60os_core
 except ImportError:
-    import sys
-
     sys.path.insert(0, str(Path(__file__).parent))
     try:
         import me60os_core
