@@ -15,7 +15,6 @@ depende del estado del sistema en el momento de ejecución.
 Resultado validado: 62.9% ahorro energético vs scheduler tradicional.
 """
 
-import math
 import time
 import logging
 import threading
