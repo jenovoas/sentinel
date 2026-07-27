@@ -10,7 +10,7 @@ from typing import List, Optional, Dict, Any
 from sqlalchemy import and_, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.monitoring import Anomaly, AnomalyType, SeverityLevel, MetricSample
+from app.models.monitoring import Anomaly, AnomalyType, SeverityLevel
 
 logger = logging.getLogger(__name__)
 
