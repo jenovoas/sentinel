@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
+# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
+# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
+# ═════════════════════════════════════════════════════════════════════════════
+# 🧪 PROTOTIPO DE ESTUDIO — PENDIENTE DE MIGRACIÓN A RUST
+# Módulo Rust equivalente: me-60os/src/quantum_core.rs
+# Este .py es un prototipo de estudio previo; no usar en pipeline productivo.
+# ═════════════════════════════════════════════════════════════════════════════
 # 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
 
 """

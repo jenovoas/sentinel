@@ -1,3 +1,6 @@
+# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
+# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
+# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 # DEPRECATED: Migrated to sentinel-cortex/src/math/s60.rs
 # Este archivo es un proxy/wrapper. La implementación real está en Rust.
 # 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️

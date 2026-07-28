@@ -1,3 +1,6 @@
+// Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
+// Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
+// Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 // Bug preexistente: usaba `me60os` pero el crate se importa bajo el alias `me60os_core`
 // (ver Cargo.toml línea 60: `me60os_core = { path = "../../me-60os", package = "me60os" }`).
 use me60os_core::spa::SPA;

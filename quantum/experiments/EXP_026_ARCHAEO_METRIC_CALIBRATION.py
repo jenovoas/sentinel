@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
+# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
+# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 # 🛡️ ME-60OS: ARCHAEO-METRIC CALIBRATOR 🛡️
 # -----------------------------------------------------------------------------
 # Verifica la alineación armónica entre ME-60OS y la "Máquina Tierra".

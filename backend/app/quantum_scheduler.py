@@ -1,3 +1,6 @@
+# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
+# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
+# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 # DEPRECATED: Migrated to sentinel-cortex/src/quantum/quantum_scheduler.rs
 # Este archivo se mantiene temporalmente por compatibilidad del backend API.
 # La implementación activa está en Rust.

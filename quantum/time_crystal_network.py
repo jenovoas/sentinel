@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
+# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
+# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 # 🛡️ ME-60OS LOCKED: BASE-60 ONLY 🛡️
 # -----------------------------------------------------------------------------
 # TIME CRYSTAL NETWORK SYNCHRONIZATION (QNTP)

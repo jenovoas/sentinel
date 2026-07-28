@@ -1,3 +1,6 @@
+# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
+# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
+# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.tenant import Tenant

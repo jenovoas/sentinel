@@ -1,3 +1,6 @@
+# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
+# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
+# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 from quantum.yatra_core import S60
 from dataclasses import dataclass
 import time

@@ -1,4 +1,7 @@
 #![allow(dead_code)]
+// Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
+// Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
+// Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 // src/security/soul_verifier_s60_production.rs
 //! PRODUCTION Biometric Verifier - Pure Base-60 (S60) Implementation
 

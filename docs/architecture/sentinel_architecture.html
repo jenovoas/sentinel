@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentinel — Arquitectura de Producción + Neural Guard</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background: #020617;
+      min-height: 100vh;
+      padding: 2rem;
+      color: white;
+    }
+    .container { max-width: 1280px; margin: 0 auto; }
+    .header { margin-bottom: 2rem; }
+    .header-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+    .pulse-dot {
+      width: 12px; height: 12px; background: #22d3ee; border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+    h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
+    .subtitle { color: #94a3b8; font-size: 0.875rem; margin-left: 1.75rem; }
+    .diagram-container {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 1rem;
+      border: 1px solid #1e293b;
+      padding: 1.5rem;
+      overflow-x: auto;
+    }
+    svg { width: 100%; min-width: 1000px; display: block; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .card {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 0.75rem;
+      border: 1px solid #1e293b;
+      padding: 1.25rem;
+    }
+    .card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .card-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .card-dot.rose { background: #fb7185; }
+    .card-dot.amber { background: #fbbf24; }
+    .card-dot.violet { background: #a78bfa; }
+    .card h3 { font-size: 0.875rem; font-weight: 600; }
+    .card ul { list-style: none; color: #94a3b8; font-size: 0.75rem; }
+    .card li { margin-bottom: 0.375rem; }
+    .footer { text-align: center; margin-top: 1.5rem; color: #475569; font-size: 0.75rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-row">
+        <div class="pulse-dot"></div>
+        <h1>Sentinel — Arquitectura (Fenix) + Neural Guard</h1>
+      </div>
+      <p class="subtitle">Producción Node Fenix · Podman rootless + Traefik · Pila de seguridad cognitiva patentable (YATRA / S60)</p>
+    </div>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 1300 1400">
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+          </marker>
+          <marker id="arrowheadCyan" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#22d3ee" />
+          </marker>
+          <marker id="arrowheadRose" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#fb7185" />
+          </marker>
+          <marker id="arrowheadGreen" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#34d399" />
+          </marker>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+
+        <rect width="100%" height="100%" fill="url(#grid)" />
+
+        <!-- ===================== REGION A: TOP INFRA ===================== -->
+
+        <!-- Operator (External) -->
+        <rect x="30" y="240" width="120" height="64" rx="6" fill="#0f172a"/>
+        <rect x="30" y="240" width="120" height="64" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="90" y="268" fill="white" font-size="11" font-weight="600" text-anchor="middle">Operador</text>
+        <text x="90" y="284" fill="#94a3b8" font-size="9" text-anchor="middle">Autorizado</text>
+
+        <!-- Traefik Edge Proxy (Cloud/Edge) -->
+        <rect x="250" y="200" width="150" height="110" rx="6" fill="#0f172a"/>
+        <rect x="250" y="200" width="150" height="110" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="325" y="232" fill="white" font-size="11" font-weight="600" text-anchor="middle">Traefik</text>
+        <text x="325" y="248" fill="#94a3b8" font-size="9" text-anchor="middle">Edge Proxy</text>
+        <text x="325" y="266" fill="#fbbf24" font-size="8" text-anchor="middle">SSL/TLS</text>
+        <text x="325" y="282" fill="#fbbf24" font-size="8" text-anchor="middle">Let's Encrypt</text>
+        <text x="325" y="300" fill="#94a3b8" font-size="7" text-anchor="middle">PowerDNS</text>
+
+        <!-- Operator -> Traefik -->
+        <line x1="150" y1="272" x2="248" y2="272" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowheadCyan)"/>
+        <text x="199" y="266" fill="#94a3b8" font-size="9" text-anchor="middle">HTTPS</text>
+
+        <!-- Traefik -> proxy services -->
+        <line x1="400" y1="232" x2="468" y2="139" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowheadCyan)"/>
+        <line x1="400" y1="250" x2="468" y2="211" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowheadCyan)"/>
+        <line x1="400" y1="278" x2="668" y2="139" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowheadCyan)"/>
+        <line x1="400" y1="290" x2="668" y2="211" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowheadCyan)"/>
+        <line x1="400" y1="305" x2="468" y2="284" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowheadCyan)"/>
+
+        <!-- Fenix Host boundary -->
+        <rect x="430" y="40" width="840" height="560" rx="12" fill="rgba(251, 191, 36, 0.05)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="8,4"/>
+        <text x="442" y="58" fill="#fbbf24" font-size="10" font-weight="600">Fenix Host — Rocky Linux 9 · Podman rootless + Traefik</text>
+
+        <!-- proxy network boundary -->
+        <rect x="450" y="70" width="420" height="320" rx="8" fill="transparent" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="458" y="84" fill="#94a3b8" font-size="8">Network: proxy (external)</text>
+
+        <!-- sentinel-cortex (Backend) -->
+        <rect x="470" y="110" width="180" height="58" rx="6" fill="#0f172a"/>
+        <rect x="470" y="110" width="180" height="58" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="560" y="134" fill="white" font-size="11" font-weight="600" text-anchor="middle">sentinel-cortex</text>
+        <text x="560" y="150" fill="#94a3b8" font-size="9" text-anchor="middle">Rust · Axum/Tokio</text>
+        <text x="560" y="163" fill="#34d399" font-size="8" text-anchor="middle">Core API</text>
+
+        <!-- sentinel-frontend (Frontend) -->
+        <rect x="470" y="185" width="180" height="52" rx="6" fill="#0f172a"/>
+        <rect x="470" y="185" width="180" height="52" rx="6" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="560" y="207" fill="white" font-size="11" font-weight="600" text-anchor="middle">sentinel-frontend</text>
+        <text x="560" y="223" fill="#94a3b8" font-size="9" text-anchor="middle">Next.js</text>
+
+        <!-- n8n (Orchestration / bus) -->
+        <rect x="670" y="110" width="180" height="58" rx="6" fill="#0f172a"/>
+        <rect x="670" y="110" width="180" height="58" rx="6" fill="rgba(251, 146, 60, 0.3)" stroke="#fb923c" stroke-width="1.5"/>
+        <text x="760" y="134" fill="white" font-size="11" font-weight="600" text-anchor="middle">n8n Automation</text>
+        <text x="760" y="150" fill="#94a3b8" font-size="9" text-anchor="middle">Playbook Exec</text>
+        <text x="760" y="163" fill="#fb923c" font-size="8" text-anchor="middle">lockdown / recovery</text>
+
+        <!-- Grafana (Cloud/Edge observability) -->
+        <rect x="670" y="185" width="180" height="52" rx="6" fill="#0f172a"/>
+        <rect x="670" y="185" width="180" height="52" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="760" y="207" fill="white" font-size="11" font-weight="600" text-anchor="middle">Grafana</text>
+        <text x="760" y="223" fill="#94a3b8" font-size="9" text-anchor="middle">Dashboards</text>
+
+        <!-- Prometheus (Cloud/Edge observability) -->
+        <rect x="470" y="258" width="180" height="52" rx="6" fill="#0f172a"/>
+        <rect x="470" y="258" width="180" height="52" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="560" y="280" fill="white" font-size="11" font-weight="600" text-anchor="middle">Prometheus</text>
+        <text x="560" y="296" fill="#94a3b8" font-size="9" text-anchor="middle">Metrics TSDB</text>
+
+        <!-- internal network boundary -->
+        <rect x="450" y="410" width="800" height="170" rx="8" fill="transparent" stroke="#fb7185" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="458" y="424" fill="#fb7185" font-size="8">Network: sentinel_internal (isolated)</text>
+
+        <!-- PostgreSQL -->
+        <rect x="470" y="450" width="160" height="60" rx="6" fill="#0f172a"/>
+        <rect x="470" y="450" width="160" height="60" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="550" y="474" fill="white" font-size="11" font-weight="600" text-anchor="middle">PostgreSQL 16</text>
+        <text x="550" y="490" fill="#94a3b8" font-size="9" text-anchor="middle">Persistence</text>
+
+        <!-- Redis -->
+        <rect x="660" y="450" width="160" height="60" rx="6" fill="#0f172a"/>
+        <rect x="660" y="450" width="160" height="60" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="740" y="474" fill="white" font-size="11" font-weight="600" text-anchor="middle">Redis 7</text>
+        <text x="740" y="490" fill="#94a3b8" font-size="9" text-anchor="middle">Hot State / Cache</text>
+
+        <!-- Loki -->
+        <rect x="850" y="450" width="160" height="60" rx="6" fill="#0f172a"/>
+        <rect x="850" y="450" width="160" height="60" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="930" y="474" fill="white" font-size="11" font-weight="600" text-anchor="middle">Loki</text>
+        <text x="930" y="490" fill="#94a3b8" font-size="9" text-anchor="middle">Log Agg</text>
+
+        <!-- Neural Guard (top, running service) -->
+        <rect x="1040" y="450" width="180" height="60" rx="6" fill="#0f172a"/>
+        <rect x="1040" y="450" width="180" height="60" rx="6" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="1130" y="474" fill="white" font-size="11" font-weight="600" text-anchor="middle">Neural Guard</text>
+        <text x="1130" y="490" fill="#94a3b8" font-size="9" text-anchor="middle">Rust + eBPF</text>
+
+        <!-- internal connections -->
+        <line x1="560" y1="168" x2="560" y2="448" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowheadGreen)"/>
+        <text x="568" y="320" fill="#94a3b8" font-size="9">SQL</text>
+        <line x1="650" y1="168" x2="740" y2="448" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowheadGreen)"/>
+        <text x="710" y="320" fill="#94a3b8" font-size="9">cache</text>
+
+        <line x1="1040" y1="480" x2="822" y2="480" stroke="#fb7185" stroke-width="1.5" marker-end="url(#arrowheadRose)"/>
+        <text x="930" y="474" fill="#94a3b8" font-size="9" text-anchor="middle">hot state</text>
+        <line x1="1040" y1="480" x2="1012" y2="480" stroke="#fb7185" stroke-width="1.5" marker-end="url(#arrowheadRose)"/>
+        <line x1="650" y1="310" x2="1110" y2="450" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <text x="900" y="370" fill="#94a3b8" font-size="9">metrics</text>
+
+        <!-- Neural Guard (top) -> down into Region B -->
+        <line x1="1130" y1="510" x2="1130" y2="660" stroke="#fb7185" stroke-width="2" marker-end="url(#arrowheadRose)"/>
+        <text x="1140" y="600" fill="#fb7185" font-size="9">eventos kernel + decisiones</text>
+
+        <!-- ===================== REGION B: SECURITY CORE ===================== -->
+        <rect x="60" y="660" width="1180" height="520" rx="12" fill="rgba(136, 19, 55, 0.05)" stroke="#fb7185" stroke-width="1" stroke-dasharray="8,4"/>
+        <text x="72" y="678" fill="#fb7185" font-size="10" font-weight="600">Neural Guard — Cognitive Security Stack (Patentable IP · YATRA Protocol)</text>
+
+        <!-- Row 1 -->
+        <!-- eBPF LSM Hooks -->
+        <rect x="80" y="710" width="250" height="90" rx="6" fill="#0f172a"/>
+        <rect x="80" y="710" width="250" height="90" rx="6" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="205" y="732" fill="white" font-size="11" font-weight="600" text-anchor="middle">eBPF LSM Hooks</text>
+        <text x="205" y="748" fill="#94a3b8" font-size="9" text-anchor="middle">Ring-0 · file_open / bprm</text>
+        <text x="205" y="762" fill="#94a3b8" font-size="9" text-anchor="middle">Whitelist ECDSA-P256</text>
+        <text x="205" y="778" fill="#fb7185" font-size="8" text-anchor="middle">Claim 3 · sub-µs block</text>
+
+        <!-- Decision Engine -->
+        <rect x="350" y="710" width="250" height="90" rx="6" fill="#0f172a"/>
+        <rect x="350" y="710" width="250" height="90" rx="6" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="475" y="732" fill="white" font-size="11" font-weight="600" text-anchor="middle">Decision Engine</text>
+        <text x="475" y="748" fill="#94a3b8" font-size="9" text-anchor="middle">Correla Prom/Loki/PG</text>
+        <text x="475" y="762" fill="#94a3b8" font-size="9" text-anchor="middle">confidence 0.0–1.0</text>
+        <text x="475" y="778" fill="#fb7185" font-size="8" text-anchor="middle">→ webhooks n8n</text>
+
+        <!-- Dual-Lane Telemetry -->
+        <rect x="620" y="710" width="250" height="90" rx="6" fill="#0f172a"/>
+        <rect x="620" y="710" width="250" height="90" rx="6" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="745" y="732" fill="white" font-size="11" font-weight="600" text-anchor="middle">Dual-Lane Telemetry</text>
+        <text x="745" y="748" fill="#94a3b8" font-size="9" text-anchor="middle">Sec WAL 100ms / Ops 1s</text>
+        <text x="745" y="762" fill="#94a3b8" font-size="9" text-anchor="middle">Routing &lt;1ms</text>
+        <text x="745" y="778" fill="#fb7185" font-size="8" text-anchor="middle">Claim 1</text>
+
+        <!-- Semantic Firewall -->
+        <rect x="890" y="710" width="250" height="90" rx="6" fill="#0f172a"/>
+        <rect x="890" y="710" width="250" height="90" rx="6" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="1015" y="732" fill="white" font-size="11" font-weight="600" text-anchor="middle">Semantic Firewall</text>
+        <text x="1015" y="748" fill="#94a3b8" font-size="9" text-anchor="middle">AIOpsDoom injection</text>
+        <text x="1015" y="762" fill="#94a3b8" font-size="9" text-anchor="middle">100% / 0.21ms</text>
+        <text x="1015" y="778" fill="#fb7185" font-size="8" text-anchor="middle">Claim 2</text>
+
+        <!-- Row 2 -->
+        <!-- Zero Trust mTLS -->
+        <rect x="80" y="840" width="250" height="90" rx="6" fill="#0f172a"/>
+        <rect x="80" y="840" width="250" height="90" rx="6" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="205" y="862" fill="white" font-size="11" font-weight="600" text-anchor="middle">Zero Trust mTLS</text>
+        <text x="205" y="878" fill="#94a3b8" font-size="9" text-anchor="middle">x509 / rotación 24h</text>
+        <text x="205" y="892" fill="#94a3b8" font-size="9" text-anchor="middle">HMAC header signing</text>
+        <text x="205" y="908" fill="#fb7185" font-size="8" text-anchor="middle">Claim 5 · SSRF block</text>
+
+        <!-- Forensic WAL -->
+        <rect x="350" y="840" width="250" height="90" rx="6" fill="#0f172a"/>
+        <rect x="350" y="840" width="250" height="90" rx="6" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="475" y="862" fill="white" font-size="11" font-weight="600" text-anchor="middle">Forensic WAL</text>
+        <text x="475" y="878" fill="#94a3b8" font-size="9" text-anchor="middle">HMAC-SHA256 + nonce</text>
+        <text x="475" y="892" fill="#94a3b8" font-size="9" text-anchor="middle">Replay protection</text>
+        <text x="475" y="908" fill="#fb7185" font-size="8" text-anchor="middle">Claim 4</text>
+
+        <!-- Parallel Telemetry -->
+        <rect x="620" y="840" width="250" height="90" rx="6" fill="#0f172a"/>
+        <rect x="620" y="840" width="250" height="90" rx="6" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="745" y="862" fill="white" font-size="11" font-weight="600" text-anchor="middle">Parallel Telemetry</text>
+        <text x="745" y="878" fill="#94a3b8" font-size="9" text-anchor="middle">AIOpsShield + TruthSync</text>
+        <text x="745" y="892" fill="#94a3b8" font-size="9" text-anchor="middle">0ms overhead</text>
+        <text x="745" y="908" fill="#fb7185" font-size="8" text-anchor="middle">Claim 6</text>
+
+        <!-- S60 Arithmetic -->
+        <rect x="890" y="840" width="250" height="90" rx="6" fill="#0f172a"/>
+        <rect x="890" y="840" width="250" height="90" rx="6" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="1015" y="862" fill="white" font-size="11" font-weight="600" text-anchor="middle">S60 Sexagesimal</text>
+        <text x="1015" y="878" fill="#94a3b8" font-size="9" text-anchor="middle">me-60os (Rust) + SPA</text>
+        <text x="1015" y="892" fill="#94a3b8" font-size="9" text-anchor="middle">Cero float · exacto</text>
+        <text x="1015" y="908" fill="#fb7185" font-size="8" text-anchor="middle">YATRA Protocol</text>
+
+        <!-- Row 3 -->
+        <!-- Octomechanical Thermal -->
+        <rect x="350" y="970" width="510" height="80" rx="6" fill="#0f172a"/>
+        <rect x="350" y="970" width="510" height="80" rx="6" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="605" y="996" fill="white" font-size="11" font-weight="600" text-anchor="middle">Octomechanical Thermal Coupling</text>
+        <text x="605" y="1014" fill="#94a3b8" font-size="9" text-anchor="middle">Umbrales se ajustan a la línea base térmica de CPU</text>
+        <text x="605" y="1032" fill="#fb7185" font-size="8" text-anchor="middle">Modos Resiliente / Ultra-Sensible</text>
+
+        <!-- Buffers Jerárquicos -->
+        <rect x="890" y="970" width="250" height="80" rx="6" fill="#0f172a"/>
+        <rect x="890" y="970" width="250" height="80" rx="6" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="1015" y="996" fill="white" font-size="11" font-weight="600" text-anchor="middle">Buffers Jerárquicos</text>
+        <text x="1015" y="1014" fill="#94a3b8" font-size="9" text-anchor="middle">Episódico + Patrones</text>
+        <text x="1015" y="1032" fill="#fb7185" font-size="8" text-anchor="middle">SIMD Rust 0.36µs</text>
+
+        <!-- Internal flows within Region B -->
+        <line x1="330" y1="755" x2="348" y2="755" stroke="#fb7185" stroke-width="1.5" marker-end="url(#arrowheadRose)"/>
+        <text x="339" y="749" fill="#94a3b8" font-size="8" text-anchor="middle">events</text>
+
+        <line x1="600" y1="755" x2="618" y2="755" stroke="#fb7185" stroke-width="1.5" marker-end="url(#arrowheadRose)"/>
+        <line x1="870" y1="755" x2="888" y2="755" stroke="#fb7185" stroke-width="1.5" marker-end="url(#arrowheadRose)"/>
+
+        <line x1="475" y1="800" x2="475" y2="838" stroke="#fb7185" stroke-width="1.5" marker-end="url(#arrowheadRose)"/>
+        <line x1="745" y1="800" x2="745" y2="838" stroke="#fb7185" stroke-width="1.5" marker-end="url(#arrowheadRose)"/>
+        <line x1="1015" y1="800" x2="1015" y2="838" stroke="#fb7185" stroke-width="1.5" marker-end="url(#arrowheadRose)"/>
+
+        <line x1="205" y1="930" x2="475" y2="930" stroke="#fb7185" stroke-width="1.5" marker-end="url(#arrowheadRose)"/>
+        <text x="340" y="924" fill="#94a3b8" font-size="8" text-anchor="middle">zero-trust</text>
+        <line x1="475" y1="930" x2="745" y2="930" stroke="#fb7185" stroke-width="1.5" marker-end="url(#arrowheadRose)"/>
+        <text x="610" y="924" fill="#94a3b8" font-size="8" text-anchor="middle">WAL forense</text>
+        <line x1="745" y1="930" x2="1015" y2="930" stroke="#fb7185" stroke-width="1.5" marker-end="url(#arrowheadRose)"/>
+        <text x="880" y="924" fill="#94a3b8" font-size="8" text-anchor="middle">buffers</text>
+
+        <!-- S60 powers Decision Engine -->
+        <path d="M 890 885 Q 700 1010 600 760" fill="none" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#arrowheadRose)"/>
+        <text x="700" y="1000" fill="#fb7185" font-size="8">aritmética exacta</text>
+
+        <!-- Thermal coupling feeds Decision Engine -->
+        <line x1="605" y1="970" x2="530" y2="800" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#arrowheadRose)"/>
+        <text x="560" y="900" fill="#fb7185" font-size="8">thermal</text>
+
+        <!-- Decision Engine -> n8n (back up to Region A) -->
+        <path d="M 475 720 Q 475 160 760 168" fill="none" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#arrowheadRose)"/>
+        <text x="380" y="430" fill="#fb7185" font-size="9">playbook webhooks</text>
+
+        <!-- cortex -> Decision Engine (events) -->
+        <path d="M 650 139 Q 800 600 475 705" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#arrowheadGreen)"/>
+        <text x="800" y="430" fill="#34d399" font-size="9">Eventos HTTP/gRPC</text>
+
+        <!-- ===================== LEGEND ===================== -->
+        <rect x="60" y="1220" width="16" height="10" rx="2" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1"/>
+        <text x="84" y="1229" fill="#94a3b8" font-size="9">Frontend</text>
+
+        <rect x="220" y="1220" width="16" height="10" rx="2" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1"/>
+        <text x="244" y="1229" fill="#94a3b8" font-size="9">Backend</text>
+
+        <rect x="380" y="1220" width="16" height="10" rx="2" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1"/>
+        <text x="404" y="1229" fill="#94a3b8" font-size="9">Database</text>
+
+        <rect x="540" y="1220" width="16" height="10" rx="2" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1"/>
+        <text x="564" y="1229" fill="#94a3b8" font-size="9">Cloud/Edge</text>
+
+        <rect x="720" y="1220" width="16" height="10" rx="2" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1"/>
+        <text x="744" y="1229" fill="#94a3b8" font-size="9">Security</text>
+
+        <rect x="880" y="1220" width="16" height="10" rx="2" fill="rgba(251, 146, 60, 0.3)" stroke="#fb923c" stroke-width="1"/>
+        <text x="904" y="1229" fill="#94a3b8" font-size="9">Orchestration</text>
+
+        <line x1="1060" y1="1225" x2="1080" y2="1225" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="4,4"/>
+        <text x="1088" y="1229" fill="#94a3b8" font-size="9">Security flow</text>
+      </svg>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot rose"></div>
+          <h3>Neural Guard — Capa Cognitiva</h3>
+        </div>
+        <ul>
+          <li>• eBPF LSM Ring-0: bloqueo sub-microsegundo, whitelist ECDSA-P256</li>
+          <li>• Decision Engine: correlaciona Prometheus/Loki/PostgreSQL</li>
+          <li>• Orquesta playbooks n8n (lockdown / recovery / auto-remediation)</li>
+          <li>• Acoplamiento térmico octomecánico (modos Resiliente / Ultra-Sensible)</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot amber"></div>
+          <h3>Pila Patentable (6 Claims)</h3>
+        </div>
+        <ul>
+          <li>• C1 Dual-Lane Telemetry (WAL 100ms/1s, routing &lt;1ms)</li>
+          <li>• C2 Semantic Firewall (AIOpsDoom, 100% / 0.21ms)</li>
+          <li>• C3 eBPF LSM Kernel-Level (TOCTOU eliminado)</li>
+          <li>• C4 Forensic WAL + Replay Protection (HMAC-SHA256)</li>
+          <li>• C5 Zero Trust mTLS + Header Signing</li>
+          <li>• C6 Parallel Telemetry (AIOpsShield+TruthSync, 0ms)</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot violet"></div>
+          <h3>YATRA Protocol — S60</h3>
+        </div>
+        <ul>
+          <li>• Aritmética sexagesimal exacta (me-60os Rust + SPA Python)</li>
+          <li>• Cero IEEE-754 float en el decision engine</li>
+          <li>• Base-60 divisible por 2,3,4,5,6,10,12,15,20,30</li>
+          <li>• Buffers jerárquicos SIMD Rust (0.36µs)</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="footer">
+      Sentinel · docs/architecture/sentinel_architecture.html · Fuente: ARCHITECTURE.md, PATENT_CLAIMS.md, NEURAL_GUARD_ARCHITECTURE.md, EBPF_CORTEX_STATUS.md, PROTECCION_TELEMETRICA.md
+    </p>
+  </div>
+</body>
+</html>
