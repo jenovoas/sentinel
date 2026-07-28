@@ -64,12 +64,13 @@ emit_event(__u32 pid, __u8 severity)
     if (!e)
         return;
 
+    __builtin_memset(e, 0, sizeof(*e));
+
     e->timestamp_ns   = bpf_ktime_get_ns();
     e->event_type     = EVENT_FLOAT_CONTAMINATION;
     e->pid            = pid;
     e->entropy_signal = (__u64)severity * S60_SCALE_0;
     e->severity       = severity;
-    __builtin_memset(e->reserved, 0, sizeof(e->reserved));
 
     bpf_ringbuf_submit(e, 0);
 }

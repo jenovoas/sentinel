@@ -67,6 +67,8 @@ static __always_inline void log_event(__u32 pid, __u32 uid,
     if (!e)
         return;
 
+    __builtin_memset(e, 0, sizeof(*e));
+
     e->pid = pid;
     e->uid = uid;
     e->action = action;

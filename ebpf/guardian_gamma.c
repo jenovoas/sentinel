@@ -95,12 +95,13 @@ emit_gamma(__u32 event_type, __u32 pid, __u8 guardian_code, __u8 severity)
     if (!e)
         return;
 
+    __builtin_memset(e, 0, sizeof(*e));
+
     e->timestamp_ns   = bpf_ktime_get_ns();
     e->event_type     = event_type;
     e->pid            = pid;
     e->entropy_signal = (__u64)guardian_code * S60_SCALE_0;
     e->severity       = severity;
-    __builtin_memset(e->reserved, 0, sizeof(e->reserved));
     e->reserved[0]    = guardian_code;
 
     bpf_ringbuf_submit(e, 0);

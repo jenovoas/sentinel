@@ -1,7 +1,7 @@
 # Arquitectura del Sistema Sentinel
 
 **Versión**: 1.2.0 (S60-Unified / Fenix Native)
-**Contacto**: jenovoa
+**Contacto**: Jaime Novoa jaime.novoase@gmail.com
 
 Este documento describe la arquitectura de software y despliegue del proyecto Sentinel. Está dividido en el estado actual de producción y la visión a futuro.
 

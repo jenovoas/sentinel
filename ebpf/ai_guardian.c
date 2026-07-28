@@ -96,6 +96,8 @@ static __always_inline void send_cortex_event(
         return;
     }
     
+    __builtin_memset(e, 0, sizeof(*e));
+    
     e->timestamp_ns = bpf_ktime_get_ns();
     e->event_type = event_type;
     e->pid = pid;
