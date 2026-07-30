@@ -248,7 +248,15 @@ async fn main() {
             tracing::trace!("⚖️ MAAT: status={}, speed={:?}, gpu_batch={}", status, current_speed, batch_size);
 
             let mut lat = lattice_thermal.lock().unwrap();
+            let node_count = lat.amplitudes_raw().len();
+            // Inject multi-point harmonic thermal pulses across central hexagonal rings (Node 0, ring centers)
             lat.inject(0, entropy_pressure);
+            if node_count > 100 {
+                let step_ring = node_count / 7;
+                for ring_idx in 1..7 {
+                    lat.inject(ring_idx * step_ring, entropy_pressure / 2);
+                }
+            }
             lat.step();
 
             // Calculate Resonant Physics Inertial Damping & Effective Load Reduction
@@ -504,10 +512,19 @@ async fn metrics_prometheus_handler(
     out.push_str("# TYPE sentinel_lattice_total_energy gauge\n");
     out.push_str(&format!("sentinel_lattice_total_energy {}\n", total_energy));
 
-    out.push_str("# HELP sentinel_lattice_node_amplitude Amplitude for lattice node\n");
+    out.push_str("# HELP sentinel_lattice_active_node_count Count of non-zero energetic lattice nodes\n");
+    out.push_str("# TYPE sentinel_lattice_active_node_count gauge\n");
+    let active_count = amps.iter().filter(|&&a| a > 0).count();
+    out.push_str(&format!("sentinel_lattice_active_node_count {}\n", active_count));
+
+    out.push_str("# HELP sentinel_lattice_node_amplitude Amplitude for active or sampled lattice node\n");
     out.push_str("# TYPE sentinel_lattice_node_amplitude gauge\n");
+    // Sample active non-zero nodes and representative rings up to 256 series to respect Mimir ingestion limits
+    let step_sample = std::cmp::max(1, amps.len() / 128);
     for (idx, amp) in amps.iter().enumerate() {
-        out.push_str(&format!("sentinel_lattice_node_amplitude{{node=\"{}\"}} {}\n", idx, amp));
+        if *amp > 0 || idx % step_sample == 0 {
+            out.push_str(&format!("sentinel_lattice_node_amplitude{{node=\"{}\"}} {}\n", idx, amp));
+        }
     }
 
     let wal_lines = std::fs::read_to_string("/var/log/sentinel/security_wal.log")

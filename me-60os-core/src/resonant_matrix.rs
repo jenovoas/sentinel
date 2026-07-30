@@ -79,19 +79,30 @@ impl ResonantMatrix {
         // 1. Calculate transfers (without applying yet to maintain symmetry)
         let mut transfers: Vec<SPA> = vec![SPA::zero(); size];
 
-        for i in 0..(size - 1) {
+        // 2D Hexagonal Ring Radius Approximation
+        let side = (size as f64).sqrt().ceil() as usize;
+
+        for i in 0..size {
             let amp_i = self.crystals[i].get_amplitude();
-            let amp_next = self.crystals[i + 1].get_amplitude();
 
-            // Amplitude differential (pressure)
-            let diff = amp_i - amp_next;
+            // Nearest Neighbors in Hexagonal 2D Grid Topology
+            let mut neighbor_indices = Vec::with_capacity(6);
+            if i >= side { neighbor_indices.push(i - side); } // North
+            if i + side < size { neighbor_indices.push(i + side); } // South
+            if i % side > 0 { neighbor_indices.push(i - 1); } // West
+            if (i + 1) % side != 0 && i + 1 < size { neighbor_indices.push(i + 1); } // East
+            if i >= side && (i + 1) % side != 0 { neighbor_indices.push(i - side + 1); } // North-East
+            if i + side < size && i % side > 0 { neighbor_indices.push(i + side - 1); } // South-West
 
-            // Flow = Differential * Coupling Factor
-            let flow = (diff * self.coupling_factor) / SPA::new(1, 0, 0, 0, 0);
-
-            // Node i loses, node i+1 gains
-            transfers[i] = transfers[i] - flow;
-            transfers[i + 1] = transfers[i + 1] + flow;
+            for &n_idx in &neighbor_indices {
+                let amp_neighbor = self.crystals[n_idx].get_amplitude();
+                let diff = amp_i - amp_neighbor;
+                if diff.to_raw() > 0 {
+                    let flow = (diff * self.coupling_factor) / SPA::new(6, 0, 0, 0, 0); // Normalized by 6 hexagonal neighbors
+                    transfers[i] = transfers[i] - flow;
+                    transfers[n_idx] = transfers[n_idx] + flow;
+                }
+            }
         }
 
         // 2. Apply transfers and oscillate
