@@ -165,10 +165,11 @@ Rust core compiled via PyO3 — zero-copy interop, no GC overhead.
 - MycNet: distributed S60 computation across mesh nodes (hardware pending)
 - Formal proof of S60 equivalence class relative to IEEE 754
 
-## Non-Sequential Experiment Numbering
-EXP-023/024/025 are not present — they were superseded during the
-zero-float migration (commit 2bfde153). EXP numbers reflect order of
-conception, not a continuous series.
+## Serie Experimental
+EXP-023 (Detección de Deriva Temporal), EXP-024 (Correlación Bio‑Sistema) y
+EXP-025 (Penta‑Resonancia) son parte del registro de investigación que llevó al
+descubrimiento del ancla humana de 17 segundos. La numeración refleja orden de
+concepción.
 
 ## References
 - Mansfield, D. (UNSW): Plimpton 322 decoding, exact sexagesimal fractions

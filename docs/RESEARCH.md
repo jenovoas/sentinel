@@ -37,9 +37,9 @@ Python access via PyO3: `import me60os_core as s60` — zero-copy, no serializat
 
 ## Experimental Program
 
-Experiments are numbered in order of conception. EXP-023/024/025 were superseded during
-the zero-float migration (commit `2bfde153`) and are not present — this is intentional,
-not a gap in the series.
+Experiments are numbered in order of conception. EXP-023 (Temporal Drift Detection),
+EXP-024 (Bio-System Correlation), and EXP-025 (Penta-Resonance) are part of the research
+record that led to the discovery of the 17-second human anchor.
 
 ### Memory and Throughput — EXP-015
 

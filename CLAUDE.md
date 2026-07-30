@@ -1,106 +1,107 @@
-# CLAUDE.md — Sentinel Contributor Guide
+# CLAUDE.md — Guía de Contribución a Sentinel
 
-> This file gives AI coding assistants context about the Sentinel codebase.
+> Este archivo proporciona contexto del código base a los asistentes de IA.
 
-## What is Sentinel?
+## Qué es Sentinel
 
-Sentinel is a low-level systems framework built on **sexagesimal (base-60) arithmetic** and eBPF.
-The core idea: IEEE 754 floating-point introduces systematic rounding errors for fractions with
-denominators that include primes not dividing 2 (1/3, 1/6, 1/60 are non-terminating in binary).
-Base-60 is divisible by 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30 — these fractions are exact.
+Sentinel es un framework de sistemas de bajo nivel construido sobre **aritmética sexagesimal (base‑60)** y eBPF.
+La idea central: el punto flotante IEEE 754 introduce errores sistemáticos de redondeo en fracciones cuyos
+denominadores incluyen primos que no dividen a 2 (1/3, 1/6, 1/60 son no terminales en binario).
+La base‑60 es divisible por 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30 — estas fracciones son **exactas**.
 
-Sentinel implements this at the kernel level: eBPF hooks enforce arithmetic purity, Rust provides
-the zero-copy type system, and PyO3 exposes the core to Python without overhead.
+Sentinel implementa esto a nivel kernel: hooks eBPF refuerzan la pureza aritmética, Rust proporciona
+el sistema de tipos zero‑copy, y PyO3 expone el núcleo a Python sin sobrecarga.
 
-## Architecture
+## Arquitectura
 
     sentinel/
-    sentinel-cortex/   Rust core: S60/U60 types, IPC, Ring 0 enforcement
-      src/math/        Pure-integer arithmetic (add, sub, mul, div, cmp)
-    ebpf/              LSM hooks: syscall interception, float contamination detection
-    quantum/           Python layer via PyO3 (me60os_core.so)
-      experiments/     Numbered experimental program (EXP-001 to EXP-029)
-    agents/            Modular agents: Research, Verifier, Publisher, Memory
-    observability/     Prometheus + Grafana dashboards
-    constraints/        YATRA_SPEC.md - the immutable arithmetic contract
+    sentinel-cortex/   Núcleo Rust: tipos S60/U60, IPC, refuerzo en Anillo 0
+      src/math/        Aritmética entera pura (suma, resta, mult, div, cmp)
+    ebpf/              Hooks LSM: intercepción de syscalls, detección de contaminación float
+    quantum/           Capa Python vía PyO3 (me60os_core.so)
+      experiments/     Programa experimental numerado (EXP-001 a EXP-029)
+    agents/            Agentes modulares: Investigación, Verificador, Publicador, Memoria
+    observability/     Dashboards Prometheus + Grafana
+    constraints/       YATRA_SPEC.md — el contrato aritmético inmutable
 
-## Tech Stack (FENIX SERVER - CPU Only)
+## Stack Tecnológico (SERVIDOR FENIX — Solo CPU)
 
-| Layer | Technology |
-|-------|-----------|
-| Core types | Rust (repr(packed) S60 struct, 16 bytes) |
-| Kernel enforcement | eBPF / LSM hooks |
-| Python bridge | PyO3 - zero-copy, no serialization |
-| IPC | /dev/shm shared memory (6x faster than serialized IPC) |
-| Observability | Prometheus + Grafana |
-| Container runtime | Podman (rootless) |
-| AI Inference | Ollama CPU-only (phi3:mini model) |
+| Capa | Tecnología |
+|------|-----------|
+| Tipos base | Rust (struct S60 empaquetado con repr(packed), 16 bytes) |
+| Refuerzo kernel | eBPF / hooks LSM |
+| Puente Python | PyO3 — zero‑copy, sin serialización |
+| IPC | Memoria compartida /dev/shm (6× más rápida que IPC serializado) |
+| Observabilidad | Prometheus + Grafana |
+| Contenedores | Podman (rootless) |
+| Inferencia IA | Ollama solo‑CPU (modelo phi3:mini) |
 
-## The YATRA Lock - Non-Negotiable Rule
+## El Candado YATRA — Regla No Negociable
 
-**NEVER use f32, f64, or any floating-point type in base-60 logic.**
+**NUNCA usar f32, f64, ni ningún tipo de punto flotante en lógica base‑60.**
 
-This rule exists because a single float operation can contaminate an entire computation chain.
-The eBPF layer detects and blocks float syscall patterns at runtime.
+Esta regla existe porque una sola operación float puede contaminar una cadena de cómputo entera.
+La capa eBPF detecta y bloquea patrones de syscalls float en tiempo de ejecución.
 
-If you need logarithms or transcendental functions: use the Taylor series S60 implementations
-in sentinel-cortex/src/math/. If one does not exist yet, open an issue - do not use floats.
+Si necesitas logaritmos o funciones trascendentales: usa las implementaciones S60 por serie de Taylor
+en sentinel‑cortex/src/math/. Si aún no existe la que necesitas, abre un issue — no uses floats.
 
-## Building
+## Compilación
 
-    # Build Rust core
+    # Construir núcleo Rust
     cd sentinel-cortex && cargo build --release
 
-    # Build PyO3 extension (me-60os)
+    # Construir extensión PyO3 (me-60os)
     cd ../me-60os && cargo build --release --features extension-module
     cp target/release/libme60os_core.so ../sentinel/quantum/
 
-    # Run experiments
+    # Ejecutar experimentos
     cd sentinel/quantum && python3 experiments/EXP_022_ENTROPY_VALIDATION.py
 
-## Key Constraints
+## Restricciones Clave
 
-- No floats in S60 logic (YATRA Lock above)
-- No new VMs or cloud instances: all services deploy as Podman containers on a single node
-- Experiments are numbered sequentially: EXP-023/024/025 are intentionally absent
-  (superseded during zero-float migration, commit 2bfde153)
-- internal/ is gitignored: exploratory research lives there, not in the main tree
+- Prohibidos floats en lógica S60 (Candado YATRA)
+- Prohibidas nuevas VMs o instancias cloud: todos los servicios despliegan como contenedores Podman en un solo nodo
+- Los experimentos siguen numeración secuencial. EXP‑023/024/025 son parte del registro
+  de investigación. Estaban temporalmente ausentes del repositorio; restaurados 2026‑07‑30.
+- internal/ está en .gitignore: la investigación exploratoria vive ahí, no en el árbol principal
 
-## Where to Start
+## Por Dónde Empezar
 
-- constraints/YATRA_SPEC.md: the arithmetic contract that governs all decisions
-- sentinel-cortex/src/math/: the core S60 type implementation
-- quantum/experiments/EXP_015_MEMORY_THROUGHPUT.py: benchmark (23.6x memory reduction)
-- RESEARCH.md: scientific narrative of the experimental program
+- constraints/YATRA_SPEC.md: el contrato aritmético que gobierna todas las decisiones
+- sentinel-cortex/src/math/: la implementación base del tipo S60
+- quantum/experiments/EXP_015_MEMORY_THROUGHPUT.py: benchmark (reducción de memoria 23.6×)
+- docs/RESEARCH_es.md: narrativa científica del programa experimental
 
-## Governance (ITIL 4 / ISO 20000‑1 / ISO 27001)
+## Gobernanza (ITIL 4 / ISO 20000‑1 / ISO 27001)
 
-- `governance/itil/service-strategy.md` – Service Strategy
-- `governance/itil/service-design.md` – Service Design
+- `governance/itil/service-strategy.md` – Estrategia de Servicio
+- `governance/itil/service-design.md` – Diseño de Servicio
 - `governance/iso27001/statement-of-applicability.md` – SoA
 - `governance/iso20000/service-management-system.md` – SMS
 - `governance/iso27001/risk-treatment-plan.md` – RTP
-- `governance/policies/information-security-policy.md` – InfoSec Policy
-- `governance/policies/access-control-policy.md` – Access Control
-- `governance/policies/incident-management-policy.md` – Incident Management
-- `governance/policies/change-management-policy.md` – Change Management
-- `governance/compliance/matrix.md` – Compliance matrix
-- `governance/compliance/evidence-index.md` – Evidence index
-- `governance/compliance/internal-audit-plan.md` – Internal audit plan
-- `governance/compliance/management-review-agenda.md` – Management review agenda
-- `governance/kpi/dashboard.md` – KPI dashboard
-- `governance/continuous-improvement/kaizen-log.md` – Kaizen log
+- `governance/policies/information-security-policy.md` – Política de Seguridad de la Información
+- `governance/policies/access-control-policy.md` – Control de Acceso
+- `governance/policies/incident-management-policy.md` – Gestión de Incidentes
+- `governance/policies/change-management-policy.md` – Gestión de Cambios
+- `governance/compliance/matrix.md` – Matriz de cumplimiento
+- `governance/compliance/evidence-index.md` – Índice de evidencias
+- `governance/compliance/internal-audit-plan.md` – Plan de auditoría interna
+- `governance/compliance/management-review-agenda.md` – Agenda de revisión por la dirección
+- `governance/kpi/dashboard.md` – Panel de KPI
+- `governance/continuous-improvement/kaizen-log.md` – Bitácora Kaizen
 
-## Translation Initiative (English → Spanish)
+## Iniciativa de Traducción (Inglés → Español)
 
-- Master list of all Markdown files with language guess: `ENGLISH_MD_LIST.md`
-- Opencode memory (auto‑updated): `.opencode/memory.md`
-- Current priority: translate the “core” docs first (README, CLAUDE, CONTRIBUTING, RESEARCH, YATRA_SPEC, EXPERIMENTS, etc.)
+- Lista maestra de archivos Markdown con idioma detectado: `ENGLISH_MD_LIST.md`
+- Memoria Opencode (auto‑actualizada): `.opencode/memory.md`
+- Prioridad actual: traducir primero los documentos "núcleo" (README, CLAUDE, CONTRIBUTING, RESEARCH,
+  YATRA_SPEC, EXPERIMENTS, etc.)
 
-## Key Constraints (updated)
+## Restricciones Clave (actualizado)
 
-- No floats in S60 logic (YATRA Lock)
-- No new VMs / cloud instances – everything runs as rootless Podman containers on the single FENIX node
-- Experiments numbered sequentially; EXP‑023/024/025 intentionally omitted
-- `internal/` is git‑ignored – exploratory work lives there
-- All new/updated documentation must be added to the translation backlog (see `ENGLISH_MD_LIST.md`)
+- Prohibidos floats en lógica S60 (Candado YATRA)
+- Prohibidas nuevas VMs / instancias cloud — todo corre como contenedores Podman rootless en el único nodo FENIX
+- Experimentos con numeración secuencial; EXP‑023/024/025 restaurados 2026‑07‑30
+- `internal/` está en .gitignore — el trabajo exploratorio vive ahí
+- Todo documento nuevo o actualizado debe agregarse a la cola de traducción (ver `ENGLISH_MD_LIST.md`)

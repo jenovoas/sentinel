@@ -29,7 +29,7 @@ Acceso desde Python vía PyO3: `import me60os_core as s60` — *zero‑copy*, si
 
 ## Programa Experimental
 
-Los experimentos están numerados en orden de concepción. EXP‑023/024/025 fueron superados durante la migración *zero‑float* (commit `2bfde153`) y no están presentes — es intencional, no un hueco en la serie.
+Los experimentos están numerados en orden de concepción. EXP‑023 (Detección de Deriva Temporal), EXP‑024 (Correlación Bio‑Sistema) y EXP‑025 (Penta‑Resonancia) son parte del registro de investigación que llevó al descubrimiento del ancla humana de 17 segundos.
 
 ### Memoria y Rendimiento — EXP‑015
 
