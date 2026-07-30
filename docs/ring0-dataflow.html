@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Ring 0 — Flujo de Datos | SecurePenguin</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background:#020617; color:#e2e8f0;
+  font-family:'Inter',sans-serif; padding:2rem;
+}
+h1 { font-size:1.5rem; font-weight:700; color:#f1f5f9; margin-bottom:0.25rem; }
+.subtitle { color:#64748b; font-size:0.85rem; margin-bottom:2rem; }
+.spec-table { width:100%; border-collapse:collapse; margin-bottom:2rem; }
+.spec-table th { text-align:left; padding:0.5rem 0.75rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:#64748b; border-bottom:1px solid #1e293b; }
+.spec-table td { padding:0.5rem 0.75rem; font-size:0.8rem; border-bottom:1px solid #1e293b; font-family:'JetBrains Mono',monospace; }
+.spec-table td:first-child { color:#22d3ee; font-weight:500; }
+.spec-table td:nth-child(2) { color:#e2e8f0; }
+.spec-table td:nth-child(3) { color:#94a3b8; font-size:0.75rem; }
+.flow-diagram { background:#0f172a; border:1px solid #1e293b; border-radius:12px; padding:2rem; margin-bottom:2rem; overflow-x:auto; }
+.layer { display:flex; align-items:center; gap:1rem; margin-bottom:0.75rem; }
+.layer-label { width:100px; font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:#64748b; flex-shrink:0; }
+.layer-line { flex:1; height:1px; background:#1e293b; }
+.block { display:inline-flex; flex-direction:column; align-items:center; padding:0.5rem 0.75rem; border-radius:6px; border:1.5px solid; font-size:0.7rem; font-family:'JetBrains Mono',monospace; position:relative; }
+.block .name { font-weight:600; margin-bottom:0.15rem; }
+.block .type { font-size:0.6rem; opacity:0.7; }
+.block.rose { background:rgba(136,19,55,0.3); border-color:#fb7185; color:#fda4af; }
+.block.cyan { background:rgba(8,51,68,0.4); border-color:#22d3ee; color:#67e8f9; }
+.block.emerald { background:rgba(6,78,59,0.4); border-color:#34d399; color:#6ee7b7; }
+.block.violet { background:rgba(76,29,149,0.4); border-color:#a78bfa; color:#c4b5fd; }
+.block.amber { background:rgba(120,53,15,0.3); border-color:#fbbf24; color:#fcd34d; }
+.block.orange { background:rgba(251,146,60,0.3); border-color:#fb923c; color:#fdba74; }
+.flow-row { display:flex; align-items:center; gap:0.5rem; margin:0.5rem 0; flex-wrap:wrap; }
+.arrow { color:#475569; font-size:0.8rem; }
+.arrow-label { font-size:0.55rem; color:#64748b; font-family:'JetBrains Mono',monospace; }
+.map-spec { background:#1e293b; border-radius:6px; padding:0.4rem 0.6rem; font-size:0.65rem; font-family:'JetBrains Mono',monospace; color:#94a3b8; display:inline-block; margin:0.15rem; }
+.map-spec strong { color:#e2e8f0; }
+.section-title { font-size:0.85rem; font-weight:600; color:#f1f5f9; margin:1.5rem 0 0.5rem; padding-bottom:0.25rem; border-bottom:1px solid #1e293b; }
+.card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1rem; margin-bottom:2rem; }
+.card { background:#0f172a; border:1px solid #1e293b; border-radius:10px; padding:1rem; }
+.card h3 { font-size:0.8rem; font-weight:600; color:#22d3ee; margin-bottom:0.5rem; }
+.card ul { list-style:none; margin:0; padding:0; }
+.card li { font-size:0.75rem; color:#94a3b8; padding:0.2rem 0; border-bottom:1px solid #1e293b; font-family:'JetBrains Mono',monospace; }
+.card li:last-child { border-bottom:none; }
+.card li .val { color:#e2e8f0; }
+</style>
+</head>
+<body>
+
+<h1>Ring 0 — Flujo de Datos</h1>
+<p class="subtitle">Sentinel / SecurePenguin · ISO 27001 · S60 · ITIL v4</p>
+
+<div class="card-grid">
+  <div class="card">
+    <h3>ISO 27001 A.8</h3>
+    <ul>
+      <li>A.8.3 <span class="val">Separación de entornos</span></li>
+      <li>A.8.4 <span class="val">Protección de secrets</span></li>
+      <li>A.8.5 <span class="val">Control de acceso</span></li>
+      <li>A.8.15 <span class="val">Registro de eventos</span></li>
+      <li>A.8.20 <span class="val">Seguridad de red</span></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>S60 Core</h3>
+    <ul>
+      <li>Zero <span class="val">float/double</span></li>
+      <li>Aritmética <span class="val">60⁴ exacta</span></li>
+      <li>SPA: <span class="val">[d,m,s,t,q]</span></li>
+      <li>Escala: <span class="val">12.960.000</span></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>ITIL v4</h3>
+    <ul>
+      <li>Gobernanza <span class="val">Cambios controlados</span></li>
+      <li>Monitoreo <span class="val">Eventos continuos</span></li>
+      <li>Disponibilidad <span class="val">Alta (mesh HA)</span></li>
+      <li>Mejora continua <span class="val">Retroalimentación</span></li>
+    </ul>
+  </div>
+</div>
+
+<h2 class="section-title">Arquitectura Ring 0 → Userspace</h2>
+
+<div class="flow-diagram">
+
+  <!-- RING 0: Kernel -->
+  <div class="layer"><span class="layer-label">RING 0</span><span class="layer-line"></span></div>
+
+  <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin:0.5rem 0 1rem">
+
+    <div class="block rose">
+      <span class="name">guardian_alpha</span>
+      <span class="type">LSM · bprm_check</span>
+    </div>
+    <span class="arrow">→</span>
+    <div class="block rose">
+      <span class="name">ai_guardian</span>
+      <span class="type">LSM · file_open/bprm</span>
+    </div>
+    <span class="arrow">→</span>
+    <div class="block rose">
+      <span class="name">float_detector</span>
+      <span class="type">LSM · bprm_check</span>
+    </div>
+    <span class="arrow">→</span>
+    <div class="block rose">
+      <span class="name">guardian_cognitive</span>
+      <span class="type">LSM · bprm_check</span>
+    </div>
+    <br>
+    <div class="block amber" style="margin-top:0.5rem">
+      <span class="name">burst_sensor</span>
+      <span class="type">XDP · todo paquete</span>
+    </div>
+    <span class="arrow">→</span>
+    <div class="block amber">
+      <span class="name">gamma_watchdog</span>
+      <span class="type">kprobe · sys_bpf</span>
+    </div>
+  </div>
+
+  <!-- MAPAS BPF -->
+  <div class="layer"><span class="layer-label">MAPAS BPF</span><span class="layer-line"></span></div>
+
+  <div style="text-align:center;margin:0.5rem 0">
+    <div class="map-spec"><strong>events</strong> ringbuf 256KB · guardian_alpha</div>
+    <div class="map-spec"><strong>cortex_events</strong> ringbuf 256KB · ai_guardian</div>
+    <div class="map-spec"><strong>burst_events</strong> ringbuf 256KB · burst_sensor</div>
+    <div class="map-spec"><strong>god_mode_uids</strong> hash key:4B val:1B 32 entries</div>
+    <div class="map-spec"><strong>whitelist_map</strong> hash key:256B val:1B 10000 entries</div>
+    <div class="map-spec"><strong>ai_whitelist_map</strong> hash key:256B val:8B 10000 entries</div>
+    <div class="map-spec"><strong>alpha_ai_agents</strong> hash key:4B val:1B 1024 entries</div>
+    <div class="map-spec"><strong>ai_agents_map</strong> hash key:4B val:1B 1024 entries</div>
+    <div class="map-spec"><strong>pkt_count</strong> percpu_array 1 entry</div>
+    <div class="map-spec"><strong>stats_map</strong> array 3 entries</div>
+  </div>
+
+  <!-- DECISION LOGIC -->
+  <div class="layer"><span class="layer-label">LÓGICA</span><span class="layer-line"></span></div>
+
+  <div style="font-size:0.7rem;font-family:'JetBrains Mono',monospace;color:#94a3b8;line-height:1.8;margin:0.5rem 0 1rem;padding:0.75rem;background:#1e293b;border-radius:8px;">
+    <span style="color:#22d3ee">cada execve/file_open</span>
+    <br>  ├─ ¿UID en god_mode_uids? → <span style="color:#34d399">PERMITIR</span>
+    <br>  ├─ ¿PID en AI agents? → <span style="color:#34d399">PERMITIR (passthrough)</span>
+    <br>  ├─ ¿path en whitelist? → <span style="color:#34d399">PERMITIR + log</span>
+    <br>  └─ No → <span style="color:#fb7185">BLOQUEAR (EACCES/EPERM) + log evento</span>
+    <br>
+    <br><span style="color:#22d3ee">burst_sensor (XDP)</span>
+    <br>  └─ contar pkt → cada 1s calcular PPS → ¿&gt;threshold? → evento ringbuf
+  </div>
+
+  <!-- TRACE PIPE -->
+  <div class="layer"><span class="layer-label">LOG</span><span class="layer-line"></span></div>
+
+  <div class="flow-row" style="justify-content:center">
+    <div class="block emerald" style="font-size:0.65rem">
+      <span class="name">bpf_printk</span>
+      <span class="type">trace_pipe</span>
+    </div>
+    <span class="arrow">→</span>
+    <div class="block cyan" style="font-size:0.65rem">
+      <span class="name">forwarder</span>
+      <span class="type">systemd service</span>
+    </div>
+    <span class="arrow">→</span>
+    <div class="block violet" style="font-size:0.65rem">
+      <span class="name">/var/log/sentinel</span>
+      <span class="type">ebpf_trace.log</span>
+    </div>
+    <span class="arrow">→</span>
+    <div class="block orange" style="font-size:0.65rem">
+      <span class="name">promtail</span>
+      <span class="type">Loki push</span>
+    </div>
+    <span class="arrow">→</span>
+    <div class="block amber" style="font-size:0.65rem">
+      <span class="name">Loki</span>
+      <span class="type">:3100</span>
+    </div>
+    <span class="arrow">→</span>
+    <div class="block amber" style="font-size:0.65rem">
+      <span class="name">Grafana</span>
+      <span class="type">:3001</span>
+    </div>
+  </div>
+
+  <!-- RING BUFFER → USERSPACE -->
+  <div class="layer"><span class="layer-label">USUARIO</span><span class="layer-line"></span></div>
+
+  <div class="flow-row" style="justify-content:center">
+    <div class="block violet" style="font-size:0.65rem">
+      <span class="name">pai_neural_daemon</span>
+      <span class="type">libbpf-rs · /sys/fs/bpf</span>
+    </div>
+    <div class="block violet" style="font-size:0.65rem">
+      <span class="name">sentinel-cortex</span>
+      <span class="type">EbpfBridge · broadcast</span>
+    </div>
+  </div>
+  <div class="flow-row" style="justify-content:center;margin-top:0.25rem">
+    <span class="arrow">↓</span>
+    <span class="arrow">↓</span>
+  </div>
+  <div class="flow-row" style="justify-content:center">
+    <div class="block emerald" style="font-size:0.65rem">
+      <span class="name">ResonantLattice</span>
+      <span class="type">64 nodos · inyectar entropía</span>
+    </div>
+    <span class="arrow">→</span>
+    <div class="block orange" style="font-size:0.65rem">
+      <span class="name">broadcast channel</span>
+      <span class="type">CortexEvent · WS</span>
+    </div>
+    <span class="arrow">→</span>
+    <div class="block cyan" style="font-size:0.65rem">
+      <span class="name">WebSocket</span>
+      <span class="type">/api/v1/telemetry</span>
+    </div>
+  </div>
+</div>
+
+<h2 class="section-title">Especificación de Eventos</h2>
+
+<table class="spec-table">
+  <tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr>
+  <tr><td>timestamp_ns</td><td>u64</td><td>Nanosegundos desde boot (bpf_ktime_get_ns)</td></tr>
+  <tr><td>event_type</td><td>u32</td><td>1=FILE_BLOCKED 2=EXEC_BLOCKED 3=FILE_ALLOWED 4=EXEC_ALLOWED 5=NETWORK_BURST 10=FLOAT_CONTAMINATION</td></tr>
+  <tr><td>pid</td><td>u32</td><td>PID del proceso que disparó el evento</td></tr>
+  <tr><td>entropy_signal</td><td>u64</td><td>Valor S60 raw (escala 60⁴). Alto=bloqueado, bajo=permitido</td></tr>
+  <tr><td>severity</td><td>u8</td><td>0=low 1=medium 2=high 3=critical</td></tr>
+  <tr><td>_reserved[7]</td><td>u8[7]</td><td>Reservado. [0]=guardian_code (1=alpha 2=cognitive 3=ai 4=float 5=gamma)</td></tr>
+</table>
+
+<p style="text-align:center;margin-top:2rem;font-size:0.65rem;color:#475569;font-family:'JetBrains Mono',monospace;">
+  Sentinel Ring 0 · SecurePenguin · v0.1 · ISO 27001 · S60 · ITIL v4 · 2026
+</p>
+
+</body>
+</html>

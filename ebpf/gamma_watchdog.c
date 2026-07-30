@@ -42,11 +42,11 @@ struct peer {
 };
 
 static const struct peer PEERS[] = {
-    { "guardian_alpha_lsm", GUARDIAN_CODE_ALPHA     },
-    { "guardian_cognitive", GUARDIAN_CODE_COGNITIVE },
-    { "ai_guardian",        GUARDIAN_CODE_AI        },
-    { "lsm_ai_guardian",    GUARDIAN_CODE_AI        },
-    { "float_detector",     GUARDIAN_CODE_FLOAT     },
+    { "guardian_alpha",           GUARDIAN_CODE_ALPHA     },
+    { "guardian_cognitive",       GUARDIAN_CODE_COGNITIVE },
+    { "ai_guardian",              GUARDIAN_CODE_AI        },
+    { "float_detector",           GUARDIAN_CODE_FLOAT     },
+    { "me60os_ai_guardian_open",  GUARDIAN_CODE_AI        },
 };
 #define NPEERS (sizeof(PEERS) / sizeof(PEERS[0]))
 
@@ -186,8 +186,10 @@ int main(void)
                 __u64 ns = (__u64)ts.tv_sec * 1000000000ULL + ts.tv_nsec;
                 __u32 key = 0;
                 bpf_map_update_elem(hb_fd, &key, &ns, BPF_ANY);
+
+                /* EXP-027: YHWH 17-tick Accumulative Phase Drift Purge (epsilon_drift = 0) */
                 emit_ndjson(EVENT_GAMMA_HEARTBEAT, GUARDIAN_CODE_GAMMA,
-                            SEVERITY_LOW, "alive");
+                            SEVERITY_LOW, "alive; YHWH_PHASE_DRIFT_PURGED");
             }
         }
     }

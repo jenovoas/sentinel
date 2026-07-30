@@ -1,0 +1,13 @@
+[Unit]
+Description=Sentinel QHC Agent (Phase Harmonic Driver)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/jnovoas/.local/bin/qhc_agent
+Restart=always
+RestartSec=5
+User=jnovoas
+
+[Install]
+WantedBy=multi-user.target

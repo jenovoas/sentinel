@@ -1,0 +1,15 @@
+[Unit]
+Description=Sentinel Cortex API
+After=network.target redis.service
+
+[Service]
+Type=simple
+User=jnovoas
+ExecStart=/home/jnovoas/.local/bin/sentinel-cortex
+Restart=always
+RestartSec=3
+Environment=REDIS_URL=redis://localhost:6379
+Environment=EBPF_MONITOR_PATH=/sys/fs/bpf
+
+[Install]
+WantedBy=multi-user.target

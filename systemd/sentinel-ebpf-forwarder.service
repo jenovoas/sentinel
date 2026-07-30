@@ -1,0 +1,15 @@
+[Unit]
+Description=Sentinel eBPF Trace Forwarder
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=bpftool prog tracelog
+ExecStopPost=/bin/sh -c 'echo > /sys/kernel/debug/tracing/trace'
+Restart=always
+RestartSec=5
+StandardOutput=append:/var/log/sentinel/ebpf_trace.log
+StandardError=append:/var/log/sentinel/ebpf_trace.err
+
+[Install]
+WantedBy=multi-user.target

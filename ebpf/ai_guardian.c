@@ -22,6 +22,14 @@
 #define EPERM 1
 #endif
 
+/* God mode: UIDs exentos de toda restricción */
+struct {
+    __uint(type, BPF_MAP_TYPE_ARRAY);
+    __uint(max_entries, 2048);
+    __type(key, __u32);
+    __type(value, __u8);
+} god_mode_uids SEC(".maps");
+
 /* Map of AI agent PIDs (updatable from userspace) */
 struct {
     __uint(type, BPF_MAP_TYPE_HASH);
@@ -122,12 +130,19 @@ SEC("lsm/file_open")
 int BPF_PROG(me60os_ai_guardian_open, struct file *file)
 {
     __u32 pid = bpf_get_current_pid_tgid() >> 32;
+    __u32 uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
+    __u8 *god;
     __u8 *is_ai;
     char path[PATH_MAX];
     __u64 *policy;
     __u32 key;
     __u64 *count;
-    
+
+    // 0. God mode bypass
+    god = bpf_map_lookup_elem(&god_mode_uids, &uid);
+    if (god && *god == 1)
+        return 0;
+
     // 1. Check if process is marked as AI agent
     is_ai = bpf_map_lookup_elem(&ai_agents_map, &pid);
     if (!is_ai || *is_ai == 0) {
@@ -184,12 +199,19 @@ SEC("lsm/bprm_check_security")
 int BPF_PROG(me60os_ai_guardian_exec, struct linux_binprm *bprm)
 {
     __u32 pid = bpf_get_current_pid_tgid() >> 32;
+    __u32 uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
+    __u8 *god;
     __u8 *is_ai;
     char path[PATH_MAX];
     __u64 *policy;
     __u32 key;
     __u64 *count;
-    
+
+    // 0. God mode bypass
+    god = bpf_map_lookup_elem(&god_mode_uids, &uid);
+    if (god && *god == 1)
+        return 0;
+
     // 1. Check if process is marked as AI agent
     is_ai = bpf_map_lookup_elem(&ai_agents_map, &pid);
     if (!is_ai || *is_ai == 0) {

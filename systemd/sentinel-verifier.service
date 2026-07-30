@@ -1,0 +1,15 @@
+[Unit]
+Description=Sentinel System Invariant Verifier Service
+After=multi-user.target sentinel-cortex.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/home/jnovoas/.local/bin/sentinel-verifier --watch 15 --json
+StandardOutput=append:/var/log/sentinel/sentinel_verifier.log
+StandardError=append:/var/log/sentinel/sentinel_verifier.err
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

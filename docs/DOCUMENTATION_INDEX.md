@@ -6,6 +6,9 @@
 
 ## ⚙️ Operations & Deployment
 
+**[00_vision_y_arquitectura_global/ARCHITECTURE_STATUS_2026.md](00_vision_y_arquitectura_global/ARCHITECTURE_STATUS_2026.md)** (Actualizado 2026-07-29)
+- Estado consolidado de la arquitectura eBPF, LSM Array maps, XDP Pre-stack, LiquidLattice 3x3, PAI-Neural SNN y TruthSync Plimpton 322 en Fan.
+
 **[01_produccion_actual_fenix/CONTENEDORES_Y_PERSISTENCIA.md](01_produccion_actual_fenix/CONTENEDORES_Y_PERSISTENCIA.md)** (Actualizado 2026-04-17)
 - Guía operativa de Podman rootless en nodo Fénix.
 - Diagnóstico de Health Checks (Redis/Nginx).
@@ -21,6 +24,11 @@
 
 **[INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md)**
 - Guía paso a paso para nuevos despliegues.
+
+**[ring0-dataflow.html](ring0-dataflow.html)** (2026-07-28)
+- Flujo de datos Ring 0 (eBPF → userspace).
+- Especificación de eventos, mapas, y lógica de decisión.
+- Estándares ISO 27001, S60, ITIL v4.
 
 ---
 

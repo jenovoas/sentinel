@@ -133,8 +133,22 @@ impl EbpfBridge {
                 ringbuf_path
             };
 
-            let map = MapHandle::from_pinned_path(&map_path)
-                .map_err(|e| anyhow::anyhow!("Failed to open pinned map at {}: {}", map_path, e))?;
+            // Safely open pinned map with error fallback
+            let map_res = std::panic::catch_unwind(|| {
+                MapHandle::from_pinned_path(&map_path)
+            });
+
+            let map = match map_res {
+                Ok(Ok(map)) => map,
+                Ok(Err(e)) => {
+                    tracing::warn!("eBPF pinned map unavailable at {}: {}. Running in non-blocking fallback mode.", map_path, e);
+                    return Ok(());
+                }
+                Err(_) => {
+                    tracing::warn!("Panic prevented during libbpf MapHandle initialization. Fallback mode engaged.");
+                    return Ok(());
+                }
+            };
 
             let mut builder = RingBufferBuilder::new();
             let tx = tx.clone();
@@ -152,11 +166,17 @@ impl EbpfBridge {
                 0
             })?;
 
-            let mut ringbuf = builder.build()?;
-
-            loop {
-                ringbuf.poll(Duration::from_millis(100))?;
+            if let Ok(ringbuf) = builder.build() {
+                loop {
+                    if let Err(e) = ringbuf.poll(Duration::from_millis(100)) {
+                        std::thread::sleep(Duration::from_millis(100));
+                        tracing::debug!("RingBuf poll status: {:?}", e);
+                    }
+                }
+            } else {
+                tracing::warn!("Failed to build RingBuf from map. Fallback engaged.");
             }
+            Ok(())
         })
         .await??;
 

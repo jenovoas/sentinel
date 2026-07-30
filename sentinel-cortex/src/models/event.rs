@@ -44,6 +44,8 @@ pub enum EventType {
     FailedLogin,
     SuccessfulLoginNewIP,
     SuspiciousCommand,
+    UnauthorizedAccess,
+    PrivilegeEscalation,
     
     // Red
     LargeDataTransfer,

@@ -267,12 +267,12 @@ impl RedisStreamCollector {
 
         let mut events = Vec::new();
 
-        if let redis::Value::Bulk(streams) = result {
+        if let redis::Value::Array(streams) = result {
             for stream in streams {
-                if let redis::Value::Bulk(mut stream_data) = stream {
-                    if let redis::Value::Bulk(messages) = stream_data.pop().unwrap() {
+                if let redis::Value::Array(mut stream_data) = stream {
+                    if let redis::Value::Array(messages) = stream_data.pop().unwrap() {
                         for message in messages {
-                            if let redis::Value::Bulk(msg_data) = message {
+                            if let redis::Value::Array(msg_data) = message {
                                 let msg_id: String = redis::from_redis_value(&msg_data[0])?;
                                 self.last_id = msg_id;
 

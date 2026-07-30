@@ -48,8 +48,9 @@ down:
 	docker-compose down
 
 build:
-	@echo "Building containers..."
-	docker-compose build
+	@echo "Building Sentinel components (Rust)..."
+	cargo build --release -p sentinel-cortex
+	@echo "✅ sentinel-cortex built"
 
 rebuild:
 	@echo "Rebuilding containers (no cache)..."

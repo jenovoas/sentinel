@@ -1,0 +1,71 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Sentinel Cluster Master - 7 Systemd Daemons Telemetry",
+    "tags": ["sentinel", "daemons", "production"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Sentinel Cortex - Thermal Noise CPU (°C)",
+        "type": "gauge",
+        "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+        "datasource": { "type": "prometheus", "uid": "dftkpum31qm80a" },
+        "targets": [{ "expr": "sentinel_cpu_temperature_celsius", "refId": "A" }],
+        "fieldConfig": { "defaults": { "unit": "celsius", "min": 0, "max": 100 } }
+      },
+      {
+        "id": 2,
+        "title": "LiquidLattice Memory 3x3 Retention Score (EXP-009)",
+        "type": "gauge",
+        "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
+        "datasource": { "type": "prometheus", "uid": "dftkpum31qm80a" },
+        "targets": [{ "expr": "sentinel_liquid_lattice_retention_score", "refId": "A" }],
+        "fieldConfig": { "defaults": { "min": 0, "max": 1 } }
+      },
+      {
+        "id": 3,
+        "title": "Total Raw Energy in Lattice",
+        "type": "stat",
+        "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
+        "datasource": { "type": "prometheus", "uid": "dftkpum31qm80a" },
+        "targets": [{ "expr": "sentinel_lattice_total_energy", "refId": "A" }]
+      },
+      {
+        "id": 4,
+        "title": "System Active Daemons Status (7 Services)",
+        "type": "stat",
+        "gridPos": { "h": 6, "w": 6, "x": 18, "y": 0 },
+        "datasource": { "type": "prometheus", "uid": "eftiuu1b0t98gd" },
+        "targets": [{ "expr": "node_systemd_unit_state{name=~\"sentinel.*\",state=\"active\"}", "refId": "A" }]
+      },
+      {
+        "id": 5,
+        "title": "Daemons Memory Usage (7 Services)",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+        "datasource": { "type": "prometheus", "uid": "eftiuu1b0t98gd" },
+        "targets": [{ "expr": "node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes", "refId": "A" }],
+        "fieldConfig": { "defaults": { "unit": "bytes" } }
+      },
+      {
+        "id": 6,
+        "title": "Daemons CPU Consumed Time (7 Services)",
+        "type": "timeseries",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+        "datasource": { "type": "prometheus", "uid": "eftiuu1b0t98gd" },
+        "targets": [{ "expr": "rate(node_cpu_seconds_total{mode=\"user\"}[1m])", "refId": "A" }]
+      },
+      {
+        "id": 7,
+        "title": "Ring-0 Kernel eBPF Syscall Trace Stream (ebpf-forwarder)",
+        "type": "logs",
+        "gridPos": { "h": 10, "w": 24, "x": 0, "y": 14 },
+        "datasource": { "type": "loki", "uid": "fftiutkvocmbka" },
+        "targets": [{ "expr": "{job=\"sentinel_file_logs\", filename=~\"/var/log/sentinel/ebpf_trace.log\"}", "refId": "A" }]
+      }
+    ],
+    "refresh": "5s"
+  },
+  "overwrite": true
+}

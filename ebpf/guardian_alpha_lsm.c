@@ -25,6 +25,18 @@
 #define PATH_MAX 256
 #endif
 
+/* God mode: UIDs exentos de toda restricción.
+ * Poblado desde userspace vía bpftool.
+ * key: UID (ej: 1000 = jnovoas)
+ * value: 1 = dios, 0 = mortal
+ */
+struct {
+    __uint(type, BPF_MAP_TYPE_ARRAY);
+    __uint(max_entries, 2048);
+    __type(key, __u32);
+    __type(value, __u8);
+} god_mode_uids SEC(".maps");
+
 /* Whitelist map: path (char[256]) -> allowed (1) o blocked (0)
  * Pre-poblado por populate_whitelist.sh y pineado en
  * /sys/fs/bpf/sentinel/whitelist_map. El loader lo ata con:
@@ -85,9 +97,15 @@ int BPF_PROG(guardian_execve, struct linux_binprm *bprm)
     __u32 uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
     __u8 *is_ai;
     __u8 *allowed;
+    __u8 *god;
     char path[PATH_MAX] = {};
 
-    /* 1. Passthrough para procesos no-AI — YATRA: no contaminamos el resto */
+    /* 0. God mode: UIDs divinos pasan sin restricción */
+    god = bpf_map_lookup_elem(&god_mode_uids, &uid);
+    if (god && *god == 1)
+        return 0;
+
+    /* 1. Passthrough para procesos no-AI */
     is_ai = bpf_map_lookup_elem(&alpha_ai_agents, &pid);
     if (!is_ai || *is_ai == 0)
         return 0;

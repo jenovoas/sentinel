@@ -2,5 +2,8 @@
 members = [
     "services/neural-guard",
     "sentinel-cortex",
+    "me-60os-core",
+    "truthsync-core",
+    "sentinel-verifier",
 ]
 resolver = "2"
