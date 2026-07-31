@@ -249,6 +249,23 @@ services:
 
   # ── AUTOMATIZACIÓN ───────────────────────────────────────────────────────────
 
+  alertmanager:
+    image: docker.io/prom/alertmanager:v0.27.0
+    container_name: sentinel-alertmanager
+    volumes:
+      - ./observability/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro,z
+      - alertmanager_data:/alertmanager
+    networks:
+      - sentinel_internal
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+    restart: unless-stopped
+
   n8n:
     image: docker.io/n8nio/n8n:1.41.0
     container_name: sentinel-n8n
@@ -261,14 +278,11 @@ services:
       - N8N_SECURE_COOKIE=true
       - GENERIC_TIMEZONE=America/Santiago
       - TZ=America/Santiago
-      # # --- Configuración SMTP (Fase 2) - Comentado temporalmente para depuración ---
-      # - N8N_EMAIL_MODE=smtp
-      # - N8N_SMTP_HOST=smtp.pinguinoseguro.cl
-      # - N8N_SMTP_PORT=587
-      # - N8N_SMTP_USER=${SMTP_USER}
-      # - N8N_SMTP_PASS=${SMTP_PASSWORD}
-      # - N8N_SMTP_SENDER=n8n@pinguinoseguro.cl
-      # - N8N_SMTP_SSL=false
+      - N8N_EMAIL_MODE=smtp
+      - N8N_SMTP_HOST=host.containers.internal
+      - N8N_SMTP_PORT=25
+      - N8N_SMTP_SENDER=n8n@pinguinoseguro.cl
+      - N8N_SMTP_SSL=false
     volumes:
       - ./docker/n8n/workflows:/tmp/workflows:ro,z
       - ./docker/n8n/init-workflows.sh:/docker-entrypoint-init.d/init-workflows.sh:ro,z
@@ -319,6 +333,7 @@ volumes:
   postgres_data:
   redis_data:
   prometheus_data:
+  alertmanager_data:
   grafana_data:
   loki_data:
   n8n_data:
