@@ -5,10 +5,11 @@
 //! S60: Sovereign Base-60 Fixed-Point Arithmetic
 //!
 //! Implements strict Base-60 math to adhere to Axiom I.
-//! Precision: 1 Degree = 60 Minutes = 3600 Seconds = 216,000 Tertia
+//! Precision: 1 Degree = 60 Minutes = 3600 Seconds = 216,000 Tertia = 12,960,000 Quarta
 //!
-//! Internal Representation: i64 representing "Tertia" (1/216,000 of a Unit)
-//! This gives us exact precision for 10;5,6,5 patterns and harmonic ratios.
+//! Internal Representation: i64 representing "Quarta" (1/12,960,000 of a Unit)
+//! Scale matches SPA (me-60os-core/src/spa.rs). Exact precision for 10;5,6,5 patterns,
+//! harmonic ratios, and full 60⁴ sexagesimal arithmetic.
 
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -22,43 +23,46 @@ pub enum S60Error {
 }
 
 /// The Holy S60 Type
-/// Value is stored in "Tertia" (Thirds)
-/// 1 Unit = 60 * 60 * 60 = 216,000 Tertia
+/// Value is stored in "Quarta" (fourth sexagesimal place)
+/// 1 Unit = 60^4 = 12,960,000 Quarta
+/// Matches SPA scale from me-60os-core/src/spa.rs — zero-incompatibility eliminated.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct S60 {
     pub _value: i64,
 }
 
 impl S60 {
-    // Scales
-    pub const SCALE_0: i64 = 216_000; // 1.0
-    pub const SCALE_1: i64 = 3_600; // 1/60 (Minute)
-    pub const SCALE_2: i64 = 60; // 1/3600 (Second)
-    pub const SCALE_3: i64 = 1; // 1/216000 (Tertia)
+    // Scales — aligned with SPA (60⁴)
+    pub const SCALE_0: i64 = 12_960_000; // 60^4 — 1.0
+    pub const SCALE_1: i64 = 216_000;    // 60^3 — 1/60 (Minute)
+    pub const SCALE_2: i64 = 3_600;      // 60^2 — 1/3600 (Second)
+    pub const SCALE_3: i64 = 60;         // 60^1 — 1/216000 (Tertia)
+    pub const SCALE_4: i64 = 1;          // 60^0 — 1/12960000 (Quarta)
 
     pub const ZERO: S60 = S60 { _value: 0 };
-    pub const ONE: S60 = S60 { _value: 216_000 };
+    pub const ONE: S60 = S60 { _value: 12_960_000 };
 
     /// Create new S60 from components
     /// d: Degrees (Units)
     /// m: Minutes (1/60)
     /// s: Seconds (1/3600)
     /// t: Tertia (1/216000)
-    /// q: Quarta (ignored/rounded for now, or added if we expand)
-    pub fn new(d: i32, m: u8, s: u8, t: u8, _q: u8) -> Result<Self, S60Error> {
-        if m >= 60 || s >= 60 || t >= 60 {
+    /// q: Quarta (1/12960000)
+    pub fn new(d: i32, m: u8, s: u8, t: u8, q: u8) -> Result<Self, S60Error> {
+        if m >= 60 || s >= 60 || t >= 60 || q >= 60 {
             return Err(S60Error::ComponentOutOfRange(
                 "Sexagesimal components must be < 60".into(),
             ));
         }
 
-        let total_tertia = (d as i64 * Self::SCALE_0)
+        let total = (d as i64 * Self::SCALE_0)
             + (m as i64 * Self::SCALE_1)
             + (s as i64 * Self::SCALE_2)
-            + (t as i64 * Self::SCALE_3);
+            + (t as i64 * Self::SCALE_3)
+            + (q as i64 * Self::SCALE_4);
 
         Ok(S60 {
-            _value: total_tertia,
+            _value: total,
         })
     }
 
@@ -94,11 +98,10 @@ impl S60 {
         }
     }
 
-    /// Common constant: 2π (6.283185307... ≈ 6;16,59,27)
+    /// Common constant: 2π (6.283185307... ≈ 6;16,59,28,0)
+    /// Matches SPA::TWO_PI exactly.
     pub fn two_pi() -> Self {
-        // 2π ≈ 6.283185307
-        // In S60: 6; 16, 59, 27 (approximately)
-        S60::new(6, 16, 59, 27, 0).unwrap()
+        S60::new(6, 16, 59, 28, 0).unwrap()
     }
 
     /// Create S60 from base units (tertia)
@@ -106,8 +109,8 @@ impl S60 {
         S60 { _value: raw }
     }
 
-    /// Get components (for display/telemetry)
-    pub fn to_components(&self) -> (i32, u8, u8, u8) {
+    /// Get components (for display/telemetry) — 4 sexagesimal places
+    pub fn to_components(&self) -> (i32, u8, u8, u8, u8) {
         let sign = if self._value < 0 { -1 } else { 1 };
         let abs_val = self._value.abs();
 
@@ -118,13 +121,16 @@ impl S60 {
         let rem_m = rem_d % S60::SCALE_1;
 
         let s = (rem_m / S60::SCALE_2) as u8;
-        let t = (rem_m % S60::SCALE_2) as u8;
+        let rem_s = rem_m % S60::SCALE_2;
 
-        (d, m, s, t)
+        let t = (rem_s / S60::SCALE_3) as u8;
+        let q = (rem_s % S60::SCALE_3) as u8;
+
+        (d, m, s, t, q)
     }
 }
 
-// FORMATTING (Sexagesimal Output)
+// FORMATTING (Sexagesimal Output — 4 places, matching SPA)
 impl fmt::Debug for S60 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let sign = if self._value < 0 { "-" } else { "" };
@@ -133,13 +139,16 @@ impl fmt::Debug for S60 {
         let d = abs_val / S60::SCALE_0;
         let rem_d = abs_val % S60::SCALE_0;
 
-        let m = rem_d / S60::SCALE_1;
+        let m = (rem_d / S60::SCALE_1) as u8;
         let rem_m = rem_d % S60::SCALE_1;
 
-        let s = rem_m / S60::SCALE_2;
-        let t = rem_m % S60::SCALE_2;
+        let s = (rem_m / S60::SCALE_2) as u8;
+        let rem_s = rem_m % S60::SCALE_2;
 
-        write!(f, "S60[{}{}; {:02}, {:02}, {:02}]", sign, d, m, s, t)
+        let t = (rem_s / S60::SCALE_3) as u8;
+        let q = (rem_s % S60::SCALE_3) as u8;
+
+        write!(f, "S60[{}{}; {:02}, {:02}, {:02}, {:02}]", sign, d, m, s, t, q)
     }
 }
 

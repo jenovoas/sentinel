@@ -459,7 +459,7 @@ async fn phonon_lattice_handler(
         node_count,
         total_energy_s60: lat.total_energy_raw(),
         coupling_factor_raw: 10,  // SPA(0,10) = 10/60 ≈ 0.167 default
-        resonance_frequency: "Row 17 Plimpton 322 (AXION_RESONANCE_RATIO 1.534)".into(),
+        resonance_frequency: "1;32,2,24 (Plimpton 322 Fila 12)".into(),
         nodes,
     })
 }
