@@ -121,16 +121,16 @@ impl HexagonalController {
 
     /// 💎 DERIVACIÓN DE CLAVE DINÁMICA DE CIFRADO ACOPLADA AL CRISTAL DE TIEMPO
     ///
-    /// Deriva la clave dinámica Base-60 combinando:
+    /// Deriva clave dinámica Base-60 combinando:
     /// 1. Energía armónica total acumulada del cristal (S60 raw energy)
-    /// 2. Constante trigonométrica Plimpton 322 Fila 17 (psi = 4.7962963 -> scaled 4796296)
-    /// 3. Pulso YHWH (26)
+    /// 2. Constante de fase acoplada al cristal de tiempo
+    /// 3. Pulso de fase resonante (salto-17)
     pub fn compute_crystal_coupled_key(&self, lattice_energy_raw: i64, tick: u64) -> i64 {
-        let psi_scaled: i64 = 4_796_296; // Ratio trigonométrico exacto Plimpton 322 Fila 17
-        let yhwh_pulse: i64 = 26;        // Constante de fase resonante
+        let phase_constant: i64 = 4_796_296; // Constante de fase empírica (60⁴ escalada)
+        let base_pulse: i64 = 26;            // Pulso base resonante
         
-        let phase_contribution = (lattice_energy_raw.abs() % 3600) * psi_scaled / 1_000_000;
-        let coupled_entropy = phase_contribution + (tick as i64 * 17) + yhwh_pulse;
+        let phase_contribution = (lattice_energy_raw.abs() % 3600) * phase_constant / 1_000_000;
+        let coupled_entropy = phase_contribution + (tick as i64 * 17) + base_pulse;
         
         (coupled_entropy % 60).abs()
     }

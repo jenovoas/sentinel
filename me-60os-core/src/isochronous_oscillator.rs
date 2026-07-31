@@ -24,7 +24,7 @@ use serde::{Deserialize, Serialize};
 pub struct IsochronousOscillator {
     /// Fixed-size name buffer for SHM compatibility (32 bytes)
     pub name: [u8; 32],
-    /// Natural frequency derived from Plimpton 322 (Row 17 tuned)
+    /// Frecuencia natural: Plimpton 322 Fila 12 (1;32,2,24)
     pub natural_frequency: SPA,
     /// Internal energy state (vibration amplitude)
     pub amplitude: SPA,
@@ -42,7 +42,7 @@ impl Default for IsochronousOscillator {
 }
 
 impl IsochronousOscillator {
-    /// Creates a new crystal with default Plimpton 322 Row 17 resonance.
+    /// Crea un cristal con resonancia por defecto (Plimpton 322 Fila 12).
     pub fn new(name_str: &str) -> Self {
         let mut name = [0u8; 32];
         let bytes = name_str.as_bytes();
@@ -52,7 +52,7 @@ impl IsochronousOscillator {
         Self {
             name,
             // Uses existing constant from spa_math.rs
-            natural_frequency: SPAMath::AXION_RESONANCE_RATIO,
+            natural_frequency: SPAMath::RESONANCE_RATIO,
             amplitude: SPA::zero(),
             phase: SPA::zero(),
             // Damping: SPA(0, 0, 30) = 30 seconds = 0.5 degrees loss
@@ -151,7 +151,7 @@ mod tests {
     fn test_crystal_creation() {
         let crystal = IsochronousOscillator::new("Test-Crystal");
         assert_eq!(crystal.amplitude, SPA::zero());
-        assert_eq!(crystal.natural_frequency, SPAMath::AXION_RESONANCE_RATIO);
+        assert_eq!(crystal.natural_frequency, SPAMath::RESONANCE_RATIO);
     }
 
     #[test]

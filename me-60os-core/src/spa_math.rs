@@ -34,13 +34,11 @@ impl SPAMath {
     // (1/ln(2)) * SCALE_0
     pub const INV_LN2: i64 = 18_698_485;
 
-    // --- QUANTUM PHYSICAL CONSTANTS (Plimpton 322 alignment) ---
-    /// Plimpton 322 Row 17: Axionic Resonance Ratio (Exact: 1;32,2,24)
-    /// (fix: el comentario decía "Row 12" — alucinación de IA previa. La fila
-    /// correcta de Plimpton 322 con este ratio es la Row 17.)
-    pub const AXION_RESONANCE_RATIO: SPA = SPA::new(1, 32, 2, 24, 0);
-    /// Harmonic Frequency (Exact: 153;24,0,0)
-    pub const AXION_FREQUENCY_MHZ: SPA = SPA::new(153, 24, 0, 0, 0);
+    // --- CONSTANTES DE RESONANCIA (Plimpton 322 Fila 12) ---
+    /// Ratio de sintonización: Plimpton 322 Fila 12 = 1;32,2,24 (~1.534)
+    pub const RESONANCE_RATIO: SPA = SPA::new(1, 32, 2, 24, 0);
+    /// Frecuencia nominal del oscilador: 153;24,0,0 (153.4 MHz)
+    pub const OSCILLATOR_FREQUENCY_MHZ: SPA = SPA::new(153, 24, 0, 0, 0);
 
     /// Normalizes angle to [0, 360) and returns (normalized, sign_sin, sign_cos).
     fn normalize_quadrants(angle: SPA) -> (SPA, i64, i64) {

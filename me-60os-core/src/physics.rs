@@ -25,7 +25,7 @@ impl ResonantPhysics {
     /// Calculates Effective Load (Computational Mass)
     /// `Load_eff = Load_static / (1 + (Priority^2 * Stability * Tuning) / Phi^2_div_S)`
     ///
-    /// Bug 1.1 fix: scaling 216 → 200 para preservar la fórmula Merkabah original
+    /// Bug 1.1 fix: scaling 216 → 200 para preservar la fórmula de diseño original
     /// (ver EXP-005: `M_eff = M_static / (1 + RF/200)`). 200 fue la constante de diseño;
     /// el cambio a 216 hecho por una IA previa modificaba los resultados ~8% sin re-calibrar
     /// el umbral de éxito. Si en el futuro se quiere "armonizar a 60³=216", debe
@@ -36,20 +36,20 @@ impl ResonantPhysics {
     pub fn calculate_effective_load(static_load: SPA, priority: SPA, stability: SPA) -> SPA {
         // Tuning = 1.366 = SPA(1;21,57,36) (60^4 precise)
         let tuning = SPA::new(1, 21, 57, 36, 0);
-        // Harmonic stabilizer: Plimpton 322 Row 11 ratio (1.5625 = 1;33,45)
-        // sustituye al irracional Phi (1.618...) para eliminar phase drift.
-        let phi_harmonic = SPA::new(1, 33, 45, 0, 0);
-        let phi_sq = phi_harmonic * phi_harmonic; // abstract phi²
+        // Estabilizador armónico: Plimpton 322 Fila 11 (1.5625 = 1;33,45)
+        // Sustituye al irracional φ (1.618...) para eliminar deriva de fase.
+        let harmonic_stabilizer = SPA::new(1, 33, 45, 0, 0);
+        let stabilizer_sq = harmonic_stabilizer * harmonic_stabilizer;
 
         let p_sq = priority * priority; // abstract P²
 
         // Numerador: P² * Stability * Tuning
         let num = p_sq * stability * tuning;
 
-        // Factor = Num / Phi²
-        let resonance_factor = num / phi_sq;
+        // Factor = Num / Estabilizador²
+        let resonance_factor = num / stabilizer_sq;
 
-        // Denom = 1 + Factor / 200 (constante Merkabah original, ver Bug 1.1)
+        // Denom = 1 + Factor / 200 (constante de diseño original, ver Bug 1.1)
         let scaling = SPA::new(200, 0, 0, 0, 0);
         let denom_add = resonance_factor / scaling;
         let denom = SPA::one() + denom_add;

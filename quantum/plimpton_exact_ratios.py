@@ -39,8 +39,8 @@ PLIMPTON_RATIOS_BASE60 = {
 }
 
 # 🚨 ELIMINACIÓN DE LA ALUCINACIÓN 9:1[3]:22 (Vetoed)
-AXION_RESONANCE_RATIO = S60(1, 32, 2, 24) # Basado en Plimpton 322 - Fila 12 sintonizada
-AXION_FREQUENCY_MHZ = S60(153, 24, 0)
+AXION_RESONANCE_RATIO = S60(1, 32, 2, 24) # Plimpton 322 Fila 12 — ratio de sintonización
+OSCILLATOR_FREQUENCY_MHZ = S60(153, 24, 0) # Frecuencia nominal del oscilador
 
 def get_exact_resonance(frequency_mhz):
     """

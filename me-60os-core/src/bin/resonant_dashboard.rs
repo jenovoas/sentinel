@@ -151,7 +151,7 @@ impl App {
                 },
             ],
             factory: vec![ProductionPipeline {
-                title: "La Paradoja de Plimpton".into(),
+                title: "Pipeline S60".into(),
                 stage: "Scripting".into(),
                 progress: 85,
             }],
@@ -504,7 +504,7 @@ fn draw_observatory_view(f: &mut Frame, area: Rect, app: &mut App) {
 
     let spark_data = app.energy_history.iter().cloned().collect::<Vec<_>>();
     let spark = Sparkline::default()
-        .block(Block::default().borders(Borders::ALL).title(" AXION FLUX "))
+        .block(Block::default().borders(Borders::ALL).title(" FLUJO DE ENERGÍA "))
         .data(&spark_data)
         .style(Style::default().fg(NEON_GREEN));
     f.render_widget(spark, left[0]);
