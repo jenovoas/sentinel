@@ -1,0 +1,16 @@
+route:
+  receiver: 'email-monitoreo'
+  group_by: ['alertname']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 3h
+
+receivers:
+- name: 'email-monitoreo'
+  email_configs:
+  - to: 'jaime@pinguinoseguro.cl, jnovoas@pinguinoseguro.cl'
+    from: 'monitoreo@pinguinoseguro.cl'
+    smarthost: 'localhost:25'
+    send_resolved: true
+    headers:
+      Subject: '[SENTINEL] {{ .GroupLabels.alertname }}'
