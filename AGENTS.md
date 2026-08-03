@@ -34,3 +34,11 @@
 - **Aritmética Exacta**: En controladores de tiempo real y seguridad, mantén aritmética entera escalada.
 - **Sin Archivos Temporales**: No guardes copias `.bak`, `.tmp`, ni logs de pruebas en el control de versiones.
 - **Formato de Commits**: Utiliza commits convencionales (`feat:`, `fix:`, `refactor:`, `docs:`). Evita mensajes genéricos.
+
+## 3. CONVERSIÓN BINARIO → AMPLITUD (PAI-60 / SPA SCALE)
+
+- **Escala SPA**: `SPA` usa fixed-point base-60⁴ (`SCALE_0 = 12_960_000`). `SPA::from_int(n)` = número entero `n.0`; `SPA::from_raw(n)` = `n/SCALE_0` (unidades raw). NO confundir.
+- **Inyección al lattice**: `transduce_pulse(pressure: i64)` y `inject(index, pressure: i64)` esperan un **entero** que ellos mismos re-escalan por `SCALE_0`. **NUNCA** pasar `SPA::to_raw()` a esos métodos (doble-escala → dato irrecuperable).
+- **Conversor PAI-60**: para llevar dato binario → amplitud resonante, USAR `ResonantMatrix::inject_pai(index, value, denominator)` (llama `pai60_divide(SPA::from_int(value), denom)` y suma el `SPA` directo al oscilador). Esto está enchufado en el drive continuo de `sentinel-cortex` tras `SENTINEL_PAI_CONVERT=1`.
+- **El lattice es disipativo**: `step()` solo disipa (decay). Sin drive continuo (`sentinel-cortex/src/main.rs` bloque 3b, cada 500ms) el lattice cae a `ground state` y no resuena. Siempre debe haber drive.
+- **Material de estudio**: `me-60os-core/src/bin/pai_convert_bench.rs` compara A (RAW), B (PAI-60) y C `[exp fallido para estudio]` (doble-escala, etiquetado, NO borrar). Leer antes de "arreglar" conversión SPA.

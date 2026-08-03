@@ -80,7 +80,16 @@ impl ResonantMatrix {
         let mut transfers: Vec<SPA> = vec![SPA::zero(); size];
 
         // 2D Hexagonal Ring Radius Approximation
-        let side = (size as f64).sqrt().ceil() as usize;
+        // integer ceil(sqrt(size)) sin float: binary search en [1, size]
+        let side = {
+            let mut lo = 1usize;
+            let mut hi = size;
+            while lo < hi {
+                let mid = (lo + hi) >> 1;
+                if mid * mid >= size { hi = mid; } else { lo = mid + 1; }
+            }
+            lo
+        };
 
         for i in 0..size {
             let amp_i = self.crystals[i].get_amplitude();
@@ -117,6 +126,31 @@ impl ResonantMatrix {
         if index < self.crystals.len() {
             self.crystals[index].transduce_pulse(pressure);
         }
+    }
+
+    /// Convierte un dato binario (0..denominator-1) a amplitud armónica EXACTA
+    /// vía PAI-60 (tabla recíproca base-60) y la inyecta en el nodo.
+    ///
+    /// Esto es el "conversor binario -> amplitud" que faltaba enchufar: en lugar
+    /// de meter `i64` crudo como presión (inject), deriva la amplitud como
+    /// `pai60_divide(SPA::from_raw(value), denominator)` -> razón recíproca exacta
+    /// en escala 60^4, sin contaminación float.
+    ///
+    /// Si el denominador no es regular (no está en la tabla PAI-60), cae back al
+    /// inject crudo para no perder el pulso.
+    pub fn inject_pai(&mut self, index: usize, value: i64, denominator: u32) {
+        if index >= self.crystals.len() {
+            return;
+        }
+        let numer = SPA::from_int(value);
+        let amp = match crate::pai60_lib::pai60_divide(numer, denominator) {
+            Some(a) => a,
+            None => SPA::from_int(value), // fallback: denominador no regular en tabla
+        };
+        // Suma la amplitud SPA ya calculada directo al oscilador.
+        // NO usar transduce_pulse(amp.to_raw()): ese metodo espera un entero y
+        // lo re-escala por SCALE_0 (doble escala -> 8.4e13 en vez de 1/2).
+        self.crystals[index].amplitude = self.crystals[index].amplitude + amp;
     }
 
     /// Returns the amplitudes of all nodes.
@@ -251,6 +285,25 @@ impl ResonantMatrix {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_inject_pai_derives_exact_reciprocal() {
+        // Conversor binario -> amplitud PAI-60: value=30, denom=60 => 30/60 = 0;30 = 1/2
+        // Amplitude inyectada debe ser la recíproca EXACTA (SPA raw de 1/2),
+        // NO el i64 crudo (que seria 30).
+        let mut lattice = ResonantMatrix::new(3);
+        lattice.inject_pai(0, 30, 60);
+
+        let amp = lattice.get_amplitudes()[0].to_raw();
+        let half = SPA::new(0, 30, 0, 0, 0).to_raw(); // 30/60 = 0;30 = 1/2
+        assert_eq!(amp, half, "inject_pai debe derivar 30/60=1/2 exacto, no 30 crudo");
+        assert_ne!(amp, 30, "no debe inyectar el entero crudo");
+
+        // Fallback: denominador no regular (7) -> cae a valor entero crudo
+        let mut lattice2 = ResonantMatrix::new(3);
+        lattice2.inject_pai(0, 21, 7);
+        assert_eq!(lattice2.get_amplitudes()[0], SPA::from_int(21));
+    }
 
     #[test]
     fn test_lattice_creation() {

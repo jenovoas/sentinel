@@ -41,6 +41,12 @@ impl ResonantLatticeBridge {
         self.lattice.inject(index, pressure);
     }
 
+    /// Convierte dato binario a amplitud armónica EXACTA via PAI-60 y la inyecta.
+    /// PRUEBA: reemplaza `inject` crudo en el drive continuo cuando esta activo.
+    pub fn inject_pai(&mut self, index: usize, value: i64, denominator: u32) {
+        self.lattice.inject_pai(index, value, denominator);
+    }
+
     /// Get total energy as ME-60OS raw S60.
     pub fn total_energy_raw(&self) -> i64 {
         self.lattice.total_energy().to_raw()

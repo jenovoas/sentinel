@@ -39,7 +39,7 @@ struct AppState {
     metrics: Arc<dyn MetricsRepository>,
     bpf_stream: broadcast::Sender<CortexEvent>,
     lattice: Arc<Mutex<memory::resonant_lattice_bridge::ResonantLatticeBridge>>,
-    truthsync: Arc<truthsync_core::TruthSyncEngine>,
+    truthsync: Arc<Mutex<truthsync_core::TruthSyncEngine>>,
     liquid_lattice: Arc<Mutex<memory::liquid_lattice::LiquidLattice>>,
     pattern_detector: Arc<engine::patterns::PatternDetector>,
     neural_memory: Arc<Mutex<me60os_core::neural_memory::NeuralMemory>>,
@@ -92,7 +92,7 @@ async fn main() {
 
     let liquid_lattice = Arc::new(Mutex::new(memory::liquid_lattice::LiquidLattice::new()));
     let pattern_detector = Arc::new(engine::patterns::PatternDetector::new());
-    let truthsync = Arc::new(truthsync_core::TruthSyncEngine::new());
+    let truthsync = Arc::new(Mutex::new(truthsync_core::TruthSyncEngine::new()));
     let neural_memory = Arc::new(Mutex::new(me60os_core::neural_memory::NeuralMemory::new()));
 
     let state = Arc::new(AppState {
@@ -250,11 +250,26 @@ async fn main() {
             let mut lat = lattice_thermal.lock().unwrap();
             let node_count = lat.amplitudes_raw().len();
             // Inject multi-point harmonic thermal pulses across central hexagonal rings (Node 0, ring centers)
-            lat.inject(0, entropy_pressure);
-            if node_count > 100 {
-                let step_ring = node_count / 7;
-                for ring_idx in 1..7 {
-                    lat.inject(ring_idx * step_ring, entropy_pressure / 2);
+            // PRUEBA PAI-60: si SENTINEL_PAI_CONVERT=1, la amplitud se deriva via pai60_divide
+            // (razon recíproca exacta base-60) en vez de meter i64 crudo como presion.
+            let pai_convert = std::env::var("SENTINEL_PAI_CONVERT").map(|v| v == "1").unwrap_or(false);
+            if pai_convert {
+                // denominador 60 = escala base-60 (S60). value en [0,60).
+                let v = entropy_pressure.rem_euclid(60);
+                lat.inject_pai(0, v, 60);
+                if node_count > 100 {
+                    let step_ring = node_count / 7;
+                    for ring_idx in 1..7 {
+                        lat.inject_pai(ring_idx * step_ring, v / 2, 60);
+                    }
+                }
+            } else {
+                lat.inject(0, entropy_pressure);
+                if node_count > 100 {
+                    let step_ring = node_count / 7;
+                    for ring_idx in 1..7 {
+                        lat.inject(ring_idx * step_ring, entropy_pressure / 2);
+                    }
                 }
             }
             lat.step();
@@ -361,8 +376,14 @@ async fn main() {
         }
     });
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
-    tracing::info!("Listening on {}", addr);
+    // Puerto configurable via SENTINEL_PORT (temporal, para comparar A vs B en vivo).
+    // Fallback 8000 para no romper el deploy estandar.
+    let port: u16 = std::env::var("SENTINEL_PORT")
+        .ok()
+        .and_then(|p| p.parse().ok())
+        .unwrap_or(8000);
+    let addr = SocketAddr::from(([0, 0, 0, 0], port));
+    tracing::info!("Listening on {} (PAI_CONVERT={})", addr, std::env::var("SENTINEL_PAI_CONVERT").unwrap_or_else(|_| "0".into()));
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
@@ -670,7 +691,8 @@ pub async fn truth_claim_handler(
     let total_energy = lat.total_energy_raw();
     
     // Execute high-speed verification via truthsync_core engine (<100us)
-    let res = state.truthsync.verify_text(&payload.claim_payload, total_energy);
+    let res = state.truthsync.lock().unwrap()
+        .verify_text(&payload.claim_payload, total_energy);
 
     tracing::info!(
         "TruthSync Verification complete in {}us | Score: {} | Certified: {}",
@@ -679,9 +701,17 @@ pub async fn truth_claim_handler(
         res.is_certified
     );
 
+    // 🛡️ YATRA: la confianza vive en S60 (sincronizada al pulso del cristal de
+    // tiempo y a la energía del lattice). NO contaminamos la lógica con float:
+    // comparamos S60 contra S60 y solo convertimos a f64 en el borde de salida
+    // (JSON hacia el cliente), que es exportación, no cómputo.
+    let threshold_s60 = me60os_core::spa::SPA::from_decimal_for_import_only(payload.trust_threshold);
+    let sentinel_score_f64 = res.overall_trust_score.to_raw() as f64
+        / me60os_core::spa::SPA::SCALE_0 as f64;
+
     Json(TruthClaimResponse {
-        claim_valid: res.overall_trust_score >= payload.trust_threshold,
-        sentinel_score: res.overall_trust_score,
+        claim_valid: res.overall_trust_score >= threshold_s60,
+        sentinel_score: sentinel_score_f64,
         truthsync_cache_hit: false,
         ring0_intercepts: res.verification_time_us as u32, // exposing real us verification latency
     })

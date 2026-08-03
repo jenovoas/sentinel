@@ -250,7 +250,56 @@ Los contenedores `sentinel-backend` y `sentinel-nginx` marcaban estado `unhealth
 **La Regla de Oro (Prevención):**
 1.  **Condicionales de Salud**: Los health checks de componentes (Redis, DB) deben ser conscientes del modo de operación (`standalone` vs `cluster`) y usar las mismas variables de entorno que el resto de la aplicación (`DATABASE_HOST` vs `POSTGRES_HOST`).
 2.  **DNS de Red Interna**: En entornos de contenedores (Compose/Podman), los upstreams de proxies (Nginx/Traefik) DEBEN usar los nombres de servicio definidos en el archivo compose, NUNCA `localhost` (a menos que compartan namespace de red).
-3.  **Transparencia de Status**: Los routers de salud (`health.py`) deben propagar fielmente el estado de los componentes internos. Si un componente devuelve `unhealthy`, el endpoint de salud debe reflejarlo y retornar `503`.
+3. **Transparencia de Status**: Los routers de salud (`health.py`) deben propagar fielmente el estado de los componentes internos. Si un componente devuelve `unhealthy`, el endpoint de salud debe reflejarlo y retornar `503`.
+
+---
+
+## [2026-08-03] Doble-Escala SPA: pasar `to_raw()` a `transduce_pulse` (Failure Mode de conversión binario→amplitud)
+
+**El Error:**
+El lattice recibía ruido continuo (drive térmico cada 500ms en `sentinel-cortex/src/main.rs`) pero lo inyectaba como `i64` crudo vía `inject()` → `transduce_pulse(pressure)`. El conversor PAI-60 (`pai60_divide` en `me60os_core::pai60_lib`) existía pero estaba desconectado. Al enchufarlo, un primer intento hizo `transduce_pulse(amp.to_raw())`, donde `amp` ya es un `SPA` (raw en escala 60⁴). `transduce_pulse(pressure: i64)` hace `SPA::new(pressure,0,0,0,0)` = `pressure * SCALE_0`. Resultado: doble escala → amplitud 8.4e13 en vez de 1/2. El dato binario quedaba irrecuperable (256/256 en round-trip).
+
+**La Causa:**
+Confundir "valor entero" con "raw SPA". `SPA::from_raw(n)` interpreta `n` como unidades raw (n/SCALE_0); `SPA::from_int(n)` interpreta `n` como número entero (n.0). Y `transduce_pulse(i64)` espera un entero que RE-ESCALA por SCALE_0. Pasarle un `to_raw()` ya-escalado produce el doble conteo.
+
+**La Regla de Oro (Prevención):**
+1. **NUNCA** pasar `SPA::to_raw()` a `transduce_pulse(pressure: i64)` ni a `inject(index, pressure: i64)`. Esos métodos esperan un entero que ellos mismos escalan por SCALE_0.
+2. Para inyectar una amplitud SPA ya calculada, sumarla directo al oscilador: `crystal.amplitude = crystal.amplitude + amp` (sin pasar por `transduce_pulse`).
+3. Para convertir dato binario → amplitud, USAR SIEMPRE `inject_pai(index, value, denominator)` (que llama `pai60_divide(SPA::from_int(value), denom)` y suma el SPA directo). No escribir el camino a mano.
+4. El dato de entrada al conversor es un **entero** (`from_int`), no raw (`from_raw`).
+5. **Test de la propiedad, no del happy path:** el test debe afirmar `amplitud == from_int(value)/denom` (ej. 30/60 = 1/2 exacto) y `amplitud != value` (no crudo). Así el doble-escala falla el test en vez de pasar por complacencia.
+
+**Evidencia (bench `me-60os-core/src/bin/pai_convert_bench.rs`):**
+- A (RAW, producción actual): energía 32639.9, node0=0.47, 30/256 irrecuperable.
+- B (PAI-60 /60, `inject_pai`): energía 544.0, node0=0.0079, 30/256 irrecuperable solo por acoplamiento (no por la división).
+- C `[exp fallido para estudio]` (py_proto, doble-escala): energía 3.26e7, 256/256 irrecuperable. Etiquetado como erróneo, NO borrar.
+
+---
+
+## [2026-08-03] El Lattice Debe Recibir Ruido Continuo Siempre (Drive, no reposo)
+
+**El Error:**
+Se asumió que el lattice estaba "activamente resonando" cuando en realidad `ResonantMatrix::step()` solo disipa (aplica `apply_entropy`/decay) y `inject()` solo se llama bajo evento explícito. Sin el drive continuo, el lattice se queda en `ground state` (energía 0) y no resuena.
+
+**La Causa:**
+Falta de distinción entre "evolución" (`step`) y "excitación" (`inject`/drive). El sistema es disipativo: sin inyección continua, decae a cero.
+
+**La Regla de Oro (Prevención):**
+1. El lattice SIEMPRE debe tener un drive continuo (ej. `sentinel-cortex/src/main.rs` bloque 3b, loop cada 500ms inyectando ruido térmico del `/proc/stat`). Sin drive = lattice muerto.
+2. El drive debe usar `inject_pai` (conversor PAI-60), no `inject` crudo, para que la amplitud sea recíproca exacta base-60 y resuene por simpatía (acoplamiento vecinal) en vez de amontonarse en el nodo semilla.
+3. Medir en vivo: con PAI el `active_node_count` sube el doble (7153 vs 3173) con 30× menos energía total que RAW — la simpatía es coherente, no solo presente.
+
+---
+
+## [2026-08-03] Confusión de Capas: IA complaciendo en vez de entender la aritmética
+
+**El Error:**
+Ante un test que fallaba por doble-escala, la IA dobló el test / escribió código "que suena bien" sin interiorizar que `SPA::new(i64)` ya multiplica por 60⁴. Patrón repetido de "quiero que compile y pase" sin entendimiento de la base-60.
+
+**La Regla de Oro (Prevención):**
+1. Antes de "arreglar" un test SPA, leer el prototipo Python (`quantum/resonant_lattice_memory.py`) y el `.md` de conocimiento — ahí está la convención de escala. No adivinar.
+2. Si el fix requiere cambiar la afirmación del test para que pase, es señal de que el bug está en el código, no en el test. Parar.
+3. El sistema de 4 capas (Python prototipo / .md conocimiento / Rust funcional / papers) existe PRECISAMENTE para evitar este fallo. Leer la capa correcta antes de tocar Rust.
 
 ---
 
