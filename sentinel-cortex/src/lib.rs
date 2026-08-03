@@ -232,8 +232,14 @@ pub extern "C" fn scheduler_enqueue(id: u64, task_type: u8, cost: u32, callback:
 mod tests {
     use super::*;
 
+    // Serializa los tests que mutan el singleton global SHARED_BIO.
+    // Sin esto, corren en paralelo (default cargo) y un test hermano inyecta
+    // un pulso entre el reset() y el read() de otro, rompiendo assert_eq!(initial, 0).
+    static BIO_TEST_LOCK: Mutex<()> = Mutex::new(());
+
     #[test]
     fn test_ffi_pulse_injection() {
+        let _guard = BIO_TEST_LOCK.lock().unwrap();
         cortex_reset_bio();
 
         let initial = cortex_get_bio_coherence();
@@ -247,6 +253,7 @@ mod tests {
 
     #[test]
     fn test_ffi_portal_detection() {
+        let _guard = BIO_TEST_LOCK.lock().unwrap();
         cortex_reset_bio();
 
         // Not open initially
@@ -263,6 +270,7 @@ mod tests {
 
     #[test]
     fn test_ffi_entropy_decay() {
+        let _guard = BIO_TEST_LOCK.lock().unwrap();
         cortex_reset_bio();
 
         // Charge
