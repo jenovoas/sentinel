@@ -23,15 +23,12 @@ impl PrometheusCollector {
     pub async fn collect(&self) -> Result<Vec<Event>, Box<dyn std::error::Error>> {
         let mut events = Vec::new();
         
-        // Umbrales en S60 (Base-60)
-        // 0.8 = 8/10 = 4/5 de Unidad
-        // Tertias en 1 Unidad = 216_000
-        // 4/5 de 216_000 = 172_800 tertias
-        let cpu_threshold = S60::from_raw(172_800); 
+        // Umbrales en S60 (Base-60, SCALE_0 = 60^4 = 12_960_000)
+        // 0.8 = 4/5 → 12_960_000 * 4 / 5 = 10_368_000
+        let cpu_threshold = S60::from_raw(10_368_000); 
         
-        // 0.1 = 1/10 de Unidad
-        // 1/10 de 216_000 = 21_600 tertias
-        let mem_threshold = S60::from_raw(21_600);
+        // 0.1 = 1/10 → 12_960_000 / 10 = 1_296_000
+        let mem_threshold = S60::from_raw(1_296_000);
 
         // Query 1: CPU alto
         let cpu_query = "rate(node_cpu_seconds_total[5m])";

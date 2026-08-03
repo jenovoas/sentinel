@@ -56,7 +56,7 @@ impl PatternDetector {
         if failed_logins > 50 || new_ip_login {
             return Some(DetectedPattern {
                 name: "Credential Stuffing Attack".to_string(),
-                confidence: S60::from_raw(205_200), // 0.95
+                confidence: S60::from_raw(12_312_000), // 0.95
                 severity: Severity::Critical,
                 events: events.iter()
                     .filter(|e| matches!(e.event_type, EventType::FailedLogin | EventType::SuccessfulLoginNewIP))
@@ -81,7 +81,7 @@ impl PatternDetector {
         if has_memory_leak || has_cpu_spike {
             return Some(DetectedPattern {
                 name: "Resource Exhaustion".to_string(),
-                confidence: S60::from_raw(183_600), // 0.85
+                confidence: S60::from_raw(11_016_000), // 0.85
                 severity: Severity::High,
                 events: events.iter()
                     .filter(|e| matches!(e.event_type, EventType::MemoryLeak | EventType::CpuSpike))
@@ -101,7 +101,7 @@ impl PatternDetector {
         if network_spikes > 100 {
             return Some(DetectedPattern {
                 name: "DDoS Attack".to_string(),
-                confidence: S60::from_raw(194_400), // 0.90
+                confidence: S60::from_raw(11_664_000), // 0.90
                 severity: Severity::Critical,
                 events: events.to_vec(),
                 recommended_action: "Engage XDP rate limiter, notify NOC".to_string(),
@@ -117,7 +117,7 @@ impl PatternDetector {
         if unauth_io {
             return Some(DetectedPattern {
                 name: "Ransomware Suspect".to_string(),
-                confidence: S60::from_raw(205_200), // 0.95
+                confidence: S60::from_raw(12_312_000), // 0.95
                 severity: Severity::Critical,
                 events: events.to_vec(),
                 recommended_action: "Isolate process, freeze BPF maps".to_string(),
@@ -133,7 +133,7 @@ impl PatternDetector {
         if priv_esc {
             return Some(DetectedPattern {
                 name: "Privilege Escalation Attempt".to_string(),
-                confidence: S60::from_raw(194_400), // 0.90
+                confidence: S60::from_raw(11_664_000), // 0.90
                 severity: Severity::Critical,
                 events: events.to_vec(),
                 recommended_action: "Revoke process token, trigger alert".to_string(),
