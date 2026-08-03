@@ -38,3 +38,7 @@ logs/*.log
 !CLAUDE.md
 !AGENTS.md
 !LICENSE
+
+# Archivos de contexto/config local (no versionar)
+MEMORY.md
+reasonix.toml
