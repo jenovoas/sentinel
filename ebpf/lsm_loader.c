@@ -84,10 +84,10 @@ int main(int argc, char **argv) {
     printf("Pinned map: %s\n", pin_path);
   }
 
-  // Find and attach the file_open LSM program
-  prog = bpf_object__find_program_by_name(obj, "me60os_ai_guardian_open");
+  // Find and attach the exec LSM program (guardian_alpha_lsm.c defines guardian_execve)
+  prog = bpf_object__find_program_by_name(obj, "guardian_execve");
   if (!prog) {
-    fprintf(stderr, "ERROR: finding program me60os_ai_guardian_open failed\n");
+    fprintf(stderr, "ERROR: finding program guardian_execve failed\n");
     goto cleanup;
   }
 
