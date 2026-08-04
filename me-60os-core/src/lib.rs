@@ -21,6 +21,7 @@ pub mod spa_math;
 pub mod time_crystal; // Wrapper
 pub mod hexagonal_control;
 pub mod atlantean;
+pub mod ram_meter; // RAM meter + dimensionado de lattice (sysinfo, S60 puro)
 
 // SOMA Backend Modules
 #[cfg(feature = "extension-module")]
