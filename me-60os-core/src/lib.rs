@@ -22,6 +22,7 @@ pub mod time_crystal; // Wrapper
 pub mod hexagonal_control;
 pub mod atlantean;
 pub mod ram_meter; // RAM meter + dimensionado de lattice (sysinfo, S60 puro)
+pub mod buffer;   // Predictor de ráfagas: memoria no-Markoviana (kernel OU, S60 puro)
 
 // SOMA Backend Modules
 #[cfg(feature = "extension-module")]
