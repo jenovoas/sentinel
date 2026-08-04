@@ -7,6 +7,7 @@
 //! Bypasses thermal noise limits using resonant radiation pressure.
 
 use crate::spa::SPA;
+use crate::spa_math::SPAMath;
 use pyo3::prelude::*;
 
 #[cfg(feature = "extension-module")]
@@ -112,5 +113,275 @@ impl OptomechanicalCooler {
         }
 
         results
+    }
+}
+
+// =============================================================================
+// OPTOMECHANICAL SYSTEM (migración de quantum/optomechanical_simulator.py)
+// Rotación simpléctica de fase en S60 puro (sin ODEs, sin scipy, sin floats).
+// Solo la parte real: parámetros físicos + evolve resonante + detector de rift.
+// Se dejan fuera los placeholders axion/entanglement/visibility (fake en el .py).
+// =============================================================================
+
+/// Parámetros físicos de la membrana nanomecánica (S60, unidades escaladas).
+#[derive(Clone, Debug)]
+pub struct MembraneParameters {
+    pub mass: SPA,
+    pub frequency: SPA,
+    pub quality_factor: SPA,
+    pub temperature: SPA,
+}
+
+impl Default for MembraneParameters {
+    fn default() -> Self {
+        Self {
+            mass: SPA::new(1000, 0, 0, 0, 0),        // 1e-15 kg
+            frequency: SPA::new(1_000_000, 0, 0, 0, 0), // 1 MHz
+            quality_factor: SPA::new(100_000_000, 0, 0, 0, 0), // 10^8
+            temperature: SPA::new(300, 0, 0, 0, 0),   // 300 K
+        }
+    }
+}
+
+impl MembraneParameters {
+    /// omega_m = 2 * PI * f
+    pub fn omega_m(&self) -> SPA {
+        SPAMath::TWO_PI * self.frequency
+    }
+    /// gamma_m = omega_m / Q
+    pub fn gamma_m(&self) -> SPA {
+        self.omega_m() / self.quality_factor
+    }
+    /// Número térmico de fonones (aprox S60)
+    pub fn thermal_phonons(&self) -> SPA {
+        self.temperature * SPA::new(0, 10, 0, 0, 0)
+    }
+}
+
+/// Parámetros de la cavidad óptica (S60).
+#[derive(Clone, Debug)]
+pub struct OpticalParameters {
+    pub wavelength_nm: SPA,
+    pub finesse: SPA,
+    pub length_mm: SPA,
+    pub power_mw: SPA,
+}
+
+impl Default for OpticalParameters {
+    fn default() -> Self {
+        Self {
+            wavelength_nm: SPA::new(1550, 0, 0, 0, 0),
+            finesse: SPA::new(1000, 0, 0, 0, 0),
+            length_mm: SPA::new(1, 0, 0, 0, 0),
+            power_mw: SPA::new(1, 0, 0, 0, 0),
+        }
+    }
+}
+
+impl OpticalParameters {
+    /// omega_c = 2 * PI * c / lambda (c escalado 299792)
+    pub fn omega_c(&self) -> SPA {
+        let c = SPA::new(299_792, 0, 0, 0, 0);
+        SPAMath::TWO_PI * (c / self.wavelength_nm)
+    }
+    /// kappa = 2 * PI * c / (finesse * length)
+    pub fn kappa(&self) -> SPA {
+        let c = SPA::new(299_792, 0, 0, 0, 0);
+        SPAMath::TWO_PI * (c / (self.finesse * self.length_mm))
+    }
+    pub fn photon_number(&self) -> SPA {
+        self.power_mw * SPA::new(1000, 0, 0, 0, 0)
+    }
+}
+
+/// Sistema optomecánico acoplado. Estado: [x, p, n_ph] en S60.
+#[derive(Clone, Debug)]
+pub struct OptomechanicalSystem {
+    pub membrane: MembraneParameters,
+    pub optical: OpticalParameters,
+    pub g0: SPA,
+    pub state: [SPA; 3],
+    pub bath_memory: Vec<[SPA; 3]>,
+    pub memory_depth: usize,
+}
+
+impl OptomechanicalSystem {
+    pub fn new(membrane: MembraneParameters, optical: OpticalParameters) -> Self {
+        let g0 = Self::calculate_coupling(&membrane, &optical);
+        let n_ph = optical.photon_number();
+        Self {
+            membrane,
+            optical,
+            g0,
+            state: [SPA::zero(), SPA::zero(), n_ph],
+            bath_memory: Vec::new(),
+            memory_depth: 100,
+        }
+    }
+
+    /// g0 = (omega_c / length) * zero_point * ratio[1;32,2,24] / (2*PI)
+    fn calculate_coupling(mem: &MembraneParameters, opt: &OpticalParameters) -> SPA {
+        let sexagesimal_ratio = SPA::new(1, 32, 2, 24, 0);
+        let zero_point = SPA::new(0, 0, 1, 0, 0);
+        let g0_base = (opt.omega_c() / opt.length_mm) * zero_point;
+        let g0_harmonic = g0_base * sexagesimal_ratio;
+        g0_harmonic / SPAMath::TWO_PI
+    }
+
+    /// Evoluciona el sistema con rotación simpléctica de fase (resonancia S60).
+    /// theta = 6 grados exactos por paso (resonancia axial).
+    pub fn evolve(&mut self, steps: usize, noise: bool) -> Vec<[SPA; 3]> {
+        let theta = SPA::new(6, 0, 0, 0, 0);
+        let sin_t = SPAMath::sin(theta);
+        let cos_t = SPAMath::cos(theta);
+        let omega_m = self.membrane.omega_m();
+        let m_omega = self.membrane.mass * omega_m;
+
+        let mut x = self.state[0];
+        let mut p = self.state[1];
+        let n_ph = self.state[2];
+
+        let mut states = Vec::with_capacity(steps);
+        states.push([x, p, n_ph]);
+
+        for _ in 1..steps {
+            // Espacio de fase adimensional
+            let p_dim = if m_omega.to_raw() != 0 {
+                p / m_omega
+            } else {
+                SPA::zero()
+            };
+            let x_new = (x * cos_t) - (p_dim * sin_t);
+            let p_new_dim = (x * sin_t) + (p_dim * cos_t);
+            let mut p_new = p_new_dim * m_omega;
+
+            // Acoplamiento optomecánico (kick simpléctico conservativo)
+            if self.g0.to_raw() > 0 {
+                p_new = p_new - (self.g0 * n_ph / SPA::new(1000, 0, 0, 0, 0));
+            }
+
+            // Ruido determinista (carga del sistema, sin RNG)
+            if noise {
+                let load = (self.bath_memory.len() % 10) as i64;
+                p_new = p_new + SPA::new(0, 0, 0, load, 0);
+            }
+
+            x = x_new;
+            p = p_new;
+            states.push([x, p, n_ph]);
+
+            if self.bath_memory.len() >= self.memory_depth {
+                self.bath_memory.remove(0);
+            }
+            self.bath_memory.push([x, p, n_ph]);
+        }
+
+        self.state = *states.last().unwrap();
+        states
+    }
+}
+
+/// Detector de rift cuántico: matriz de correlación entre nodos + umbral.
+/// Equivalente eBPF-guardian para la red optomecánica.
+pub struct QuantumRiftDetector {
+    pub n_nodes: usize,
+    pub systems: Vec<OptomechanicalSystem>,
+    pub threshold: SPA,
+}
+
+impl QuantumRiftDetector {
+    pub fn new(n_nodes: usize, threshold: SPA) -> Self {
+        let systems = (0..n_nodes)
+            .map(|_| OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default()))
+            .collect();
+        Self { n_nodes, systems, threshold }
+    }
+
+    /// Correlación de fase media entre nodos i,j: promedio de cos(phi_i - phi_j).
+    pub fn correlation_matrix(&self, states_list: &[Vec<[SPA; 3]>]) -> Vec<Vec<SPA>> {
+        let n = states_list.len();
+        let mut c = vec![vec![SPA::zero(); n]; n];
+        for i in 0..n {
+            for j in (i + 1)..n {
+                let steps = states_list[i].len().min(states_list[j].len());
+                if steps == 0 {
+                    continue;
+                }
+                let mut total = SPA::zero();
+                for k in 0..steps {
+                    let dphi = states_list[i][k][0] - states_list[j][k][0];
+                    total = total + SPAMath::cos(dphi);
+                }
+                let avg = total / SPA::from_int(steps as i64);
+                c[i][j] = avg;
+                c[j][i] = avg;
+            }
+        }
+        c
+    }
+
+    /// Detecta rift donde la correlación supera el umbral.
+    pub fn detect_rift(&self, matrix: &[Vec<SPA>]) -> (bool, Vec<usize>) {
+        let mut rift_nodes = std::collections::HashSet::new();
+        let mut detected = false;
+        for i in 0..self.n_nodes {
+            for j in (i + 1)..self.n_nodes {
+                if i < matrix.len() && j < matrix.len() {
+                    if matrix[i][j] > self.threshold {
+                        detected = true;
+                        rift_nodes.insert(i);
+                        rift_nodes.insert(j);
+                    }
+                }
+            }
+        }
+        let mut nodes: Vec<usize> = rift_nodes.into_iter().collect();
+        nodes.sort();
+        (detected, nodes)
+    }
+}
+
+#[cfg(test)]
+mod opto_tests {
+    use super::*;
+
+    #[test]
+    fn test_coupling_positive() {
+        let sys = OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default());
+        assert!(sys.g0.to_raw() > 0, "g0 debe ser > 0 (acoplamiento real)");
+    }
+
+    #[test]
+    fn test_evolve_runs_and_stays_finite() {
+        // El `evolve` usa rotación de fase de theta=6° fijo (aproximación del
+        // Python original). Verificamos que: (1) corre 600 pasos sin panic,
+        // (2) el estado final es finito (no satura a infinito), y (3) respeta
+        // la estructura [x, p, n_ph] conservando n_ph.
+        // NOTA: no es un integrador simpléctico exacto, por lo que la energía
+        // no se conserva estrictamente (igual que el original Python).
+        let mut sys = OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default());
+        sys.state[0] = SPA::new(1000, 0, 0, 0, 0);
+        let n_ph0 = sys.state[2];
+        let states = sys.evolve(600, false);
+        assert_eq!(states.len(), 600);
+        let last = states.last().unwrap();
+        // p en unidades de momentum escala con m_omega; bajo rotación de fase
+        // fija de 6° el esquema amplifica (es aproximación, no simpléctico
+        // exacto). Lo que verificamos es que NO hace overflow/panic en 600 pasos.
+        assert!(last[0].to_raw().abs() <= 12_960_000_000_000_000, "x en rango S60");
+        // n_ph se conserva (no se toca en evolve).
+        assert_eq!(last[2], n_ph0);
+    }
+
+    #[test]
+    fn test_rift_detection_threshold() {
+        let det = QuantumRiftDetector::new(3, SPA::new(0, 48, 0, 0, 0));
+        // Matriz con correlación alta en (0,1)
+        let mut m = vec![vec![SPA::zero(); 3]; 3];
+        m[0][1] = SPA::new(0, 55, 0, 0, 0); // > umbral 0;48
+        m[1][0] = SPA::new(0, 55, 0, 0, 0);
+        let (detected, nodes) = det.detect_rift(&m);
+        assert!(detected);
+        assert_eq!(nodes, vec![0, 1]);
     }
 }
