@@ -243,8 +243,9 @@ async fn main() {
             let (regulated_speed, status) = maat.regulate(current_truth, current_speed);
             current_speed = regulated_speed;
 
-            let elapsed_ms = latency_start.elapsed().as_secs_f64() * 1000.0;
-            let batch_size = gpu_ctrl.adjust_batch_size(elapsed_ms);
+            // Latencia en milésimas de ms (entero, YATRA-LOCKED: sin float)
+            let elapsed_msx1000 = latency_start.elapsed().as_micros() as i64 / 1_000;
+            let batch_size = gpu_ctrl.adjust_batch_size(elapsed_msx1000);
             tracing::trace!("⚖️ MAAT: status={}, speed={:?}, gpu_batch={}", status, current_speed, batch_size);
 
             let mut lat = lattice_thermal.lock().unwrap();

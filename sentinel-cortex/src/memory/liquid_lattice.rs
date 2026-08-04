@@ -89,10 +89,74 @@ impl LiquidLattice {
         }
         (total_amp.to_base_units() as f64 / 1_000_000.0).min(1.0)
     }
+
+    /// Retención total en S60 puro (suma de amplitudes). Para asserts sin float.
+    pub fn total_amplitude(&self) -> S60 {
+        let mut total_amp = S60::zero();
+        for r in 0..3 {
+            for c in 0..3 {
+                total_amp = total_amp + self.grid[r][c].amplitude;
+            }
+        }
+        total_amp
+    }
 }
 
 impl Default for LiquidLattice {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_diffuse_spreads_to_neighbors() {
+        // EXP-009: difusión Von Neumann debe propagar energía a celdas vecinas.
+        let mut lat = LiquidLattice::new();
+        // Inyectar presión solo en la esquina (0,0)
+        lat.inject_entropy(0, 0, 1_000_000); // 1.0 unidad S60 en crudo
+        lat.diffuse();
+
+        // Tras una difusión, la celda (0,1) y (1,0) deben haber recibido energía.
+        let neighbor_right = lat.grid[0][1].amplitude;
+        let neighbor_down = lat.grid[1][0].amplitude;
+        assert!(neighbor_right > S60::zero(), "energía debe propagar a (0,1)");
+        assert!(neighbor_down > S60::zero(), "energía debe propagar a (1,0)");
+    }
+
+    #[test]
+    fn test_retention_above_72_percent() {
+        // EXP-009: retención objetivo > 72%. Medido en S60 puro (sin float).
+        let mut lat = LiquidLattice::new();
+        let injected = 1_000_000; // 1.0 unidad S60
+        lat.inject_entropy(1, 1, injected); // celda central
+
+        // Difundir varios pasos (el tejido líquido reparte el daño)
+        for _ in 0..10 {
+            lat.diffuse();
+        }
+
+        let retained = lat.total_amplitude().to_base_units();
+        // > 72% de lo inyectado (1.0 unidad). Nota: el Rust usa 0.7 self + 0.3 avg,
+        // así que la energía NO se conserva exacta pero se retiene bien.
+        let threshold = (injected as i64 * 72) / 100;
+        assert!(
+            retained > threshold,
+            "retención debe superar 72%: retenido={}, umbral={}",
+            retained,
+            threshold
+        );
+    }
+
+    #[test]
+    fn test_inject_isolated_cell_stays_put_before_diffuse() {
+        // Antes de difundir, la energía inyectada no se filtra a vecinos.
+        let mut lat = LiquidLattice::new();
+        lat.inject_entropy(2, 2, 1_000_000);
+        assert_eq!(lat.grid[2][2].amplitude, S60::from_base_units(1_000_000));
+        assert_eq!(lat.grid[1][2].amplitude, S60::zero(), "vecino no debe tener energía aún");
     }
 }
