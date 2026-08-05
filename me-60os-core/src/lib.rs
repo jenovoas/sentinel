@@ -61,6 +61,7 @@ pub mod scheduler;
 #[cfg(feature = "extension-module")]
 pub mod scv;
 pub mod guardian_lsm;
+pub mod dual_lane; // Dual-lane router: Security (WAL fsync) + Observability (buffer/backpressure)
 #[cfg(feature = "extension-module")]
 pub mod shm_bridge;
 

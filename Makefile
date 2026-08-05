@@ -1,4 +1,4 @@
-.PHONY: help up down build restart logs shell clean health certify ps
+.PHONY: help up down build restart logs shell clean health certify ps audit
  
 help:
 	@echo "Sentinel - Plataforma SaaS Multi-tenant (Protocolo YATRA)"
@@ -14,6 +14,7 @@ help:
 	@echo "  make shell-cortex    - Abrir terminal en el contenedor Cortex"
 	@echo "  make health          - Verificar salud de los servicios"
 	@echo "  make certify         - Ejecutar certificación aritmética S60"
+	@echo "  make audit           - Auditar .py legacy (fake/no-medible) con health_audit_fake_detector"
 	@echo "  make clean           - Limpiar servicios y volúmenes"
 	@echo "  make ps              - Listar contenedores activos"
 	@echo ""
@@ -21,6 +22,10 @@ help:
 certify:
 	@echo "🧪 Ejecutando Certificación de Integridad Aritmética S60..."
 	cargo run --release -p sentinel-cortex --bin certify_s60
+
+audit:
+	@echo "🔍 Auditoría de código fake / no-medible (Python legacy)..."
+	@python3 quantum/health_audit_fake_detector.py
 
 
 up:

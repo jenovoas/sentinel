@@ -31,7 +31,7 @@
 
 | Python (recuperado de purge `aed3b377^`) | Destino Rust propuesto | Por qué es real |
 |---|---|---|
-| `backend/app/core/data_lanes.py` (`DualLaneRouter`, 507 líneas) | `me-60os-core/src/` o `sentinel-cortex/src/` (nuevo módulo `dual_lane`) | Carriles SECURITY (WAL, cero buffering) vs OBSERVABILITY. `LaneEvent.synthetic` anti-fabricación. Determinista. El cortex YA escribe Security WAL (`truth_claim_handler`). **Migrar.** |
+| `backend/app/core/data_lanes.py` (`DualLaneRouter`, 507 líneas) | `me-60os-core/src/dual_lane.rs` ✅ MIGRADO 2026-08-05 | Carriles SECURITY (WAL, cero buffering) vs OBSERVABILITY. `LaneEvent.synthetic` anti-fabricación. Determinista. El cortex YA escribe Security WAL (`truth_claim_handler`). **Migrado.** |
 
 ## Cómo leer este mapa
 - Si un `.py` aparece aquí con destino Rust → ya está cubierto, NO re-migrar.
