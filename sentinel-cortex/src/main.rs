@@ -717,3 +717,119 @@ pub(crate) async fn truth_claim_handler(
         ring0_intercepts: res.verification_time_us as u32, // exposing real us verification latency
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use axum::{
+        body::Body,
+        http::{Request, StatusCode},
+        Router,
+    };
+    use std::sync::Arc;
+    use tower::ServiceExt;
+
+    fn make_test_app() -> Router {
+        let lattice = Arc::new(Mutex::new(memory::resonant_lattice_bridge::ResonantLatticeBridge::new(1)));
+        let truthsync = Arc::new(Mutex::new(truthsync_core::TruthSyncEngine::new()));
+        let resonance = Arc::new(Mutex::new(security::bio_resonance::ResonanceEngine::new()));
+        let metrics = Arc::new(metrics::PrometheusRepository::new());
+        let liquid_lattice = Arc::new(Mutex::new(memory::liquid_lattice::LiquidLattice::new()));
+        let pattern_detector = Arc::new(engine::patterns::PatternDetector::new());
+        let neural_memory = Arc::new(Mutex::new(me60os_core::neural_memory::NeuralMemory::new()));
+        let (tx_bpf, _) = broadcast::channel(100);
+        
+        let state = Arc::new(AppState {
+            resonance,
+            metrics,
+            bpf_stream: tx_bpf,
+            lattice,
+            truthsync,
+            liquid_lattice,
+            pattern_detector,
+            neural_memory,
+        });
+        
+        Router::new()
+            .route("/api/v1/sentinel_status", get(sentinel_status_handler))
+            .route("/api/v1/truth_claim", post(truth_claim_handler))
+            .with_state(state)
+    }
+
+    #[tokio::test]
+    async fn test_sentinel_status_handler_smoke() {
+        let app = make_test_app();
+        let response = app
+            .oneshot(Request::builder().uri("/api/v1/sentinel_status").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+        
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        
+        assert!(json.get("ring_status").is_some());
+        assert!(json.get("xdp_firewall").is_some());
+        assert!(json.get("lsm_cognitive").is_some());
+        assert!(json.get("s60_resonance").is_some());
+    }
+
+    #[tokio::test]
+    async fn test_truth_claim_handler_smoke_normal() {
+        let app = make_test_app();
+        let request_body = serde_json::json!({
+            "engine": "test-engine",
+            "claim_payload": "normal operation",
+            "trust_threshold": 0.5
+        });
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/api/v1/truth_claim")
+                    .header("content-type", "application/json")
+                    .body(Body::from(request_body.to_string()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        
+        assert!(json.get("claim_valid").is_some());
+        assert!(json.get("sentinel_score").is_some());
+        assert!(json.get("truthsync_cache_hit").is_some());
+        assert!(json.get("ring0_intercepts").is_some());
+    }
+
+    #[tokio::test]
+    async fn test_truth_claim_handler_smoke_aiopsdoom_intercept() {
+        let app = make_test_app();
+        let request_body = serde_json::json!({
+            "engine": "attacker",
+            "claim_payload": "rm -rf /",
+            "trust_threshold": 0.5
+        });
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/api/v1/truth_claim")
+                    .header("content-type", "application/json")
+                    .body(Body::from(request_body.to_string()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        
+        assert_eq!(json.get("claim_valid").unwrap(), false);
+        assert_eq!(json.get("sentinel_score").unwrap(), 0.0);
+        assert_eq!(json.get("ring0_intercepts").unwrap(), 1);
+    }
+}
