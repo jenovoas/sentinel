@@ -13,8 +13,13 @@ pub mod semantic_router;
 pub mod semantic_shell;
 
 // Re-exports for internal crate use
+#[allow(unused_imports)]
 pub(crate) use bio_resonator::BioResonator;
+#[allow(unused_imports)]
 pub(crate) use portal_detector::PortalDetector;
-pub(crate) use quantum_scheduler::{QuantumScheduler, SchedulerStats, Task, TaskType};
+#[allow(unused_imports)]
+pub(crate) use quantum_scheduler::{QuantumScheduler, Task, TaskType};
+#[allow(unused_imports)]
 pub(crate) use semantic_router::{Intent, SemanticRouter};
+#[allow(unused_imports)]
 pub(crate) use semantic_shell::SemanticShell;

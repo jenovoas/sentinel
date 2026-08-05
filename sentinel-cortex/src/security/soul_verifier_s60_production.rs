@@ -6,8 +6,6 @@
 //! PRODUCTION Biometric Verifier - Pure Base-60 (S60) Implementation
 
 use crate::math::s60::S60;
-use me60os_core::spa_math::SPAMath;
-use me60os_core::spa::SPAError as S60Error;
 use crate::security::soul_verifier_s60::{calculate_lyapunov_s60, chaos_entropy_s60, calculate_q_factor_s60};
 use serde::{Deserialize, Serialize};
 use sha3::{Digest, Sha3_512};

@@ -1,6 +1,10 @@
 // Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
+//
+// Prometheus metrics collector; pending routing to the main event loop.
+#![allow(dead_code)]
+
 use reqwest::Client;
 use crate::models::{Event, EventSource, EventType, Severity};
 use chrono::Utc;

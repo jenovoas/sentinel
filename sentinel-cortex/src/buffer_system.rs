@@ -5,6 +5,10 @@
 //!
 //! High-performance ring buffer for Quantum/Hardware bridge.
 //! Implements lock-free access for S60 data streams.
+//
+// Lock-free ring buffer primitives; pending integration with the
+// collector pipeline. Silenced at module level.
+#![allow(dead_code)]
 
 use crate::math::s60::S60;
 use std::cell::UnsafeCell;

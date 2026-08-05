@@ -6,7 +6,7 @@
 //!
 //! This module provides S60-based chaos theory calculations for biometric verification.
 
-use crate::math::s60::{S60Error, S60};
+use crate::math::s60::S60;
 use crate::math::s60_math::ln_s60;
 // Dup 3.1 fix: sqrt_s60 estaba duplicado en este archivo (privado) y en
 // s60_math.rs (público). Se elimina la copia local y se reutiliza la pública

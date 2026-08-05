@@ -6,6 +6,14 @@
 //!
 //! Implements logarithm, entropy, and other functions needed for
 //! Soul Verifier calculations using pure integer arithmetic.
+//
+// These functions form a library of pure-S60 transcendental/signal
+// routines. Several are not yet wired into the running binary; they
+// are kept here as ready-to-use infrastructure so future modules can
+// call them without reintroducing floats (YATRA). Silence dead_code
+// at the module level rather than cloning implementations later.
+
+#![allow(dead_code)]
 
 use super::s60::{S60Error, S60};
 use std::collections::HashMap;
@@ -306,7 +314,7 @@ pub fn ifft_s60(spectrum: &[ComplexS60]) -> Result<Vec<S60>, S60Error> {
     let n = spectrum.len();
 
     // Conjugate the input
-    let mut conjugated: Vec<ComplexS60> = spectrum
+    let conjugated: Vec<ComplexS60> = spectrum
         .iter()
         .map(|c| ComplexS60::new(c.real, -c.imag))
         .collect();

@@ -5,6 +5,9 @@
 //! Semantic Router - Intent Classification via Vertex AI
 //!
 //! Classifies natural language queries into executable intents.
+//
+// Intent classification layer; pending wiring into the live shell.
+#![allow(dead_code)]
 
 use reqwest::Client;
 use serde::{Deserialize, Serialize};

@@ -5,6 +5,9 @@
 //! BioResonator: Bio-Quantum Coherence Engine
 //!
 //! Translates biological events (keyboard/mouse) into quantum coherence states.
+//
+// Bio-quantum coherence engine; consumed by quantum_scheduler.
+#![allow(dead_code)]
 
 use crate::math::s60::S60;
 use std::time::Instant;

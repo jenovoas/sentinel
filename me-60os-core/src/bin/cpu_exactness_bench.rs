@@ -47,7 +47,7 @@ fn main() {
     // como las razones difieren (1.618 vs 1.633), la separacion absoluta crece; eso mismo
     // prueba que el float NO puede seguir la razon exacta: cualquier razon que elija,
     // el error de representacion de φ en f64 es ~1e-16 por paso y se amplifica.
-    let sep_abs = (xf_abs - xs_abs).abs();
+    let _sep_abs = (xf_abs - xs_abs).abs();
 
     println!("[F] float64 (IEEE-754, default Linux/C)");
     println!("  x_final (abstracto) : {:.6e}", xf);

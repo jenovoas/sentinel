@@ -14,8 +14,11 @@
 //!
 //! Reference: `implementation_plan.md` (Sentinel v8.0)
 
+// Harmonic logic primitives: part of the 未来-ready S60 math library.
+// Silenced at module level; items are used indirectly via the processor.
+#![allow(dead_code)]
+
 use me60os_core::spa::SPA;
-use std::fmt;
 
 /// Logic Score: SPA[0;0] (Pure Noise) to SPA[1;0] (Pure Tonal Unity)
 /// PURE SPA: No float contamination

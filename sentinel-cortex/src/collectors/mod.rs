@@ -3,4 +3,5 @@
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 pub mod prometheus;
 
+#[allow(unused_imports)]
 pub use prometheus::PrometheusCollector;

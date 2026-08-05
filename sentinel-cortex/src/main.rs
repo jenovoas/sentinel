@@ -17,14 +17,12 @@ use axum::{routing::{get, post}, Json, Router};
 use axum::extract::ws::{WebSocketUpgrade, WebSocket, Message};
 use math::harmonic_logic::{HarmonicProcessor, HarmonicState};
 use security::bio_resonance::ResonanceEngine;
-use security::soul_verifier_s60_production::BiometricVerifier;
 use metrics::{MetricsRepository, PrometheusRepository, MetricsSnapshot};
 use ebpf_cortex_bridge::{EbpfBridge, CortexEvent};
-use sha3::Digest;
 use serde::Serialize;
 use std::sync::{Arc, Mutex};
 use std::{net::SocketAddr, time::Duration};
-use tokio::sync::{mpsc, broadcast};
+use tokio::sync::broadcast;
 use tokio::time::sleep;
 
 #[derive(Serialize)]
@@ -34,13 +32,14 @@ struct HealthStatus {
     metrics: MetricsSnapshot,
 }
 
-struct AppState {
+pub(crate) struct AppState {
     resonance: Arc<Mutex<ResonanceEngine>>,
     metrics: Arc<dyn MetricsRepository>,
     bpf_stream: broadcast::Sender<CortexEvent>,
     lattice: Arc<Mutex<memory::resonant_lattice_bridge::ResonantLatticeBridge>>,
     truthsync: Arc<Mutex<truthsync_core::TruthSyncEngine>>,
     liquid_lattice: Arc<Mutex<memory::liquid_lattice::LiquidLattice>>,
+    #[allow(dead_code)]
     pattern_detector: Arc<engine::patterns::PatternDetector>,
     neural_memory: Arc<Mutex<me60os_core::neural_memory::NeuralMemory>>,
 }
@@ -144,7 +143,7 @@ async fn main() {
 
     // 2. Start eBPF Ring Buffer Reader (Guardian events → WebSocket)
     let tx_bpf_ebpf = tx_bpf.clone();
-    let state_ebpf = state.clone();
+    let _state_ebpf = state.clone();
     tokio::spawn(async move {
         use tokio::sync::mpsc;
         let (tx_ring, mut rx_ring) = mpsc::channel::<CortexEvent>(1024);
@@ -313,7 +312,7 @@ async fn main() {
                         let mut stream = pubsub.on_message();
                         use futures_util::StreamExt; // We might need to add this
                         
-                        while let Some(msg) = stream.next().await {
+                        while let Some(_msg) = stream.next().await {
                             let mut res = redis_resonance.lock().unwrap();
                             res.inject_pulse(0);
                             tracing::info!("💖 Bio-Pulse received from SENTINEL_MEDIA");
@@ -362,7 +361,7 @@ async fn main() {
                     now, i, amps[i], phases[i], gradient, energy));
             }
             use std::io::Write;
-            let mut file = std::fs::OpenOptions::new()
+            let file = std::fs::OpenOptions::new()
                 .create(true)
                 .append(true)
                 .open("/var/log/sentinel/phonon_data.csv");
@@ -486,6 +485,7 @@ async fn phonon_lattice_handler(
     })
 }
 
+#[allow(dead_code)]
 fn setup_prometheus_registry() {
     // No-op: registry initialized at startup
 }
@@ -496,7 +496,7 @@ async fn metrics_prometheus_handler(
     let lat = state.lattice.lock().unwrap();
     let total_energy = lat.total_energy_raw();
     let amps = lat.amplitudes_raw();
-    let phases = lat.phases_raw();
+    let _phases = lat.phases_raw();
 
     let cpu_temp_celsius: f64 = std::fs::read_to_string("/sys/class/thermal/thermal_zone0/temp")
         .ok()
@@ -622,7 +622,7 @@ pub struct SentinelStatusResponse {
     pub s60_resonance: i64,
 }
 
-pub async fn sentinel_status_handler(
+pub(crate) async fn sentinel_status_handler(
     axum::extract::State(state): axum::extract::State<Arc<AppState>>,
 ) -> Json<SentinelStatusResponse> {
     let bpf_events_exists = std::path::Path::new("/sys/fs/bpf/sentinel/events").exists();
@@ -651,7 +651,7 @@ pub struct TruthClaimResponse {
     pub ring0_intercepts: u32,
 }
 
-pub async fn truth_claim_handler(
+pub(crate) async fn truth_claim_handler(
     axum::extract::State(state): axum::extract::State<Arc<AppState>>,
     Json(payload): Json<TruthClaimRequest>,
 ) -> Json<TruthClaimResponse> {

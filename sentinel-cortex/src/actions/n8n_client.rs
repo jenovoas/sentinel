@@ -4,12 +4,14 @@
 use reqwest::Client;
 use crate::models::DetectedPattern;
 
+#[allow(dead_code)]
 pub struct N8NClient {
     client: Client,
     base_url: String,
     auth: Option<(String, String)>,
 }
 
+#[allow(dead_code)]
 impl N8NClient {
     pub fn new(base_url: String, auth: Option<(String, String)>) -> Self {
         Self {

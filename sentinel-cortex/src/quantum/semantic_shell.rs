@@ -8,18 +8,18 @@
 //! 1. Teaching (Oracle Mode)
 //! 2. System Control (Action Mode)
 //! 3. Safety Verification
+//
+// Interactive REPL; pending wiring into the main binary.
+#![allow(dead_code)]
 
 use std::io::{self, Write};
 use std::process::Command; // Assuming a coloring crate or basic ANSI codes if not present
                            // Use standard ANSI codes to avoid extra dependencies if 'colored' isn't in Cargo.toml
 
 use crate::quantum::semantic_router::{Intent, SemanticRouter};
-use rustyline::completion::{Completer, FilenameCompleter};
+use rustyline::completion::FilenameCompleter;
 use rustyline::error::ReadlineError;
-use rustyline::highlight::Highlighter;
-use rustyline::hint::Hinter;
-use rustyline::validate::Validator;
-use rustyline::{Config, Editor, Helper};
+use rustyline::{Config, Editor};
 use rustyline_derive::{Completer, Helper, Highlighter, Hinter, Validator};
 use tokio::runtime::Builder;
 

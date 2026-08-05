@@ -4,4 +4,5 @@
 pub mod patterns;
 pub mod resonant_loop;
 
+#[allow(unused_imports)]
 pub use patterns::PatternDetector;

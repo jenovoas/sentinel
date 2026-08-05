@@ -9,6 +9,7 @@
 use crate::math::harmonic_logic::{HarmonicProcessor, HarmonicState, LogicState};
 use me60os_core::spa::SPA as S60;
 
+#[allow(dead_code)]
 const PULSE_PERIOD_SEC: i64 = 17;
 #[allow(dead_code)]
 const CYCLE_DURATION_SEC: i64 = 68;

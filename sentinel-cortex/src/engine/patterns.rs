@@ -10,6 +10,8 @@ pub struct PatternDetector {
     time_window_secs: i64,
 }
 
+#[allow(dead_code)]
+#[allow(dead_code)]
 impl PatternDetector {
     pub fn new() -> Self {
         Self {

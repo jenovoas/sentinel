@@ -6,6 +6,7 @@ use std::collections::{HashMap, VecDeque};
 
 /// The context required for a pattern to make a decision.
 /// It provides read-only access to the event buffer and configuration thresholds.
+#[allow(dead_code)]
 pub struct PatternContext<'a> {
     pub event_buffer: &'a VecDeque<Event>,
     pub ssh_bruteforce_threshold: usize,
@@ -20,7 +21,7 @@ pub struct PatternContext<'a> {
 pub struct TrafficDropPattern;
 impl Pattern for TrafficDropPattern {
     fn check(&self, context: &PatternContext) -> Option<CorrelatedIncident> {
-        let net_events: Vec<_> = context
+        let _net_events: Vec<_> = context
             .event_buffer
             .iter()
             .filter(|e| e.event_type == "high_network_traffic")

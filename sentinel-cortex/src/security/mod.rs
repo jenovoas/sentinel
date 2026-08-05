@@ -16,6 +16,7 @@ pub mod soul_verifier_s60_production;
 pub mod bio_resonance;
 
 // Re-export production version as default
+#[allow(unused_imports)]
 pub use soul_verifier_s60_production::{
     BiometricError, BiometricProof, BiometricVerifier, LivenessChallenge,
 };

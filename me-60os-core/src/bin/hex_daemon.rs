@@ -29,7 +29,7 @@ fn main() {
             // Apply Salto 17 stabilization & Time-Crystal Coupled Dynamic Encryption Key Rotation
             let rift_center = (tick as usize * 17) % controller.n_nodes;
             let dynamic_key = controller.compute_crystal_coupled_key(crystal_energy_raw, tick);
-            let (status_code, _coherence, affected) = controller
+            let (_status_code, _coherence, affected) = controller
                 .control_rift_propagation(rift_center)
                 .unwrap_or((-1, me60os_core::spa::SPA::zero(), 0));
 

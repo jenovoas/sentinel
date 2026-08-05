@@ -1,6 +1,9 @@
 // Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // 💧 LIQUID LATTICE MEMORY 3x3 (EXP-009) — Topología Von Neumann S60 💧
+//
+// Liquid lattice memory simulation. Silenced at module level.
+#![allow(dead_code)]
 
 use crate::math::s60::S60;
 use serde::{Deserialize, Serialize};

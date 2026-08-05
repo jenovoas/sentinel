@@ -220,7 +220,7 @@ impl OptomechanicalSystem {
     }
 
     /// g0 = (omega_c / length) * zero_point * ratio[1;32,2,24] / (2*PI)
-    fn calculate_coupling(mem: &MembraneParameters, opt: &OpticalParameters) -> SPA {
+    fn calculate_coupling(_mem: &MembraneParameters, opt: &OpticalParameters) -> SPA {
         let sexagesimal_ratio = SPA::new(1, 32, 2, 24, 0);
         let zero_point = SPA::new(0, 0, 1, 0, 0);
         let g0_base = (opt.omega_c() / opt.length_mm) * zero_point;

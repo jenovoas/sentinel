@@ -6,6 +6,10 @@
 //!
 //! Implements portal-locked task execution for maximum energy efficiency.
 //! Based on EXP-029-V2 optimizations achieving 94.4% portal-lock efficiency.
+//
+// Quantum task orchestration primitives. Currently exercised through the
+// lib.rs integration harness; many methods are ready for future wiring.
+#![allow(dead_code)]
 
 use crate::math::s60::S60;
 use crate::quantum::bio_resonator::BioResonator;

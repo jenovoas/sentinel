@@ -11,6 +11,8 @@
 //! Scale matches SPA (me-60os-core/src/spa.rs). Exact precision for 10;5,6,5 patterns,
 //! harmonic ratios, and full 60⁴ sexagesimal arithmetic.
 
+#![allow(dead_code)]
+
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::ops::{Add, Div, Mul, Neg, Sub};

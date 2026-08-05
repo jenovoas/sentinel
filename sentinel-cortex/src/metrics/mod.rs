@@ -7,12 +7,12 @@
 //! This module decouples metric collection from the underlying exporter (Prometheus).
 
 use crate::math::s60::S60;
-use std::sync::{Arc, Mutex};
 use serde::Serialize;
 
 /// Core Metric Repository Trait (Dependency Inversion)
 pub trait MetricsRepository: Send + Sync {
     /// Get current bio-quantum coherence
+    #[allow(dead_code)]
     fn get_bio_coherence(&self) -> S60;
     
     /// Get task scheduler efficiency

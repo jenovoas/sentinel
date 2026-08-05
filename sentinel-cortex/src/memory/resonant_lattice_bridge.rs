@@ -1,6 +1,10 @@
 // Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
+//
+// Direct integration bridge with me-60os ResonantLattice. Silenced at module level.
+#![allow(dead_code)]
+
 //! # 🧠 Resonant Lattice Bridge (ME-60OS) 🧠
 //!
 //! Direct Rust integration with ME-60OS ResonantLattice + PySharedBuffer.
