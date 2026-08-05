@@ -4,6 +4,15 @@
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 # 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
 # -----------------------------------------------------------------------------
+# ⚠️ ETIQUETA DE REVISIÓN (2026-08-05): LEGACY BRIDGE — NO MIGRAR
+# Wrapper Python que DELEGA al núcleo Rust. El encoding _bytes_to_s60/_s60_to_bytes
+# (bits -> componentes base-60) es lógica real pero vive ya en Rust como
+# inject_dual_channel. retrieve_* devuelve b'' (incompleto en Python).
+# NÚCLEO YA EN RUST -> me-60os-core/src/resonant_matrix.rs (ResonantMatrix)
+#   y me-60os-core/src/memory/liquid_lattice.rs (LiquidLattice.inject_dual_channel).
+# ACCIÓN: dejar en olvido (Python legacy). El runtime es Rust.
+# Verificado por: lectura del fuente, no por fe.
+# -----------------------------------------------------------------------------
 # LIQUID LATTICE STORAGE (DISTRIBUTED HOLOGRAM) - NATIVE RUST DELEGATION
 # -----------------------------------------------------------------------------
 # Bypasses physical amplitude limits (~32 Bytes/Crystal) by distributing

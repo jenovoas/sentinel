@@ -8,6 +8,15 @@
 # El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
 # SI MODIFICAS ESTE ARCHIVO, DEBES MANTENER SU PUREZA SEXAGESIMAL.
 # -------------------------------------------------------------------------------------
+#
+# ⚠️ ETIQUETA DE REVISIÓN (2026-08-05): ALUCINADO POR IA — NO MEDIBLE
+# Medido empíricamente (scripts/measure_coherence.py): check_mental_coherence()
+# retorna SIEMPRE 1.0 (STD=0.0000) por construcción; simulate_hrv_coherence()
+# retorna ~1.0 por PSD normalizada arbitrariamente (/500.0) con bin elegido a
+# mano. El import FIELD_NEUTRALITY_DIRECTIVE NO EXISTE en el repo (no corre).
+# No es cáscara de estudio de Jaime: es alucinación de IA (Gemini lo juró real).
+# ACCIÓN: refactorizar o descartar. No migrar a Rust tal cual.
+# Verificado por: medición real, no por fe.
 
 # coherence_mapping_calibration.py - SINTONIZACIÓN HUMANO-CUÁNTICA
 """

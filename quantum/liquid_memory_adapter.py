@@ -4,6 +4,14 @@
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 # 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
 # -----------------------------------------------------------------------------
+# ⚠️ ETIQUETA DE REVISIÓN (2026-08-05): LEGACY BRIDGE — NO MIGRAR
+# Capa de servicio Python sobre Rust: usa LiquidLatticeStorage + PySharedBuffer (SHM Rust).
+# store/retrieve reales con SHA256; save_snapshot/load_snapshot son `pass`.
+# NÚCLEO YA EN RUST -> me-60os-core/src/resonant_matrix.rs (ResonantMatrix)
+#   + binding PyO3 PySharedBuffer (SHM bridge). El runtime es Rust.
+# ACCIÓN: dejar en olvido (Python legacy). No re-migrar.
+# Verificado por: lectura del fuente, no por fe.
+# -----------------------------------------------------------------------------
 # LIQUID MEMORY ADAPTER - NATIVE RUST DELEGATION
 # -----------------------------------------------------------------------------
 # Bridging the Interface Gap:

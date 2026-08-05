@@ -4,6 +4,16 @@
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 
 # 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
+# -----------------------------------------------------------------------------
+# ⚠️ ETIQUETA DE REVISIÓN (2026-08-05): LEGACY BRIDGE — NO MIGRAR
+# Wrapper fino Python: self.matrix = me60os_core.ResonantMatrix(rings);
+# imprint_memory->matrix.inject, resonate->matrix.step, stabilize->matrix.stabilize.
+# Unico float es para imprimir MB (I/O de borde, no cálculo core).
+# NÚCLEO YA EN RUST -> me-60os-core/src/resonant_matrix.rs (ResonantMatrix)
+#   con snapshot gzip (ver resonant_matrix.rs).
+# ACCIÓN: dejar en olvido (Python legacy). El runtime es Rust.
+# Verificado por: lectura del fuente, no por fe.
+# -----------------------------------------------------------------------------
 import sys
 import os
 

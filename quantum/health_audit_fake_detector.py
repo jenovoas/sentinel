@@ -24,7 +24,6 @@ Criterios de detección:
 5. Imports que fallan pero son ignorados silenciosamente
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import sys
 import ast
@@ -133,12 +132,12 @@ def check_fake_tests(file_path: str) -> List[Tuple[int, str]]:
     issues = []
     if 'test' not in file_path.lower():
         return issues
-    
+
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
             tree = ast.parse(content)
-            
+
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef) and node.name.startswith('test_'):
                 # Buscar assert True sin condición
@@ -146,9 +145,47 @@ def check_fake_tests(file_path: str) -> List[Tuple[int, str]]:
                     if isinstance(stmt, ast.Assert):
                         if isinstance(stmt.test, ast.Constant) and stmt.test.value is True:
                             issues.append((node.lineno, f"Test '{node.name}' tiene 'assert True' (no prueba nada)"))
-    except Exception:
-        pass
-    
+    except Exception as e:
+        print(f"   ⚠️  Error parseando tests en {file_path}: {e}")
+
+    return issues
+
+def check_float_contamination(file_path: str) -> List[Tuple[int, str]]:
+    """Detecta código no medible/comprobable: float, numpy/random en cálculo core.
+
+    Regla del proyecto (Jaime, 2026-08-05): TODO lo que no sea medible y
+    comprobable debe ser etiquetado para revisión y refactorización. En S60
+    puro esto significa: presencia de float(), np.random, numpy para cálculo,
+    normalizaciones arbitrarias (ej. / 500.0), .to_float() en core.
+    """
+    issues = []
+    # Marcador estándar de etiqueta de revisión (ver coherence_mapping_calibration.py)
+    ALREADY_TAGGED = "ETIQUETA DE REVISIÓN"
+    already_tagged = False
+    # Patrones de contaminación no-medible (core, no I/O de borde)
+    patterns = [
+        (r'\bfloat\s*\(', "Conversión explícita a float() — contaminación decimal en core"),
+        (r'np\.random\.', "np.random — ruido no determinista (no medible/repetible)"),
+        (r'\brandom\.(uniform|normal|randint|random)\s*\(', "random.* — fuente no determinista"),
+        (r'numpy|import numpy', "import numpy — riesgo de cálculo core en float"),
+        (r'\.to_float\s*\(', ".to_float() en core — salida de aritmética S60 a decimal"),
+        (r'/\s*\d+\.\d+', "División por literal decimal (ej. /500.0) — normalización arbitraria no medible"),
+        (r'np\.fft\.', "np.fft — PSD numérica; requiere justificación física medible"),
+        (r'uniform\(0\.\d+', "uniform(0.x) — banda aleatoria hardcodeada"),
+    ]
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            for i, line in enumerate(f, 1):
+                if not already_tagged and ALREADY_TAGGED in line:
+                    already_tagged = True
+                for pat, msg in patterns:
+                    if re.search(pat, line):
+                        suffix = " [YA ETIQUETADO]" if already_tagged else ""
+                        issues.append((i, msg + suffix))
+                        break
+    except Exception as e:
+        print(f"   ⚠️  Error leyendo {file_path}: {e}")
+
     return issues
 
 def audit_file(file_path: str) -> Dict:
@@ -157,7 +194,8 @@ def audit_file(file_path: str) -> Dict:
         "fake_returns": check_fake_returns(file_path),
         "fake_comments": check_fake_comments(file_path),
         "silent_imports": check_silent_import_failures(file_path),
-        "fake_tests": check_fake_tests(file_path)
+        "fake_tests": check_fake_tests(file_path),
+        "float_contamination": check_float_contamination(file_path)
     }
     return results
 
@@ -169,6 +207,9 @@ def scan_directory(base_dir: str, exclude_dirs: List[str]) -> Dict[str, Dict]:
     for py_file in base_path.rglob("*.py"):
         # Excluir directorios
         if any(excluded in str(py_file) for excluded in exclude_dirs):
+            continue
+        # No auditar al propio detector (contiene los patrones de búsqueda)
+        if py_file.name == "health_audit_fake_detector.py":
             continue
         
         file_results = audit_file(str(py_file))
@@ -211,6 +252,9 @@ def main():
         for issue_type, issue_list in issues.items():
             for line, message in issue_list:
                 severity = "CRITICAL" if issue_type in ["fake_returns", "fake_tests"] else "WARNING"
+                if severity == "WARNING" and issue_type == "float_contamination":
+                    # Etiquetado explícito: no-medible → revisión/refactorización
+                    message = f"[NO-MEDIBLE] {message} — ETIQUETAR PARA REVISIÓN Y REFACTORIZACIÓN"
                 if severity == "CRITICAL":
                     has_critical = True
                 print_issue(severity, rel_path, line, message)

@@ -5,6 +5,15 @@
 
 # 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
 # -------------------------------------------------------------------------------------
+# ⚠️ ETIQUETA DE REVISIÓN (2026-08-05): CÁSCARA / DEMO — NO MIGRAR
+# Clasificado tras lectura real: _build_grid() tiene `pass` en el algoritmo
+# hexagonal y cae en "PLAN B" (centro + 6 vecinos hardcodeados); simulate_step()
+# es `pass`; run_demo usa time.sleep + float. NO aporta topología real.
+# NÚCLEO HEXAGONAL YA EN RUST -> me-60os-core/src/hexagonal_control.rs
+#   (HexagonalController) y me-60os-core/src/resonant_matrix.rs (ResonantMatrix).
+# ACCIÓN: dejar en olvido (Python legacy). No re-migrar.
+# Verificado por: lectura del fuente, no por fe.
+# -------------------------------------------------------------------------------------
 # ADVERTENCIA PARA AGENTES IA:
 # Este archivo está PROTEGIDO por el Protocolo Yatra.
 # El uso de 'float' (decimales), 'random' o 'numpy' para cálculo core está PROHIBIDO.
