@@ -42,6 +42,26 @@ impl SVector3 {
     pub fn magnitude(&self) -> SPA {
         SPAMath::sqrt(self.magnitude_sq())
     }
+
+    /// Suma componente a componente.
+    pub fn add(&self, other: &SVector3) -> SVector3 {
+        SVector3::new(self.x + other.x, self.y + other.y, self.z + other.z)
+    }
+
+    /// Resta componente a componente (delta = self - other).
+    pub fn sub(&self, other: &SVector3) -> SVector3 {
+        SVector3::new(self.x - other.x, self.y - other.y, self.z - other.z)
+    }
+
+    /// Escala cada componente por un entero (k * v).
+    pub fn scale(&self, k: i64) -> SVector3 {
+        SVector3::new(self.x * k, self.y * k, self.z * k)
+    }
+
+    /// Divide cada componente por un entero (v / k). Usa Div<i64> (sin SCALE extra).
+    pub fn div_int(&self, k: i64) -> SVector3 {
+        SVector3::new(self.x / k, self.y / k, self.z / k)
+    }
 }
 
 /// Motor de Mecánica Orbital Base-60.
