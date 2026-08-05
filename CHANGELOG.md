@@ -1,26 +1,26 @@
-## [Unreleased]
-
-### Added - Monitoring Stack (2026-03-02)
-- **Firewalld ports** for monitoring: 9100 (node-exporter), 9115 (black to: fenixbox)
-- Applied, centurion, kingu
-
-### Fixed
-- Prometheus connectivity: kingu node-exporter now reachable
-- WireGuard peers: Only kingu has direct peer to sentinel (pending: fenix, centurion)
-
----
-
-
 # Changelog
-
 All notable changes to the Sentinel project will be documented in this file.
-
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
----
-
 ## [Unreleased]
+
+### Added
+- `OptomechanicalSystem::calculate_visibility()` — quantum interference visibility (S60 pure, no floats)
+- 3 new tests for `calculate_visibility`: max coherent, anti-correlated, zero total
+- 1 new linearity test for `calculate_visibility` (intermediate V ≈ 0.5)
+- `AGENTS.md` and `CLAUDE.md` project instructions
+
+### Fixed
+- Resolved 15 compilation warnings in `sentinel-cortex`
+- Removed unused imports (`sha3::Digest`, `BiometricVerifier`, `S60Error`, `mpsc`)
+- Removed dead code (`BiometricVerifier`, `soul_verifier_s60_production` usage in main)
+- Fixed `mut` redundancy and unused variable warnings across handlers
+
+### Changed
+- `sentinel_status_handler` and `truth_claim_handler` visibility reduced from `pub` to `pub(crate)`
+- `calculate_coupling` parameter renamed (`mem` → `_mem`) to suppress unused warning
+- `semantic_shell.rs` cleaned up redundant `rustyline` imports
 
 ---
 
