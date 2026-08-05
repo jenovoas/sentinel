@@ -10,18 +10,44 @@
 |---|---|---|
 | `ram_meter` | `quantum_lite.get_available_memory_gb` (psutil) | commit 0e9287a4 |
 | `buffer` | `quantum/ai_buffer_cascade.py` (kernel OU no-Markoviano) | commit 15e44b7f |
-| `optomechanical` | (ya existía) fonones/sideband cooling | verificado |
+| `optomechanical` (core) | (ya existía) fonones/sideband cooling | verificado |
+| `optomechanical` (sim) | `optomechanical_simulator.py` — `calculate_visibility()` | ✅ completado 2026-08-05 |
 | `resonant_matrix` + `liquid_lattice` | (ya existían) lattice hexagonal / memoria líquida | verificado |
 | `spa` / `spa_math` | `yatra_core` / `yatra_math` (S60) | ya en Rust |
 | `pai60_lib` | `plimpton_exact_ratios` (razones recíprocas) | ya en Rust |
 
+### Detalle de completados
+
+#### ✅ `optomechanical_simulator.py` → `optomechanical.rs` (2026-08-05)
+**Migrado:**
+- `MembraneParameters` ✅ (ya existía)
+- `OpticalParameters` ✅ (ya existía)
+- `OptomechanicalSystem` ✅ (ya existía: `new`, `calculate_coupling`, `evolve`)
+- `QuantumRiftDetector` ✅ (ya existía: `correlation_matrix`, `detect_rift`)
+- `calculate_visibility()` ✅ **NUEVO** — visibilidad de interferencia V = (P_corr - P_anti)/(P_corr + P_anti) desde matriz densidad 4×4. S60 puro.
+
+**Placeholders intencionales (no migrados, documentados en código):**
+- `measure_quality_factor()` — en Python retorna Q nominal, no mide nada real (ring-down simulado).
+- `simulate_axion_detection()` — en Python la confianza es hardcoded (98% placeholder), no físico.
+
+**Bench:** `me-60os-core/src/bin/opto_cooling_bench.rs`
+- CSV: `step,g_raw,cooperativity_raw,n_final_raw`
+- Resultado registrado (2026-08-05):
+  - n_th_env (inicial) raw: 7,776,000,000,000
+  - n_final (tras 13 muestras) raw: 4,064,522
+  - n_min_limit (piso cuántico) raw: 2,025
+  - **Reducción térmica: 99%**
+  - Régimen: RESUELTO (kappa < omega_m) — enfriamiento eficiente
+  - Estado: aún sobre piso cuántico (n_final > n_min_limit) — físicamente correcto
+- Comando: `cargo run --release --bin opto_cooling_bench` (output a stdout)
+
+**Tests:** 41 tests pasan (3 nuevos: `test_visibility_max_coherent`, `test_visibility_anticorrelated`, `test_visibility_zero_total`)
+- Comando: `cargo test --manifest-path me-60os-core/Cargo.toml --lib`
+
 ## 📋 PENDIENTES (orden por dependencia, no por prioridad de negocio)
 
 ### NIVEL 1 — Fortalecer el núcleo (sin nuevas features)
-1. **`optomechanical_simulator.py`** → extender `optomechanical.rs`
-   - Clases: `MembraneParameters`, `OpticalParameters`, `OptomechanicalSystem`, `QuantumRiftDetector`.
-   - Bench: ocupación fonónica vs pasos de enfriamiento.
-   - Nota: `optomechanical_cooling.py` ya tiene `run_cooling_sequence`.
+1. ~~**`optomechanical_simulator.py`** → extender `optomechanical.rs`~~ ✅ COMPLETADO 2026-08-05
 2. **`field_stabilization_sim.py`** → `FluxStabilizer` (estabilización de fase/rift)
    - Posible destino: `hexagonal_control.rs` (ya tiene `control_rift_propagation`).
    - Bench: drift residual tras N ciclos de estabilización.

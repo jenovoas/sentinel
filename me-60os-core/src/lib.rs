@@ -13,6 +13,7 @@ use pyo3::prelude::*;
 pub mod isochronous_oscillator;
 pub mod pai60_lib;
 pub mod optomechanical;
+pub mod flux_stabilizer; // Estabilizador de flux cuántico (LCG + damping S60)
 pub mod quantum_core;
 pub mod s60_pid;
 pub mod spa;

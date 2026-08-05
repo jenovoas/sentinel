@@ -279,6 +279,39 @@ impl OptomechanicalSystem {
         self.state = *states.last().unwrap();
         states
     }
+
+    /// Visibilidad de interferencia: V = (P_corr - P_anti) / (P_corr + P_anti).
+    /// Mide el grado de coherencia cuántica desde una matriz de densidad 4x4
+    /// (dos modos acoplados). P_corr = P_00 + P_11 (diagonal),
+    /// P_anti = P_01 + P_10 (anti-diagonal).
+    /// Retorna 0 si total = 0 (sin información). S60 puro, sin floats.
+    /// Migrado de quantum/optomechanical_simulator.py:237-256.
+    pub fn calculate_visibility(&self, rho: &[[SPA; 4]; 4]) -> SPA {
+        let p_corr = rho[0][0] + rho[3][3];
+        let p_anti = rho[1][1] + rho[2][2];
+        let total = p_corr + p_anti;
+        if total.to_raw() == 0 {
+            return SPA::zero();
+        }
+        // visibility = (P_corr - P_anti) / total
+        // En raw: ((P_corr - P_anti) * SCALE_0) / total_raw
+        // El operador / en SPA ya aplica la escala internamente.
+        (p_corr - p_anti) / total
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // PLACEHOLDERS INTENCIONALES (no migrados — ver optomechanical_simulator.py)
+    // ─────────────────────────────────────────────────────────────
+    // measure_quality_factor() → en Python retorna el Q nominal, no mide nada
+    //   real (ring-down simulado). Equivalente: self.membrane.quality_factor.
+    //   Si se necesita Q medido de verdad, implementar decay de amplitud tras
+    //   evolve() y calcular Q = omega * tau_decay / ln(2).
+    //
+    // simulate_axion_detection() → en Python evoluciona con noise=True y
+    //   calcula desviación media como proxy de SNR, pero la confianza es
+    //   hardcoded (S60(0,59) = 98% placeholder). No es físicamente real.
+    //   Para implementarlo bien: añadir fuerza periódica en el loop evolve()
+    //   a la frecuencia de axión esperada y medir transferencia de energía.
 }
 
 /// Detector de rift cuántico: matriz de correlación entre nodos + umbral.
@@ -383,5 +416,54 @@ mod opto_tests {
         let (detected, nodes) = det.detect_rift(&m);
         assert!(detected);
         assert_eq!(nodes, vec![0, 1]);
+    }
+
+    #[test]
+    fn test_visibility_max_coherent() {
+        // Estado totalmente correlacionado: P_corr=1, P_anti=0 → V=1
+        let sys = OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default());
+        let mut rho = [[SPA::zero(); 4]; 4];
+        rho[0][0] = SPA::new(1, 0, 0, 0, 0);
+        rho[3][3] = SPA::new(0, 0, 0, 0, 0);
+        let v = sys.calculate_visibility(&rho);
+        assert_eq!(v.to_raw(), SPA::new(1, 0, 0, 0, 0).to_raw(),
+            "V debe ser 1 (correlacion total)");
+    }
+
+    #[test]
+    fn test_visibility_anticorrelated() {
+        // Estado anti-correlacionado: P_corr=0, P_anti=1 → V=-1
+        let sys = OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default());
+        let mut rho = [[SPA::zero(); 4]; 4];
+        rho[1][1] = SPA::new(1, 0, 0, 0, 0);
+        rho[2][2] = SPA::new(0, 0, 0, 0, 0);
+        let v = sys.calculate_visibility(&rho);
+        assert!(v.to_raw() < 0, "V debe ser negativo (anti-correlacion)");
+    }
+
+    #[test]
+    fn test_visibility_zero_total() {
+        // Matriz vacía → V = 0
+        let sys = OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default());
+        let rho = [[SPA::zero(); 4]; 4];
+        let v = sys.calculate_visibility(&rho);
+        assert_eq!(v.to_raw(), 0, "V debe ser 0 sin informacion");
+    }
+
+    #[test]
+    fn test_visibility_linearity_intermediate() {
+        // V ≈ 0.5: P_corr = 3, P_anti = 1 → V = (3-1)/(3+1) = 0.5
+        let sys = OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default());
+        let mut rho = [[SPA::zero(); 4]; 4];
+        // P_corr = P_00 + P_33 = 3
+        rho[0][0] = SPA::new(2, 0, 0, 0, 0);
+        rho[3][3] = SPA::new(1, 0, 0, 0, 0);
+        // P_anti = P_11 + P_22 = 1
+        rho[1][1] = SPA::new(1, 0, 0, 0, 0);
+        let v = sys.calculate_visibility(&rho);
+        // V = (3-1)/4 = 0.5 → raw = SCALE_0/2 = 6_480_000
+        let expected_half = SPA::new(0, 30, 0, 0, 0); // 30/60 = 0.5 in S60
+        assert_eq!(v.to_raw(), expected_half.to_raw(),
+            "V debe ser ~0.5 (linealidad intermedia)");
     }
 }
