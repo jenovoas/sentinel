@@ -42,3 +42,5 @@ logs/*.log
 # Archivos de contexto/config local (no versionar)
 MEMORY.md
 reasonix.toml
+# Added by code-review-graph
+.code-review-graph/
