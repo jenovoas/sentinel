@@ -110,9 +110,11 @@ int main(int argc, char **argv) {
   printf("Pinned link: %s\n", pin_path);
 
   // Find and attach the bprm_check_security LSM program
-  prog = bpf_object__find_program_by_name(obj, "me60os_ai_guardian_exec");
+  // FIX: guardian_alpha_lsm.c only defines guardian_execve (SEC lsm/bprm_check_security).
+  // The old name me60os_ai_guardian_exec does not exist -> the exec hook was never attached.
+  prog = bpf_object__find_program_by_name(obj, "guardian_execve");
   if (!prog) {
-    fprintf(stderr, "WARNING: program me60os_ai_guardian_exec not found, skipping\n");
+    fprintf(stderr, "WARNING: program guardian_execve not found, skipping\n");
     // Not fatal - continue
   } else {
     // Attach the LSM program

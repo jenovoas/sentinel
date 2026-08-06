@@ -148,8 +148,11 @@ async fn main() {
         use tokio::sync::mpsc;
         let (tx_ring, mut rx_ring) = mpsc::channel::<CortexEvent>(1024);
 
+        // QA 2026-08-06: ruta corregida al pin real del guardian LSM (cargado manual,
+        // hook bprm_check_security vivo). El ringbuf 'events' es el que llena guardian_execve.
+        // Sin LLM local (laptop no da): el cortex corre como motor determinista de eventos+lattice.
         let monitor_path = std::env::var("EBPF_MONITOR_PATH")
-            .unwrap_or_else(|_| "/sys/fs/bpf/ai_guardian".to_string());
+            .unwrap_or_else(|_| "/sys/fs/bpf/sentinel/events".to_string());
         let bridge = EbpfBridge::new()
             .with_ringbuf_path(monitor_path);
 

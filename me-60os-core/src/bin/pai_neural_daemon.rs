@@ -19,13 +19,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut memory = NeuralMemory::new();
 
     // 2. Open eBPF Ring Buffer
-    // Sentinel Guardian LSM uses /sys/fs/bpf/cortex_events (or legacy fallback)
-    let ringbuf_path = if Path::new("/sys/fs/bpf/cortex_events").exists() {
-        "/sys/fs/bpf/cortex_events"
-    } else if Path::new("/sys/fs/bpf/sentinel/events").exists() {
+    // QA 2026-08-06: el guardian LSM pinea en /sys/fs/bpf/sentinel/events (cargado manual,
+    // hook bprm_check_security vivo). El viejo /sys/fs/bpf/cortex_events ya no existe.
+    // Probamos el pin real primero para no caer en Permission denied del path muerto.
+    let ringbuf_path = if Path::new("/sys/fs/bpf/sentinel/events").exists() {
         "/sys/fs/bpf/sentinel/events"
-    } else {
+    } else if Path::new("/sys/fs/bpf/cortex_events").exists() {
         "/sys/fs/bpf/cortex_events"
+    } else {
+        "/sys/fs/bpf/sentinel/events"
     };
 
     let map = MapHandle::from_pinned_path(ringbuf_path)
