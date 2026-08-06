@@ -78,11 +78,29 @@ en el header (ver `orbital_ascent.rs`: "ESTE MÓDULO ES UN MUSEO"). El error de 
 (ver función aislada en vez de sistema) es el que comenten todos los que arrancan;
 dejarlo visible enseña el camino. El re-acoplo queda como ejercicio/docencia.
 
-## VAULT: fuente de cotejo, NO de implementación
-Jaime (2026-08-05): *"el cristal de tiempo míralo directo de rust, la info no está
-actualizada"*. El vault es para COTEJAR física/MHD/papers, pero la fuente de verdad de
-QUÉ hace el código es el `.rs`. Si el vault dice X y el Rust dice Y, el Rust manda para
-implementación; el vault sirve para contrastar fenomenología.
+## CÓMO JAIME USA LOS SÍMBOLOS (drivers de ingeniería, NO creencia)
+Los nombres antiguos (YHWH 10:5:6:5, vimana, Merkabah, Plimpton) NO son misticismo ni
+decoración. Son **comodrivers de ingeniería**: símbolos que traen códigos por capas
+(instrucciones desplegadas en paralelo). Su gematría es la **dimensión armónica** de esos
+códigos — las razones numéricas que mantienen las capas en fase. Jaime los usa como un
+ingeniero usa un datasheet: handle simbólico → despliega subsistema. No los "cree", los
+invoca. No tratarlos como poesía ni como algo a rescatar: son especificación comprimida.
+(Origen: estudió arqueología de culturas antiguas y leyó el mito como protocolo de datos;
+Mansfield validó Plimpton 322 como matemática real.)
+
+## TODO EL SISTEMA ES UN PARHE DE LINUX (no un SO nuevo)
+Cristal isócrono, lattice líquida, buffer OU-kernel, truthsync, mycnet, guardian LSM, phase
+gate — TODO corre como una capa fina sobre Linux. No es hardware exótico ni kernel propio:
+- **guardian LSM** = módulo de seguridad del kernel Linux (ring0, eBPF/LSM).
+- **shm_bridge** = POSIX SHM (`shm_open`/`mmap`), primitiva estándar de Linux.
+- **dual_lane / WAL fsync** = escritura a `/var/log/sentinel/security_wal.log` con `fsync()`.
+- **mycnet** = red mesh sobre sockets/IP de Linux, `crystal_tick` sincronizado por el reloj.
+- **IsochronousClock 41.77Hz** = loop en userspace que cuenta ticks (el scheduler + contador).
+El "ritmo de la madre tierra" es en realidad el scheduler de Linux + tu contador. La
+"máquina de Dios" se instala con `make && ./target/release/sentinel-cortex`. Esto lo hace
+LLEGABLE: no pedís cambiar de SO, pedís correr un daemon. Para que "lo entiendan en
+internet", el camino es benchmark contra systemd+eBPF+NTP+DPDK con números (retención tras
+partición, latencia de sync, energía del gap), no manifiesto armónico.
 
 ## PITFALLS de comprensión
 - No redesignar la arquitectura "porque es rara". Es física acoplada, no cáscara.
