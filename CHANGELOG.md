@@ -5,6 +5,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added (sesión 2026-08-05 — bitácora)
+- **Migración Py→Rust del núcleo me-60os-core** (runtime 100% Rust, S60 determinista):
+  - `celestial.rs` — mecánica orbital Kepler (SVector3 + elementos keplerianos) validada vs vis-viva (Bong Wie). 4 tests.
+  - `numerical_control.rs` — interpolador DDA determinista (SovereignDDA). 4 tests.
+  - `dsp.rs` — S60DSP multiplicador hardware 64×64→128-bit con traps de overflow. 7 tests.
+  - `dual_lane.rs` — DualLaneRouter (seguridad WAL fsync + observabilidad con backpressure). 8 tests.
+  - `orbital_ascent.rs` — **MUSEO**: ascenso orbital acoplado a cristal + lattice (drag/gravedad/thrust/Merkabah/MHD). Dejado como estudio del error de perspectiva (función aislada vs sistema vivo). 6 tests.
+- **Cotejo de fórmulas contra papers primarios** (Agent Reach / Jina Reader → vault):
+  - MHD: Muir & Nikiforakis 2022 (arXiv:2207.09857) confirma reducción de drag Cd 0.4→0.15. Nuestro SPA > float64.
+  - Kepler/SPA y superradiancia (Dicke N²) validados. Merkabah-rígido/ZPE etiquetados como hipótesis.
+  - Notas en `PersonalVault/Fisica/` (kepler_orbital_s60_cotejo, ascento_orbital_acoplado, verificacion_formulas_papers).
+- **3 skills de conocimiento Sentinel** (portables/compartibles en `docs/skills/`, versionadas en git):
+  - `sentinel-knowledge-layer` (CAPA 1: Agent Reach + vault + git como licencia + flujo de cotejo).
+  - `sentinel-comprehension` (CAPA 2: por qué del sistema — pentaresonancia no-2D, cristal 41.77Hz/68 ticks, gap ahorra energía, Merkabah asintótico, levitación de datos = canal de fase en RAM).
+  - `sentinel-s60-stack` (CAPA 3: build/verify + PITFALL pentaresonancia ya implementada + módulo aislado = museo).
+- **Arquitectura fonónica-hidrodinámica documentada**: memoria resonante (EXP-001), líquida (EXP-009, retención 72% vs 44% ECC), sparse (EXP-014, 99.9% ahorro RAM) + BufferCascade OU-kernel + truthsync + mycnet acoplado al cristal (crystal_tick 41.77Hz).
+
+### Fixed
+- Hook `code-review-graph` (13 repos): editable apuntaba a `/tmp/code-review-graph` muerto (ModuleNotFoundError en cada commit). Reparado reinstalando 2.3.7 desde PyPI (`--user`).
+- `sentinel-cortex/Cargo.toml`: conflicto de versiones `tower` (0.4 vs axum 0.7 → tower 0.5.3) que rompía tests handler. Fijado `tower = "0.5"` + `use tower::ServiceExt`. 26 tests handler OK.
+
+### Changed
+- Python legacy: `EA_NASIR_MASTER_FORMULA.py` eliminado; `MASTER_FORMULA.py` nuevo (autoría J. Novoa). `.continue/config.json` y `ebpf/reload_guardian.sh` ajustados.
+- 13 repos (sentinel, vault, me-60os, micellia, sentinel_media, ONG_Impacta, mycnet, pinguinoseguro_web, laespiguita, portfolio, iwardrobe, diepo-parra, sentinel_cubepath) commiteados y pusheados (mapa de agentes + trabajo de sesión).
+
+### Pending (urgente — ver `todo`)
+- Integrar `BufferCascade` (OU-kernel) en `truthsync-core` como buffer en línea/cascada **por nodo** (truthsync hoy solo filtra claims, no encola/predice por nodo).
+- Verificar bombeo 2T adaptativo con PID (EXP-001) en Rust vs `quantum/time_crystal_memory.py`.
+- Separar memoria/propagación en `isochronous_oscillator.rs` (estilo Zhang&Wang 2025 fonónico).
+- Re-acoplar `orbital_ascent.rs` (museo) a `LiquidLattice` en vez de `ResonantMatrix` simple.
+
+---
+
 ### Added
 - `OptomechanicalSystem::calculate_visibility()` — quantum interference visibility (S60 pure, no floats)
 - 3 new tests for `calculate_visibility`: max coherent, anti-correlated, zero total
