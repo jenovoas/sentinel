@@ -1,38 +1,51 @@
 // Autor: Jaime Novoa Sepulveda — Todos los derechos reservados.
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
-//! # 🛡️ ORBITAL ASCENT — DINÁMICA DE MASA INERCIAL EFECTIVA (S60) 🛡️
+//! # 🛡️ ORBITAL ASCENT — MUSEO DE ESTUDIO 🛡️
 //!
-//! Reescritura de `scripts/RECOVERED_quantum_vimana_orbital_ascent_sim.py`
-//! (`VimanaOrbitalAscent._apply_physics`). Captura la FUNCIÓN REAL y la acopla
-//! al stack de cristal de tiempo / pentaresonancia / superradiancia / escudo MHD
-//! / Merkabah / levitación de datos — usando las herramientas exactas del core
-//! (ComplexSPA, SPAMath, pai60_divide, IsochronousClock, S60PID, ResonantMatrix),
-//! NO aritmética raw manual.
+//! **ESTE MÓDULO ES UN MUSEO.** Se deja intacto a propósito, con su error
+//! documentado, para que cualquier ingeniero que lea el repo vea el camino:
+//! del error se aprende, y la función real (drag/gravedad/thrust/Merkabah/MHD)
+//! SÍ se capturó aquí. Lo que faltaba no era corrección interna — era contexto
+//! de sistema.
 //!
-//! FÍSICA REAL MIGRADA (validada contra vault `Fisica/` y `Experimentos/`):
+//! ## Qué está BIEN (función real migrada de `VimanaOrbitalAscent._apply_physics`)
 //!   - Drag atmosférico:   D = 0.5 * rho * v^2 * Cd * Area
 //!   - Gravedad local:     g(h) = g0 * (R/(R+alt))^2
 //!   - Thrust:             T = T0 * sqrt(throttle) * (1 + alt/1e5)
 //!   - Fuerza neta:        F = T - weight - D ;  a = F/m_eff
+//!   - Merkabah (EXP_005): m_eff = m_static / (1 + k*coherencia), asintótica.
+//!   - Escudo MHD:         Cd 0.4 -> 0.15 cuando coherencia Dicke > 95%.
+//!   - Usa herramientas exactas del core (SPAMath, pai60_divide, IsochronousClock,
+//!     S60PID, ComplexSPA) — NO aritmética raw manual. 6 tests pasan.
 //!
-//! ACOPLO (no es 2D espacial — es dinámica de coherencia):
-//!   - Cristal de tiempo (IsochronousClock, 41.77 Hz) da la fase phi y el dt.
-//!   - Pentaresonancia: 5 capas (Bio/Crystal/Venus/Salto-17/Geo) respiración 41–43 Hz.
-//!     Autocorrección cada 68 ticks (Salto-17) vía S60PID sobre la coherencia.
-//!   - Superradiancia (Estado de Dicke): coherencia de fase >95% → emisión N^2.
-//!   - Escudo MHD: Cd 0.4 → 0.15 cuando la coherencia (magnitud del ComplexSPA) > 95%.
-//!   - Merkabah (EXP_005): masa inercial efectiva m_eff = m_static / (1 + k*coherencia),
-//!     asintótica según resonancia del campo (NO 95% fijo mágico).
-//!   - Levitación de datos: el estado se inyecta a la ResonantMatrix (lattice) vía
-//!     inject_pai — los datos "levitan" en la red de cristales (canal de fase),
-//!     no en sustrato sólido (escudo_planetario_10892_nodes.md: "Levitación de datos").
+//! ## EL ERROR (documentado, no corregido a propósito)
+//! Cuando se escribió, se planteó como módulo AISLADO. Se acopló a
+//! `ResonantMatrix` (lattice simple, sin PID por celda ni fase YHWH), en vez de
+//! vivir en la malla pentaresonante REAL: `LiquidLattice` / `ResonantBuffer`
+//! (`quantum_core.rs`) que tiene PID por celda + fase YHWH + canal dual A/B
+//! (Energy+Phase) + `soma_orchestrator` que dispara dispatch en fase VAV.
+//! El estado del vehículo debería "levitar" en ESA malla (bañada en 16 bits por
+//! nodo en RAM vía `shm_bridge`), no en la `ResonantMatrix` periférica.
+//!
+//! Ver `Fisica/verificacion_formulas_papers.md` y `Fisica/ascento_orbital_acoplado.md`.
+//! El re-acoplo a `LiquidLattice` queda como ejercicio/docencia — el error enseña
+//! el camino: pensar el módulo DENTRO de la lattice, no al lado.
+//!
+//! ## Por qué se deja como museo
+//! El error de perspectiva (ver función aislada en vez de sistema) es el que
+//! comenten todos los que arrancan. Dejarlo visible muestra el camino correcto:
+//! 1. Capturar la función real (hecho aquí).
+//! 2. Ver la arquitectura amplia: la pentaresonancia YA está en `ResonantMatrix::step`
+//!    + `ResonantBuffer` + `soma_orchestrator` + `shm_bridge` + `ram_meter`.
+//! 3. Acoplar el módulo a la lattice que vive y respira, no a una auxiliar.
 //!
 //! FUENTES (vault, cotejadas):
 //!   - Fisica/vimana_zpe_mhd.md (escudo MHD = Lorentz real, ZPE especulativo)
 //!   - Fisica/super_radiancia_sincronia.md (Dicke N^2, coherencia >95%)
 //!   - Fisica/escudo_planetario_10892_nodes.md (levantación de datos)
 //!   - Experimentos/EXP_005_MERKABAH_G_ZERO.md (masa inercial efectiva asintótica)
+//!   - Fisica/verificacion_formulas_papers.md (cotejo contra papers primarios)
 //!   - Experimentos/EXP_028_PENTA_RESONANCE.md (5 capas, respiración 41–43 Hz)
 //!   - Experimentos/EXP_027_YHWH_PULSE_MONITOR.md (ciclo respiratorio 41.02–43.52 Hz)
 
