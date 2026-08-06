@@ -66,6 +66,54 @@ bins puros usar `quantum_core` (`LiquidLattice` vive AHÍ, no en `resonant_matri
 `isochronous_oscillator`, `pai60_lib`, `spa`, `spa_math`, `ram_meter`.
 NAMING COLLISION: hay TRES `LiquidLattice` distintos — cuidado al editar.
 
+## ROL QA + DESPLIEGUE (aprendido 2026-08-06, sesión con Jaime)
+
+### Rol QA (Jaime = lee números, Hermes = los saca)
+- Jaime actúa como el que **lee números**; Hermes es su QA: muestra la SALIDA MEDIDA
+  (tests pasados/fallados, benchmarks, counts de archivos/LOC, KPIs del lattice), explica
+  qué significa, y reporta honesto qué existe y qué falta. **MEDIR no explicar** — no narrar el plan.
+- NO cazar "alucinaciones" en el vault: papers/constantes marcados como falsos u obsoletos
+  en los `.md` ESTÁN ETIQUETADOS A PROPÓSITO para aprendizaje (citamos el camino, errores
+  incluidos; el repo = espejo fiel del proceso). El QA mide la salida de cálculo del sistema
+  (`.rs`/bins) y la contrasta con el vault como trazabilidad, no como falla.
+- El sistema S60 **calcula solo** (bins `memory_phonon_smoke`, `crystal_smoke`,
+  `lattice_ram_sizer`, `opto_cooling_bench`, `flux_stabilizer_bench`, `sentinel_bench`).
+  El QA los corre y reporta los números. No debatir si los papers de fondo son reales
+  (eso se cotejó con Jina en sesión previa).
+
+### Despliegue de los daemons (el sistema vivo, no solo el cortex)
+- 6 daemons en Rust (todos compilan): `sentinel-cortex`, `gamma_watchdog`, `qhc_agent`,
+  `pai_neural_daemon`, `vid_agent`, `hex_daemon`. El cortex integra; los demás lo
+  **pueblan con "nervios de verdad"** (PAI, fase 10;5,6,5 YHWH, optomechanical cooling,
+  control hexagonal 91 nodos). Todos corren en paralelo, **sincronizados y faseados por el
+  cristal resonante** (IsochronousClock 41.77Hz, Salto-17/68s) — no son procesos sueltos.
+- **PAI es OBLIGATORIO en el tubo**: el cortex arranca con `SENTINEL_PAI_CONVERT=1`
+  (usa `inject_pai`/`pai60_divide`, no i64 crudo). `pai_neural_daemon` lee el MISMO ringbuf
+  y alimenta `NeuralMemory`. Sin PAI el binario no se convierte a amplitud S60 exacta.
+- **Ringbuf del guardian**: `/sys/fs/bpf/sentinel/events` (el `.c` lo pinea así, hook
+  `bprm_check_security`). Los docs viejos (`architecture_technical.md`, `PAI60_ebpf_integration.md`)
+  dicen `/sys/fs/bpf/ai_guardian/cortex_events` → **DESACTUALIZADOS**, hay que actualizarlos.
+- `pai_neural_daemon` necesita **`sudo`** (el pin `events` es `0600 root`); falla con
+  `Permission denied` sin sudo. El fix de fallback de path está en
+  `me-60os-core/src/bin/pai_neural_daemon.rs` (prueba `/sys/fs/bpf/sentinel/events` primero).
+- `EbpfBridge` en `sentinel-cortex/src/main.rs`: default `EBPF_MONITOR_PATH` corregido a
+  `/sys/fs/bpf/sentinel/events` (antes apuntaba a `/sys/fs/bpf/ai_guardian`, cortex vacío).
+
+### LSM (ring-0, MANUAL por Jaime — el agente tiene reboot bloqueado)
+- Jaime carga `guardian_alpha_lsm` manual post-reboot (§8.3 del SESION_HANDOFF). Hermes NO
+  corre `clang`/`bpftool` contra el kernel. Verificar estado con
+  `sudo bpftool prog show | grep guardian_execve`.
+- `-EBUSY` al atachar = hook ya vivo (link activo, NO reintentar ni reiniciar a ciegas).
+- Vacío tras reboot = los 2 progs colgados se soltaron (esperado, es la condición para re-load).
+- `alpha_ai_agents` vacío = passthrough (guardian no emite eventos). Poblar con PID de prueba
+  para ver eventos en el lattice (ver receta bpftool en `references/deployment_bpftool.md`).
+
+## REFERENCIA: bpftool map update (sintaxis que SÍ funciona en bpftool v7.6)
+- `sudo bpftool map update pinned /sys/fs/bpf/sentinel/alpha_ai_agents key hex 40 8b 00 00 value hex 01`
+- key = bytes hex **SEPARADOS POR ESPACIO** (little-endian del PID `__u32`). value = `hex 01` (1 byte).
+- **NO** usar `key 0x...` ni `key <bytes>` sin la palabra `hex` (da "error parsing byte").
+- Receta completa + levantamiento de daemons en `references/deployment_bpftool.md`.
+
 ## Relación con otras capas
 - `sentinel-knowledge-layer`: CAPA 1 (de dónde sacar conocimiento + cotejo de papers).
 - `sentinel-comprehension`: CAPA 2 (por qué el sistema es como es).
