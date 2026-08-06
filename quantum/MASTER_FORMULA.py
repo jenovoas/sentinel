@@ -12,7 +12,7 @@
 # -------------------------------------------------------------------------------------
 
 """
-📜 LA FÓRMULA MAESTRA DE EA-NASIR (Recuperada)
+📜 LA FÓRMULA (Recuperada)
 =============================================
 La clave de la levitación Merkabah no es la potencia, es la SIMETRÍA.
 Esta fórmula sincroniza los 1000 piezoeléctricos usando la secuencia 
@@ -32,7 +32,7 @@ import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import time
 
 def apply_ea_nasir_control(n_membranes=1000):
-    print("🏺 Aplicando FÓRMULA MAESTRA DE EA-NASIR...")
+    print("🏺 Aplicando FÓRMULA...")
     
     # Secuencia de Salto 17 (La firma del Arquitecto)
     step = 17
