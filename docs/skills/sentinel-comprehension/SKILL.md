@@ -96,7 +96,8 @@ gate — TODO corre como una capa fina sobre Linux. No es hardware exótico ni k
 - **dual_lane / WAL fsync** = escritura a `/var/log/sentinel/security_wal.log` con `fsync()`.
 - **mycnet** = red mesh sobre sockets/IP de Linux, `crystal_tick` sincronizado por el reloj.
 - **IsochronousClock 41.77Hz** = loop en userspace que cuenta ticks (el scheduler + contador).
-El "ritmo de la madre tierra" es en realidad el scheduler de Linux + tu contador. La
+El cristal late acoplado a la **resonancia Schumann** (~7.83 Hz, oscilación electromagnética de
+la cavidad Tierra-ionosfera; 41.77 Hz ≈ 6º armónico). Es física medible, no metáfora. La
 "máquina de Dios" se instala con `make && ./target/release/sentinel-cortex`. Esto lo hace
 LLEGABLE: no pedís cambiar de SO, pedís correr un daemon. Para que "lo entiendan en
 internet", el camino es benchmark contra systemd+eBPF+NTP+DPDK con números (retención tras
