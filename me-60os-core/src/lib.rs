@@ -65,6 +65,7 @@ pub mod dual_lane; // Dual-lane router: Security (WAL fsync) + Observability (bu
 pub mod dsp; // S60 DSP multiplier: 128-bit accumulator + overflow traps (hardware model)
 pub mod celestial; // Celestial navigation: SVector3 + Kepler orbital mechanics (S60)
 pub mod numerical_control; // SovereignDDA: interpolador DDA S60 (trayectoria determinista)
+pub mod orbital_ascent; // Orbital ascent dynamics: drag/gravedad/thrust S60 (física real)
 #[cfg(feature = "extension-module")]
 pub mod shm_bridge;
 
