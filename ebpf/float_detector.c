@@ -50,6 +50,14 @@ struct {
     __type(value, __u8);
 } float_block_map SEC(".maps");
 
+/* Map de desvío PAI: binarios cuyos cálculos decimales son redirigidos a Ring 0 / S60 */
+struct {
+    __uint(type, BPF_MAP_TYPE_HASH);
+    __uint(max_entries, 4096);
+    __type(key, char[256]);
+    __type(value, __u8);
+} float_redirect_map SEC(".maps");
+
 /* Ring buffer compartido con el bridge Rust. */
 struct {
     __uint(type, BPF_MAP_TYPE_RINGBUF);
@@ -71,6 +79,27 @@ emit_event(__u32 pid, __u8 severity)
     e->pid            = pid;
     e->entropy_signal = (__u64)severity * S60_SCALE_0;
     e->severity       = severity;
+    e->reserved[0]    = GUARDIAN_CODE_FLOAT;
+
+    bpf_ringbuf_submit(e, 0);
+}
+
+static __always_inline void
+emit_math_diversion(__u32 pid, __u64 payload_signal, __u8 severity)
+{
+    struct cortex_event *e;
+    e = bpf_ringbuf_reserve(&events, sizeof(*e), 0);
+    if (!e)
+        return;
+
+    __builtin_memset(e, 0, sizeof(*e));
+
+    e->timestamp_ns   = bpf_ktime_get_ns();
+    e->event_type     = EVENT_MATH_DIVERSION;
+    e->pid            = pid;
+    e->entropy_signal = payload_signal > 0 ? payload_signal : S60_SCALE_0;
+    e->severity       = severity;
+    e->reserved[0]    = GUARDIAN_CODE_FLOAT;
 
     bpf_ringbuf_submit(e, 0);
 }
@@ -95,13 +124,21 @@ int BPF_PROG(float_detector, struct linux_binprm *bprm, int ret)
         return -EACCES;
     }
 
-    /* 2. Whitelist — allow silencioso */
+    /* 2. Redirección PAI-60 explícita — desvío de cálculos decimales a Ring 0 */
+    __u8 *redirect = bpf_map_lookup_elem(&float_redirect_map, key);
+    if (redirect && *redirect) {
+        emit_math_diversion(pid, S60_SCALE_0, SEVERITY_HIGH);
+        bpf_printk("FloatDetector [REDIRECT->PAI]: diverting math for %s (pid=%d)", filename, pid);
+        return 0;
+    }
+
+    /* 3. Whitelist — allow silencioso */
     __u8 *safe = bpf_map_lookup_elem(&float_safe_map, key);
     if (safe && *safe) {
         return 0;
     }
 
-    /* 3. Desconocido — política configurable */
+    /* 4. Desconocido — política configurable */
     emit_event(pid, SEVERITY_MEDIUM);
     bpf_printk("FloatDetector [UNKNOWN]: %s (pid=%d)", filename, pid);
 
@@ -113,3 +150,4 @@ int BPF_PROG(float_detector, struct linux_binprm *bprm, int ret)
 }
 
 char LICENSE[] SEC("license") = "GPL";
+

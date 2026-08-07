@@ -22,9 +22,9 @@ META_OBJS := guardian_gamma.o
 
 ALL_BPF_OBJS := $(LSM_OBJS) $(XDP_OBJS) $(TC_OBJS) $(KPROBE_OBJS) $(META_OBJS)
 
-# ─── Userspace binaries ───────────────────────────────────────────────────────
+# ─── Userspace binaries & Shared Libraries ───────────────────────────────────
 BPF_BINS  := event_monitor loader lsm_loader lsm_attach attacher gamma_watchdog
-MISC_BINS := benchmark_exec
+MISC_BINS := benchmark_exec libpai_redirect.so
 
 ALL_BINS := $(BPF_BINS) $(MISC_BINS)
 
@@ -32,6 +32,11 @@ ALL_BINS := $(BPF_BINS) $(MISC_BINS)
 .PHONY: all clean load-all unload-all load-lsm load-xdp test
 
 all: $(ALL_BPF_OBJS) $(ALL_BINS)
+
+libpai_redirect.so: libpai_redirect.c
+	$(CC) $(CFLAGS_USER) -shared -fPIC $< -o $@ -ldl -lm
+
+
 
 # Kernel BPF objects (generic rule)
 %.o: %.c

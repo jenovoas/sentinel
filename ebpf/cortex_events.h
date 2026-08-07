@@ -42,6 +42,8 @@
 #define EVENT_GAMMA_INCONSISTENCY   16 /* Decisiones contradictorias entre peers */
 #define EVENT_GAMMA_PEER_UNLOADED   17 /* Prog ya no aparece en bpftool prog list */
 #define EVENT_GAMMA_HEARTBEAT       18 /* Gamma alive — pulso cada BIO_PULSE */
+#define EVENT_MATH_DIVERSION        19 /* Desvío de cálculo decimal hacia PAI-60 */
+
 
 /* ─── Códigos de peer Guardian (reservado[0] del cortex_event) ─────────────── */
 #define GUARDIAN_CODE_ALPHA     1
