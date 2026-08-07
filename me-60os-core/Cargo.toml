@@ -20,6 +20,14 @@ path = "src/soma_orchestrator.rs"
 name = "soma-worker"
 path = "src/soma_worker.rs"
 
+[[bin]]
+name = "fpu_vs_pai_bench"
+path = "src/bin/fpu_vs_pai_bench.rs"
+
+[[bin]]
+name = "resonant_lattice_memory"
+path = "src/bin/resonant_lattice_memory.rs"
+
 [dependencies]
 libc = "0.2"
 # pyo3 made optional to allow pure Rust binary builds
