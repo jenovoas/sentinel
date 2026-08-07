@@ -151,7 +151,7 @@ impl HexagonalController {
     }
 
     // Calcula los índices de los 6 vecinos en la red hexagonal
-    fn get_neighbors(&self, node_idx: usize) -> Vec<usize> {
+    pub fn get_neighbors(&self, node_idx: usize) -> Vec<usize> {
         let (q, r) = self.nodes_coords[node_idx];
         let neighbor_coords = [
             (q + 1, r), (q + 1, r - 1), (q, r - 1),

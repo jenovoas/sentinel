@@ -7,6 +7,7 @@
 use crate::isochronous_oscillator::IsochronousOscillator;
 use crate::spa::SPA;
 use serde::{Deserialize, Serialize};
+use std::collections::VecDeque;
 use std::thread;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
@@ -14,8 +15,14 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use pyo3::prelude::*;
 
 // =============================================================================
-// S60 PID CONTROLLER
+// S60 PID CONTROLLER (Extended with Non-Markovian History Kernel)
 // =============================================================================
+//
+// Extension based on Nandi & Vitiello 2026 (arXiv:2606.30890):
+// The Bateman dual oscillator generates non-Markovian memory via partial trace.
+// The reduced dynamics contains a history-dependent memory kernel.
+// Extending PID integral to full lattice history eliminates need for external
+// Salto-17 correction (self-correction via intrinsic dynamics).
 
 // #[cfg_attr(feature = "extension-module", pyclass)]
 #[derive(Clone, Serialize, Deserialize)]
@@ -26,11 +33,15 @@ pub struct S60PID {
     pub setpoint: SPA,
     pub integral: SPA,
     pub prev_error: SPA,
+    // Non-Markovian history kernel (Nandi & Vitiello 2026)
+    // Stores full lattice error history for memory-dependent correction
+    history: VecDeque<SPA>,
+    history_capacity: usize,
+    // Kernel weights for history integration (exponential decay default)
+    kernel_alpha: SPA,
 }
 
-// #[cfg_attr(feature = "extension-module", pymethods)]
 impl S60PID {
-    // #[cfg_attr(feature = "extension-module", new)]
     pub fn new(kp_raw: i64, ki_raw: i64, kd_raw: i64, setpoint_raw: i64) -> Self {
         Self {
             kp: kp_raw,
@@ -39,19 +50,31 @@ impl S60PID {
             setpoint: SPA::from_raw(setpoint_raw),
             integral: SPA::zero(),
             prev_error: SPA::zero(),
+            history: VecDeque::with_capacity(68), // 68 ticks = 1 Salto-17 cycle
+            history_capacity: 68,
+            kernel_alpha: SPA::new(0, 50, 0, 0, 0), // 5/6 decay (0.833...)
         }
     }
 
+    /// Standard PID update (backward compatible)
     pub fn update(&mut self, measured_raw: i64, dt_raw: i64) -> i64 {
+        self.update_internal(measured_raw, dt_raw)
+    }
+
+    /// Resets internal PID state (integral, prev_error, history)
+    pub fn reset(&mut self) {
+        self.integral = SPA::zero();
+        self.prev_error = SPA::zero();
+        self.history.clear();
+    }
+
+    /// Standard PID update (internal implementation)
+    pub fn update_internal(&mut self, measured_raw: i64, dt_raw: i64) -> i64 {
+
         let measured = SPA::from_raw(measured_raw);
         let dt = SPA::from_raw(dt_raw);
         let error = self.setpoint - measured;
 
-        // Bug 4.1 fix: kp/ki/kd están guardados como valores *abstractos* ya escalados
-        // (kp_raw = SPA::new(0,30,0,0,0).to_raw() = 180_000 representa 0.5 abstracto).
-        // Al reconvertir con SPA::from_raw recuperamos el valor abstracto original,
-        // y la multiplicación SPA*SPA ya normaliza por SCALE_0. La división por
-        // SPA::one() era un no-op redundante (a/S = a); se elimina.
         let kp_spa = SPA::from_raw(self.kp);
         let ki_spa = SPA::from_raw(self.ki);
         let kd_spa = SPA::from_raw(self.kd);
@@ -68,12 +91,109 @@ impl S60PID {
         };
 
         self.prev_error = error;
+
+        // Store in history for non-Markovian kernel
+        self.history.push_back(error);
+        if self.history.len() > self.history_capacity {
+            self.history.pop_front();
+        }
+
         (p_term + i_term + d_term).to_raw()
     }
 
-    pub fn reset(&mut self) {
+    /// Non-Markovian PID update with full lattice history
+    /// Implements memory kernel from Nandi & Vitiello 2026:
+    /// The correction depends on entire history, not just current error
+    pub fn update_with_history_internal(
+        &mut self,
+        measured_raw: i64,
+        dt_raw: i64,
+        lattice_errors: Vec<i64>
+    ) -> i64 {
+        let measured = SPA::from_raw(measured_raw);
+        let dt = SPA::from_raw(dt_raw);
+        let error = self.setpoint - measured;
+
+        let kp_spa = SPA::from_raw(self.kp);
+        let ki_spa = SPA::from_raw(self.ki);
+        let kd_spa = SPA::from_raw(self.kd);
+
+        let p_term = kp_spa * error;
+
+        // Standard integral (local memory)
+        self.integral = self.integral + (error * dt);
+
+        // Non-Markovian kernel: integrate full lattice history
+        // Kernel: exponential decay with alpha = 5/6 (base-60 harmonic)
+        let mut non_markovian_integral = SPA::zero();
+        let mut weight = SPA::one();
+
+        for &hist_error in self.history.iter().rev() {
+            non_markovian_integral = non_markovian_integral + (hist_error * weight);
+            // Decay weight by alpha (5/6 in base-60)
+            weight = weight * self.kernel_alpha;
+        }
+
+        // Also integrate current lattice errors (global state)
+        for lattice_err_raw in lattice_errors {
+            let lattice_err = SPA::from_raw(lattice_err_raw);
+            non_markovian_integral = non_markovian_integral + (lattice_err * weight);
+            weight = weight * self.kernel_alpha;
+        }
+
+        // Combined integral: local + non-Markovian
+        let combined_integral = self.integral + non_markovian_integral;
+        let i_term = ki_spa * combined_integral;
+
+        let d_term = if dt.to_raw() > 0 {
+            let d_error = error - self.prev_error;
+            kd_spa * d_error / dt
+        } else {
+            SPA::zero()
+        };
+
+        self.prev_error = error;
+
+        // Store in history
+        self.history.push_back(error);
+        if self.history.len() > self.history_capacity {
+            self.history.pop_front();
+        }
+
+        (p_term + i_term + d_term).to_raw()
+    }
+
+    pub fn reset_internal(&mut self) {
         self.integral = SPA::zero();
         self.prev_error = SPA::zero();
+        self.history.clear();
+    }
+
+    /// Get non-Markovian correction for Salto-17 elimination
+    /// Returns correction in nanoseconds based on history kernel
+    pub fn calculate_drift_correction(&self, current_tick: u64) -> u64 {
+        if current_tick == 0 || current_tick % 68 != 0 {
+            return 0;
+        }
+
+        // Instead of fixed 700,000ns, compute from history kernel
+        let mut correction_accum = SPA::zero();
+        let mut weight = SPA::one();
+
+        for hist_error in self.history.iter().rev() {
+            let correction = hist_error.to_raw().abs() as i64 * 1000; // scale to ns
+            if correction > 0 {
+                correction_accum = correction_accum + SPA::from_raw(correction);
+            }
+            weight = weight * self.kernel_alpha;
+        }
+
+        correction_accum.to_raw().abs() as u64
+    }
+
+    pub fn set_history_capacity(&mut self, capacity: usize) {
+        self.history_capacity = capacity;
+        self.history = VecDeque::with_capacity(capacity);
     }
 }
 

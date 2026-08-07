@@ -22,7 +22,7 @@ El proyecto **Sentinel** se fundamenta en la traslación de la matemática sexag
 3. **Arquitectura Fisiológica de 7 Niveles & Dual Guardians**:
    - **Nervio A (Alpha Guardian - LSM)**: Intercepción determinista en el Kernel Ring-0 (`bprm_check_security`, `file_open`).
    - **Nervio B (Cognitive & Neural Guard)**: Evaluación semántica y correlación de patrones a nivel de espacio de usuario.
-   - **Gamma Watchdog**: Daemon de metavigilancia en espacio de usuario que supervisa la integridad de los pins de eBPF e inyecta un latido armónico de 17 segundos en `/sys/fs/bpf/gamma_heartbeat`.
+   - **Gamma Watchdog**: Daemon de metavigilancia en espacio de usuario que supervisa la integridad de los pins de eBPF e inyecta un latido armónico de 17 segundos en `/sys/fs/bpf/sentinel/gamma_heartbeat`.
 
 ---
 
