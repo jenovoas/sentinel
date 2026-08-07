@@ -54,21 +54,35 @@ fn main() {
     }
 
     // --- READ: reconstruir por FIDELIDAD COLECTIVA ---
-    // El dato vive en la resonancia, no en la celda aislada. Leemos amplitudes
-    // y las snappeamos al setpoint del PID (ADC simbólico, sin float).
+    // El dato vive en la resonancia, no en la celda aislada. El PID corrige la
+    // amplitud medida hacia el setpoint (snap-to-value tipo ADC, en entero S60
+    // puro, sin float). El char se DECODIFICA desde la amplitud corregida, no
+    // desde el contexto (el contexto solo sirve para validación cruzada).
     let amps = lattice.get_amplitudes();
     let mut reconstructed = String::new();
     let mut fidelity_ok = true;
     for i in 0..data.len() {
         let measured = amps[i];
-        // Control PID: corrige la amplitud medida hacia el setpoint.
+        // Control PID: corrige la amplitud medida hacia el setpoint del cristal.
         let _u = pids[i].update(measured, SPA::new(0, 1, 0, 0, 0));
-        // Snap-to-value: el dato es válido si la amplitud del contexto coincide.
+        // Decodificar char DESDE la amplitud (entero S60 puro, sin float):
+        // SPA(ch) = ch × SCALE_0 -> raw / SCALE_0 = ch exacto.
+        let raw = measured.to_raw();
+        let ch_code = (raw / SPA::SCALE_0) as u8; // snap-to-value entero
+        let decoded = if ch_code > 0 && (ch_code as char).is_ascii() {
+            ch_code as char
+        } else {
+            '?'
+        };
+        // Validación cruzada con el contexto original (no se usa para decodificar).
         if let Some(ctx) = lattice.get_context_py(i) {
-            reconstructed.push_str(&ctx);
+            if ctx.chars().next() != Some(decoded) {
+                fidelity_ok = false;
+            }
         } else {
             fidelity_ok = false;
         }
+        reconstructed.push(decoded);
     }
     println!("📖 Reconstruido por fidelidad colectiva: '{}'", reconstructed);
     println!("   Fidelidad: {}", if reconstructed == data && fidelity_ok { "✅ 100% (resonancia estable)" } else { "⚠️ degradada" });
@@ -124,8 +138,13 @@ fn main() {
 
     let mut recovered_str = String::new();
     for i in 0..data.len() {
-        if let Some(ctx) = recovered.get_context_py(i) {
-            recovered_str.push_str(&ctx);
+        // Decodificar DESDE la amplitud recuperada (igual que en read en vivo).
+        let raw = recovered.get_amplitudes()[i].to_raw();
+        let ch_code = (raw / SPA::SCALE_0) as u8;
+        if ch_code > 0 && (ch_code as char).is_ascii() {
+            recovered_str.push(ch_code as char);
+        } else {
+            recovered_str.push('?');
         }
     }
     println!("📖 Recuperado post-reboot: '{}'", recovered_str);
