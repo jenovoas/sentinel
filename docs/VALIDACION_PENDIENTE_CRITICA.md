@@ -1,5 +1,11 @@
 # ✅ Validación Pendiente - CRÍTICA
 
+> ⚠️ ADVERTENCIA QA (Hermes, 2026-08-06): Este doc es de Gemini y mezcla
+> validación real con HYPE de patentes ($8-15M, "HOME RUN", "valoración IP").
+> **Las patentes son alucinación de Gemini — confirmado por Jaime, fuera de
+> alcance.** Quedan solo las tareas de validación técnica reales (eBPF LSM,
+> WAL replay, mTLS SSRF). Usar con escepticismo.
+
 **Fecha**: 21 de Diciembre de 2025  
 **Objetivo**: Documentar exactamente qué falta probar antes de filing patent
 
