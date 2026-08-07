@@ -44,3 +44,4 @@ MEMORY.md
 reasonix.toml
 # Added by code-review-graph
 .code-review-graph/
+.aider*

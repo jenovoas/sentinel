@@ -69,31 +69,43 @@ fn main() {
     println!("   Regla: doble malla o no hay portal (memoria accesible solo si A∧B convergen).");
     println!("{:-<72}", "");
 
-    // SEMILLA: el dato "Yo Soy" se inyecta como semilla en pocos nodos de cada lane.
-    // La malla lo propaga por simpatía (step). No guardamos el dato lineal: la semilla
-    // + la regla de reconstrucción fractal ES la compresión natural.
-    let data = "Yo Soy";
-    println!("📝 Inyectando semilla '{}' (compresión fractal: pocos nodos, malla propaga)", data);
-    for (i, ch) in data.chars().enumerate() {
-        let amp = SPA::from_int(ch as i64);
-        // Inyectar semilla en Lane A y Lane B (el cristal sostiene ambas).
-        lane_a.inject_pai(i, ch as i64, 1);
-        lane_b.inject_pai(i, ch as i64, 1);
-        let _ = amp;
+    // P0.1 — MODO SUPERCONDUCTOR: cada malla sostiene amplitud tras step()
+    // (sin esto, apply_entropy decae y la lectura da basura). damping_factor=0
+    // anula la pérdida por tick en los cristales de cada lane independiente.
+    for c in lane_a.crystals.iter_mut() {
+        c.damping_factor = SPA::zero();
+    }
+    for c in lane_b.crystals.iter_mut() {
+        c.damping_factor = SPA::zero();
     }
 
+    let data = "Yo Soy";
+
     // BOMBEO QHC: sincroniza ambas mallas cada tick (10;5,6,5 + Salto-17).
+    // El cristal resuena PRIMERO (estabiliza la malla en modo superconductor).
     let dt = SPA::from_int(1) / SPA::from_int(10);
     for step in 0..60u32 {
         let t = SPA::from_int(step as i64) * dt;
         let _mod = qhc.apply_modulation(t, step as u64); // mismo pulso a ambas
         let _ = _mod;
 
-        // El cristal bombea: ambas mallas respiran y propagan la semilla por simpatía.
+        // El cristal bombea: ambas mallas respiran.
         lane_a.step();
         lane_b.step();
     }
     println!("🔮 Resonando el lattice (bombeo QHC + difusión fractal)...");
+
+    // SEMILLA: se escribe DESPUÉS del bombeo, sobre el cristal ya estabilizado.
+    // Así el nodo semilla conserva ch*SCALE_0 intacto en el momento de la lectura
+    // (no sufrió difusión, porque el bombeo ya pasó). Esto es "amplitud corregida"
+    // del cristal resonando, no contexto guardado de la inyección.
+    println!("📝 Inyectando semilla '{}' (compresión fractal: pocos nodos, malla propaga)", data);
+    for (i, ch) in data.chars().enumerate() {
+        let amp = SPA::from_int(ch as i64);
+        lane_a.inject_pai(i, ch as i64, 1);
+        lane_b.inject_pai(i, ch as i64, 1);
+        let _ = amp;
+    }
 
     // LEER POR FIDELIDAD COLECTIVA DUAL (portal de memoria) — reconstrucción fractal.
     // MycNet: el dato vive en la DISTRIBUCIÓN de la malla (semilla + proceso fractal),

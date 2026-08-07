@@ -81,3 +81,13 @@ Fall back to Grep/Glob/Read **only** when the graph doesn't cover what you need.
 2. Use `detect_changes_tool` for code review.
 3. Use `get_affected_flows_tool` to understand impact.
 4. Use `query_graph_tool` pattern="tests_for" to check coverage.
+
+---
+
+## REGLAS OPERATIVAS DE JAIME (memoria viva del agente)
+
+> **El agente debe leer esto al iniciar:** [`~/.hermes/MEMORY.md`](file:///home/jnovoas/.hermes/MEMORY.md)
+> Contiene las reglas duras (NO quemar cuota de omniroute sin pedido explícito, NO editar
+> trabajo ajeno sin autorización, estilo directo-ejecutar-no-narrar), los factos de
+> omniroute (gateway laptop :20128, bridge MCP en el fan, túnel LAPTON, aider→free-stack),
+> y el método QA de Sentinel. Válido también para otros modelos/agentes que operen este repo.
