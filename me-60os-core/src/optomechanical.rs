@@ -52,14 +52,12 @@ impl OptomechanicalCooler {
 impl OptomechanicalCooler {
     pub fn new_internal() -> Self {
         Self {
-            omega_m: SPA::new(1, 0, 0, 0, 0),        // 1 Natural unit
+            omega_m: SPA::new(1, 0, 0, 0, 0),        // 1 Natural unit (10 MHz físicos)
             gamma_m: SPA::new(0, 0, 0, 13, 0),       // ~ 1e-4
-            kappa: SPA::new(0, 3, 0, 0, 0),          // 0.05
-            // Bug 1.2: el comentario decía "300K Context" pero el valor 600_000 no
-            // corresponde a 300K en ninguna unidad obvia (T=300K, n_th=kT/ℏω, etc).
-            // Se preserva el valor numérico (600_000 phonones) y se deja el comentario
-            // neutral: si la intención era "300K", reemplazar por el n_th verdadero.
-            n_th_env: SPA::new(600_000, 0, 0, 0, 0), // 600K phonons (constante de calibración)
+            kappa: SPA::new(0, 3, 0, 0, 0),          // 0.05 (kappa/omega_m = 0.05, sideband-resolved)
+            // n_th = k_B * T / (hbar * omega_m) para T=300K, omega_m=10MHz
+            // = 3,927,610 fonones (calibrado contra paper Filho 2026: 5.5e6 a ~7 MHz)
+            n_th_env: SPA::new(3_927_610, 0, 0, 0, 0), // n_th físico real a 300K
         }
     }
 

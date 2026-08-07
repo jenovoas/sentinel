@@ -35,6 +35,11 @@ const EVENT_EXEC_ALLOWED: u32 = 4;
 const EVENT_NETWORK_BURST: u32 = 5;
 #[allow(dead_code)]
 const EVENT_NETWORK_NORMAL: u32 = 6;
+#[allow(dead_code)]
+const EVENT_FLOAT_CONTAMINATION: u32 = 10;
+#[allow(dead_code)]
+const EVENT_MATH_DIVERSION: u32 = 19;
+
 
 // Severity levels
 #[allow(dead_code)]

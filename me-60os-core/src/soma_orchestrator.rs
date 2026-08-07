@@ -94,7 +94,9 @@ impl Orchestrator {
         // 1. Obtener reglas (RAG First / Redis)
         let mut context = String::new();
 
-        // 1.1 Leer memoria viva (Redis)
+        // 1.1 Leer memoria viva (Redis) con Sanitización Semántica (TruthSync / ScvEngine)
+        let scv = me60os_core::scv::ScvEngine::new();
+
         let handoff: std::collections::HashMap<String, String> = conn
             .hgetall("swarm:session:handoff")
             .await
@@ -102,7 +104,12 @@ impl Orchestrator {
         if !handoff.is_empty() {
             context.push_str("=== SWARM HANDOFF ===\n");
             for (k, v) in handoff {
-                context.push_str(&format!("{}: {}\n", k, v));
+                let (is_valid, _score, _entropy, _kw) = scv.analyze(&v);
+                if is_valid {
+                    context.push_str(&format!("{}: {}\n", k, v));
+                } else {
+                    warn!("🛡️ SOMA [TELEMETRY SANITIZER]: Descartada telemetría maliciosa en handoff (clave: {})", k);
+                }
             }
         }
 
@@ -113,9 +120,15 @@ impl Orchestrator {
         if !sys_status.is_empty() {
             context.push_str("\n=== SYSTEM STATUS ===\n");
             for (k, v) in sys_status {
-                context.push_str(&format!("{}: {}\n", k, v));
+                let (is_valid, _score, _entropy, _kw) = scv.analyze(&v);
+                if is_valid {
+                    context.push_str(&format!("{}: {}\n", k, v));
+                } else {
+                    warn!("🛡️ SOMA [TELEMETRY SANITIZER]: Descartada telemetría sospechosa en status (clave: {})", k);
+                }
             }
         }
+
 
         // 1.2 Leer respaldo RAG (Archivos)
         let memory_rules = fs::read_to_string(&self.memory_path)

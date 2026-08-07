@@ -57,13 +57,34 @@ impl GuardianLsm {
         true
     }
 
-    /// Interface with eBPF Ring Buffer
+    /// Interface with eBPF Ring Buffer & Active Isolation
     pub fn process_cortex_event(&self, event_type: u32, pid: u32) {
-        // Here we would push feedback to eBPF maps if needed.
-        // For now, it logs Ring 0 violations.
         match event_type {
-            1 | 2 => warn!("🛡️ GUARDIAN: Bloqueo en Ring 0 detectado (PID: {}, Tipo: {})", pid, event_type),
+            1 | 2 | 10 => {
+                warn!("🛡️ GUARDIAN: Bloqueo/Disonancia en Ring 0 detectado (PID: {}, Tipo: {})", pid, event_type);
+            }
             _ => (),
         }
     }
+
+    /// Activamente aísla un PID atacante en Ring 0 (eBPF float_block_map) y colapsa coherencia
+    pub async fn isolate_pid(&self, pid: u32, filename: &str) {
+        error!("🛡️ GUARDIAN [AISLAMIENTO AUTÓNOMO]: Bloqueando PID {} ({}) en Ring 0 eBPF", pid, filename);
+
+        // 1. Actualizar mapa eBPF en kernel mediante bpftool (si existe el pin)
+        let _ = tokio::process::Command::new("bpftool")
+            .args(&[
+                "map", "update", "pinned", "/sys/fs/bpf/sentinel/float_block_map",
+                "key", "hex", &format!("{:02x} {:02x} {:02x} {:02x}",
+                    pid & 0xff, (pid >> 8) & 0xff, (pid >> 16) & 0xff, (pid >> 24) & 0xff),
+                "value", "hex", "01"
+            ])
+            .output()
+            .await;
+
+        // 2. Colapsar la coherencia de la mallas para prevenir propagación
+        let mut lattice = self.lattice.lock().await;
+        lattice.buffer.coherence = 0;
+    }
 }
+
