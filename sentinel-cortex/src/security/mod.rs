@@ -15,7 +15,11 @@ pub mod soul_verifier_s60_production;
 // BIO-RESONANCE: The Human Anchor (Phase 6)
 pub mod bio_resonance;
 
+// TELEMETRY SANITIZER: Pure Rust Defense Against Telemetry Poisoning & Prompt Injection
+pub mod telemetry_sanitizer;
+
 // Re-export production version as default
+
 #[allow(unused_imports)]
 pub use soul_verifier_s60_production::{
     BiometricError, BiometricProof, BiometricVerifier, LivenessChallenge,
