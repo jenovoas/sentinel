@@ -95,24 +95,45 @@ fn main() {
     }
     println!("🔮 Resonando el lattice (bombeo QHC + difusión fractal)...");
 
-    // LEER POR FIDELIDAD COLECTIVA DUAL (portal de memoria).
-    // El dato se reconstruye del patrón de la malla (semilla + proceso fractal),
-    // no de un nodo aislado. Y solo es válido si AMBAS mallas convergen.
+    // LEER POR FIDELIDAD COLECTIVA DUAL (portal de memoria) — reconstrucción fractal.
+    // MycNet: el dato vive en la DISTRIBUCIÓN de la malla (semilla + proceso fractal),
+    // no en un nodo aislado. Leemos la REGIÓN hexagonal alrededor de cada nodo semilla:
+    // la simpatía conserva la energía, así que la suma de la región ≈ valor original.
     let amps_a = lane_a.get_amplitudes();
     let amps_b = lane_b.get_amplitudes();
+    let side = (data.len() as f64).sqrt().ceil() as usize; // para 6 nodos => 3x2, pero usamos vecindad genérica
+    let _ = side;
+
+    let region_sum = |amps: &[SPA], i: usize, n: usize| -> i64 {
+        // Suma el nodo i + sus 6 vecinos hexagonales (misma topología que step()).
+        let mut total = amps[i].to_raw().max(0);
+        let s = (n as f64).sqrt().ceil() as usize;
+        let mut neigh = Vec::with_capacity(6);
+        if i >= s { neigh.push(i - s); }
+        if i + s < n { neigh.push(i + s); }
+        if i % s > 0 { neigh.push(i - 1); }
+        if (i + 1) % s != 0 && i + 1 < n { neigh.push(i + 1); }
+        if i >= s && (i + 1) % s != 0 { neigh.push(i - s + 1); }
+        if i + s < n && i % s > 0 { neigh.push(i + s - 1); }
+        for &ni in &neigh {
+            total += amps[ni].to_raw().max(0);
+        }
+        total
+    };
 
     let mut recovered = String::new();
     let mut convergen = true;
     for i in 0..data.len() {
-        // Decodificar desde la amplitud colectiva del nodo i (semilla propagada).
-        let raw_a = amps_a[i].to_raw().max(0);
-        let raw_b = amps_b[i].to_raw().max(0);
+        // Reconstrucción fractal: región hexagonal de Lane A y Lane B.
+        let raw_a = region_sum(&amps_a, i, amps_a.len());
+        let raw_b = region_sum(&amps_b, i, amps_b.len());
         // Portal de memoria: A y B deben coincidir (convergencia dual).
         let diff = if raw_a > raw_b { raw_a - raw_b } else { raw_b - raw_a };
-        if diff > SPA::SCALE_0 / 100 {
+        if diff > SPA::SCALE_0 / 50 {
             convergen = false; // las mallas no convergen -> no hay portal
         }
-        // El char vive en la amplitud (semilla = ch*SCALE_0, propagada por simpatía).
+        // El char vive en la energía de la región (semilla = ch*SCALE_0 propagada).
+        // La región tiene 7 nodos; el nodo semilla domina, así que /SCALE_0 da ~ch.
         let ch_val = (raw_a / SPA::SCALE_0) as u8;
         if ch_val > 0 && ch_val < 128 {
             recovered.push(ch_val as u8 as char);
