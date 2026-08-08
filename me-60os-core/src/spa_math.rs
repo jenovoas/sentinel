@@ -234,6 +234,17 @@ impl SPAMath {
         SPA::from_raw(res as i64)
     }
 
+    /// log2(x) = ln(x) / ln(2). Base para distancia en octavas
+    /// (Ley de la Octava: f_lower * 2^n = f_higher).
+    pub fn log2(x: SPA) -> SPA {
+        Self::ln(x) / SPA::from_raw(Self::LN_2)
+    }
+
+    /// log_base(x) = ln(x) / ln(base). Base 60 = potencia sumeria.
+    pub fn log_base(x: SPA, base: SPA) -> SPA {
+        Self::ln(x) / Self::ln(base)
+    }
+
     pub fn from_radians(rad_raw: i64) -> SPA {
         // rad_raw is scaled by SCALE_0. Convert to Degrees: (rad * 180 / PI)
         let deg_raw = (rad_raw as i128 * 180) / Self::PI.to_raw() as i128;
