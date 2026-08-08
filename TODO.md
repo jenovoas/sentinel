@@ -8,13 +8,13 @@
 ---
 
 ## A) RUNTIME `me-60os-core` (código Rust)
-- [ ] **Decoder `resonant_lattice_memory.rs`**: integrar cambio minimax — capturar `amplitud_base` tras bombeo QHC, decodificar `amplitud_actual - amplitud_base`, eliminar `f64` del decoder. *Verificado:* `f64` sigue en L116/122, sin `amplitud_base`. (Ref: paste_3_192504.txt)
+- [x] **Decoder `resonant_lattice_memory.rs`**: CERRADO 2026-08-07 — `base_amps_a/b` tras bombeo QHC, decoder resta base, `f64`/`region_sum`/`pai60_divide` eliminados. Verificado: 'Yo Soy' fidelidad 100%.
 - [ ] **Migración Py→Rust N1**: `field_stabilization_sim.py` → `FluxStabilizer` (destino `hexagonal_control.rs`, ya tiene `control_rift_propagation`).
 - [ ] **Migración Py→Rust N1**: `coherence_mapping_calibration.py` → `CoherenceMapper` (destino `sentinel-cortex/src/quantum/bio_resonator.rs`).
-- [ ] **Migración Py→Rust N2**: `quantum_lattice.py` (VimanaLattice) vs `ResonantMatrix` — LEER antes de migrar (posible duplicado).
-- [ ] **Migración Py→Rust N2**: `liquid_lattice_storage.py` vs `LiquidLattice` (3×3) — unificar o documentar diferencia.
-- [ ] **Migración Py→Rust N2**: `crystal_memory.py` (CrystalMemoryCore) vs `ResonantMatrix` + snapshot gzip.
-- [ ] **Migración Py→Rust N2**: `liquid_memory_adapter.py` (LiquidMemory) capa de servicio.
+- [x] **Migración Py→Rust N2**: `quantum_lattice.py` (VimanaLattice) vs `ResonantMatrix` — CERRADO 2026-08-08: duplicado degradado confirmado (`_build_grid` con `pass`, PLAN B hardcodeado). Topología real ya en `hexagonal_control.rs` + `resonant_matrix.rs`. No se migra.
+- [x] **Migración Py→Rust N2**: `liquid_lattice_storage.py` vs `LiquidLattice` (3×3) — CERRADO 2026-08-08: legacy bridge que ya delega a Rust; su encoding vive en `quantum_core::LiquidLattice::inject_dual_channel`. Nada que rescatar.
+- [x] **Migración Py→Rust N2**: `crystal_memory.py` (CrystalMemoryCore) — CERRADO 2026-08-08: wrapper fino (inject/step/stabilize) sobre `ResonantMatrix` + snapshot gzip ya en Rust.
+- [x] **Migración Py→Rust N2**: `liquid_memory_adapter.py` (LiquidMemory) — CERRADO 2026-08-08: PORTADO el único aporte real (tabla clave→len/hash/shm_name + retrieve verificado) a `me-60os-core/src/liquid_memory.rs` (nativo, blake3, SHM POSIX vía libc, 4/4 tests).
 - [ ] **Migración Py→Rust N3**: `data_lanes.py` (DualLaneRouter) — BORRADO en purge `aed3b377`; recuperar `git show aed3b377^:backend/app/core/data_lanes.py` y migrar a Rust (WAL, security/observability lanes).
 - [ ] **Migración Py→Rust N4**: portar/correr `EXP_012_PHASE_COMPRESSION.py`, `EXP_021_S60_DUAL_PATH_TEST.py`, `verify_plimpton.py`, `verify_meijer_scale.py` (benchmarks de exactitud S60).
 - [ ] **BufferCascade**: acoplar `BufferCascade` (`me-60os-core/src/buffer.rs`) a `truthsync-core` como buffer en línea/cascada **por nodo** (hoy solo struct + tests).

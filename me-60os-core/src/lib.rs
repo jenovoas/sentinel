@@ -24,6 +24,7 @@ pub mod hexagonal_control;
 pub mod atlantean;
 pub mod ram_meter; // RAM meter + dimensionado de lattice (sysinfo, S60 puro)
 pub mod buffer;   // Predictor de ráfagas: memoria no-Markoviana (kernel OU, S60 puro)
+pub mod liquid_memory; // KV-store cognitivo: SHM POSIX nativo + inyección dual a LiquidLattice
 
 // SOMA Backend Modules
 #[cfg(feature = "extension-module")]
