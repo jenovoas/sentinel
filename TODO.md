@@ -9,8 +9,8 @@
 
 ## A) RUNTIME `me-60os-core` (código Rust)
 - [x] **Decoder `resonant_lattice_memory.rs`**: CERRADO 2026-08-07 — `base_amps_a/b` tras bombeo QHC, decoder resta base, `f64`/`region_sum`/`pai60_divide` eliminados. Verificado: 'Yo Soy' fidelidad 100%.
-- [ ] **Migración Py→Rust N1**: `field_stabilization_sim.py` → `FluxStabilizer` (destino `hexagonal_control.rs`, ya tiene `control_rift_propagation`).
-- [ ] **Migración Py→Rust N1**: `coherence_mapping_calibration.py` → `CoherenceMapper` (destino `sentinel-cortex/src/quantum/bio_resonator.rs`).
+- [x] **Migración Py→Rust N1**: `field_stabilization_sim.py` → `FluxStabilizer` — CERRADO 2026-08-08: YA estaba migrado como `me-60os-core/src/flux_stabilizer.rs` (LCG base-60 verbatim, ecuación estabilización idéntica, guardrails, 6 tests OK).
+- [x] **Migración Py→Rust N1**: `coherence_mapping_calibration.py` → `CoherenceMapper` — CERRADO 2026-08-08: NO MIGRAR. Header del propio archivo: "ALUCINADO POR IA — NO MEDIBLE" (coherencia siempre ~1.0 por construcción, PSD arbitraria /500, import FIELD_NEUTRALITY_DIRECTIVE inexistente — no corre ni en Py). Bio-coherencia real = `BioResonator`.
 - [x] **Migración Py→Rust N2**: `quantum_lattice.py` (VimanaLattice) vs `ResonantMatrix` — CERRADO 2026-08-08: duplicado degradado confirmado (`_build_grid` con `pass`, PLAN B hardcodeado). Topología real ya en `hexagonal_control.rs` + `resonant_matrix.rs`. No se migra.
 - [x] **Migración Py→Rust N2**: `liquid_lattice_storage.py` vs `LiquidLattice` (3×3) — CERRADO 2026-08-08: legacy bridge que ya delega a Rust; su encoding vive en `quantum_core::LiquidLattice::inject_dual_channel`. Nada que rescatar.
 - [x] **Migración Py→Rust N2**: `crystal_memory.py` (CrystalMemoryCore) — CERRADO 2026-08-08: wrapper fino (inject/step/stabilize) sobre `ResonantMatrix` + snapshot gzip ya en Rust.
