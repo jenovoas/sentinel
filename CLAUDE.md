@@ -88,7 +88,7 @@ en sentinel‑cortex/src/math/. Si aún no existe la que necesitas, abre un issu
 - constraints/YATRA_SPEC.md: el contrato aritmético que gobierna todas las decisiones
 - sentinel-cortex/src/math/: la implementación base del tipo S60
 - quantum/experiments/EXP_015_MEMORY_THROUGHPUT.py: benchmark (reducción de memoria 23.6×)
-- docs/RESEARCH_es.md: narrativa científica del programa experimental
+- docs/02_ciencia_y_quantum/RESEARCH_es.md: narrativa científica del programa experimental
 
 ## Gobernanza (ITIL 4 / ISO 20000‑1 / ISO 27001)
 
