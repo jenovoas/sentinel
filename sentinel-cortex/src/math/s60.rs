@@ -10,6 +10,13 @@
 //! Internal Representation: i64 representing "Quarta" (1/12,960,000 of a Unit)
 //! Scale matches SPA (me-60os-core/src/spa.rs). Exact precision for 10;5,6,5 patterns,
 //! harmonic ratios, and full 60⁴ sexagesimal arithmetic.
+//!
+//! ## References
+//! - [P-RES] Novoa, J. (2026). *Investigación: Aritmética Sexagesimal como Base de Sistemas.*
+//!   `docs/02_ciencia_y_quantum/RESEARCH_es.md` — tipo S60 base, escala 60⁴ = 12,960,000 quartas.
+//! - [EXT-MAN] Mansfield, D. F. & Wildberger, N. J. (2017).
+//!   *Plimpton 322 is Babylonian exact sexagesimal trigonometry.* Historia Mathematica.
+//!   https://doi.org/10.1016/j.hm.2017.08.001 — fundamento histórico de la aritmética exacta base-60.
 
 #![allow(dead_code)]
 

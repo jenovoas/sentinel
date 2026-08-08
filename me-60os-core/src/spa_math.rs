@@ -8,6 +8,14 @@
 //!
 //! REVIEW: TWO_PI ahora referencia SPA::TWO_PI (single source of truth).
 //!         DEG_TO_RAD_FACTOR corregido (226,152 → 226,195).
+//!
+//! ## References
+//! - [P-RES] Novoa, J. (2026). *Investigación: Aritmética Sexagesimal como Base de Sistemas.*
+//!   `docs/02_ciencia_y_quantum/RESEARCH_es.md` — Series de Taylor en base-60, memoización.
+//! - [EXT-MAN] Mansfield, D. F. & Wildberger, N. J. (2017).
+//!   *Plimpton 322 is Babylonian exact sexagesimal trigonometry.* Historia Mathematica.
+//!   https://doi.org/10.1016/j.hm.2017.08.001 — `RESONANCE_RATIO = SPA::new(1, 32, 2, 24, 0)`
+//!   codifica Plimpton 322 Fila 12 (1;32,2,24). Índice: `PAPERS_INDEX.md`.
 
 use crate::spa::SPA;
 

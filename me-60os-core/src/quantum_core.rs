@@ -18,11 +18,18 @@ use pyo3::prelude::*;
 // S60 PID CONTROLLER (Extended with Non-Markovian History Kernel)
 // =============================================================================
 //
-// Extension based on Nandi & Vitiello 2026 (arXiv:2606.30890):
+// Extension based on Nandi & Vitiello 2026 (arXiv:2606.30890) — [EXT-NV]:
 // The Bateman dual oscillator generates non-Markovian memory via partial trace.
 // The reduced dynamics contains a history-dependent memory kernel.
 // Extending PID integral to full lattice history eliminates need for external
 // Salto-17 correction (self-correction via intrinsic dynamics).
+//
+// ## References (S60PID Non-Markovian kernel)
+// - [EXT-NV] / [NV-050] Nandi & Vitiello (2026). arXiv:2606.30890 — Bateman dual oscillator / Non-Markovian memory.
+//   PDF local: `papers/referencias_locales/Papers/nandi_vitiello/Nandi_2606.30890.pdf`.
+// - [NV-049] Nandi (2026). arXiv:2606.08595 — *Is Exact Markovianity Fundamental Once Time Is Relational?*
+// - [NV-040] Nandi (2025). arXiv:2503.19688 — *Gravitationally induced entanglement: a memory-driven time-crystalline phase?*
+// - [P-RES] Novoa, J. (2026). *Aritmética Sexagesimal como Base de Sistemas.* `RESEARCH_es.md`.
 
 // #[cfg_attr(feature = "extension-module", pyclass)]
 #[derive(Clone, Serialize, Deserialize)]

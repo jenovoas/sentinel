@@ -15,6 +15,11 @@
 //! - Zero-copy from kernel to userspace
 //! - Lock-free ring buffer
 //! - Sub-millisecond latency
+//!
+//! ## References (eBPF → userspace / verificación formal)
+//! - [EXT-003] A flow-based IDS using Machine Learning in eBPF. arXiv:2102.09980.
+//! - [EXT-014] Heimdall: Formally Verified Automated Migration of Legacy eBPF Programs to Rust. arXiv:2605.25411.
+//! - [P-S20] Novoa, J. (2026). *Sentinel 2.0 Paper.* `docs/02_ciencia_y_quantum/quantum/SENTINEL_2.0_PAPER.md`.
 
 use crate::buffer_system::ResonantBuffer;
 use crate::spa::SPA;

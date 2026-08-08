@@ -11,6 +11,13 @@
 //! - ResonantPhysics: Merkabah effective load reduction
 //!
 //! Los portales EMERGEN del sistema, no se hardcodean.
+//!
+//! ## References
+//! - [P-RRS] Novoa, J. (2026). *Reporte Final Resonance Architecture.*
+//!   `docs/02_ciencia_y_quantum/FINAL_REPORT_RESONANCE_ARCHITECTURE.md` — penta-resonancia convergente.
+//! - [P-TES] Novoa, J. (2026). *Tesis de Resonancia.* `docs/02_ciencia_y_quantum/research/TesiResonancia.md`.
+//! - [EXT-NV] / [NV-050] Nandi & Vitiello (2026). arXiv:2606.30890 — dinámica de cristal de tiempo.
+//! - [NV-040] Nandi (2025). arXiv:2503.19688 — memory-driven time-crystalline phase (análogo al portal).
 
 use me60os_core::hexagonal_control::HexagonalController;
 use me60os_core::physics::ResonantPhysics;

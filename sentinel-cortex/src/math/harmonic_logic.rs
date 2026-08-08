@@ -13,6 +13,14 @@
 //! - REF   = 10;5,6,5 (Divine Order / Reference) => Absolute Override
 //!
 //! Reference: `implementation_plan.md` (Sentinel v8.0)
+//!
+//! ## References (ratios armónicos exactos en base-60)
+//! - [P-RES] Novoa, J. (2026). *Aritmética Sexagesimal como Base de Sistemas.* `RESEARCH_es.md`
+//!   — 3:2 = 1;30 (quinta justa), 4:3 = 1;20 (cuarta), 45:32 (tritono) son exactos en base-60.
+//! - [EXT-MAN] Mansfield & Wildberger (2017). Historia Mathematica. DOI:10.1016/j.hm.2017.08.001
+//!   — ratios pitagóricos exactos en base sexagesimal.
+//! - Lógica armónica (consonancia/disonancia como estados lógicos) es diseño original de Sentinel
+//!   (Novoa 2026, nota técnica no publicada).
 
 // Harmonic logic primitives: part of the 未来-ready S60 math library.
 // Silenced at module level; items are used indirectly via the processor.

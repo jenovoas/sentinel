@@ -5,6 +5,11 @@
 //!
 //! Control Adaptativo Discreto para Sistemas Floquet en Base-60.
 //! Estabilización de cristales de tiempo usando aritmética sin floats.
+//!
+//! ## References
+//! - [P-RES] Novoa, J. (2026). *Aritmética Sexagesimal como Base de Sistemas.* `RESEARCH_es.md`.
+//! - [EXT-NV] / [NV-050] Nandi & Vitiello (2026). arXiv:2606.30890 — non-Markovian kernel del PID extendido.
+//! - Ver `research/CONTROL_SYSTEMS_THEORY.md` (si existe) para teoría de control discreto base-60.
 
 use crate::spa::SPA;
 use pyo3::prelude::*;

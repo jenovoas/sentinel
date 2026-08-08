@@ -13,6 +13,14 @@
 //!
 //! NOTA: esto es routing/forense, NO aritmética de cristal. Por eso el
 //! timestamp vive en i64 micros y las latencias en u64 ms — SIN float en
+//! la lógica de medición (el YATRA aplica solo a aritmética S60, no a
+//! timestamps POSIX).
+//!
+//! ## References (arquitectura original de Sentinel)
+//! - [P-S20] Novoa, J. (2026). *Sentinel 2.0 Paper.* `docs/02_ciencia_y_quantum/quantum/SENTINEL_2.0_PAPER.md`.
+//! - [P-RRS] Novoa, J. (2026). *Reporte Final Resonance Architecture.* — diseño dual-lane.
+//! - [EXT-014] Heimdall: Formally Verified Automated Migration of Legacy eBPF Programs to Rust. arXiv:2605.25411.
+//!   (El flujo Security/Audit Lane usa verificación formal análoga a Heimdall para eBPF→Rust.)
 //! el core (cumple YATRA: el float solo aparece en I/O de borde si acaso).
 //! Los TODOs del .py (dual_guardian, forensic_storage, loki_client) NO se
 //! inventan: el Security WAL escribe al mismo archivo que sentinel-cortex

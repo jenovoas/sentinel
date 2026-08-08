@@ -10,6 +10,24 @@ Academic research, theoretical foundations, and scientific validation for Sentin
 
 ---
 
+## 📑 Índice Formal de Papers Externos
+
+> **[`../PAPERS_INDEX.md`](../PAPERS_INDEX.md)** — 78 papers externos con arXiv ID verificado
+> vía API oficial de arXiv, organizados en 4 grupos temáticos (Nandi & Vitiello, Muir &
+> Nikiforakis, Zhang & Wang, y papers raíz de optomecánica/eBPF/cristales de tiempo).
+> Mapeo bidireccional paper → módulo Rust, con constantes verificables contra el código.
+
+### Fuentes externas fundacionales
+- **EXT-MAN** — Mansfield & Wildberger (2017), *Historia Mathematica*. DOI: 10.1016/j.hm.2017.08.001 → Plimpton 322
+- **EXT-NV** — Nandi & Vitiello (2026), arXiv:2606.30890 → Bateman dual oscillator / memoria no-Markoviana
+
+### Bibliografía compilada (con advertencias de verificación)
+- **[BIBLIOGRAPHY.md](BIBLIOGRAPHY.md)** — 20 entradas (1 con DOI verificado, 19 marcadas
+  `[Unverified]`). Originalmente compilada por scraper; las atribuciones no son rastreables.
+  Preferir `PAPERS_INDEX.md` para fuentes verificables.
+
+---
+
 ## 📑 Research Papers
 
 ### Featured Research

@@ -14,6 +14,23 @@ Sentinel Cortex is not just another security tool; it is a **research ** in cybe
 
 ---
 
+## 📑 Scientific Foundation & References
+
+La base teórica de Sentinel está formalmente indexada en dos documentos:
+
+- **[`PAPERS_INDEX.md`](../02_ciencia_y_quantum/PAPERS_INDEX.md)** — Índice de **78 papers externos** (arXiv IDs verificados vía API oficial de arXiv) que fundamentan los módulos Rust. Mapeo bidireccional paper → módulo.
+- **[`RESEARCH_es.md`](../02_ciencia_y_quantum/RESEARCH_es.md)** — Tesis principal: *Aritmética Sexagesimal como Base de Sistemas*. Cita Mansfield & Wildberger (2017), *Historia Mathematica*.
+
+### Fuentes externas fundacionales (DOI/arXiv verificado)
+| ID | Cita | Módulos Rust |
+|----|------|-------------|
+| **EXT-MAN** | Mansfield, D. F. & Wildberger, N. J. (2017). *Plimpton 322 is Babylonian exact sexagesimal trigonometry.* Historia Mathematica. DOI: [10.1016/j.hm.2017.08.001](https://doi.org/10.1016/j.hm.2017.08.001) | `pai60_lib.rs`, `spa_math.rs`, `isochronous_oscillator.rs`, `verify_plimpton.rs`, `s60.rs`, `s60_math.rs`, `harmonic_logic.rs` |
+| **EXT-NV** | Nandi & Vitiello (2026). arXiv:[2606.30890](https://arxiv.org/abs/2606.30890) — *Spin-Induced Fractal Time-Crystal-Like Dynamics and Non-Markovian Memory in the Bateman Dual Oscillator.* | `quantum_core.rs`, `time_crystal.rs`, `isochronous_oscillator.rs` |
+
+Los algoritmos **originales de Sentinel** (LCG damping, dual-lane router, harmonic logic, S60PID non-Markovian kernel, SPA Taylor series) se citan como *Novoa, J. (2026), nota técnica no publicada de Sentinel*.
+
+---
+
 ##  Research : Sub-Microsecond Threat Detection
 
 We have solved a fundamental problem in cybersecurity: **how to make security decisions faster than attacks can execute**.

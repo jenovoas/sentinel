@@ -17,6 +17,12 @@
 //!    irreproducible; misma estadística, resultado repetible)
 //! 2. Lyapunov + Entropía Shannon en ambos caminos (float vs S60 puro)
 //! 3. Divergencia Δ < 0.1 y rangos físicos (Lyap [0.1, 2.5], Entropía [0.5, 3.5])
+//!
+//! ## References
+//! - [P-RES] Novoa, J. (2026). *Aritmética Sexagesimal como Base de Sistemas.* `RESEARCH_es.md`
+//!   — sección EXP-021 (dual-path Soul Verifier). `SPAMath::ln` por serie de Taylor = algoritmo Sentinel.
+//! - [EXT-MAN] Mansfield & Wildberger (2017). Historia Mathematica. DOI:10.1016/j.hm.2017.08.001
+//!   — fundamento de la exactitud base-60 vs float que VALIDA este experimento.
 
 use me60os_core::spa::SPA;
 use me60os_core::spa_math::SPAMath;

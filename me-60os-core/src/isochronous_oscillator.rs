@@ -7,6 +7,13 @@
 //! Migrated from quantum/isochronous_oscillator.py with zero functionality loss.
 //!
 //! Uses existing SPAMath functions (sin, cos, exp) for oscillation and damping.
+//!
+//! ## References
+//! - [P-TES] Novoa, J. (2026). *Tesis de Resonancia.* `docs/02_ciencia_y_quantum/research/TesiResonancia.md`.
+//! - [EXT-MAN] Mansfield & Wildberger (2017). Historia Mathematica. DOI:10.1016/j.hm.2017.08.001 —
+//!   `natural_frequency` por defecto = Plimpton 322 Fila 12 (1;32,2,24) = `SPAMath::RESONANCE_RATIO`.
+//! - [EXT-NV] / [NV-050] Nandi & Vitiello (2026). arXiv:2606.30890 — Bateman dual oscillator / non-Markovian memory.
+//! - [NV-028] Nandi (2022). arXiv:2207.08687 — *Low frequency gravitational waves emerge [as] Berry phase.*
 
 use crate::spa::SPA;
 use crate::spa_math::SPAMath;

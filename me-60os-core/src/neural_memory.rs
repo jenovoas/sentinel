@@ -4,6 +4,12 @@
 // src/neural_memory.rs
 //! Real Leaky Integrate-and-Fire (LIF) Spiking Neural Network (SNN) implementation for PAI-60.
 //! Integrates eBPF ringbuffer events as dynamic amplitude spikes over 64 neural channels.
+//!
+//! ## References (memoria fonónica / inteligencia mecánica cognitiva)
+//! - [ZW-005] In-memory phononic learning toward cognitive mechanical intelligence. arXiv:2511.13543.
+//! - [ZW-004] Uncovering multifunctional mechano-intelligence. arXiv:2305.19354.
+//! - [P-TES] Novoa, J. (2026). *Tesis de Resonancia.* `docs/02_ciencia_y_quantum/research/TesiResonancia.md`.
+//! - [P-RES] Novoa, J. (2026). *Aritmética Sexagesimal como Base de Sistemas.* `RESEARCH_es.md` — LIF SNN en base-60.
 
 use crate::ebpf_cortex_bridge::CortexEvent;
 use crate::spa::SPA;

@@ -12,6 +12,13 @@
 // are kept here as ready-to-use infrastructure so future modules can
 // call them without reintroducing floats (YATRA). Silence dead_code
 // at the module level rather than cloning implementations later.
+//
+// ## References
+// - [P-RES] Novoa, J. (2026). *Aritmética Sexagesimal como Base de Sistemas.* `RESEARCH_es.md`.
+//   Funciones trascendentales (ln, sin, cos, exp, sqrt, fft, entropy) por series de Taylor
+//   en base-60 pura — algoritmo original de Sentinel, sin floats (Candado YATRA).
+// - [EXT-MAN] Mansfield & Wildberger (2017). Historia Mathematica. DOI:10.1016/j.hm.2017.08.001
+//   — convergencia rápida de series trigonométricas porque π/6, π/4, π/3, π/2 son exactos en base-60.
 
 #![allow(dead_code)]
 

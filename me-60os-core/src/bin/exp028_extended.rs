@@ -2,6 +2,12 @@
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 //! 🛡️ EXP-028 EXTENDED — 10 ciclos × 68s (680s) para buscar META-PORTALES
+//!
+//! ## References
+//! - [P-RRS] Novoa, J. (2026). *Reporte Final Resonance Architecture.*
+//!   `docs/02_ciencia_y_quantum/FINAL_REPORT_RESONANCE_ARCHITECTURE.md` — meta-portales en ciclos de 68s.
+//! - [P-TES] Novoa, J. (2026). *Tesis de Resonancia.* `docs/02_ciencia_y_quantum/research/TesiResonancia.md`.
+//! - [EXT-NV] / [NV-050] Nandi & Vitiello (2026). arXiv:2606.30890 — dinámica de cristal de tiempo.
 
 use me60os_core::pai60_lib::pai60_divide;
 use me60os_core::qhc::QhcTensor;

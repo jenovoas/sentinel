@@ -8,10 +8,17 @@
 //! Aquí TODO es SPA entero (base-60⁴): sqrt por SPAMath::sqrt, ratio (c/a)²
 //! en división exacta de enteros escalados.
 //!
-//! La tesis del benchmark (Mansfield 2021, Plimpton 322 = matemática real):
+//! La tesis del benchmark (Mansfield & Wildberger 2017, Plimpton 322 = matemática real):
 //! los ratios (c/a)² de la tablilla son TERMINOS SEXAGESIMALES EXACTOS —
 //! en base-60 tienen expansión finita; en binario/decimal flotante son
 //! periódicos y acumulan error. Esta herramienta mide esa diferencia.
+//!
+//! ## References
+//! - [EXT-MAN] Mansfield, D. F. & Wildberger, N. J. (2017).
+//!   *Plimpton 322 is Babylonian exact sexagesimal trigonometry.* Historia Mathematica.
+//!   https://doi.org/10.1016/j.hm.2017.08.001 — fuente formal de los ratios (c/a)² exactos.
+//! - [P-RES] Novoa, J. (2026). *Aritmética Sexagesimal como Base de Sistemas.* `RESEARCH_es.md`.
+//! - [P-GEO] Novoa, J. (2026). *Geoglifos Base-60.* `docs/02_ciencia_y_quantum/research/geoglyphs/GEOGLYPHS_BASE60_PEER_REVIEW_PAPER.md`.
 //!
 //! Datos: las 15 filas (short_side b, diagonal c) de Plimpton 322,
 //! verbatim del script Py (a² = c² - b², ratio = (c/a)²).

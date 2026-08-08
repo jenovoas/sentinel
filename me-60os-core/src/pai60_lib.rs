@@ -5,6 +5,14 @@
 //! Rust implementation of the PAI‑60 reciprocal table and helper functions.
 //! Designed for ultra‑low latency usage by the neural memory daemon.
 //! Uses the shared `SPA` type from `src/spa.rs`.
+//!
+//! ## References (tabla recíproca babilónica / Plimpton 322)
+//! - [P-RES] Novoa, J. (2026). *Aritmética Sexagesimal como Base de Sistemas.* `RESEARCH_es.md`.
+//! - [EXT-MAN] Mansfield, D. F. & Wildberger, N. J. (2017).
+//!   *Plimpton 322 is Babylonian exact sexagesimal trigonometry.* Historia Mathematica.
+//!   https://doi.org/10.1016/j.hm.2017.08.001 — Los denominadores 5-smooth
+//!   (2,3,4,5,6,8,9,10,12,15,...,60) son precisamente aquellos con recíproco finito exacto en
+//!   base-60; `RECIPROCAL_TABLE` implementa el mismo concepto de las tablas babilónicas.
 
 use crate::spa::SPA;
 use phf::Map;

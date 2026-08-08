@@ -5,6 +5,12 @@
 //! 
 //! User-space component of the eBPF LSM Guardian.
 //! Enforces Base-60 coherence thresholds on system actions.
+//!
+//! ## References (eBPF / detección en Ring 0)
+//! - [EXT-003] A flow-based IDS using Machine Learning in eBPF. arXiv:2102.09980.
+//! - [EXT-007] eBPF-DDoS Mitigation for IoT. arXiv:2508.00851.
+//! - [EXT-006] QUT-DV25: A Dataset for Dynamic Analysis of Next-Gen Software Supply Chain Attacks. arXiv:2505.13804.
+//! - [P-RES] Novoa, J. (2026). *Aritmética Sexagesimal como Base de Sistemas.* `RESEARCH_es.md`.
 
 use crate::spa::SPA;
 use crate::scv::ScvEngine;

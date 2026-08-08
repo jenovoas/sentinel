@@ -13,6 +13,12 @@
 //!
 //! El núcleo matemático es ECUACIÓN DE ESTABILIZACIÓN:
 //!   next = current * damping + target * (1 - damping) + noise
+//!
+//! ## References (algoritmo original de Sentinel)
+//! - [P-RRS] Novoa, J. (2026). *Reporte Final Resonance Architecture.*
+//!   `docs/02_ciencia_y_quantum/FINAL_REPORT_RESONANCE_ARCHITECTURE.md` — estabilización de flujo.
+//! - [P-RES] Novoa, J. (2026). Nota técnica no publicada de Sentinel — algoritmo original de LCG damping base-60.
+//!   LCG determinista, damping exponencial discreto y guardrails son diseño original de Sentinel (Novoa 2026).
 //! donde todo es S60 fixed-point. Sin floats, sin scipy.
 
 use crate::spa::SPA;

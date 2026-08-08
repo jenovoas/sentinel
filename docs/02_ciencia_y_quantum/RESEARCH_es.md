@@ -2,6 +2,8 @@
 
 **Estado:** Programa experimental activo | **Experimentos:** EXP‑001 a EXP‑029
 
+> **📑 Índice de papers formales:** [`PAPERS_INDEX.md`](PAPERS_INDEX.md) — 78 papers externos (arXiv verificados) que fundamentan los módulos Rust de Sentinel, con mapeo bidireccional paper → módulo.
+
 ---
 
 ## Motivación
@@ -91,6 +93,8 @@ Los experimentos están numerados en orden de concepción. EXP‑023 (Detección
 
 ## Referencias
 
+- **Índice formal de papers:** [`PAPERS_INDEX.md`](PAPERS_INDEX.md) — 78 papers externos (arXiv IDs verificados vía API oficial de arXiv) que fundamentan los módulos Rust, con mapeo bidireccional paper → módulo y constantes verificables contra el código (Candado YATRA).
 - Mansfield, D. F. & Wildberger, N. J. (2017). *Plimpton 322 is Babylonian exact sexagesimal trigonometry.* Historia Mathematica. https://doi.org/10.1016/j.hm.2017.08.001
+- Nandi & Vitiello (2026). *Spin-Induced Fractal Time-Crystal-Like Dynamics and Non-Markovian Memory in the Bateman Dual Oscillator.* arXiv:2606.30890
 - Especificación Protocolo YATRA: `constraints/YATRA_SPEC.md`
 - Código fuente experimental: `quantum/experiments/`

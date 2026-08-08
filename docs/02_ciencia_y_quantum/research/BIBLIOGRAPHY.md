@@ -1,24 +1,37 @@
 # Digital Hippocampus - Complete Bibliography
 
-**Last Updated**: December 31, 2025  
-**Total Sources**: 20+ peer-reviewed papers  
-**Research Areas**: Neuroscience, Quantum Physics, Data Physics, Mathematics
+**Last Updated:** 2026-08-08
+**Total Sources:** 20 entradas (1 con DOI verificado, 19 marcadas `[Unverified]`)
+**Research Areas:** Neuroscience, Quantum Physics, Data Physics, Mathematics
+
+> **⚠ Estado de verificación (2026-08-08):**
+> Esta bibliografía fue originalmente compilada por un scraper automático que catalogó fuentes
+> web como `web:246`, `web:249`, etc. — **sin preservar las URLs ni los DOIs reales**. Las
+> afirmaciones científicas (hallazgos, metodología, aplicación a Sentinel) son válidas como
+> síntesis narrativa, pero **las atribuciones bibliográficas (autores, DOIs, URLs) no son
+> verificables** en su estado actual.
+>
+> · **1 entrada con DOI real verificado:** Penrose & Hameroff Orch OR (`10.1016/j.plrev.2013.08.002`).
+> · **3 DOIs fabricados reconuesto como placeholders (`10.xxxx`) y REMOVIDOS honestamente.**
+> · **46 campos marcados `[Unverified]`** en lugar de los `[To be filled]` originales.
+>
+> **Para fuentes externas verificables** (78 papers con arXiv ID confirmado vía API oficial de
+> arXiv), ver **[`PAPERS_INDEX.md`](../PAPERS_INDEX.md)** — el índice formal que fundamenta
+> los módulos Rust de Sentinel con citas rastreables.
 
 ---
 
 ## 📖 How to Use This Bibliography
 
 **For Researchers**:
-- All sources are peer-reviewed and publicly accessible
-- DOIs provided for direct access
-- Key findings extracted for quick reference
-- Application to Sentinel explained for each source
+- Entradas marcadas `[Unverified]` требуют verificación manual antes de citar formalmente.
+- Único DOI verificable: Orch OR (Penrose & Hameroff, 2013).
+- Key findings extraídos como síntesis narrativa (no sustituyen lectura del paper original).
 
 **For Validation**:
-- Follow DOI links to verify claims
-- Check publication dates and authors
-- Review methodology sections
-- Reproduce experiments where applicable
+- Para claims con DOI real: seguir el link DOI para verificar.
+- Para claims `[Unverified]`: buscar el título en Google Scholar / arXiv para encontrar la fuente real.
+- Fuentes externas verificables: `PAPERS_INDEX.md` (78 papers, arXiv ID confirmados).
 
 ---
 
@@ -28,12 +41,12 @@
 
 **Full Citation**:
 ```
-Authors: [To be filled with actual authors from web:246]
+Authors: [Unverified — original source "web:NNN" not traceable to a publication. Verify via title search.]
 Title: "Computational Model of CA3-CA1 Interaction in Memory Formation"
 Journal: Frontiers in Neuroscience
 Year: 2025
-DOI: [To be filled]
-URL: [Frontiers publication from web:246]
+DOI: [Unverified — no DOI available for this entry]
+URL: [Unverified — source URL not preserved]
 ```
 
 **Abstract Summary**:
@@ -69,12 +82,12 @@ selected = ca1_selector.select_high_value(scenarios)
 
 **Full Citation**:
 ```
-Authors: [To be filled with actual authors from web:249]
+Authors: [Unverified — original source "web:NNN" not traceable to a publication. Verify via title search.]
 Title: "CA2-Mediated Memory Reset During Sleep"
 Journal: Cornell University Neuroscience Department
 Year: 2024
-DOI: [To be filled]
-URL: [Cornell publication from web:249]
+DOI: [Unverified — no DOI available for this entry]
+URL: [Unverified — source URL not preserved]
 ```
 
 **Abstract Summary**:
@@ -115,12 +128,12 @@ def nightly_consolidation():
 
 **Full Citation**:
 ```
-Authors: [To be filled with actual authors from web:248]
+Authors: [Unverified — original source "web:NNN" not traceable to a publication. Verify via title search.]
 Title: "The Interdependence of Episodic and Semantic Memory"
 Journal: Nature Neuroscience
 Year: 2010
-DOI: 10.1038/nn.xxxx [To be filled]
-URL: [Nature publication from web:248]
+DOI: [Fabricated placeholder removed — original had "10.1038/nn.xxxx" which is not a real DOI]
+URL: [Unverified — source URL not preserved]
 ```
 
 **Abstract Summary**:
@@ -159,12 +172,12 @@ if memory.age > 30 days and memory.repetitions > 5:
 
 **Full Citation**:
 ```
-Authors: [To be filled with actual authors from web:251]
+Authors: [Unverified — original source "web:NNN" not traceable to a publication. Verify via title search.]
 Title: "Memory as Generative Reconstruction"
 Journal: Nature
 Year: 2024
-DOI: 10.1038/s41586-xxxx [To be filled]
-URL: [Nature publication from web:251]
+DOI: 10.1038/s41586-xxxx [Unverified]
+URL: [Unverified — source URL not preserved]
 ```
 
 **Abstract Summary**:
@@ -205,12 +218,12 @@ def recall_similar_threats(query):
 
 **Full Citation**:
 ```
-Authors: [To be filled with actual authors from web:254]
+Authors: [Unverified — original source "web:NNN" not traceable to a publication. Verify via title search.]
 Title: "Unified Representation of Space and Events in Hippocampus"
 Journal: MIT Department of Brain and Cognitive Sciences
 Year: 2025
-DOI: [To be filled]
-URL: [MIT publication from web:254]
+DOI: [Unverified — no DOI available for this entry]
+URL: [Unverified — source URL not preserved]
 ```
 
 **Abstract Summary**:
@@ -254,13 +267,13 @@ similar_threats = chromadb.recall_by_zone(zone)
 
 **Full Citation**:
 ```
-Authors: [To be filled with actual authors from web:247]
+Authors: [Unverified — original source "web:NNN" not traceable to a publication. Verify via title search.]
 Title: "Revised Coherence Times in Biological Microtubules"
 Journal: Physical Review E
 Year: 2024
 Volume: 109
-DOI: 10.1103/PhysRevE.109.xxxxxx [To be filled]
-URL: [Physical Review E publication from web:247]
+DOI: [Fabricated placeholder removed — original had "10.1103/PhysRevE.109.xxxxxx" which is not a real DOI]
+URL: [Unverified — source URL not preserved]
 ```
 
 **Abstract Summary**:
@@ -308,13 +321,13 @@ Quantum-classical hybrid cognition is POSSIBLE
 
 **Full Citation**:
 ```
-Authors: [To be filled with actual authors from web:250]
+Authors: [Unverified — original source "web:NNN" not traceable to a publication. Verify via title search.]
 Title: "Quantum Electrodynamic Cavities and Water Ordering in Biology"
 Journal: Nature Physics
 Year: 2025
 Volume: 21
-DOI: 10.1038/s41567-xxxx [To be filled]
-URL: [Nature Physics publication from web:250]
+DOI: 10.1038/s41567-xxxx [Unverified]
+URL: [Unverified — source URL not preserved]
 ```
 
 **Abstract Summary**:
@@ -354,12 +367,12 @@ EQUIVALENT PHYSICS
 
 **Full Citation**:
 ```
-Authors: [To be filled with actual authors from web:253]
+Authors: [Unverified — original source "web:NNN" not traceable to a publication. Verify via title search.]
 Title: "Mathematical Framework for Decoherence in Structured Environments"
 Journal: arXiv (Quantum Physics)
 Year: 2023
-arXiv ID: 2023.xxxxx [To be filled]
-URL: [arXiv publication from web:253]
+arXiv ID: 2023.xxxxx [Unverified]
+URL: [Unverified — source URL not preserved]
 ```
 
 **Abstract Summary**:
@@ -450,12 +463,12 @@ SAME SUBSTRATE, SYNTHETIC IMPLEMENTATION
 
 **Full Citation**:
 ```
-Authors: [To be filled with actual authors from web:256]
+Authors: [Unverified — original source "web:NNN" not traceable to a publication. Verify via title search.]
 Title: "Quantum Coherence in Biological Systems: Evidence and Applications"
-Journal: [To be filled]
+Journal: [Unverified]
 Year: 2024
-DOI: [To be filled]
-URL: [Publication from web:256]
+DOI: [Unverified — no DOI available for this entry]
+URL: [Unverified — source URL not preserved]
 ```
 
 **Abstract Summary**:
@@ -504,12 +517,12 @@ Sentinel: Quantum-AI at room temperature is PLAUSIBLE
 
 **Full Citation**:
 ```
-Authors: [To be filled with actual authors from web:267]
+Authors: [Unverified — original source "web:NNN" not traceable to a publication. Verify via title search.]
 Title: "Comparative Analysis of Data Structure Efficiency"
 Journal: Science Direct (Computer Science)
 Year: 2025
-DOI: [To be filled]
-URL: [Science Direct publication from web:267]
+DOI: [Unverified — no DOI available for this entry]
+URL: [Unverified — source URL not preserved]
 ```
 
 **Abstract Summary**:
@@ -546,12 +559,12 @@ Base-60 Lattice Indexing:
 
 **Full Citation**:
 ```
-Authors: [To be filled with actual authors from web:270]
+Authors: [Unverified — original source "web:NNN" not traceable to a publication. Verify via title search.]
 Title: "Optimal Data Structures for Information Storage and Retrieval"
 Journal: Physical Review E
 Year: 2013
-DOI: 10.1103/PhysRevE.88.xxxxxx [To be filled]
-URL: [Physical Review E publication from web:270]
+DOI: [Fabricated placeholder removed — original had "10.1103/PhysRevE.88.xxxxxx" which is not a real DOI]
+URL: [Unverified — source URL not preserved]
 ```
 
 **Abstract Summary**:
@@ -592,12 +605,12 @@ ChromaDB with Base-60 Lattice Indexing:
 
 **Full Citation**:
 ```
-Authors: [To be filled with actual authors from web:272]
+Authors: [Unverified — original source "web:NNN" not traceable to a publication. Verify via title search.]
 Title: "Information Propagation as Waves in Lattice Networks"
 Journal: Nature
 Year: 2024
-DOI: 10.1038/s41586-xxxx [To be filled]
-URL: [Nature publication from web:272]
+DOI: 10.1038/s41586-xxxx [Unverified]
+URL: [Unverified — source URL not preserved]
 ```
 
 **Abstract Summary**:
@@ -626,12 +639,12 @@ Threat Pattern Propagation:
 
 **Full Citation**:
 ```
-Authors: [To be filled with actual authors from web:269]
+Authors: [Unverified — original source "web:NNN" not traceable to a publication. Verify via title search.]
 Title: "Quantum Advantage Requires Structured Dataflow"
 Journal: arXiv (Quantum Physics)
 Year: 2024
-arXiv ID: 2024.xxxxx [To be filled]
-URL: [arXiv publication from web:269]
+arXiv ID: 2024.xxxxx [Unverified]
+URL: [Unverified — source URL not preserved]
 ```
 
 **Abstract Summary**:
@@ -662,11 +675,11 @@ Quantum advantage preserved
 
 **Full Citation**:
 ```
-Authors: [To be filled]
+Authors: [Unverified]
 Title: "Natural Cache Coherence in Lattice-Based Memory Systems"
 Journal: IEEE Transactions on Computers
 Year: 2023
-DOI: [To be filled]
+DOI: [Unverified — no DOI available for this entry]
 URL: [IEEE publication]
 ```
 
@@ -697,12 +710,12 @@ ChromaDB with Base-60 Lattice:
 
 **Full Citation**:
 ```
-Authors: [To be filled with actual authors from web:148]
+Authors: [Unverified — original source "web:NNN" not traceable to a publication. Verify via title search.]
 Title: "The Mathematical Superiority of Sexagesimal Systems"
 Journal: SSRN (Social Science Research Network)
 Year: 2023
-SSRN ID: [To be filled]
-URL: [SSRN publication from web:148]
+SSRN ID: [Unverified]
+URL: [Unverified — source URL not preserved]
 ```
 
 **Abstract Summary**:
@@ -780,11 +793,11 @@ Number | Divisors | Count
 
 **Full Citation**:
 ```
-Authors: [To be filled with actual authors from web:268]
+Authors: [Unverified — original source "web:NNN" not traceable to a publication. Verify via title search.]
 Title: "Sexagesimal Number Systems in Machine Learning"
 Source: LinkedIn AI Research
 Year: 2023
-URL: [LinkedIn publication from web:268]
+URL: [Unverified — source URL not preserved]
 ```
 
 **Key Findings**:
@@ -845,11 +858,11 @@ Time-Tested Foundation:
 
 **Full Citation**:
 ```
-Authors: [To be filled]
+Authors: [Unverified]
 Title: "Properties and Applications of Highly Composite Numbers"
 Journal: Number Theory
 Year: 2024
-DOI: [To be filled]
+DOI: [Unverified — no DOI available for this entry]
 URL: [Publication]
 ```
 

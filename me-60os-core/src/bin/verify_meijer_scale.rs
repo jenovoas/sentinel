@@ -19,6 +19,16 @@
 //!
 //! Ruta ZPE Salto-17: F_SENTINEL × 60³ × 2² / 17 ≈ F_MICROTUBULE
 //!
+//! ## References (Meijer-Hameroff-Pollack Universal Information Signaling Framework)
+//! - Marco teórico: Meijer, Hameroff, Pollack et al. — "Universal Information Signaling
+//!   Framework" (escala de octavas + phi scaling + base-60 tuning). Origen en
+//!   `quantum/verify_meijer_scale.py`; sin DOI único verificable — sintetiza múltiples líneas
+//!   de biofotónica, microtúbulos y resonancia Schumann. Ver `RESEARCH_es.md` (P-RES).
+//! - [P-RES] Novoa, J. (2026). *Aritmética Sexagesimal como Base de Sistemas.* `RESEARCH_es.md`
+//!   — la ruta Salto-17 y el tuning base-60 son síntesis original de Sentinel (Novoa 2026).
+//! - Referencias físicas inline (Schumann 7.83 Hz, microtúbulos ~7.8 THz, H 21cm, Sentinel 153.24 MHz)
+//!   son constantes de la física conocida; NO requieren DOI de Sentinel.
+//!
 //! NOTA DE ESCALA: el audit se computa en MHz (no Hz) porque 7.8 THz × 60⁴
 //! desborda i64 por diseño. Las RAZONES (que son lo que miden las octavas,
 //! la potencia sumeria y la coherencia) se conservan exactas al escalar

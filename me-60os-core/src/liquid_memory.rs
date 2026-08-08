@@ -17,6 +17,13 @@
 //!   para que los bins puros puedan usarla).
 //! - Nombre SHM derivado de la clave: `/liquid_<hash[:8]>` (igual que legacy).
 //!
+//! ## References (memoria cuántica / fonónica)
+//! - [EXT-009] Minute-Scale Photonic Quantum Memory. arXiv:2511.12537.
+//! - [EXT-008] Memory of Starobinsky in a Time Crystal (Condensate). arXiv:2509.21959.
+//! - [ZW-005] In-memory phononic learning toward cognitive mechanical intelligence. arXiv:2511.13543.
+//! - [NV-046] Nandi (2025). arXiv:2510.11075 — quantum memory effect / thermal modulation.
+//! - [P-TES] Novoa, J. (2026). *Tesis de Resonancia.* `docs/02_ciencia_y_quantum/research/TesiResonancia.md`.
+//!
 //! ## Regla S60
 //! Este módulo NO hace aritmética de estado: solo IO de bytes + addressing.
 //! La resonancia la pone `LiquidLattice::inject_dual_channel` (SPA exacto).

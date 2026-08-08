@@ -12,6 +12,12 @@
 //! - **Priority (Power)**: Allocated CPU cycles.
 //!
 //! A "Stable" process (high coherence) has REDUCED Effective Load, optimizing schedule latency.
+//!
+//! ## References (analogía MHD para inertial damping / priority feedback)
+//! - [MN-007] Single-fluid simulation of partially-ionized, non-ideal plasma. arXiv:2411.12607.
+//! - [MN-003] A Moving Boundary Flux Stabilization Method for Cartesian Cut-Cell. arXiv:1711.11361.
+//! - [EXT-004] Numerical modelling of imposed magnetohydrodynamic effects in hypersonic flows. arXiv:2207.09857.
+//! - [P-MHD] Novoa, J. (2026). *MHD Shield Technical White Paper.* `docs/02_ciencia_y_quantum/quantum/MHD_SHIELD_TECHNICAL_WHITE_PAPER.md`.
 
 use crate::spa::SPA;
 

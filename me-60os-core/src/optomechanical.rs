@@ -5,6 +5,13 @@
 //!
 //! Implementation of Sideband Cooling calculation using pure Base-60 arithmetic.
 //! Bypasses thermal noise limits using resonant radiation pressure.
+//!
+//! ## References
+//! - [EXT-005] High-purity quantum optomechanics at room temperature. arXiv:2412.14117.
+//! - [EXT-013] Coherent Feedback Cooling of an Ultracoherent Phononic-Crystal Membrane at Room Temperature. arXiv:2605.20902.
+//! - [EXT-012] Optomechanical disk resonator in the quantum ground state of motion. arXiv:2511.15492.
+//! - [NV-037] Nandi (2024). arXiv:2410.03808 — quantum thermodynamics.
+//! - [P-BEK] Novoa, J. (2026). *Bekenstein Base-60.* `docs/02_ciencia_y_quantum/quantum/WHITE_PAPER_BEKENSTEIN_BASE60.md`.
 
 use crate::spa::SPA;
 use crate::spa_math::SPAMath;

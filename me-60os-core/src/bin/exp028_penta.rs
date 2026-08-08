@@ -13,6 +13,12 @@
 //!   (GEO=cos(5t), SYSTEM=|t%17|<0.15 son visuales, NO entran en portal)
 //!   portal = (BIO>0.8)∧(CRYSTAL>0.8)∧(VENUS>0.8)  [flanco de subida]
 //!   dt=0.1s, ventana 68s. Esperado vault: 9 muestras en [4.9,5.7]s.
+//!
+//! ## References
+//! - [P-RRS] Novoa, J. (2026). *Reporte Final Resonance Architecture.*
+//!   `docs/02_ciencia_y_quantum/FINAL_REPORT_RESONANCE_ARCHITECTURE.md` — penta-resonancia (BIO/CRYSTAL/VENUS).
+//! - [P-TES] Novoa, J. (2026). *Tesis de Resonancia.* `docs/02_ciencia_y_quantum/research/TesiResonancia.md`.
+//! - [EXT-NV] / [NV-050] Nandi & Vitiello (2026). arXiv:2606.30890 — cristal de tiempo bombeado.
 
 use me60os_core::pai60_lib::pai60_divide;
 use me60os_core::qhc::QhcTensor;
