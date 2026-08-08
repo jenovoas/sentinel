@@ -110,13 +110,17 @@ impl SPAMath {
         }
 
         // Newton-Raphson: x = (x + n/x) / 2
-        let mut x = if n.to_raw() > SPA::SCALE_0 {
-            n.to_raw() / 2
+        // i128 en el punto de multiplicación: n.to_raw() * SCALE_0 desborda i64
+        // para n >= ~710_000 (enteros grandes, p.ej. a²=11_338_224 de Plimpton fila 2).
+        let n_raw = n.to_raw();
+        let mut x = if n_raw > SPA::SCALE_0 {
+            n_raw / 2
         } else {
             SPA::SCALE_0
         };
         for _ in 0..15 {
-            let next = (x + (n.to_raw() * SPA::SCALE_0) / x) / 2;
+            let num = (n_raw as i128) * (SPA::SCALE_0 as i128);
+            let next = (x + (num / (x as i128)) as i64) / 2;
             if (next - x).abs() < 1 {
                 break;
             }
