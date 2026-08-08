@@ -51,10 +51,11 @@ fn main() {
     let mut portals_detected = 0u32;
     let mut cycle_portals: Vec<Vec<f64>> = vec![Vec::new(); 10];
     let mut portal_intensities: Vec<f64> = Vec::new();
+    let mut prev_intensity = 0.0f64; // flanco de subida (estado local, no static mut)
 
     for tick in 0..TOTAL_TICKS {
         let t_sec = tick as f64;
-        let t_s60 = SPA::from_raw((t_sec * SPA::SCALE_0 as f64) as i64);
+        let t_s60 = SPA::from_int(tick as i64); // S60 exacto: tick entero, sin f64
         let cycle = (tick / 68) as usize;
 
         // 1. QHC bombea AMBAS mallas (patron 10;5,6,5 + Salto-17)
@@ -100,9 +101,8 @@ fn main() {
         let reduction_pct = 100.0 - (effective_load.to_base_units() as f64 / static_load.to_base_units() as f64 * 100.0);
 
         // 8. DETECCION DE PORTALES EMERGENTES (flanco de subida en intensidad)
-        static mut PREV_INTENSITY: f64 = 0.0;
-        let prev = unsafe { PREV_INTENSITY };
-        unsafe { PREV_INTENSITY = intensity; }
+        let prev = prev_intensity;
+        prev_intensity = intensity;
 
         // Portal emergente: intensidad cruza umbral hacia arriba
         if intensity > 0.75 && prev <= 0.75 {
@@ -163,10 +163,8 @@ fn apply_qhc_to_lattice(lattice: &mut HexagonalController, modulation: u8, _corr
     for i in 0..lattice.n_nodes {
         if let Some(phase) = lattice.get_node_phase(i) {
             let new_deg = (phase.to_degrees() + shift) % 60;
-            unsafe {
-                let phases_ptr = lattice.phases_base60.as_mut_ptr();
-                *phases_ptr.add(i) = SPA::new(new_deg, 0, 0, 0, 0);
-            }
+            // phases_base60 es campo publico: escritura directa, sin unsafe
+            lattice.phases_base60[i] = SPA::new(new_deg, 0, 0, 0, 0);
         }
     }
 
@@ -175,37 +173,35 @@ fn apply_qhc_to_lattice(lattice: &mut HexagonalController, modulation: u8, _corr
 }
 
 /// Evolucion por acoplamiento hexagonal (difusion Von Neumann en 6 vecinos)
+/// Promedio de fases en enteros S60 (la difusion de un fluido es exacta o no es).
 fn evolve_hexagonal_coupling(lattice: &mut HexagonalController) {
     let n = lattice.n_nodes;
     let mut new_phases = vec![SPA::zero(); n];
 
     for i in 0..n {
-        let mut sum_deg = 0.0;
-        let mut count = 1;
+        let mut sum = SPA::zero();
+        let mut count: i64 = 1;
 
         // Propia fase
         if let Some(phase) = lattice.get_node_phase(i) {
-            sum_deg += phase.to_degrees() as f64;
+            sum = sum + phase;
         }
 
         // 6 vecinos hexagonales
         for n_idx in lattice.get_neighbors(i) {
             if let Some(phase) = lattice.get_node_phase(n_idx) {
-                sum_deg += phase.to_degrees() as f64;
+                sum = sum + phase;
                 count += 1;
             }
         }
 
-        // Promedio armonico (difusion)
-        new_phases[i] = SPA::new((sum_deg / count as f64).round() as i64, 0, 0, 0, 0);
+        // Promedio armonico (difusion) en S60 puro
+        new_phases[i] = sum / SPA::from_int(count);
     }
 
-    // Aplicar
+    // Aplicar (campo publico, sin unsafe)
     for i in 0..n {
-        unsafe {
-            let phases_ptr = lattice.phases_base60.as_mut_ptr();
-            *phases_ptr.add(i) = new_phases[i];
-        }
+        lattice.phases_base60[i] = new_phases[i];
     }
 }
 
