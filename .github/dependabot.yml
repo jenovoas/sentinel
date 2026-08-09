@@ -32,7 +32,10 @@ updates:
       rust-deps:
         patterns:
           - "*"
-    # Excluimos las carpetas de investigación para que no den avisos de seguridad
+    # Excluimos las carpetas de investigación/legacy para que no den avisos de seguridad.
+    # El workspace activo (Cargo.toml raíz) solo incluye me-60os-core, sentinel-cortex,
+    # truthsync-core, sentinel-verifier y services/neural-guard. Todo lo demás en cargo/*
+    # son crates legacy fuera del workspace — fuente probable de ruido en Dependabot.
     ignore:
       - dependency-name: "*"
         directories:
@@ -42,3 +45,10 @@ updates:
           - "/backups_traefik"
           - "/temporal"
           - "/history"
+          - "/gui/src-tauri"
+          - "/src/core"
+          - "/src/sentinel-cortex"
+          - "/src/sentinel-wasm"
+          - "/tools/sctl-rs"
+          - "/tools/sip-rs"
+          - "/docs/02_ciencia_y_quantum/research"
