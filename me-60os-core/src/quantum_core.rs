@@ -430,8 +430,9 @@ impl LiquidLattice {
                 self.buffer.pids[i].setpoint = self.buffer.lattice[i].amplitude;
             }
             if i < chunks_b.len() {
-                let deg = (chunks_b[i][0] as i64 * 360) / 256;
-                self.buffer.lattice[i].phase = SPA::new(deg, 0, 0, 0, 0);
+                let deg = ((chunks_b[i][0] as i64) * 360) / 256;
+                let deg_norm = if deg < 0 { 0 } else if deg > 359 { 359 } else { deg };
+                self.buffer.lattice[i].phase = SPA::new(deg_norm, 0, 0, 0, 0);
             }
         }
     }
@@ -443,6 +444,30 @@ impl LiquidLattice {
     // #[cfg_attr(feature = "extension-module", pyo3(signature = (filename)))]
     pub fn load(&mut self, filename: String) -> std::io::Result<bool> {
         self.buffer.load_snapshot(filename)
+    }
+
+    pub fn retrieve_dual_channel(&self, count_a: usize, count_b: usize) -> (Vec<u8>, Vec<u8>) {
+        let mut rec_a = Vec::new();
+        let mut rec_b = Vec::new();
+        for i in 0..self.buffer.size {
+            let amp = self.buffer.lattice[i].amplitude;
+            if amp.to_raw() > 0 {
+                let raw_amp = amp.to_raw().unsigned_abs();
+                let bytes = raw_amp.to_be_bytes();
+                let non_zero: Vec<u8> = bytes.iter().copied().skip_while(|&b| b == 0).collect();
+                if rec_a.len() < count_a {
+                    rec_a.extend_from_slice(&non_zero);
+                }
+            }
+            if rec_b.len() < count_b {
+                let phase = self.buffer.lattice[i].phase;
+                let phase_deg = phase.to_raw() / SPA::SCALE_0;
+                let deg_normalized = if phase_deg < 0 { 0 } else if phase_deg > 359 { 359 } else { phase_deg as i64 };
+                let byte_val = ((deg_normalized * 256) / 360) as u8;
+                rec_b.push(byte_val);
+            }
+        }
+        (rec_a, rec_b)
     }
 }
 
