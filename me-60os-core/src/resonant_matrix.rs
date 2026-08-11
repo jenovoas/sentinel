@@ -153,6 +153,15 @@ impl ResonantMatrix {
         self.crystals[index].amplitude = self.crystals[index].amplitude + amp;
     }
 
+    /// Adds an SPA amplitude directly to a node's amplitude without re-scaling.
+    /// Use this when you already have an SPA value (not an integer pressure).
+    /// Mirrors the internal pattern from `inject_pai` line 153.
+    pub fn inject_spa(&mut self, index: usize, amp: SPA) {
+        if index < self.crystals.len() {
+            self.crystals[index].amplitude = self.crystals[index].amplitude + amp;
+        }
+    }
+
     /// Returns the amplitudes of all nodes.
     pub fn get_amplitudes(&self) -> Vec<SPA> {
         self.crystals.iter().map(|c| c.get_amplitude()).collect()
@@ -303,6 +312,23 @@ mod tests {
         let mut lattice2 = ResonantMatrix::new(3);
         lattice2.inject_pai(0, 21, 7);
         assert_eq!(lattice2.get_amplitudes()[0], SPA::from_int(21));
+    }
+
+    #[test]
+    fn test_inject_spa_no_double_scale() {
+        // inject_spa añade el SPA directo sin re-escalar.
+        // La landmine anterior era: inject(0, signal.to_raw()) en cortex.rs:92,
+        // que re-escalaba por SCALE_0 (doble-escala -> 8.4e13 en vez de 1/2).
+        let mut l = ResonantMatrix::new(3);
+        l.inject_spa(0, SPA::new(0, 30, 0, 0, 0)); // 1/2
+        let amp = l.get_amplitudes()[0];
+        assert_eq!(amp, SPA::new(0, 30, 0, 0, 0), "amplitude should be 1/2 exactly");
+        assert_ne!(amp.to_raw(), 30, "should NOT be the raw integer 30");
+        assert_ne!(
+            amp.to_raw(),
+            30 * SPA::SCALE_0,
+            "should NOT be 30 * SCALE_0 (double-scale)"
+        );
     }
 
     #[test]

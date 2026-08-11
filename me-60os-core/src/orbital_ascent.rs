@@ -218,8 +218,10 @@ impl OrbitalAscent {
 
         // 6. Levitación de datos: inyectar el estado a la lattice (canal de fase).
         //    El dato "levita" en la red de cristales, no en sustrato sólido.
+        // FIX (audit-360): inject_pai espera integer; pasar to_raw() + denom=1000
+        // no-regular causaba triple-escala. Usar denom=60 (5-smooth, en tabla pai60).
         let idx = (self.clock.ticks as usize) % self.lattice.crystals.len();
-        self.lattice.inject_pai(idx, coherence.to_raw(), 1_000);
+        self.lattice.inject_pai(idx, coherence.to_raw() / crate::spa::SPA::SCALE_0, 60);
 
         AscentStep {
             altitude: new_alt,
@@ -309,5 +311,16 @@ mod tests {
         assert!(step.thrust.to_raw() > 0);
         // Con coherencia Dicke: masa Merkabah baja + escudo MHD -> aceleración positiva
         assert!(step.acceleration.to_raw() > 0);
+    }
+
+    #[test]
+    fn test_inject_pai_no_double_scale() {
+        // FIX (audit-360): inject_pai(idx, coherence.to_raw() / SCALE_0, 60)
+        // produce una amplitud sana, no triple-escala.
+        let mut l = ResonantMatrix::new(64);
+        l.inject_pai(0, 1, 60); // 1/60 amplitude
+        let amp = l.get_amplitudes()[0];
+        let one_sixtieth = SPA::new(0, 1, 0, 0, 0);
+        assert_eq!(amp, one_sixtieth, "inject_pai(0, 1, 60) should be 1/60 exactly");
     }
 }

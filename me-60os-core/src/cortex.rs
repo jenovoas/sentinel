@@ -89,8 +89,37 @@ impl CortexEngine {
 
     pub fn activate_neuron(&mut self, neuron_id: usize, signal: SPA) {
         let target_node = neuron_id % self.neurons;
-        self.lattice.inject(target_node, signal.to_raw());
+        // FIX (audit-360): was inject_spa_pre247(target_node, signal.to_raw()) —
+        // double-scale landmine. inject_spa adds the SPA directly without re-scaling.
+        self.lattice.inject_spa(target_node, signal);
         self.lattice.step();
         self.total_energy = self.lattice.total_energy();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_activate_neuron_no_double_scale() {
+        // Verifica el fix (audit-360): antes era inject(target, signal.to_raw()) que
+        // double-escalaba. Ahora con inject_spa(target, signal) el dato llega como
+        // amplitud SPA, no como i64 re-escalado. step() aplica damping, as\u00ed que la
+        // amplitud post-step es MENOR que la inyectada, pero NUNCA es double-scale.
+        let mut e = CortexEngine::new(4);
+        let signal = SPA::new(0, 30, 0, 0, 0); // 1/2 unidad
+        e.activate_neuron(0, signal);
+        let amp = e.lattice.get_amplitudes()[0];
+        // Cota superior: no es double-scale (signal.to_raw() * SCALE_0).
+        // Cota inferior: > 0 porque recibi\u00f3 inyeccion.
+        // Tambi\u00e9n verificamos que es <= signal (porque step() aplica damping).
+        assert!(amp.to_raw() > 0, "amp should be > 0 after injection");
+        assert!(amp.to_raw() <= signal.to_raw(), "amp should be <= signal after damping");
+        assert_ne!(
+            amp.to_raw(),
+            signal.to_raw() * SPA::SCALE_0,
+            "amp should NOT be signal * SCALE_0 (that would be double-scale)"
+        );
     }
 }
