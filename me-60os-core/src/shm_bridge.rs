@@ -36,6 +36,12 @@ impl PySharedBuffer {
             PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("Invalid name: {}", e))
         })?;
 
+        // SAFETY: POSIX shm_open/ftruncate/mmap on a freshly-constructed
+        // CString (null-terminated, no NUL bytes) pointed-to by
+        // c_name.as_ptr(). fd leaks are prevented by close() on each
+        // error path before return. mmap result is checked against
+        // MAP_FAILED and the failing fd is closed. The pointer is
+        // stored on Self and freed in Drop via close().
         unsafe {
             let fd;
             if create {
