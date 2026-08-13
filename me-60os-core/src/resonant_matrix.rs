@@ -257,6 +257,7 @@ impl ResonantMatrix {
             return Err(format!("Buffer too small: {} < {}", buf_size, total_size));
         }
 
+        // SAFETY: buf_size was checked >= total_size on line 256; src/dst are non-overlapping; n is exact byte count
         unsafe {
             let src_ptr = self.crystals.as_ptr() as *const u8;
             std::ptr::copy_nonoverlapping(src_ptr, shm_ptr, total_size);
@@ -282,6 +283,7 @@ impl ResonantMatrix {
             ));
         }
 
+        // SAFETY: buffer.size was checked >= total_size on line 278; src/dst are non-overlapping; n is exact byte count
         unsafe {
             let dst_ptr = self.crystals.as_mut_ptr() as *mut u8;
             std::ptr::copy_nonoverlapping(shm_ptr, dst_ptr, total_size);

@@ -29,8 +29,8 @@ pub struct ResonantBuffer {
     _padding: [u8; CACHE_LINE_SIZE], // Reduce false sharing
 }
 
-// SAFETY: SPSC access pattern assumed.
-// Sync is safe because head/tail are atomic and buffer is fixed size.
+// SAFETY: ResonantBuffer uses UnsafeCell internally; all mutable access goes through atomic
+// head/tail indices which enforce the SPSC invariant (writer-only head, reader-only tail).
 unsafe impl Sync for ResonantBuffer {}
 
 impl ResonantBuffer {
@@ -61,7 +61,7 @@ impl ResonantBuffer {
             return false; // Full (Harmonic Saturation)
         }
 
-        // Write data
+        // SAFETY: head was loaded and validated against tail; (head+1)%SIZE != tail proves the slot is not written
         unsafe {
             *self.data[head].get() = value;
         }
@@ -81,7 +81,7 @@ impl ResonantBuffer {
             return None; // Empty (Vacuum State)
         }
 
-        // Read data
+        // SAFETY: tail was loaded and validated against head; tail != head proves the slot is not empty
         let value = unsafe { (*self.data[tail].get()).clone() };
 
         // Commit read

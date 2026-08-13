@@ -69,6 +69,7 @@ impl EbpfBridge {
             return None;
         }
 
+        // SAFETY: data.len() was checked >= size_of::<CortexEventRaw>() on line 68; pointer is valid for read
         let raw: CortexEventRaw =
             unsafe { std::ptr::read_unaligned(data.as_ptr() as *const CortexEventRaw) };
 

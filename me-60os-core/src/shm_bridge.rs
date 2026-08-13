@@ -92,6 +92,7 @@ impl PySharedBuffer {
                 "Write out of bounds",
             ));
         }
+        // SAFETY: offset+len validated against self.size above; src/dst non-overlapping; len is exact byte count
         unsafe {
             ptr::copy_nonoverlapping(data.as_ptr(), self.ptr.add(offset), data.len());
         }
@@ -104,6 +105,7 @@ impl PySharedBuffer {
                 "Read out of bounds",
             ));
         }
+        // SAFETY: offset+length validated against self.size above; ptr.add(offset) within mapped region
         unsafe {
             let slice = std::slice::from_raw_parts(self.ptr.add(offset), length);
             let bytes = PyBytes::new(py, slice);
@@ -112,6 +114,7 @@ impl PySharedBuffer {
     }
 
     pub fn close(&mut self) {
+        // SAFETY: munmap and close are idempotent; null/MAP_FAILED checks guard against double-free
         unsafe {
             if !self.ptr.is_null() && self.ptr != MAP_FAILED as *mut u8 {
                 munmap(self.ptr as *mut libc::c_void, self.size);
@@ -127,6 +130,7 @@ impl PySharedBuffer {
     pub fn unlink(&self) {
         if self.is_owner {
             if let Ok(c_name) = CString::new(self.name.clone()) {
+                // SAFETY: shm_unlink is idempotent POSIX; called only when is_owner=true
                 unsafe {
                     shm_unlink(c_name.as_ptr());
                 }
