@@ -63,6 +63,12 @@ truthsync_core = { path = "../truthsync-core", package = "truthsync-core" }
 [dev-dependencies]
 tokio-test = "0.4"
 
+[lints.clippy]
+float_arithmetic = "forbid"
+float_cmp = "forbid"
+cast_possible_truncation = "forbid"
+cast_precision_loss = "forbid"
+
 [profile.release]
 opt-level = 3
 lto = true

@@ -24,11 +24,15 @@ from typing import List
 router = APIRouter(prefix="/api/v1/users", tags=["users"])
 
 @router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
+async def create_user(
+    user: UserCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     """
     Creates a new user.
 
-    This is a public endpoint that allows new users to register.
+    Requires authentication.
     If a tenant_id is not provided, the user is assigned to the 'default' tenant.
     """
     return await create_user_service(db=db, user=user)

@@ -10,10 +10,10 @@ Provider:
 import logging
 import os
 import httpx
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from app.core.prompts import AIMode, SYSTEM_PROMPTS
-from app.security import TelemetrySanitizer
+from app.security import TelemetrySanitizer, get_current_user
 
 # Configure Logger
 logger = logging.getLogger(__name__)
@@ -69,7 +69,7 @@ class AIHealth(BaseModel):
 # ============================================================================
 
 @router.post("/query", response_model=AIResponse)
-async def query_ai(query: AIQuery):
+async def query_ai(query: AIQuery, current_user = Depends(get_current_user)):
     """
     Query Google Vertex AI Model
     """

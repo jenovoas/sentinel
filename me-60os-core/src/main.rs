@@ -1,5 +1,9 @@
 // Autor: Jaime Novoa Sepulveda — Todos los derechos reservados.
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
+#![forbid(clippy::float_arithmetic)]
+#![forbid(clippy::float_cmp)]
+#![forbid(clippy::cast_possible_truncation)]
+#![forbid(clippy::cast_precision_loss)]
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 // src/main.rs
 //! 🛡️ ME-60OS: NATIVE RESONANT CORE DAEMON 🛡️
