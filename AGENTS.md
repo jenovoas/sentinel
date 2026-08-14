@@ -63,9 +63,9 @@ ALWAYS prefer MCP graph tools over grep/glob/file-search for code discovery.
 - When MCP tools return insufficient results
 
 ## Examples
-- Find a handler: `search_graph(name_pattern=".*OrderHandler.*")`
-- Who calls it: `trace_path(function_name="OrderHandler", direction="inbound")`
-- Read source: `get_code_snippet(qualified_name="pkg/orders.OrderHandler")`
+- Find a handler: `search_graph(project="sentinel", name_pattern=".*OrderHandler.*")`
+- Who calls it: `trace_path(project="sentinel", function_name="OrderHandler", direction="inbound")`
+- Read source: `get_code_snippet(project="sentinel", qualified_name="pkg/orders.OrderHandler")`
 <!-- codebase-memory-mcp:end -->
 
 ---
