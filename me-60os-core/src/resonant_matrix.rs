@@ -32,6 +32,9 @@ pub struct ResonantMatrix {
     pub coupling_factor: SPA,
     /// Time step for evolution
     pub dt: SPA,
+
+    /// Reusable transfer buffer (hoisted out of step() to avoid per-tick alloc)
+    transfers_buf: Vec<SPA>,
 }
 
 impl ResonantMatrix {
@@ -46,6 +49,7 @@ impl ResonantMatrix {
             context_data: HashMap::new(),
             coupling_factor: SPA::new(0, 10, 0, 0, 0), // 10/60
             dt: SPA::new(0, 0, 1, 0, 0),               // 1 second step
+            transfers_buf: vec![SPA::zero(); size],
         }
     }
 
@@ -60,6 +64,7 @@ impl ResonantMatrix {
             context_data: HashMap::new(),
             coupling_factor: coupling,
             dt: SPA::new(0, 0, 1, 0, 0),
+            transfers_buf: vec![SPA::zero(); size],
         }
     }
 
@@ -76,8 +81,10 @@ impl ResonantMatrix {
             return;
         }
 
-        // 1. Calculate transfers (without applying yet to maintain symmetry)
-        let mut transfers: Vec<SPA> = vec![SPA::zero(); size];
+        // 1. Reuse transfer buffer (hoisted out of step() to avoid per-tick alloc)
+        self.transfers_buf.clear();
+        self.transfers_buf.resize(size, SPA::zero());
+        let transfers: &mut [SPA] = &mut self.transfers_buf;
 
         // 2D Hexagonal Ring Radius Approximation
         // integer ceil(sqrt(size)) sin float: binary search en [1, size]

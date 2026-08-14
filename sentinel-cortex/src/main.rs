@@ -250,54 +250,61 @@ async fn main() {
             let batch_size = gpu_ctrl.adjust_batch_size(elapsed_msx1000);
             tracing::trace!("⚖️ MAAT: status={}, speed={:?}, gpu_batch={}", status, current_speed, batch_size);
 
-            let mut lat = lattice_thermal.lock().unwrap();
-            let node_count = lat.amplitudes_raw().len();
-            // Inject multi-point harmonic thermal pulses across central hexagonal rings (Node 0, ring centers)
-            // PRUEBA PAI-60: si SENTINEL_PAI_CONVERT=1, la amplitud se deriva via pai60_divide
-            // (razon recíproca exacta base-60) en vez de meter i64 crudo como presion.
-            let pai_convert = std::env::var("SENTINEL_PAI_CONVERT").map(|v| v == "1").unwrap_or(false);
-            if pai_convert {
-                // denominador 60 = escala base-60 (S60). value en [0,60).
-                let v = entropy_pressure.rem_euclid(60);
-                lat.inject_pai(0, v, 60);
-                if node_count > 100 {
-                    let step_ring = node_count / 7;
-                    for ring_idx in 1..7 {
-                        lat.inject_pai(ring_idx * step_ring, v / 2, 60);
+            // AUDIT-360: scope mutex to critical section (inject + step), release before oscillate writes
+            {
+                let mut lat = lattice_thermal.lock().unwrap();
+                let node_count = lat.amplitudes_raw().len();
+                // Inject multi-point harmonic thermal pulses across central hexagonal rings (Node 0, ring centers)
+                // PRUEBA PAI-60: si SENTINEL_PAI_CONVERT=1, la amplitud se deriva via pai60_divide
+                // (razon recíproca exacta base-60) en vez de meter i64 crudo como presion.
+                let pai_convert = std::env::var("SENTINEL_PAI_CONVERT").map(|v| v == "1").unwrap_or(false);
+                if pai_convert {
+                    // denominador 60 = escala base-60 (S60). value en [0,60).
+                    let v = entropy_pressure.rem_euclid(60);
+                    lat.inject_pai(0, v, 60);
+                    if node_count > 100 {
+                        let step_ring = node_count / 7;
+                        for ring_idx in 1..7 {
+                            lat.inject_pai(ring_idx * step_ring, v / 2, 60);
+                        }
+                    }
+                } else {
+                    lat.inject(0, entropy_pressure);
+                    if node_count > 100 {
+                        let step_ring = node_count / 7;
+                        for ring_idx in 1..7 {
+                            lat.inject(ring_idx * step_ring, entropy_pressure / 2);
+                        }
                     }
                 }
-            } else {
-                lat.inject(0, entropy_pressure);
-                if node_count > 100 {
-                    let step_ring = node_count / 7;
-                    for ring_idx in 1..7 {
-                        lat.inject(ring_idx * step_ring, entropy_pressure / 2);
-                    }
-                }
-            }
-            lat.step();
+                lat.step();
+            } // drop lat lock here
 
-            // Calculate Resonant Physics Inertial Damping & Effective Load Reduction
+            // Calculate Resonant Physics Inertial Damping & Effective Load Reduction (outside lock)
             let static_load = me60os_core::spa::SPA::from_raw(entropy_pressure);
             let priority = me60os_core::spa::SPA::new(1, 0, 0, 0, 0); // 1.0 Priority Unit
             let stability = me60os_core::spa::SPA::from_raw((entropy_pressure % 60 + 1) * (me60os_core::spa::SPA::SCALE_0 / 60));
             let effective_load = me60os_core::physics::ResonantPhysics::calculate_effective_load(static_load, priority, stability);
 
             // Inject entropy & diffuse in EXP-009 LiquidLattice 3x3 grid continuously using effective load
-            let mut ll = liquid_lattice_thermal.lock().unwrap();
-            ll.inject_entropy(1, 1, effective_load.to_raw()); // Center cell (1,1)
-            ll.diffuse();
+            {
+                let mut ll = liquid_lattice_thermal.lock().unwrap();
+                ll.inject_entropy(1, 1, effective_load.to_raw()); // Center cell (1,1)
+                ll.diffuse();
+            }
 
             // Continuous pulse of PAI-Neural SNN LIF memory with thermal CPU noise
-            let mut nm = neural_memory_thermal.lock().unwrap();
-            let thermal_ev = me60os_core::ebpf_cortex_bridge::CortexEvent::new(
-                chrono::Utc::now().timestamp_nanos_opt().unwrap_or(0) as u64,
-                18, // Watchdog/Resonance Event Type
-                std::process::id() as u32,
-                entropy_pressure as u64,
-                0,
-            );
-            nm.ingest_event(thermal_ev, me60os_core::spa::SPA::from_raw(entropy_pressure));
+            {
+                let mut nm = neural_memory_thermal.lock().unwrap();
+                let thermal_ev = me60os_core::ebpf_cortex_bridge::CortexEvent::new(
+                    chrono::Utc::now().timestamp_nanos_opt().unwrap_or(0) as u64,
+                    18, // Watchdog/Resonance Event Type
+                    std::process::id() as u32,
+                    entropy_pressure as u64,
+                    0,
+                );
+                nm.ingest_event(thermal_ev, me60os_core::spa::SPA::from_raw(entropy_pressure));
+            }
         }
     });
 
@@ -356,25 +363,24 @@ async fn main() {
                 .unwrap()
                 .as_secs();
             
-            // CSV line: timestamp,node_id,amplitude_s60,phase_s60,gradient_s60,energy_s60
-            let mut csv = String::new();
-            for i in 0..amps.len() {
-                let gradient = if i + 1 < amps.len() { amps[i + 1] - amps[i] } else { 0 };
-                csv.push_str(&format!("{},{},{},{},{},{}\n",
-                    now, i, amps[i], phases[i], gradient, energy));
-            }
-            use std::io::Write;
+            // AUDIT-360: use BufWriter + writeln! per node instead of format! + String concat
+            use std::io::{BufWriter, Write};
             let file = std::fs::OpenOptions::new()
                 .create(true)
                 .append(true)
                 .open("/var/log/sentinel/phonon_data.csv");
-            
-            if let Ok(mut f) = file {
-                if let Err(e) = f.write_all(csv.as_bytes()) {
-                    tracing::error!("Phonon CSV write error: {}", e);
-                } else {
-                    tracing::info!("Phonon lattice snapshot exported: {} nodes, total_energy={}", amps.len(), energy);
+
+            if let Ok(f) = file {
+                let mut buf = BufWriter::new(f);
+                for i in 0..amps.len() {
+                    let gradient = if i + 1 < amps.len() { amps[i + 1] - amps[i] } else { 0 };
+                    if let Err(e) = writeln!(buf, "{},{},{},{},{},{}", now, i, amps[i], phases[i], gradient, energy) {
+                        tracing::error!("Phonon CSV write error: {}", e);
+                        break;
+                    }
                 }
+                let _ = buf.flush();
+                tracing::info!("Phonon lattice snapshot exported: {} nodes, total_energy={}", amps.len(), energy);
             }
         }
     });
@@ -524,31 +530,33 @@ async fn metrics_prometheus_handler(
 
     let ll_retention = state.liquid_lattice.lock().unwrap().retention_score();
 
-    let mut out = String::new();
-    out.push_str("# HELP sentinel_cpu_temperature_celsius Physical CPU Thermal Noise Sensor\n");
-    out.push_str("# TYPE sentinel_cpu_temperature_celsius gauge\n");
-    out.push_str(&format!("sentinel_cpu_temperature_celsius {:.2}\n", cpu_temp_celsius));
+    // AUDIT-360: use single String buffer with write! macros instead of fragmented format!
+    use std::fmt::Write as _;
+    let mut out = String::with_capacity(4096);
+    let _ = writeln!(out, "# HELP sentinel_cpu_temperature_celsius Physical CPU Thermal Noise Sensor");
+    let _ = writeln!(out, "# TYPE sentinel_cpu_temperature_celsius gauge");
+    let _ = writeln!(out, "sentinel_cpu_temperature_celsius {:.2}", cpu_temp_celsius);
 
-    out.push_str("# HELP sentinel_liquid_lattice_retention_score EXP-009 Liquid Lattice Memory Retention Score\n");
-    out.push_str("# TYPE sentinel_liquid_lattice_retention_score gauge\n");
-    out.push_str(&format!("sentinel_liquid_lattice_retention_score {:.4}\n", ll_retention));
+    let _ = writeln!(out, "# HELP sentinel_liquid_lattice_retention_score EXP-009 Liquid Lattice Memory Retention Score");
+    let _ = writeln!(out, "# TYPE sentinel_liquid_lattice_retention_score gauge");
+    let _ = writeln!(out, "sentinel_liquid_lattice_retention_score {:.4}", ll_retention);
 
-    out.push_str("# HELP sentinel_lattice_total_energy Total raw energy in Liquid Lattice\n");
-    out.push_str("# TYPE sentinel_lattice_total_energy gauge\n");
-    out.push_str(&format!("sentinel_lattice_total_energy {}\n", total_energy));
+    let _ = writeln!(out, "# HELP sentinel_lattice_total_energy Total raw energy in Liquid Lattice");
+    let _ = writeln!(out, "# TYPE sentinel_lattice_total_energy gauge");
+    let _ = writeln!(out, "sentinel_lattice_total_energy {}", total_energy);
 
-    out.push_str("# HELP sentinel_lattice_active_node_count Count of non-zero energetic lattice nodes\n");
-    out.push_str("# TYPE sentinel_lattice_active_node_count gauge\n");
+    let _ = writeln!(out, "# HELP sentinel_lattice_active_node_count Count of non-zero energetic lattice nodes");
+    let _ = writeln!(out, "# TYPE sentinel_lattice_active_node_count gauge");
     let active_count = amps.iter().filter(|&&a| a > 0).count();
-    out.push_str(&format!("sentinel_lattice_active_node_count {}\n", active_count));
+    let _ = writeln!(out, "sentinel_lattice_active_node_count {}", active_count);
 
-    out.push_str("# HELP sentinel_lattice_node_amplitude Amplitude for active or sampled lattice node\n");
-    out.push_str("# TYPE sentinel_lattice_node_amplitude gauge\n");
+    let _ = writeln!(out, "# HELP sentinel_lattice_node_amplitude Amplitude for active or sampled lattice node");
+    let _ = writeln!(out, "# TYPE sentinel_lattice_node_amplitude gauge");
     // Sample active non-zero nodes and representative rings up to 256 series to respect Mimir ingestion limits
     let step_sample = std::cmp::max(1, amps.len() / 128);
     for (idx, amp) in amps.iter().enumerate() {
         if *amp > 0 || idx % step_sample == 0 {
-            out.push_str(&format!("sentinel_lattice_node_amplitude{{node=\"{}\"}} {}\n", idx, amp));
+            let _ = writeln!(out, "sentinel_lattice_node_amplitude{{node=\"{}\"}} {}", idx, amp);
         }
     }
 
@@ -560,21 +568,21 @@ async fn metrics_prometheus_handler(
 
     let snn_spikes = state.neural_memory.lock().unwrap().total_spikes;
 
-    out.push_str("# HELP sentinel_pai_snn_spikes_total Total SNN LIF neural spikes processed in Ring 0\n");
-    out.push_str("# TYPE sentinel_pai_snn_spikes_total counter\n");
-    out.push_str(&format!("sentinel_pai_snn_spikes_total {}\n", snn_spikes));
+    let _ = writeln!(out, "# HELP sentinel_pai_snn_spikes_total Total SNN LIF neural spikes processed in Ring 0");
+    let _ = writeln!(out, "# TYPE sentinel_pai_snn_spikes_total counter");
+    let _ = writeln!(out, "sentinel_pai_snn_spikes_total {}", snn_spikes);
 
-    out.push_str("# HELP sentinel_aiops_shield_interceptions_total Total AIOpsDoom prompt injection interceptions\n");
-    out.push_str("# TYPE sentinel_aiops_shield_interceptions_total counter\n");
-    out.push_str(&format!("sentinel_aiops_shield_interceptions_total {}\n", wal_lines));
+    let _ = writeln!(out, "# HELP sentinel_aiops_shield_interceptions_total Total AIOpsDoom prompt injection interceptions");
+    let _ = writeln!(out, "# TYPE sentinel_aiops_shield_interceptions_total counter");
+    let _ = writeln!(out, "sentinel_aiops_shield_interceptions_total {}", wal_lines);
 
-    out.push_str("# HELP sentinel_security_wal_entries_total Total Security WAL persistent entries\n");
-    out.push_str("# TYPE sentinel_security_wal_entries_total counter\n");
-    out.push_str(&format!("sentinel_security_wal_entries_total {}\n", wal_lines));
+    let _ = writeln!(out, "# HELP sentinel_security_wal_entries_total Total Security WAL persistent entries");
+    let _ = writeln!(out, "# TYPE sentinel_security_wal_entries_total counter");
+    let _ = writeln!(out, "sentinel_security_wal_entries_total {}", wal_lines);
 
-    out.push_str("# HELP sentinel_xdp_firewall_status XDP network firewall status (1=ACTIVE, 0=INACTIVE)\n");
-    out.push_str("# TYPE sentinel_xdp_firewall_status gauge\n");
-    out.push_str(&format!("sentinel_xdp_firewall_status {}\n", xdp_active));
+    let _ = writeln!(out, "# HELP sentinel_xdp_firewall_status XDP network firewall status (1=ACTIVE, 0=INACTIVE)");
+    let _ = writeln!(out, "# TYPE sentinel_xdp_firewall_status gauge");
+    let _ = writeln!(out, "sentinel_xdp_firewall_status {}", xdp_active);
 
     out
 }
