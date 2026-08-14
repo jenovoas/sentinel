@@ -1,13 +1,8 @@
 {
   "servers": {
-    "code-review-graph": {
-      "command": "uvx",
-      "args": [
-        "code-review-graph",
-        "serve"
-      ],
-      "cwd": "/home/jnovoas/Proyectos/sentinel",
-      "type": "stdio"
+    "codebase-memory-mcp": {
+      "command": "/home/jnovoas/.local/bin/codebase-memory-mcp",
+      "args": []
     }
   }
 }
