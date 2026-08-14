@@ -1,3 +1,4 @@
+// AUDIT-360: semantic check removed — was a stub. Either re-implement with real argv parser (future) or remove this file.
 // SPDX-License-Identifier: GPL-2.0
 /* Guardian-Alpha™ Cognitive Kernel - Semantic Awareness at Ring 0
  *
@@ -54,6 +55,7 @@ struct event {
 /* Helper: String Compare (limited length) */
 static __always_inline int str_equals(const char *s1, const char *s2, int n) {
   for (int i = 0; i < n; i++) {
+    if (i >= 64) break; // AUDIT-360: OOB read guard
     if (s1[i] != s2[i])
       return 0;
     if (s1[i] == '\0')
@@ -78,6 +80,7 @@ static __always_inline int str_contains(const char *haystack,
     for (int j = 0; j < 8; j++) { // Needle limited to 8 chars
       if (needle[j] == '\0')
         break;
+      if (i + j >= 64) break; // AUDIT-360: OOB read guard
       if (haystack[i + j] != needle[j]) {
         match = 0;
         break;
@@ -91,34 +94,11 @@ static __always_inline int str_contains(const char *haystack,
 
 /*
  * COGNITIVE ENGINE (Micro-LLM Logic)
- * Detects "Destructive Intent"
+ * AUDIT-360: check_semantic_intent stub removed — was non-functional.
+ * The LSM hook below already does whitelist lookup based on path
+ * (same pattern as ai_guardian.c). Semantic intent detection via
+ * argv parsing is deferred to a future real implementation.
  */
-static __always_inline int check_semantic_intent(struct linux_binprm *bprm) {
-  unsigned long argc = BPF_CORE_READ(bprm, argc);
-  if (argc < 2)
-    return 1; // No args, safe
-
-  // Read first 3 arguments (argv[0] is binary, argv[1], argv[2]...)
-  char arg1[32] = {0};
-  char arg2[32] = {0};
-
-  // Pointer arithmetic to get argv pointers is complex in BPF-LSM
-  // We use a simplified approximation or assume fixed layout for POC
-  // Note: Proper argv reading in LSM requires accessing bprm->p (memory offset)
-  // which is advanced reading. For this POC, we will stub the logic
-  // to demonstrate WHERE it would plug in, essentially treating 'rm' specially.
-
-  // REALITY CHECK: Reading user stack arguments from LSM is HARD.
-  // Instead of full argv parsing (which needs complex memory loop),
-  // we will demonstrate the logic structure.
-
-  return 1; // Default Safe
-}
-
-// NOTE: Since full argv reading is complex and unstable across kernels without
-// specific helpers, we implement a safer "Cognitive" check:
-// We verify if the binary name itself contains suspicious patterns if
-// masqueraded, OR we apply STRICTER policy for Critical Binaries.
 
 SEC("lsm/bprm_check_security")
 int BPF_PROG(guardian_cognitive, struct linux_binprm *bprm, int ret) {

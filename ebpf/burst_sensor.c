@@ -85,8 +85,12 @@ int detect_burst(struct xdp_md *ctx)
     }
     
     // Calculate packets per second
-    // PPS = (packets * 1,000,000,000) / elapsed_ns
-    pps = (*count * 1000000000ULL) / elapsed_ns;
+    // AUDIT-360: fix u64 overflow — divide by seconds first, then multiply
+    // Old: pps = (*count * 1000000000ULL) / elapsed_ns;  // overflow if *count > 18.4T
+    // New: pre-divide elapsed_ns to seconds, avoiding multiplication overflow
+    __u64 elapsed_s = elapsed_ns / 1000000000ULL;
+    if (elapsed_s == 0) elapsed_s = 1; // guard against div-by-zero
+    pps = *count / elapsed_s;
     
     // Determine severity
     __u32 severity = 0;

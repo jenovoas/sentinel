@@ -38,7 +38,9 @@ struct {
     __type(value, __u8);   // 1 = AI agent, 0 = normal
 } ai_agents_map SEC(".maps");
 
-/* Dynamic whitelist of paths (updatable without reboot) */
+/* Dynamic whitelist of paths (updatable without reboot)
+ * TODO(audit-360-5b): replace path-string keys with SHA256-of-binary
+ */
 struct {
     __uint(type, BPF_MAP_TYPE_HASH);
     __uint(max_entries, 10000);
@@ -138,10 +140,12 @@ int BPF_PROG(me60os_ai_guardian_open, struct file *file)
     __u32 key;
     __u64 *count;
 
-    // 0. God mode bypass
+    // 0. God mode bypass — audit each invocation
     god = bpf_map_lookup_elem(&god_mode_uids, &uid);
-    if (god && *god == 1)
+    if (god && *god == 1) {
+        send_cortex_event(EVENT_GODMODE_INSERT, pid, 0, SEVERITY_HIGH);
         return 0;
+    }
 
     // 1. Check if process is marked as AI agent
     is_ai = bpf_map_lookup_elem(&ai_agents_map, &pid);
@@ -207,10 +211,12 @@ int BPF_PROG(me60os_ai_guardian_exec, struct linux_binprm *bprm)
     __u32 key;
     __u64 *count;
 
-    // 0. God mode bypass
+    // 0. God mode bypass — audit each invocation
     god = bpf_map_lookup_elem(&god_mode_uids, &uid);
-    if (god && *god == 1)
+    if (god && *god == 1) {
+        send_cortex_event(EVENT_GODMODE_INSERT, pid, 0, SEVERITY_HIGH);
         return 0;
+    }
 
     // 1. Check if process is marked as AI agent
     is_ai = bpf_map_lookup_elem(&ai_agents_map, &pid);
