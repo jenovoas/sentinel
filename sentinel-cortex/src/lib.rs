@@ -15,8 +15,8 @@
 //! - QuantumScheduler: Adiabatic task scheduling (future)
 //! - Portal Detection: Harmonic convergence detection (future)
 
-mod math;
-mod quantum;
+pub mod math;
+pub mod quantum;
 mod buffer_system;
 mod memory;
 pub mod concentrator;
