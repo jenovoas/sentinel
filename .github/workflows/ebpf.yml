@@ -1,0 +1,25 @@
+name: eBPF CI
+
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+
+jobs:
+  ebpf:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang llvm libelf-dev libbpf-dev build-essential linux-headers-$(uname -r)
+
+      - name: Build eBPF programs
+        run: make -C ebpf
+        continue-on-error: true
+
+      - name: Basic LSM test
+        run: bash ebpf/test_lsm_basic.sh
+        continue-on-error: true

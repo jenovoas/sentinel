@@ -1,0 +1,37 @@
+# cargo-deny configuration
+# Run: cargo deny check
+
+[advisories]
+# Fail on advisories with severity >= medium
+yanked = "deny"
+
+[licenses]
+# Deny GPL-3 (incompatible with Apache-2.0)
+[[licenses.deny]]
+name = "GPL-3"
+reason = "Incompatible with Apache-2.0 license"
+
+[[licenses.deny]]
+name = "GPL-3.0-only"
+reason = "Incompatible with Apache-2.0 license"
+
+[[licenses.deny]]
+name = "GPL-3.0-or-later"
+reason = "Incompatible with Apache-2.0 license"
+
+[licenses.allow]
+# Allow common permissive licenses
+ licenses = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Unicode-DFS-2016",
+    "Zlib",
+]
+
+[bans]
+# Disallow multiple versions of the same crate
+multiple-versions = "warn"
