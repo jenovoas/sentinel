@@ -10,7 +10,7 @@
 use libc::{close, ftruncate, mmap, munmap, shm_open, shm_unlink};
 use libc::{MAP_FAILED, MAP_SHARED, O_CREAT, O_RDWR, PROT_READ, PROT_WRITE};
 use pyo3::prelude::*;
-use pyo3::types::PyBytes;
+use pyo3::types::{PyAny, PyBytes};
 use std::ffi::CString;
 use std::ptr;
 
@@ -105,7 +105,7 @@ impl PySharedBuffer {
         Ok(data.len())
     }
 
-    pub fn read<'py>(&self, py: Python<'py>, offset: usize, length: usize) -> PyResult<PyObject> {
+    pub fn read<'py>(&self, py: Python<'py>, offset: usize, length: usize) -> PyResult<Py<PyAny>> {
         if offset + length > self.size {
             return Err(PyErr::new::<pyo3::exceptions::PyIndexError, _>(
                 "Read out of bounds",
@@ -115,7 +115,7 @@ impl PySharedBuffer {
         unsafe {
             let slice = std::slice::from_raw_parts(self.ptr.add(offset), length);
             let bytes = PyBytes::new(py, slice);
-            Ok(bytes.into())
+            Ok(bytes.into_any().unbind())
         }
     }
 

@@ -31,7 +31,7 @@ path = "src/bin/resonant_lattice_memory.rs"
 [dependencies]
 libc = "0.2"
 # pyo3 made optional to allow pure Rust binary builds
-pyo3 = { version = "0.25", optional = true }
+pyo3 = { version = "0.29", optional = true }
 regex = "1.10"
 memmap2 = "0.9"
 rayon = "1.10"
