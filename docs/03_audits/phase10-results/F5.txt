@@ -1,0 +1,57 @@
+
+==================================== ERRORS ====================================
+___________________ ERROR collecting test_advanced_gates.py ____________________
+E   AttributeError: type object 'me60os_core.SPA' has no attribute 'from_decimal_degrees_FOR_IMPORT_ONLY'
+_________________________ ERROR collecting test_all.py _________________________
+E   AttributeError: type object 'me60os_core.SPA' has no attribute 'from_decimal_degrees_FOR_IMPORT_ONLY'
+_____________________ ERROR collecting test_complex_s60.py _____________________
+E   AttributeError: type object 'me60os_core.SPA' has no attribute 'from_decimal_degrees_FOR_IMPORT_ONLY'
+_____________________ ERROR collecting test_floor_ceil.py ______________________
+E   AttributeError: type object 'me60os_core.SPA' has no attribute 'from_decimal_degrees_FOR_IMPORT_ONLY'
+____________________ ERROR collecting test_network_sync.py _____________________
+E   AttributeError: type object 'me60os_core.SPA' has no attribute 'from_decimal_degrees_FOR_IMPORT_ONLY'
+____________________ ERROR collecting test_noise_models.py _____________________
+E   AttributeError: type object 'me60os_core.SPA' has no attribute 'from_decimal_degrees_FOR_IMPORT_ONLY'
+________________________ ERROR collecting test_path.py _________________________
+E   AttributeError: type object 'me60os_core.SPA' has no attribute 'from_decimal_degrees_FOR_IMPORT_ONLY'
+_____________________ ERROR collecting test_qaoa_maxcut.py _____________________
+E   AttributeError: type object 'me60os_core.SPA' has no attribute 'from_decimal_degrees_FOR_IMPORT_ONLY'
+______________________ ERROR collecting test_qaoa_s60.py _______________________
+E   AttributeError: type object 'me60os_core.SPA' has no attribute 'from_decimal_degrees_FOR_IMPORT_ONLY'
+_______________ ERROR collecting test_quantum_lattice_engine.py ________________
+E   AttributeError: type object 'me60os_core.SPA' has no attribute 'from_decimal_degrees_FOR_IMPORT_ONLY'
+__________________ ERROR collecting test_qwen_coordinator.py ___________________
+E   AttributeError: type object 'me60os_core.SPA' has no attribute 'from_decimal_degrees_FOR_IMPORT_ONLY'
+__________________ ERROR collecting test_scheduler_bridge.py ___________________
+E   AttributeError: type object 'me60os_core.SPA' has no attribute 'from_decimal_degrees_FOR_IMPORT_ONLY'
+___________________ ERROR collecting test_tensor_product.py ____________________
+E   AttributeError: type object 'me60os_core.SPA' has no attribute 'from_decimal_degrees_FOR_IMPORT_ONLY'
+___________________ ERROR collecting test_trig_additional.py ___________________
+E   AttributeError: type object 'me60os_core.SPA' has no attribute 'from_decimal_degrees_FOR_IMPORT_ONLY'
+____________________ ERROR collecting test_vqe_crystals.py _____________________
+E   AttributeError: type object 'me60os_core.SPA' has no attribute 'from_decimal_degrees_FOR_IMPORT_ONLY'
+_____________________ ERROR collecting test_yatra_hook.py ______________________
+E   AttributeError: type object 'me60os_core.SPA' has no attribute 'from_decimal_degrees_FOR_IMPORT_ONLY'
+________________ ERROR collecting test_yatra_math_precision.py _________________
+E   AttributeError: type object 'me60os_core.SPA' has no attribute 'from_decimal_degrees_FOR_IMPORT_ONLY'
+=========================== short test summary info ============================
+ERROR test_advanced_gates.py - AttributeError: type object 'me60os_core.SPA' ...
+ERROR test_all.py - AttributeError: type object 'me60os_core.SPA' has no attr...
+ERROR test_complex_s60.py - AttributeError: type object 'me60os_core.SPA' has...
+ERROR test_floor_ceil.py - AttributeError: type object 'me60os_core.SPA' has ...
+ERROR test_network_sync.py - AttributeError: type object 'me60os_core.SPA' ha...
+ERROR test_noise_models.py - AttributeError: type object 'me60os_core.SPA' ha...
+ERROR test_path.py - AttributeError: type object 'me60os_core.SPA' has no att...
+ERROR test_qaoa_maxcut.py - AttributeError: type object 'me60os_core.SPA' has...
+ERROR test_qaoa_s60.py - AttributeError: type object 'me60os_core.SPA' has no...
+ERROR test_quantum_lattice_engine.py - AttributeError: type object 'me60os_co...
+ERROR test_qwen_coordinator.py - AttributeError: type object 'me60os_core.SPA...
+ERROR test_scheduler_bridge.py - AttributeError: type object 'me60os_core.SPA...
+ERROR test_tensor_product.py - AttributeError: type object 'me60os_core.SPA' ...
+ERROR test_trig_additional.py - AttributeError: type object 'me60os_core.SPA'...
+ERROR test_vqe_crystals.py - AttributeError: type object 'me60os_core.SPA' ha...
+ERROR test_yatra_hook.py - AttributeError: type object 'me60os_core.SPA' has ...
+ERROR test_yatra_math_precision.py - AttributeError: type object 'me60os_core...
+!!!!!!!!!!!!!!!!!!! Interrupted: 17 errors during collection !!!!!!!!!!!!!!!!!!!
+17 errors in 0.16s
+F5 exit=2

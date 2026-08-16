@@ -1,0 +1,584 @@
+warning: profiles for the non root package will be ignored, specify profiles at the workspace root:
+package:   /home/jnovoas/Proyectos/sentinel/sentinel-cortex/Cargo.toml
+workspace: /home/jnovoas/Proyectos/sentinel/Cargo.toml
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.47
+   Compiling libc v0.2.189
+   Compiling serde_core v1.0.229
+   Compiling serde v1.0.229
+   Compiling cfg-if v1.0.4
+   Compiling version_check v0.9.5
+   Compiling parking_lot_core v0.9.12
+   Compiling shlex v2.0.1
+   Compiling find-msvc-tools v0.1.9
+   Compiling pin-project-lite v0.2.17
+   Compiling generic-array v0.14.7
+   Compiling memchr v2.8.3
+   Compiling bytes v1.12.1
+   Compiling cc v1.4.0
+   Compiling pkg-config v0.3.33
+   Compiling futures-core v0.3.33
+   Compiling itoa v1.0.18
+   Compiling syn v2.0.119
+   Compiling syn v3.0.3
+   Compiling scopeguard v1.2.0
+   Compiling lock_api v0.4.14
+   Compiling log v0.4.33
+   Compiling typenum v1.20.1
+   Compiling errno v0.3.14
+   Compiling getrandom v0.2.17
+   Compiling icu_properties_data v2.2.0
+   Compiling signal-hook-registry v1.4.8
+   Compiling autocfg v1.5.1
+   Compiling icu_normalizer_data v2.2.0
+   Compiling rand_core v0.6.4
+   Compiling vcpkg v0.2.15
+   Compiling mio v1.2.2
+   Compiling socket2 v0.6.5
+   Compiling futures-sink v0.3.33
+   Compiling stable_deref_trait v1.2.1
+   Compiling once_cell v1.21.4
+   Compiling zmij v1.0.23
+   Compiling slab v0.4.12
+   Compiling openssl-sys v0.9.117
+   Compiling futures-channel v0.3.33
+   Compiling crypto-common v0.1.7
+   Compiling subtle v2.6.1
+   Compiling tracing-core v0.1.36
+   Compiling serde_json v1.0.151
+   Compiling futures-task v0.3.33
+   Compiling bitflags v2.13.1
+   Compiling futures-io v0.3.33
+   Compiling openssl v0.10.81
+   Compiling target-lexicon v0.13.5
+   Compiling native-tls v0.2.18
+   Compiling zerocopy v0.8.55
+   Compiling writeable v0.6.3
+   Compiling equivalent v1.0.2
+   Compiling litemap v0.8.2
+   Compiling http v1.4.2
+   Compiling utf8_iter v1.0.4
+   Compiling percent-encoding v2.3.2
+   Compiling cpufeatures v0.2.17
+   Compiling crossbeam-utils v0.8.22
+   Compiling pyo3-build-config v0.25.1
+   Compiling num-traits v0.2.19
+   Compiling form_urlencoded v1.2.2
+   Compiling hashbrown v0.17.1
+   Compiling synstructure v0.13.2
+   Compiling indexmap v2.14.0
+   Compiling http-body v1.1.0
+   Compiling heck v0.5.0
+   Compiling foreign-types-shared v0.1.1
+   Compiling rustversion v1.0.23
+   Compiling httparse v1.10.1
+   Compiling serde_derive v1.0.229
+   Compiling displaydoc v0.2.7
+   Compiling foreign-types v0.3.2
+   Compiling tower-service v0.3.3
+   Compiling cfg_aliases v0.2.2
+   Compiling crossbeam-epoch v0.9.20
+   Compiling base64 v0.22.1
+   Compiling ryu v1.0.23
+   Compiling foldhash v0.1.5
+   Compiling zerofrom-derive v0.1.7
+   Compiling yoke-derive v0.8.2
+   Compiling zerovec-derive v0.11.3
+   Compiling tokio-macros v2.7.1
+   Compiling tracing-attributes v0.1.31
+   Compiling futures-macro v0.3.33
+   Compiling openssl-macros v0.1.1
+   Compiling zerocopy-derive v0.8.55
+   Compiling zerofrom v0.1.8
+   Compiling ppv-lite86 v0.2.21
+   Compiling futures-util v0.3.33
+   Compiling yoke v0.8.3
+   Compiling zerovec v0.11.6
+   Compiling zerotrie v0.2.4
+   Compiling tracing v0.1.44
+   Compiling rand_chacha v0.3.1
+   Compiling tinystr v0.8.3
+   Compiling potential_utf v0.1.5
+   Compiling smallvec v1.15.2
+   Compiling icu_locale_core v2.2.0
+   Compiling icu_collections v2.2.0
+   Compiling either v1.17.0
+   Compiling rand v0.8.7
+   Compiling allocator-api2 v0.2.21
+   Compiling parking_lot v0.12.5
+   Compiling icu_provider v2.2.0
+   Compiling openssl-probe v0.2.1
+   Compiling tokio v1.53.1
+   Compiling icu_properties v2.2.0
+   Compiling icu_normalizer v2.2.0
+   Compiling hashbrown v0.15.5
+   Compiling nix v0.31.3
+   Compiling atomic-waker v1.1.2
+   Compiling idna_adapter v1.2.2
+   Compiling idna v1.1.0
+   Compiling try-lock v0.2.5
+   Compiling crossbeam-deque v0.8.7
+   Compiling tower-layer v0.3.3
+   Compiling url v2.5.8
+   Compiling fnv v1.0.7
+   Compiling want v0.3.1
+   Compiling http-body-util v0.1.4
+   Compiling sync_wrapper v1.0.2
+   Compiling aho-corasick v1.1.4
+   Compiling httpdate v1.0.3
+   Compiling rayon-core v1.13.0
+   Compiling regex-syntax v0.8.11
+   Compiling signal-hook v0.3.18
+   Compiling pyo3-macros-backend v0.25.1
+   Compiling pyo3-ffi v0.25.1
+   Compiling inout v0.1.4
+   Compiling ipnet v2.12.0
+   Compiling siphasher v1.0.3
+   Compiling phf_shared v0.11.3
+   Compiling cipher v0.4.4
+   Compiling regex-automata v0.4.16
+   Compiling libbpf-sys v1.7.0+v1.7.0
+   Compiling async-trait v0.1.91
+   Compiling universal-hash v0.5.1
+   Compiling memoffset v0.9.1
+   Compiling mio v0.8.11
+   Compiling tokio-util v0.7.19
+   Compiling tokio-stream v0.1.19
+   Compiling h2 v0.4.15
+   Compiling tower v0.5.3
+   Compiling vsprintf v2.0.0
+   Compiling mime v0.3.17
+   Compiling unicode-width v0.1.14
+   Compiling anyhow v1.0.104
+   Compiling crc32fast v1.5.0
+   Compiling unicode-segmentation v1.13.3
+   Compiling paste v1.0.15
+   Compiling opaque-debug v0.3.1
+   Compiling polyval v0.6.2
+   Compiling combine v4.6.7
+   Compiling signal-hook-mio v0.2.5
+   Compiling tokio-native-tls v0.3.1
+   Compiling rayon v1.12.0
+   Compiling hyper v1.11.0
+   Compiling phf_generator v0.11.3
+   Compiling itertools v0.13.0
+   Compiling serde_urlencoded v0.7.1
+   Compiling strum_macros v0.26.4
+   Compiling hyper-util v0.1.20
+   Compiling castaway v0.2.4
+   Compiling pyo3 v0.25.1
+   Compiling blake3 v1.8.6
+   Compiling adler2 v2.0.1
+   Compiling simd-adler32 v0.3.10
+   Compiling zeroize v1.9.0
+   Compiling sha1_smol v1.0.1
+   Compiling lazy_static v1.5.0
+   Compiling static_assertions v1.1.0
+   Compiling sharded-slab v0.1.7
+   Compiling compact_str v0.7.1
+   Compiling hyper-tls v0.6.0
+   Compiling pyo3-macros v0.25.1
+   Compiling rustls-pki-types v1.15.1
+   Compiling strum v0.26.3
+   Compiling miniz_oxide v0.8.9
+   Compiling unicode-truncate v1.1.0
+   Compiling phf_macros v0.11.3
+   Compiling regex v1.13.1
+   Compiling matchers v0.2.0
+   Compiling crossterm v0.27.0
+   Compiling ghash v0.5.1
+   Compiling tower-http v0.6.11
+   Compiling ctr v0.9.2
+   Compiling aes v0.8.4
+   Compiling lru v0.12.5
+   Compiling futures-executor v0.3.33
+   Compiling itertools v0.12.1
+   Compiling stability v0.2.1
+   Compiling tracing-log v0.2.0
+   Compiling aead v0.5.2
+   Compiling socket2 v0.5.10
+   Compiling thread_local v1.1.10
+   Compiling encoding_rs v0.8.35
+   Compiling cpufeatures v0.3.0
+   Compiling nu-ansi-term v0.50.3
+   Compiling iana-time-zone v0.1.65
+   Compiling unindent v0.2.4
+   Compiling indoc v2.0.7
+   Compiling arrayvec v0.7.8
+   Compiling constant_time_eq v0.4.2
+   Compiling arrayref v0.3.9
+   Compiling cassowary v0.3.0
+   Compiling chrono v0.4.45
+   Compiling ratatui v0.26.3
+   Compiling tracing-subscriber v0.3.23
+   Compiling reqwest v0.12.28
+   Compiling redis v0.25.5
+   Compiling aes-gcm v0.10.3
+   Compiling futures v0.3.33
+   Compiling flate2 v1.1.9
+   Compiling phf v0.11.3
+   Compiling libbpf-rs v0.24.8
+   Compiling sysinfo v0.33.1
+   Compiling memmap2 v0.9.11
+   Compiling block-buffer v0.10.4
+   Compiling digest v0.10.7
+   Compiling thiserror v2.0.19
+   Compiling thiserror-impl v2.0.19
+   Compiling tinyvec_macros v0.1.1
+   Compiling tinyvec v1.12.0
+   Compiling crc-catalog v2.5.0
+   Compiling parking v2.2.1
+   Compiling event-listener v5.4.2
+   Compiling sha2 v0.10.9
+   Compiling crc v3.4.0
+   Compiling crossbeam-queue v0.3.13
+   Compiling futures-intrusive v0.5.0
+   Compiling hashlink v0.10.0
+   Compiling unicode-normalization v0.1.25
+   Compiling hmac v0.12.1
+   Compiling thiserror v1.0.69
+   Compiling unicode-bidi v0.3.18
+   Compiling unicode-properties v0.1.4
+   Compiling byteorder v1.5.0
+   Compiling atoi v2.0.0
+   Compiling hkdf v0.12.4
+   Compiling sqlx-core v0.8.6
+   Compiling stringprep v0.1.5
+   Compiling md-5 v0.10.6
+   Compiling thiserror-impl v1.0.69
+   Compiling getrandom v0.4.3
+   Compiling keccak v0.1.6
+   Compiling rustix v0.38.44
+   Compiling dotenvy v0.15.7
+   Compiling home v0.5.12
+   Compiling hex v0.4.3
+   Compiling whoami v1.6.1
+   Compiling sha3 v0.10.9
+   Compiling sha1 v0.10.7
+   Compiling num-integer v0.1.46
+   Compiling data-encoding v2.11.0
+   Compiling linux-raw-sys v0.4.15
+   Compiling utf-8 v0.7.6
+   Compiling tungstenite v0.24.0
+   Compiling sqlx-postgres v0.8.6
+   Compiling num-bigint v0.4.8
+   Compiling nibble_vec v0.1.0
+   Compiling bitflags v1.3.2
+   Compiling endian-type v0.1.2
+   Compiling nix v0.26.4
+   Compiling radix_trie v0.2.1
+   Compiling uuid v1.24.0
+   Compiling redis v0.32.7
+   Compiling sqlx-macros-core v0.8.6
+   Compiling me60os v0.1.0 (/home/jnovoas/Proyectos/sentinel/me-60os-core)
+   Compiling fd-lock v3.0.13
+   Compiling tokio-tungstenite v0.24.0
+   Compiling axum-core v0.4.5
+   Compiling serde_path_to_error v0.1.20
+   Compiling matchit v0.7.3
+   Compiling utf8parse v0.2.2
+   Compiling rustyline v12.0.0
+   Compiling tower-http v0.5.2
+   Compiling rustyline-derive v0.10.0
+   Compiling sqlx-macros v0.8.6
+   Compiling tokio-test v0.4.5
+   Compiling half v2.7.1
+   Compiling axum v0.7.9
+   Compiling clap_lex v1.1.0
+   Compiling sqlx v0.8.6
+   Compiling ciborium-io v0.2.2
+   Compiling anstyle v1.0.14
+   Compiling plotters-backend v0.3.7
+   Compiling ciborium-ll v0.2.2
+   Compiling clap_builder v4.6.2
+   Compiling plotters-svg v0.3.7
+   Compiling itertools v0.10.5
+   Compiling cast v0.3.0
+   Compiling same-file v1.0.6
+   Compiling walkdir v2.5.0
+   Compiling plotters v0.3.7
+   Compiling criterion-plot v0.5.0
+   Compiling clap v4.6.4
+   Compiling ciborium v0.2.2
+   Compiling tinytemplate v1.2.1
+   Compiling is-terminal v0.4.17
+   Compiling anes v0.1.6
+   Compiling oorandom v11.1.5
+   Compiling criterion v0.5.1
+   Compiling sentinel-verifier v0.1.0 (/home/jnovoas/Proyectos/sentinel/sentinel-verifier)
+   Compiling truthsync-core v0.1.0 (/home/jnovoas/Proyectos/sentinel/truthsync-core)
+   Compiling neural-guard v0.1.0 (/home/jnovoas/Proyectos/sentinel/services/neural-guard)
+warning: fields `threshold_portal` and `dead_man_threshold_ms` are never read
+   --> me-60os-core/src/bin/exp028_system_portals.rs:260:5
+    |
+256 | struct BioResonator {
+    |        ------------ fields in this struct
+...
+260 |     threshold_portal: SPA,
+    |     ^^^^^^^^^^^^^^^^
+261 |     last_pulse: std::time::Instant,
+262 |     dead_man_threshold_ms: u64,
+    |     ^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: methods `is_portal_open`, `is_pilot_present`, `time_since_pulse_ms`, and `reset` are never used
+   --> me-60os-core/src/bin/exp028_system_portals.rs:294:8
+    |
+265 | impl BioResonator {
+    | ----------------- methods in this implementation
+...
+294 |     fn is_portal_open(&self) -> bool { self.coherence >= self.threshold_portal }
+    |        ^^^^^^^^^^^^^^
+295 |     fn is_pilot_present(&self) -> bool { self.last_pulse.elapsed().as_millis() < self.dead_man_threshold_ms as u128 }
+    |        ^^^^^^^^^^^^^^^^
+296 |     fn get_coherence_raw(&self) -> i64 { self.coherence.to_base_units() }
+297 |     fn time_since_pulse_ms(&self) -> u64 { self.last_pulse.elapsed().as_millis() as u64 }
+    |        ^^^^^^^^^^^^^^^^^^^
+298 |     fn reset(&mut self) { self.coherence = SPA::zero(); }
+    |        ^^^^^
+
+warning: field `bio` is never read
+   --> me-60os-core/src/bin/exp028_system_portals.rs:303:5
+    |
+302 | struct QuantumScheduler {
+    |        ---------------- field in this struct
+303 |     bio: Arc<Mutex<BioResonator>>,
+    |     ^^^
+
+warning: `me60os` (bin "exp028_system_portals" test) generated 3 warnings
+   Compiling sentinel-cortex v0.1.0 (/home/jnovoas/Proyectos/sentinel/sentinel-cortex)
+warning: struct `SanitizationResult` is never constructed
+  --> sentinel-cortex/src/security/telemetry_sanitizer.rs:11:12
+   |
+11 | pub struct SanitizationResult {
+   |            ^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `TelemetrySanitizer` is never constructed
+  --> sentinel-cortex/src/security/telemetry_sanitizer.rs:19:12
+   |
+19 | pub struct TelemetrySanitizer {
+   |            ^^^^^^^^^^^^^^^^^^
+
+warning: associated items `new` and `sanitize_prompt` are never used
+  --> sentinel-cortex/src/security/telemetry_sanitizer.rs:32:12
+   |
+31 | impl TelemetrySanitizer {
+   | ----------------------- associated items in this implementation
+32 |     pub fn new(enabled: bool) -> Self {
+   |            ^^^
+...
+79 |     pub fn sanitize_prompt(&self, prompt: &str) -> SanitizationResult {
+   |            ^^^^^^^^^^^^^^^
+
+warning: fields `confidence`, `safe_prompt`, and `original_prompt` are never read
+  --> sentinel-cortex/src/security/telemetry_sanitizer.rs:13:9
+   |
+11 | pub struct SanitizationResult {
+   |            ------------------ fields in this struct
+12 |     pub is_safe: bool,
+13 |     pub confidence: f64,
+   |         ^^^^^^^^^^
+14 |     pub blocked_patterns: Vec<String>,
+15 |     pub safe_prompt: Option<String>,
+   |         ^^^^^^^^^^^
+16 |     pub original_prompt: String,
+   |         ^^^^^^^^^^^^^^^
+   |
+   = note: `SanitizationResult` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `sentinel-cortex` (bin "sentinel-cortex" test) generated 1 warning
+warning: `sentinel-cortex` (bin "sentinel-cortex") generated 3 warnings
+    Finished `release` profile [optimized] target(s) in 4m 32s
+     Running unittests src/lib.rs (target/release/deps/me60os_core-18010796a0a77abc)
+
+running 88 tests
+test atlantean::tests::test_gpu_clamp_min_max ... ok
+test atlantean::tests::test_maat_accel_above_99 ... ok
+test atlantean::tests::test_maat_throttle_below_95 ... ok
+test atlantean::tests::test_maat_harmonic_band ... ok
+test buffer::tests::test_cascade_predicts_higher_coherence_with_history ... ok
+test atlantean::tests::test_gpu_low_latency_increases_batch ... ok
+test atlantean::tests::test_gpu_high_latency_reduces_batch ... ok
+test buffer::tests::test_ou_kernel_monotonic_decay ... ok
+test buffer::tests::test_cascade_respects_limit ... ok
+test celestial::tests::test_kepler_escape ... ok
+test celestial::tests::test_kepler_leo_circular ... ok
+test celestial::tests::test_spherical_to_cartesian_pole ... ok
+test celestial::tests::test_svector3_magnitude ... ok
+test crystal_cipher::tests::test_different_crystal_different_key ... ok
+test cortex::tests::test_activate_neuron_no_double_scale ... ok
+test crystal_cipher::tests::test_encrypt_decrypt_roundtrip ... ok
+test crystal_cipher::tests::test_pulse_rotates_key ... ok
+test crystal_cipher::tests::test_same_phase_same_key ... ok
+test dsp::tests::test_mul_pipeline_leo_momentum ... ok
+test dsp::tests::test_mul_pipeline_negative ... ok
+test dsp::tests::test_mul_pipeline_overflow_64_trap ... ok
+test dsp::tests::test_mul_pipeline_trivial ... ok
+test dsp::tests::test_mul_pipeline_zero ... ok
+test dsp::tests::test_mul_wide_pipeline_handles_large ... ok
+test dsp::tests::test_scale_constant ... ok
+test dual_lane::tests::test_backpressure_drops_lowest_priority ... ok
+test dual_lane::tests::test_default_routes_to_observability ... ok
+test dual_lane::tests::test_malicious_data_routes_to_security ... ok
+test dual_lane::tests::test_security_source_routes_to_security ... ok
+test dual_lane::tests::test_should_bypass_buffer ... ok
+test dual_lane::tests::test_observability_buffer_flush_reorder ... ok
+test dual_lane::tests::test_security_wal_write_and_fsync ... ok
+test ebpf_cortex_bridge::tests::test_event_size ... ok
+test ebpf_cortex_bridge::tests::test_handle_event ... ok
+test ebpf_cortex_bridge::tests::test_neuron_mapping ... ok
+test flux_stabilizer::flux_tests::test_noise_bounded ... ok
+test flux_stabilizer::flux_tests::test_noise_deterministic ... ok
+test flux_stabilizer::flux_tests::test_residual_drift_small ... ok
+test flux_stabilizer::flux_tests::test_seed_cycles ... ok
+test flux_stabilizer::flux_tests::test_stabilize_converges ... ok
+test flux_stabilizer::flux_tests::test_stabilize_stays_in_guardrails ... ok
+test isochronous_oscillator::tests::test_crystal_creation ... ok
+test isochronous_oscillator::tests::test_entropy_decay ... ok
+test isochronous_oscillator::tests::test_oscillation ... ok
+test isochronous_oscillator::tests::test_pulse_injection ... ok
+test dual_lane::tests::test_threat_label_routes_to_security_high ... ok
+test numerical_control::tests::test_interpolation_zero_duration ... ok
+test liquid_memory::tests::test_retrieve_missing_key ... ok
+test numerical_control::tests::test_interpolation_linear_steps ... ok
+test optomechanical::opto_tests::test_coupling_positive ... ok
+test optomechanical::opto_tests::test_rift_detection_threshold ... ok
+test optomechanical::opto_tests::test_visibility_anticorrelated ... ok
+test optomechanical::opto_tests::test_visibility_linearity_intermediate ... ok
+test optomechanical::opto_tests::test_evolve_runs_and_stays_finite ... ok
+test optomechanical::opto_tests::test_visibility_max_coherent ... ok
+test optomechanical::opto_tests::test_visibility_zero_total ... ok
+test orbital_ascent::tests::test_air_density_exponential_decay ... ok
+test orbital_ascent::tests::test_drag_zero_at_zero_density ... ok
+test orbital_ascent::tests::test_gravity_decreases_with_altitude ... ok
+test orbital_ascent::tests::test_inject_pai_no_double_scale ... ok
+test orbital_ascent::tests::test_merkabah_reduces_mass_with_coherence ... ok
+test pai60_lib::tests::test_divide ... ok
+test numerical_control::tests::test_interpolation_residual_zero ... ok
+test pai60_lib::tests::test_is_regular ... ok
+test numerical_control::tests::test_interpolation_reaches_end ... ok
+test pai60_lib::tests::test_lookup ... ok
+test ram_meter::tests::test_hex_ring_150_is_67951 ... ok
+test ram_meter::tests::test_recommend_ring_respects_budget ... ok
+test resonant_matrix::tests::test_energy_conservation ... ok
+test resonant_matrix::tests::test_inject_pai_derives_exact_reciprocal ... ok
+test liquid_memory::tests::test_overwrite_same_key ... ok
+test resonant_matrix::tests::test_energy_propagation ... ok
+test resonant_matrix::tests::test_inject_spa_no_double_scale ... ok
+test scheduler::tests::test_p_controller_decrease ... ok
+test resonant_matrix::tests::test_lattice_creation ... ok
+test liquid_memory::tests::test_store_retrieve_roundtrip ... ok
+test scheduler::tests::test_scheduler_init ... ok
+test scheduler::tests::test_venus_phase_reset ... ok
+test spa_complex::tests::test_complex_add ... ok
+test spa_math::tests::test_exp_decay ... ok
+test spa_math::tests::test_ln ... ok
+test spa_math::tests::test_sin_cos_identity ... ok
+test spa_math::tests::test_sqrt ... ok
+test scheduler::tests::test_p_controller_increase ... ok
+test orbital_ascent::tests::test_mhd_shield_activates_at_dicke ... ok
+test orbital_ascent::tests::test_step_produces_acceleration ... ok
+test liquid_memory::tests::test_large_payload ... ok
+test ram_meter::tests::test_available_memory_positive ... ok
+
+test result: ok. 88 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.32s
+
+     Running unittests src/bin/adm_agent.rs (target/release/deps/adm_agent-147e95ae83daaaa3)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/adm_sim.rs (target/release/deps/adm_sim-0f65011298ceb972)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/bench_desvio_pai.rs (target/release/deps/bench_desvio_pai-ad1970f1e94fd156)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/benchmark_pai60.rs (target/release/deps/benchmark_pai60-ad6f778aa1ba0735)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/cpu_exactness_bench.rs (target/release/deps/cpu_exactness_bench-8935d5e756cae44c)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/crystal_drift_probe.rs (target/release/deps/crystal_drift_probe-fb27a4cd32672659)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/crystal_smoke.rs (target/release/deps/crystal_smoke-6d9c02abd443c355)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/debug_s60-37c9150b9bd7e988)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/dual_lane_bench.rs (target/release/deps/dual_lane_bench-2a40cef3cd2a38c3)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/exp005_merkabah.rs (target/release/deps/exp005_merkabah-711b0d0955217871)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/exp012_phase_compression.rs (target/release/deps/exp012_phase_compression-7710490e7592cccb)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/exp021_dual_path.rs (target/release/deps/exp021_dual_path-90eece763fb4e8b2)
+
+running 3 tests
+test tests::test_entropy_s60_pure_path_positive ... FAILED
+test tests::test_lcg_deterministic_and_ranged ... ok
+test tests::test_lyapunov_s60_pure_path_in_physical_range ... FAILED
+
+failures:
+
+---- tests::test_entropy_s60_pure_path_positive stdout ----
+
+thread 'tests::test_entropy_s60_pure_path_positive' (2604606) panicked at me-60os-core/src/bin/exp021_dual_path.rs:257:9:
+entropía positiva
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- tests::test_lyapunov_s60_pure_path_in_physical_range stdout ----
+
+thread 'tests::test_lyapunov_s60_pure_path_in_physical_range' (2604608) panicked at me-60os-core/src/bin/exp021_dual_path.rs:248:9:
+lyap >= 0.1
+
+
+failures:
+    tests::test_entropy_s60_pure_path_positive
+    tests::test_lyapunov_s60_pure_path_in_physical_range
+
+test result: FAILED. 1 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p me60os --bin exp021_dual_path`

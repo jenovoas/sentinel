@@ -1,0 +1,61 @@
+warning: profiles for the non root package will be ignored, specify profiles at the workspace root:
+package:   /home/jnovoas/Proyectos/sentinel/sentinel-cortex/Cargo.toml
+workspace: /home/jnovoas/Proyectos/sentinel/Cargo.toml
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling libc v0.2.189
+   Compiling serde_core v1.0.229
+   Compiling smallvec v1.15.2
+   Compiling serde v1.0.229
+   Compiling serde_json v1.0.151
+   Compiling syn v2.0.119
+   Compiling syn v3.0.3
+   Compiling memchr v2.8.3
+   Compiling parking_lot_core v0.9.12
+   Compiling errno v0.3.14
+   Compiling socket2 v0.6.5
+   Compiling mio v1.2.2
+   Compiling signal-hook-registry v1.4.8
+   Compiling parking_lot v0.12.5
+   Compiling serde_derive v1.0.229
+   Compiling tokio-macros v2.7.1
+   Compiling tokio v1.53.1
+   Compiling sentinel-verifier v0.1.0 (/home/jnovoas/Proyectos/sentinel/sentinel-verifier)
+    Finished `release` profile [optimized] target(s) in 17.80s
+     Running `target/release/sentinel-verifier`
+
+=== SENTINEL VERIFIER @ fedora (1786856886) ===
+  1 OK | 9 FAIL | 0 SKIP (de 10)
+
+  ❌ [             lsm_progs] programas LSM Ring-0 cargados
+      → solo 0/3 encontrados
+        salida bpftool:
+        41: lsm  name restrict_filesystems  tag 31efb7c56239148b  gpl
+        	loaded_at 2026-08-15T11:25:10-0400  uid 0
+  ❌ [ cortex_events_ringbuf] ringbuf cortex_events pinned
+      → map cortex_events no encontrado
+  ❌ [              bpf_pins] pins /sys/fs/bpf presentes
+      → faltan: cortex_events, guardian_alpha, guardian_cognitive, ai_guardian, float_detector, gamma_heartbeat
+        los que hay:
+  ✅ [           cortex_segv] cortex sin SEGV últimas 24h
+      → 0 coredumps en journal
+  ❌ [        watchdog_alive] gamma-watchdog heartbeats
+      → solo 0 beats en 90s
+        journal:
+  ❌ [  sentinel_status_http] endpoint sentinel_status
+      → Not Found
+        esperados: RING0_PINNED_ACTIVE, WHITELIST_MAP_ENGAGED, LSM_HOOK_ACTIVE
+  ❌ [           health_http] endpoint /health
+      → HTTP 404 (esperado 200)
+  ❌ [     sentinel_services] servicios systemd sentinel-*
+      → caídos: sentinel-cortex, sentinel-gamma-watchdog, sentinel-hex-daemon, sentinel-pai-neural, sentinel-qhc-agent, sentinel-vid-agent, sentinel-adm-agent
+        sentinel-cortex: inactive
+        sentinel-gamma-watchdog: inactive
+        sentinel-hex-daemon: inactive
+  ❌ [        ebpf_trace_log] ebpf_trace.log vivo
+      → archivo no accesible
+  ❌ [       lattice_metrics] LiquidLattice métricas
+      → métricas esperadas no encontradas en /metrics
+
+F8 exit=0

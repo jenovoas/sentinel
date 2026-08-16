@@ -1,0 +1,112 @@
+warning: profiles for the non root package will be ignored, specify profiles at the workspace root:
+package:   /home/jnovoas/Proyectos/sentinel/sentinel-cortex/Cargo.toml
+workspace: /home/jnovoas/Proyectos/sentinel/Cargo.toml
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on build directory
+   Compiling smallvec v1.15.2
+   Compiling getrandom v0.2.17
+   Compiling futures-io v0.3.33
+   Compiling bitflags v2.13.1
+   Compiling tracing v0.1.44
+   Compiling either v1.17.0
+   Compiling openssl-sys v0.9.117
+   Compiling zerocopy v0.8.55
+   Compiling aho-corasick v1.1.4
+   Compiling rand_core v0.6.4
+   Compiling futures-util v0.3.33
+   Compiling parking_lot_core v0.9.12
+   Compiling icu_normalizer v2.2.0
+   Compiling crypto-common v0.1.7
+   Compiling parking_lot v0.12.5
+   Compiling rand v0.8.7
+   Compiling universal-hash v0.5.1
+   Compiling cipher v0.4.4
+   Compiling tokio v1.53.1
+   Compiling idna_adapter v1.2.2
+   Compiling openssl v0.10.81
+   Compiling idna v1.1.0
+   Compiling url v2.5.8
+   Compiling regex-automata v0.4.16
+   Compiling signal-hook v0.3.18
+   Compiling num-traits v0.2.19
+   Compiling mio v0.8.11
+   Compiling polyval v0.6.2
+   Compiling serde v1.0.229
+   Compiling signal-hook-mio v0.2.5
+   Compiling native-tls v0.2.18
+   Compiling ppv-lite86 v0.2.21
+   Compiling phf_generator v0.11.3
+   Compiling itertools v0.13.0
+   Compiling rand_chacha v0.3.1
+   Compiling serde_urlencoded v0.7.1
+   Compiling serde_json v1.0.151
+   Compiling rayon v1.12.0
+   Compiling matchers v0.2.0
+   Compiling phf_macros v0.11.3
+   Compiling unicode-truncate v1.1.0
+   Compiling crossterm v0.27.0
+   Compiling vsprintf v2.0.0
+   Compiling ghash v0.5.1
+   Compiling futures-executor v0.3.33
+   Compiling ctr v0.9.2
+   Compiling tokio-util v0.7.19
+   Compiling tower v0.5.3
+   Compiling h2 v0.4.15
+   Compiling tokio-native-tls v0.3.1
+   Compiling combine v4.6.7
+   Compiling tower-http v0.6.11
+   Compiling aes v0.8.4
+   Compiling pyo3-ffi v0.25.1
+   Compiling aead v0.5.2
+   Compiling itertools v0.12.1
+   Compiling socket2 v0.5.10
+   Compiling tracing-subscriber v0.3.23
+   Compiling chrono v0.4.45
+   Compiling pyo3 v0.25.1
+   Compiling ratatui v0.26.3
+   Compiling hyper v1.11.0
+   Compiling redis v0.25.5
+   Compiling hyper-util v0.1.20
+   Compiling aes-gcm v0.10.3
+   Compiling sysinfo v0.33.1
+   Compiling hyper-tls v0.6.0
+   Compiling reqwest v0.12.28
+   Compiling tokio-stream v0.1.19
+   Compiling futures v0.3.33
+   Compiling libbpf-rs v0.24.8
+   Compiling phf v0.11.3
+   Compiling regex v1.13.1
+   Compiling memmap2 v0.9.11
+   Compiling me60os v0.1.0 (/home/jnovoas/Proyectos/sentinel/me-60os-core)
+    Finished `release` profile [optimized] target(s) in 1m 36s
+     Running `target/release/pai_convert_bench`
+=== BENCH CONVERSOR BINARIO->AMPLITUD (stream 0..255, 256 nodos, 1 step) ===
+SCALE_0 = 12960000
+
+[A: RAW (produccion actual)]
+  energia total (abstracto): 32639.9244
+  amplitud nodo0 : 0.472221
+  amplitud nodo128: 127.610816
+  coherencia (raw S60): 12960000
+  error reconstruccion PAI(60): 256/256
+  error reconstruccion RAW    : 30/256
+
+[B: PAI-60 exacto (inject_pai /60)]
+  energia total (abstracto): 543.9987
+  amplitud nodo0 : 0.007870
+  amplitud nodo128: 2.126847
+  coherencia (raw S60): 12960000
+  error reconstruccion PAI(60): 30/256
+  error reconstruccion RAW    : 255/256
+
+[C: [exp fallido para estudio] PY PROTO (byte/1000 -> transduce, doble-escala)]
+  energia total (abstracto): 32639924.4444
+  amplitud nodo0 : 472.221129
+  amplitud nodo128: 127610.815715
+  coherencia (raw S60): 12960000
+  error reconstruccion PAI(60): 256/256
+  error reconstruccion RAW    : 256/256
+
+F7 exit=0
