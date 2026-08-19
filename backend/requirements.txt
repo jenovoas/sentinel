@@ -30,7 +30,7 @@ alembic==1.18.4
 # Pydantic 2.0 - Data validation with Python type hints
 pydantic==2.12.5
 # Settings management from environment variables
-pydantic-settings==2.13.1
+pydantic-settings==2.14.2
 
 # ============================================================================
 # ASYNC TASK QUEUE
@@ -44,7 +44,7 @@ redis==5.2.1
 # AUTHENTICATION & SECURITY
 # ============================================================================
 # JWT token generation and validation
-PyJWT==2.12.1
+PyJWT==2.13.0
 # Password hashing with bcrypt
 bcrypt==5.0.0
 # Password utilities
@@ -54,11 +54,11 @@ passlib[bcrypt]==1.7.4
 # ENVIRONMENT & UTILITIES
 # ============================================================================
 # Load environment variables from .env files
-python-dotenv==1.0.1
+python-dotenv==1.2.2
 # Async HTTP client for AI integration
 httpx==0.28.1
 # Form data parsing for FastAPI
-python-multipart==0.0.26
+python-multipart==0.0.31
 # Email validation
 email-validator==2.3.0
 # Scientific computing for anomaly detection
