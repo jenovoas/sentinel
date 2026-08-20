@@ -47,4 +47,5 @@ reasonix.toml
 .aider*
 .omo/
 .openspec/
+.dsh/
 *.bak*

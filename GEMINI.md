@@ -22,3 +22,10 @@ ALWAYS prefer MCP graph tools over grep/glob/file-search for code discovery.
 - Who calls it: `trace_path(project="sentinel", function_name="OrderHandler", direction="inbound")`
 - Read source: `get_code_snippet(project="sentinel", qualified_name="pkg/orders.OrderHandler")`
 <!-- codebase-memory-mcp:end -->
+
+---
+
+# OBSIDIAN VAULT INTEGRATION
+- **Obsidian Vault**: `/home/jnovoas/Proyectos/personalvault`
+
+
