@@ -651,53 +651,31 @@ fn draw_side_telemetry(f: &mut Frame, area: Rect, state: &AppState) {
     let side_split = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Percentage(50),
-            Constraint::Percentage(50),
+            Constraint::Length(5),  // Banda compacta de coherencia / retículo
+            Constraint::Min(6),     // El resto completo para la auditoría de TruthSync
         ])
         .split(area);
 
-    // 1. Panel de Retículo Real
+    // 1. Banda Compacta de Coherencia & Retículo SHM
+    let coh_percent = ((state.coherence.to_raw() * 100) / SPA::SCALE_0).min(100).max(0) as u16;
+    let lat_title = format!(
+        " 🌊 SHM LATTICE ({} Nodes │ S60: {} │ Coh: {}%) ",
+        state.active_nodes, state.coherence, coh_percent
+    );
     let lat_block = Block::default()
         .borders(Borders::ALL)
         .border_type(BorderType::Rounded)
-        .title(Span::styled(" 🌊 REAL SHM LATTICE (/dev/shm/me60os_lattice) ", Style::default().fg(PURPLE).add_modifier(Modifier::BOLD)));
-
-    let lat_layout = Layout::default()
-        .direction(Direction::Vertical)
-        .constraints([
-            Constraint::Length(2),
-            Constraint::Length(3),
-            Constraint::Min(2),
-        ])
-        .margin(1)
-        .split(side_split[0]);
+        .title(Span::styled(lat_title, Style::default().fg(PURPLE).add_modifier(Modifier::BOLD)));
 
     let data_vec: Vec<u64> = state.energy_history.iter().copied().collect();
     let sparkline = Sparkline::default()
+        .block(lat_block)
         .data(&data_vec)
         .style(Style::default().fg(PURPLE));
-    
-    let stats = Paragraph::new(Line::from(vec![
-        Span::styled("Nodes: ", Style::default().fg(TEXT_MUTED)),
-        Span::styled(format!("{} ", state.active_nodes), Style::default().fg(CYAN).add_modifier(Modifier::BOLD)),
-        Span::styled("│ S60 Coh: ", Style::default().fg(TEXT_MUTED)),
-        Span::styled(format!("{} ", state.coherence), Style::default().fg(GREEN).add_modifier(Modifier::BOLD)),
-        Span::styled("│ Raw: ", Style::default().fg(TEXT_MUTED)),
-        Span::styled(format!("{}", state.total_energy_raw), Style::default().fg(WHITE)),
-    ]));
 
-    let coh_percent = ((state.coherence.to_raw() * 100) / SPA::SCALE_0).min(100).max(0) as u16;
-    let gauge = Gauge::default()
-        .block(Block::default().title("Coherencia Macroscópica Real"))
-        .gauge_style(Style::default().fg(GREEN))
-        .percent(coh_percent);
+    f.render_widget(sparkline, side_split[0]);
 
-    f.render_widget(lat_block, side_split[0]);
-    f.render_widget(stats, lat_layout[0]);
-    f.render_widget(gauge, lat_layout[1]);
-    f.render_widget(sparkline, lat_layout[2]);
-
-    // 2. Panel de TruthSync & Seguridad Real
+    // 2. Panel Expandido de TruthSync & Seguridad Real
     let sec_block = Block::default()
         .borders(Borders::ALL)
         .border_type(BorderType::Rounded)
