@@ -17,8 +17,9 @@
 
 pub mod math;
 pub mod quantum;
+pub mod security;
 mod buffer_system;
-mod memory;
+pub mod memory;
 pub mod concentrator;
 
 use lazy_static::lazy_static;

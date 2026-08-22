@@ -18,9 +18,13 @@ pub mod bio_resonance;
 // TELEMETRY SANITIZER: Pure Rust Defense Against Telemetry Poisoning & Prompt Injection
 pub mod telemetry_sanitizer;
 
+// LFM PIPELINE: Ingress Sanitization & TruthSync Egress Certification (<100μs)
+pub mod lfm_security_pipeline;
+
 // Re-export production version as default
 
 #[allow(unused_imports)]
 pub use soul_verifier_s60_production::{
     BiometricError, BiometricProof, BiometricVerifier, LivenessChallenge,
 };
+pub use lfm_security_pipeline::{LfmSecurityPipeline, LfmSecurityError};
