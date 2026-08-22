@@ -50,8 +50,9 @@ thiserror = "1.0"
 # Lazy static initialization
 lazy_static = "1.4"
 
-# eBPF Bridge
 # Terminal UI
+ratatui = "0.26"
+crossterm = { version = "0.27", features = ["events"] }
 rustyline = "12.0"
 rustyline-derive = "0.10"
 libbpf-rs = "0.24"
