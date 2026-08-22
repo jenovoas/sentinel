@@ -38,6 +38,9 @@ logs/*.log
 !CLAUDE.md
 !AGENTS.md
 !LICENSE
+!sentinel_tui.py
+!sentinel_cli.py
+!install_sentinel_tui.sh
 
 # Archivos de contexto/config local (no versionar)
 MEMORY.md
