@@ -261,23 +261,68 @@ impl AppState {
     }
 }
 
-// Inferencia HTTP hacia LFM 2.5 local
+// Inferencia HTTP hacia LFM 2.5 local con resolución de contexto y archivos del sistema ("manos")
 fn query_lfm_25(prompt: &str, persona: &str) -> Result<String, String> {
     let client = reqwest::blocking::Client::builder()
-        .timeout(Duration::from_secs(30))
+        .timeout(Duration::from_secs(45))
         .build()
         .map_err(|e| format!("HTTP Client Error: {}", e))?;
 
-    let sys_prompt = format!(
-        "Eres Sentinel AI en modo {persona}. Responde con alta precisión técnica y concisión matemática."
-    );
+    // 1. Contexto fundamental de Sentinel
+    let base_context = "\
+Eres Sentinel Cortex AI, el núcleo de inteligencia soberana de Jaime Novoa Sepúlveda.
+Conoces en profundidad el ecosistema completo:
+- Sentinel: Runtime 100% Rust con eBPF LSM (guardian_alpha_lsm), Base-60 pura (SPA, SCALE_0=12.960.000, cero floats).
+- Memoria Resonante: Osciladores isócronos de 192 bytes en /dev/shm/me60os_lattice con división babilónica pai60_divide.
+- Seguridad: TelemetrySanitizer en ingress y TruthSync Core en egress (<100μs con SHA3-512 ligado a energía física).
+- MycNet: Red micelial distribuida con sincronización fractal holográfica (Dato = f^N(Semilla)).
+- Daemons: qhc_agent (YHWH 10;5,6,5), hex_daemon (91 nodos, Salto-17), gamma_watchdog.
+Responde con autoridad técnica, precisión matemática y en español.";
+
+    // 2. Darle "manos": Si el prompt menciona rutas o archivos locales, resolverlos automáticamente
+    let mut file_context = String::new();
+    let words: Vec<&str> = prompt.split_whitespace().collect();
+    for word in words {
+        let clean = word.trim_matches(|c| c == '?' || c == ',' || c == '"' || c == '\'' || c == '`');
+        let expanded = if clean.starts_with("~/") {
+            clean.replacen("~", "/home/jnovoas", 1)
+        } else {
+            clean.to_string()
+        };
+
+        let path = std::path::Path::new(&expanded);
+        if path.exists() {
+            if path.is_dir() {
+                if let Ok(entries) = std::fs::read_dir(path) {
+                    let mut list = Vec::new();
+                    for entry in entries.flatten().take(25) {
+                        list.push(entry.file_name().to_string_lossy().to_string());
+                    }
+                    file_context.push_str(&format!("\n[Directorio {} contiene: {}]\n", clean, list.join(", ")));
+                }
+            } else if path.is_file() {
+                if let Ok(content) = std::fs::read_to_string(path) {
+                    let preview: String = content.lines().take(60).collect::<Vec<&str>>().join("\n");
+                    file_context.push_str(&format!("\n[Contenido de {}:\n{}\n...]\n", clean, preview));
+                }
+            }
+        }
+    }
+
+    let user_content = if file_context.is_empty() {
+        prompt.to_string()
+    } else {
+        format!("{}\n\nContexto del sistema de archivos detectado:\n{}", prompt, file_context)
+    };
+
+    let sys_prompt = format!("{}\nModo actual: {}.", base_context, persona);
 
     let payload = serde_json::json!({
         "messages": [
             {"role": "system", "content": sys_prompt},
-            {"role": "user", "content": prompt}
+            {"role": "user", "content": user_content}
         ],
-        "max_tokens": 512,
+        "max_tokens": 768,
         "temperature": 0.3
     });
 
