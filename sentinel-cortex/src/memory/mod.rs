@@ -3,3 +3,4 @@
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 pub mod liquid_lattice;
 pub mod resonant_lattice_bridge;
+pub mod lfm_bridge;
