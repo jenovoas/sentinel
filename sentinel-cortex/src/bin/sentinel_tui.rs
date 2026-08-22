@@ -322,7 +322,7 @@ Responde con autoridad técnica, precisión matemática y en español.";
             {"role": "system", "content": sys_prompt},
             {"role": "user", "content": user_content}
         ],
-        "max_tokens": 768,
+        "max_tokens": 1024,
         "temperature": 0.3
     });
 
@@ -338,17 +338,17 @@ Responde con autoridad técnica, precisión matemática y en español.";
             if let Some(first) = choices.first() {
                 if let Some(msg) = first.get("message") {
                     let content = msg.get("content").and_then(|c| c.as_str()).unwrap_or("").trim();
+                    let reasoning = msg.get("reasoning_content").and_then(|c| c.as_str()).unwrap_or("").trim();
+
                     if !content.is_empty() {
                         return Ok(content.to_string());
-                    }
-                    let reasoning = msg.get("reasoning_content").and_then(|c| c.as_str()).unwrap_or("").trim();
-                    if !reasoning.is_empty() {
+                    } else if !reasoning.is_empty() {
                         return Ok(reasoning.to_string());
                     }
                 }
             }
         }
-        Ok("[LFM retornó una respuesta vacía]".into())
+        Ok("[LFM completó el análisis pero no emitió texto visible]".into())
     } else {
         Err(format!("LFM HTTP Status: {}", resp.status()))
     }
@@ -436,6 +436,8 @@ fn main() -> Result<()> {
                                 let sanitize_res = s.security_pipeline.sanitize_ingress(&prompt);
                                 match sanitize_res {
                                     Err(err) => {
+                                        s.status_msg = format!("⛔ Bloqueado: {}", err);
+                                        s.is_generating = false;
                                         s.security_events.push_back(SecurityEvent {
                                             tag: "INGRESS_BLOCKED".into(),
                                             message: format!("{}", err),
@@ -444,7 +446,7 @@ fn main() -> Result<()> {
                                         });
                                         s.chat_messages.push_back(ChatMessage {
                                             sender: "SECURITY GUARD".into(),
-                                            content: format!("⛔ Prompt bloqueado por sanitizador: {}", err),
+                                            content: format!("⛔ Prompt bloqueado por sanitizador de seguridad:\n{}", err),
                                             timestamp: chrono::Local::now().format("%H:%M:%S").to_string(),
                                             certified: false,
                                             trust_score: SPA::zero(),
