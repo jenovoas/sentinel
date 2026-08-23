@@ -12,20 +12,24 @@ BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-# Check if running in Sentinel directory
-if [ ! -f "sentinel_tui.py" ]; then
-    echo "❌ Error: Must run from Sentinel root directory"
+# Resolve repo root from script location (scripts/ -> root)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(dirname "$SCRIPT_DIR")"
+
+# Check repo layout
+if [ ! -f "$ROOT_DIR/gui/sentinel_tui.py" ]; then
+    echo "❌ Error: gui/sentinel_tui.py not found under $ROOT_DIR"
     exit 1
 fi
 
 # Activate virtual environment
-if [ -d ".venv" ]; then
+if [ -d "$ROOT_DIR/.venv" ]; then
     echo -e "${BLUE}🐍 Using Sentinel virtual environment...${NC}"
-    source .venv/bin/activate
+    source "$ROOT_DIR/.venv/bin/activate"
 else
     echo -e "${YELLOW}⚠️  No virtual environment found. Creating one...${NC}"
-    python3 -m venv .venv
-    source .venv/bin/activate
+    python3 -m venv "$ROOT_DIR/.venv"
+    source "$ROOT_DIR/.venv/bin/activate"
 fi
 
 # Install Python dependencies
@@ -33,12 +37,12 @@ echo -e "${BLUE}📦 Installing Python dependencies...${NC}"
 pip install textual rich httpx
 
 # Make TUI executable
-chmod +x sentinel_tui.py
+chmod +x "$ROOT_DIR/gui/sentinel_tui.py"
 
 # Create symlink in user bin
 echo -e "${BLUE}🔗 Creating symlink...${NC}"
 mkdir -p ~/.local/bin
-ln -sf "$(pwd)/sentinel_tui.py" ~/.local/bin/sentinel-tui
+ln -sf "$ROOT_DIR/gui/sentinel_tui.py" ~/.local/bin/sentinel-tui
 
 # Add to PATH if not already there
 if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
@@ -194,6 +198,6 @@ echo "4. Or run directly from terminal:"
 echo "   sentinel-tui"
 echo ""
 echo -e "${YELLOW}⚠️  Make sure Sentinel backend is running:${NC}"
-echo "   cd /home/jnovoas/sentinel && docker-compose up -d backend"
+echo "   cd /home/jnovoas/proyectos/sentinel && docker-compose up -d backend"
 echo ""
 echo -e "${GREEN}🎉 Happy coding with Sentinel AI!${NC}"

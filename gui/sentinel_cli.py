@@ -1,4 +1,4 @@
-#!/home/jnovoas/sentinel/.venv/bin/python3
+#!/home/jnovoas/proyectos/sentinel/.venv/bin/python3
 """
 Sentinel CLI - Command-line interface for quick queries
 Complements the TUI for direct command-line usage
@@ -17,8 +17,8 @@ import json
 from pathlib import Path
 from datetime import datetime
 
-# Add backend to path
-sys.path.insert(0, str(Path(__file__).parent / "backend"))
+# Add backend to path (repo root is one level above gui/)
+sys.path.insert(0, str(Path(__file__).parent.parent / "backend"))
 
 from app.services.safe_ollama import SafeOllamaClient
 from rich.console import Console

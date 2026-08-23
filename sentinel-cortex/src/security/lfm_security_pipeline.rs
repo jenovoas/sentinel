@@ -57,7 +57,8 @@ impl LfmSecurityPipeline {
         res.safe_prompt.ok_or(LfmSecurityError::EmptyPrompt)
     }
 
-    /// Verifies and certifies an LFM output using TruthSync (<100μs verification time).
+    /// Verifies and certifies an LFM output using TruthSync (<100μs en estado estacionario;
+    /// la primera llamada paga la compilación del RegexSet).
     pub fn verify_egress<'a>(&mut self, output: &'a str, lattice_energy: i64) -> VerificationResult<'a> {
         self.truthsync.verify_text(output, lattice_energy)
     }
@@ -119,8 +120,30 @@ mod tests {
         assert!(result.is_ok());
         let verification = result.unwrap();
         assert!(verification.is_certified);
-        assert!(verification.verification_time_us < 100_000); // Verify microsecond performance
         assert!(!verification.claims.is_empty());
+
+        // Latencia en estado estacionario: la primera verificación paga la
+        // compilación del RegexSet (LazyLock) y el primer SHA3-512; en producción
+        // (TUI) el motor ya está caliente. Medir la segunda llamada.
+        let warmed = pipeline.verify_egress(
+            "El watchdog reporta latencia estable de 3ms en el hexágono 12.",
+            lattice_energy,
+        );
+        if cfg!(not(debug_assertions)) {
+            // Claim de arquitectura: verificación TruthSync < 100μs (release).
+            assert!(
+                warmed.verification_time_us < 100,
+                "TruthSync excedió 100μs: {}μs",
+                warmed.verification_time_us
+            );
+        } else {
+            // Debug sin optimizar es ~25x más lento: solo acotar orden de magnitud.
+            assert!(
+                warmed.verification_time_us < 5_000,
+                "TruthSync excedió 5ms en debug: {}μs",
+                warmed.verification_time_us
+            );
+        }
     }
 
     #[test]

@@ -1,4 +1,4 @@
-#!/home/jnovoas/sentinel/.venv/bin/python3
+#!/home/jnovoas/proyectos/sentinel/.venv/bin/python3
 """
 Sentinel TUI - Terminal User Interface for AI-Powered System Administration
 
