@@ -19,7 +19,7 @@ def test_unauthenticated_endpoints_return_401():
     protected = [
         ("POST", "/api/v1/ai/api/v1/ai/query", {"prompt": "test"}),
         ("POST", "/api/v1/users/api/v1/users/", {"username": "test", "password": "pwd", "email": "test@test.com"}),
-        ("POST", "/api/v1/tenants/api/v1/tenants/", {"name": "test"}),
+        ("POST", "/api/v1/tenants/api/v1/tenants/", {"name": "test", "slug": "test-tenant"}),
         ("POST", "/api/v1/backup/trigger", {}),
         ("POST", "/api/v1/failsafe/trigger", {"playbook": "Incident Response", "wait_seconds": 10, "details": {}}),
         ("GET", "/api/v1/analytics/api/v1/analytics/metrics/recent"),

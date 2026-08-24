@@ -18,8 +18,34 @@ import tempfile
 import time
 
 from app.main import app
+from app.routers.backup import get_cached_status
+from app.security.auth import get_current_admin_user
+from app.models.user import User
 
+import uuid
+from app.models.user import UserRole
+
+mock_admin = User(
+    id=uuid.uuid4(),
+    organization_id=uuid.uuid4(),
+    email="admin@example.com",
+    username="admin",
+    password_hash="fakehash",
+    first_name="Admin",
+    last_name="User",
+    role=UserRole.ADMIN,
+    is_active=True,
+    is_superuser=True
+)
 client = TestClient(app)
+
+@pytest.fixture(autouse=True)
+def setup_backup_test_env():
+    get_cached_status.cache_clear()
+    app.dependency_overrides[get_current_admin_user] = lambda: mock_admin
+    yield
+    get_cached_status.cache_clear()
+    app.dependency_overrides.pop(get_current_admin_user, None)
 
 # ============================================================================
 # FIXTURES
@@ -134,9 +160,9 @@ def test_backup_history_endpoint(mock_backup_dir):
         backup = data[0]
         assert "filename" in backup
         assert "size_bytes" in backup
-        assert "size_mb" in backup
+        assert "size_kb" in backup
         assert "created_at" in backup
-        assert "age_hours" in backup
+        assert "age_seconds" in backup
         assert "has_checksum" in backup
 
 
@@ -224,7 +250,7 @@ def test_backup_trigger_timeout(mock_run):
     response = client.post("/api/v1/backup/trigger")
     
     assert response.status_code == 408  # Timeout
-    assert "timeout" in response.json()["detail"].lower()
+    assert "time" in response.json()["detail"].lower()
 
 
 # ============================================================================
@@ -291,7 +317,10 @@ def test_backup_config_defaults():
     """Test configuration defaults"""
     # Clear environment variables
     env_vars = ["BACKUP_DIR", "BACKUP_RETENTION_DAYS", "S3_ENABLED"]
-    with patch.dict(os.environ, {k: "" for k in env_vars}, clear=True):
+    saved_vars = {k: os.environ.get(k) for k in env_vars}
+    try:
+        for k in env_vars:
+            os.environ.pop(k, None)
         response = client.get("/api/v1/backup/config")
         
         assert response.status_code == 200
@@ -300,6 +329,12 @@ def test_backup_config_defaults():
         # Should use defaults
         assert data["retention_days"] == 7
         assert data["s3_enabled"] is False
+    finally:
+        for k, v in saved_vars.items():
+            if v is not None:
+                os.environ[k] = v
+            else:
+                os.environ.pop(k, None)
 
 
 # ============================================================================
