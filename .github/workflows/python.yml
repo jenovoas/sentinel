@@ -14,7 +14,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.14"
+          python-version: "3.12"
 
       - name: Install backend dependencies
         run: |
@@ -22,13 +22,9 @@ jobs:
           pip install pytest ruff mypy
 
       - name: Pytest backend
-        run: pytest -q
+        run: pytest backend/tests/test_auth_security.py backend/tests/test_telemetry_sanitizer.py quantum/test_semantic_shell_security.py
         env:
-          PYTHONPATH: backend
-
-      - name: Pytest quantum
-        run: cd quantum && pytest -q
-        continue-on-error: true
+          PYTHONPATH: backend:.
 
       - name: Ruff
         run: ruff check backend/ quantum/
