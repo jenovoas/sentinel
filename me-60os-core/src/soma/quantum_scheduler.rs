@@ -56,7 +56,9 @@ impl QuantumSchedulerCore {
     }
 
     #[staticmethod]
+    #[allow(clippy::float_arithmetic, clippy::cast_precision_loss, clippy::cast_possible_truncation)]
     pub fn is_portal_open(time_monotonic_s: f64) -> bool {
+        // BORDE I/O: entrada externa decimal/tiempo -> raw S60 (YATRA: float solo en bordes)
         let t_raw = (time_monotonic_s * SPA::SCALE_0 as f64).round() as i64;
         let t_norm = t_raw % T_CYCLE_RAW;
         let resonance = Self::phi(SPA::from_raw(t_norm));
@@ -136,7 +138,9 @@ impl QuantumBuffer {
     }
 
     #[getter]
+    #[allow(clippy::float_arithmetic, clippy::cast_precision_loss)]
     pub fn efficiency(&self) -> f64 {
+        // BORDE I/O: ratio de estadísticas (usize->f64) para telemetría externa.
         let total = self.stats_portal + self.stats_overflow;
         if total > 0 {
             self.stats_portal as f64 / total as f64

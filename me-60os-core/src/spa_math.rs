@@ -16,6 +16,19 @@
 //!   *Plimpton 322 is Babylonian exact sexagesimal trigonometry.* Historia Mathematica.
 //!   https://doi.org/10.1016/j.hm.2017.08.001 — `RESONANCE_RATIO = SPA::new(1, 32, 2, 24, 0)`
 //!   codifica Plimpton 322 Fila 12 (1;32,2,24). Índice: `PAPERS_INDEX.md`.
+//!
+//! ## Núcleo base-60: los casts i128→i64 y u64→usize son intencionales en el modelo
+//! numérico. Los valores nunca exceden el espacio físico S60 (raw < 60⁴ * 360), así que el
+//! truncamiento no altera la semántica respecto a exactitud.
+//!
+//! // (BORDES I/O manejados por allows en spa.rs y orbital_ascent.rs)
+
+#![allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    clippy::cast_sign_loss,
+    clippy::cast_possible_wrap
+)]
 
 use crate::spa::SPA;
 

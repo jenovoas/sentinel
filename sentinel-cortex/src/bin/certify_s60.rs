@@ -3,6 +3,10 @@
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 // Bug preexistente: usaba `me60os` pero el crate se importa bajo el alias `me60os_core`
 // (ver Cargo.toml línea 60: `me60os_core = { path = "../../me-60os", package = "me60os" }`).
+// This binary's purpose is to quantify IEEE-754 float drift vs S60 exactness:
+// float arithmetic here is the object under test, not part of the compute core.
+#![allow(clippy::float_arithmetic)]
+
 use me60os_core::spa::SPA;
 use std::time::Instant;
 

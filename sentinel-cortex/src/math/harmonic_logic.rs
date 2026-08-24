@@ -60,7 +60,7 @@ impl HarmonicState {
         }
     }
 
-    /// Define Standard Harmonic Logic Constants
+    // Define Standard Harmonic Logic Constants
 
     // TRUE: Perfect Fifth (3:2 = 1.5 = 1;30)
     pub fn logic_true() -> Self {
@@ -253,6 +253,12 @@ pub struct HarmonicProcessor {
     tick: u64,
 }
 
+impl Default for HarmonicProcessor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl HarmonicProcessor {
     pub fn new() -> Self {
         HarmonicProcessor {
@@ -261,12 +267,9 @@ impl HarmonicProcessor {
         }
     }
 
-    /// Process a new signal.
     /// Returns the LogicState (True/False/Ref) of the integration.
     pub fn process_signal(&mut self, input: HarmonicState) -> LogicState {
         self.tick += 1;
-
-        // 1. Attempt Integration (H-AND)
         // Combine input with current context to see if they resonate.
         let integrated = HarmonicState::h_and(self.context, input);
 

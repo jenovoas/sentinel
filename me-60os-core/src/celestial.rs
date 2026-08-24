@@ -17,6 +17,11 @@
 //! estándar de mecánica orbital newtoniana (ε = v²/2 − μ/r, a = −μ/2ε,
 //! e = √(1 + 2εh²/μ²), T = 2π√(a³/μ)). Determinista, S60 puro.
 
+// Núcleo S60: los casts i128→i64 en Mul/Div dentro de S60 son intencionales por el modelo
+// de punto fijo base-60 (SCALE_0=12_960_000). Estos truncamientos no alteran la semántica
+// ya que los valores nunca exceden el espacio físico S60 (raw < 60⁴ × 360).
+#![allow(clippy::cast_possible_truncation)]
+
 use crate::spa::SPA;
 use crate::spa_math::SPAMath;
 

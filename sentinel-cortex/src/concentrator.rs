@@ -152,12 +152,11 @@ pub async fn synthesize_vertex(client: &Client, config: &FallbackConfig, system_
     // Fallback a gcloud Vertex AI
     let project = config.gcloud_project_id.as_ref()
         .context("gcloud_project_id no configurado para Fallback de Vertex")?;
-    let region = config.gcloud_region.as_ref()
-        .map(|s| s.as_str())
+    let region = config.gcloud_region.as_deref()
         .unwrap_or("us-central1");
     let model = "gemini-1.5-flash";
 
-    let token_out = Command::new("gcloud").args(&["auth", "print-access-token"]).output()
+    let token_out = Command::new("gcloud").args(["auth", "print-access-token"]).output()
         .context("Error al ejecutar gcloud auth print-access-token")?;
     
     if !token_out.status.success() {

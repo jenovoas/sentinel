@@ -83,18 +83,21 @@ impl PrometheusCollector {
             .as_str()
             .ok_or("No value found")?;
         
-        Ok(parse_prometheus_value_to_s60(value_str)?)
+        parse_prometheus_value_to_s60(value_str)
     }
 }
 
 /// Parsea un string numérico de Prometheus a S60 sin usar tipos de coma flotante.
 /// Soporta notación científica y números decimales.
+// mantissa length and final tertia are bounded by input string length, so
+// the i32/i64 truncation casts are safe for realistic Prometheus magnitudes
+#[allow(clippy::cast_possible_truncation)]
 fn parse_prometheus_value_to_s60(s: &str) -> Result<S60, Box<dyn std::error::Error>> {
     if s.eq_ignore_ascii_case("nan") || s.eq_ignore_ascii_case("+inf") || s.eq_ignore_ascii_case("-inf") || s.eq_ignore_ascii_case("inf") {
         return Err("Cannot parse NaN or Inf to S60".into());
     }
 
-    let (mantissa_str, exp_val) = if let Some(idx) = s.find(|c: char| c == 'e' || c == 'E') {
+    let (mantissa_str, exp_val) = if let Some(idx) = s.find(['e', 'E']) {
         let mant = &s[..idx];
         let exp: i32 = s[idx + 1..].parse()?;
         (mant, exp)
@@ -141,6 +144,6 @@ fn parse_prometheus_value_to_s60(s: &str) -> Result<S60, Box<dyn std::error::Err
     if is_negative {
         tertia = -tertia;
     }
-    
+
     Ok(S60::from_raw(tertia as i64))
 }

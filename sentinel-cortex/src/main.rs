@@ -174,40 +174,35 @@ async fn main() {
     let mut rx_lattice = tx_bpf.subscribe();
     tokio::spawn(async move {
         tracing::info!("💎 Lattice Processor active: Ring-0 Ingestion + LiquidLattice 3x3 Diffusivity (EXP-009)");
-        loop {
-            match rx_lattice.recv().await {
-                Ok(event) => {
-                    let mut lat = lattice_task.lock().unwrap();
-                    let pressure = event.entropy_s60_raw as i64;
-                    let node = (event.pid as usize) % 64;
-                    // FIX (auditoría 2026-08-23, P0.4-A1): pressure es S60 RAW del
-                    // kernel (cortex_events.h:117); inject() lo re-escalaria por
-                    // SCALE_0 (doble escala). inject_spa preserva la escala SPA.
-                    lat.inject_spa(node, me60os_core::spa::SPA::from_raw(pressure));
-                    lat.step();
+        while let Ok(event) = rx_lattice.recv().await {
+            let mut lat = lattice_task.lock().unwrap();
+            let pressure = event.entropy_s60_raw as i64;
+            let node = (event.pid as usize) % 64;
+            // FIX (auditoría 2026-08-23, P0.4-A1): pressure es S60 RAW del
+            // kernel (cortex_events.h:117); inject() lo re-escalaria por
+            // SCALE_0 (doble escala). inject_spa preserva la escala SPA.
+            lat.inject_spa(node, me60os_core::spa::SPA::from_raw(pressure));
+            lat.step();
 
-                    // Connect EXP-009 LiquidLattice 3x3 grid diffusion
-                    let mut ll = liquid_lattice_task.lock().unwrap();
-                    let row = (event.pid as usize) % 3;
-                    let col = ((event.pid as usize) / 3) % 3;
-                    ll.inject_entropy(row, col, pressure);
-                    ll.diffuse();
+            // Connect EXP-009 LiquidLattice 3x3 grid diffusion
+            let mut ll = liquid_lattice_task.lock().unwrap();
+            let row = (event.pid as usize) % 3;
+            let col = ((event.pid as usize) / 3) % 3;
+            ll.inject_entropy(row, col, pressure);
+            ll.diffuse();
 
-                    // Ingest eBPF event into PAI-Neural LIF Spiking Neural Network
-                    let mut nm = neural_memory_task.lock().unwrap();
-                    let entropy_spa = me60os_core::spa::SPA::from_raw(pressure);
-                    let event_type_code: u32 = event.event_type.parse().unwrap_or(1);
-                    let me60os_ev = me60os_core::ebpf_cortex_bridge::CortexEvent::new(
-                        event.timestamp_ns,
-                        event_type_code,
-                        event.pid as u32,
-                        event.entropy_s60_raw,
-                        event.severity as u8,
-                    );
-                    nm.ingest_event(me60os_ev, entropy_spa);
-                }
-                Err(_) => break,
-            }
+            // Ingest eBPF event into PAI-Neural LIF Spiking Neural Network
+            let mut nm = neural_memory_task.lock().unwrap();
+            let entropy_spa = me60os_core::spa::SPA::from_raw(pressure);
+            let event_type_code: u32 = event.event_type.parse().unwrap_or(1);
+            let me60os_ev = me60os_core::ebpf_cortex_bridge::CortexEvent::new(
+                event.timestamp_ns,
+                event_type_code,
+                event.pid,
+                event.entropy_s60_raw,
+                event.severity,
+            );
+            nm.ingest_event(me60os_ev, entropy_spa);
         }
     });
 
@@ -249,6 +244,8 @@ async fn main() {
             current_speed = regulated_speed;
 
             // Latencia en milésimas de ms (entero, YATRA-LOCKED: sin float)
+            // latency of a scheduler tick is bounded (ms-range); safe truncation to i64
+            #[allow(clippy::cast_possible_truncation)]
             let elapsed_msx1000 = latency_start.elapsed().as_micros() as i64 / 1_000;
             let batch_size = gpu_ctrl.adjust_batch_size(elapsed_msx1000);
             tracing::trace!("⚖️ MAAT: status={}, speed={:?}, gpu_batch={}", status, current_speed, batch_size);
@@ -510,6 +507,8 @@ async fn metrics_prometheus_handler(
     let amps = lat.amplitudes_raw();
     let _phases = lat.phases_raw();
 
+    // YATRA boundary: thermal sensor read is hardware I/O; float is the sensor contract
+    #[allow(clippy::float_arithmetic, clippy::cast_precision_loss)]
     let cpu_temp_celsius: f64 = std::fs::read_to_string("/sys/class/thermal/thermal_zone0/temp")
         .ok()
         .and_then(|s| s.trim().parse::<f64>().ok().map(|m| m / 1000.0))
@@ -617,7 +616,7 @@ async fn handle_socket(mut socket: WebSocket, state: Arc<AppState>) {
             }
         };
 
-        if socket.send(Message::Text(payload.into())).await.is_err() {
+        if socket.send(Message::Text(payload)).await.is_err() {
             tracing::info!("🔌 Connection Dropped (Investor UI Disconnected)");
             break;
         }
@@ -721,6 +720,8 @@ pub(crate) async fn truth_claim_handler(
     // comparamos S60 contra S60 y solo convertimos a f64 en el borde de salida
     // (JSON hacia el cliente), que es exportación, no cómputo.
     let threshold_s60 = me60os_core::spa::SPA::from_decimal_for_import_only(payload.trust_threshold);
+    // YATRA boundary: f64 export is the JSON contract to the client, not compute
+    #[allow(clippy::float_arithmetic, clippy::cast_precision_loss)]
     let sentinel_score_f64 = res.overall_trust_score.to_raw() as f64
         / me60os_core::spa::SPA::SCALE_0 as f64;
 
@@ -728,6 +729,8 @@ pub(crate) async fn truth_claim_handler(
         claim_valid: res.overall_trust_score >= threshold_s60,
         sentinel_score: sentinel_score_f64,
         truthsync_cache_hit: false,
+        // verification latency is bounded (us-range); safe truncation to u32
+        #[allow(clippy::cast_possible_truncation)]
         ring0_intercepts: res.verification_time_us as u32, // exposing real us verification latency
     })
 }

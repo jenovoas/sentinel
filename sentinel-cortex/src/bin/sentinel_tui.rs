@@ -35,7 +35,7 @@ use ratatui::{
     style::{Color, Modifier, Style},
     text::{Line, Span},
     widgets::{
-        Block, BorderType, Borders, Gauge, List, ListItem, Paragraph, Sparkline, Wrap,
+        Block, BorderType, Borders, List, ListItem, Paragraph, Sparkline, Wrap,
     },
     Frame, Terminal,
 };
@@ -64,6 +64,7 @@ const RED_WARN: Color = Color::Rgb(255, 60, 80);
 /// Estructura de mapeo de memoria compartida POSIX (/dev/shm/me60os_lattice)
 struct RealShmLattice {
     ptr: *mut u8,
+    #[allow(dead_code)] // mapping extent kept for introspection of the SHM region
     size: usize,
 }
 
@@ -202,6 +203,7 @@ struct AppState {
     energy_history: VecDeque<u64>,
     coherence: SPA,
     total_energy_raw: i64,
+    #[allow(dead_code)] // SHM online flag for future UI status rendering
     shm_active: bool,
     active_nodes: usize,
     
@@ -704,7 +706,9 @@ fn draw_side_telemetry(f: &mut Frame, area: Rect, state: &AppState) {
         .split(area);
 
     // 1. Banda Compacta de Coherencia & Retículo SHM
-    let coh_percent = ((state.coherence.to_raw() * 100) / SPA::SCALE_0).min(100).max(0) as u16;
+    // clamp(0,100) guarantees the value fits u16; cast is lossless
+    #[allow(clippy::cast_possible_truncation)]
+    let coh_percent = (((state.coherence.to_raw() * 100) / SPA::SCALE_0).clamp(0, 100)) as u16;
     let lat_title = format!(
         " 🌊 SHM LATTICE ({} Nodes │ S60: {} │ Coh: {}%) ",
         state.active_nodes, state.coherence, coh_percent

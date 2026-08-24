@@ -4,6 +4,11 @@
 //! # 💎 CORE CUÁNTICO ME-60OS 💎
 //! Logic Pura Rust con soporte condicional para PyO3
 
+// Núcleo S60: los casts u128→u64 (nanos del reloj, acotado por el hardware) e i64→u8
+// (byte de fase normalizada 0-359→0-255) son intencionales: los valores están acotados
+// por el dominio físico (raw < 60⁴×360; nanos < 2^64 en la práctica del reloj).
+#![allow(clippy::cast_possible_truncation)]
+
 use crate::isochronous_oscillator::IsochronousOscillator;
 use crate::spa::SPA;
 use serde::{Deserialize, Serialize};
@@ -179,7 +184,7 @@ impl S60PID {
     /// Get non-Markovian correction for Salto-17 elimination
     /// Returns correction in nanoseconds based on history kernel
     pub fn calculate_drift_correction(&self, current_tick: u64) -> u64 {
-        if current_tick == 0 || current_tick % 68 != 0 {
+        if current_tick == 0 || !current_tick.is_multiple_of(68) {
             return 0;
         }
 
@@ -188,14 +193,14 @@ impl S60PID {
         let mut weight = SPA::one();
 
         for hist_error in self.history.iter().rev() {
-            let correction = hist_error.to_raw().abs() as i64 * 1000; // scale to ns
+            let correction = hist_error.to_raw().abs() * 1000; // scale to ns
             if correction > 0 {
                 correction_accum = correction_accum + SPA::from_raw(correction);
             }
             weight = weight * self.kernel_alpha;
         }
 
-        correction_accum.to_raw().abs() as u64
+        correction_accum.to_raw().unsigned_abs()
     }
 
     pub fn set_history_capacity(&mut self, capacity: usize) {
@@ -431,7 +436,7 @@ impl LiquidLattice {
             }
             if i < chunks_b.len() {
                 let deg = ((chunks_b[i][0] as i64) * 360) / 256;
-                let deg_norm = if deg < 0 { 0 } else if deg > 359 { 359 } else { deg };
+                let deg_norm = deg.clamp(0, 359);
                 self.buffer.lattice[i].phase = SPA::new(deg_norm, 0, 0, 0, 0);
             }
         }
@@ -462,7 +467,7 @@ impl LiquidLattice {
             if rec_b.len() < count_b {
                 let phase = self.buffer.lattice[i].phase;
                 let phase_deg = phase.to_raw() / SPA::SCALE_0;
-                let deg_normalized = if phase_deg < 0 { 0 } else if phase_deg > 359 { 359 } else { phase_deg as i64 };
+                let deg_normalized = if phase_deg < 0 { 0 } else if phase_deg > 359 { 359 } else { phase_deg };
                 let byte_val = ((deg_normalized * 256) / 360) as u8;
                 rec_b.push(byte_val);
             }

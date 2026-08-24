@@ -74,6 +74,8 @@ impl BiometricVerifier {
 
     fn fallback_nonce(&self) -> u64 {
         use std::time::{SystemTime, UNIX_EPOCH};
+        // nanos since epoch always fits u64 for current timestamps
+        #[allow(clippy::cast_possible_truncation)]
         let ts = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos() as u64;
         ts ^ (std::process::id() as u64)
     }

@@ -17,10 +17,16 @@
 //! NOTA: la cáscara ("S60 HARDWARE SIMULATOR v2", "DSP MELTDOWN") es documentación;
 //! la FUNCIÓN es el pipeline de mul + traps, que se replica aquí.
 
+// Núcleo S60: los casts i128→i64 están precedidos por checks de rango explícitos
+// (líneas 84-86 y 105-111), por lo que el truncamiento nunca enmascara overflow.
+#![allow(clippy::cast_possible_truncation)]
+
 use crate::spa::SPA;
 
 /// Límite de registro acumulador DSP (128-bit con signo).
+#[allow(dead_code)] // Documentación del modelo de hardware; el check siempre pasa para i128.
 const MAX_INT128: i128 = i128::MAX; // 2^127 - 1 approx; usamos i128 completo
+#[allow(dead_code)]
 const MIN_INT128: i128 = i128::MIN;
 
 /// Error de restricción de hardware DSP.
@@ -56,10 +62,9 @@ impl S60DSP {
 
     /// Verifica que el valor intermedio cabe en el acumulador DSP (128-bit).
     #[inline]
-    fn check_128(val: i128) -> Result<(), DspConstraintError> {
-        if val > MAX_INT128 || val < MIN_INT128 {
-            return Err(DspConstraintError::AccumulatorMeltdown(val));
-        }
+    fn check_128(_val: i128) -> Result<(), DspConstraintError> {
+        // Branch muerto eliminado (absurd_extreme_comparisons): `val` ya es i128, así que
+        // `val > i128::MAX || val < i128::MIN` es SIEMPRE falso — semánticamente idéntico.
         Ok(())
     }
 

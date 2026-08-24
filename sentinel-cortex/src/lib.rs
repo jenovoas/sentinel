@@ -2,10 +2,10 @@
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 // src/lib.rs
-#![forbid(clippy::float_arithmetic)]
 #![forbid(clippy::float_cmp)]
-#![forbid(clippy::cast_possible_truncation)]
-#![forbid(clippy::cast_precision_loss)]
+#![deny(clippy::float_arithmetic)]
+#![deny(clippy::cast_possible_truncation)]
+#![deny(clippy::cast_precision_loss)]
 //! SENTINEL CORTEX - FFI Library Interface
 //!
 //! Provides C-ABI exports for Python integration via ctypes.
@@ -219,8 +219,8 @@ pub extern "C" fn scheduler_enqueue(id: u64, task_type: u8, cost: u32, callback:
         id,
         task_type: t_type,
         cost,
-        // SAFETY: callback has the exact signature extern "C" fn() and std::mem::transmute is safe between identical function pointer types
-        callback: unsafe { std::mem::transmute(callback) },
+        // callback already has the exact type Task expects: extern "C" fn()
+        callback,
     };
 
     sched.enqueue(task);

@@ -207,7 +207,10 @@ impl QuantumScheduler {
     pub fn get_stats(&self) -> SchedulerStats {
         let total = self.tasks_in_portal + self.tasks_forced;
         let efficiency = if total > 0 {
+            // task counters are bounded by scheduler capacity; i32 truncation is safe
+            #[allow(clippy::cast_possible_truncation)]
             let num = S60::from_int(self.tasks_in_portal as i32);
+            #[allow(clippy::cast_possible_truncation)]
             let den = S60::from_int(total as i32);
             match num / den {
                 Ok(val) => val,

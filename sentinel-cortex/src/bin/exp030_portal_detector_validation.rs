@@ -187,6 +187,8 @@ fn main() {
 
     println!();
     println!("[RENDIMIENTO]");
+    // benchmark durations are bounded (ms-range); safe truncation to i64
+    #[allow(clippy::cast_possible_truncation)]
     let elapsed_micros = elapsed.as_micros() as i64;
     let elapsed_per_tick_ns = (elapsed_micros * 1000) / TOTAL_TICKS as i64;
     let throughput_per_sec = TOTAL_TICKS as i64 * 1_000_000 / elapsed_micros.max(1);

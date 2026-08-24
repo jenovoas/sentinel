@@ -63,6 +63,8 @@ impl BioResonator {
     pub fn set_dead_man_threshold(&mut self, ms: u64) { self.dead_man_threshold_ms = ms; }
 
     pub fn get_coherence_raw(&self) -> i64 { self.coherence.to_base_units() }
+    // elapsed time in ms always fits u64 for any real uptime
+    #[allow(clippy::cast_possible_truncation)]
     pub fn time_since_pulse_ms(&self) -> u64 { self.last_pulse.elapsed().as_millis() as u64 }
     pub fn reset(&mut self) { self.coherence = S60::zero(); }
 }

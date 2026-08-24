@@ -14,6 +14,8 @@ use me60os_core::spa::SPA;
 use crate::memory::resonant_lattice_bridge::ResonantLatticeBridge;
 
 /// Bridges LFM inference streams to Sentinel's resonant crystal lattice.
+// pipeline preparado: integracion pendiente
+#[allow(dead_code)]
 pub struct LfmPaiBridge;
 
 impl LfmPaiBridge {

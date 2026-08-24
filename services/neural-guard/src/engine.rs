@@ -97,8 +97,7 @@ impl DecisionEngine {
 
         // 1. Buscar la lectura térmica más reciente
         let latest_temp = self.event_buffer.iter()
-            .filter(|e| e.event_type == "cpu_thermal_reading")
-            .last();
+            .rfind(|e| e.event_type == "cpu_thermal_reading");
 
         let temp_c = match latest_temp {
             Some(e) => e.metadata["celsius"].as_f64().unwrap_or(40.0),

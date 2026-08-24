@@ -80,7 +80,7 @@ impl S60 {
         S60 { _value: raw }
     }
 
-    pub fn to_base_units(&self) -> i64 {
+    pub fn to_base_units(self) -> i64 {
         self._value
     }
 
@@ -119,7 +119,9 @@ impl S60 {
     }
 
     /// Get components (for display/telemetry) — 4 sexagesimal places
-    pub fn to_components(&self) -> (i32, u8, u8, u8, u8) {
+    // Sexagesimal digits are always < 60, so i32/u8 truncation casts are lossless
+    #[allow(clippy::cast_possible_truncation)]
+    pub fn to_components(self) -> (i32, u8, u8, u8, u8) {
         let sign = if self._value < 0 { -1 } else { 1 };
         let abs_val = self._value.abs();
 
@@ -140,6 +142,8 @@ impl S60 {
 }
 
 // FORMATTING (Sexagesimal Output — 4 places, matching SPA)
+// Sexagesimal digits are always < 60, so u8 truncation casts are lossless
+#[allow(clippy::cast_possible_truncation)]
 impl fmt::Debug for S60 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let sign = if self._value < 0 { "-" } else { "" };
@@ -194,6 +198,8 @@ impl Mul for S60 {
         // So we do (A*B)/S.
         // Use i128 to prevent overflow during intermediate calc
         let product = (self._value as i128 * other._value as i128) / S60::SCALE_0 as i128;
+        // product is the exact result of SPA multiply — value fits i64 (same range as operands)
+        #[allow(clippy::cast_possible_truncation)]
         S60 {
             _value: product as i64,
         }
@@ -210,6 +216,8 @@ impl Div for S60 {
         // So we do (A * S) / B.
         let scaled_numerator = self._value as i128 * S60::SCALE_0 as i128;
         let quotient = scaled_numerator / other._value as i128;
+        // quotient is the exact result of SPA division — value fits i64
+        #[allow(clippy::cast_possible_truncation)]
         Ok(S60 {
             _value: quotient as i64,
         })

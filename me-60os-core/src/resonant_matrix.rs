@@ -8,6 +8,10 @@
 //!
 //! Enables energy (data) transfer through sympathetic vibration between nodes.
 
+// Núcleo S60: los casts i128→i64 en el cálculo de coherencia son intencionales por el
+// modelo de punto fijo base-60. Los valores son promedios de fase acotados a 360°×SCALE_0.
+#![allow(clippy::cast_possible_truncation)]
+
 use crate::isochronous_oscillator::IsochronousOscillator;
 use crate::shm_bridge::PySharedBuffer;
 use crate::spa::SPA;

@@ -95,6 +95,8 @@ impl ResonantBuffer {
 
         // Convert count to percentage S60 (0-60 degrees roughly)
         let degrees = (count as i64 * 60) / BUFFER_SIZE_S60 as i64;
+        // degrees is bounded by BUFFER_SIZE_S60 (small), safe truncation to i32
+        #[allow(clippy::cast_possible_truncation)]
         S60::from_int(degrees as i32)
     }
 }

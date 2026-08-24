@@ -18,6 +18,12 @@ pub struct PortalDetector {
     threshold: S60,
 }
 
+impl Default for PortalDetector {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl PortalDetector {
     pub fn new() -> Self {
         PortalDetector {

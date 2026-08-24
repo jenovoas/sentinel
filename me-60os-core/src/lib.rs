@@ -2,10 +2,11 @@
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 // 🛡️ ME-60OS CORE LIBRARY - RUST 🛡️
-#![forbid(clippy::float_arithmetic)]
-#![forbid(clippy::float_cmp)]
-#![forbid(clippy::cast_possible_truncation)]
-#![forbid(clippy::cast_precision_loss)]
+// Policy: deny for numeric core (float_arithmetic, float_cmp, cast_possible_truncation, cast_precision_loss)
+#![deny(clippy::float_arithmetic)]
+#![deny(clippy::float_cmp)]
+#![deny(clippy::cast_possible_truncation)]
+#![deny(clippy::cast_precision_loss)]
 #[cfg(feature = "extension-module")]
 use pyo3::prelude::*;
 

@@ -66,6 +66,8 @@ fn main() {
     }
     let elapsed = start.elapsed();
 
+    // benchmark durations are bounded (ms-range); safe truncation to i64
+    #[allow(clippy::cast_possible_truncation)]
     let elapsed_ns = elapsed.as_nanos() as i64;
     let ns_per_tick = elapsed_ns / ITERS as i64;
     let ticks_per_sec = (ITERS as i64 * 1_000_000_000) / elapsed_ns.max(1);

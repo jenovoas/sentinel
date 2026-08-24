@@ -40,6 +40,8 @@ impl ResonantLoop {
 
         if wait_ms > 0 {
             tracing::debug!("⏳ Resonant Loop: Syncing phase ({}ms)", wait_ms);
+            // wait_ms is bounded by the 17s breath cycle, always fits u64
+            #[allow(clippy::cast_possible_truncation)]
             sleep(Duration::from_millis(wait_ms as u64)).await;
         }
 

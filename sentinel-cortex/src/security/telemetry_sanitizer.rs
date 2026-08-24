@@ -8,6 +8,8 @@
 //! by validating and sanitizing telemetry data in pure Rust (zero external dependencies).
 
 #[derive(Debug, Clone)]
+// pipeline preparado: integracion pendiente
+#[allow(dead_code)]
 pub struct SanitizationResult {
     pub is_safe: bool,
     pub confidence: f64,
@@ -16,6 +18,8 @@ pub struct SanitizationResult {
     pub original_prompt: String,
 }
 
+// pipeline preparado: integracion pendiente
+#[allow(dead_code)]
 pub struct TelemetrySanitizer {
     enabled: bool,
     dangerous_keywords: Vec<(&'static str, &'static str)>,
@@ -28,6 +32,8 @@ impl Default for TelemetrySanitizer {
     }
 }
 
+// pipeline preparado: integracion pendiente
+#[allow(dead_code)]
 impl TelemetrySanitizer {
     pub fn new(enabled: bool) -> Self {
         let dangerous_keywords = vec![
@@ -132,6 +138,9 @@ impl TelemetrySanitizer {
         }
 
         if !blocked.is_empty() {
+            // Pipeline preparado: integracion pendiente. Confidence float lives at the
+            // I/O boundary (score contract), not in the S60 compute core.
+            #[allow(clippy::float_arithmetic, clippy::cast_precision_loss)]
             let conf_val: f64 = 1.0 - (blocked.len() as f64 * 0.3);
             let confidence = if conf_val < 0.0 { 0.0 } else { conf_val };
             return SanitizationResult {

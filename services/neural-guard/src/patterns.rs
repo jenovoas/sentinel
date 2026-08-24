@@ -128,7 +128,7 @@ impl Pattern for NginxErrorSpikePattern {
             .filter(|e| e.event_type == "nginx_5xx_spike")
             .collect();
 
-        if let Some(last_event) = nginx_5xx_events.last() {
+        if let Some(last_event) = nginx_5xx_events.iter().rfind(|_| true) {
             if let Some(count) = last_event.metadata["count"].as_u64() {
                 if count > context.nginx_5xx_threshold {
                     return Some(CorrelatedIncident {
@@ -158,7 +158,7 @@ impl Pattern for RedisMemoryPattern {
             .filter(|e| e.event_type == "redis_memory_usage")
             .collect();
 
-        if let Some(last_event) = redis_mem_events.last() {
+        if let Some(last_event) = redis_mem_events.iter().rfind(|_| true) {
             if let Some(used_bytes) = last_event.metadata["used_bytes"].as_u64() {
                 if used_bytes > context.redis_memory_threshold_bytes {
                     return Some(CorrelatedIncident {

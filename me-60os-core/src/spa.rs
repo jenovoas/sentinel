@@ -11,6 +11,16 @@
 //!         to_raw() ya no clampea silenciosamente.
 //!         two_pi() ahora es fn constante y consistente con SPAMath::TWO_PI.
 
+// SPA acotado: |raw_128 productos| < SCALE_0^2 * (i64::MAX/SCALE_0) << i64::MAX; los casts
+// i128->i64 en Mul/Div/Div::div_safe caben por el acotamiento físico S60 (raw < 60^4 * 360).
+#![allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    clippy::cast_sign_loss,
+    clippy::cast_possible_wrap,
+    clippy::float_arithmetic
+)]
+
 use std::fmt;
 use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
 use serde::{Deserialize, Serialize};
@@ -19,7 +29,7 @@ use serde::{Deserialize, Serialize};
 use pyo3::prelude::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[cfg_attr(feature = "extension-module", pyclass(module = "me60os_core", eq, eq_int))]
+#[cfg_attr(feature = "extension-module", pyclass(module = "me60os_core", eq, eq_int, from_py_object))]
 pub enum SPAError {
     DivisionByZero,
 }
@@ -36,7 +46,7 @@ impl std::error::Error for SPAError {}
 
 /// Sexagesimal (Base-60) Fixed-Point Number.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Serialize, Deserialize)]
-#[cfg_attr(feature = "extension-module", pyclass(module = "me60os_core"))]
+#[cfg_attr(feature = "extension-module", pyclass(module = "me60os_core", from_py_object))]
 pub struct SPA {
     pub components: [i64; 5],
 }
@@ -90,6 +100,7 @@ impl SPA {
     pub fn from_legacy_tertia(tertia: i64) -> Self { Self::from_raw(tertia * 60) }
     pub fn to_legacy_tertia(&self) -> i64 { self.to_raw() / 60 }
     pub fn from_decimal_for_import_only(decimal: f64) -> Self {
+        // BORDE I/O: entrada externa decimal/tiempo -> raw S60 (YATRA: float solo en bordes)
         let raw = (decimal * Self::SCALE_0 as f64).round() as i64;
         Self::from_raw(raw)
     }

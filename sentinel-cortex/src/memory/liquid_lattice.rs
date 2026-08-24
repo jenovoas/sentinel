@@ -40,6 +40,8 @@ impl LiquidLattice {
 
     /// Difusión de estado Von Neumann (Arriba, Abajo, Izquierda, Derecha)
     /// Retención objetivo >72% (EXP-009)
+    // Fixed 3x3 grid indexed by r/c for Von Neumann neighbor arithmetic; iterators would obscure indices
+    #[allow(clippy::needless_range_loop)]
     pub fn diffuse(&mut self) {
         let mut new_grid = self.grid.clone();
 
@@ -83,6 +85,9 @@ impl LiquidLattice {
         }
     }
 
+    // Boundary metric for dashboards/telemetry: float conversion is the display contract,
+    // not part of the S60 compute core (YATRA: float only at I/O edge).
+    #[allow(clippy::float_arithmetic, clippy::cast_precision_loss)]
     pub fn retention_score(&self) -> f64 {
         let mut total_amp = S60::zero();
         for r in 0..3 {

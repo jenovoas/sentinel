@@ -94,7 +94,7 @@ pub fn ln_s60(x: &S60) -> Result<S60, S60Error> {
 
         // Divide by (2n + 1)
         let divisor_val = 2 * n + 1;
-        let divisor_s60 = S60::new(divisor_val as i32, 0, 0, 0, 0).unwrap();
+        let divisor_s60 = S60::new(divisor_val, 0, 0, 0, 0).unwrap();
         let term = match z_power / divisor_s60 {
             Ok(val) => val,
             Err(_) => break,
@@ -375,8 +375,8 @@ pub fn q_factor_s60(spectrum: &[ComplexS60], sample_rate: S60) -> Result<S60, S6
     let mut peak_magnitude = S60::ZERO;
 
     // Only search first half (positive frequencies)
-    for i in 0..(n / 2) {
-        let mag = spectrum[i].magnitude_squared();
+    for (i, item) in spectrum.iter().enumerate().take(n / 2) {
+        let mag = item.magnitude_squared();
         if mag > peak_magnitude {
             peak_magnitude = mag;
             peak_idx = i;
@@ -407,8 +407,8 @@ pub fn q_factor_s60(spectrum: &[ComplexS60], sample_rate: S60) -> Result<S60, S6
     }
 
     // Search right for upper -3dB point
-    for i in (peak_idx + 1)..(n / 2) {
-        if spectrum[i].magnitude_squared() < half_power {
+    for (i, item) in spectrum.iter().enumerate().take(n / 2).skip(peak_idx + 1) {
+        if item.magnitude_squared() < half_power {
             f_high_idx = i;
             break;
         }
@@ -459,6 +459,8 @@ pub fn cross_correlation_s60(signal_a: &[S60], signal_b: &[S60]) -> Result<S60, 
         ));
     }
 
+    // signal length is bounded by input buffer size; safe truncation to i32 for S60::new
+    #[allow(clippy::cast_possible_truncation)]
     let n = signal_a.len() as i32;
     let n_s60 = S60::new(n, 0, 0, 0, 0)?;
 
@@ -495,7 +497,7 @@ pub fn cross_correlation_s60(signal_a: &[S60], signal_b: &[S60]) -> Result<S60, 
     // Compute sqrt using Newton-Raphson method
     let sqrt_denom = sqrt_s60(&denominator)?;
 
-    Ok((numerator / sqrt_denom)?)
+    numerator / sqrt_denom
 }
 
 /// Square root in S60 using Newton-Raphson method

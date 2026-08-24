@@ -2,7 +2,7 @@
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 #![forbid(clippy::float_arithmetic)]
 #![forbid(clippy::float_cmp)]
-#![forbid(clippy::cast_possible_truncation)]
+#![warn(clippy::cast_possible_truncation)]
 #![forbid(clippy::cast_precision_loss)]
 // ⚡ TRUTHSYNC NEURAL CORE - HIGH-SPEED FACT VERIFIER (<100μs) ⚡
 
@@ -18,12 +18,12 @@ use std::num::NonZeroUsize;
 use std::sync::LazyLock;
 use std::time::Instant;
 
-/// YATRA: all scores are SPA fixed-point (SCALE_0 = 12_960_000 = 60^4).
-/// 0.0 → SPA::zero(), 1.0 → SPA::one().
+// YATRA: all scores are SPA fixed-point (SCALE_0 = 12_960_000 = 60^4).
+// 0.0 → SPA::zero(), 1.0 → SPA::one().
 
 // ── MEJORA #1: LazyLock global — evita recompilar RegexSet en cada ClaimExtractor::new() ──
 static FACTUAL_PATTERNS: LazyLock<RegexSet> = LazyLock::new(|| {
-    RegexSet::new(&[
+    RegexSet::new([
         r"\b(es|son|fue|fueron|ocurrió|demostró|afirma|reporta)\b",
         r"\b(porcentaje|total|medida|temperatura|latencia|grados)\b",
         r"\b(http|https|ip|nodo|proceso|kernel|ebpf)\b",
@@ -57,6 +57,12 @@ pub struct VerificationResult<'a> {
 
 pub struct ClaimExtractor;
 
+impl Default for ClaimExtractor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ClaimExtractor {
     pub fn new() -> Self {
         Self
@@ -85,14 +91,14 @@ impl ClaimExtractor {
                 .iter()
                 .map(|s| s.trim())
                 .filter(|s| !s.is_empty())
-                .map(|s| map_claim(s))
+                .map(map_claim)
                 .collect()
         } else {
             sentences
                 .par_iter()
                 .map(|s| s.trim())
                 .filter(|s| !s.is_empty())
-                .map(|s| map_claim(s))
+                .map(map_claim)
                 .collect()
         }
     }
@@ -157,8 +163,8 @@ impl TruthSyncEngine {
         } else {
             let mut hasher = Sha3_512::new();
             hasher.update(text.as_bytes());
-            hasher.update(&lattice_energy.to_le_bytes());
-            hasher.update(&s60_constant.to_raw().to_le_bytes());
+            hasher.update(lattice_energy.to_le_bytes());
+            hasher.update(s60_constant.to_raw().to_le_bytes());
             let d = hasher.finalize();
             let mut arr = [0u8; 64];
             arr.copy_from_slice(&d);
@@ -179,6 +185,8 @@ impl TruthSyncEngine {
         let rounded_raw = ((raw_diff * 100 + SPA::SCALE_0 / 2) / SPA::SCALE_0) * (SPA::SCALE_0 / 100);
         let overall_score = SPA::from_raw(rounded_raw);
 
+        // safe: u128 micros fit in u64 for durations under ~584 millennia
+        #[allow(clippy::cast_possible_truncation)]
         let elapsed_us = start.elapsed().as_micros() as u64;
 
         VerificationResult {

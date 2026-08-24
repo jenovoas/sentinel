@@ -43,11 +43,21 @@
 //! FUENTES (vault, cotejadas):
 //!   - Fisica/vimana_zpe_mhd.md (escudo MHD = Lorentz real, ZPE especulativo)
 //!   - Fisica/super_radiancia_sincronia.md (Dicke N^2, coherencia >95%)
-//!   - Fisica/escudo_planetario_10892_nodes.md (levantación de datos)
+//!   - Fisica/escudo_planetario_10892_nodes.md (levantamiento de datos)
 //!   - Experimentos/EXP_005_MERKABAH_G_ZERO.md (masa inercial efectiva asintótica)
 //!   - Fisica/verificacion_formulas_papers.md (cotejo contra papers primarios)
 //!   - Experimentos/EXP_028_PENTA_RESONANCE.md (5 capas, respiración 41–43 Hz)
 //!   - Experimentos/EXP_027_YHWH_PULSE_MONITOR.md (ciclo respiratorio 41.02–43.52 Hz)
+
+// Arithmética S60: los casts u64→usize y i128→i64 son intencionales en módulos numéricos del
+// núcleo base-60. Los ticks son u64 limitados por el rango físico del reloj; el cast a usize
+// es seguro en sistemas 64-bit y necesario para indexar la lattice.
+#![allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    clippy::cast_sign_loss,
+    clippy::cast_possible_wrap
+)]
 
 use crate::spa::SPA;
 use crate::spa_math::SPAMath;

@@ -21,6 +21,12 @@ pub struct ResonanceEngine {
     entropy_rate: S60,
 }
 
+impl Default for ResonanceEngine {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ResonanceEngine {
     pub fn new() -> Self {
         ResonanceEngine {
