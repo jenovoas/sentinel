@@ -1,12 +1,10 @@
 # Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
 # Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
-from typing import List, Optional, Dict, Any
+from typing import Optional, Dict, Any
 import logging
-from google.cloud import aiplatform
-from google.oauth2 import service_account
 import vertexai
-from vertexai.generative_models import GenerativeModel, Part, Content, HarmCategory, HarmBlockThreshold
+from vertexai.generative_models import GenerativeModel, HarmCategory, HarmBlockThreshold
 from app.config import get_settings
 
 # Configure logging
