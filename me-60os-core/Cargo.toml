@@ -59,7 +59,7 @@ blake3 = "1.5"
 
 [features]
 extension-module = ["pyo3/extension-module", "pyo3"]
-default = ["extension-module"]
+default = []
 
 [lints.clippy]
 float_arithmetic = "forbid"

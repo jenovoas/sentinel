@@ -22,9 +22,9 @@ jobs:
           pip install pytest ruff mypy
 
       - name: Pytest backend
-        run: cd backend && pytest -q
+        run: pytest backend/ -q
         env:
-          PYTHONPATH: .
+          PYTHONPATH: backend
 
       - name: Pytest quantum
         run: cd quantum && pytest -q
