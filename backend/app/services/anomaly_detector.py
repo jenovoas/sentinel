@@ -9,7 +9,7 @@ Implements baseline statistical detection for pre-AI analysis
 import logging
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Any
 from sqlalchemy import and_, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
