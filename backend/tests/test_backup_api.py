@@ -56,6 +56,14 @@ def mock_log_file(tmp_path):
     return str(log_file)
 
 
+from app.security import get_current_admin_user
+
+@pytest.fixture(autouse=True)
+def override_admin_auth():
+    app.dependency_overrides[get_current_admin_user] = lambda: {"id": 1, "username": "admin", "is_admin": True}
+    yield
+    app.dependency_overrides.pop(get_current_admin_user, None)
+
 # ============================================================================
 # TESTS: /api/v1/backup/status
 # ============================================================================
@@ -87,6 +95,8 @@ def test_backup_status_endpoint_success(mock_backup_dir, mock_log_file):
 
 
 def test_backup_status_endpoint_no_backups():
+    from app.routers.backup import get_cached_status
+    get_cached_status.cache_clear()
     """Test backup status with no backups"""
     with tempfile.TemporaryDirectory() as tmp_dir:
         with patch.dict(os.environ, {"BACKUP_DIR": tmp_dir}):
@@ -134,9 +144,9 @@ def test_backup_history_endpoint(mock_backup_dir):
         backup = data[0]
         assert "filename" in backup
         assert "size_bytes" in backup
-        assert "size_mb" in backup
+        assert "size_kb" in backup
         assert "created_at" in backup
-        assert "age_hours" in backup
+        assert "age_seconds" in backup
         assert "has_checksum" in backup
 
 
@@ -291,7 +301,10 @@ def test_backup_config_defaults():
     """Test configuration defaults"""
     # Clear environment variables
     env_vars = ["BACKUP_DIR", "BACKUP_RETENTION_DAYS", "S3_ENABLED"]
-    with patch.dict(os.environ, {k: "" for k in env_vars}, clear=True):
+    env_copy = dict(os.environ)
+    for k in env_vars:
+        env_copy.pop(k, None)
+    with patch.dict(os.environ, env_copy, clear=True):
         response = client.get("/api/v1/backup/config")
         
         assert response.status_code == 200
@@ -355,6 +368,8 @@ def test_full_backup_workflow(mock_backup_dir, mock_log_file):
 # ============================================================================
 
 def test_error_handling_invalid_backup_dir():
+    from app.routers.backup import get_cached_status
+    get_cached_status.cache_clear()
     """Test graceful handling of invalid backup directory"""
     with patch.dict(os.environ, {"BACKUP_DIR": "/invalid/path/that/does/not/exist"}):
         response = client.get("/api/v1/backup/status")

@@ -19,7 +19,7 @@ jobs:
       - name: Install system dependencies for libbpf
         run: |
           sudo apt-get update
-          sudo apt-get install -y libelf-dev libbpf-dev pkg-config
+          sudo apt-get install -y libelf-dev libbpf-dev pkg-config python3-dev
 
       - name: Cache cargo registry
         uses: actions/cache@v4
