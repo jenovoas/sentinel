@@ -24,7 +24,7 @@ jobs:
       - name: Pytest backend
         run: cd backend && pytest -q
         env:
-          PYTHONPATH: backend
+          PYTHONPATH: .
 
       - name: Pytest quantum
         run: cd quantum && pytest -q
