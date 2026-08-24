@@ -18,8 +18,21 @@ import tempfile
 import time
 
 from app.main import app
+from app.routers.backup import get_cached_status
+from app.security import get_current_admin_user
 
 client = TestClient(app)
+
+# Override admin auth dependency for trigger endpoint tests
+async def mock_admin_user():
+    return {"id": "admin1", "email": "admin@example.com", "role": "admin"}
+
+app.dependency_overrides[get_current_admin_user] = mock_admin_user
+
+@pytest.fixture(autouse=True)
+def clear_status_cache():
+    """Clear lru_cache on get_cached_status before each test"""
+    get_cached_status.cache_clear()
 
 # ============================================================================
 # FIXTURES
@@ -134,9 +147,9 @@ def test_backup_history_endpoint(mock_backup_dir):
         backup = data[0]
         assert "filename" in backup
         assert "size_bytes" in backup
-        assert "size_mb" in backup
+        assert "size_kb" in backup
         assert "created_at" in backup
-        assert "age_hours" in backup
+        assert "age_seconds" in backup
         assert "has_checksum" in backup
 
 
@@ -224,7 +237,7 @@ def test_backup_trigger_timeout(mock_run):
     response = client.post("/api/v1/backup/trigger")
     
     assert response.status_code == 408  # Timeout
-    assert "timeout" in response.json()["detail"].lower()
+    assert "timed out" in response.json()["detail"].lower()
 
 
 # ============================================================================
@@ -291,7 +304,10 @@ def test_backup_config_defaults():
     """Test configuration defaults"""
     # Clear environment variables
     env_vars = ["BACKUP_DIR", "BACKUP_RETENTION_DAYS", "S3_ENABLED"]
-    with patch.dict(os.environ, {k: "" for k in env_vars}, clear=True):
+    env = os.environ.copy()
+    for var in env_vars:
+        env.pop(var, None)
+    with patch.dict(os.environ, env, clear=True):
         response = client.get("/api/v1/backup/config")
         
         assert response.status_code == 200

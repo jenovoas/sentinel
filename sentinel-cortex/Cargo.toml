@@ -58,7 +58,7 @@ rustyline-derive = "0.10"
 libbpf-rs = "0.24"
 libc = "0.2"
 futures-util = "0.3"
-me60os_core = { path = "../me-60os-core", package = "me60os" }
+me60os_core = { path = "../me-60os-core", package = "me60os", default-features = false }
 truthsync_core = { path = "../truthsync-core", package = "truthsync-core" }
 
 [dev-dependencies]
