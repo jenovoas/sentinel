@@ -63,6 +63,7 @@ truthsync_core = { path = "../truthsync-core", package = "truthsync-core" }
 
 [dev-dependencies]
 tokio-test = "0.4"
+pyo3 = { version = "0.29", features = ["auto-initialize"] }
 
 [lints.clippy]
 float_arithmetic = "forbid"
