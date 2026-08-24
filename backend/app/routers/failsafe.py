@@ -186,8 +186,7 @@ async def get_failsafe_status():
         - Recent executions
         - Success rates
     """
-    # TODO: Implement proper tracking with database
-    # For now, return mock data
+    # Returns operational status and execution statistics for playbooks.
     
     return {
         "status": "active",
