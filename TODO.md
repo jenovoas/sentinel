@@ -23,7 +23,7 @@
 - [ ] **FFT + Q-factor detector** (`MEJORAS_PLANIFICADAS` P2): `PeriodicDetector` en `sentinel-cortex/src/detectors/periodic.rs` usando `fft_s60`/`q_factor_s60` (ya en `s60_math.rs`). *Verificado:* no existe.
 
 ## B) eBPF / Kernel (requiere Fan + clang — NO ejecutar sin autorización de Jaime)
-- [ ] **eBPF LSM PoC**: compilar/cargar `guardian_alpha_lsm.o` en Fan, medir overhead <1µs, test WAL replay, mTLS SSRF prevention. *Verificado:* código existe (`god_mode_uids` en `guardian_alpha_lsm.c`).
+- [ ] **eBPF LSM PoC**: ~~compilar/cargar `guardian_alpha_lsm.o` en Fan~~ → HECHO (`.o` 5,528 B compilado y cargado; LSM ACTIVO según AGENT_BRAIN + `ebpf/EVIDENCE_LSM_DEPLOYMENT.md`). Quedan abiertos: medir overhead <1µs, test WAL replay, mTLS SSRF prevention.
 - [ ] **xdp_firewall.c**: compilar `-target bpf` + cargar en `eth0` de Fan.
 - [ ] **gamma_watchdog.c**: corregir `PEERS[]` (`guardian_alpha`/`ai_guardian`), compilar, confirmar 5/5 peers.
 - [ ] **Security hardening legacy**: ECDSA P-256, HMAC Nginx, nonce+replay (de `docs/archive/SECURITY_HARDENING_PLAN.md`).
@@ -36,7 +36,7 @@
 - [ ] **eBPF forwarder Fan**: copiar `sentinel-ebpf-forwarder.service` a Fan.
 - [ ] **PoC WebSocket telemetría**: `wscat` a `/api/v1/telemetry`.
 - [ ] **scripts/sentinel-health.sh**: unificar health checks (`startup.sh` obsoleto).
-- [ ] **Inercia CPU dinámica**: eliminar `unwrap_or(45000)` en `sentinel-cortex/src/main.rs`, usar `/proc/stat` en S60.
+- [x] **Inercia CPU dinámica**: CERRADO 2026-08-23 — `unwrap_or(45000)` ya no existe en `sentinel-cortex/src/main.rs` (grep 0 hits); el drive lee `/proc/stat` en el bloque 3b (L227-241).
 - [ ] **Security Lane WAL**: append-only `/var/log/sentinel/security_wal.log` + AIOpsShield en `POST /api/v1/truth_claim`.
 - [ ] **Batería carga + Grafana**: `LiquidLattice` `retention_score` bajo tráfico concurrente.
 
@@ -66,4 +66,4 @@
 
 ---
 
-*Generado 2026-08-07 por Hermes tras auditoría completa. Detalle: `docs/_AUDIT_PENDIENTES.md`. Sin commitear (decisión de Jaime).*
+*Generado 2026-08-07 por Hermes tras auditoría completa. Detalle: `docs/_AUDIT_PENDIENTES.md`. Actualizado 2026-08-23 (auditoría staleness: items A/B cerrados verificados contra HEAD `bc3944ee`; commiteado con autorización de Jaime).*
