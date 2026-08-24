@@ -24,7 +24,6 @@ import logging
 import threading
 import functools
 from collections import deque
-from dataclasses import dataclass, field
 from typing import Callable, Any
 
 logger = logging.getLogger("quantum_scheduler")
