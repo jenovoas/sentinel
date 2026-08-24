@@ -380,3 +380,9 @@ AttributeError: module 'bcrypt' has no attribute '__about__'
 2026-08-24 03:51:11,880 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: OPTIONS http://testserver/ "HTTP/1.1 400 Bad Request"
 2026-08-24 03:51:11,883 - app.logging_config - INFO - main.py:144 - log_requests() - OPTIONS /
 2026-08-24 03:51:11,884 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: OPTIONS http://testserver/ "HTTP/1.1 400 Bad Request"
+2026-08-24 04:01:08,158 - app.logging_config - INFO - main.py:144 - log_requests() - OPTIONS /
+2026-08-24 04:01:08,161 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: OPTIONS http://testserver/ "HTTP/1.1 200 OK"
+2026-08-24 04:01:08,164 - app.logging_config - INFO - main.py:144 - log_requests() - OPTIONS /
+2026-08-24 04:01:08,166 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: OPTIONS http://testserver/ "HTTP/1.1 400 Bad Request"
+2026-08-24 04:01:08,169 - app.logging_config - INFO - main.py:144 - log_requests() - OPTIONS /
+2026-08-24 04:01:08,171 - httpx - INFO - _client.py:1025 - _send_single_request() - HTTP Request: OPTIONS http://testserver/ "HTTP/1.1 400 Bad Request"
