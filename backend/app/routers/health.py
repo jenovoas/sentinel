@@ -25,7 +25,7 @@ import asyncpg
 import redis.asyncio as redis
 import httpx
 
-from app.security import get_current_admin_user
+from app.security import get_current_admin_user, get_current_user
 from app.models.user import User
 
 router = APIRouter()
@@ -371,10 +371,10 @@ async def demote_to_standby(
 
 
 @router.get("/metrics")
-async def prometheus_metrics():
+async def prometheus_metrics(current_user = Depends(get_current_user)):
     """
     Prometheus metrics endpoint
-    
+
     Exposes metrics in Prometheus format for scraping
     """
     # Check components

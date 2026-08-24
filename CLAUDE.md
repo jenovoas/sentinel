@@ -26,28 +26,35 @@ La idea central: el punto flotante IEEE 754 introduce errores sistemáticos de
 denominadores incluyen primos que no dividen a 2 (1/3, 1/6, 1/60 son no terminales en binario).
 La base‑60 es divisible por 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30 — estas fracciones son **exactas**.
 
-Sentinel implementa esto a nivel kernel: hooks eBPF refuerzan la pureza aritmética, Rust proporciona
-el sistema de tipos zero‑copy, y PyO3 expone el núcleo a Python sin sobrecarga.
+Sentinel implementa esto en un runtime **100% Rust**: hooks eBPF refuerzan la pureza aritmética
+en Ring-0, y el puente PyO3 hacia `quantum/*.py` es **legacy** (estudio/puente de migración, no runtime).
 
 ## Arquitectura
 
-    sentinel/
-    sentinel-cortex/   Núcleo Rust: tipos S60/U60, IPC, refuerzo en Anillo 0
-      src/math/        Aritmética entera pura (suma, resta, mult, div, cmp)
-    ebpf/              Hooks LSM: intercepción de syscalls, detección de contaminación float
-    quantum/           Capa Python vía PyO3 (me60os_core.so)
-      experiments/     Programa experimental numerado (EXP-001 a EXP-029)
-    agents/            Agentes modulares: Investigación, Verificador, Publicador, Memoria
-    observability/     Dashboards Prometheus + Grafana
-    constraints/       YATRA_SPEC.md — el contrato aritmético inmutable
+    sentinel/                        (workspace Cargo — 5 miembros)
+    sentinel-cortex/    Crate principal: servidor Axum (:8000), drive continuo 500ms,
+                        ingesta eBPF, LiquidLattice 3x3, TruthSync, API /api/v1/*
+      src/math/         Aritmética entera pura (tipo S60, suma/resta/mult/div/cmp)
+    me-60os-core/       Núcleo numérico-físico (crate me60os): SPA [i64;5] escala 60^4,
+                        PAI-60, ResonantMatrix, IsochronousOscillator, QHC, Guardian LSM,
+                        Dual-Lane + 32 bins (EXP-XXX, benches, daemons nativos, TUI)
+    truthsync-core/     Motor de verificación de claims sobre energía del lattice
+    sentinel-verifier/  Verificador de invariantes runtime (systemd --watch 15 --json)
+    services/neural-guard/  Correlación de eventos + playbooks n8n
+    ebpf/               Hooks LSM/kernel: guardian_alpha_lsm.c (ACTIVO), guardian_cognitive,
+                        float_detector, gamma_watchdog; ai_guardian.c DESACTIVADO
+    quantum/            LEGADO: .py con headers LEGACY BRIDGE / MIGRADO — estudio,
+                        incluye experiments/ EXP-001..EXP-035 preservados
+    observability/      Dashboards Prometheus + Grafana
+    constraints/        YATRA_SPEC.md — el contrato aritmético inmutable
 
 ## Stack Tecnológico (SERVIDOR FENIX — Solo CPU)
 
 | Capa | Tecnología |
 |------|-----------|
-| Tipos base | Rust (struct S60 empaquetado con repr(packed), 16 bytes) |
-| Refuerzo kernel | eBPF / hooks LSM |
-| Puente Python | PyO3 — zero‑copy, sin serialización |
+| Tipos base | Rust: SPA `[i64;5]` escala 60⁴=12,960,000 (me-60os-core); S60 `i64` (sentinel-cortex) |
+| Refuerzo kernel | eBPF / hooks LSM (guardian_alpha_lsm ACTIVO; ai_guardian DESACTIVADO) |
+| Puente Python | PyO3 — LEGADO (runtime 100% Rust) |
 | IPC | Memoria compartida /dev/shm (6× más rápida que IPC serializado) |
 | Observabilidad | Prometheus + Grafana |
 | Contenedores | Podman (rootless) |
@@ -65,29 +72,25 @@ en sentinel‑cortex/src/math/. Si aún no existe la que necesitas, abre un issu
 
 ## Compilación
 
-    # Construir núcleo Rust
-    cd sentinel-cortex && cargo build --release
+    # Compilar todo el workspace (5 crates)
+    cargo build --release
 
-    # Construir extensión PyO3 (me-60os)
-    cd ../me-60os && cargo build --release --features extension-module
-    cp target/release/libme60os_core.so ../sentinel/quantum/
+    # Suite de tests del núcleo numérico
+    cargo test -p me60os --lib
 
-    # Ejecutar experimentos
-    cd sentinel/quantum && python3 experiments/EXP_022_ENTROPY_VALIDATION.py
+    # Servidor principal (Axum :8000)
+    cargo run -p sentinel-cortex --bin sentinel-cortex
 
-## Restricciones Clave
-
-- Prohibidos floats en lógica S60 (Candado YATRA)
-- Prohibidas nuevas VMs o instancias cloud: todos los servicios despliegan como contenedores Podman en un solo nodo
-- Los experimentos siguen numeración secuencial. EXP‑023/024/025 son parte del registro
-  de investigación. Estaban temporalmente ausentes del repositorio; restaurados 2026‑07‑30.
-- internal/ está en .gitignore: la investigación exploratoria vive ahí, no en el árbol principal
+    # Experimentos Rust (los .py de quantum/experiments son legado/estudio)
+    cargo run -p me60os --bin resonant_lattice_memory
+    cargo run -p me60os --bin exp028_penta
 
 ## Por Dónde Empezar
 
 - constraints/YATRA_SPEC.md: el contrato aritmético que gobierna todas las decisiones
-- sentinel-cortex/src/math/: la implementación base del tipo S60
-- quantum/experiments/EXP_015_MEMORY_THROUGHPUT.py: benchmark (reducción de memoria 23.6×)
+- AGENTS.md: reglas operativas del repo (SCALE_0, no doble-escala, drive continuo)
+- me-60os-core/src/spa.rs: el tipo base SPA; me-60os-core/src/resonant_matrix.rs: el lattice
+- cargo test -p me60os --lib: suite viva (89 tests)
 - docs/02_ciencia_y_quantum/RESEARCH_es.md: narrativa científica del programa experimental
 
 ## Gobernanza (ITIL 4 / ISO 20000‑1 / ISO 27001)

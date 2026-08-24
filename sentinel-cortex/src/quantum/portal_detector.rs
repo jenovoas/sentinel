@@ -21,12 +21,17 @@ pub struct PortalDetector {
 impl PortalDetector {
     pub fn new() -> Self {
         PortalDetector {
-            period_bio: S60::from_int(17),
-            // 4;15,0,0 = 4 * 216,000 + 15 * 3,600 = 918,000
+            // EXP-028 / me60os_core::bin::exp028_system_portals
+            // Periodos en S60 (1.0 unidad = 1 segundo, definicion operativa)
+            period_bio: S60::from_int(17), // 17s (pulso humano / operador)
+            // 4.25s = 17/4 (cristal YHWH, 4 ciclos por ciclo bio)
+            // raw = 4 * SCALE_0 + 15 * SCALE_1 = 51_840_000 + 3_240_000 = 55_080_000
             period_crystal: S60::from_raw(4 * S60::SCALE_0 + 15 * S60::SCALE_1),
-            // 16;10,48 = 16 * 216,000 + 10 * 3,600 + 48 * 60 = 3,492,480
+            // 16.18s (Venus Phi-ratio 13:8)
+            // raw = 16 * SCALE_0 + 10 * SCALE_1 + 48 * SCALE_2 = 207_360_000 + 2_160_000 + 172_800 = 209_692_800
             period_venus: S60::from_raw(16 * S60::SCALE_0 + 10 * S60::SCALE_1 + 48 * S60::SCALE_2),
-            // 0;45 = 45 * 3,600 = 162,000
+            // 0.75 umbral (45/60 = 3/4 en base 60)
+            // raw = 45 * SCALE_1 = 45 * 216_000 = 9_720_000
             threshold: S60::from_raw(45 * S60::SCALE_1),
         }
     }

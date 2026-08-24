@@ -22,17 +22,21 @@ from app.services.tenant_service import (
     get_tenants,
     get_tenant as get_tenant_service,
 )
-from app.security import get_current_user
+from app.security import get_current_user, get_current_admin_user
 from typing import List
 
 router = APIRouter(prefix="/api/v1/tenants", tags=["tenants"])
 
 @router.post("/", response_model=TenantResponse, status_code=status.HTTP_201_CREATED)
-async def create_tenant(tenant: TenantCreate, db: AsyncSession = Depends(get_db)):
+async def create_tenant(
+    tenant: TenantCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_admin_user)
+):
     """
     Creates a new tenant.
 
-    This is a public endpoint that allows new tenants to be created.
+    Requires admin authentication.
     """
     return await create_tenant_service(db=db, tenant=tenant)
 

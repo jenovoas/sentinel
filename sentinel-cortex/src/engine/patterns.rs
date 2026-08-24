@@ -151,3 +151,47 @@ impl Default for PatternDetector {
         Self::new()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::models::{Event, EventSource, EventType, Severity};
+    use chrono::Utc;
+
+    fn make_event(et: EventType) -> Event {
+        Event {
+            id: format!("{}", Utc::now().timestamp_nanos_opt().unwrap_or(0)),
+            source: EventSource::Prometheus,
+            timestamp: Utc::now(),
+            severity: Severity::Low,
+            event_type: et,
+            metadata: serde_json::Value::Null,
+        }
+    }
+
+    #[test]
+    fn test_credential_stuffing_detected() {
+        let detector = PatternDetector::new();
+        let events: Vec<Event> = (0..60).map(|_| make_event(EventType::FailedLogin)).collect();
+        let patterns = detector.detect(&events);
+        assert!(patterns.iter().any(|p| p.name.contains("Credential Stuffing")));
+    }
+
+    #[test]
+    fn test_credential_stuffing_not_detected() {
+        let detector = PatternDetector::new();
+        let events = vec![make_event(EventType::FailedLogin)];
+        let patterns = detector.detect(&events);
+        assert!(!patterns.iter().any(|p| p.name.contains("Credential Stuffing")));
+    }
+
+    #[test]
+    fn test_resource_exhaustion_not_detected_via_main_detect() {
+        let detector = PatternDetector::new();
+        let events = vec![make_event(EventType::CpuSpike)];
+        let patterns = detector.detect(&events);
+        // detect() calls detect_ddos (not detect_resource_exhaustion directly)
+        // -> 1 CpuSpike is < 100 threshold -> no pattern
+        assert!(patterns.is_empty());
+    }
+}

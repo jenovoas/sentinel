@@ -45,3 +45,7 @@ reasonix.toml
 # Added by code-review-graph
 .code-review-graph/
 .aider*
+.omo/
+.openspec/
+.dsh/
+*.bak*

@@ -43,51 +43,30 @@
 - **El lattice es disipativo**: `step()` solo disipa (decay). Sin drive continuo (`sentinel-cortex/src/main.rs` bloque 3b, cada 500ms) el lattice cae a `ground state` y no resuena. Siempre debe haber drive.
 - **Material de estudio**: `me-60os-core/src/bin/pai_convert_bench.rs` compara A (RAW), B (PAI-60) y C `[exp fallido para estudio]` (doble-escala, etiquetado, NO borrar). Leer antes de "arreglar" conversión SPA.
 
-<!-- code-review-graph MCP tools -->
-## MCP Tools: code-review-graph
+<!-- codebase-memory-mcp:start -->
+# Codebase Knowledge Graph (codebase-memory-mcp)
 
-**IMPORTANT: This project has a knowledge graph. ALWAYS use the
-code-review-graph MCP tools BEFORE using Grep/Glob/Read to explore
-the codebase.** The graph is faster, cheaper (fewer tokens), and gives
-you structural context (callers, dependents, test coverage) that file
-scanning cannot.
+This project uses codebase-memory-mcp to maintain a knowledge graph of the codebase.
+ALWAYS prefer MCP graph tools over grep/glob/file-search for code discovery.
 
-### When to use graph tools FIRST
+## Priority Order
+1. `search_graph` — find functions, classes, routes, variables by pattern
+2. `trace_path` — trace who calls a function or what it calls
+3. `get_code_snippet` — read specific function/class source code
+4. `query_graph` — run Cypher queries for complex patterns
+5. `get_architecture` — high-level project summary
+6. `detect_changes` — inspect changed files and blast radius
 
-- **Exploring code**: `semantic_search_nodes_tool` or `query_graph_tool` instead of Grep
-- **Understanding impact**: `get_impact_radius_tool` instead of manually tracing imports
-- **Code review**: `detect_changes_tool` + `get_review_context_tool` instead of reading entire files
-- **Finding relationships**: `query_graph_tool` with callers_of/callees_of/imports_of/tests_for
-- **Architecture questions**: `get_architecture_overview_tool` + `list_communities_tool`
+## When to fall back to grep/glob
+- Searching for string literals, error messages, config values
+- Searching non-code files (Dockerfiles, shell scripts, configs)
+- When MCP tools return insufficient results
 
-Fall back to Grep/Glob/Read **only** when the graph doesn't cover what you need.
+## Examples
+- Find a handler: `search_graph(project="sentinel", name_pattern=".*OrderHandler.*")`
+- Who calls it: `trace_path(project="sentinel", function_name="OrderHandler", direction="inbound")`
+- Read source: `get_code_snippet(project="sentinel", qualified_name="pkg/orders.OrderHandler")`
+<!-- codebase-memory-mcp:end -->
 
-### Key Tools
 
-| Tool | Use when |
-| ------ | ---------- |
-| `detect_changes_tool` | Reviewing code changes — gives risk-scored analysis |
-| `get_review_context_tool` | Need source snippets for review — token-efficient |
-| `get_impact_radius_tool` | Understanding blast radius of a change |
-| `get_affected_flows_tool` | Finding which execution paths are impacted |
-| `query_graph_tool` | Tracing callers, callees, imports, tests, dependencies |
-| `semantic_search_nodes_tool` | Finding functions/classes by name or keyword |
-| `get_architecture_overview_tool` | Understanding high-level codebase structure |
-| `refactor_tool` | Planning renames, finding dead code |
 
-### Workflow
-
-1. The graph auto-updates on file changes (via hooks).
-2. Use `detect_changes_tool` for code review.
-3. Use `get_affected_flows_tool` to understand impact.
-4. Use `query_graph_tool` pattern="tests_for" to check coverage.
-
----
-
-## REGLAS OPERATIVAS DE JAIME (memoria viva del agente)
-
-> **El agente debe leer esto al iniciar:** [`~/.hermes/MEMORY.md`](file:///home/jnovoas/.hermes/MEMORY.md)
-> Contiene las reglas duras (NO quemar cuota de omniroute sin pedido explícito, NO editar
-> trabajo ajeno sin autorización, estilo directo-ejecutar-no-narrar), los factos de
-> omniroute (gateway laptop :20128, bridge MCP en el fan, túnel LAPTON, aider→free-stack),
-> y el método QA de Sentinel. Válido también para otros modelos/agentes que operen este repo.

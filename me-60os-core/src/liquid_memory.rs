@@ -61,6 +61,7 @@ struct NativeShm {
 impl NativeShm {
     fn create(name: &str, size: usize) -> Result<Self, String> {
         let c_name = CString::new(name).map_err(|e| format!("nombre inválido: {e}"))?;
+        // SAFETY: shm_open, ftruncate, mmap are standard POSIX; c_name is null-terminated and verified by CString::new
         unsafe {
             let fd = shm_open(c_name.as_ptr(), O_CREAT | O_RDWR, 0o600);
             if fd == -1 {
@@ -85,6 +86,7 @@ impl NativeShm {
 
     fn open(name: &str, size: usize) -> Result<Self, String> {
         let c_name = CString::new(name).map_err(|e| format!("nombre inválido: {e}"))?;
+        // SAFETY: shm_open and mmap are standard POSIX; c_name is null-terminated and verified by CString::new
         unsafe {
             let fd = shm_open(c_name.as_ptr(), O_RDWR, 0o600);
             if fd == -1 {
@@ -104,6 +106,7 @@ impl NativeShm {
         if offset + data.len() > self.size {
             return Err("write fuera de rango".to_string());
         }
+        // SAFETY: offset and len validated against self.size above; ptr.add(offset) is within mapped region
         unsafe {
             ptr::copy_nonoverlapping(data.as_ptr(), self.ptr.add(offset), data.len());
         }
@@ -114,6 +117,7 @@ impl NativeShm {
         if offset + len > self.size {
             return Err("read fuera de rango".to_string());
         }
+        // SAFETY: offset and len validated against self.size above; ptr.add(offset) is within mapped region
         unsafe {
             Ok(std::slice::from_raw_parts(self.ptr.add(offset), len).to_vec())
         }
@@ -122,6 +126,7 @@ impl NativeShm {
 
 impl Drop for NativeShm {
     fn drop(&mut self) {
+        // SAFETY: munmap and close are idempotent; null/MAP_FAILED checks guard against double-free
         unsafe {
             if !self.ptr.is_null() && self.ptr != MAP_FAILED as *mut u8 {
                 munmap(self.ptr as *mut libc::c_void, self.size);
@@ -225,6 +230,7 @@ impl Drop for LiquidMemory {
         // Deslinkear los segmentos SHM que este servicio creó.
         for buf in &self.owned_buffers {
             if let Ok(c_name) = CString::new(buf.name.clone()) {
+                // SAFETY: shm_unlink is idempotent; owned_buffers list is internal and exclusive
                 unsafe {
                     shm_unlink(c_name.as_ptr());
                 }

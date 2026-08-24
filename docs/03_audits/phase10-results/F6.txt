@@ -1,0 +1,8 @@
+[1m[0;34m
+╔═══════════════════════════════════════════════════════════╗
+║  Guardian-Alpha LSM - Basic Test Suite                   ║
+╚═══════════════════════════════════════════════════════════╝
+[0m
+[1m1️⃣  Checking if LSM is loaded[0m
+   [0;31m❌ LSM not loaded. Run: sudo ./load.sh[0m
+F6 exit=1

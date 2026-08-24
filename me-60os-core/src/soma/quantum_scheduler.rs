@@ -11,7 +11,7 @@
 use crate::spa::SPA;
 use crate::spa_math::SPAMath;
 use pyo3::prelude::*;
-use pyo3::types::PyList;
+use pyo3::types::{PyAny, PyList};
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
 use std::thread;
@@ -67,7 +67,7 @@ impl QuantumSchedulerCore {
 #[cfg_attr(feature = "extension-module", pyclass(module = "me60os_core"))]
 pub struct QuantumBuffer {
     overflow_limit: usize,
-    buffer: Arc<Mutex<VecDeque<PyObject>>>,
+    buffer: Arc<Mutex<VecDeque<Py<PyAny>>>>,
     pub stats_portal: usize,
     pub stats_overflow: usize,
     pub stats_dropped: usize,
@@ -88,7 +88,7 @@ impl QuantumBuffer {
         }
     }
 
-    pub fn push(&mut self, event: PyObject) -> bool {
+    pub fn push(&mut self, event: Py<PyAny>) -> bool {
         let mut q = self.buffer.lock().unwrap();
         if q.len() >= self.overflow_limit * 2 {
             self.stats_dropped += 1;
@@ -112,7 +112,7 @@ impl QuantumBuffer {
         list.into()
     }
 
-    pub fn pop_one(&mut self) -> Option<PyObject> {
+    pub fn pop_one(&mut self) -> Option<Py<PyAny>> {
         let mut q = self.buffer.lock().unwrap();
         q.pop_front()
     }
@@ -149,7 +149,7 @@ impl QuantumBuffer {
 #[cfg_attr(feature = "extension-module", pyclass(module = "me60os_core"))]
 pub struct QuantumSchedulerDaemon {
     buffer: Py<QuantumBuffer>,
-    process_fn: PyObject,
+    process_fn: Py<PyAny>,
     dt: f64,
     name: String,
     running: Arc<Mutex<bool>>,
@@ -160,7 +160,7 @@ pub struct QuantumSchedulerDaemon {
 impl QuantumSchedulerDaemon {
     #[new]
     #[pyo3(signature = (buffer, process_fn, dt=0.1, name="quantum-daemon".to_string()))]
-    pub fn new(buffer: Py<QuantumBuffer>, process_fn: PyObject, dt: f64, name: String) -> Self {
+    pub fn new(buffer: Py<QuantumBuffer>, process_fn: Py<PyAny>, dt: f64, name: String) -> Self {
         Self {
             buffer,
             process_fn,
@@ -197,7 +197,7 @@ impl QuantumSchedulerDaemon {
                 
                 let portal_open = resonance > THETA_RAW;
                 
-                let (q_size, is_overflow) = Python::with_gil(|py| {
+                let (q_size, is_overflow) = Python::attach(|py| {
                     let buf = buffer_ref.borrow(py);
                     (buf.size(), buf.is_overflow())
                 });
@@ -213,7 +213,7 @@ impl QuantumSchedulerDaemon {
                                   else if resonance > THETA_LOW { 3 }
                                   else { 2 };
 
-                    Python::with_gil(|py| {
+                    Python::attach(|py| {
                         let mut buf = buffer_ref.borrow_mut(py);
                         let mut batch = Vec::new();
                         for _ in 0..batch_n {
@@ -229,7 +229,7 @@ impl QuantumSchedulerDaemon {
                         buf.record_portal(batch_len);
                     });
                 } else if !portal_open && is_overflow {
-                    Python::with_gil(|py| {
+                    Python::attach(|py| {
                         let mut buf = buffer_ref.borrow_mut(py);
                         if let Some(event) = buf.pop_one() {
                             let _ = process_fn.call1(py, (event,));

@@ -1,0 +1,17 @@
+* fc2b9be0 (HEAD -> feat/audit-360-remediation, origin/feat/audit-360-remediation) chore: track code-review-graph install artifacts (hooks, gitignore, drop orphan .bak backup)
+* 11311f7f chore(cargo): resolve lockfile after reqwest 0.12 pin
+* af8f7d0a ci(react-doctor): graduate gate to blocking: error
+* d2d69cd1 ci: add Rust/Python/eBPF CI + cargo-deny + pin deps (reqwest 0.12, cortex requirements)
+* 3c35863e test(cortex): close coverage gaps — s60, portal_detector, semantic_router, engine patterns
+* 0f5f33ff perf(core): reduce step() allocs, restructure drive-lock window, batch CSV/metrics output
+* daab40f7 fix(ebpf): god-mode audit + OOB fix + stub removal + PPS overflow fix (SHA256 deferred to Phase 5b)
+* e4853550 fix(backend): require auth on 7 endpoints + YATRA float forbid workspace-wide
+* a10a9252 docs(mcp): agregar parametro project en ejemplos de graph
+* e35478fe fix(mcp): alinear instrucciones y configs con codebase-memory-mcp
+* 16a19756 chore: ignorar carpetas de agentes (.omo, .openspec) y respaldos
+* 82417ff6 docs(arch): instantánea del grafo completo de sentinel
+* 9301b190 chore(core): SAFETY: document POSIX preconditions in PySharedBuffer::new
+* ff072606 chore(core): document SAFETY invariants on existing unsafe blocks
+* 3117557f fix(core): patch two double-scale landmines via new inject_spa method per AGENTS.md §3
+* 69f04c4b docs(audit): add 360 degree audit report for 2026-08-11
+F10 exit=0

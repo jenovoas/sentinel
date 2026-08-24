@@ -51,6 +51,13 @@ impl ResonantLatticeBridge {
         self.lattice.inject_pai(index, value, denominator);
     }
 
+    /// Inyecta una amplitud SPA ya escalada SIN re-escalar.
+    /// Usar para valores en raw ME-60OS (ej. entropy_s60_raw del kernel eBPF):
+    /// `inject()` interpreta su i64 como unidades enteras y lo multiplica por SCALE_0.
+    pub fn inject_spa(&mut self, index: usize, amp: MeS60) {
+        self.lattice.inject_spa(index, amp);
+    }
+
     /// Get total energy as ME-60OS raw S60.
     pub fn total_energy_raw(&self) -> i64 {
         self.lattice.total_energy().to_raw()

@@ -281,6 +281,7 @@ impl EbpfCortexBridge {
                 if data.len() < std::mem::size_of::<RawCortexEvent>() {
                     return 0;
                 }
+                // SAFETY: data.len() was checked >= size_of::<RawCortexEvent>() above; pointer is valid for read
                 let event: RawCortexEvent =
                     unsafe { std::ptr::read_unaligned(data.as_ptr() as *const RawCortexEvent) };
                 buffer.push(CortexEvent::from_raw_event(event));
@@ -334,9 +335,10 @@ impl EbpfCortexBridge {
                 if data.len() < std::mem::size_of::<RawCortexEvent>() {
                     return 0;
                 }
+                // SAFETY: data.len() was checked >= size_of::<RawCortexEvent>() above; pointer is valid for read
                 let event: RawCortexEvent =
                     unsafe { std::ptr::read_unaligned(data.as_ptr() as *const RawCortexEvent) };
-                
+
                 buffer.push(CortexEvent::from_raw_event(event));
 
                 let mut events = events_clone.lock().unwrap();
@@ -432,7 +434,7 @@ mod tests {
             _reserved: [0; 7],
         };
 
-        // Use write_unaligned to avoid creating reference to packed struct
+        // SAFETY: data buffer is 32 bytes; write to it with exact-size struct; only used in test
         unsafe {
             std::ptr::write_unaligned(data.as_mut_ptr() as *mut RawCortexEvent, event);
         }

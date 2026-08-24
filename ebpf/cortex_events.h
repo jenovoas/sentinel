@@ -44,6 +44,8 @@
 #define EVENT_GAMMA_HEARTBEAT       18 /* Gamma alive — pulso cada BIO_PULSE */
 #define EVENT_MATH_DIVERSION        19 /* Desvío de cálculo decimal hacia PAI-60 */
 
+#define EVENT_GODMODE_INSERT        20 /* UID añadido a god_mode_uids */
+
 
 /* ─── Códigos de peer Guardian (reservado[0] del cortex_event) ─────────────── */
 #define GUARDIAN_CODE_ALPHA     1

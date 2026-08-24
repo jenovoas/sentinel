@@ -1,0 +1,1452 @@
+warning: profiles for the non root package will be ignored, specify profiles at the workspace root:
+package:   /home/jnovoas/Proyectos/sentinel/sentinel-cortex/Cargo.toml
+workspace: /home/jnovoas/Proyectos/sentinel/Cargo.toml
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+   Compiling libc v0.2.189
+   Compiling serde_core v1.0.229
+    Checking cfg-if v1.0.4
+   Compiling serde v1.0.229
+   Compiling version_check v0.9.5
+   Compiling parking_lot_core v0.9.12
+   Compiling shlex v2.0.1
+   Compiling find-msvc-tools v0.1.9
+    Checking pin-project-lite v0.2.17
+    Checking bytes v1.12.1
+    Checking futures-core v0.3.33
+    Checking memchr v2.8.3
+   Compiling generic-array v0.14.7
+   Compiling cc v1.4.0
+    Checking log v0.4.33
+    Checking itoa v1.0.18
+    Checking typenum v1.20.1
+    Checking scopeguard v1.2.0
+    Checking lock_api v0.4.14
+   Compiling syn v2.0.119
+   Compiling syn v3.0.3
+   Compiling pkg-config v0.3.33
+   Compiling icu_normalizer_data v2.2.0
+    Checking getrandom v0.2.17
+    Checking errno v0.3.14
+    Checking signal-hook-registry v1.4.8
+    Checking rand_core v0.6.4
+   Compiling icu_properties_data v2.2.0
+    Checking futures-sink v0.3.33
+   Compiling autocfg v1.5.1
+    Checking socket2 v0.6.5
+    Checking crypto-common v0.1.7
+    Checking mio v1.2.2
+   Compiling vcpkg v0.2.15
+   Compiling zerocopy v0.8.55
+    Checking stable_deref_trait v1.2.1
+    Checking once_cell v1.21.4
+    Checking slab v0.4.12
+    Checking futures-channel v0.3.33
+    Checking subtle v2.6.1
+    Checking tracing-core v0.1.36
+    Checking futures-io v0.3.33
+    Checking futures-task v0.3.33
+    Checking bitflags v2.13.1
+   Compiling target-lexicon v0.13.5
+   Compiling zmij v1.0.23
+   Compiling openssl v0.10.81
+    Checking litemap v0.8.2
+    Checking equivalent v1.0.2
+   Compiling openssl-sys v0.9.117
+    Checking writeable v0.6.3
+    Checking http v1.4.2
+   Compiling native-tls v0.2.18
+   Compiling serde_json v1.0.151
+    Checking utf8_iter v1.0.4
+    Checking percent-encoding v2.3.2
+    Checking cpufeatures v0.2.17
+   Compiling crossbeam-utils v0.8.22
+    Checking form_urlencoded v1.2.2
+    Checking hashbrown v0.17.1
+   Compiling pyo3-build-config v0.25.1
+    Checking http-body v1.1.0
+   Compiling num-traits v0.2.19
+   Compiling heck v0.5.0
+   Compiling rustversion v1.0.23
+    Checking foreign-types-shared v0.1.1
+   Compiling httparse v1.10.1
+    Checking indexmap v2.14.0
+    Checking foreign-types v0.3.2
+    Checking tower-service v0.3.3
+   Compiling synstructure v0.13.2
+    Checking allocator-api2 v0.2.21
+    Checking foldhash v0.1.5
+    Checking ryu v1.0.23
+    Checking base64 v0.22.1
+    Checking openssl-probe v0.2.1
+   Compiling cfg_aliases v0.2.2
+   Compiling nix v0.31.3
+    Checking hashbrown v0.15.5
+    Checking try-lock v0.2.5
+    Checking atomic-waker v1.1.2
+    Checking fnv v1.0.7
+   Compiling crossbeam-epoch v0.9.20
+    Checking tower-layer v0.3.3
+   Compiling serde_derive v1.0.229
+   Compiling displaydoc v0.2.7
+    Checking want v0.3.1
+    Checking http-body-util v0.1.4
+    Checking sync_wrapper v1.0.2
+   Compiling crossbeam-deque v0.8.7
+    Checking httpdate v1.0.3
+   Compiling signal-hook v0.3.18
+   Compiling pyo3-ffi v0.25.1
+   Compiling pyo3-macros-backend v0.25.1
+    Checking inout v0.1.4
+    Checking aho-corasick v1.1.4
+    Checking ipnet v2.12.0
+   Compiling rayon-core v1.13.0
+   Compiling siphasher v1.0.3
+    Checking regex-syntax v0.8.11
+   Compiling phf_shared v0.11.3
+   Compiling zerofrom-derive v0.1.7
+   Compiling yoke-derive v0.8.2
+   Compiling zerovec-derive v0.11.3
+   Compiling tracing-attributes v0.1.31
+   Compiling tokio-macros v2.7.1
+   Compiling futures-macro v0.3.33
+   Compiling openssl-macros v0.1.1
+   Compiling ppv-lite86 v0.2.21
+    Checking zerofrom v0.1.8
+    Checking futures-util v0.3.33
+    Checking yoke v0.8.3
+    Checking tracing v0.1.44
+    Checking regex-automata v0.4.16
+    Checking zerovec v0.11.6
+    Checking zerotrie v0.2.4
+   Compiling rand_chacha v0.3.1
+   Compiling libbpf-sys v1.7.0+v1.7.0
+    Checking rand v0.8.7
+    Checking cipher v0.4.4
+    Checking tinystr v0.8.3
+    Checking potential_utf v0.1.5
+    Checking icu_collections v2.2.0
+    Checking icu_locale_core v2.2.0
+   Compiling async-trait v0.1.91
+    Checking smallvec v1.15.2
+    Checking either v1.17.0
+    Checking universal-hash v0.5.1
+   Compiling memoffset v0.9.1
+   Compiling vsprintf v2.0.0
+    Checking parking_lot v0.12.5
+    Checking mio v0.8.11
+   Compiling anyhow v1.0.104
+    Checking icu_provider v2.2.0
+    Checking tokio v1.53.1
+   Compiling crc32fast v1.5.0
+    Checking icu_properties v2.2.0
+    Checking icu_normalizer v2.2.0
+    Checking unicode-width v0.1.14
+   Compiling paste v1.0.15
+    Checking mime v0.3.17
+    Checking opaque-debug v0.3.1
+    Checking unicode-segmentation v1.13.3
+    Checking polyval v0.6.2
+    Checking signal-hook-mio v0.2.5
+    Checking itertools v0.13.0
+    Checking serde_urlencoded v0.7.1
+   Compiling phf_generator v0.11.3
+   Compiling strum_macros v0.26.4
+    Checking castaway v0.2.4
+   Compiling pyo3 v0.25.1
+   Compiling blake3 v1.8.6
+    Checking sha1_smol v1.0.1
+    Checking idna_adapter v1.2.2
+    Checking idna v1.1.0
+    Checking adler2 v2.0.1
+    Checking zeroize v1.9.0
+    Checking lazy_static v1.5.0
+    Checking simd-adler32 v0.3.10
+    Checking static_assertions v1.1.0
+    Checking compact_str v0.7.1
+    Checking rustls-pki-types v1.15.1
+    Checking url v2.5.8
+    Checking miniz_oxide v0.8.9
+    Checking sharded-slab v0.1.7
+    Checking unicode-truncate v1.1.0
+    Checking rayon v1.12.0
+   Compiling phf_macros v0.11.3
+    Checking matchers v0.2.0
+    Checking crossterm v0.27.0
+    Checking ghash v0.5.1
+    Checking futures-executor v0.3.33
+    Checking strum v0.26.3
+    Checking itertools v0.12.1
+    Checking ctr v0.9.2
+    Checking aes v0.8.4
+   Compiling stability v0.2.1
+    Checking lru v0.12.5
+    Checking tracing-log v0.2.0
+    Checking aead v0.5.2
+    Checking socket2 v0.5.10
+    Checking encoding_rs v0.8.35
+    Checking thread_local v1.1.10
+    Checking nu-ansi-term v0.50.3
+    Checking unindent v0.2.4
+    Checking constant_time_eq v0.4.2
+    Checking cpufeatures v0.3.0
+    Checking cassowary v0.3.0
+   Compiling indoc v2.0.7
+    Checking iana-time-zone v0.1.65
+    Checking arrayref v0.3.9
+    Checking arrayvec v0.7.8
+    Checking chrono v0.4.45
+    Checking ratatui v0.26.3
+    Checking tracing-subscriber v0.3.23
+    Checking sysinfo v0.33.1
+    Checking tokio-util v0.7.19
+    Checking tower v0.5.3
+    Checking tokio-stream v0.1.19
+    Checking tokio-native-tls v0.3.1
+    Checking tower-http v0.6.11
+    Checking aes-gcm v0.10.3
+    Checking h2 v0.4.15
+    Checking combine v4.6.7
+    Checking libbpf-rs v0.24.8
+   Compiling pyo3-macros v0.25.1
+    Checking flate2 v1.1.9
+    Checking futures v0.3.33
+    Checking phf v0.11.3
+    Checking regex v1.13.1
+    Checking memmap2 v0.9.11
+    Checking block-buffer v0.10.4
+    Checking digest v0.10.7
+   Compiling thiserror v2.0.19
+   Compiling thiserror-impl v2.0.19
+    Checking hyper v1.11.0
+    Checking redis v0.25.5
+   Compiling tinyvec_macros v0.1.1
+   Compiling tinyvec v1.12.0
+    Checking hyper-util v0.1.20
+   Compiling parking v2.2.1
+   Compiling crc-catalog v2.5.0
+   Compiling crossbeam-queue v0.3.13
+   Compiling crc v3.4.0
+    Checking hyper-tls v0.6.0
+    Checking reqwest v0.12.28
+   Compiling sha2 v0.10.9
+   Compiling event-listener v5.4.2
+   Compiling hashlink v0.10.0
+   Compiling unicode-normalization v0.1.25
+   Compiling futures-intrusive v0.5.0
+    Checking me60os v0.1.0 (/home/jnovoas/Proyectos/sentinel/me-60os-core)
+   Compiling hmac v0.12.1
+    Checking byteorder v1.5.0
+   Compiling unicode-bidi v0.3.18
+   Compiling thiserror v1.0.69
+   Compiling unicode-properties v0.1.4
+   Compiling stringprep v0.1.5
+   Compiling hkdf v0.12.4
+   Compiling atoi v2.0.0
+   Compiling md-5 v0.10.6
+   Compiling thiserror-impl v1.0.69
+   Compiling home v0.5.12
+   Compiling whoami v1.6.1
+   Compiling dotenvy v0.15.7
+   Compiling hex v0.4.3
+   Compiling rustix v0.38.44
+   Compiling getrandom v0.4.3
+   Compiling sqlx-core v0.8.6
+    Checking sha1 v0.10.7
+error: manual implementation of `.is_multiple_of()`
+  --> me-60os-core/src/pai60_lib.rs:24:15
+   |
+24 |         while m % p == 0 {
+   |               ^^^^^^^^^^ help: replace with: `m.is_multiple_of(*p)`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#manual_is_multiple_of
+   = note: `-D clippy::manual-is-multiple-of` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::manual_is_multiple_of)]`
+
+error: the loop variable `k` is only used to index `states_list`
+   --> me-60os-core/src/optomechanical.rs:349:26
+    |
+349 |                 for k in 0..steps {
+    |                          ^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#needless_range_loop
+    = note: `-D clippy::needless-range-loop` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::needless_range_loop)]`
+help: consider using an iterator
+    |
+349 -                 for k in 0..steps {
+349 +                 for <item> in states_list.iter().take(steps) {
+    |
+
+error: this `if` statement can be collapsed
+   --> me-60os-core/src/optomechanical.rs:367:17
+    |
+367 | /                 if i < matrix.len() && j < matrix.len() {
+368 | |                     if matrix[i][j] > self.threshold {
+369 | |                         detected = true;
+370 | |                         rift_nodes.insert(i);
+...   |
+373 | |                 }
+    | |_________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#collapsible_if
+    = note: `-D clippy::collapsible-if` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::collapsible_if)]`
+help: collapse nested if block
+    |
+367 ~                 if i < matrix.len() && j < matrix.len()
+368 ~                     && matrix[i][j] > self.threshold {
+369 |                         detected = true;
+370 |                         rift_nodes.insert(i);
+371 |                         rift_nodes.insert(j);
+372 ~                     }
+    |
+
+error: doc list item without indentation
+  --> me-60os-core/src/flux_stabilizer.rs:22:5
+   |
+22 | //! donde todo es S60 fixed-point. Sin floats, sin scipy.
+   |     ^
+   |
+   = help: if this is supposed to be its own paragraph, add a blank line
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#doc_lazy_continuation
+   = note: `-D clippy::doc-lazy-continuation` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::doc_lazy_continuation)]`
+help: indent this line
+   |
+22 | //!   donde todo es S60 fixed-point. Sin floats, sin scipy.
+   |     ++
+
+error: manual implementation of `.is_multiple_of()`
+   --> me-60os-core/src/quantum_core.rs:182:33
+    |
+182 |         if current_tick == 0 || current_tick % 68 != 0 {
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^ help: replace with: `!current_tick.is_multiple_of(68)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#manual_is_multiple_of
+
+error: casting to the same type is unnecessary (`i64` -> `i64`)
+   --> me-60os-core/src/quantum_core.rs:191:30
+    |
+191 |             let correction = hist_error.to_raw().abs() as i64 * 1000; // scale to ns
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `hist_error.to_raw().abs()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#unnecessary_cast
+    = note: `-D clippy::unnecessary-cast` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::unnecessary_cast)]`
+
+error: casting the result of `i64::abs()` to u64
+   --> me-60os-core/src/quantum_core.rs:198:9
+    |
+198 |         correction_accum.to_raw().abs() as u64
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace with: `correction_accum.to_raw().unsigned_abs()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_abs_to_unsigned
+    = note: `-D clippy::cast-abs-to-unsigned` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::cast_abs_to_unsigned)]`
+
+error: casting `u128` to `u64` may truncate the value
+   --> me-60os-core/src/quantum_core.rs:262:48
+    |
+262 |             thread::sleep(Duration::from_nanos(sleep_ns as u64));
+    |                                                ^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+note: the lint level is defined here
+   --> me-60os-core/src/lib.rs:7:11
+    |
+  7 | #![forbid(clippy::cast_possible_truncation)]
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: ... or use `try_from` and handle the error accordingly
+    |
+262 -             thread::sleep(Duration::from_nanos(sleep_ns as u64));
+262 +             thread::sleep(Duration::from_nanos(u64::try_from(sleep_ns)));
+    |
+
+error: casting `u128` to `u64` may truncate the value
+   --> me-60os-core/src/quantum_core.rs:267:9
+    |
+267 |         self.start_time.elapsed().as_nanos() as u64
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+267 -         self.start_time.elapsed().as_nanos() as u64
+267 +         u64::try_from(self.start_time.elapsed().as_nanos())
+    |
+
+error: clamp-like pattern without using clamp function
+   --> me-60os-core/src/quantum_core.rs:434:32
+    |
+434 |                 let deg_norm = if deg < 0 { 0 } else if deg > 359 { 359 } else { deg };
+    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace with clamp: `deg.clamp(0, 359)`
+    |
+    = note: clamp will panic if max < min
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#manual_clamp
+    = note: `-D clippy::manual-clamp` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::manual_clamp)]`
+
+error: casting to the same type is unnecessary (`i64` -> `i64`)
+   --> me-60os-core/src/quantum_core.rs:465:100
+    |
+465 |                 let deg_normalized = if phase_deg < 0 { 0 } else if phase_deg > 359 { 359 } else { phase_deg as i64 };
+    |                                                                                                    ^^^^^^^^^^^^^^^^ help: try: `phase_deg`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#unnecessary_cast
+
+error: casting `i64` to `u8` may truncate the value
+   --> me-60os-core/src/quantum_core.rs:466:32
+    |
+466 |                 let byte_val = ((deg_normalized * 256) / 360) as u8;
+    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+466 -                 let byte_val = ((deg_normalized * 256) / 360) as u8;
+466 +                 let byte_val = u8::try_from((deg_normalized * 256) / 360);
+    |
+
+    Checking num-integer v0.1.46
+error: casting `f64` to `i64` may truncate the value
+  --> me-60os-core/src/spa.rs:93:19
+   |
+93 |         let raw = (decimal * Self::SCALE_0 as f64).round() as i64;
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+
+error: floating-point arithmetic detected
+  --> me-60os-core/src/spa.rs:93:19
+   |
+93 |         let raw = (decimal * Self::SCALE_0 as f64).round() as i64;
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#float_arithmetic
+note: the lint level is defined here
+  --> me-60os-core/src/lib.rs:5:11
+   |
+ 5 | #![forbid(clippy::float_arithmetic)]
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: casting `i64` to `f64` may cause a loss of precision (`i64` is 64 bits wide, but `f64`'s mantissa is only 52 bits wide)
+  --> me-60os-core/src/spa.rs:93:30
+   |
+93 |         let raw = (decimal * Self::SCALE_0 as f64).round() as i64;
+   |                              ^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_precision_loss
+note: the lint level is defined here
+  --> me-60os-core/src/lib.rs:8:11
+   |
+ 8 | #![forbid(clippy::cast_precision_loss)]
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: casting `i128` to `i64` may truncate the value
+   --> me-60os-core/src/spa.rs:130:24
+    |
+130 |         Self::from_raw(((v1 * v2) / Self::SCALE_0 as i128) as i64)
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+130 -         Self::from_raw(((v1 * v2) / Self::SCALE_0 as i128) as i64)
+130 +         Self::from_raw(i64::try_from((v1 * v2) / Self::SCALE_0 as i128))
+    |
+
+error: casting `i128` to `i64` may truncate the value
+   --> me-60os-core/src/spa.rs:148:24
+    |
+148 |         Self::from_raw(((v1 * Self::SCALE_0 as i128) / v2 as i128) as i64)
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+148 -         Self::from_raw(((v1 * Self::SCALE_0 as i128) / v2 as i128) as i64)
+148 +         Self::from_raw(i64::try_from((v1 * Self::SCALE_0 as i128) / v2 as i128))
+    |
+
+error: casting `i128` to `i64` may truncate the value
+   --> me-60os-core/src/spa.rs:157:27
+    |
+157 |         Ok(Self::from_raw(((v1 * Self::SCALE_0 as i128) / v2 as i128) as i64))
+    |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+157 -         Ok(Self::from_raw(((v1 * Self::SCALE_0 as i128) / v2 as i128) as i64))
+157 +         Ok(Self::from_raw(i64::try_from((v1 * Self::SCALE_0 as i128) / v2 as i128)))
+    |
+
+error: casting `i128` to `i64` may truncate the value
+   --> me-60os-core/src/spa.rs:218:27
+    |
+218 |         Ok(Self::from_raw(((v1 * Self::SCALE_0 as i128) / divisor_raw as i128) as i64))
+    |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+218 -         Ok(Self::from_raw(((v1 * Self::SCALE_0 as i128) / divisor_raw as i128) as i64))
+218 +         Ok(Self::from_raw(i64::try_from((v1 * Self::SCALE_0 as i128) / divisor_raw as i128)))
+    |
+
+error: casting `i128` to `i64` may truncate the value
+  --> me-60os-core/src/spa_math.rs:89:23
+   |
+89 |         SPA::from_raw((res as i64) * s_sin)
+   |                       ^^^^^^^^^^^^
+   |
+   = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+   |
+89 -         SPA::from_raw((res as i64) * s_sin)
+89 +         SPA::from_raw(i64::try_from(res) * s_sin)
+   |
+
+error: casting `i128` to `i64` may truncate the value
+   --> me-60os-core/src/spa_math.rs:109:23
+    |
+109 |         SPA::from_raw((res as i64) * s_cos)
+    |                       ^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+109 -         SPA::from_raw((res as i64) * s_cos)
+109 +         SPA::from_raw(i64::try_from(res) * s_cos)
+    |
+
+error: casting `i128` to `i64` may truncate the value
+   --> me-60os-core/src/spa_math.rs:131:29
+    |
+131 |             let next = (x + (num / (x as i128)) as i64) / 2;
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+131 -             let next = (x + (num / (x as i128)) as i64) / 2;
+131 +             let next = (x + i64::try_from(num / (x as i128))) / 2;
+    |
+
+error: casting `i128` to `i64` may truncate the value
+   --> me-60os-core/src/spa_math.rs:162:23
+    |
+162 |         SPA::from_raw(res as i64)
+    |                       ^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+162 -         SPA::from_raw(res as i64)
+162 +         SPA::from_raw(i64::try_from(res))
+    |
+
+error: manual implementation of an assign operation
+   --> me-60os-core/src/spa_math.rs:200:13
+    |
+200 |             m = m * 2; // multiplicación exacta (no pierde nada)
+    |             ^^^^^^^^^ help: replace it with: `m *= 2`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#assign_op_pattern
+    = note: `-D clippy::assign-op-pattern` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::assign_op_pattern)]`
+
+error: casting `i128` to `i64` may truncate the value
+   --> me-60os-core/src/spa_math.rs:242:23
+    |
+242 |         SPA::from_raw(res as i64)
+    |                       ^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+242 -         SPA::from_raw(res as i64)
+242 +         SPA::from_raw(i64::try_from(res))
+    |
+
+error: casting `i128` to `i64` may truncate the value
+   --> me-60os-core/src/spa_math.rs:259:23
+    |
+259 |         SPA::from_raw((deg_raw as i64) * SPA::SCALE_0)
+    |                       ^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+259 -         SPA::from_raw((deg_raw as i64) * SPA::SCALE_0)
+259 +         SPA::from_raw(i64::try_from(deg_raw) * SPA::SCALE_0)
+    |
+
+    Checking linux-raw-sys v0.4.15
+error: redundant closure
+  --> me-60os-core/src/hexagonal_control.rs:42:22
+   |
+42 |             .map_err(|e| pyo3::exceptions::PyIndexError::new_err(e))
+   |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace the closure with the associated function itself: `pyo3::exceptions::PyIndexError::new_err`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#redundant_closure
+   = note: `-D clippy::redundant-closure` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::redundant_closure)]`
+
+error: clamp-like pattern without using clamp function
+   --> me-60os-core/src/atlantean.rs:107:9
+    |
+107 | /         if scale_x1000 < 500 {
+108 | |             scale_x1000 = 500;
+109 | |         } else if scale_x1000 > 1500 {
+110 | |             scale_x1000 = 1500;
+111 | |         }
+    | |_________^ help: replace with clamp: `scale_x1000 = scale_x1000.clamp(500, 1500);`
+    |
+    = note: clamp will panic if max < min
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#manual_clamp
+
+error: casting `i64` to `usize` may truncate the value on targets with 32-bit wide pointers
+   --> me-60os-core/src/atlantean.rs:114:25
+    |
+114 |         let new_batch = new_batch.clamp(self.min_batch as i64, self.max_batch as i64) as usize;
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+114 -         let new_batch = new_batch.clamp(self.min_batch as i64, self.max_batch as i64) as usize;
+114 +         let new_batch = usize::try_from(new_batch.clamp(self.min_batch as i64, self.max_batch as i64));
+    |
+
+error: casting `f64` to `i64` may truncate the value
+  --> me-60os-core/src/soma/quantum_scheduler.rs:60:21
+   |
+60 |         let t_raw = (time_monotonic_s * SPA::SCALE_0 as f64).round() as i64;
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+
+error: floating-point arithmetic detected
+  --> me-60os-core/src/soma/quantum_scheduler.rs:60:21
+   |
+60 |         let t_raw = (time_monotonic_s * SPA::SCALE_0 as f64).round() as i64;
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#float_arithmetic
+
+error: casting `i64` to `f64` may cause a loss of precision (`i64` is 64 bits wide, but `f64`'s mantissa is only 52 bits wide)
+  --> me-60os-core/src/soma/quantum_scheduler.rs:60:41
+   |
+60 |         let t_raw = (time_monotonic_s * SPA::SCALE_0 as f64).round() as i64;
+   |                                         ^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_precision_loss
+
+error: floating-point arithmetic detected
+   --> me-60os-core/src/soma/quantum_scheduler.rs:142:13
+    |
+142 |             self.stats_portal as f64 / total as f64
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#float_arithmetic
+
+error: casting `usize` to `f64` may cause a loss of precision (`usize` can be up to 64 bits wide depending on the target architecture, but `f64`'s mantissa is only 52 bits wide)
+   --> me-60os-core/src/soma/quantum_scheduler.rs:142:13
+    |
+142 |             self.stats_portal as f64 / total as f64
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_precision_loss
+
+error: casting `usize` to `f64` may cause a loss of precision (`usize` can be up to 64 bits wide depending on the target architecture, but `f64`'s mantissa is only 52 bits wide)
+   --> me-60os-core/src/soma/quantum_scheduler.rs:142:40
+    |
+142 |             self.stats_portal as f64 / total as f64
+    |                                        ^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_precision_loss
+
+error: casting `f64` to `i64` may truncate the value
+   --> me-60os-core/src/soma/quantum_scheduler.rs:194:29
+    |
+194 |                 let t_raw = (elapsed_s * SPA::SCALE_0 as f64).round() as i64;
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+
+error: floating-point arithmetic detected
+   --> me-60os-core/src/soma/quantum_scheduler.rs:194:29
+    |
+194 |                 let t_raw = (elapsed_s * SPA::SCALE_0 as f64).round() as i64;
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#float_arithmetic
+
+error: casting `i64` to `f64` may cause a loss of precision (`i64` is 64 bits wide, but `f64`'s mantissa is only 52 bits wide)
+   --> me-60os-core/src/soma/quantum_scheduler.rs:194:42
+    |
+194 |                 let t_raw = (elapsed_s * SPA::SCALE_0 as f64).round() as i64;
+    |                                          ^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_precision_loss
+
+error: this function has too many arguments (10/7)
+  --> me-60os-core/src/soma/anomaly_detector.rs:56:5
+   |
+56 | /     pub fn analyze_metrics<'py>(
+57 | |         &mut self,
+58 | |         py: Python<'py>,
+59 | |         cpu: f64,
+...  |
+66 | |         memory_total_mb: f64,
+67 | |     ) -> PyResult<Vec<Bound<'py, PyDict>>> {
+   | |__________________________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#too_many_arguments
+   = note: `-D clippy::too-many-arguments` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::too_many_arguments)]`
+
+error: floating-point arithmetic detected
+  --> me-60os-core/src/soma/anomaly_detector.rs:91:56
+   |
+91 |         let z_score = if cpu_std == 0.0 { 0.0 } else { (cpu - cpu_mean) / cpu_std };
+   |                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#float_arithmetic
+
+error: floating-point arithmetic detected
+  --> me-60os-core/src/soma/anomaly_detector.rs:99:22
+   |
+99 |                 cpu, cpu_mean + (self.z_score_threshold * cpu_std)
+   |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#float_arithmetic
+
+error: floating-point arithmetic detected
+   --> me-60os-core/src/soma/anomaly_detector.rs:130:72
+    |
+130 |             let mem_z = if self.baseline_mem_std == 0.0 { 0.0 } else { (memory - self.baseline_mem_mean) / self.baseline_mem_std };
+    |                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#float_arithmetic
+
+error: floating-point arithmetic detected
+   --> me-60os-core/src/soma/anomaly_detector.rs:136:29
+    |
+136 |                     memory, self.baseline_mem_mean + (self.z_score_threshold * self.baseline_mem_std)
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#float_arithmetic
+
+error: floating-point arithmetic detected
+   --> me-60os-core/src/soma/anomaly_detector.rs:145:35
+    |
+145 |                 let rate_change = (network_bytes - prev_bytes) / prev_bytes;
+    |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#float_arithmetic
+
+error: floating-point arithmetic detected
+   --> me-60os-core/src/soma/anomaly_detector.rs:150:87
+    |
+150 |                         &format!("Network traffic increased by {:.0}% in one sample", rate_change * 100.0),
+    |                                                                                       ^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#float_arithmetic
+
+error: floating-point arithmetic detected
+   --> me-60os-core/src/soma/anomaly_detector.rs:151:40
+    |
+151 |                         network_bytes, prev_bytes * 5.0
+    |                                        ^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#float_arithmetic
+
+error: floating-point arithmetic detected
+   --> me-60os-core/src/soma/anomaly_detector.rs:159:23
+    |
+159 |             let avg = sum / 10.0;
+    |                       ^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#float_arithmetic
+
+error: floating-point arithmetic detected
+   --> me-60os-core/src/soma/anomaly_detector.rs:160:22
+    |
+160 |             if avg > self.baseline_net_mean * 3.0 {
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#float_arithmetic
+
+error: floating-point arithmetic detected
+   --> me-60os-core/src/soma/anomaly_detector.rs:165:26
+    |
+165 |                     avg, self.baseline_net_mean * 3.0
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#float_arithmetic
+
+error: casting `usize` to `f64` may cause a loss of precision (`usize` can be up to 64 bits wide depending on the target architecture, but `f64`'s mantissa is only 52 bits wide)
+   --> me-60os-core/src/soma/anomaly_detector.rs:189:17
+    |
+189 |                 db_connections as f64, 50.0
+    |                 ^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_precision_loss
+
+error: casting `usize` to `f64` may cause a loss of precision (`usize` can be up to 64 bits wide depending on the target architecture, but `f64`'s mantissa is only 52 bits wide)
+   --> me-60os-core/src/soma/anomaly_detector.rs:198:17
+    |
+198 |                 db_locks as f64, 5.0
+    |                 ^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_precision_loss
+
+error: floating-point arithmetic detected
+   --> me-60os-core/src/soma/anomaly_detector.rs:223:20
+    |
+223 |         let mean = window.iter().sum::<f64>() / window.len() as f64;
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#float_arithmetic
+
+error: casting `usize` to `f64` may cause a loss of precision (`usize` can be up to 64 bits wide depending on the target architecture, but `f64`'s mantissa is only 52 bits wide)
+   --> me-60os-core/src/soma/anomaly_detector.rs:223:49
+    |
+223 |         let mean = window.iter().sum::<f64>() / window.len() as f64;
+    |                                                 ^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_precision_loss
+
+error: floating-point arithmetic detected
+   --> me-60os-core/src/soma/anomaly_detector.rs:224:19
+    |
+224 |         let var = window.iter().map(|v| (v - mean) * (v - mean)).sum::<f64>() / window.len() as f64;
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#float_arithmetic
+
+error: casting `usize` to `f64` may cause a loss of precision (`usize` can be up to 64 bits wide depending on the target architecture, but `f64`'s mantissa is only 52 bits wide)
+   --> me-60os-core/src/soma/anomaly_detector.rs:224:81
+    |
+224 |         let var = window.iter().map(|v| (v - mean) * (v - mean)).sum::<f64>() / window.len() as f64;
+    |                                                                                 ^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_precision_loss
+
+error: this function has too many arguments (8/7)
+   --> me-60os-core/src/soma/anomaly_detector.rs:250:5
+    |
+250 | /     fn create_anomaly_dict<'py>(
+251 | |         &self,
+252 | |         py: Python<'py>,
+253 | |         atype: &str,
+...   |
+258 | |         threshold: f64,
+259 | |     ) -> PyResult<Bound<'py, PyDict>> {
+    | |_____________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#too_many_arguments
+
+error: casting `i128` to `i64` may truncate the value
+   --> me-60os-core/src/resonant_matrix.rs:566:30
+    |
+566 |         let mean_phase_val = (total_phase_val / n_nodes as i128) as i64;
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+566 -         let mean_phase_val = (total_phase_val / n_nodes as i128) as i64;
+566 +         let mean_phase_val = i64::try_from(total_phase_val / n_nodes as i128);
+    |
+
+error: casting `i128` to `i64` may truncate the value
+   --> me-60os-core/src/resonant_matrix.rs:572:32
+    |
+572 |         let mut mean_dev_val = (total_dev_val / n_nodes as i128) as i64;
+    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+572 -         let mut mean_dev_val = (total_dev_val / n_nodes as i128) as i64;
+572 +         let mut mean_dev_val = i64::try_from(total_dev_val / n_nodes as i128);
+    |
+
+error: casting `i128` to `i64` may truncate the value
+   --> me-60os-core/src/resonant_matrix.rs:581:9
+    |
+581 |         coh_val as i64
+    |         ^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+581 -         coh_val as i64
+581 +         i64::try_from(coh_val)
+    |
+
+error: casting `i64` to `u8` may truncate the value
+   --> me-60os-core/src/bci.rs:135:23
+    |
+135 |             let val = (scalar.min(255)) as u8;
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+135 -             let val = (scalar.min(255)) as u8;
+135 +             let val = u8::try_from((scalar.min(255)));
+    |
+
+error: casting `i64` to `usize` may truncate the value on targets with 32-bit wide pointers
+   --> me-60os-core/src/bio.rs:109:24
+    |
+109 |                 counts[idx as usize] += 1;
+    |                        ^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+109 -                 counts[idx as usize] += 1;
+109 +                 counts[usize::try_from(idx)] += 1;
+    |
+
+error: casting `u64` to `usize` may truncate the value on targets with 32-bit wide pointers
+  --> me-60os-core/src/cortex.rs:35:27
+   |
+35 |         let target_node = (input_val.unsigned_abs() as usize) % self.neurons;
+   |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+   |
+35 -         let target_node = (input_val.unsigned_abs() as usize) % self.neurons;
+35 +         let target_node = usize::try_from(input_val.unsigned_abs()) % self.neurons;
+   |
+
+error: casting `u64` to `usize` may truncate the value on targets with 32-bit wide pointers
+  --> me-60os-core/src/cortex.rs:50:31
+   |
+50 |             let target_node = (raw_val.unsigned_abs() as usize) % self.neurons;
+   |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+   |
+50 -             let target_node = (raw_val.unsigned_abs() as usize) % self.neurons;
+50 +             let target_node = usize::try_from(raw_val.unsigned_abs()) % self.neurons;
+   |
+
+error: you should consider adding a `Default` implementation for `LIFNeuron`
+  --> me-60os-core/src/neural_memory.rs:28:5
+   |
+28 | /     pub fn new() -> Self {
+29 | |         Self {
+30 | |             v_membrane: SPA::zero(),
+31 | |             v_threshold: SPA::from_raw(SPA::SCALE_0 / 20), // Sensitive threshold 0.05
+...  |
+35 | |     }
+   | |_____^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#new_without_default
+   = note: `-D clippy::new-without-default` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::new_without_default)]`
+help: try adding this
+   |
+27 + impl Default for LIFNeuron {
+28 +     fn default() -> Self {
+29 +         Self::new()
+30 +     }
+31 + }
+   |
+
+error: manual implementation of `.is_multiple_of()`
+  --> me-60os-core/src/qhc.rs:33:33
+   |
+33 |         if current_ticks > 0 && current_ticks % self.correction_interval == 0 {
+   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace with: `current_ticks.is_multiple_of(self.correction_interval)`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#manual_is_multiple_of
+
+error: you should consider adding a `Default` implementation for `ResonantLoop`
+  --> me-60os-core/src/resonant_loop.rs:19:5
+   |
+19 | /     pub fn new() -> Self {
+20 | |         Self {
+21 | |             breath_cycle: Duration::from_secs(17),
+22 | |             master_cycle: Duration::from_secs(68),
+...  |
+25 | |     }
+   | |_____^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#new_without_default
+help: try adding this
+   |
+18 + impl Default for ResonantLoop {
+19 +     fn default() -> Self {
+20 +         Self::new()
+21 +     }
+22 + }
+   |
+
+error: casting `u128` to `u64` may truncate the value
+  --> me-60os-core/src/resonant_loop.rs:39:41
+   |
+39 |             sleep(Duration::from_millis(wait_ms as u64)).await;
+   |                                         ^^^^^^^^^^^^^^
+   |
+   = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+   |
+39 -             sleep(Duration::from_millis(wait_ms as u64)).await;
+39 +             sleep(Duration::from_millis(u64::try_from(wait_ms))).await;
+   |
+
+error: casting `i64` to `usize` may truncate the value on targets with 32-bit wide pointers
+  --> me-60os-core/src/scheduler.rs:97:25
+   |
+97 |         let new_batch = new_batch_spa.to_degrees() as usize;
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+   |
+97 -         let new_batch = new_batch_spa.to_degrees() as usize;
+97 +         let new_batch = usize::try_from(new_batch_spa.to_degrees());
+   |
+
+    Checking utf-8 v0.7.6
+error: the borrowed expression implements the required traits
+  --> me-60os-core/src/guardian_lsm.rs:82:19
+   |
+82 |               .args(&[
+   |  ___________________^
+83 | |                 "map", "update", "pinned", "/sys/fs/bpf/sentinel/float_block_map",
+84 | |                 "key", "hex", &format!("{:02x} {:02x} {:02x} {:02x}",
+85 | |                     pid & 0xff, (pid >> 8) & 0xff, (pid >> 16) & 0xff, (pid >> 24) & 0xff),
+86 | |                 "value", "hex", "01"
+87 | |             ])
+   | |_____________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#needless_borrows_for_generic_args
+   = note: `-D clippy::needless-borrows-for-generic-args` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::needless_borrows_for_generic_args)]`
+help: change this to
+   |
+82 ~             .args([
+83 +                 "map", "update", "pinned", "/sys/fs/bpf/sentinel/float_block_map",
+84 +                 "key", "hex", &format!("{:02x} {:02x} {:02x} {:02x}",
+85 +                     pid & 0xff, (pid >> 8) & 0xff, (pid >> 16) & 0xff, (pid >> 24) & 0xff),
+86 +                 "value", "hex", "01"
+87 ~             ])
+   |
+
+error: manual implementation of `.is_multiple_of()`
+  --> me-60os-core/src/crystal_cipher.rs:60:12
+   |
+60 |         if self.pulse % 4 == 0 {
+   |            ^^^^^^^^^^^^^^^^^^^ help: replace with: `self.pulse.is_multiple_of(4)`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#manual_is_multiple_of
+
+error: doc list item without indentation
+  --> me-60os-core/src/dual_lane.rs:24:5
+   |
+24 | //! el core (cumple YATRA: el float solo aparece en I/O de borde si acaso).
+   |     ^
+   |
+   = help: if this is supposed to be its own paragraph, add a blank line
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#doc_lazy_continuation
+help: indent this line
+   |
+24 | //!   el core (cumple YATRA: el float solo aparece en I/O de borde si acaso).
+   |     ++
+
+error: doc list item without indentation
+  --> me-60os-core/src/dual_lane.rs:25:5
+   |
+25 | //! Los TODOs del .py (dual_guardian, forensic_storage, loki_client) NO se
+   |     ^
+   |
+   = help: if this is supposed to be its own paragraph, add a blank line
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#doc_lazy_continuation
+help: indent this line
+   |
+25 | //!   Los TODOs del .py (dual_guardian, forensic_storage, loki_client) NO se
+   |     ++
+
+error: doc list item without indentation
+  --> me-60os-core/src/dual_lane.rs:26:5
+   |
+26 | //! inventan: el Security WAL escribe al mismo archivo que sentinel-cortex
+   |     ^
+   |
+   = help: if this is supposed to be its own paragraph, add a blank line
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#doc_lazy_continuation
+help: indent this line
+   |
+26 | //!   inventan: el Security WAL escribe al mismo archivo que sentinel-cortex
+   |     ++
+
+error: doc list item without indentation
+  --> me-60os-core/src/dual_lane.rs:27:5
+   |
+27 | //! (/var/log/sentinel/security_wal.log) de forma síncrona.
+   |     ^
+   |
+   = help: if this is supposed to be its own paragraph, add a blank line
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#doc_lazy_continuation
+help: indent this line
+   |
+27 | //!   (/var/log/sentinel/security_wal.log) de forma síncrona.
+   |     ++
+
+error: casting `u128` to `i64` may truncate the value
+   --> me-60os-core/src/dual_lane.rs:124:18
+    |
+124 |         .map(|d| d.as_micros() as i64)
+    |                  ^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+124 -         .map(|d| d.as_micros() as i64)
+124 +         .map(|d| i64::try_from(d.as_micros()))
+    |
+
+error: you should consider adding a `Default` implementation for `DualLaneRouter`
+   --> me-60os-core/src/dual_lane.rs:137:5
+    |
+137 | /     pub fn new() -> Self {
+138 | |         Self {
+139 | |             security_sources: vec![
+140 | |                 "auditd", "ebpf", "shield", "dual_guardian", "kernel", "syscall",
+...   |
+147 | |     }
+    | |_____^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#new_without_default
+help: try adding this
+    |
+136 + impl Default for DualLaneRouter {
+137 +     fn default() -> Self {
+138 +         Self::new()
+139 +     }
+140 + }
+    |
+
+error: this `if` has identical blocks
+   --> me-60os-core/src/dual_lane.rs:164:12
+    |
+164 |           }) {
+    |  ____________^
+165 | |             self.security_events += 1;
+166 | |             (DataLane::Security, EventPriority::High)
+167 | |         } else if contains_any(data.to_lowercase().as_str(), &["malicious", "blocked", "threat", "attack"]) {
+    | |_________^
+    |
+note: same as this
+   --> me-60os-core/src/dual_lane.rs:167:109
+    |
+167 |           } else if contains_any(data.to_lowercase().as_str(), &["malicious", "blocked", "threat", "attack"]) {
+    |  _____________________________________________________________________________________________________________^
+168 | |             self.security_events += 1;
+169 | |             (DataLane::Security, EventPriority::High)
+170 | |         } else {
+    | |_________^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#if_same_then_else
+    = note: `-D clippy::if-same-then-else` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::if_same_then_else)]`
+
+error: using `contains()` instead of `iter().any()` is more efficient
+   --> me-60os-core/src/dual_lane.rs:159:35
+    |
+159 |         let (lane, priority) = if self.security_sources.iter().any(|s| *s == source) {
+    |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `self.security_sources.contains(&source)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#manual_contains
+    = note: `-D clippy::manual-contains` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::manual_contains)]`
+
+error: floating-point arithmetic detected
+   --> me-60os-core/src/dual_lane.rs:269:13
+    |
+269 |             self.events_lost as f64 / total as f64
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#float_arithmetic
+
+error: casting `u64` to `f64` may cause a loss of precision (`u64` is 64 bits wide, but `f64`'s mantissa is only 52 bits wide)
+   --> me-60os-core/src/dual_lane.rs:269:13
+    |
+269 |             self.events_lost as f64 / total as f64
+    |             ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_precision_loss
+
+error: casting `u64` to `f64` may cause a loss of precision (`u64` is 64 bits wide, but `f64`'s mantissa is only 52 bits wide)
+   --> me-60os-core/src/dual_lane.rs:269:39
+    |
+269 |             self.events_lost as f64 / total as f64
+    |                                       ^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_precision_loss
+
+error: manual checked division
+   --> me-60os-core/src/dual_lane.rs:274:12
+    |
+274 |         if self.latency_samples == 0 {
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^ check performed here
+...
+277 |             self.latency_ms_total / self.latency_samples
+    |             -------------------------------------------- division performed here
+    |
+    = help: consider using `checked_div`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#manual_checked_ops
+    = note: `-D clippy::manual-checked-ops` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::manual_checked_ops)]`
+
+error: manual checked division
+   --> me-60os-core/src/dual_lane.rs:396:12
+    |
+396 |           if self.events_flushed > 0 {
+    |              ^^^^^^^^^^^^^^^^^^^^^^^ check performed here
+397 |               self.avg_batch_size = (self.avg_batch_size
+    |  ___________________________________-
+398 | |                 * (self.events_flushed - batch_size)
+399 | |                 + batch_size)
+400 | |                 / self.events_flushed;
+    | |_____________________________________- division performed here
+    |
+    = help: consider using `checked_div`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#manual_checked_ops
+
+error: floating-point arithmetic detected
+   --> me-60os-core/src/dual_lane.rs:424:13
+    |
+424 |             self.events_dropped as f64 / self.events_collected as f64
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#float_arithmetic
+
+error: casting `u64` to `f64` may cause a loss of precision (`u64` is 64 bits wide, but `f64`'s mantissa is only 52 bits wide)
+   --> me-60os-core/src/dual_lane.rs:424:13
+    |
+424 |             self.events_dropped as f64 / self.events_collected as f64
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_precision_loss
+
+error: casting `u64` to `f64` may cause a loss of precision (`u64` is 64 bits wide, but `f64`'s mantissa is only 52 bits wide)
+   --> me-60os-core/src/dual_lane.rs:424:42
+    |
+424 |             self.events_dropped as f64 / self.events_collected as f64
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_precision_loss
+
+error: manual `!RangeInclusive::contains` implementation
+  --> me-60os-core/src/dsp.rs:60:12
+   |
+60 |         if val > MAX_INT128 || val < MIN_INT128 {
+   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: use: `!(MIN_INT128..=MAX_INT128).contains(&val)`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#manual_range_contains
+   = note: `-D clippy::manual-range-contains` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::manual_range_contains)]`
+
+error: this comparison involving the minimum or maximum element for this type contains a case that is always true or always false
+  --> me-60os-core/src/dsp.rs:60:12
+   |
+60 |         if val > MAX_INT128 || val < MIN_INT128 {
+   |            ^^^^^^^^^^^^^^^^
+   |
+   = help: because `MAX_INT128` is the maximum value for this type, this comparison is always false
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#absurd_extreme_comparisons
+   = note: `#[deny(clippy::absurd_extreme_comparisons)]` on by default
+
+error: this comparison involving the minimum or maximum element for this type contains a case that is always true or always false
+  --> me-60os-core/src/dsp.rs:60:32
+   |
+60 |         if val > MAX_INT128 || val < MIN_INT128 {
+   |                                ^^^^^^^^^^^^^^^^
+   |
+   = help: because `MIN_INT128` is the minimum value for this type, this comparison is always false
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#absurd_extreme_comparisons
+
+error: casting `i128` to `i64` may truncate the value
+  --> me-60os-core/src/dsp.rs:87:22
+   |
+87 |         let res_64 = res_raw as i64;
+   |                      ^^^^^^^^^^^^^^
+   |
+   = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+   |
+87 -         let res_64 = res_raw as i64;
+87 +         let res_64 = i64::try_from(res_raw);
+   |
+
+error: casting `i128` to `i64` may truncate the value
+   --> me-60os-core/src/dsp.rs:110:13
+    |
+110 |             res_raw as i64
+    |             ^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+110 -             res_raw as i64
+110 +             i64::try_from(res_raw)
+    |
+
+error: casting `i128` to `i64` may truncate the value
+   --> me-60os-core/src/celestial.rs:104:40
+    |
+104 |                 epsilon: SPA::from_raw(epsilon_raw as i64),
+    |                                        ^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+104 -                 epsilon: SPA::from_raw(epsilon_raw as i64),
+104 +                 epsilon: SPA::from_raw(i64::try_from(epsilon_raw)),
+    |
+
+error: casting `i128` to `i64` may truncate the value
+   --> me-60os-core/src/celestial.rs:108:37
+    |
+108 |         let epsilon = SPA::from_raw(epsilon_raw as i64);
+    |                                     ^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+108 -         let epsilon = SPA::from_raw(epsilon_raw as i64);
+108 +         let epsilon = SPA::from_raw(i64::try_from(epsilon_raw));
+    |
+
+error: casting `i128` to `i64` may truncate the value
+   --> me-60os-core/src/celestial.rs:114:45
+    |
+114 |         let semi_major_axis = SPA::from_raw(semi_major_axis_raw as i64);
+    |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+114 -         let semi_major_axis = SPA::from_raw(semi_major_axis_raw as i64);
+114 +         let semi_major_axis = SPA::from_raw(i64::try_from(semi_major_axis_raw));
+    |
+
+error: casting `i128` to `i64` may truncate the value
+   --> me-60os-core/src/celestial.rs:130:56
+    |
+130 |         let eccentricity = SPAMath::sqrt(SPA::from_raw(under_root_raw as i64));
+    |                                                        ^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+130 -         let eccentricity = SPAMath::sqrt(SPA::from_raw(under_root_raw as i64));
+130 +         let eccentricity = SPAMath::sqrt(SPA::from_raw(i64::try_from(under_root_raw)));
+    |
+
+error: casting `i128` to `i64` may truncate the value
+   --> me-60os-core/src/celestial.rs:135:87
+    |
+135 |         let period = SPA::from_int(2) * SPAMath::TWO_PI * SPAMath::sqrt(SPA::from_raw(under_root_t_raw as i64));
+    |                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+135 -         let period = SPA::from_int(2) * SPAMath::TWO_PI * SPAMath::sqrt(SPA::from_raw(under_root_t_raw as i64));
+135 +         let period = SPA::from_int(2) * SPAMath::TWO_PI * SPAMath::sqrt(SPA::from_raw(i64::try_from(under_root_t_raw)));
+    |
+
+error: casting `i64` to `usize` may truncate the value on targets with 32-bit wide pointers
+  --> me-60os-core/src/numerical_control.rs:52:64
+   |
+52 |         let mut trajectory: Vec<SVector3> = Vec::with_capacity(duration_ticks as usize + 1);
+   |                                                                ^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+   |
+52 -         let mut trajectory: Vec<SVector3> = Vec::with_capacity(duration_ticks as usize + 1);
+52 +         let mut trajectory: Vec<SVector3> = Vec::with_capacity(usize::try_from(duration_ticks) + 1);
+   |
+
+error: casting `i128` to `i64` may truncate the value
+   --> me-60os-core/src/orbital_ascent.rs:131:50
+    |
+131 |         let exp_val = SPAMath::exp(SPA::from_int(exp_arg as i64));
+    |                                                  ^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+131 -         let exp_val = SPAMath::exp(SPA::from_int(exp_arg as i64));
+131 +         let exp_val = SPAMath::exp(SPA::from_int(i64::try_from(exp_arg)));
+    |
+
+error: casting `u64` to `usize` may truncate the value on targets with 32-bit wide pointers
+   --> me-60os-core/src/orbital_ascent.rs:223:19
+    |
+223 |         let idx = (self.clock.ticks as usize) % self.lattice.crystals.len();
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: if this is intentional allow the lint with `#[allow(clippy::cast_possible_truncation)]` ...
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.97.0/index.html#cast_possible_truncation
+help: ... or use `try_from` and handle the error accordingly
+    |
+223 -         let idx = (self.clock.ticks as usize) % self.lattice.crystals.len();
+223 +         let idx = usize::try_from(self.clock.ticks) % self.lattice.crystals.len();
+    |
+
+    Checking data-encoding v2.11.0
+error: could not compile `me60os` (lib) due to 99 previous errors
+warning: build failed, waiting for other jobs to finish...
+F2 exit=101

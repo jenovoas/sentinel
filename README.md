@@ -1,128 +1,106 @@
 # Sentinel — Sexagesimal Systems Framework
 
-**Low-level systems framework implementing base-60 arithmetic at the kernel level, eliminating IEEE 754 rounding errors from the mathematical foundation.**
+**Framework de sistemas de bajo nivel que implementa aritmética base-60 exacta (S60) como fundamento matemático del runtime, eliminando los errores de redondeo IEEE 754 de la cadena de cálculo.**
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
-[![Rust](https://img.shields.io/badge/rust-%23000000.svg?logo=rust)](./services/neural-guard/)
+[![Rust](https://img.shields.io/badge/rust-%23000000.svg?logo=rust)](./sentinel-cortex/)
 [![eBPF](https://img.shields.io/badge/eBPF-kernel--level-orange)](./ebpf/)
-[![Fenix Status](https://img.shields.io/badge/Fenix_Node-ACTIVE-brightgreen?style=for-the-badge&logo=linux)](https://pinguinoseguro.cl)
 
 > [!NOTE]
-> **Nodo Fenix Operativo**: Sentinel ha transicionado a una arquitectura de **Nodo Único (Fenix)** bajo Podman Rootless, consolidando la orquestación Ring 0 y el monitoreo resiliente.
-
----
+> **Runtime 100% Rust.** La migración Py→Rust terminó. Los `.py` restantes en `quantum/` son material de estudio o puentes legacy (`LEGACY BRIDGE / MIGRADO / YATRA-protected`) — no forman parte del runtime activo.
+> Producción real: servidor **Fan** (nodo único Fenix, Podman rootless).
 
 ---
 
 ## Fases del Proyecto
 
-Este repositorio contiene la infraestructura y el código para el proyecto Sentinel en sus diferentes etapas. Es crucial entender cada contexto:
+1. **PoC Inicial (legacy):**
+   * `backend/` + `docker-compose.yml` — Python (FastAPI/Celery/Nginx).
+   * Prueba de concepto original. **No se usa en producción.**
 
-1.  **Entorno de Desarrollo Local (PoC Inicial):**
-    *   **Ubicación:** Principalmente en `docker-compose.yml` (desarrollo) y el directorio `backend/`.
-    *   **Stack:** Python (FastAPI), Celery, Nginx.
-    *   **Propósito:** Fue la prueba de concepto original para validar las ideas del proyecto. Contiene la integración inicial con la IA de Google. **No se usa en producción.**
+2. **Producción actual (Nodo Único Fenix):**
+   * `docker-compose.fenix.yml` + workspace Cargo descrito abajo.
+   * Stack: **Rust**, Podman, Traefik, eBPF Ring-0, systemd units por daemon.
 
-2.  **Producción Fase 1 (Nodo Único Fenix):**
-    *   **Ubicación:** `docker-compose.fenix.yml` y los directorios `sentinel-cortex/` y `services/neural-guard/`.
-    *   **Stack:** **Rust (Axum)**, Podman, Traefik. El backend de Python fue reemplazado por un binario nativo (`sentinel-cortex`).
-    *   **Propósito:** Es el **entorno de producción actual**. Un único servidor robusto que corre el núcleo del sistema.
-
-3.  **Arquitectura Objetivo Fase 2 (Cluster Multi-Nodo):**
-    *   **Ubicación:** Documentado en `docs/00_vision_y_arquitectura_global/`.
-    *   **Stack:** Se expandirá a un clúster de múltiples nodos (ej. Kingu, Centurion), posiblemente usando tecnologías de mesh-networking como MycNet.
-    *   **Propósito:** Es la **visión a futuro del proyecto**, buscando una computación distribuida y de alta disponibilidad.
+3. **Visión Fase 2 (Cluster Multi-Nodo):**
+   * Mesh S60 distribuido vía [MycNet](https://github.com/) (ver `docs/archive/` para el diseño histórico).
 
 ---
 
-## El Problema: La Deriva del Punto Flotante
-
-IEEE 754 (el estándar para números de punto flotante) tiene problemas de precisión con fracciones comunes en sistemas binarios, como `1/3`, `1/6`, `1/12`, y `1/60`. Estas se convierten en números periódicos que acumulan errores de redondeo en cadenas de cálculo largas.
-
-La Base-60 (sexagesimal), usada por los astrónomos babilonios durante 2,000 años, es divisible por 1, 2, 3, 4, 5, 6, 10, 12, 15, 20 y 30. Esto permite que esas fracciones sean **exactas**. Sentinel explora cómo implementar esta robustez matemática en el software de sistemas moderno.
-
----
-
-## Resultados de Benchmarks
-
-### Eficiencia de Memoria (EXP-015)
-
-| Implementación | Memoria por nodo | Throughput | Capacidad en 11 GB RAM |
-|---|---|---|---|
-| Python sparse lattice | ~377 bytes | ~0.04M nodos/s | ~0.4 GB payload |
-| **Rust S60 nativo** | **16.00 bytes** | **~120M nodos/s** | **~10 GB payload** |
-| **Factor** | **23.6x más pequeño** | **~3,000x más rápido** | **25x más** |
-
-### Equivalencia Numérica (EXP-021/022)
-
-Comparación de S60 vs. f64 con 1,000 señales y 300 muestras:
-
-| Métrica | Divergencia Media (Lyapunov) | Divergencia Media (Shannon) |
-|---|---|---|
-| S60 vs f64 | **< 0.0001** | **< 0.0001** |
-
-S60 demuestra ser numéricamente equivalente a f64 para procesamiento de señales, pero eliminando la representación de punto flotante.
-
----
-
-## Arquitectura Actual (Fenix)
+## Workspace Cargo (5 crates)
 
 ```
 sentinel/
-├── sentinel-cortex/   Rust Cortex — 🛡️ Servidor Axum, API y motor de decisiones.
-├── services/
-│   └── neural-guard/  (Legacy) Lógica de defensa ahora integrada en Cortex.
-├── ebpf/              Hooks de Kernel — Interceptación de syscalls, bloqueo de floats.
-├── quantum/           Capa de Python vía PyO3 (me60os_core.so, zero-copy).
-├── observability/     Prometheus + Grafana (métricas con conciencia térmica).
-└── constraints/       YATRA_SPEC.md — El contrato inmutable de la aritmética.
+├── sentinel-cortex/     Crate principal: servidor Axum, drive continuo, ingesta eBPF,
+│                        LiquidLattice 3x3, TruthSync, API REST (/api/v1/*, /metrics)
+├── me-60os-core/        Núcleo numérico y físico: SPA/S60, PAI-60, ResonantMatrix,
+│                        IsochronousOscillator, QHC, Guardian LSM, Dual-Lane (32 bins:
+│                        experimentos EXP-XXX, benches, daemons nativos, TUI)
+├── truthsync-core/      Motor de verificación de claims sobre energía del lattice
+├── sentinel-verifier/   Verificador de invariantes runtime (systemd --watch 15 --json)
+├── services/neural-guard/  Correlación de eventos + disparo de playbooks n8n
+├── ebpf/                Programas kernel: guardian_alpha_lsm.c (ACTIVO),
+│                        guardian_cognitive, float_detector, gamma_watchdog;
+│                        ai_guardian.c DESACTIVADO — no usar file_open ni
+│                        /sys/fs/bpf/ai_guardian
+├── quantum/             LEGADO: .py con headers LEGACY BRIDGE / MIGRADO — estudio
+└── constraints/         YATRA_SPEC.md — contrato inmutable de la aritmética
 ```
 
-### 🧠 Neural Guard y Acoplamiento Octomecánico
+## El Problema: La Deriva del Punto Flotante
 
-Sentinel integra el **Acoplamiento Octomecánico**:
+IEEE 754 convierte fracciones comunes en sistemas binarios (`1/3`, `1/6`, `1/12`, `1/60`) en periódicos que acumulan error de redondeo. La base-60 (sexagesimal babilónica) es divisible por 1, 2, 3, 4, 5, 6, 10, 12, 15, 20 y 30 — esas fracciones son **exactas**.
 
-- **Conciencia Térmica**: El sistema consulta la temperatura de la CPU en tiempo real.
-- **Umbrales Dinámicos**: Las alertas de seguridad se ajustan basadas en la **Masa Computacional** del sistema (carga efectiva). Entornos más "calientes" (con más carga/entropía) se vuelven menos sensibles para evitar falsos positivos.
+## Reglas de Oro de la Aritmética
 
----
+Ver `constraints/YATRA_SPEC.md` y `AGENTS.md`. Resumen operativo:
 
-## Quick Start (Desarrollo)
+1. **`SCALE_0 = 60⁴ = 12,960,000`** (NO 60⁶). `SPA::from_int(n)` ≠ `SPA::from_raw(n)`.
+2. **Nunca doble-escalar**: `inject()`/`transduce_pulse()` esperan enteros-unidad y re-escalan internamente; pasarles un valor ya en raw (p.ej. `to_raw()` o `entropy_s60_raw` del kernel) corrompe el dato ×12,960,000. Para valores raw usar **`inject_spa(x, SPA::from_raw(v))`**.
+3. **El lattice es disipativo**: `step()` solo disipa; el drive continuo (`sentinel-cortex/src/main.rs`, bloque 3b cada 500ms) mantiene la resonancia.
+4. Reforzado por clippy: `float_arithmetic`, `float_cmp`, `cast_possible_truncation`, `cast_precision_loss` = **forbid** en los crates numéricos; e interceptado en kernel por `float_detector.c`.
+
+## Resultados Medidos
+
+| Métrica | Valor | Fuente |
+|---|---|---|
+| Memoria por nodo (EXP-015) | 16 B vs ~377 B Python (**23.6×**) | `me-60os-core/src/bin/fpu_vs_pai_bench.rs` |
+| Throughput | ~120M nodos/s (**~3000×**) | ídem |
+| Desviación PAI vs raw | 0.000 ppm | `bench_desvio_pai.rs` |
+| Tests core | 89/89 (incl. familia anti-doble-escala 4/4) | `cargo test -p me60os --lib` |
+| Recuperación memoria cristal P0.1 | 'Yo Soy' al 100% (doble malla convergida) | `bin/resonant_lattice_memory.rs` |
+
+*Auditoría física↔código↔papers completa (2026-08-23): `personalvault/Sistemas/Auditoria_Fisica_Sentinel_2026-08-23.md`.*
+
+## Quick Start
 
 ```bash
-# Construir el núcleo de Rust
-cd sentinel-cortex && cargo build --release
+# Compilar todo el workspace
+cargo build --release
 
-# Construir la extensión PyO3 (requiere el repo me-60os)
-cd ../me-60os && cargo build --release --features extension-module
-cp target/release/libme60os_core.so ../sentinel/quantum/
+# Suite de tests del núcleo numérico
+cargo test -p me60os --lib
 
-# Ejecutar benchmarks (desde el directorio sentinel/quantum)
-python3 experiments/EXP_015_MEMORY_THROUGHPUT.py
-python3 experiments/EXP_022_ENTROPY_VALIDATION.py
+# Servidor principal (Axum :8000, drive continuo 500ms, ingesta eBPF)
+cargo run -p sentinel-cortex --bin sentinel-cortex
+
+# Experimentos destacados
+cargo run -p me60os --bin resonant_lattice_memory   # memoria doble malla + SHM
+cargo run -p me60os --bin exp028_penta              # portales emergentes (68s)
+
+# Benchmarks
+cargo run --release -p me60os --bin fpu_vs_pai_bench
+cargo run --release -p me60os --bin bench_desvio_pai
 ```
 
----
+Requisitos eBPF (kernel hooks): Linux ≥ 5.x con BTF, root o CAP_BPF+CAP_PERFMON. Ver `ebpf/` y sus loaders.
 
-## El Contrato YATRA
+## Estado y Pendientes Conocidos
 
-**No usar `f32` o `f64` en la lógica de base-60.** Esta regla es reforzada a nivel de kernel por ganchos de eBPF que pueden detectar y bloquear syscalls "contaminados" con punto flotante.
-
----
-
-## Roadmap
-
-- [x] **Soberanía Fenix**: Transición a orquestador de nodo único con Podman.
-- [x] **Neural Guard (Rust)**: Despliegue del nuevo motor de decisiones seguro.
-- [x] **Acoplamiento Octomecánico**: Sensibilidad dinámica basada en la temperatura de la CPU.
-- [x] **Ring 0**: Hooks de eBPF para detectar contaminación de punto flotante.
-- [x] **Puente PyO3**: Acceso desde Python al núcleo Rust sin sobrecarga de serialización.
-- [x] Stack de observabilidad con Prometheus + Grafana.
-- [ ] **MycNet**: Computación S60 distribuida entre nodos de un mesh.
-- [ ] **Prueba de Equivalencia Formal**: Demostración matemática de S60 como una clase de equivalencia a IEEE 754.
-
----
+- ✅ Migración Py→Rust completa; TUI nativa en Rust; fix doble-escala ingesta eBPF (`bc3944ee`).
+- 🔴 Abiertos (decisión de diseño pendiente): convención de `entropy_pressure` en loop térmico (P0.5), modo superconductor en ruta viva (P1.6), acoplamiento real del bombeo QHC (P1.7), wrap de fase módulo 360° (P1.8).
+- Detalles: `Pendientes.md` del vault de investigación (`~/Proyectos/personalvault`).
 
 ## Licencia
 
-Apache 2.0 — ver [LICENSE](./LICENSE)
+Apache 2.0 — ver [LICENSE](./LICENSE).

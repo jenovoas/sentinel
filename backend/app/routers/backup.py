@@ -18,10 +18,11 @@ Author: Sentinel Team
 Created: 2025-12-15
 """
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from datetime import datetime, timedelta
 from typing import List, Optional, Dict, Any
+from app.security import get_current_admin_user
 import os
 import glob
 import subprocess
@@ -355,7 +356,7 @@ async def get_backup_history(
 
 
 @router.post("/trigger", response_model=BackupTriggerResponse)
-async def trigger_backup():
+async def trigger_backup(current_user = Depends(get_current_admin_user)):
     """
     Manually trigger a backup
     

@@ -333,19 +333,55 @@ fn main() -> Result<()> {
 }
 
 fn call_sentinel_ai(prompt: &str, mode: &str) -> String {
-    let client = reqwest::blocking::Client::new();
-    let req = AIQueryRequest {
+    let client = match reqwest::blocking::Client::builder()
+        .timeout(Duration::from_secs(15))
+        .build()
+    {
+        Ok(c) => c,
+        Err(_) => return "Error: No se pudo inicializar el cliente HTTP.".into(),
+    };
+
+    // 1. Intentar llamar a LFM 2.5 local en GPU (:8080)
+    let sys_msg = format!("Eres Sentinel AI en modo {mode}. Responde de forma clara, técnica y concisa.");
+    let lfm_req = serde_json::json!({
+        "messages": [
+            {"role": "system", "content": sys_msg},
+            {"role": "user", "content": prompt}
+        ],
+        "max_tokens": 512,
+        "temperature": 0.3
+    });
+
+    if let Ok(resp) = client.post("http://127.0.0.1:8080/v1/chat/completions").json(&lfm_req).send() {
+        if resp.status().is_success() {
+            if let Ok(val) = resp.json::<serde_json::Value>() {
+                if let Some(choices) = val.get("choices").and_then(|c| c.as_array()) {
+                    if let Some(first) = choices.first() {
+                        if let Some(msg) = first.get("message") {
+                            let content = msg.get("content").and_then(|c| c.as_str()).unwrap_or("").trim();
+                            if !content.is_empty() {
+                                return content.to_string();
+                            }
+                            let reasoning = msg.get("reasoning_content").and_then(|c| c.as_str()).unwrap_or("").trim();
+                            if !reasoning.is_empty() {
+                                return reasoning.to_string();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // 2. Fallback al Neocórtex clásico (:8000)
+    let legacy_req = AIQueryRequest {
         prompt: prompt.to_string(),
         mode: mode.to_lowercase(),
         max_tokens: 512,
         temperature: 0.4,
     };
 
-    match client
-        .post("http://localhost:8000/api/ai/query")
-        .json(&req)
-        .send()
-    {
+    match client.post("http://localhost:8000/api/ai/query").json(&legacy_req).send() {
         Ok(resp) => {
             if let Ok(ai_resp) = resp.json::<AIQueryResponse>() {
                 ai_resp.response
@@ -353,14 +389,14 @@ fn call_sentinel_ai(prompt: &str, mode: &str) -> String {
                 "Error: No pude decodificar el pensamiento del Cortex.".into()
             }
         }
-        Err(_) => "Error de conexión: El Neocórtex está offline. Verifica el backend.".into(),
+        Err(_) => "Error de conexión: Ni LFM (:8080) ni Neocórtex (:8000) están respondiendo.".into(),
     }
 }
 
 // --- UI ---
 
 fn draw_ui(f: &mut Frame, app: &mut App) {
-    let size = f.size();
+    let area = f.area();
     let layout = Layout::default()
         .direction(Direction::Vertical)
         .constraints(
@@ -371,7 +407,7 @@ fn draw_ui(f: &mut Frame, app: &mut App) {
             ]
             .as_ref(),
         )
-        .split(size);
+        .split(area);
 
     draw_top_tabs(f, layout[0], app);
 

@@ -1,5 +1,5 @@
 redis==5.2.1
 hiredis==3.0.0
-pydantic>=2.9.2
-pydantic-settings>=2.5.0
-python-dotenv==1.0.0
+pydantic==2.12.5
+pydantic-settings==2.14.2
+python-dotenv==1.2.2

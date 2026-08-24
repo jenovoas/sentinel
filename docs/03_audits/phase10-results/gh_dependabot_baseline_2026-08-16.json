@@ -1,0 +1,117 @@
+{"eco":null,"manifest":"pnpm-lock.yaml","n":194,"pkg":"extract-zip","sev":"high","summary":"extract-zip unvalidated symlink path traversal"}
+{"eco":null,"manifest":"pnpm-lock.yaml","n":193,"pkg":"fast-uri","sev":"high","summary":"fast-uri vulnerable to path traversal via percent-encoded dot segments"}
+{"eco":null,"manifest":"pnpm-lock.yaml","n":192,"pkg":"fast-uri","sev":"high","summary":"fast-uri vulnerable to host confusion via percent-encoded authority delimiters"}
+{"eco":null,"manifest":"pnpm-lock.yaml","n":191,"pkg":"nanoid","sev":"high","summary":"nanoid: non-secure generators can loop indefinitely with negative size"}
+{"eco":null,"manifest":"pnpm-lock.yaml","n":189,"pkg":"fast-uri","sev":"high","summary":"fast-uri vulnerable to host confusion via backslash authority introducer"}
+{"eco":null,"manifest":"pnpm-lock.yaml","n":188,"pkg":"postcss","sev":"medium","summary":"PostCSS: incomplete fix of GHSA-6g55-p6wh-862q — attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset"}
+{"eco":null,"manifest":"backend/requirements.txt","n":187,"pkg":"PyJWT","sev":"medium","summary":"PyJWKClient: missing scheme allowlist enables CVE-2024-21643-class SSRF + token forgery via file://, ftp://, data: schemes"}
+{"eco":null,"manifest":"backend/requirements.txt","n":186,"pkg":"pyjwt","sev":"low","summary":"PyJWKClient unbounded JWKS endpoint requests via attacker-controlled kid values (DoS)"}
+{"eco":null,"manifest":"truthsync-core/Cargo.toml","n":185,"pkg":"lru","sev":"low","summary":"`IterMut` violates Stacked Borrows by invalidating internal pointer"}
+{"eco":null,"manifest":"me-60os-core/Cargo.lock","n":184,"pkg":"pyo3","sev":"medium","summary":"PyO3 has a missing `Sync` bound on `PyCFunction::new_closure` closures"}
+{"eco":null,"manifest":"me-60os-core/Cargo.lock","n":183,"pkg":"pyo3","sev":"high","summary":"PyO3 has an Out-of-bounds Read in `nth` / `nth_back` for `PyList` and `PyTuple` iterators"}
+{"eco":null,"manifest":"me-60os-core/Cargo.lock","n":182,"pkg":"openssl","sev":"medium","summary":"rust-openssl: Potential out-of-bounds write in `CipherCtxRef::cipher_update_inplace` for AES-KW-PAD ciphers"}
+{"eco":null,"manifest":"me-60os-core/Cargo.lock","n":181,"pkg":"openssl","sev":"medium","summary":"rust-openssl vulnerable to heap buffer overflow when encrypting with AES key-wrap-with-padding"}
+{"eco":null,"manifest":"me-60os-core/Cargo.lock","n":180,"pkg":"openssl","sev":"high","summary":"rust-openssl has undefined behavior in X509Ref::ocsp_responders for certificates with non-UTF-8 OCSP URLs"}
+{"eco":null,"manifest":"me-60os-core/Cargo.lock","n":179,"pkg":"openssl","sev":"high","summary":"rust-openssl: Deriver::derive and PkeyCtxRef::derive can overflow short buffers on OpenSSL 1.1.1"}
+{"eco":null,"manifest":"me-60os-core/Cargo.lock","n":178,"pkg":"openssl","sev":"low","summary":"rust-opennssl has an Out-of-bounds read in PEM password callback when returning an oversized length"}
+{"eco":null,"manifest":"me-60os-core/Cargo.lock","n":177,"pkg":"openssl","sev":"high","summary":"rust-openssl has incorrect bounds assertion in aes key wrap"}
+{"eco":null,"manifest":"me-60os-core/Cargo.lock","n":176,"pkg":"openssl","sev":"high","summary":"rust-openssl: rustMdCtxRef::digest_final() writes past caller buffer with no length check"}
+{"eco":null,"manifest":"me-60os-core/Cargo.lock","n":175,"pkg":"openssl","sev":"high","summary":"rust-openssl: Unchecked callback length in PSK/cookie trampolines leaks adjacent memory to peer"}
+{"eco":null,"manifest":"me-60os-core/Cargo.lock","n":174,"pkg":"rand","sev":"low","summary":"Rand is unsound with a custom logger using rand::rng()"}
+{"eco":null,"manifest":"me-60os-core/Cargo.lock","n":173,"pkg":"bytes","sev":"medium","summary":"bytes has integer overflow in BytesMut::reserve"}
+{"eco":null,"manifest":"me-60os-core/Cargo.lock","n":172,"pkg":"lru","sev":"low","summary":"`IterMut` violates Stacked Borrows by invalidating internal pointer"}
+{"eco":null,"manifest":"pnpm-lock.yaml","n":171,"pkg":"postcss","sev":"high","summary":"PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure"}
+{"eco":null,"manifest":"pnpm-lock.yaml","n":170,"pkg":"postcss","sev":"high","summary":"PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments"}
+{"eco":null,"manifest":"pnpm-lock.yaml","n":169,"pkg":"postcss","sev":"medium","summary":"PostCSS has XSS via Unescaped \u003c/style\u003e in its CSS Stringify Output"}
+{"eco":null,"manifest":"frontend/package.json","n":168,"pkg":"next","sev":"high","summary":"Next.js: Server-Side Request Forgery in Server Actions on custom servers"}
+{"eco":null,"manifest":"frontend/package.json","n":167,"pkg":"next","sev":"medium","summary":"Next.js: Cache confusion of response bodies for requests with bodies"}
+{"eco":null,"manifest":"frontend/package.json","n":166,"pkg":"next","sev":"medium","summary":"Next.js: Cache confusion of response bodies for requests with bodies containing invalid UTF-8 byte sequences"}
+{"eco":null,"manifest":"frontend/package.json","n":165,"pkg":"next","sev":"medium","summary":"Next.js: Unbounded Server Action payload in Edge runtime"}
+{"eco":null,"manifest":"frontend/package.json","n":164,"pkg":"next","sev":"high","summary":"Next.js: Server-Side Request Forgery in rewrites via attacker-controlled destination hostname"}
+{"eco":null,"manifest":"frontend/package.json","n":163,"pkg":"next","sev":"medium","summary":"Next.js: Denial of Service in the Image Optimization API using SVGs"}
+{"eco":null,"manifest":"frontend/package.json","n":162,"pkg":"next","sev":"medium","summary":"Next.js: Unauthenticated disclosure of internal Server Function endpoints"}
+{"eco":null,"manifest":"frontend/package.json","n":161,"pkg":"next","sev":"high","summary":"Next.js: Denial of Service in App Router using Server Actions"}
+{"eco":null,"manifest":"pnpm-lock.yaml","n":160,"pkg":"fast-uri","sev":"high","summary":"fast-uri vulnerable to host confusion via literal backslash authority delimiter"}
+{"eco":null,"manifest":"pnpm-lock.yaml","n":159,"pkg":"fast-uri","sev":"high","summary":"fast-uri vulnerable to host confusion via failed IDN canonicalization"}
+{"eco":null,"manifest":"gui/src-tauri/Cargo.lock","n":158,"pkg":"serde_with","sev":"medium","summary":"serde_with: KeyValueMap serialization panics on empty sequence or map entries"}
+{"eco":null,"manifest":"backend/requirements.txt","n":157,"pkg":"pydantic-settings","sev":"medium","summary":"pydantic-settings: NestedSecretsSettingsSource follows symlinks outside secrets_dir, enabling local file read and bypassing secrets_dir_max_size"}
+{"eco":null,"manifest":"pnpm-lock.yaml","n":156,"pkg":"ws","sev":"high","summary":"ws: Memory exhaustion DoS from tiny fragments and data chunks"}
+{"eco":null,"manifest":"backend/requirements.txt","n":155,"pkg":"python-multipart","sev":"high","summary":"python-multipart: Quadratic-time querystring parsing with semicolon separators causes CPU denial of service"}
+{"eco":null,"manifest":"backend/requirements.txt","n":154,"pkg":"python-multipart","sev":"low","summary":"python-multipart: Negative Content-Length in parse_form buffers the entire body in memory"}
+{"eco":null,"manifest":"backend/requirements.txt","n":153,"pkg":"python-multipart","sev":"low","summary":"python-multipart: Semicolon treated as querystring field separator enables parameter smuggling"}
+{"eco":null,"manifest":"backend/requirements.txt","n":152,"pkg":"python-multipart","sev":"low","summary":"python-multipart: Content-Disposition parameter smuggling via RFC 2231/5987 extended parameters"}
+{"eco":null,"manifest":"backend/requirements.txt","n":151,"pkg":"pyjwt","sev":"high","summary":"PyJWT: Public-key JWK accepted as HMAC secret enables forged HS256 tokens when mixed families are allowed"}
+{"eco":null,"manifest":"backend/requirements.txt","n":149,"pkg":"pyjwt","sev":"medium","summary":"PyJWT: Unauthenticated DoS via unbounded Base64URL decoding of unused payload segment in b64=false detached JWS"}
+{"eco":null,"manifest":"backend/requirements.txt","n":148,"pkg":"pyjwt","sev":"medium","summary":"PyJWT: Algorithm allow-list bypass when decoding with `PyJWK` / `PyJWKClient` keys"}
+{"eco":null,"manifest":"Cargo.lock","n":145,"pkg":"pyo3","sev":"medium","summary":"PyO3 has a missing `Sync` bound on `PyCFunction::new_closure` closures"}
+{"eco":null,"manifest":"sentinel-cortex/Cargo.lock","n":144,"pkg":"pyo3","sev":"medium","summary":"PyO3 has a missing `Sync` bound on `PyCFunction::new_closure` closures"}
+{"eco":null,"manifest":"Cargo.lock","n":143,"pkg":"pyo3","sev":"high","summary":"PyO3 has an Out-of-bounds Read in `nth` / `nth_back` for `PyList` and `PyTuple` iterators"}
+{"eco":null,"manifest":"sentinel-cortex/Cargo.lock","n":142,"pkg":"pyo3","sev":"high","summary":"PyO3 has an Out-of-bounds Read in `nth` / `nth_back` for `PyList` and `PyTuple` iterators"}
+{"eco":null,"manifest":"gui/src-tauri/Cargo.lock","n":141,"pkg":"tar","sev":"medium","summary":"tar has a PAX header desynchronization issue"}
+{"eco":null,"manifest":"frontend/package.json","n":140,"pkg":"next","sev":"medium","summary":"Next.js vulnerable to cross-site scripting in App Router applications using CSP nonces"}
+{"eco":null,"manifest":"pnpm-lock.yaml","n":139,"pkg":"ws","sev":"medium","summary":"ws: Uninitialized memory disclosure"}
+{"eco":null,"manifest":"src/sentinel-cortex/Cargo.lock","n":137,"pkg":"openssl","sev":"medium","summary":"rust-openssl: Potential out-of-bounds write in `CipherCtxRef::cipher_update_inplace` for AES-KW-PAD ciphers"}
+{"eco":null,"manifest":"src/core/sentinel_core/forensics/Cargo.lock","n":136,"pkg":"openssl","sev":"medium","summary":"rust-openssl: Potential out-of-bounds write in `CipherCtxRef::cipher_update_inplace` for AES-KW-PAD ciphers"}
+{"eco":null,"manifest":"sentinel-cortex/Cargo.lock","n":135,"pkg":"openssl","sev":"medium","summary":"rust-openssl: Potential out-of-bounds write in `CipherCtxRef::cipher_update_inplace` for AES-KW-PAD ciphers"}
+{"eco":null,"manifest":"frontend/package.json","n":134,"pkg":"next","sev":"low","summary":"Next.js vulnerable to cache poisoning via collisions in React Server Component cache-busting"}
+{"eco":null,"manifest":"frontend/package.json","n":133,"pkg":"next","sev":"medium","summary":"Next.js has a Denial of Service in the Image Optimization API"}
+{"eco":null,"manifest":"frontend/package.json","n":132,"pkg":"next","sev":"low","summary":"Next.js's Middleware / Proxy redirects can be cache-poisoned"}
+{"eco":null,"manifest":"frontend/package.json","n":131,"pkg":"next","sev":"high","summary":"Next.js has a Middleware / Proxy bypass in Pages Router applications using i18n"}
+{"eco":null,"manifest":"frontend/package.json","n":130,"pkg":"next","sev":"medium","summary":"Next.js has cross-site scripting in beforeInteractive scripts with untrusted input"}
+{"eco":null,"manifest":"frontend/package.json","n":129,"pkg":"next","sev":"high","summary":"Next.js Vulnerable to Denial of Service with Server Components"}
+{"eco":null,"manifest":"frontend/package.json","n":128,"pkg":"next","sev":"high","summary":"Next.js vulnerable to server-side request forgery in applications using WebSocket upgrades"}
+{"eco":null,"manifest":"frontend/package.json","n":127,"pkg":"next","sev":"medium","summary":"Next.js vulnerable to cache poisoning in React Server Component responses"}
+{"eco":null,"manifest":"frontend/package.json","n":126,"pkg":"next","sev":"high","summary":"Next.js vulnerable to Denial of Service via connection exhaustion in applications using Cache Components"}
+{"eco":null,"manifest":"frontend/package.json","n":125,"pkg":"next","sev":"high","summary":"Next.js has a Middleware / Proxy bypass in App Router applications via segment-prefetch routes"}
+{"eco":null,"manifest":"frontend/package.json","n":124,"pkg":"next","sev":"high","summary":"Next.js has a Middleware / Proxy bypass in App Router applications via segment-prefetch routes - Incomplete Fix Follow-Up"}
+{"eco":null,"manifest":"frontend/package.json","n":123,"pkg":"next","sev":"high","summary":"Next.js has a Middleware / Proxy bypass through dynamic route parameter injection"}
+{"eco":null,"manifest":"src/sentinel-cortex/Cargo.lock","n":119,"pkg":"openssl","sev":"medium","summary":"rust-openssl vulnerable to heap buffer overflow when encrypting with AES key-wrap-with-padding"}
+{"eco":null,"manifest":"src/core/sentinel_core/forensics/Cargo.lock","n":118,"pkg":"openssl","sev":"medium","summary":"rust-openssl vulnerable to heap buffer overflow when encrypting with AES key-wrap-with-padding"}
+{"eco":null,"manifest":"sentinel-cortex/Cargo.lock","n":117,"pkg":"openssl","sev":"medium","summary":"rust-openssl vulnerable to heap buffer overflow when encrypting with AES key-wrap-with-padding"}
+{"eco":null,"manifest":"backend/requirements.txt","n":116,"pkg":"python-multipart","sev":"high","summary":"python-multipart has Denial of Service via unbounded multipart part headers"}
+{"eco":null,"manifest":"src/sentinel-cortex/Cargo.lock","n":114,"pkg":"openssl","sev":"high","summary":"rust-openssl has undefined behavior in X509Ref::ocsp_responders for certificates with non-UTF-8 OCSP URLs"}
+{"eco":null,"manifest":"src/core/sentinel_core/forensics/Cargo.lock","n":113,"pkg":"openssl","sev":"high","summary":"rust-openssl has undefined behavior in X509Ref::ocsp_responders for certificates with non-UTF-8 OCSP URLs"}
+{"eco":null,"manifest":"sentinel-cortex/Cargo.lock","n":112,"pkg":"openssl","sev":"high","summary":"rust-openssl has undefined behavior in X509Ref::ocsp_responders for certificates with non-UTF-8 OCSP URLs"}
+{"eco":null,"manifest":"src/sentinel-cortex/Cargo.lock","n":110,"pkg":"rand","sev":"low","summary":"Rand is unsound with a custom logger using rand::rng()"}
+{"eco":null,"manifest":"tools/sip-rs/Cargo.lock","n":109,"pkg":"rand","sev":"low","summary":"Rand is unsound with a custom logger using rand::rng()"}
+{"eco":null,"manifest":"src/core/sentinel_core/init/Cargo.lock","n":108,"pkg":"rand","sev":"low","summary":"Rand is unsound with a custom logger using rand::rng()"}
+{"eco":null,"manifest":"src/core/sentinel_core/forensics/Cargo.lock","n":107,"pkg":"rand","sev":"low","summary":"Rand is unsound with a custom logger using rand::rng()"}
+{"eco":null,"manifest":"sentinel-cortex/Cargo.lock","n":105,"pkg":"rand","sev":"low","summary":"Rand is unsound with a custom logger using rand::rng()"}
+{"eco":null,"manifest":"src/sentinel-cortex/Cargo.lock","n":102,"pkg":"openssl","sev":"high","summary":"rust-openssl: Deriver::derive and PkeyCtxRef::derive can overflow short buffers on OpenSSL 1.1.1"}
+{"eco":null,"manifest":"src/core/sentinel_core/forensics/Cargo.lock","n":101,"pkg":"openssl","sev":"high","summary":"rust-openssl: Deriver::derive and PkeyCtxRef::derive can overflow short buffers on OpenSSL 1.1.1"}
+{"eco":null,"manifest":"sentinel-cortex/Cargo.lock","n":100,"pkg":"openssl","sev":"high","summary":"rust-openssl: Deriver::derive and PkeyCtxRef::derive can overflow short buffers on OpenSSL 1.1.1"}
+{"eco":null,"manifest":"src/sentinel-cortex/Cargo.lock","n":99,"pkg":"openssl","sev":"low","summary":"rust-opennssl has an Out-of-bounds read in PEM password callback when returning an oversized length"}
+{"eco":null,"manifest":"src/core/sentinel_core/forensics/Cargo.lock","n":98,"pkg":"openssl","sev":"low","summary":"rust-opennssl has an Out-of-bounds read in PEM password callback when returning an oversized length"}
+{"eco":null,"manifest":"sentinel-cortex/Cargo.lock","n":97,"pkg":"openssl","sev":"low","summary":"rust-opennssl has an Out-of-bounds read in PEM password callback when returning an oversized length"}
+{"eco":null,"manifest":"src/sentinel-cortex/Cargo.lock","n":95,"pkg":"openssl","sev":"high","summary":"rust-openssl has incorrect bounds assertion in aes key wrap"}
+{"eco":null,"manifest":"src/core/sentinel_core/forensics/Cargo.lock","n":94,"pkg":"openssl","sev":"high","summary":"rust-openssl has incorrect bounds assertion in aes key wrap"}
+{"eco":null,"manifest":"sentinel-cortex/Cargo.lock","n":93,"pkg":"openssl","sev":"high","summary":"rust-openssl has incorrect bounds assertion in aes key wrap"}
+{"eco":null,"manifest":"src/sentinel-cortex/Cargo.lock","n":91,"pkg":"openssl","sev":"high","summary":"rust-openssl: Unchecked callback length in PSK/cookie trampolines leaks adjacent memory to peer"}
+{"eco":null,"manifest":"src/core/sentinel_core/forensics/Cargo.lock","n":90,"pkg":"openssl","sev":"high","summary":"rust-openssl: Unchecked callback length in PSK/cookie trampolines leaks adjacent memory to peer"}
+{"eco":null,"manifest":"sentinel-cortex/Cargo.lock","n":89,"pkg":"openssl","sev":"high","summary":"rust-openssl: Unchecked callback length in PSK/cookie trampolines leaks adjacent memory to peer"}
+{"eco":null,"manifest":"src/sentinel-cortex/Cargo.lock","n":87,"pkg":"openssl","sev":"high","summary":"rust-openssl: rustMdCtxRef::digest_final() writes past caller buffer with no length check"}
+{"eco":null,"manifest":"src/core/sentinel_core/forensics/Cargo.lock","n":86,"pkg":"openssl","sev":"high","summary":"rust-openssl: rustMdCtxRef::digest_final() writes past caller buffer with no length check"}
+{"eco":null,"manifest":"sentinel-cortex/Cargo.lock","n":85,"pkg":"openssl","sev":"high","summary":"rust-openssl: rustMdCtxRef::digest_final() writes past caller buffer with no length check"}
+{"eco":null,"manifest":"gui/src-tauri/Cargo.lock","n":84,"pkg":"rand","sev":"low","summary":"Rand is unsound with a custom logger using rand::rng()"}
+{"eco":null,"manifest":"src/sentinel-cortex/Cargo.lock","n":83,"pkg":"rand","sev":"low","summary":"Rand is unsound with a custom logger using rand::rng()"}
+{"eco":null,"manifest":"backend/requirements.txt","n":82,"pkg":"python-dotenv","sev":"medium","summary":"python-dotenv: Symlink following in set_key allows arbitrary file overwrite via cross-device rename fallback"}
+{"eco":null,"manifest":"requirements.cortex.txt","n":81,"pkg":"python-dotenv","sev":"medium","summary":"python-dotenv: Symlink following in set_key allows arbitrary file overwrite via cross-device rename fallback"}
+{"eco":null,"manifest":"gui/src-tauri/Cargo.lock","n":56,"pkg":"tar","sev":"medium","summary":"tar-rs incorrectly ignores PAX size headers if header size is nonzero"}
+{"eco":null,"manifest":"gui/src-tauri/Cargo.lock","n":55,"pkg":"tar","sev":"medium","summary":"tar-rs `unpack_in` can chmod arbitrary directories by following symlinks"}
+{"eco":null,"manifest":"tools/sip-rs/Cargo.lock","n":54,"pkg":"time","sev":"medium","summary":"time vulnerable to stack exhaustion Denial of Service attack"}
+{"eco":null,"manifest":"src/sentinel-wasm/Cargo.lock","n":53,"pkg":"wee_alloc","sev":"critical","summary":"wee_alloc is Unmaintained"}
+{"eco":null,"manifest":"src/sentinel-cortex/Cargo.lock","n":52,"pkg":"keccak","sev":"low","summary":"Unsoundness in opt-in ARMv8 assembly backend for `keccak`"}
+{"eco":null,"manifest":"src/sentinel-cortex/Cargo.lock","n":51,"pkg":"bytes","sev":"medium","summary":"bytes has integer overflow in BytesMut::reserve"}
+{"eco":null,"manifest":"src/sentinel-cortex/Cargo.lock","n":50,"pkg":"rsa","sev":"low","summary":"rsa crate has potential panic on a prime being equal to 1"}
+{"eco":null,"manifest":"src/sentinel-cortex/Cargo.lock","n":49,"pkg":"sqlx","sev":"medium","summary":"SQLx Binary Protocol Misinterpretation caused by Truncating or Overflowing Casts"}
+{"eco":null,"manifest":"src/core/sentinel_core/init/Cargo.lock","n":48,"pkg":"bytes","sev":"medium","summary":"bytes has integer overflow in BytesMut::reserve"}
+{"eco":null,"manifest":"src/core/sentinel_core/forensics/Cargo.lock","n":47,"pkg":"bytes","sev":"medium","summary":"bytes has integer overflow in BytesMut::reserve"}
+{"eco":null,"manifest":"gui/src-tauri/Cargo.lock","n":46,"pkg":"time","sev":"medium","summary":"time vulnerable to stack exhaustion Denial of Service attack"}
+{"eco":null,"manifest":"gui/src-tauri/Cargo.lock","n":45,"pkg":"bytes","sev":"medium","summary":"bytes has integer overflow in BytesMut::reserve"}
+{"eco":null,"manifest":"gui/src-tauri/Cargo.lock","n":44,"pkg":"glib","sev":"medium","summary":"Unsoundness in `Iterator` and `DoubleEndedIterator` impls for `glib::VariantStrIter`"}
+{"eco":null,"manifest":"Cargo.lock","n":43,"pkg":"lru","sev":"low","summary":"`IterMut` violates Stacked Borrows by invalidating internal pointer"}
+{"eco":null,"manifest":"sentinel-cortex/Cargo.lock","n":40,"pkg":"keccak","sev":"low","summary":"Unsoundness in opt-in ARMv8 assembly backend for `keccak`"}
+{"eco":null,"manifest":"sentinel-cortex/Cargo.lock","n":39,"pkg":"bytes","sev":"medium","summary":"bytes has integer overflow in BytesMut::reserve"}
+{"eco":null,"manifest":"sentinel-cortex/Cargo.lock","n":38,"pkg":"lru","sev":"low","summary":"`IterMut` violates Stacked Borrows by invalidating internal pointer"}
+{"eco":null,"manifest":"sentinel-cortex/Cargo.lock","n":37,"pkg":"rsa","sev":"low","summary":"rsa crate has potential panic on a prime being equal to 1"}
+{"eco":null,"manifest":"sentinel-cortex/Cargo.lock","n":36,"pkg":"pyo3","sev":"low","summary":"PyO3 Risk of buffer overflow in `PyString::from_object`"}

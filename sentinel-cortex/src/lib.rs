@@ -15,10 +15,11 @@
 //! - QuantumScheduler: Adiabatic task scheduling (future)
 //! - Portal Detection: Harmonic convergence detection (future)
 
-mod math;
-mod quantum;
+pub mod math;
+pub mod quantum;
+pub mod security;
 mod buffer_system;
-mod memory;
+pub mod memory;
 pub mod concentrator;
 
 use lazy_static::lazy_static;
@@ -218,6 +219,7 @@ pub extern "C" fn scheduler_enqueue(id: u64, task_type: u8, cost: u32, callback:
         id,
         task_type: t_type,
         cost,
+        // SAFETY: callback has the exact signature extern "C" fn() and std::mem::transmute is safe between identical function pointer types
         callback: unsafe { std::mem::transmute(callback) },
     };
 

@@ -10,10 +10,11 @@ Acts as the bridge between Sentinel and automated remediation.
 Events are queued and sent to N8N webhooks with proper authentication.
 """
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from pydantic import BaseModel, Field
 from typing import Literal, Optional, Dict, Any
 from datetime import datetime
+from app.security import get_current_admin_user
 import httpx
 import os
 import logging
@@ -126,7 +127,8 @@ async def send_to_n8n(playbook: str, event_data: Dict[str, Any]) -> bool:
 @router.post("/trigger")
 async def trigger_failsafe(
     event: FailSafeEvent,
-    background_tasks: BackgroundTasks
+    background_tasks: BackgroundTasks,
+    current_user = Depends(get_current_admin_user)
 ):
     """
     Trigger a fail-safe playbook

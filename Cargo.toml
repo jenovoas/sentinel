@@ -7,3 +7,8 @@ members = [
     "sentinel-verifier",
 ]
 resolver = "2"
+
+[workspace.lints.clippy]
+float_arithmetic = "deny"
+float_cmp = "deny"
+cast_precision_loss = "deny"

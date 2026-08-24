@@ -17,6 +17,7 @@
 #include <bpf/bpf_core_read.h>
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
+#include "cortex_events.h"
 
 #ifndef EACCES
 #define EACCES 13
@@ -41,6 +42,7 @@ struct {
  * Pre-poblado por populate_whitelist.sh y pineado en
  * /sys/fs/bpf/sentinel/whitelist_map. El loader lo ata con:
  *   bpftool prog load ... map name whitelist_map pinned <pin>
+ * TODO(audit-360-5b): replace path-string keys with SHA256-of-binary
  */
 struct {
     __uint(type, BPF_MAP_TYPE_HASH);
@@ -63,6 +65,12 @@ struct {
     __uint(type, BPF_MAP_TYPE_RINGBUF);
     __uint(max_entries, 256 * 1024);
 } events SEC(".maps");
+
+/* Ring buffer para cortex_event (auditoría god-mode) */
+struct {
+    __uint(type, BPF_MAP_TYPE_RINGBUF);
+    __uint(max_entries, 256 * 1024);
+} cortex_events SEC(".maps");
 
 struct event {
     __u32 pid;
@@ -90,6 +98,29 @@ static __always_inline void log_event(__u32 pid, __u32 uid,
     bpf_ringbuf_submit(e, 0);
 }
 
+static __always_inline void send_cortex_event(
+    __u32 event_type,
+    __u32 pid,
+    __u64 entropy_signal,
+    __u8 severity)
+{
+    struct cortex_event *e;
+
+    e = bpf_ringbuf_reserve(&cortex_events, sizeof(*e), 0);
+    if (!e)
+        return;
+
+    __builtin_memset(e, 0, sizeof(*e));
+
+    e->timestamp_ns = bpf_ktime_get_ns();
+    e->event_type = event_type;
+    e->pid = pid;
+    e->entropy_signal = entropy_signal;
+    e->severity = severity;
+
+    bpf_ringbuf_submit(e, 0);
+}
+
 SEC("lsm/bprm_check_security")
 int BPF_PROG(guardian_execve, struct linux_binprm *bprm)
 {
@@ -100,10 +131,12 @@ int BPF_PROG(guardian_execve, struct linux_binprm *bprm)
     __u8 *god;
     char path[PATH_MAX] = {};
 
-    /* 0. God mode: UIDs divinos pasan sin restricción */
+    /* 0. God mode: UIDs divinos pasan sin restricción — audit each invocation */
     god = bpf_map_lookup_elem(&god_mode_uids, &uid);
-    if (god && *god == 1)
+    if (god && *god == 1) {
+        send_cortex_event(EVENT_GODMODE_INSERT, pid, 0, SEVERITY_HIGH);
         return 0;
+    }
 
     /* 1. Passthrough para procesos no-AI */
     is_ai = bpf_map_lookup_elem(&alpha_ai_agents, &pid);

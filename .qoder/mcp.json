@@ -6,7 +6,7 @@
         "code-review-graph",
         "serve"
       ],
-      "cwd": "/home/jnovoas/Proyectos/sentinel",
+      "cwd": "/home/jnovoas/proyectos/sentinel",
       "type": "stdio"
     }
   }

@@ -9,6 +9,39 @@ Tests the password hashing and verification utilities.
 
 import pytest
 from app.security.auth import get_password_hash, verify_password
+from app.main import app
+from fastapi.testclient import TestClient
+
+client = TestClient(app)
+
+def test_unauthenticated_endpoints_return_401():
+    """Verify that all newly protected endpoints return 401 Unauthorized for anonymous requests"""
+    protected = [
+        ("POST", "/api/v1/ai/api/v1/ai/query", {"prompt": "test"}),
+        ("POST", "/api/v1/users/api/v1/users/", {"username": "test", "password": "pwd", "email": "test@test.com"}),
+        ("POST", "/api/v1/tenants/api/v1/tenants/", {"name": "test"}),
+        ("POST", "/api/v1/backup/trigger", {}),
+        ("POST", "/api/v1/failsafe/trigger", {"playbook": "Incident Response", "wait_seconds": 10, "details": {}}),
+        ("GET", "/api/v1/analytics/api/v1/analytics/metrics/recent"),
+        ("GET", "/api/v1/analytics/api/v1/analytics/metrics/range"),
+        ("GET", "/api/v1/analytics/api/v1/analytics/statistics"),
+        ("GET", "/api/v1/analytics/api/v1/analytics/anomalies"),
+        ("GET", "/api/v1/analytics/api/v1/analytics/export/metrics"),
+        ("GET", "/api/v1/analytics/api/v1/analytics/export/anomalies"),
+        ("GET", "/api/v1/analytics/api/v1/analytics/storage/summary"),
+        ("GET", "/api/v1/metrics"),
+    ]
+    for entry in protected:
+        if len(entry) == 3:
+            method, path, data = entry
+        else:
+            method, path = entry
+            data = None
+        if method == "POST":
+            response = client.post(path, json=data)
+        elif method == "GET":
+            response = client.get(path)
+        assert response.status_code == 401, f"{method} {path} should require authentication, got {response.status_code}"
 
 def test_password_hashing():
     """Verify that password hashing works and is non-reversible"""
