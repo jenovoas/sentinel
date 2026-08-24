@@ -21,6 +21,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libelf-dev pkg-config libbpf-dev build-essential
 
+      - name: Set up Python for PyO3
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Cache cargo registry
         uses: actions/cache@v4
         with:
