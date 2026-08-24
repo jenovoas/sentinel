@@ -180,7 +180,10 @@ async fn main() {
                     let mut lat = lattice_task.lock().unwrap();
                     let pressure = event.entropy_s60_raw as i64;
                     let node = (event.pid as usize) % 64;
-                    lat.inject(node, pressure);
+                    // FIX (auditoría 2026-08-23, P0.4-A1): pressure es S60 RAW del
+                    // kernel (cortex_events.h:117); inject() lo re-escalaria por
+                    // SCALE_0 (doble escala). inject_spa preserva la escala SPA.
+                    lat.inject_spa(node, me60os_core::spa::SPA::from_raw(pressure));
                     lat.step();
 
                     // Connect EXP-009 LiquidLattice 3x3 grid diffusion
