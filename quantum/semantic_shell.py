@@ -20,6 +20,7 @@ o enseñe conceptos (Modo Maestro).
 
 import sys
 import os
+import subprocess
 import asyncio
 import time
 
@@ -41,7 +42,7 @@ class SemanticShell:
         self.running = True
         
     def clear(self):
-        os.system('clear')
+        subprocess.run(['clear'], check=False)
         
     def print_banner(self):
         print("\033[1;35m" + "="*60)
@@ -64,9 +65,8 @@ class SemanticShell:
         if category == "QUERY_ORACLE":
             print("\n🔮 Invocando al Oráculo (Modo Maestro)...")
             time.sleep(0.5)
-            # Pass the query wrapper in quotes to handle spaces safely
-            cmd = f'python3 quantum/quantum_oracle_cli.py "{user_input}"'
-            os.system(cmd)
+            # Pass arguments as a list to subprocess.run to prevent command injection
+            subprocess.run([sys.executable, "quantum/quantum_oracle_cli.py", user_input], check=False)
             
         elif category == "SYSTEM_ACTION":
             print("\n⚙️ Ejecutando Acción de Sistema...")
@@ -89,13 +89,13 @@ class SemanticShell:
         # Heuristic mapping for v2.0 (To be enhanced with dedicated tool calling)
         u = user_input.lower()
         if "dashboard" in u or "monitor" in u:
-            os.system("python3 quantum/sentinel_dashboard.py")
+            subprocess.run([sys.executable, "quantum/sentinel_dashboard.py"], check=False)
         elif "scan" in u or "resonan" in u:
-            os.system("python3 quantum/quantum_scanner.py quantum/RESONANT_ARCH_SPECS.md")
+            subprocess.run([sys.executable, "quantum/quantum_scanner.py", "quantum/RESONANT_ARCH_SPECS.md"], check=False)
         elif "lattice" in u or "red" in u:
-            os.system("python3 quantum/quantum_lattice.py")
+            subprocess.run([sys.executable, "quantum/quantum_lattice.py"], check=False)
         elif "audit" in u or "truth" in u:
-            os.system("python3 quantum/TRUTHSYNC_FULL_SYSTEM_AUDIT.py")
+            subprocess.run([sys.executable, "quantum/TRUTHSYNC_FULL_SYSTEM_AUDIT.py"], check=False)
         else:
             print("⚠️ Acción reconocida pero sin enlace directo en el Shell v2.0.")
             print("   Por favor usa el menú numérico del CLI para esta función específica.")
