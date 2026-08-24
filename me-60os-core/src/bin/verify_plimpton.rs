@@ -78,7 +78,14 @@ fn main() {
         let ratio_disp = ratio_sq.to_raw() as f64 / SPA::SCALE_0 as f64;
         println!(
             "Row {:2}: a={:9.4}  (c/a)^2 = {:9.6}  ->  Base60: [{}; {}, {}, {}, {}]",
-            i + 1, a_disp, ratio_disp, d[0], d[1], d[2], d[3], d[4]
+            i + 1,
+            a_disp,
+            ratio_disp,
+            d[0],
+            d[1],
+            d[2],
+            d[3],
+            d[4]
         );
     }
 

@@ -42,7 +42,7 @@ impl OptomechanicalCooler {
     pub fn py_new() -> Self {
         Self::new_internal()
     }
-    
+
     #[getter]
     pub fn n_th_env(&self) -> pyo3::PyResult<SPA> {
         Ok(self.n_th_env)
@@ -60,9 +60,9 @@ impl OptomechanicalCooler {
 impl OptomechanicalCooler {
     pub fn new_internal() -> Self {
         Self {
-            omega_m: SPA::new(1, 0, 0, 0, 0),        // 1 Natural unit (10 MHz físicos)
-            gamma_m: SPA::new(0, 0, 0, 13, 0),       // ~ 1e-4
-            kappa: SPA::new(0, 3, 0, 0, 0),          // 0.05 (kappa/omega_m = 0.05, sideband-resolved)
+            omega_m: SPA::new(1, 0, 0, 0, 0),  // 1 Natural unit (10 MHz físicos)
+            gamma_m: SPA::new(0, 0, 0, 13, 0), // ~ 1e-4
+            kappa: SPA::new(0, 3, 0, 0, 0),    // 0.05 (kappa/omega_m = 0.05, sideband-resolved)
             // n_th = k_B * T / (hbar * omega_m) para T=300K, omega_m=10MHz
             // = 3,927,610 fonones (calibrado contra paper Filho 2026: 5.5e6 a ~7 MHz)
             n_th_env: SPA::new(3_927_610, 0, 0, 0, 0), // n_th físico real a 300K
@@ -80,11 +80,11 @@ impl OptomechanicalCooler {
     /// Emits states to a list instead of direct print for bindings compatibility.
     pub fn run_cooling_sequence_internal(&self, steps: usize) -> Vec<(SPA, SPA, SPA)> {
         let mut results = Vec::with_capacity(steps);
-        
+
         let g_max = SPA::new(1, 12, 0, 0, 0); // 1.2
-        let step = SPA::new(0, 0, 36, 0, 0);   // Paso fino
+        let step = SPA::new(0, 0, 36, 0, 0); // Paso fino
         let mut current_g = SPA::zero();
-        
+
         let n_min_limit = self.quantum_limit_internal();
         let spa_one = SPA::new(1, 0, 0, 0, 0);
         let spa_four = SPA::new(4, 0, 0, 0, 0);
@@ -93,25 +93,25 @@ impl OptomechanicalCooler {
         while current_g <= g_max {
             let g_sq = current_g * current_g;
             let num = spa_four * g_sq;
-            
+
             let mut c = SPA::zero();
             if kappa_gamma > SPA::zero() {
                 c = num / kappa_gamma;
             }
-            
+
             let denom_cool = spa_one + c;
             let mut n_final = self.n_th_env / denom_cool;
-            
+
             // Thermal backaction (Quantum basic noise limit)
             n_final = n_final + n_min_limit;
-            
+
             // Only collect sample every 10 ticks for the wrapper log
             let curr_val = current_g.to_raw();
             let step_val = step.to_raw();
             if step_val > 0 && curr_val >= 0 {
                 let divisor = curr_val / step_val;
                 if divisor % 10 == 0 {
-                   results.push((current_g, c, n_final));
+                    results.push((current_g, c, n_final));
                 }
             }
 
@@ -141,10 +141,10 @@ pub struct MembraneParameters {
 impl Default for MembraneParameters {
     fn default() -> Self {
         Self {
-            mass: SPA::new(1000, 0, 0, 0, 0),        // 1e-15 kg
-            frequency: SPA::new(1_000_000, 0, 0, 0, 0), // 1 MHz
+            mass: SPA::new(1000, 0, 0, 0, 0),                  // 1e-15 kg
+            frequency: SPA::new(1_000_000, 0, 0, 0, 0),        // 1 MHz
             quality_factor: SPA::new(100_000_000, 0, 0, 0, 0), // 10^8
-            temperature: SPA::new(300, 0, 0, 0, 0),   // 300 K
+            temperature: SPA::new(300, 0, 0, 0, 0),            // 300 K
         }
     }
 }
@@ -331,9 +331,18 @@ pub struct QuantumRiftDetector {
 impl QuantumRiftDetector {
     pub fn new(n_nodes: usize, threshold: SPA) -> Self {
         let systems = (0..n_nodes)
-            .map(|_| OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default()))
+            .map(|_| {
+                OptomechanicalSystem::new(
+                    MembraneParameters::default(),
+                    OpticalParameters::default(),
+                )
+            })
             .collect();
-        Self { n_nodes, systems, threshold }
+        Self {
+            n_nodes,
+            systems,
+            threshold,
+        }
     }
 
     /// Correlación de fase media entre nodos i,j: promedio de cos(phi_i - phi_j).
@@ -347,8 +356,8 @@ impl QuantumRiftDetector {
                     continue;
                 }
                 let mut total = SPA::zero();
-                for k in 0..steps {
-                    let dphi = states_list[i][k][0] - states_list[j][k][0];
+                for (s_i, s_j) in states_list[i].iter().zip(states_list[j].iter()).take(steps) {
+                    let dphi = s_i[0] - s_j[0];
                     total = total + SPAMath::cos(dphi);
                 }
                 let avg = total / SPA::from_int(steps as i64);
@@ -365,12 +374,11 @@ impl QuantumRiftDetector {
         let mut detected = false;
         for i in 0..self.n_nodes {
             for j in (i + 1)..self.n_nodes {
-                if i < matrix.len() && j < matrix.len()
-                    && matrix[i][j] > self.threshold {
-                        detected = true;
-                        rift_nodes.insert(i);
-                        rift_nodes.insert(j);
-                    }
+                if i < matrix.len() && j < matrix.len() && matrix[i][j] > self.threshold {
+                    detected = true;
+                    rift_nodes.insert(i);
+                    rift_nodes.insert(j);
+                }
             }
         }
         let mut nodes: Vec<usize> = rift_nodes.into_iter().collect();
@@ -385,7 +393,8 @@ mod opto_tests {
 
     #[test]
     fn test_coupling_positive() {
-        let sys = OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default());
+        let sys =
+            OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default());
         assert!(sys.g0.to_raw() > 0, "g0 debe ser > 0 (acoplamiento real)");
     }
 
@@ -397,7 +406,8 @@ mod opto_tests {
         // la estructura [x, p, n_ph] conservando n_ph.
         // NOTA: no es un integrador simpléctico exacto, por lo que la energía
         // no se conserva estrictamente (igual que el original Python).
-        let mut sys = OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default());
+        let mut sys =
+            OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default());
         sys.state[0] = SPA::new(1000, 0, 0, 0, 0);
         let n_ph0 = sys.state[2];
         let states = sys.evolve(600, false);
@@ -406,7 +416,10 @@ mod opto_tests {
         // p en unidades de momentum escala con m_omega; bajo rotación de fase
         // fija de 6° el esquema amplifica (es aproximación, no simpléctico
         // exacto). Lo que verificamos es que NO hace overflow/panic en 600 pasos.
-        assert!(last[0].to_raw().abs() <= 12_960_000_000_000_000, "x en rango S60");
+        assert!(
+            last[0].to_raw().abs() <= 12_960_000_000_000_000,
+            "x en rango S60"
+        );
         // n_ph se conserva (no se toca en evolve).
         assert_eq!(last[2], n_ph0);
     }
@@ -426,19 +439,24 @@ mod opto_tests {
     #[test]
     fn test_visibility_max_coherent() {
         // Estado totalmente correlacionado: P_corr=1, P_anti=0 → V=1
-        let sys = OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default());
+        let sys =
+            OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default());
         let mut rho = [[SPA::zero(); 4]; 4];
         rho[0][0] = SPA::new(1, 0, 0, 0, 0);
         rho[3][3] = SPA::new(0, 0, 0, 0, 0);
         let v = sys.calculate_visibility(&rho);
-        assert_eq!(v.to_raw(), SPA::new(1, 0, 0, 0, 0).to_raw(),
-            "V debe ser 1 (correlacion total)");
+        assert_eq!(
+            v.to_raw(),
+            SPA::new(1, 0, 0, 0, 0).to_raw(),
+            "V debe ser 1 (correlacion total)"
+        );
     }
 
     #[test]
     fn test_visibility_anticorrelated() {
         // Estado anti-correlacionado: P_corr=0, P_anti=1 → V=-1
-        let sys = OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default());
+        let sys =
+            OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default());
         let mut rho = [[SPA::zero(); 4]; 4];
         rho[1][1] = SPA::new(1, 0, 0, 0, 0);
         rho[2][2] = SPA::new(0, 0, 0, 0, 0);
@@ -449,7 +467,8 @@ mod opto_tests {
     #[test]
     fn test_visibility_zero_total() {
         // Matriz vacía → V = 0
-        let sys = OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default());
+        let sys =
+            OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default());
         let rho = [[SPA::zero(); 4]; 4];
         let v = sys.calculate_visibility(&rho);
         assert_eq!(v.to_raw(), 0, "V debe ser 0 sin informacion");
@@ -458,7 +477,8 @@ mod opto_tests {
     #[test]
     fn test_visibility_linearity_intermediate() {
         // V ≈ 0.5: P_corr = 3, P_anti = 1 → V = (3-1)/(3+1) = 0.5
-        let sys = OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default());
+        let sys =
+            OptomechanicalSystem::new(MembraneParameters::default(), OpticalParameters::default());
         let mut rho = [[SPA::zero(); 4]; 4];
         // P_corr = P_00 + P_33 = 3
         rho[0][0] = SPA::new(2, 0, 0, 0, 0);
@@ -468,7 +488,10 @@ mod opto_tests {
         let v = sys.calculate_visibility(&rho);
         // V = (3-1)/4 = 0.5 → raw = SCALE_0/2 = 6_480_000
         let expected_half = SPA::new(0, 30, 0, 0, 0); // 30/60 = 0.5 in S60
-        assert_eq!(v.to_raw(), expected_half.to_raw(),
-            "V debe ser ~0.5 (linealidad intermedia)");
+        assert_eq!(
+            v.to_raw(),
+            expected_half.to_raw(),
+            "V debe ser ~0.5 (linealidad intermedia)"
+        );
     }
 }

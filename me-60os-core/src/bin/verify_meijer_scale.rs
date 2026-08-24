@@ -187,7 +187,11 @@ mod tests {
         let two = SPA::from_int(2);
         let tol = SPA::new(0, 6, 0, 0, 0); // 0.1
         let diff = (r - two).to_raw().abs();
-        assert!(diff < tol.to_raw(), "log60(3600) ≈ 2, got raw {}", r.to_raw());
+        assert!(
+            diff < tol.to_raw(),
+            "log60(3600) ≈ 2, got raw {}",
+            r.to_raw()
+        );
     }
 
     #[test]

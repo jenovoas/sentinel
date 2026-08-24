@@ -45,7 +45,6 @@ const EVENT_FLOAT_CONTAMINATION: u32 = 10;
 #[allow(dead_code)]
 const EVENT_MATH_DIVERSION: u32 = 19;
 
-
 // Severity levels
 #[allow(dead_code)]
 const SEVERITY_LOW: u8 = 0;
@@ -221,7 +220,10 @@ impl EbpfCortexBridge {
             // Log event
             eprintln!(
                 "📡 eBPF Event: type={} pid={} entropy={} severity={}",
-                event_type, pid, SPA::from_raw(entropy_signal as i64), severity
+                event_type,
+                pid,
+                SPA::from_raw(entropy_signal as i64),
+                severity
             );
 
             0 // Return 0 to continue polling
@@ -381,7 +383,10 @@ impl EbpfCortexBridge {
         // Log for debugging
         eprintln!(
             "📡 eBPF Event: type={} pid={} entropy={} severity={}",
-            event_type, pid, SPA::from_raw(entropy_signal as i64), severity
+            event_type,
+            pid,
+            SPA::from_raw(entropy_signal as i64),
+            severity
         );
     }
 

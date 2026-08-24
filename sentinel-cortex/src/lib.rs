@@ -2,7 +2,11 @@
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 // src/lib.rs
-#![allow(clippy::cast_possible_truncation, clippy::cast_precision_loss, clippy::float_arithmetic)]
+#![allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    clippy::float_arithmetic
+)]
 #![deny(clippy::float_cmp)]
 //! SENTINEL CORTEX - FFI Library Interface
 //!
@@ -13,12 +17,12 @@
 //! - QuantumScheduler: Adiabatic task scheduling (future)
 //! - Portal Detection: Harmonic convergence detection (future)
 
+mod buffer_system;
+pub mod concentrator;
 pub mod math;
+pub mod memory;
 pub mod quantum;
 pub mod security;
-mod buffer_system;
-pub mod memory;
-pub mod concentrator;
 
 use lazy_static::lazy_static;
 use quantum::BioResonator;
@@ -217,8 +221,7 @@ pub extern "C" fn scheduler_enqueue(id: u64, task_type: u8, cost: u32, callback:
         id,
         task_type: t_type,
         cost,
-        // SAFETY: callback has the exact signature extern "C" fn() and std::mem::transmute is safe between identical function pointer types
-        callback: unsafe { std::mem::transmute(callback) },
+        callback,
     };
 
     sched.enqueue(task);

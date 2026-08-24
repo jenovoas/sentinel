@@ -5,10 +5,10 @@
 // Prometheus metrics collector; pending routing to the main event loop.
 #![allow(dead_code)]
 
-use reqwest::Client;
+use crate::math::s60::S60;
 use crate::models::{Event, EventSource, EventType, Severity};
 use chrono::Utc;
-use crate::math::s60::S60;
+use reqwest::Client;
 
 pub struct PrometheusCollector {
     client: Client,
@@ -22,15 +22,15 @@ impl PrometheusCollector {
             base_url,
         }
     }
-    
+
     /// Consulta Prometheus y devuelve eventos usando matemáticas S60 puras
     pub async fn collect(&self) -> Result<Vec<Event>, Box<dyn std::error::Error>> {
         let mut events = Vec::new();
-        
+
         // Umbrales en S60 (Base-60, SCALE_0 = 60^4 = 12_960_000)
         // 0.8 = 4/5 → 12_960_000 * 4 / 5 = 10_368_000
-        let cpu_threshold = S60::from_raw(10_368_000); 
-        
+        let cpu_threshold = S60::from_raw(10_368_000);
+
         // 0.1 = 1/10 → 12_960_000 / 10 = 1_296_000
         let mem_threshold = S60::from_raw(1_296_000);
 
@@ -51,7 +51,7 @@ impl PrometheusCollector {
                 });
             }
         }
-        
+
         // Query 2: Memoria disponible
         let mem_query = "node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes";
         if let Ok(value) = self.query_scalar_s60(mem_query).await {
@@ -69,20 +69,20 @@ impl PrometheusCollector {
                 });
             }
         }
-        
+
         Ok(events)
     }
-    
+
     async fn query_scalar_s60(&self, query: &str) -> Result<S60, Box<dyn std::error::Error>> {
         let url = format!("{}/api/v1/query?query={}", self.base_url, query);
         let response = self.client.get(&url).send().await?;
         let json: serde_json::Value = response.json().await?;
-        
+
         // Extraer primer valor del resultado
         let value_str = json["data"]["result"][0]["value"][1]
             .as_str()
             .ok_or("No value found")?;
-        
+
         parse_prometheus_value_to_s60(value_str)
     }
 }
@@ -90,7 +90,11 @@ impl PrometheusCollector {
 /// Parsea un string numérico de Prometheus a S60 sin usar tipos de coma flotante.
 /// Soporta notación científica y números decimales.
 fn parse_prometheus_value_to_s60(s: &str) -> Result<S60, Box<dyn std::error::Error>> {
-    if s.eq_ignore_ascii_case("nan") || s.eq_ignore_ascii_case("+inf") || s.eq_ignore_ascii_case("-inf") || s.eq_ignore_ascii_case("inf") {
+    if s.eq_ignore_ascii_case("nan")
+        || s.eq_ignore_ascii_case("+inf")
+        || s.eq_ignore_ascii_case("-inf")
+        || s.eq_ignore_ascii_case("inf")
+    {
         return Err("Cannot parse NaN or Inf to S60".into());
     }
 
@@ -105,14 +109,14 @@ fn parse_prometheus_value_to_s60(s: &str) -> Result<S60, Box<dyn std::error::Err
     let parts: Vec<&str> = mantissa_str.split('.').collect();
     let int_part_str = parts[0];
     let is_negative = int_part_str.starts_with('-');
-    
+
     let mut digits = String::new();
     if is_negative {
         digits.push_str(&int_part_str[1..]);
     } else {
         digits.push_str(int_part_str);
     }
-    
+
     let frac_len = if parts.len() > 1 {
         digits.push_str(parts[1]);
         parts[1].len() as i32
@@ -126,9 +130,9 @@ fn parse_prometheus_value_to_s60(s: &str) -> Result<S60, Box<dyn std::error::Err
 
     let parsed_digits = digits.parse::<i128>()?;
     let mut total_exp = exp_val - frac_len;
-    
+
     let mut tertia = parsed_digits * (S60::SCALE_0 as i128);
-    
+
     while total_exp > 0 {
         tertia *= 10;
         total_exp -= 1;
@@ -137,10 +141,10 @@ fn parse_prometheus_value_to_s60(s: &str) -> Result<S60, Box<dyn std::error::Err
         tertia /= 10;
         total_exp += 1;
     }
-    
+
     if is_negative {
         tertia = -tertia;
     }
-    
+
     Ok(S60::from_raw(tertia as i64))
 }

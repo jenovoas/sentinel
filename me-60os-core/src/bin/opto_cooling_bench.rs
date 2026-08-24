@@ -25,7 +25,8 @@ fn main() {
     println!("# gamma_m (raw) = {}", cooler.gamma_m.to_raw());
     println!("# kappa (raw) = {}", cooler.kappa.to_raw());
     println!("#");
-    println!("# Regimen: {}",
+    println!(
+        "# Regimen: {}",
         if cooler.kappa.to_raw() < cooler.omega_m.to_raw() {
             "RESUELTO (kappa < omega_m) — enfriamiento eficiente al estado fundamental"
         } else {
@@ -37,10 +38,14 @@ fn main() {
 
     let seq = cooler.run_cooling_sequence_internal(2000);
 
-    let mut step = 0u32;
-    for (g, c, n_final) in &seq {
-        println!("{},{},{},{}", step, g.to_raw(), c.to_raw(), n_final.to_raw());
-        step += 1;
+    for (step, (g, c, n_final)) in seq.iter().enumerate() {
+        println!(
+            "{},{},{},{}",
+            step,
+            g.to_raw(),
+            c.to_raw(),
+            n_final.to_raw()
+        );
     }
 
     // Resumen final

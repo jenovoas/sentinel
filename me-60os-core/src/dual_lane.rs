@@ -142,8 +142,16 @@ impl DualLaneRouter {
     pub fn new() -> Self {
         Self {
             security_sources: vec![
-                "auditd", "ebpf", "shield", "dual_guardian", "kernel", "syscall",
-                "biometric", "soul_verifier", "rppg", "authentication",
+                "auditd",
+                "ebpf",
+                "shield",
+                "dual_guardian",
+                "kernel",
+                "syscall",
+                "biometric",
+                "soul_verifier",
+                "rppg",
+                "authentication",
             ],
             security_events: 0,
             observability_events: 0,
@@ -164,8 +172,13 @@ impl DualLaneRouter {
         let (lane, priority) = if self.security_sources.contains(&source) {
             self.security_events += 1;
             (DataLane::Security, EventPriority::Critical)
-        } else if labels.keys().any(|k| k == "threat" || k == "attack" || k == "malicious")
-            || contains_any(data.to_lowercase().as_str(), &["malicious", "blocked", "threat", "attack"])
+        } else if labels
+            .keys()
+            .any(|k| k == "threat" || k == "attack" || k == "malicious")
+            || contains_any(
+                data.to_lowercase().as_str(),
+                &["malicious", "blocked", "threat", "attack"],
+            )
         {
             self.security_events += 1;
             (DataLane::Security, EventPriority::High)
@@ -195,7 +208,11 @@ impl DualLaneRouter {
     }
 
     pub fn stats(&self) -> (u64, u64, u64) {
-        (self.security_events, self.observability_events, self.misrouted_events)
+        (
+            self.security_events,
+            self.observability_events,
+            self.misrouted_events,
+        )
     }
 }
 
@@ -237,8 +254,7 @@ impl SecurityLaneCollector {
                 f.write_all(entry.as_bytes())?;
                 f.sync_all()?; // fsync: durabilidad forense
                 Ok(())
-            })
-        {
+            }) {
             Ok(()) => {
                 let latency_ms = ((now_micros() - start) as u64).max(1) / 1000;
                 self.latency_ms_total += latency_ms;
@@ -273,11 +289,9 @@ impl SecurityLaneCollector {
     }
 
     pub fn avg_latency_ms(&self) -> u64 {
-        if self.latency_samples == 0 {
-            0
-        } else {
-            self.latency_ms_total / self.latency_samples
-        }
+        self.latency_ms_total
+            .checked_div(self.latency_samples)
+            .unwrap_or(0)
     }
 }
 
@@ -395,11 +409,10 @@ impl ObservabilityLaneCollector {
         }
         let batch_size = self.buffer.len() as u64;
         self.events_flushed += batch_size;
-        if self.events_flushed > 0 {
-            self.avg_batch_size = (self.avg_batch_size
-                * (self.events_flushed - batch_size)
-                + batch_size)
-                / self.events_flushed;
+        if let Some(avg) = (self.avg_batch_size * (self.events_flushed - batch_size) + batch_size)
+            .checked_div(self.events_flushed)
+        {
+            self.avg_batch_size = avg;
         }
         self.buffer.clear();
         self.buffer_bytes = 0;
@@ -408,7 +421,11 @@ impl ObservabilityLaneCollector {
 
     /// Drop evento de menor prioridad (LOW → MEDIUM → HIGH; nunca CRITICAL).
     fn drop_lowest_priority(&mut self) -> Option<LaneEvent> {
-        for prio in [EventPriority::Low, EventPriority::Medium, EventPriority::High] {
+        for prio in [
+            EventPriority::Low,
+            EventPriority::Medium,
+            EventPriority::High,
+        ] {
             if let Some(pos) = self.buffer.iter().position(|e| e.priority == prio) {
                 let dropped = self.buffer.remove(pos);
                 self.buffer_bytes -= dropped.to_json().len();
@@ -550,7 +567,7 @@ mod tests {
         let wal = dir.join(format!("sentinel_test_bp_{}.log", std::process::id()));
         let mut col = ObservabilityLaneCollector::new(wal.clone());
         col.max_buffer_bytes = 20; // evento individual (~35 bytes) supera el buffer
-        // Llenar con eventos MEDIUM (cada uno > max_buffer_bytes)
+                                   // Llenar con eventos MEDIUM (cada uno > max_buffer_bytes)
         for i in 0..5 {
             col.emit_buffered(LaneEvent {
                 lane: DataLane::Observability,

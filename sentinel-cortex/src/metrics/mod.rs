@@ -14,10 +14,10 @@ pub trait MetricsRepository: Send + Sync {
     /// Get current bio-quantum coherence
     #[allow(dead_code)]
     fn get_bio_coherence(&self) -> S60;
-    
+
     /// Get task scheduler efficiency
     fn get_scheduler_efficiency(&self) -> S60;
-    
+
     /// Record a generic S60 metric
     #[allow(dead_code)]
     fn record_metric(&self, name: &str, value: S60);

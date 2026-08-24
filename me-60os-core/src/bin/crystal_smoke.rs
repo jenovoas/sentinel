@@ -5,7 +5,10 @@ use std::time::Instant;
 
 fn main() {
     let mut clock = IsochronousClock::new_internal();
-    println!("💎 CRYSTAL SMOKE (Rust): intervalo {} ns (~41 Hz)", clock.tick_interval_ns);
+    println!(
+        "💎 CRYSTAL SMOKE (Rust): intervalo {} ns (~41 Hz)",
+        clock.tick_interval_ns
+    );
 
     let n = 60u64;
     let t0 = Instant::now();

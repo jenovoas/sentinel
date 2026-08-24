@@ -1,6 +1,6 @@
 // AUDIT-360 Phase 7: Tests for portal_detector.rs
-use sentinel_cortex::quantum::portal_detector::PortalDetector;
 use sentinel_cortex::math::s60::S60;
+use sentinel_cortex::quantum::portal_detector::PortalDetector;
 
 #[test]
 fn test_portal_detector_creation() {

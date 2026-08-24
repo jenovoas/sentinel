@@ -8,17 +8,20 @@ mod ebpf_cortex_bridge;
 mod engine;
 mod math;
 mod memory;
+mod metrics;
 mod models;
 mod quantum;
 mod security;
-mod metrics;
 
-use axum::{routing::{get, post}, Json, Router};
-use axum::extract::ws::{WebSocketUpgrade, WebSocket, Message};
+use axum::extract::ws::{Message, WebSocket, WebSocketUpgrade};
+use axum::{
+    routing::{get, post},
+    Json, Router,
+};
+use ebpf_cortex_bridge::{CortexEvent, EbpfBridge};
 use math::harmonic_logic::{HarmonicProcessor, HarmonicState};
+use metrics::{MetricsRepository, MetricsSnapshot, PrometheusRepository};
 use security::bio_resonance::ResonanceEngine;
-use metrics::{MetricsRepository, PrometheusRepository, MetricsSnapshot};
-use ebpf_cortex_bridge::{EbpfBridge, CortexEvent};
 use serde::Serialize;
 use std::sync::{Arc, Mutex};
 use std::{net::SocketAddr, time::Duration};
@@ -68,9 +71,13 @@ async fn main() {
     let available_ram_mb: usize = std::fs::read_to_string("/proc/meminfo")
         .ok()
         .and_then(|s| {
-            s.lines().find(|l| l.starts_with("MemAvailable:")).and_then(|l| {
-                l.split_whitespace().nth(1).and_then(|v| v.parse::<usize>().ok().map(|k| k / 1024))
-            })
+            s.lines()
+                .find(|l| l.starts_with("MemAvailable:"))
+                .and_then(|l| {
+                    l.split_whitespace()
+                        .nth(1)
+                        .and_then(|v| v.parse::<usize>().ok().map(|k| k / 1024))
+                })
         })
         .unwrap_or(1024);
 
@@ -84,7 +91,7 @@ async fn main() {
     tracing::info!("💎 Dynamic RAM Lattice Allocator: Allocated {} nodes across {} rings (Available RAM: {} MB)", calculated_nodes, rings, available_ram_mb);
 
     let lattice = Arc::new(Mutex::new(
-        memory::resonant_lattice_bridge::ResonantLatticeBridge::new(calculated_nodes)
+        memory::resonant_lattice_bridge::ResonantLatticeBridge::new(calculated_nodes),
     ));
     // Broadcast channel para Múltiples Inversores (WebSockets) viendo el eBPF
     let (tx_bpf, _) = broadcast::channel(100);
@@ -153,8 +160,7 @@ async fn main() {
         // Sin LLM local (laptop no da): el cortex corre como motor determinista de eventos+lattice.
         let monitor_path = std::env::var("EBPF_MONITOR_PATH")
             .unwrap_or_else(|_| "/sys/fs/bpf/sentinel/events".to_string());
-        let bridge = EbpfBridge::new()
-            .with_ringbuf_path(monitor_path);
+        let bridge = EbpfBridge::new().with_ringbuf_path(monitor_path);
 
         tokio::spawn(async move {
             if let Err(e) = bridge.run_monitor(tx_ring).await {
@@ -174,40 +180,35 @@ async fn main() {
     let mut rx_lattice = tx_bpf.subscribe();
     tokio::spawn(async move {
         tracing::info!("💎 Lattice Processor active: Ring-0 Ingestion + LiquidLattice 3x3 Diffusivity (EXP-009)");
-        loop {
-            match rx_lattice.recv().await {
-                Ok(event) => {
-                    let mut lat = lattice_task.lock().unwrap();
-                    let pressure = event.entropy_s60_raw as i64;
-                    let node = (event.pid as usize) % 64;
-                    // FIX (auditoría 2026-08-23, P0.4-A1): pressure es S60 RAW del
-                    // kernel (cortex_events.h:117); inject() lo re-escalaria por
-                    // SCALE_0 (doble escala). inject_spa preserva la escala SPA.
-                    lat.inject_spa(node, me60os_core::spa::SPA::from_raw(pressure));
-                    lat.step();
+        while let Ok(event) = rx_lattice.recv().await {
+            let mut lat = lattice_task.lock().unwrap();
+            let pressure = event.entropy_s60_raw as i64;
+            let node = (event.pid as usize) % 64;
+            // FIX (auditoría 2026-08-23, P0.4-A1): pressure es S60 RAW del
+            // kernel (cortex_events.h:117); inject() lo re-escalaria por
+            // SCALE_0 (doble escala). inject_spa preserva la escala SPA.
+            lat.inject_spa(node, me60os_core::spa::SPA::from_raw(pressure));
+            lat.step();
 
-                    // Connect EXP-009 LiquidLattice 3x3 grid diffusion
-                    let mut ll = liquid_lattice_task.lock().unwrap();
-                    let row = (event.pid as usize) % 3;
-                    let col = ((event.pid as usize) / 3) % 3;
-                    ll.inject_entropy(row, col, pressure);
-                    ll.diffuse();
+            // Connect EXP-009 LiquidLattice 3x3 grid diffusion
+            let mut ll = liquid_lattice_task.lock().unwrap();
+            let row = (event.pid as usize) % 3;
+            let col = ((event.pid as usize) / 3) % 3;
+            ll.inject_entropy(row, col, pressure);
+            ll.diffuse();
 
-                    // Ingest eBPF event into PAI-Neural LIF Spiking Neural Network
-                    let mut nm = neural_memory_task.lock().unwrap();
-                    let entropy_spa = me60os_core::spa::SPA::from_raw(pressure);
-                    let event_type_code: u32 = event.event_type.parse().unwrap_or(1);
-                    let me60os_ev = me60os_core::ebpf_cortex_bridge::CortexEvent::new(
-                        event.timestamp_ns,
-                        event_type_code,
-                        event.pid,
-                        event.entropy_s60_raw,
-                        event.severity,
-                    );
-                    nm.ingest_event(me60os_ev, entropy_spa);
-                }
-                Err(_) => break,
-            }
+            // Ingest eBPF event into PAI-Neural LIF Spiking Neural Network
+            let mut nm = neural_memory_task.lock().unwrap();
+            let entropy_spa = me60os_core::spa::SPA::from_raw(pressure);
+            let event_type_code: u32 = event.event_type.parse().unwrap_or(1);
+            let me60os_ev = me60os_core::ebpf_cortex_bridge::CortexEvent::new(
+                event.timestamp_ns,
+                event_type_code,
+                event.pid,
+                event.entropy_s60_raw,
+                event.severity,
+            );
+            nm.ingest_event(me60os_ev, entropy_spa);
         }
     });
 
@@ -251,7 +252,12 @@ async fn main() {
             // Latencia en milésimas de ms (entero, YATRA-LOCKED: sin float)
             let elapsed_msx1000 = latency_start.elapsed().as_micros() as i64 / 1_000;
             let batch_size = gpu_ctrl.adjust_batch_size(elapsed_msx1000);
-            tracing::trace!("⚖️ MAAT: status={}, speed={:?}, gpu_batch={}", status, current_speed, batch_size);
+            tracing::trace!(
+                "⚖️ MAAT: status={}, speed={:?}, gpu_batch={}",
+                status,
+                current_speed,
+                batch_size
+            );
 
             // AUDIT-360: scope mutex to critical section (inject + step), release before oscillate writes
             {
@@ -260,7 +266,9 @@ async fn main() {
                 // Inject multi-point harmonic thermal pulses across central hexagonal rings (Node 0, ring centers)
                 // PRUEBA PAI-60: si SENTINEL_PAI_CONVERT=1, la amplitud se deriva via pai60_divide
                 // (razon recíproca exacta base-60) en vez de meter i64 crudo como presion.
-                let pai_convert = std::env::var("SENTINEL_PAI_CONVERT").map(|v| v == "1").unwrap_or(false);
+                let pai_convert = std::env::var("SENTINEL_PAI_CONVERT")
+                    .map(|v| v == "1")
+                    .unwrap_or(false);
                 if pai_convert {
                     // denominador 60 = escala base-60 (S60). value en [0,60).
                     let v = entropy_pressure.rem_euclid(60);
@@ -286,8 +294,14 @@ async fn main() {
             // Calculate Resonant Physics Inertial Damping & Effective Load Reduction (outside lock)
             let static_load = me60os_core::spa::SPA::from_raw(entropy_pressure);
             let priority = me60os_core::spa::SPA::new(1, 0, 0, 0, 0); // 1.0 Priority Unit
-            let stability = me60os_core::spa::SPA::from_raw((entropy_pressure % 60 + 1) * (me60os_core::spa::SPA::SCALE_0 / 60));
-            let effective_load = me60os_core::physics::ResonantPhysics::calculate_effective_load(static_load, priority, stability);
+            let stability = me60os_core::spa::SPA::from_raw(
+                (entropy_pressure % 60 + 1) * (me60os_core::spa::SPA::SCALE_0 / 60),
+            );
+            let effective_load = me60os_core::physics::ResonantPhysics::calculate_effective_load(
+                static_load,
+                priority,
+                stability,
+            );
 
             // Inject entropy & diffuse in EXP-009 LiquidLattice 3x3 grid continuously using effective load
             {
@@ -306,7 +320,10 @@ async fn main() {
                     entropy_pressure as u64,
                     0,
                 );
-                nm.ingest_event(thermal_ev, me60os_core::spa::SPA::from_raw(entropy_pressure));
+                nm.ingest_event(
+                    thermal_ev,
+                    me60os_core::spa::SPA::from_raw(entropy_pressure),
+                );
             }
         }
     });
@@ -314,17 +331,20 @@ async fn main() {
     // 4. Start Redis Pulse Subscriber (Remote Bio-Sync)
     let redis_resonance = resonance.clone();
     tokio::spawn(async move {
-        let redis_url = std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://127.0.0.1:6379".to_string());
+        let redis_url =
+            std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://127.0.0.1:6379".to_string());
         match redis::Client::open(redis_url) {
             Ok(client) => {
                 match client.get_async_pubsub().await {
                     Ok(mut pubsub) => {
                         let _ = pubsub.subscribe("sentinel:bio_pulse").await;
-                        tracing::info!("📡 Remote Bio-Sync Active: Subscribed to 'sentinel:bio_pulse'");
-                        
+                        tracing::info!(
+                            "📡 Remote Bio-Sync Active: Subscribed to 'sentinel:bio_pulse'"
+                        );
+
                         let mut stream = pubsub.on_message();
                         use futures_util::StreamExt; // We might need to add this
-                        
+
                         while let Some(_msg) = stream.next().await {
                             let mut res = redis_resonance.lock().unwrap();
                             res.inject_pulse(0);
@@ -365,7 +385,7 @@ async fn main() {
                 .duration_since(std::time::UNIX_EPOCH)
                 .unwrap()
                 .as_secs();
-            
+
             // AUDIT-360: use BufWriter + writeln! per node instead of format! + String concat
             use std::io::{BufWriter, Write};
             let file = std::fs::OpenOptions::new()
@@ -376,14 +396,26 @@ async fn main() {
             if let Ok(f) = file {
                 let mut buf = BufWriter::new(f);
                 for i in 0..amps.len() {
-                    let gradient = if i + 1 < amps.len() { amps[i + 1] - amps[i] } else { 0 };
-                    if let Err(e) = writeln!(buf, "{},{},{},{},{},{}", now, i, amps[i], phases[i], gradient, energy) {
+                    let gradient = if i + 1 < amps.len() {
+                        amps[i + 1] - amps[i]
+                    } else {
+                        0
+                    };
+                    if let Err(e) = writeln!(
+                        buf,
+                        "{},{},{},{},{},{}",
+                        now, i, amps[i], phases[i], gradient, energy
+                    ) {
                         tracing::error!("Phonon CSV write error: {}", e);
                         break;
                     }
                 }
                 let _ = buf.flush();
-                tracing::info!("Phonon lattice snapshot exported: {} nodes, total_energy={}", amps.len(), energy);
+                tracing::info!(
+                    "Phonon lattice snapshot exported: {} nodes, total_energy={}",
+                    amps.len(),
+                    energy
+                );
             }
         }
     });
@@ -395,7 +427,11 @@ async fn main() {
         .and_then(|p| p.parse().ok())
         .unwrap_or(8000);
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
-    tracing::info!("Listening on {} (PAI_CONVERT={})", addr, std::env::var("SENTINEL_PAI_CONVERT").unwrap_or_else(|_| "0".into()));
+    tracing::info!(
+        "Listening on {} (PAI_CONVERT={})",
+        addr,
+        std::env::var("SENTINEL_PAI_CONVERT").unwrap_or_else(|_| "0".into())
+    );
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
@@ -440,8 +476,8 @@ pub struct PhononNodeSnapshot {
     pub amplitude_s60: i64,
     pub phase_s60: i64,
     pub neighbors: Vec<usize>,
-    pub gradient_pressure: i64,  // ΔP with next node
-    pub velocity_s60: i64,       // dA/dt (approximation)
+    pub gradient_pressure: i64, // ΔP with next node
+    pub velocity_s60: i64,      // dA/dt (approximation)
 }
 
 #[derive(Serialize)]
@@ -462,14 +498,21 @@ async fn phonon_lattice_handler(
     let amps = lat.amplitudes_raw();
     let phases = lat.phases_raw();
     let node_count = amps.len();
-    let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
 
     // Build hexagonal neighbor map (1D chain approximation with nearest-neighbor coupling)
     let mut nodes = Vec::with_capacity(node_count);
     for i in 0..node_count {
         let mut neighbors = Vec::new();
-        if i > 0 { neighbors.push(i - 1); }
-        if i + 1 < node_count { neighbors.push(i + 1); }
+        if i > 0 {
+            neighbors.push(i - 1);
+        }
+        if i + 1 < node_count {
+            neighbors.push(i + 1);
+        }
 
         let gradient = if i + 1 < node_count {
             amps[i + 1] - amps[i]
@@ -483,7 +526,7 @@ async fn phonon_lattice_handler(
             phase_s60: phases[i],
             neighbors,
             gradient_pressure: gradient,
-            velocity_s60: 0,  // computed by caller if previous snapshot available
+            velocity_s60: 0, // computed by caller if previous snapshot available
         });
     }
 
@@ -491,7 +534,7 @@ async fn phonon_lattice_handler(
         timestamp_unix: now,
         node_count,
         total_energy_s60: lat.total_energy_raw(),
-        coupling_factor_raw: 10,  // SPA(0,10) = 10/60 ≈ 0.167 default
+        coupling_factor_raw: 10, // SPA(0,10) = 10/60 ≈ 0.167 default
         resonance_frequency: "1;32,2,24 (Plimpton 322 Fila 12)".into(),
         nodes,
     })
@@ -536,30 +579,54 @@ async fn metrics_prometheus_handler(
     // AUDIT-360: use single String buffer with write! macros instead of fragmented format!
     use std::fmt::Write as _;
     let mut out = String::with_capacity(4096);
-    let _ = writeln!(out, "# HELP sentinel_cpu_temperature_celsius Physical CPU Thermal Noise Sensor");
+    let _ = writeln!(
+        out,
+        "# HELP sentinel_cpu_temperature_celsius Physical CPU Thermal Noise Sensor"
+    );
     let _ = writeln!(out, "# TYPE sentinel_cpu_temperature_celsius gauge");
-    let _ = writeln!(out, "sentinel_cpu_temperature_celsius {:.2}", cpu_temp_celsius);
+    let _ = writeln!(
+        out,
+        "sentinel_cpu_temperature_celsius {:.2}",
+        cpu_temp_celsius
+    );
 
     let _ = writeln!(out, "# HELP sentinel_liquid_lattice_retention_score EXP-009 Liquid Lattice Memory Retention Score");
     let _ = writeln!(out, "# TYPE sentinel_liquid_lattice_retention_score gauge");
-    let _ = writeln!(out, "sentinel_liquid_lattice_retention_score {:.4}", ll_retention);
+    let _ = writeln!(
+        out,
+        "sentinel_liquid_lattice_retention_score {:.4}",
+        ll_retention
+    );
 
-    let _ = writeln!(out, "# HELP sentinel_lattice_total_energy Total raw energy in Liquid Lattice");
+    let _ = writeln!(
+        out,
+        "# HELP sentinel_lattice_total_energy Total raw energy in Liquid Lattice"
+    );
     let _ = writeln!(out, "# TYPE sentinel_lattice_total_energy gauge");
     let _ = writeln!(out, "sentinel_lattice_total_energy {}", total_energy);
 
-    let _ = writeln!(out, "# HELP sentinel_lattice_active_node_count Count of non-zero energetic lattice nodes");
+    let _ = writeln!(
+        out,
+        "# HELP sentinel_lattice_active_node_count Count of non-zero energetic lattice nodes"
+    );
     let _ = writeln!(out, "# TYPE sentinel_lattice_active_node_count gauge");
     let active_count = amps.iter().filter(|&&a| a > 0).count();
     let _ = writeln!(out, "sentinel_lattice_active_node_count {}", active_count);
 
-    let _ = writeln!(out, "# HELP sentinel_lattice_node_amplitude Amplitude for active or sampled lattice node");
+    let _ = writeln!(
+        out,
+        "# HELP sentinel_lattice_node_amplitude Amplitude for active or sampled lattice node"
+    );
     let _ = writeln!(out, "# TYPE sentinel_lattice_node_amplitude gauge");
     // Sample active non-zero nodes and representative rings up to 256 series to respect Mimir ingestion limits
     let step_sample = std::cmp::max(1, amps.len() / 128);
     for (idx, amp) in amps.iter().enumerate() {
         if *amp > 0 || idx % step_sample == 0 {
-            let _ = writeln!(out, "sentinel_lattice_node_amplitude{{node=\"{}\"}} {}", idx, amp);
+            let _ = writeln!(
+                out,
+                "sentinel_lattice_node_amplitude{{node=\"{}\"}} {}",
+                idx, amp
+            );
         }
     }
 
@@ -567,23 +634,45 @@ async fn metrics_prometheus_handler(
         .map(|s| s.lines().count())
         .unwrap_or(0);
 
-    let xdp_active = if std::path::Path::new("/sys/fs/bpf/xdp").exists() || std::fs::metadata("/tmp/xdp_firewall.o").is_ok() { 1 } else { 0 };
+    let xdp_active = if std::path::Path::new("/sys/fs/bpf/xdp").exists()
+        || std::fs::metadata("/tmp/xdp_firewall.o").is_ok()
+    {
+        1
+    } else {
+        0
+    };
 
     let snn_spikes = state.neural_memory.lock().unwrap().total_spikes;
 
-    let _ = writeln!(out, "# HELP sentinel_pai_snn_spikes_total Total SNN LIF neural spikes processed in Ring 0");
+    let _ = writeln!(
+        out,
+        "# HELP sentinel_pai_snn_spikes_total Total SNN LIF neural spikes processed in Ring 0"
+    );
     let _ = writeln!(out, "# TYPE sentinel_pai_snn_spikes_total counter");
     let _ = writeln!(out, "sentinel_pai_snn_spikes_total {}", snn_spikes);
 
     let _ = writeln!(out, "# HELP sentinel_aiops_shield_interceptions_total Total AIOpsDoom prompt injection interceptions");
-    let _ = writeln!(out, "# TYPE sentinel_aiops_shield_interceptions_total counter");
-    let _ = writeln!(out, "sentinel_aiops_shield_interceptions_total {}", wal_lines);
+    let _ = writeln!(
+        out,
+        "# TYPE sentinel_aiops_shield_interceptions_total counter"
+    );
+    let _ = writeln!(
+        out,
+        "sentinel_aiops_shield_interceptions_total {}",
+        wal_lines
+    );
 
-    let _ = writeln!(out, "# HELP sentinel_security_wal_entries_total Total Security WAL persistent entries");
+    let _ = writeln!(
+        out,
+        "# HELP sentinel_security_wal_entries_total Total Security WAL persistent entries"
+    );
     let _ = writeln!(out, "# TYPE sentinel_security_wal_entries_total counter");
     let _ = writeln!(out, "sentinel_security_wal_entries_total {}", wal_lines);
 
-    let _ = writeln!(out, "# HELP sentinel_xdp_firewall_status XDP network firewall status (1=ACTIVE, 0=INACTIVE)");
+    let _ = writeln!(
+        out,
+        "# HELP sentinel_xdp_firewall_status XDP network firewall status (1=ACTIVE, 0=INACTIVE)"
+    );
     let _ = writeln!(out, "# TYPE sentinel_xdp_firewall_status gauge");
     let _ = writeln!(out, "sentinel_xdp_firewall_status {}", xdp_active);
 
@@ -599,7 +688,7 @@ async fn telemetry_ws_handler(
 
 async fn handle_socket(mut socket: WebSocket, state: Arc<AppState>) {
     tracing::info!("🔗 Client/Inversor connected to EBPF Ring-0 Stream");
-    
+
     let mut rx = state.bpf_stream.subscribe();
 
     loop {
@@ -608,7 +697,7 @@ async fn handle_socket(mut socket: WebSocket, state: Arc<AppState>) {
             Ok(e) => e,
             Err(_) => break, // Broadcast channel cerraría si todo explota
         };
-        
+
         let payload = match serde_json::to_string(&event) {
             Ok(p) => p,
             Err(e) => {
@@ -643,8 +732,16 @@ pub(crate) async fn sentinel_status_handler(
     let bpf_whitelist_exists = std::path::Path::new("/sys/fs/bpf/sentinel/whitelist_map").exists();
 
     Json(SentinelStatusResponse {
-        ring_status: if bpf_events_exists { "RING0_PINNED_ACTIVE".into() } else { "OFFLINE".into() },
-        xdp_firewall: if bpf_whitelist_exists { "WHITELIST_MAP_ENGAGED".into() } else { "UNFILTERED".into() },
+        ring_status: if bpf_events_exists {
+            "RING0_PINNED_ACTIVE".into()
+        } else {
+            "OFFLINE".into()
+        },
+        xdp_firewall: if bpf_whitelist_exists {
+            "WHITELIST_MAP_ENGAGED".into()
+        } else {
+            "UNFILTERED".into()
+        },
         lsm_cognitive: "LSM_HOOK_ACTIVE".into(),
         s60_resonance: state.lattice.lock().unwrap().total_energy_raw(),
     })
@@ -669,18 +766,23 @@ pub(crate) async fn truth_claim_handler(
     axum::extract::State(state): axum::extract::State<Arc<AppState>>,
     Json(payload): Json<TruthClaimRequest>,
 ) -> Json<TruthClaimResponse> {
-    tracing::info!("Verificando Truth Claim de AI con TruthSync Core S60: {}", payload.engine);
+    tracing::info!(
+        "Verificando Truth Claim de AI con TruthSync Core S60: {}",
+        payload.engine
+    );
 
     // 🛡️ AIOpsShield Phase 1: Neutralización de AIOpsDoom (Inyección de Prompt / Comandos Destructivos)
     let payload_lower = payload.claim_payload.to_lowercase();
-    let is_aiopsdoom_attack = payload_lower.contains("drop database") 
-        || payload_lower.contains("rm -rf") 
-        || payload_lower.contains("shutdown") 
+    let is_aiopsdoom_attack = payload_lower.contains("drop database")
+        || payload_lower.contains("rm -rf")
+        || payload_lower.contains("shutdown")
         || payload_lower.contains("systemctl stop");
 
     if is_aiopsdoom_attack {
-        tracing::warn!("🚨 AIOpsShield INTERCEPCIÓN EN VIVO: Ataque AIOpsDoom detectado en claim_payload!");
-        
+        tracing::warn!(
+            "🚨 AIOpsShield INTERCEPCIÓN EN VIVO: Ataque AIOpsDoom detectado en claim_payload!"
+        );
+
         // Carril 1: Security & Audit Lane — Escribir inmediatamente en Security WAL sin buffers
         let wal_entry = format!(
             "{{\"ts\":\"{}\",\"lane\":\"security\",\"event\":\"AIOPSDOOM_INTERCEPTION\",\"engine\":\"{}\",\"payload\":\"{}\"}}\n",
@@ -701,12 +803,15 @@ pub(crate) async fn truth_claim_handler(
             ring0_intercepts: 1,
         });
     }
-    
+
     let lat = state.lattice.lock().unwrap();
     let total_energy = lat.total_energy_raw();
-    
+
     // Execute high-speed verification via truthsync_core engine (<100us)
-    let res = state.truthsync.lock().unwrap()
+    let res = state
+        .truthsync
+        .lock()
+        .unwrap()
         .verify_text(&payload.claim_payload, total_energy);
 
     tracing::info!(
@@ -720,9 +825,10 @@ pub(crate) async fn truth_claim_handler(
     // tiempo y a la energía del lattice). NO contaminamos la lógica con float:
     // comparamos S60 contra S60 y solo convertimos a f64 en el borde de salida
     // (JSON hacia el cliente), que es exportación, no cómputo.
-    let threshold_s60 = me60os_core::spa::SPA::from_decimal_for_import_only(payload.trust_threshold);
-    let sentinel_score_f64 = res.overall_trust_score.to_raw() as f64
-        / me60os_core::spa::SPA::SCALE_0 as f64;
+    let threshold_s60 =
+        me60os_core::spa::SPA::from_decimal_for_import_only(payload.trust_threshold);
+    let sentinel_score_f64 =
+        res.overall_trust_score.to_raw() as f64 / me60os_core::spa::SPA::SCALE_0 as f64;
 
     Json(TruthClaimResponse {
         claim_valid: res.overall_trust_score >= threshold_s60,
@@ -744,7 +850,9 @@ mod tests {
     use tower::ServiceExt;
 
     fn make_test_app() -> Router {
-        let lattice = Arc::new(Mutex::new(memory::resonant_lattice_bridge::ResonantLatticeBridge::new(1)));
+        let lattice = Arc::new(Mutex::new(
+            memory::resonant_lattice_bridge::ResonantLatticeBridge::new(1),
+        ));
         let truthsync = Arc::new(Mutex::new(truthsync_core::TruthSyncEngine::new()));
         let resonance = Arc::new(Mutex::new(security::bio_resonance::ResonanceEngine::new()));
         let metrics = Arc::new(metrics::PrometheusRepository::new());
@@ -752,7 +860,7 @@ mod tests {
         let pattern_detector = Arc::new(engine::patterns::PatternDetector::new());
         let neural_memory = Arc::new(Mutex::new(me60os_core::neural_memory::NeuralMemory::new()));
         let (tx_bpf, _) = broadcast::channel(100);
-        
+
         let state = Arc::new(AppState {
             resonance,
             metrics,
@@ -763,7 +871,7 @@ mod tests {
             pattern_detector,
             neural_memory,
         });
-        
+
         Router::new()
             .route("/api/v1/sentinel_status", get(sentinel_status_handler))
             .route("/api/v1/truth_claim", post(truth_claim_handler))
@@ -774,14 +882,21 @@ mod tests {
     async fn test_sentinel_status_handler_smoke() {
         let app = make_test_app();
         let response = app
-            .oneshot(Request::builder().uri("/api/v1/sentinel_status").body(Body::empty()).unwrap())
+            .oneshot(
+                Request::builder()
+                    .uri("/api/v1/sentinel_status")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
             .await
             .unwrap();
-        
+
         assert_eq!(response.status(), StatusCode::OK);
-        let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
         let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
-        
+
         assert!(json.get("ring_status").is_some());
         assert!(json.get("xdp_firewall").is_some());
         assert!(json.get("lsm_cognitive").is_some());
@@ -807,11 +922,13 @@ mod tests {
             )
             .await
             .unwrap();
-        
+
         assert_eq!(response.status(), StatusCode::OK);
-        let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
         let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
-        
+
         assert!(json.get("claim_valid").is_some());
         assert!(json.get("sentinel_score").is_some());
         assert!(json.get("truthsync_cache_hit").is_some());
@@ -837,11 +954,13 @@ mod tests {
             )
             .await
             .unwrap();
-        
+
         assert_eq!(response.status(), StatusCode::OK);
-        let body = axum::body::to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
         let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
-        
+
         assert_eq!(json.get("claim_valid").unwrap(), false);
         assert_eq!(json.get("sentinel_score").unwrap(), 0.0);
         assert_eq!(json.get("ring0_intercepts").unwrap(), 1);

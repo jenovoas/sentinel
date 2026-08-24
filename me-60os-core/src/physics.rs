@@ -73,7 +73,7 @@ impl ResonantPhysics {
     pub fn priority_feedback(demand: SPA) -> SPA {
         // dynamic_recharge = base + (demand * 5/6)
         // Using 5/6 (0;50) instead of 0.8 for harmonic resonance with 24ms cycles
-        let base = SPA::new(600, 0, 0, 0, 0); 
+        let base = SPA::new(600, 0, 0, 0, 0);
         let feedback = demand * SPA::new(0, 50, 0, 0, 0);
         base + feedback
     }

@@ -129,7 +129,11 @@ impl TruthSyncEngine {
         }
     }
 
-    pub fn verify_text<'a>(&mut self, text: &'a str, lattice_energy: i64) -> VerificationResult<'a> {
+    pub fn verify_text<'a>(
+        &mut self,
+        text: &'a str,
+        lattice_energy: i64,
+    ) -> VerificationResult<'a> {
         let start = Instant::now();
         let claims = self.extractor.extract(text);
 
@@ -171,7 +175,8 @@ impl TruthSyncEngine {
         let raw_diff = (base_score.to_raw() - penalty.to_raw()).max(0);
 
         // Round to 2 decimal places in S60: round(raw * 100 / SCALE_0) * SCALE_0 / 100
-        let rounded_raw = ((raw_diff * 100 + SPA::SCALE_0 / 2) / SPA::SCALE_0) * (SPA::SCALE_0 / 100);
+        let rounded_raw =
+            ((raw_diff * 100 + SPA::SCALE_0 / 2) / SPA::SCALE_0) * (SPA::SCALE_0 / 100);
         let overall_score = SPA::from_raw(rounded_raw);
 
         let elapsed_us = start.elapsed().as_micros() as u64;

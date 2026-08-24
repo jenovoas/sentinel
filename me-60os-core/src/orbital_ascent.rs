@@ -49,11 +49,11 @@
 //!   - Experimentos/EXP_028_PENTA_RESONANCE.md (5 capas, respiración 41–43 Hz)
 //!   - Experimentos/EXP_027_YHWH_PULSE_MONITOR.md (ciclo respiratorio 41.02–43.52 Hz)
 
-use crate::spa::SPA;
-use crate::spa_math::SPAMath;
-use crate::spa_complex::ComplexSPA;
 use crate::quantum_core::{IsochronousClock, S60PID};
 use crate::resonant_matrix::ResonantMatrix;
+use crate::spa::SPA;
+use crate::spa_complex::ComplexSPA;
+use crate::spa_math::SPAMath;
 
 /// Coherencia Dicke mínima para activar escudo MHD (95%, sin float).
 pub const DICKE_COHERENCE: SPA = SPA::new(0, 57, 0, 0, 0); // 57/60 = 0.95
@@ -167,7 +167,13 @@ impl OrbitalAscent {
     ///
     /// `throttle`: 0-100. `cd_standard`: Cd base (0.4). `alt`: altitud S60.
     /// Devuelve el paso y actualiza la lattice (levantación de datos).
-    pub fn step(&mut self, state: &AscentState, throttle: i64, cd_standard: SPA, alt: SPA) -> AscentStep {
+    pub fn step(
+        &mut self,
+        state: &AscentState,
+        throttle: i64,
+        cd_standard: SPA,
+        alt: SPA,
+    ) -> AscentStep {
         // 1. Cristal de tiempo: tick (41.77 Hz base) + fase de respiración.
         self.clock.tick_internal();
         self.ticks_since_correct += 1;
@@ -175,7 +181,10 @@ impl OrbitalAscent {
         // 2. Autocorrección cada 68 ticks (Salto-17) vía PID sobre coherencia.
         let mut coherence = state.coherence;
         if self.ticks_since_correct >= 68 {
-            let correction = SPA::from_raw(self.pid.update(coherence.to_raw(), SPA::from_int(1).to_raw()));
+            let correction = SPA::from_raw(
+                self.pid
+                    .update(coherence.to_raw(), SPA::from_int(1).to_raw()),
+            );
             coherence = coherence + correction;
             self.ticks_since_correct = 0;
         }
@@ -221,7 +230,8 @@ impl OrbitalAscent {
         // FIX (audit-360): inject_pai espera integer; pasar to_raw() + denom=1000
         // no-regular causaba triple-escala. Usar denom=60 (5-smooth, en tabla pai60).
         let idx = (self.clock.ticks as usize) % self.lattice.crystals.len();
-        self.lattice.inject_pai(idx, coherence.to_raw() / crate::spa::SPA::SCALE_0, 60);
+        self.lattice
+            .inject_pai(idx, coherence.to_raw() / crate::spa::SPA::SCALE_0, 60);
 
         AscentStep {
             altitude: new_alt,
@@ -321,6 +331,9 @@ mod tests {
         l.inject_pai(0, 1, 60); // 1/60 amplitude
         let amp = l.get_amplitudes()[0];
         let one_sixtieth = SPA::new(0, 1, 0, 0, 0);
-        assert_eq!(amp, one_sixtieth, "inject_pai(0, 1, 60) should be 1/60 exactly");
+        assert_eq!(
+            amp, one_sixtieth,
+            "inject_pai(0, 1, 60) should be 1/60 exactly"
+        );
     }
 }

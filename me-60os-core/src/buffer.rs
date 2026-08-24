@@ -13,9 +13,9 @@
 // Integrado sobre el historial reciente de coherencia para anticipar el
 // colapso de una ráfaga antes de que ocurra. S60 puro, sin float.
 
+use crate::hexagonal_control::HexagonalController;
 use crate::spa::SPA;
 use crate::spa_math::SPAMath;
-use crate::hexagonal_control::HexagonalController;
 use std::collections::BTreeMap;
 
 /// Kernel Ornstein-Uhlenbeck en S60. tau_c es la escala de correlación temporal.
@@ -61,13 +61,7 @@ impl BufferCascade {
 
     /// Efecto de memoria: suma ponderada del kernel sobre los últimos `window` timestamps.
     pub fn memory_effect(&self, now: SPA, window: usize) -> SPA {
-        let recent: Vec<SPA> = self
-            .history
-            .keys()
-            .cloned()
-            .rev()
-            .take(window)
-            .collect();
+        let recent: Vec<SPA> = self.history.keys().cloned().rev().take(window).collect();
         let mut acc = SPA::zero();
         for ts in recent {
             let k = ou_kernel(now, ts, self.tau_c);
@@ -90,7 +84,11 @@ impl BufferCascade {
         let base = SPA::new(42, 30, 0, 0, 0); // 42;30
         let boost = SPA::new(22, 0, 0, 0, 0);
         let boosted = base + (memory * boost);
-        let current = if boosted < self.limit { boosted } else { self.limit };
+        let current = if boosted < self.limit {
+            boosted
+        } else {
+            self.limit
+        };
 
         // Objetivo futuro = min(base + memory*20, 60)
         let future_target = base + (memory * SPA::new(20, 0, 0, 0, 0));
@@ -101,7 +99,8 @@ impl BufferCascade {
         };
 
         // Guardar estado presente para el futuro (backflow de información).
-        self.history.insert(now, CoherenceRecord { coherence: current });
+        self.history
+            .insert(now, CoherenceRecord { coherence: current });
 
         (current, future, true)
     }
@@ -132,21 +131,13 @@ mod tests {
     fn test_cascade_predicts_higher_coherence_with_history() {
         // Sin historia => memoria ~0 => coherencia en base (42;30).
         let hex = HexagonalController::new(7);
-        let mut bc = BufferCascade::new(
-            hex,
-            SPA::new(1, 0, 0, 0, 0),
-            SPA::new(58, 0, 0, 0, 0),
-        );
+        let mut bc = BufferCascade::new(hex, SPA::new(1, 0, 0, 0, 0), SPA::new(58, 0, 0, 0, 0));
         let (cur_empty, _f_empty, _) = bc.cascade(ts(100, 0), 10);
         assert_eq!(cur_empty, SPA::new(42, 30, 0, 0, 0));
 
         // Con historial reciente estable, la memoria empuja la coherencia hacia arriba.
         let hex2 = HexagonalController::new(7);
-        let mut bc2 = BufferCascade::new(
-            hex2,
-            SPA::new(1, 0, 0, 0, 0),
-            SPA::new(58, 0, 0, 0, 0),
-        );
+        let mut bc2 = BufferCascade::new(hex2, SPA::new(1, 0, 0, 0, 0), SPA::new(58, 0, 0, 0, 0));
         // Inyectar historia: 5 registros a 0;6 de distancia, coherencia 42;30.
         let base = SPA::new(42, 30, 0, 0, 0);
         for i in 0..5 {
@@ -166,11 +157,7 @@ mod tests {
     fn test_cascade_respects_limit() {
         // Mucha memoria no debe superar el límite soberano 58/60.
         let hex = HexagonalController::new(7);
-        let mut bc = BufferCascade::new(
-            hex,
-            SPA::new(1, 0, 0, 0, 0),
-            SPA::new(58, 0, 0, 0, 0),
-        );
+        let mut bc = BufferCascade::new(hex, SPA::new(1, 0, 0, 0, 0), SPA::new(58, 0, 0, 0, 0));
         // Inyectar mucha historia para saturar la memoria.
         for i in 0..50 {
             let t = ts(300 + i as i64, 0);

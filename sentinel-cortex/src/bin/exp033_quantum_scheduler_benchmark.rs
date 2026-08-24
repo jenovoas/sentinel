@@ -89,7 +89,10 @@ fn main() {
         (python_us_per_tick * 1000) / ns_per_tick
     };
     println!("Python EXP-028 (estimado): ~{} us/tick", python_us_per_tick);
-    println!("Rust EXP-033 (medido):     {} ns/tick = {} us/tick", ns_per_tick, rust_us_per_tick);
+    println!(
+        "Rust EXP-033 (medido):     {} ns/tick = {} us/tick",
+        ns_per_tick, rust_us_per_tick
+    );
     println!("Speedup: {}x", speedup);
 
     println!();

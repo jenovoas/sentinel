@@ -42,7 +42,6 @@ impl TelemetrySanitizer {
             ("UPDATE ", "UPDATE SET"),
             ("EXEC(", "EXEC()"),
             ("OR '1'='1", "SQL OR injection"),
-
             // Command Injection
             ("RM -RF", "rm -rf"),
             ("SUDO ", "sudo"),
@@ -52,12 +51,10 @@ impl TelemetrySanitizer {
             ("| SH", "pipe to sh"),
             ("WGET HTTP", "wget download"),
             ("CURL HTTP", "curl download"),
-
             // Path Traversal
             ("../../", "path traversal"),
             ("/ETC/PASSWD", "/etc/passwd access"),
             ("/ETC/SHADOW", "/etc/shadow access"),
-
             // Code Execution / Poisoning
             ("__IMPORT__", "__import__()"),
             ("OS.SYSTEM", "os.system()"),

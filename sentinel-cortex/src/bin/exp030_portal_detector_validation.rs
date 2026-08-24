@@ -160,10 +160,7 @@ fn main() {
         && last_portal_tick.unwrap_or(u64::MAX) >= exp_028_last_tick;
 
     if count_ok {
-        println!(
-            "  OK: conteo coincide ({} portales)",
-            exp_028_count
-        );
+        println!("  OK: conteo coincide ({} portales)", exp_028_count);
     } else {
         println!(
             "  DIFERENCIA: conteo Rust={} vs Python={}",
@@ -172,9 +169,7 @@ fn main() {
     }
 
     if first_ok && last_ok {
-        println!(
-            "  OK: ventana temporal coincide (5 ticks = 0.5s tolerancia)"
-        );
+        println!("  OK: ventana temporal coincide (5 ticks = 0.5s tolerancia)");
     } else {
         println!(
             "  DIFERENCIA: ventana temporal Rust=[{},{}] vs Python=[{},{}]",
@@ -194,10 +189,7 @@ fn main() {
         "Tiempo: {} us ({} ticks) -> {} ns/tick",
         elapsed_micros, TOTAL_TICKS, elapsed_per_tick_ns
     );
-    println!(
-        "Throughput: {} ticks/s",
-        throughput_per_sec
-    );
+    println!("Throughput: {} ticks/s", throughput_per_sec);
 
     // Estado de salida
     if count_ok && first_ok && last_ok {

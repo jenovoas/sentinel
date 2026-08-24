@@ -81,8 +81,7 @@ impl CortexEngine {
         Ok(())
     }
 
-    pub fn sync_persistence(&self) {
-    }
+    pub fn sync_persistence(&self) {}
 
     pub fn apply_plasticity(&mut self, entropy: SPA) {
         let raw = entropy.to_raw();
@@ -118,7 +117,10 @@ mod tests {
         // Cota inferior: > 0 porque recibi\u00f3 inyeccion.
         // Tambi\u00e9n verificamos que es <= signal (porque step() aplica damping).
         assert!(amp.to_raw() > 0, "amp should be > 0 after injection");
-        assert!(amp.to_raw() <= signal.to_raw(), "amp should be <= signal after damping");
+        assert!(
+            amp.to_raw() <= signal.to_raw(),
+            "amp should be <= signal after damping"
+        );
         assert_ne!(
             amp.to_raw(),
             signal.to_raw() * SPA::SCALE_0,

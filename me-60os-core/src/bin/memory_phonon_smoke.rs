@@ -6,8 +6,8 @@
 // (quantum_core) que SI estan disponibles en binario Rust.
 
 use me60os_core::optomechanical::OptomechanicalCooler;
-use me60os_core::quantum_core::LiquidLattice;
 use me60os_core::pai60_lib;
+use me60os_core::quantum_core::LiquidLattice;
 use me60os_core::spa::SPA;
 
 fn main() {
@@ -19,13 +19,25 @@ fn main() {
     println!("❄️  [1] OPTOMECHANICAL / FONONES");
     let cooler = OptomechanicalCooler::new_internal();
     let n_th = cooler.n_th_env;
-    println!("   n_th_env (calibración): {} (raw {})", n_th, n_th.to_raw());
+    println!(
+        "   n_th_env (calibración): {} (raw {})",
+        n_th,
+        n_th.to_raw()
+    );
     let qlim = cooler.quantum_limit_internal();
-    println!("   quantum limit n_min    : {} (raw {})", qlim, qlim.to_raw());
+    println!(
+        "   quantum limit n_min    : {} (raw {})",
+        qlim,
+        qlim.to_raw()
+    );
     // Secuencia de enfriamiento: la ocupación fonónica final debe bajar de n_th
     let seq = cooler.run_cooling_sequence_internal(200);
     if let Some((_g, _c, n_final)) = seq.last().copied() {
-        println!("   n_final tras enfriamiento: {} (raw {})", n_final, n_final.to_raw());
+        println!(
+            "   n_final tras enfriamiento: {} (raw {})",
+            n_final,
+            n_final.to_raw()
+        );
         // Efecto de enfriamiento: n_final < n_th (por división por 1+c)
         if n_final < n_th {
             println!("   ✅ enfriamiento fonónico efectivo (n_final < n_th)");
@@ -45,7 +57,7 @@ fn main() {
     let mut lat = LiquidLattice::new(64);
     // Canal A: 8 bytes payload -> amplitud S60 en nodo i
     let payload_a: Vec<u8> = (1u8..=8).collect(); // 01 02 .. 08
-    // Canal B: 1 byte por nodo -> fase (grados 0..359 mapeados de 0..255)
+                                                  // Canal B: 1 byte por nodo -> fase (grados 0..359 mapeados de 0..255)
     let payload_b: Vec<u8> = (0u8..=63).collect();
     lat.inject_dual_channel(payload_a.clone(), payload_b.clone());
 
@@ -53,7 +65,10 @@ fn main() {
     // (big-endian 8 bytes => 0x0102030405060708) pasada por SPA::from_raw.
     let expected_amp_raw: i64 = i64::from_be_bytes([1, 2, 3, 4, 5, 6, 7, 8]);
     let node0_amp = lat.buffer.lattice[0].amplitude.to_raw();
-    println!("   nodo0 amplitud raw: {} (esperado {})", node0_amp, expected_amp_raw);
+    println!(
+        "   nodo0 amplitud raw: {} (esperado {})",
+        node0_amp, expected_amp_raw
+    );
     if node0_amp == SPA::from_raw(expected_amp_raw).to_raw() {
         println!("   ✅ canal A (amplitud) inyectado correcto");
     } else {
@@ -93,6 +108,13 @@ fn main() {
     }
 
     // ─────────────────────────────────────────────────────────────
-    println!("\n{}", if ok { "✅ MEMORIA/FONON/DUAL/PAI VERIFICADOS (S60, sin floats)" } else { "⚠️  ALGUNA VERIFICACIÓN FALLÓ" });
+    println!(
+        "\n{}",
+        if ok {
+            "✅ MEMORIA/FONON/DUAL/PAI VERIFICADOS (S60, sin floats)"
+        } else {
+            "⚠️  ALGUNA VERIFICACIÓN FALLÓ"
+        }
+    );
     std::process::exit(if ok { 0 } else { 1 });
 }

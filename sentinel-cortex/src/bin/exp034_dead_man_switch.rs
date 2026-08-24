@@ -28,9 +28,24 @@ fn main() {
     let mut scheduler = QuantumScheduler::new(bio.clone());
 
     // Agregar tareas: 2 normales, 1 critica
-    scheduler.enqueue(Task { id: 1, task_type: TaskType::ZPETune, cost: 50, callback: mock_normal });
-    scheduler.enqueue(Task { id: 2, task_type: TaskType::BackupS60, cost: 10, callback: mock_backup });
-    scheduler.enqueue(Task { id: 3, task_type: TaskType::PhaseAlign, cost: 20, callback: mock_normal });
+    scheduler.enqueue(Task {
+        id: 1,
+        task_type: TaskType::ZPETune,
+        cost: 50,
+        callback: mock_normal,
+    });
+    scheduler.enqueue(Task {
+        id: 2,
+        task_type: TaskType::BackupS60,
+        cost: 10,
+        callback: mock_backup,
+    });
+    scheduler.enqueue(Task {
+        id: 3,
+        task_type: TaskType::PhaseAlign,
+        cost: 20,
+        callback: mock_normal,
+    });
 
     println!("1. Piloto presente (inyectando pulso bio)");
     bio.lock().unwrap().inject_bio_pulse();

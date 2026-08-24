@@ -30,13 +30,13 @@ const N_CAPAS: usize = 5;
 
 fn main() {
     let dt = SPA::from_int(1) / SPA::from_int(10); // 0.1s
-    let t_max_steps = 680u32;                       // 68s
+    let t_max_steps = 680u32; // 68s
 
     let period_bio = SPA::from_int(17);
     let period_crys = SPA::from_int(17) / SPA::from_int(4); // 4.25s
-    let period_venus = SPA::from_raw(16_180_000);            // 16.18s
+    let period_venus = SPA::from_raw(16_180_000); // 16.18s
     let three_sixty = SPA::from_int(360);
-    let threshold = SPA::from_int(48) / SPA::from_int(60);  // 0.8
+    let threshold = SPA::from_int(48) / SPA::from_int(60); // 0.8
 
     // DOBLE MALLA — una por carril, bombeada por el mismo QHC.
     let mut carril_a = ResonantMatrix::new(N_CAPAS);
@@ -95,7 +95,10 @@ fn main() {
         prev_aligned = aligned;
     }
 
-    println!("🔮 PORTALES DETECTADOS (doble malla bombeada, flancos): {}", portales);
+    println!(
+        "🔮 PORTALES DETECTADOS (doble malla bombeada, flancos): {}",
+        portales
+    );
     for m in &muestras {
         println!("   ⏳ Portal abierto @ T={:.1}s", m);
     }

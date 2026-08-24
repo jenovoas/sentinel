@@ -275,7 +275,9 @@ impl SPAMath {
     #[staticmethod]
     pub fn py_sqrt(n: SPA) -> PyResult<SPA> {
         if n.to_raw() < 0 {
-            return Err(pyo3::exceptions::PyValueError::new_err("Math Domain Error: sqrt de negativo"));
+            return Err(pyo3::exceptions::PyValueError::new_err(
+                "Math Domain Error: sqrt de negativo",
+            ));
         }
         Ok(Self::sqrt(n))
     }
@@ -286,19 +288,27 @@ impl SPAMath {
     #[staticmethod]
     pub fn py_ln(x: SPA) -> PyResult<SPA> {
         if x.to_raw() <= 0 {
-             return Err(pyo3::exceptions::PyValueError::new_err("Math Domain Error: ln de no positivo"));
+            return Err(pyo3::exceptions::PyValueError::new_err(
+                "Math Domain Error: ln de no positivo",
+            ));
         }
         Ok(Self::ln(x))
     }
 
     #[staticmethod]
-    pub fn get_pi() -> SPA { SPAMath::PI }
+    pub fn get_pi() -> SPA {
+        SPAMath::PI
+    }
 
     #[staticmethod]
-    pub fn get_two_pi() -> SPA { SPAMath::TWO_PI }
+    pub fn get_two_pi() -> SPA {
+        SPAMath::TWO_PI
+    }
 
     #[staticmethod]
-    pub fn get_pi_half() -> SPA { SPAMath::PI_HALF }
+    pub fn get_pi_half() -> SPA {
+        SPAMath::PI_HALF
+    }
 }
 
 #[cfg(test)]

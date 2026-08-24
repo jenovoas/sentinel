@@ -8,21 +8,21 @@
 use pyo3::prelude::*;
 
 // Core Modules (Always included for Rust Binaries)
-pub mod isochronous_oscillator;
-pub mod pai60_lib;
-pub mod optomechanical;
+pub mod atlantean;
+pub mod buffer; // Predictor de ráfagas: memoria no-Markoviana (kernel OU, S60 puro)
 pub mod flux_stabilizer; // Estabilizador de flux cuántico (LCG + damping S60)
+pub mod hexagonal_control;
+pub mod isochronous_oscillator;
+pub mod liquid_memory;
+pub mod optomechanical;
+pub mod pai60_lib;
 pub mod quantum_core;
+pub mod ram_meter; // RAM meter + dimensionado de lattice (sysinfo, S60 puro)
 pub mod s60_pid;
 pub mod spa;
 pub mod spa_complex;
 pub mod spa_math;
-pub mod time_crystal; // Wrapper
-pub mod hexagonal_control;
-pub mod atlantean;
-pub mod ram_meter; // RAM meter + dimensionado de lattice (sysinfo, S60 puro)
-pub mod buffer;   // Predictor de ráfagas: memoria no-Markoviana (kernel OU, S60 puro)
-pub mod liquid_memory; // KV-store cognitivo: SHM POSIX nativo + inyección dual a LiquidLattice
+pub mod time_crystal; // Wrapper // KV-store cognitivo: SHM POSIX nativo + inyección dual a LiquidLattice
 
 // SOMA Backend Modules
 pub mod soma;
@@ -36,21 +36,21 @@ pub mod agent_manager;
 pub mod bci;
 pub mod bio;
 pub mod buffer_system;
+pub mod celestial; // Celestial navigation: SVector3 + Kepler orbital mechanics (S60)
 pub mod cortex;
+pub mod crystal_cipher; // Clave efímera por pulso del cristal (capa de cifrado ring0-adjacent)
+pub mod dsp; // S60 DSP multiplier: 128-bit accumulator + overflow traps (hardware model)
+pub mod dual_lane; // Dual-lane router: Security (WAL fsync) + Observability (buffer/backpressure)
 pub mod ebpf_cortex_bridge;
+pub mod guardian_lsm;
 pub mod neural_memory;
+pub mod numerical_control; // SovereignDDA: interpolador DDA S60 (trayectoria determinista)
+pub mod orbital_ascent; // Orbital ascent dynamics: drag/gravedad/thrust S60 (física real)
 pub mod physics;
 pub mod qhc;
 pub mod resonant_loop;
 pub mod scheduler;
 pub mod scv;
-pub mod guardian_lsm;
-pub mod crystal_cipher; // Clave efímera por pulso del cristal (capa de cifrado ring0-adjacent)
-pub mod dual_lane; // Dual-lane router: Security (WAL fsync) + Observability (buffer/backpressure)
-pub mod dsp; // S60 DSP multiplier: 128-bit accumulator + overflow traps (hardware model)
-pub mod celestial; // Celestial navigation: SVector3 + Kepler orbital mechanics (S60)
-pub mod numerical_control; // SovereignDDA: interpolador DDA S60 (trayectoria determinista)
-pub mod orbital_ascent; // Orbital ascent dynamics: drag/gravedad/thrust S60 (física real)
 pub mod shm_bridge;
 
 #[cfg(feature = "extension-module")]

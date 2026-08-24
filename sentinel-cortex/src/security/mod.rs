@@ -24,8 +24,8 @@ pub mod lfm_security_pipeline;
 // Re-export production version as default
 
 #[allow(unused_imports)]
+pub use lfm_security_pipeline::{LfmSecurityError, LfmSecurityPipeline};
+#[allow(unused_imports)]
 pub use soul_verifier_s60_production::{
     BiometricError, BiometricProof, BiometricVerifier, LivenessChallenge,
 };
-#[allow(unused_imports)]
-pub use lfm_security_pipeline::{LfmSecurityPipeline, LfmSecurityError};

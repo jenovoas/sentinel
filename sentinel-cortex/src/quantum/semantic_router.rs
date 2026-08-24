@@ -87,7 +87,7 @@ impl SemanticRouter {
 
     pub async fn classify(&self, query: &str) -> (Intent, String) {
         if self.api_key.is_empty() {
-             return (Intent::Unknown, "Missing GOOGLE_API_KEY".to_string());
+            return (Intent::Unknown, "Missing GOOGLE_API_KEY".to_string());
         }
 
         let system_prompt = r#"
@@ -170,32 +170,34 @@ impl SemanticRouter {
     fn parse_response(&self, text: &str) -> (Intent, String) {
         // Simple JSON parsing wrapper
         // Clean markdown ```json blocks
-        let clean_text = text.trim()
+        let clean_text = text
+            .trim()
             .trim_start_matches("```json")
             .trim_start_matches("```")
             .trim_end_matches("```")
             .trim();
 
         if let Ok(val) = serde_json::from_str::<serde_json::Value>(clean_text) {
-             let cat = val["category"].as_str().unwrap_or("UNKNOWN");
-             
-             // If SYSTEM_ACTION, prioritize the 'command' field if it exists
-             let output = if cat == "SYSTEM_ACTION" {
-                 val["command"].as_str()
-                     .or_else(|| val["reason"].as_str())
-                     .unwrap_or("CMD: unknown")
-                     .to_string()
-             } else {
-                 val["reason"].as_str().unwrap_or("No reason").to_string()
-             };
+            let cat = val["category"].as_str().unwrap_or("UNKNOWN");
 
-             let intent = match cat {
-                 "QUERY_ORACLE" => Intent::Oracle,
-                 "SYSTEM_ACTION" => Intent::SystemAction,
-                 "SAFETY_CHECK" => Intent::SafetyCheck,
-                 _ => Intent::Unknown,
-             };
-             (intent, output)
+            // If SYSTEM_ACTION, prioritize the 'command' field if it exists
+            let output = if cat == "SYSTEM_ACTION" {
+                val["command"]
+                    .as_str()
+                    .or_else(|| val["reason"].as_str())
+                    .unwrap_or("CMD: unknown")
+                    .to_string()
+            } else {
+                val["reason"].as_str().unwrap_or("No reason").to_string()
+            };
+
+            let intent = match cat {
+                "QUERY_ORACLE" => Intent::Oracle,
+                "SYSTEM_ACTION" => Intent::SystemAction,
+                "SAFETY_CHECK" => Intent::SafetyCheck,
+                _ => Intent::Unknown,
+            };
+            (intent, output)
         } else {
             (Intent::Unknown, "Invalid JSON from AI".to_string())
         }

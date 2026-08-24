@@ -4,7 +4,9 @@
 // métricas reales a stderr. Verifica que el routing es determinista y que el WAL
 // security escribe con fsync (sin buffering), y que el observability reordena por ts.
 
-use me60os_core::dual_lane::{DataLane, DualLaneRouter, EventPriority, ObservabilityLaneCollector, SecurityLaneCollector};
+use me60os_core::dual_lane::{
+    DataLane, DualLaneRouter, EventPriority, ObservabilityLaneCollector, SecurityLaneCollector,
+};
 use std::collections::HashMap;
 
 fn main() {
@@ -83,7 +85,10 @@ fn main() {
     let first_line = obs_contents.lines().next().unwrap_or("");
     eprintln!("Observability WAL líneas: {}", obs_contents.lines().count());
     eprintln!("Primer evento (debe ser ts=0, reordenado): {}", first_line);
-    assert!(first_line.contains("\"ts\":0"), "buffer no reordenado por timestamp");
+    assert!(
+        first_line.contains("\"ts\":0"),
+        "buffer no reordenado por timestamp"
+    );
 
     let _ = std::fs::remove_file(&sec_wal);
     let _ = std::fs::remove_file(&obs_wal);

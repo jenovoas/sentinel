@@ -88,7 +88,11 @@ fn lattice_io(phase: &str, ops: u64) {
     let per_op = elapsed / (ops as u128).max(1);
     println!(
         "[{}] lattice I/O: {} ops en {}ns => {} ns/op (~{:.1} ops/ms)",
-        phase, ops, elapsed, per_op, (ops as f64) / elapsed as f64 * 1e6
+        phase,
+        ops,
+        elapsed,
+        per_op,
+        (ops as f64) / elapsed as f64 * 1e6
     );
 }
 
@@ -108,7 +112,9 @@ fn main() {
     let cpu_pct = (busy as f64 / tot as f64) * 100.0;
     println!(
         "[{}] cpu_sistema_durante_bench={:.1}% temp_final={:.2}C",
-        phase, cpu_pct, cpu_temp()
+        phase,
+        cpu_pct,
+        cpu_temp()
     );
     println!("=== FIN [{}] ===", phase);
     // Evitar warning de import no usado

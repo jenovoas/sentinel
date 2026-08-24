@@ -182,7 +182,7 @@ mod tests {
     fn test_gpu_clamp_min_max() {
         let mut gpu = GpuController::new();
         gpu.current_batch_size = 100; // min
-        // latencia bajísima empuja al clamp superior, no debe pasar max
+                                      // latencia bajísima empuja al clamp superior, no debe pasar max
         let b = gpu.adjust_batch_size(100);
         assert!(b >= gpu.min_batch, "respeta min_batch");
         let mut gpu2 = GpuController::new();

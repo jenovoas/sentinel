@@ -3,4 +3,4 @@
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 pub mod event;
 
-pub use event::{Event, EventSource, EventType, Severity, DetectedPattern};
+pub use event::{DetectedPattern, Event, EventSource, EventType, Severity};

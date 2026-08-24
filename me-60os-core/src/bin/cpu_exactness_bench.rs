@@ -54,16 +54,32 @@ fn main() {
     println!("  ns/op              : {:.1}\n", ns_f);
 
     println!("[S] SPA base-60 (φ≈98/60, entero 60^4, sin truncar)");
-    println!("  x_final (abstracto) : {:.6e}  (raw {})", xs_abs, xs.to_raw());
+    println!(
+        "  x_final (abstracto) : {:.6e}  (raw {})",
+        xs_abs,
+        xs.to_raw()
+    );
     println!("  ns/op              : {:.1}\n", ns_s);
 
     println!("=== QUE SIGNIFICA PARA EL SISTEMA ===");
-    println!("- El float64 representa φ con error ~1e-16/paso. Tras {} pasos la desviacion", N);
+    println!(
+        "- El float64 representa φ con error ~1e-16/paso. Tras {} pasos la desviacion",
+        N
+    );
     println!("  relativa del float vs la trayectoria exacta CRECE (es exponencial). La CPU");
-    println!("  'olvida' precision irrecuperable en loops largos -> hay que renormalizar/recalcular.");
+    println!(
+        "  'olvida' precision irrecuperable en loops largos -> hay que renormalizar/recalcular."
+    );
     println!("- SPA retiene la fraccion: su trayectoria es EXACTA para la razon que usa.");
-    println!("- Costo: SPA ~{:.0} ns/op vs float ~{:.0} ns/op  (~{:.1}x mas caro por op,", ns_s, ns_f, ns_s/ns_f);
+    println!(
+        "- Costo: SPA ~{:.0} ns/op vs float ~{:.0} ns/op  (~{:.1}x mas caro por op,",
+        ns_s,
+        ns_f,
+        ns_s / ns_f
+    );
     println!("  entero i128), PERO no requiere reprocesar para corregir drift.");
     println!("- En el lattice resonante: sin truncar, fase/amplitud se mantienen coherentes");
-    println!("  sin 'reset' periodico. Eso es 'matematicamente optimizado' = sin perdida por diseño.");
+    println!(
+        "  sin 'reset' periodico. Eso es 'matematicamente optimizado' = sin perdida por diseño."
+    );
 }

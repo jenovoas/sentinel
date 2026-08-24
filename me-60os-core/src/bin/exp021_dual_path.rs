@@ -33,13 +33,14 @@ struct RppgLcg {
 
 impl RppgLcg {
     fn new() -> Self {
-        Self {
-            seed: 42,
-        }
+        Self { seed: 42 }
     }
     /// Siguiente valor entero en [60, 100]
     fn next_bpm(&mut self) -> i64 {
-        self.seed = self.seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+        self.seed = self
+            .seed
+            .wrapping_mul(6364136223846793005)
+            .wrapping_add(1442695040888963407);
         60 + ((self.seed >> 32) % 41) as i64
     }
 }
@@ -195,13 +196,29 @@ fn main() {
     println!("\n🎯 Rangos físicos:");
     println!(
         "   Lyapunov [0.1, 2.5]: float {} | S60 {}",
-        if in_range(lyap_float, 0.1, 2.5) { "✅" } else { "❌" },
-        if in_range(lyap_s60_f, 0.1, 2.5) { "✅" } else { "❌" }
+        if in_range(lyap_float, 0.1, 2.5) {
+            "✅"
+        } else {
+            "❌"
+        },
+        if in_range(lyap_s60_f, 0.1, 2.5) {
+            "✅"
+        } else {
+            "❌"
+        }
     );
     println!(
         "   Entropía [0.5, 4.0]: float {} | S60 {}",
-        if in_range(entr_float, 0.5, 4.0) { "✅" } else { "❌" },
-        if in_range(entr_s60_f, 0.5, 4.0) { "✅" } else { "❌" }
+        if in_range(entr_float, 0.5, 4.0) {
+            "✅"
+        } else {
+            "❌"
+        },
+        if in_range(entr_s60_f, 0.5, 4.0) {
+            "✅"
+        } else {
+            "❌"
+        }
     );
 
     let all_pass = lyap_diff < 0.1

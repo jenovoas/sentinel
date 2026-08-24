@@ -6,9 +6,9 @@
 // layer and future incident sinks. Silenced at module level.
 #![allow(dead_code)]
 
+use crate::math::s60::S60;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use crate::math::s60::S60;
 
 /// Evento normalizado de cualquier fuente
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -44,18 +44,18 @@ pub enum EventType {
     CpuSpike,
     MemoryLeak,
     DiskFull,
-    
+
     // Seguridad
     FailedLogin,
     SuccessfulLoginNewIP,
     SuspiciousCommand,
     UnauthorizedAccess,
     PrivilegeEscalation,
-    
+
     // Red
     LargeDataTransfer,
     UnusualTraffic,
-    
+
     // Aplicación
     ErrorSpike,
     SlowResponse,
@@ -64,9 +64,9 @@ pub enum EventType {
 #[derive(Debug, Clone, Serialize)]
 pub struct DetectedPattern {
     pub name: String,
-    pub confidence: S60,  // Protocolo YATRA (S60)
+    pub confidence: S60, // Protocolo YATRA (S60)
     pub severity: Severity,
     pub events: Vec<Event>,
     pub recommended_action: String,
-    pub playbook: String,  // Nombre del playbook N8N
+    pub playbook: String, // Nombre del playbook N8N
 }

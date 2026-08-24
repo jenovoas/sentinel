@@ -34,16 +34,12 @@ use ratatui::{
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Line, Span},
-    widgets::{
-        Block, BorderType, Borders, List, ListItem, Paragraph, Sparkline, Wrap,
-    },
+    widgets::{Block, BorderType, Borders, List, ListItem, Paragraph, Sparkline, Wrap},
     Frame, Terminal,
 };
 
 use me60os_core::{
-    isochronous_oscillator::IsochronousOscillator,
-    pai60_lib::pai60_divide,
-    spa::SPA,
+    isochronous_oscillator::IsochronousOscillator, pai60_lib::pai60_divide, spa::SPA,
 };
 use sentinel_cortex::security::LfmSecurityPipeline;
 
@@ -86,7 +82,7 @@ impl RealShmLattice {
                     libc::close(fd);
                     return None;
                 }
-                
+
                 // Inicializar memoria con osciladores base
                 let mem = libc::mmap(
                     ptr::null_mut(),
@@ -100,17 +96,21 @@ impl RealShmLattice {
                     libc::close(fd);
                     return None;
                 }
-                
+
                 // Limpiar memoria
                 libc::memset(mem, 0, TOTAL_SHM_SIZE);
-                let osc_slice = std::slice::from_raw_parts_mut(mem as *mut IsochronousOscillator, NUM_NODES);
+                let osc_slice =
+                    std::slice::from_raw_parts_mut(mem as *mut IsochronousOscillator, NUM_NODES);
                 for (i, osc) in osc_slice.iter_mut().enumerate() {
                     let mut node = IsochronousOscillator::new(&format!("node_{}", i));
                     node.amplitude = SPA::from_int((i as i64 + 1) * 10);
                     *osc = node;
                 }
                 libc::close(fd);
-                return Some(Self { ptr: mem as *mut u8, size: TOTAL_SHM_SIZE });
+                return Some(Self {
+                    ptr: mem as *mut u8,
+                    size: TOTAL_SHM_SIZE,
+                });
             }
 
             let mem = libc::mmap(
@@ -125,7 +125,10 @@ impl RealShmLattice {
             if mem == libc::MAP_FAILED {
                 None
             } else {
-                Some(Self { ptr: mem as *mut u8, size: TOTAL_SHM_SIZE })
+                Some(Self {
+                    ptr: mem as *mut u8,
+                    size: TOTAL_SHM_SIZE,
+                })
             }
         }
     }
@@ -133,7 +136,8 @@ impl RealShmLattice {
     /// Lee las amplitudes reales de los nodos en SHM
     pub fn read_telemetry(&self) -> (i64, SPA, u64) {
         unsafe {
-            let osc_slice = std::slice::from_raw_parts(self.ptr as *const IsochronousOscillator, NUM_NODES);
+            let osc_slice =
+                std::slice::from_raw_parts(self.ptr as *const IsochronousOscillator, NUM_NODES);
             let mut total_raw = 0i64;
             let mut count = 0i64;
 
@@ -156,7 +160,8 @@ impl RealShmLattice {
     /// Inyecta tokens en las posiciones del retículo
     pub fn inject_tokens(&self, tokens: &[u32]) {
         unsafe {
-            let osc_slice = std::slice::from_raw_parts_mut(self.ptr as *mut IsochronousOscillator, NUM_NODES);
+            let osc_slice =
+                std::slice::from_raw_parts_mut(self.ptr as *mut IsochronousOscillator, NUM_NODES);
             for (i, &tok) in tokens.iter().enumerate() {
                 let idx = i % NUM_NODES;
                 let numer = SPA::from_int((tok % 3600) as i64);
@@ -198,7 +203,7 @@ struct AppState {
     history_idx: usize,
     chat_messages: VecDeque<ChatMessage>,
     security_events: VecDeque<SecurityEvent>,
-    
+
     // Telemetría REAL de SHM
     energy_history: VecDeque<u64>,
     coherence: SPA,
@@ -206,10 +211,10 @@ struct AppState {
     #[allow(dead_code)]
     shm_active: bool,
     active_nodes: usize,
-    
+
     // Motor de Seguridad
     security_pipeline: LfmSecurityPipeline,
-    
+
     // Estado de inferencia
     is_generating: bool,
     current_persona: String,
@@ -231,7 +236,10 @@ impl AppState {
         let mut security_events = VecDeque::new();
         security_events.push_back(SecurityEvent {
             tag: "SHM_INIT".into(),
-            message: format!("Mapeado /dev/shm/me60os_lattice ({} bytes, {} nodos)", TOTAL_SHM_SIZE, NUM_NODES),
+            message: format!(
+                "Mapeado /dev/shm/me60os_lattice ({} bytes, {} nodos)",
+                TOTAL_SHM_SIZE, NUM_NODES
+            ),
             level: "OK".into(),
             timestamp: chrono::Local::now().format("%H:%M:%S").to_string(),
         });
@@ -285,7 +293,8 @@ Responde con autoridad técnica, precisión matemática y en español.";
     let mut file_context = String::new();
     let words: Vec<&str> = prompt.split_whitespace().collect();
     for word in words {
-        let clean = word.trim_matches(|c| c == '?' || c == ',' || c == '"' || c == '\'' || c == '`');
+        let clean =
+            word.trim_matches(|c| c == '?' || c == ',' || c == '"' || c == '\'' || c == '`');
         let expanded = if clean.starts_with("~/") {
             clean.replacen("~", "/home/jnovoas", 1)
         } else {
@@ -300,12 +309,18 @@ Responde con autoridad técnica, precisión matemática y en español.";
                     for entry in entries.flatten().take(25) {
                         list.push(entry.file_name().to_string_lossy().to_string());
                     }
-                    file_context.push_str(&format!("\n[Directorio {} contiene: {}]\n", clean, list.join(", ")));
+                    file_context.push_str(&format!(
+                        "\n[Directorio {} contiene: {}]\n",
+                        clean,
+                        list.join(", ")
+                    ));
                 }
             } else if path.is_file() {
                 if let Ok(content) = std::fs::read_to_string(path) {
-                    let preview: String = content.lines().take(60).collect::<Vec<&str>>().join("\n");
-                    file_context.push_str(&format!("\n[Contenido de {}:\n{}\n...]\n", clean, preview));
+                    let preview: String =
+                        content.lines().take(60).collect::<Vec<&str>>().join("\n");
+                    file_context
+                        .push_str(&format!("\n[Contenido de {}:\n{}\n...]\n", clean, preview));
                 }
             }
         }
@@ -314,7 +329,10 @@ Responde con autoridad técnica, precisión matemática y en español.";
     let user_content = if file_context.is_empty() {
         prompt.to_string()
     } else {
-        format!("{}\n\nContexto del sistema de archivos detectado:\n{}", prompt, file_context)
+        format!(
+            "{}\n\nContexto del sistema de archivos detectado:\n{}",
+            prompt, file_context
+        )
     };
 
     let sys_prompt = format!("{}\nModo actual: {}.", base_context, persona);
@@ -335,12 +353,22 @@ Responde con autoridad técnica, precisión matemática y en español.";
         .map_err(|e| format!("Sin conexión con LFM 2.5 en :8080 -> {}", e))?;
 
     if resp.status().is_success() {
-        let val: serde_json::Value = resp.json().map_err(|e| format!("JSON Parse Error: {}", e))?;
+        let val: serde_json::Value = resp
+            .json()
+            .map_err(|e| format!("JSON Parse Error: {}", e))?;
         if let Some(choices) = val.get("choices").and_then(|c| c.as_array()) {
             if let Some(first) = choices.first() {
                 if let Some(msg) = first.get("message") {
-                    let content = msg.get("content").and_then(|c| c.as_str()).unwrap_or("").trim();
-                    let reasoning = msg.get("reasoning_content").and_then(|c| c.as_str()).unwrap_or("").trim();
+                    let content = msg
+                        .get("content")
+                        .and_then(|c| c.as_str())
+                        .unwrap_or("")
+                        .trim();
+                    let reasoning = msg
+                        .get("reasoning_content")
+                        .and_then(|c| c.as_str())
+                        .unwrap_or("")
+                        .trim();
 
                     if !content.is_empty() {
                         return Ok(content.to_string());
@@ -412,7 +440,9 @@ fn main() -> Result<()> {
                     InputMode::Normal => match key.code {
                         KeyCode::Char('q') | KeyCode::Char('Q') => s.should_quit = true,
                         KeyCode::Char('i') | KeyCode::Char('a') => s.input_mode = InputMode::Insert,
-                        KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => s.should_quit = true,
+                        KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => {
+                            s.should_quit = true
+                        }
                         KeyCode::Char('l') if key.modifiers.contains(KeyModifiers::CONTROL) => {
                             s.chat_messages.clear();
                         }
@@ -444,7 +474,9 @@ fn main() -> Result<()> {
                                             tag: "INGRESS_BLOCKED".into(),
                                             message: format!("{}", err),
                                             level: "WARN".into(),
-                                            timestamp: chrono::Local::now().format("%H:%M:%S").to_string(),
+                                            timestamp: chrono::Local::now()
+                                                .format("%H:%M:%S")
+                                                .to_string(),
                                         });
                                         s.chat_messages.push_back(ChatMessage {
                                             sender: "SECURITY GUARD".into(),
@@ -458,7 +490,9 @@ fn main() -> Result<()> {
                                         s.chat_messages.push_back(ChatMessage {
                                             sender: "YOU".into(),
                                             content: safe_prompt.clone(),
-                                            timestamp: chrono::Local::now().format("%H:%M:%S").to_string(),
+                                            timestamp: chrono::Local::now()
+                                                .format("%H:%M:%S")
+                                                .to_string(),
                                             certified: true,
                                             trust_score: SPA::one(),
                                         });
@@ -476,11 +510,16 @@ fn main() -> Result<()> {
                                                     if let Ok(mut s_ai) = state_ai.lock() {
                                                         // 2. AUDITORÍA EGRESS REAL CON TRUTHSYNC (<100μs)
                                                         let total_energy = s_ai.total_energy_raw;
-                                                        let verification = s_ai.security_pipeline.verify_egress(&output, total_energy);
-                                                        let is_certified = verification.is_certified;
-                                                        let trust_score = verification.overall_trust_score;
+                                                        let verification = s_ai
+                                                            .security_pipeline
+                                                            .verify_egress(&output, total_energy);
+                                                        let is_certified =
+                                                            verification.is_certified;
+                                                        let trust_score =
+                                                            verification.overall_trust_score;
                                                         let num_claims = verification.claims.len();
-                                                        let lat_us = verification.verification_time_us;
+                                                        let lat_us =
+                                                            verification.verification_time_us;
 
                                                         s_ai.security_events.push_back(SecurityEvent {
                                                             tag: "TRUTHSYNC_AUDIT".into(),
@@ -496,20 +535,29 @@ fn main() -> Result<()> {
 
                                                         // 3. INYECCIÓN REAL DE TOKENS A SHM LATTICE
                                                         if let Some(ref shm) = *shm_ai {
-                                                            let tokens: Vec<u32> = output.bytes().map(|b| b as u32).collect();
+                                                            let tokens: Vec<u32> = output
+                                                                .bytes()
+                                                                .map(|b| b as u32)
+                                                                .collect();
                                                             shm.inject_tokens(&tokens);
                                                         }
 
                                                         s_ai.chat_messages.push_back(ChatMessage {
-                                                            sender: format!("LFM-2.5 [{}]", persona),
+                                                            sender: format!(
+                                                                "LFM-2.5 [{}]",
+                                                                persona
+                                                            ),
                                                             content: output,
-                                                            timestamp: chrono::Local::now().format("%H:%M:%S").to_string(),
+                                                            timestamp: chrono::Local::now()
+                                                                .format("%H:%M:%S")
+                                                                .to_string(),
                                                             certified: is_certified,
                                                             trust_score,
                                                         });
 
                                                         s_ai.is_generating = false;
-                                                        s_ai.status_msg = "Ready (Zero-Copy SHM Synced)".into();
+                                                        s_ai.status_msg =
+                                                            "Ready (Zero-Copy SHM Synced)".into();
                                                     }
                                                 }
                                                 Err(err_msg) => {
@@ -517,12 +565,15 @@ fn main() -> Result<()> {
                                                         s_ai.chat_messages.push_back(ChatMessage {
                                                             sender: "LFM-2.5 [ERROR]".into(),
                                                             content: format!("❌ {}", err_msg),
-                                                            timestamp: chrono::Local::now().format("%H:%M:%S").to_string(),
+                                                            timestamp: chrono::Local::now()
+                                                                .format("%H:%M:%S")
+                                                                .to_string(),
                                                             certified: false,
                                                             trust_score: SPA::zero(),
                                                         });
                                                         s_ai.is_generating = false;
-                                                        s_ai.status_msg = "Error de Inferencia".into();
+                                                        s_ai.status_msg =
+                                                            "Error de Inferencia".into();
                                                     }
                                                 }
                                             }
@@ -544,7 +595,9 @@ fn main() -> Result<()> {
                             }
                         }
                         KeyCode::Down => {
-                            if !s.input_history.is_empty() && s.history_idx + 1 < s.input_history.len() {
+                            if !s.input_history.is_empty()
+                                && s.history_idx + 1 < s.input_history.len()
+                            {
                                 s.history_idx += 1;
                                 s.input_buffer = s.input_history[s.history_idx].clone();
                             } else {
@@ -602,14 +655,26 @@ fn draw_header(f: &mut Frame, area: Rect, state: &AppState) {
         .split(area);
 
     let title = Paragraph::new(Line::from(vec![
-        Span::styled(" 🛡️ SENTINEL ", Style::default().fg(CYAN).add_modifier(Modifier::BOLD)),
-        Span::styled("SOVEREIGN CORTEX", Style::default().fg(WHITE).add_modifier(Modifier::DIM)),
+        Span::styled(
+            " 🛡️ SENTINEL ",
+            Style::default().fg(CYAN).add_modifier(Modifier::BOLD),
+        ),
+        Span::styled(
+            "SOVEREIGN CORTEX",
+            Style::default().fg(WHITE).add_modifier(Modifier::DIM),
+        ),
     ]))
-    .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded));
+    .block(
+        Block::default()
+            .borders(Borders::ALL)
+            .border_type(BorderType::Rounded),
+    );
     f.render_widget(title, chunks[0]);
 
     let status_style = if state.is_generating {
-        Style::default().fg(PURPLE).add_modifier(Modifier::SLOW_BLINK)
+        Style::default()
+            .fg(PURPLE)
+            .add_modifier(Modifier::SLOW_BLINK)
     } else {
         Style::default().fg(GREEN)
     };
@@ -618,7 +683,11 @@ fn draw_header(f: &mut Frame, area: Rect, state: &AppState) {
         Span::styled(&state.status_msg, status_style),
     ]))
     .alignment(Alignment::Center)
-    .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded));
+    .block(
+        Block::default()
+            .borders(Borders::ALL)
+            .border_type(BorderType::Rounded),
+    );
     f.render_widget(center, chunks[1]);
 
     let persona_color = match state.current_persona.as_str() {
@@ -628,23 +697,29 @@ fn draw_header(f: &mut Frame, area: Rect, state: &AppState) {
     };
     let right = Paragraph::new(Line::from(vec![
         Span::styled(" ROLE: ", Style::default().fg(TEXT_MUTED)),
-        Span::styled(&state.current_persona, Style::default().fg(persona_color).add_modifier(Modifier::BOLD)),
+        Span::styled(
+            &state.current_persona,
+            Style::default()
+                .fg(persona_color)
+                .add_modifier(Modifier::BOLD),
+        ),
         Span::styled(" │ LFM: ", Style::default().fg(TEXT_MUTED)),
         Span::styled("GPU (:8080)", Style::default().fg(GREEN)),
         Span::styled(" │ SHM: ", Style::default().fg(TEXT_MUTED)),
         Span::styled("ZERO-COPY", Style::default().fg(CYAN)),
     ]))
-    .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded));
+    .block(
+        Block::default()
+            .borders(Borders::ALL)
+            .border_type(BorderType::Rounded),
+    );
     f.render_widget(right, chunks[2]);
 }
 
 fn draw_body(f: &mut Frame, area: Rect, state: &AppState) {
     let main_split = Layout::default()
         .direction(Direction::Horizontal)
-        .constraints([
-            Constraint::Percentage(60),
-            Constraint::Percentage(40),
-        ])
+        .constraints([Constraint::Percentage(60), Constraint::Percentage(40)])
         .split(area);
 
     draw_chat_stream(f, main_split[0], state);
@@ -655,7 +730,10 @@ fn draw_chat_stream(f: &mut Frame, area: Rect, state: &AppState) {
     let block = Block::default()
         .borders(Borders::ALL)
         .border_type(BorderType::Rounded)
-        .title(Span::styled(" 💬 NEURAL DIALOGUE (LFM 2.5 GPU) ", Style::default().fg(CYAN).add_modifier(Modifier::BOLD)));
+        .title(Span::styled(
+            " 💬 NEURAL DIALOGUE (LFM 2.5 GPU) ",
+            Style::default().fg(CYAN).add_modifier(Modifier::BOLD),
+        ));
 
     let items: Vec<ListItem> = state
         .chat_messages
@@ -663,12 +741,23 @@ fn draw_chat_stream(f: &mut Frame, area: Rect, state: &AppState) {
         .map(|msg| {
             let is_user = msg.sender == "YOU";
             let prefix_color = if is_user { WHITE } else { CYAN };
-            
+
             let header_spans = vec![
-                Span::styled(format!("┌─[{}] ", msg.sender), Style::default().fg(prefix_color).add_modifier(Modifier::BOLD)),
-                Span::styled(format!("at {} ", msg.timestamp), Style::default().fg(TEXT_MUTED)),
+                Span::styled(
+                    format!("┌─[{}] ", msg.sender),
+                    Style::default()
+                        .fg(prefix_color)
+                        .add_modifier(Modifier::BOLD),
+                ),
+                Span::styled(
+                    format!("at {} ", msg.timestamp),
+                    Style::default().fg(TEXT_MUTED),
+                ),
                 if msg.certified {
-                    Span::styled(format!("✓ TRUTHSYNC [{}]", msg.trust_score), Style::default().fg(GREEN))
+                    Span::styled(
+                        format!("✓ TRUTHSYNC [{}]", msg.trust_score),
+                        Style::default().fg(GREEN),
+                    )
                 } else {
                     Span::styled("⚠ UNCERTIFIED ", Style::default().fg(RED_WARN))
                 },
@@ -676,17 +765,23 @@ fn draw_chat_stream(f: &mut Frame, area: Rect, state: &AppState) {
 
             let header = Line::from(header_spans);
 
-            let content_lines: Vec<Line> = msg.content
+            let content_lines: Vec<Line> = msg
+                .content
                 .lines()
-                .map(|l| Line::from(vec![
-                    Span::styled("│ ", Style::default().fg(TEXT_MUTED)),
-                    Span::raw(l.to_string()),
-                ]))
+                .map(|l| {
+                    Line::from(vec![
+                        Span::styled("│ ", Style::default().fg(TEXT_MUTED)),
+                        Span::raw(l.to_string()),
+                    ])
+                })
                 .collect();
 
             let mut all_lines = vec![header];
             all_lines.extend(content_lines);
-            all_lines.push(Line::from(vec![Span::styled("└────────────────────────────────────────", Style::default().fg(DARK_BG))]));
+            all_lines.push(Line::from(vec![Span::styled(
+                "└────────────────────────────────────────",
+                Style::default().fg(DARK_BG),
+            )]));
 
             ListItem::new(all_lines)
         })
@@ -700,8 +795,8 @@ fn draw_side_telemetry(f: &mut Frame, area: Rect, state: &AppState) {
     let side_split = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Length(5),  // Banda compacta de coherencia / retículo
-            Constraint::Min(6),     // El resto completo para la auditoría de TruthSync
+            Constraint::Length(5), // Banda compacta de coherencia / retículo
+            Constraint::Min(6),    // El resto completo para la auditoría de TruthSync
         ])
         .split(area);
 
@@ -714,7 +809,10 @@ fn draw_side_telemetry(f: &mut Frame, area: Rect, state: &AppState) {
     let lat_block = Block::default()
         .borders(Borders::ALL)
         .border_type(BorderType::Rounded)
-        .title(Span::styled(lat_title, Style::default().fg(PURPLE).add_modifier(Modifier::BOLD)));
+        .title(Span::styled(
+            lat_title,
+            Style::default().fg(PURPLE).add_modifier(Modifier::BOLD),
+        ));
 
     let data_vec: Vec<u64> = state.energy_history.iter().copied().collect();
     let sparkline = Sparkline::default()
@@ -728,7 +826,10 @@ fn draw_side_telemetry(f: &mut Frame, area: Rect, state: &AppState) {
     let sec_block = Block::default()
         .borders(Borders::ALL)
         .border_type(BorderType::Rounded)
-        .title(Span::styled(" 🛡️ TRUTHSYNC LIVE AUDIT TRAIL ", Style::default().fg(GREEN).add_modifier(Modifier::BOLD)));
+        .title(Span::styled(
+            " 🛡️ TRUTHSYNC LIVE AUDIT TRAIL ",
+            Style::default().fg(GREEN).add_modifier(Modifier::BOLD),
+        ));
 
     let sec_items: Vec<ListItem> = state
         .security_events
@@ -741,8 +842,14 @@ fn draw_side_telemetry(f: &mut Frame, area: Rect, state: &AppState) {
                 _ => CYAN,
             };
             ListItem::new(Line::from(vec![
-                Span::styled(format!("[{}] ", ev.timestamp), Style::default().fg(TEXT_MUTED)),
-                Span::styled(format!("[{}] ", ev.tag), Style::default().fg(color).add_modifier(Modifier::BOLD)),
+                Span::styled(
+                    format!("[{}] ", ev.timestamp),
+                    Style::default().fg(TEXT_MUTED),
+                ),
+                Span::styled(
+                    format!("[{}] ", ev.tag),
+                    Style::default().fg(color).add_modifier(Modifier::BOLD),
+                ),
                 Span::styled(&ev.message, Style::default().fg(WHITE)),
             ]))
         })
@@ -758,14 +865,23 @@ fn draw_input(f: &mut Frame, area: Rect, state: &AppState) {
         InputMode::Insert => " [INSERT] ",
     };
     let mode_color = match state.input_mode {
-        InputMode::Normal => Style::default().fg(DARK_BG).bg(CYAN).add_modifier(Modifier::BOLD),
-        InputMode::Insert => Style::default().fg(DARK_BG).bg(GREEN).add_modifier(Modifier::BOLD),
+        InputMode::Normal => Style::default()
+            .fg(DARK_BG)
+            .bg(CYAN)
+            .add_modifier(Modifier::BOLD),
+        InputMode::Insert => Style::default()
+            .fg(DARK_BG)
+            .bg(GREEN)
+            .add_modifier(Modifier::BOLD),
     };
 
     let input_block = Block::default()
         .borders(Borders::ALL)
         .border_type(BorderType::Rounded)
-        .title(Span::styled(" PROMPT (INGRESS FILTERED) ", Style::default().fg(WHITE).add_modifier(Modifier::BOLD)));
+        .title(Span::styled(
+            " PROMPT (INGRESS FILTERED) ",
+            Style::default().fg(WHITE).add_modifier(Modifier::BOLD),
+        ));
 
     let chunks = Layout::default()
         .direction(Direction::Horizontal)
@@ -775,7 +891,11 @@ fn draw_input(f: &mut Frame, area: Rect, state: &AppState) {
     let mode_widget = Paragraph::new(mode_str)
         .style(mode_color)
         .alignment(Alignment::Center)
-        .block(Block::default().borders(Borders::ALL).border_type(BorderType::Rounded));
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .border_type(BorderType::Rounded),
+        );
 
     let input_text = if state.input_buffer.is_empty() && state.input_mode == InputMode::Normal {
         "Presiona 'i' para escribir a Sentinel LFM..."
@@ -800,15 +920,33 @@ fn draw_input(f: &mut Frame, area: Rect, state: &AppState) {
 
 fn draw_footer(f: &mut Frame, area: Rect, _state: &AppState) {
     let footer_text = Line::from(vec![
-        Span::styled(" [i] ", Style::default().fg(GREEN).add_modifier(Modifier::BOLD)),
+        Span::styled(
+            " [i] ",
+            Style::default().fg(GREEN).add_modifier(Modifier::BOLD),
+        ),
         Span::styled("Insert  ", Style::default().fg(TEXT_MUTED)),
-        Span::styled("[Esc] ", Style::default().fg(CYAN).add_modifier(Modifier::BOLD)),
+        Span::styled(
+            "[Esc] ",
+            Style::default().fg(CYAN).add_modifier(Modifier::BOLD),
+        ),
         Span::styled("Normal  ", Style::default().fg(TEXT_MUTED)),
-        Span::styled("[F1-F4] ", Style::default().fg(PURPLE).add_modifier(Modifier::BOLD)),
-        Span::styled("Roles (Arch/Hack/Res/Op)  ", Style::default().fg(TEXT_MUTED)),
-        Span::styled("[Ctrl+L] ", Style::default().fg(WHITE).add_modifier(Modifier::BOLD)),
+        Span::styled(
+            "[F1-F4] ",
+            Style::default().fg(PURPLE).add_modifier(Modifier::BOLD),
+        ),
+        Span::styled(
+            "Roles (Arch/Hack/Res/Op)  ",
+            Style::default().fg(TEXT_MUTED),
+        ),
+        Span::styled(
+            "[Ctrl+L] ",
+            Style::default().fg(WHITE).add_modifier(Modifier::BOLD),
+        ),
         Span::styled("Clear  ", Style::default().fg(TEXT_MUTED)),
-        Span::styled("[q] ", Style::default().fg(RED_WARN).add_modifier(Modifier::BOLD)),
+        Span::styled(
+            "[q] ",
+            Style::default().fg(RED_WARN).add_modifier(Modifier::BOLD),
+        ),
         Span::styled("Quit", Style::default().fg(TEXT_MUTED)),
     ]);
 

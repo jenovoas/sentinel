@@ -119,7 +119,7 @@ impl WorkerApp {
 
         // allowed_score = (allowed / 3.0).min(1.0) -> (allowed * SCALE_0 / 3).clamp(0, SCALE_0)
         let allowed_score = SPA::from_raw((allowed * SPA::SCALE_0 / 3).min(SPA::SCALE_0));
-        
+
         // blocked_penalty = blocked.min(1.0) -> if >0 SCALE_0 else 0
         let blocked_penalty = if blocked > 0 { one } else { SPA::zero() };
 
@@ -129,10 +129,9 @@ impl WorkerApp {
 
         // weighted: (1.0 - blocked_penalty)*0.4 + (allowed_score)*0.3 + (entropy)*0.3
         // 0.4 = 40/100, 0.3 = 30/100
-        let semantic_score = 
-            (one - blocked_penalty) * 40 / 100 + 
-            allowed_score * 30 / 100 + 
-            entropy_score * 30 / 100;
+        let semantic_score = (one - blocked_penalty) * 40 / 100
+            + allowed_score * 30 / 100
+            + entropy_score * 30 / 100;
 
         if blocked > 0 {
             issues.push(format!("semantic:blocked_phrases({})", blocked));
@@ -172,7 +171,10 @@ impl WorkerApp {
         };
 
         if elapsed < 5 {
-            return (SPA::one(), Some(format!("velocity_impossible:{}s<5s", elapsed)));
+            return (
+                SPA::one(),
+                Some(format!("velocity_impossible:{}s<5s", elapsed)),
+            );
         }
         if elapsed < min_time {
             // half = 0.5 = 6,480,000
@@ -211,7 +213,10 @@ impl WorkerApp {
 
                 if cpu_val_x60 < 2 {
                     // 0.1 penalty = 1,296,000
-                    return (SPA::from_raw(SPA::SCALE_0 / 10), Some("stress_anomaly:low_cpu".to_string()));
+                    return (
+                        SPA::from_raw(SPA::SCALE_0 / 10),
+                        Some("stress_anomaly:low_cpu".to_string()),
+                    );
                 }
             }
         }
@@ -276,11 +281,10 @@ impl WorkerApp {
         // Métrica final de Coherencia (Aritmética SPA)
         let one = SPA::one();
         let is_ghost = ghost_pen.to_raw() > 0;
-        let coherence = 
-            (semantic_score * 25 / 100) +
-            (one - ghost_pen) * 40 / 100 +
-            (one - vel_pen) * 20 / 100 +
-            (one - ring0_pen) * 15 / 100;
+        let coherence = (semantic_score * 25 / 100)
+            + (one - ghost_pen) * 40 / 100
+            + (one - vel_pen) * 20 / 100
+            + (one - ring0_pen) * 15 / 100;
 
         let base_score: i64 = 20;
         let mut final_score = base_score;

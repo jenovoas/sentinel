@@ -18,7 +18,10 @@
 //!   El dato completo se reconstruye por fidelidad colectiva, no por celda aislada.
 //! - QHC: bombeo 10;5,6,5 + Salto-17 sincroniza ambas mallas cada tick.
 
-use libc::{shm_open, ftruncate, mmap, munmap, shm_unlink, MAP_FAILED, MAP_SHARED, O_CREAT, O_RDWR, PROT_READ, PROT_WRITE};
+use libc::{
+    ftruncate, mmap, munmap, shm_open, shm_unlink, MAP_FAILED, MAP_SHARED, O_CREAT, O_RDWR,
+    PROT_READ, PROT_WRITE,
+};
 use me60os_core::qhc::QhcTensor;
 use me60os_core::resonant_matrix::ResonantMatrix;
 use me60os_core::spa::SPA;
@@ -38,7 +41,14 @@ unsafe fn anchor_shm(name: &str, size: usize) -> (*mut u8, i32) {
     if ftruncate(fd, size as i64) == -1 {
         panic!("ftruncate falló");
     }
-    let ptr = mmap(ptr::null_mut(), size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    let ptr = mmap(
+        ptr::null_mut(),
+        size,
+        PROT_READ | PROT_WRITE,
+        MAP_SHARED,
+        fd,
+        0,
+    );
     if ptr == MAP_FAILED {
         panic!("mmap falló");
     }
@@ -64,7 +74,10 @@ fn main() {
 
     println!("💎 RESONANT LATTICE MEMORY — DOBLE MALLA + SHM + fractal (S60 puro)");
     println!("   Lane A y B anclados a /dev/shm (RAM extendida por cristal).");
-    println!("   Nodos/lane: {} | bytes/lane: {} | bytes/nodo: {}", N_NODES, total, crystal_size);
+    println!(
+        "   Nodos/lane: {} | bytes/lane: {} | bytes/nodo: {}",
+        N_NODES, total, crystal_size
+    );
     println!("   Regla: doble malla o no hay portal (memoria accesible solo si A∧B convergen).");
     println!("{:-<72}", "");
 
@@ -103,7 +116,10 @@ fn main() {
     // Así el nodo semilla conserva ch*SCALE_0 intacto en el momento de la lectura
     // (no sufrió difusión, porque el bombeo ya pasó). Esto es "amplitud corregida"
     // del cristal resonando, no contexto guardado de la inyección.
-    println!("📝 Inyectando semilla '{}' (compresión fractal: pocos nodos, malla propaga)", data);
+    println!(
+        "📝 Inyectando semilla '{}' (compresión fractal: pocos nodos, malla propaga)",
+        data
+    );
     for (i, ch) in data.chars().enumerate() {
         let amp = SPA::from_int(ch as i64);
         lane_a.inject_pai(i, ch as i64, 1);
@@ -138,7 +154,10 @@ fn main() {
     }
 
     if convergen {
-        println!("📖 Memoria reconstruida por fidelidad colectiva dual: '{}'", recovered);
+        println!(
+            "📖 Memoria reconstruida por fidelidad colectiva dual: '{}'",
+            recovered
+        );
         println!("   Fidelidad: ✅ 100% (doble malla convergida = portal abierto)");
     } else {
         println!("📖 Lectura parcial: '{}'", recovered);
@@ -147,18 +166,13 @@ fn main() {
 
     // ANCLAR A SHM: copiar la malla al buffer POSIX (extensión de RAM persistente).
     unsafe {
-        ptr::copy_nonoverlapping(
-            lane_a.crystals.as_ptr() as *const u8,
-            ptr_a,
-            total,
-        );
-        ptr::copy_nonoverlapping(
-            lane_b.crystals.as_ptr() as *const u8,
-            ptr_b,
-            total,
-        );
+        ptr::copy_nonoverlapping(lane_a.crystals.as_ptr() as *const u8, ptr_a, total);
+        ptr::copy_nonoverlapping(lane_b.crystals.as_ptr() as *const u8, ptr_b, total);
         println!("💾 Mallas ancladas a /dev/shm (/resonant_lattice_a, /resonant_lattice_b).");
-        println!("   RAM extendida por cristal: {} bytes/lane fuera del heap del proceso.", total);
+        println!(
+            "   RAM extendida por cristal: {} bytes/lane fuera del heap del proceso.",
+            total
+        );
 
         // Limpieza.
         munmap(ptr_a as *mut libc::c_void, total);

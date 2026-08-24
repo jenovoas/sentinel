@@ -2,7 +2,7 @@
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 //! # 🛡️ GUARDIAN LSM: RING 0 EXECUTION CONTROL 🛡️
-//! 
+//!
 //! User-space component of the eBPF LSM Guardian.
 //! Enforces Base-60 coherence thresholds on system actions.
 //!
@@ -12,12 +12,12 @@
 //! - [EXT-006] QUT-DV25: A Dataset for Dynamic Analysis of Next-Gen Software Supply Chain Attacks. arXiv:2505.13804.
 //! - [P-RES] Novoa, J. (2026). *Aritmética Sexagesimal como Base de Sistemas.* `RESEARCH_es.md`.
 
-use crate::spa::SPA;
 use crate::scv::ScvEngine;
+use crate::spa::SPA;
 use crate::time_crystal::LiquidLattice;
 use std::sync::Arc;
 use tokio::sync::Mutex;
-use tracing::{info, warn, error};
+use tracing::{error, info, warn};
 
 #[cfg(feature = "extension-module")]
 use pyo3::prelude::*;
@@ -45,21 +45,30 @@ impl GuardianLsm {
         // 1. Check System Coherence
         let lattice = self.lattice.lock().await;
         let system_coherence = SPA::from_raw(lattice.buffer.coherence as i64);
-        
+
         if system_coherence < self.coherence_threshold {
-            warn!("🛡️ GUARDIAN: Acción bloqueada por BAJA COHERENCIA ({}) - Actor: {}", system_coherence, actor);
+            warn!(
+                "🛡️ GUARDIAN: Acción bloqueada por BAJA COHERENCIA ({}) - Actor: {}",
+                system_coherence, actor
+            );
             return false;
         }
 
         // 2. Semantic Verification (TruthSync)
         let (is_valid, score, _entropy, _keywords) = self.scv.analyze(context);
-        
+
         if !is_valid {
-            error!("🛡️ GUARDIAN: Violación Semántica detectada - Acción: {} | Score: {}", action, score);
+            error!(
+                "🛡️ GUARDIAN: Violación Semántica detectada - Acción: {} | Score: {}",
+                action, score
+            );
             return false;
         }
 
-        info!("🛡️ GUARDIAN: Acción permitida - Actor: {} | Coherencia: {}", actor, system_coherence);
+        info!(
+            "🛡️ GUARDIAN: Acción permitida - Actor: {} | Coherencia: {}",
+            actor, system_coherence
+        );
         true
     }
 
@@ -67,7 +76,10 @@ impl GuardianLsm {
     pub fn process_cortex_event(&self, event_type: u32, pid: u32) {
         match event_type {
             1 | 2 | 10 => {
-                warn!("🛡️ GUARDIAN: Bloqueo/Disonancia en Ring 0 detectado (PID: {}, Tipo: {})", pid, event_type);
+                warn!(
+                    "🛡️ GUARDIAN: Bloqueo/Disonancia en Ring 0 detectado (PID: {}, Tipo: {})",
+                    pid, event_type
+                );
             }
             _ => (),
         }
@@ -75,15 +87,30 @@ impl GuardianLsm {
 
     /// Activamente aísla un PID atacante en Ring 0 (eBPF float_block_map) y colapsa coherencia
     pub async fn isolate_pid(&self, pid: u32, filename: &str) {
-        error!("🛡️ GUARDIAN [AISLAMIENTO AUTÓNOMO]: Bloqueando PID {} ({}) en Ring 0 eBPF", pid, filename);
+        error!(
+            "🛡️ GUARDIAN [AISLAMIENTO AUTÓNOMO]: Bloqueando PID {} ({}) en Ring 0 eBPF",
+            pid, filename
+        );
 
         // 1. Actualizar mapa eBPF en kernel mediante bpftool (si existe el pin)
         let _ = tokio::process::Command::new("bpftool")
             .args([
-                "map", "update", "pinned", "/sys/fs/bpf/sentinel/float_block_map",
-                "key", "hex", &format!("{:02x} {:02x} {:02x} {:02x}",
-                    pid & 0xff, (pid >> 8) & 0xff, (pid >> 16) & 0xff, (pid >> 24) & 0xff),
-                "value", "hex", "01"
+                "map",
+                "update",
+                "pinned",
+                "/sys/fs/bpf/sentinel/float_block_map",
+                "key",
+                "hex",
+                &format!(
+                    "{:02x} {:02x} {:02x} {:02x}",
+                    pid & 0xff,
+                    (pid >> 8) & 0xff,
+                    (pid >> 16) & 0xff,
+                    (pid >> 24) & 0xff
+                ),
+                "value",
+                "hex",
+                "01",
             ])
             .output()
             .await;
@@ -93,4 +120,3 @@ impl GuardianLsm {
         lattice.buffer.coherence = 0;
     }
 }
-

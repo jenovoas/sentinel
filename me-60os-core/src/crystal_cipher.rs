@@ -94,7 +94,10 @@ impl CrystalCipher {
         let key = self.current_key();
         let cipher = Aes256Gcm::new(&key.into());
         let nonce = self.nonce_for_pulse();
-        let payload = Payload { msg: plaintext, aad: b"sentinel-crystal-layer" };
+        let payload = Payload {
+            msg: plaintext,
+            aad: b"sentinel-crystal-layer",
+        };
         cipher.encrypt((&nonce).into(), payload).ok()
     }
 
@@ -103,7 +106,10 @@ impl CrystalCipher {
         let key = self.current_key();
         let cipher = Aes256Gcm::new(&key.into());
         let nonce = self.nonce_for_pulse();
-        let payload = Payload { msg: ciphertext, aad: b"sentinel-crystal-layer" };
+        let payload = Payload {
+            msg: ciphertext,
+            aad: b"sentinel-crystal-layer",
+        };
         cipher.decrypt((&nonce).into(), payload).ok()
     }
 

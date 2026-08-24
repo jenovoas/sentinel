@@ -43,10 +43,10 @@ pub struct S60 {
 impl S60 {
     // Scales — aligned with SPA (60⁴)
     pub const SCALE_0: i64 = 12_960_000; // 60^4 — 1.0
-    pub const SCALE_1: i64 = 216_000;    // 60^3 — 1/60 (Minute)
-    pub const SCALE_2: i64 = 3_600;      // 60^2 — 1/3600 (Second)
-    pub const SCALE_3: i64 = 60;         // 60^1 — 1/216000 (Tertia)
-    pub const SCALE_4: i64 = 1;          // 60^0 — 1/12960000 (Quarta)
+    pub const SCALE_1: i64 = 216_000; // 60^3 — 1/60 (Minute)
+    pub const SCALE_2: i64 = 3_600; // 60^2 — 1/3600 (Second)
+    pub const SCALE_3: i64 = 60; // 60^1 — 1/216000 (Tertia)
+    pub const SCALE_4: i64 = 1; // 60^0 — 1/12960000 (Quarta)
 
     pub const ZERO: S60 = S60 { _value: 0 };
     pub const ONE: S60 = S60 { _value: 12_960_000 };
@@ -70,9 +70,7 @@ impl S60 {
             + (t as i64 * Self::SCALE_3)
             + (q as i64 * Self::SCALE_4);
 
-        Ok(S60 {
-            _value: total,
-        })
+        Ok(S60 { _value: total })
     }
 
     /// Raw constructor (Internal use only)
@@ -80,6 +78,7 @@ impl S60 {
         S60 { _value: raw }
     }
 
+    #[allow(clippy::wrong_self_convention)]
     pub fn to_base_units(&self) -> i64 {
         self._value
     }
@@ -119,6 +118,7 @@ impl S60 {
     }
 
     /// Get components (for display/telemetry) — 4 sexagesimal places
+    #[allow(clippy::wrong_self_convention)]
     pub fn to_components(&self) -> (i32, u8, u8, u8, u8) {
         let sign = if self._value < 0 { -1 } else { 1 };
         let abs_val = self._value.abs();
@@ -157,7 +157,11 @@ impl fmt::Debug for S60 {
         let t = (rem_s / S60::SCALE_3) as u8;
         let q = (rem_s % S60::SCALE_3) as u8;
 
-        write!(f, "S60[{}{}; {:02}, {:02}, {:02}, {:02}]", sign, d, m, s, t, q)
+        write!(
+            f,
+            "S60[{}{}; {:02}, {:02}, {:02}, {:02}]",
+            sign, d, m, s, t, q
+        )
     }
 }
 

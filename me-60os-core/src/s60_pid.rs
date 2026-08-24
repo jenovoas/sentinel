@@ -43,14 +43,14 @@ impl S60PID {
     pub fn update(&mut self, measured_value: SPA, dt: SPA) -> SPA {
         // 1. Calcular Error
         let error = self.setpoint - measured_value;
-        
+
         // 2. Término Proporcional
         let p_term = self.kp * error;
-        
+
         // 3. Término Integral (Acumulación de error en el tiempo)
         self._integral = self._integral + (error * dt);
         let i_term = self.ki * self._integral;
-        
+
         // 4. Término Derivativo (Tasa de cambio del error)
         let d_term = if dt > SPA::zero() {
             let d_error = (error - self._prev_error) / dt;
@@ -58,10 +58,10 @@ impl S60PID {
         } else {
             SPA::zero()
         };
-        
+
         // Actualizar estado para siguiente ciclo
         self._prev_error = error;
-        
+
         // 5. Salida Total
         p_term + i_term + d_term
     }

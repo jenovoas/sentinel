@@ -19,13 +19,13 @@ const N_CAPAS: usize = 5;
 
 fn main() {
     let dt = SPA::from_int(1) / SPA::from_int(10); // 0.1s
-    let t_max_steps = 6800u32;                      // 680s = 10 ciclos de 68s
+    let t_max_steps = 6800u32; // 680s = 10 ciclos de 68s
 
     let period_bio = SPA::from_int(17);
     let period_crys = SPA::from_int(17) / SPA::from_int(4); // 4.25s
-    let period_venus = SPA::from_raw(16_180_000);            // 16.18s
+    let period_venus = SPA::from_raw(16_180_000); // 16.18s
     let three_sixty = SPA::from_int(360);
-    let threshold = SPA::from_int(48) / SPA::from_int(60);  // 0.8
+    let threshold = SPA::from_int(48) / SPA::from_int(60); // 0.8
 
     let mut carril_a = ResonantMatrix::new(N_CAPAS);
     let mut carril_b = ResonantMatrix::new(N_CAPAS);
@@ -80,10 +80,10 @@ fn main() {
 
     println!("🔮 TOTAL PORTALES EN 680s: {}", all_portals.len());
     println!();
-    
+
     // Por ciclo
     for (i, portals) in cycle_portals.iter().enumerate() {
-        print!("   Ciclo {} ({}s-{}s): ", i, i*68, (i+1)*68);
+        print!("   Ciclo {} ({}s-{}s): ", i, i * 68, (i + 1) * 68);
         if portals.is_empty() {
             println!("(ninguno)");
         } else {
@@ -93,26 +93,31 @@ fn main() {
             println!();
         }
     }
-    
+
     println!();
     println!("🔍 BUSCANDO META-PORTALES (alineación de portales entre ciclos)...");
-    
+
     // Buscar meta-portales: portales que ocurren en tiempos similares módulo 68s
     let mut meta_counts: std::collections::HashMap<u32, u32> = std::collections::HashMap::new();
     for &t in &all_portals {
         let phase = ((t % 68.0) * 10.0).round() as u32; // discretizar a 0.1s
         *meta_counts.entry(phase).or_insert(0) += 1;
     }
-    
+
     println!("   Frecuencia de fases de portal (módulo 68s):");
     let mut sorted: Vec<_> = meta_counts.iter().collect();
     sorted.sort_by_key(|(k, _)| *k);
     for (phase, count) in sorted {
-        if *count >= 3 { // aparece en 3+ ciclos
-            println!("   ⭐ META-PORTAL @ fase {:.1}s (aparece en {} ciclos)", *phase as f64 / 10.0, count);
+        if *count >= 3 {
+            // aparece en 3+ ciclos
+            println!(
+                "   ⭐ META-PORTAL @ fase {:.1}s (aparece en {} ciclos)",
+                *phase as f64 / 10.0,
+                count
+            );
         }
     }
-    
+
     println!("{:-<72}", "");
     println!("🏆 Portal = convergencia φ_BIO∧φ_CRYSTAL∧φ_VENUS > 0.8");
     println!("   Meta-portal = misma fase de portal en múltiples ciclos de 68s");

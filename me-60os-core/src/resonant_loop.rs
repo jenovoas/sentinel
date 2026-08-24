@@ -35,11 +35,11 @@ impl ResonantLoop {
     pub async fn wait_next_pulse(&mut self) -> bool {
         let now = Instant::now();
         let elapsed = now.duration_since(self.cycle_start);
-        
+
         // Calcular tiempo restante para completar el ciclo de 17s
         let remainder = elapsed.as_millis() % self.breath_cycle.as_millis();
         let wait_ms = self.breath_cycle.as_millis() - remainder;
-        
+
         if wait_ms > 0 {
             tracing::debug!("⏳ Resonant Loop: Syncing phase ({}ms)", wait_ms);
             sleep(Duration::from_millis(wait_ms as u64)).await;

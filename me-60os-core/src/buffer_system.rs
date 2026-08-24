@@ -11,10 +11,10 @@
 //! - Base-60 Alignment (Buffer sizes are multiples of 60)
 //! - Atomic control indices for zero-latency sync
 
+use crate::ebpf_cortex_bridge::CortexEvent;
 use crate::spa::SPA;
 use std::cell::UnsafeCell;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use crate::ebpf_cortex_bridge::CortexEvent;
 
 /// Constants
 pub const BUFFER_SIZE_S60: usize = 3600; // 60^2 blocks

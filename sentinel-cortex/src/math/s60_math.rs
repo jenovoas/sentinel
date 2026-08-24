@@ -375,8 +375,8 @@ pub fn q_factor_s60(spectrum: &[ComplexS60], sample_rate: S60) -> Result<S60, S6
     let mut peak_magnitude = S60::ZERO;
 
     // Only search first half (positive frequencies)
-    for i in 0..(n / 2) {
-        let mag = spectrum[i].magnitude_squared();
+    for (i, spec) in spectrum.iter().enumerate().take(n / 2) {
+        let mag = spec.magnitude_squared();
         if mag > peak_magnitude {
             peak_magnitude = mag;
             peak_idx = i;
@@ -407,8 +407,8 @@ pub fn q_factor_s60(spectrum: &[ComplexS60], sample_rate: S60) -> Result<S60, S6
     }
 
     // Search right for upper -3dB point
-    for i in (peak_idx + 1)..(n / 2) {
-        if spectrum[i].magnitude_squared() < half_power {
+    for (i, spec) in spectrum.iter().enumerate().take(n / 2).skip(peak_idx + 1) {
+        if spec.magnitude_squared() < half_power {
             f_high_idx = i;
             break;
         }
@@ -557,7 +557,8 @@ pub fn sin_s60(x: S60) -> S60 {
     // Normaliza x a (-π, π] restando/restableciendo 2π simétricamente
     // (antes era a [0, 2π] que deja a x=π en el borde, donde el Taylor diverge más).
     let two_pi = S60::two_pi();
-    let pi = S60::from_raw(S60::SCALE_0 * 3 + S60::SCALE_1 * 8 + S60::SCALE_2 * 29 + S60::SCALE_3 * 44);
+    let pi =
+        S60::from_raw(S60::SCALE_0 * 3 + S60::SCALE_1 * 8 + S60::SCALE_2 * 29 + S60::SCALE_3 * 44);
 
     let mut angle = x;
     // Traer a (-2π, 2π] primero

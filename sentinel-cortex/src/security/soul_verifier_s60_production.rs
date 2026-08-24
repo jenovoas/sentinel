@@ -6,7 +6,9 @@
 //! PRODUCTION Biometric Verifier - Pure Base-60 (S60) Implementation
 
 use crate::math::s60::S60;
-use crate::security::soul_verifier_s60::{calculate_lyapunov_s60, chaos_entropy_s60, calculate_q_factor_s60};
+use crate::security::soul_verifier_s60::{
+    calculate_lyapunov_s60, calculate_q_factor_s60, chaos_entropy_s60,
+};
 use serde::{Deserialize, Serialize};
 use sha3::{Digest, Sha3_512};
 use std::fs::File;
@@ -48,7 +50,9 @@ pub struct BiometricVerifier {
 
 impl BiometricVerifier {
     pub fn new() -> Self {
-        Self { challenge_seq: vec![255, 0, 255] }
+        Self {
+            challenge_seq: vec![255, 0, 255],
+        }
     }
 
     pub fn generate_challenge(&self, user_id: &str) -> LivenessChallenge {
@@ -65,8 +69,11 @@ impl BiometricVerifier {
         match File::open("/dev/urandom") {
             Ok(mut file) => {
                 let mut buffer = [0u8; 8];
-                if file.read_exact(&mut buffer).is_ok() { u64::from_le_bytes(buffer) }
-                else { self.fallback_nonce() }
+                if file.read_exact(&mut buffer).is_ok() {
+                    u64::from_le_bytes(buffer)
+                } else {
+                    self.fallback_nonce()
+                }
             }
             Err(_) => self.fallback_nonce(),
         }
@@ -74,29 +81,45 @@ impl BiometricVerifier {
 
     fn fallback_nonce(&self) -> u64 {
         use std::time::{SystemTime, UNIX_EPOCH};
-        let ts = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos() as u64;
+        let ts = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos() as u64;
         ts ^ (std::process::id() as u64)
     }
 
-    pub fn verify_liveness(&self, rppg_signal: &[S60], challenge: &LivenessChallenge) -> Result<BiometricProof, BiometricError> {
+    pub fn verify_liveness(
+        &self,
+        rppg_signal: &[S60],
+        challenge: &LivenessChallenge,
+    ) -> Result<BiometricProof, BiometricError> {
         let now = chrono::Utc::now().timestamp();
-        if (now - challenge.timestamp) > 30 { return Err(BiometricError::StaleChallenge); }
+        if (now - challenge.timestamp) > 30 {
+            return Err(BiometricError::StaleChallenge);
+        }
 
         let lyapunov = calculate_lyapunov_s60(rppg_signal);
         let entropy = chaos_entropy_s60(rppg_signal);
         let q_factor = calculate_q_factor_s60(rppg_signal);
         let light_response = S60::zero();
 
-        let biometric_hash_str = self.compute_biometric_hash_s60(rppg_signal, &challenge.nonce.to_le_bytes());
+        let biometric_hash_str =
+            self.compute_biometric_hash_s60(rppg_signal, &challenge.nonce.to_le_bytes());
 
         let min_lyap = S60::from_raw(S60::SCALE_0 / 10);
         let max_lyap = S60::from_raw((S60::SCALE_0 * 5) / 2);
         let min_entr = S60::from_raw(S60::SCALE_0 / 2);
         let min_q = S60::from_int(2);
 
-        if lyapunov < min_lyap || lyapunov > max_lyap { return Err(BiometricError::NoLivingSource); }
-        if entropy < min_entr { return Err(BiometricError::NoLivingSource); }
-        if q_factor < min_q { return Err(BiometricError::NoLivingSource); }
+        if lyapunov < min_lyap || lyapunov > max_lyap {
+            return Err(BiometricError::NoLivingSource);
+        }
+        if entropy < min_entr {
+            return Err(BiometricError::NoLivingSource);
+        }
+        if q_factor < min_q {
+            return Err(BiometricError::NoLivingSource);
+        }
 
         Ok(BiometricProof {
             lyapunov_exp: lyapunov,
@@ -110,13 +133,19 @@ impl BiometricVerifier {
 
     fn compute_biometric_hash_s60(&self, rppg: &[S60], nonce: &[u8]) -> String {
         let mut hasher = Sha3_512::new();
-        for val in rppg { hasher.update(val.to_base_units().to_le_bytes()); }
+        for val in rppg {
+            hasher.update(val.to_base_units().to_le_bytes());
+        }
         hasher.update(nonce);
         hex::encode(hasher.finalize())
     }
 }
 
-impl Default for BiometricVerifier { fn default() -> Self { Self::new() } }
+impl Default for BiometricVerifier {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -135,7 +164,7 @@ mod tests {
             .map(|d| d.as_nanos() as i64)
             .unwrap_or(seed_offset.wrapping_mul(997));
         // Mapeo a rango fisiológico: BPM 60-100 → valor S60 60-100
-        
+
         60 + ((nanos.wrapping_add(seed_offset * 997)) % 41).unsigned_abs() as i64
     }
 
@@ -152,15 +181,21 @@ mod tests {
         // con ruido del scheduler del SO) para ejercitar el flujo
         // real del verifier. Si la calibración actual fuera demasiado
         // laxa (deja pasar señales sintéticas), este test lo revelaría.
-        let signal: Vec<S60> = (0..100).map(|i| {
-            let base = entropy_signal(i);
-            // Añadir jitter no periódico (HRV)
-            let jitter = (entropy_signal(i * 7 + 3) % 5) - 2;
-            // from_int toma i32; nuestro rango fisiológico 60-100 + jitter (-2..2) cabe.
-            S60::from_int((base + jitter) as i32)
-        }).collect();
+        let signal: Vec<S60> = (0..100)
+            .map(|i| {
+                let base = entropy_signal(i);
+                // Añadir jitter no periódico (HRV)
+                let jitter = (entropy_signal(i * 7 + 3) % 5) - 2;
+                // from_int toma i32; nuestro rango fisiológico 60-100 + jitter (-2..2) cabe.
+                S60::from_int((base + jitter) as i32)
+            })
+            .collect();
         let result = verifier.verify_liveness(&signal, &challenge);
-        assert!(result.is_ok(), "Señal con variabilidad real debería pasar: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "Señal con variabilidad real debería pasar: {:?}",
+            result.err()
+        );
     }
 
     #[test]
@@ -171,7 +206,9 @@ mod tests {
         // y se vuelve demasiado laxa, este test lo detectará.
         let verifier = BiometricVerifier::new();
         let challenge = verifier.generate_challenge("test_synthetic");
-        let signal: Vec<S60> = (0..100).map(|i| S60::from_int(60 + (i as i64 % 10) as i32)).collect();
+        let signal: Vec<S60> = (0..100)
+            .map(|i| S60::from_int(60 + (i as i64 % 10) as i32))
+            .collect();
         let _ = verifier.verify_liveness(&signal, &challenge);
         // No assertamos is_err() porque los clamps actuales la dejan pasar;
         // este test documenta el gap y forzará la decisión cuando se apriete

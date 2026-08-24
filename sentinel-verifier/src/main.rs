@@ -39,13 +39,36 @@ struct CheckResult {
 
 impl CheckResult {
     fn ok(id: &'static str, name: &'static str, evidence: String) -> Self {
-        Self { id, name, status: Status::Ok, evidence, detail: None }
+        Self {
+            id,
+            name,
+            status: Status::Ok,
+            evidence,
+            detail: None,
+        }
     }
-    fn fail(id: &'static str, name: &'static str, evidence: String, detail: Option<String>) -> Self {
-        Self { id, name, status: Status::Fail, evidence, detail }
+    fn fail(
+        id: &'static str,
+        name: &'static str,
+        evidence: String,
+        detail: Option<String>,
+    ) -> Self {
+        Self {
+            id,
+            name,
+            status: Status::Fail,
+            evidence,
+            detail,
+        }
     }
     fn skip(id: &'static str, name: &'static str, reason: String) -> Self {
-        Self { id, name, status: Status::Skip, evidence: reason, detail: None }
+        Self {
+            id,
+            name,
+            status: Status::Skip,
+            evidence: reason,
+            detail: None,
+        }
     }
 }
 
@@ -61,18 +84,22 @@ struct Report {
 }
 
 fn run(cmd: &str, args: &[&str]) -> Result<String> {
-    let out = Command::new(cmd).args(args).output()
+    let out = Command::new(cmd)
+        .args(args)
+        .output()
         .with_context(|| format!("spawning {} {:?}", cmd, args))?;
     let mut buf = String::from_utf8_lossy(&out.stdout).to_string();
     if !out.stderr.is_empty() {
-        if !buf.is_empty() { buf.push('\n'); }
+        if !buf.is_empty() {
+            buf.push('\n');
+        }
         buf.push_str(&String::from_utf8_lossy(&out.stderr));
     }
     Ok(buf)
 }
 
 fn sudo_run(args: &[&str]) -> Result<String> {
-    let mut full = vec!["-n"];  // non-interactive sudo
+    let mut full = vec!["-n"]; // non-interactive sudo
     full.extend_from_slice(args);
     run("sudo", &full)
 }
@@ -81,15 +108,25 @@ fn sudo_run(args: &[&str]) -> Result<String> {
 fn check_lsm_progs() -> CheckResult {
     match sudo_run(&["bpftool", "prog", "show"]) {
         Ok(out) => {
-            let names = ["guardian_execve", "guardian_cognitive", "me60os_ai_guardian_open"];
+            let names = [
+                "guardian_execve",
+                "guardian_cognitive",
+                "me60os_ai_guardian_open",
+            ];
             let found: Vec<&str> = names.iter().filter(|n| out.contains(*n)).copied().collect();
             if found.len() == names.len() {
-                CheckResult::ok("lsm_progs", "programas LSM Ring-0 cargados",
-                    format!("{}/{}: {}", found.len(), names.len(), found.join(", ")))
+                CheckResult::ok(
+                    "lsm_progs",
+                    "programas LSM Ring-0 cargados",
+                    format!("{}/{}: {}", found.len(), names.len(), found.join(", ")),
+                )
             } else {
-                CheckResult::fail("lsm_progs", "programas LSM Ring-0 cargados",
+                CheckResult::fail(
+                    "lsm_progs",
+                    "programas LSM Ring-0 cargados",
                     format!("solo {}/{} encontrados", found.len(), names.len()),
-                    Some(format!("salida bpftool:\n{}", out)))
+                    Some(format!("salida bpftool:\n{}", out)),
+                )
             }
         }
         Err(e) => CheckResult::skip("lsm_progs", "programas LSM Ring-0 cargados", e.to_string()),
@@ -109,7 +146,8 @@ fn check_cortex_events_ringbuf() -> CheckResult {
                     block = line.to_string();
                 } else if in_cortex_block {
                     if line.trim_start().starts_with("pids ") {
-                        block.push('\n'); block.push_str(line);
+                        block.push('\n');
+                        block.push_str(line);
                         if !line.trim_end().ends_with("pids") && line.contains('(') {
                             has_consumers = true;
                         }
@@ -119,35 +157,70 @@ fn check_cortex_events_ringbuf() -> CheckResult {
                 }
             }
             if block.is_empty() {
-                CheckResult::fail("cortex_events_ringbuf", "ringbuf cortex_events pinned",
-                    "map cortex_events no encontrado".into(), None)
+                CheckResult::fail(
+                    "cortex_events_ringbuf",
+                    "ringbuf cortex_events pinned",
+                    "map cortex_events no encontrado".into(),
+                    None,
+                )
             } else if has_consumers {
-                CheckResult::ok("cortex_events_ringbuf", "ringbuf cortex_events pinned con consumidores",
-                    block.trim().to_string())
+                CheckResult::ok(
+                    "cortex_events_ringbuf",
+                    "ringbuf cortex_events pinned con consumidores",
+                    block.trim().to_string(),
+                )
             } else {
-                CheckResult::fail("cortex_events_ringbuf", "ringbuf cortex_events pinned",
-                    "existe pero SIN consumidores adjuntos".into(), Some(block))
+                CheckResult::fail(
+                    "cortex_events_ringbuf",
+                    "ringbuf cortex_events pinned",
+                    "existe pero SIN consumidores adjuntos".into(),
+                    Some(block),
+                )
             }
         }
-        Err(e) => CheckResult::skip("cortex_events_ringbuf", "ringbuf cortex_events", e.to_string()),
+        Err(e) => CheckResult::skip(
+            "cortex_events_ringbuf",
+            "ringbuf cortex_events",
+            e.to_string(),
+        ),
     }
 }
 
 // 3. Pins en /sys/fs/bpf
 fn check_bpf_pins() -> CheckResult {
-    let expected = ["cortex_events", "guardian_alpha", "guardian_cognitive",
-                    "ai_guardian", "float_detector", "gamma_heartbeat"];
+    let expected = [
+        "cortex_events",
+        "guardian_alpha",
+        "guardian_cognitive",
+        "ai_guardian",
+        "float_detector",
+        "gamma_heartbeat",
+    ];
     match sudo_run(&["ls", "/sys/fs/bpf/"]) {
         Ok(out) => {
-            let found: Vec<&str> = expected.iter().filter(|n| out.contains(*n)).copied().collect();
+            let found: Vec<&str> = expected
+                .iter()
+                .filter(|n| out.contains(*n))
+                .copied()
+                .collect();
             if found.len() == expected.len() {
-                CheckResult::ok("bpf_pins", "pins /sys/fs/bpf presentes",
-                    format!("{}/{}", found.len(), expected.len()))
+                CheckResult::ok(
+                    "bpf_pins",
+                    "pins /sys/fs/bpf presentes",
+                    format!("{}/{}", found.len(), expected.len()),
+                )
             } else {
-                let missing: Vec<&str> = expected.iter().filter(|n| !out.contains(*n)).copied().collect();
-                CheckResult::fail("bpf_pins", "pins /sys/fs/bpf presentes",
+                let missing: Vec<&str> = expected
+                    .iter()
+                    .filter(|n| !out.contains(*n))
+                    .copied()
+                    .collect();
+                CheckResult::fail(
+                    "bpf_pins",
+                    "pins /sys/fs/bpf presentes",
                     format!("faltan: {}", missing.join(", ")),
-                    Some(format!("los que hay:\n{}", out)))
+                    Some(format!("los que hay:\n{}", out)),
+                )
             }
         }
         Err(e) => CheckResult::skip("bpf_pins", "pins /sys/fs/bpf", e.to_string()),
@@ -156,19 +229,34 @@ fn check_bpf_pins() -> CheckResult {
 
 // 4. Cortex no ha hecho core-dump en últimas 24h
 fn check_cortex_no_segv() -> CheckResult {
-    let out = sudo_run(&["journalctl", "-u", "sentinel-cortex.service", "--no-pager",
-                          "--since", "24 hours ago", "-q"]);
+    let out = sudo_run(&[
+        "journalctl",
+        "-u",
+        "sentinel-cortex.service",
+        "--no-pager",
+        "--since",
+        "24 hours ago",
+        "-q",
+    ]);
     match out {
         Ok(o) => {
             let segv_count = o.matches("core-dump").count()
-                + o.matches("SEGV").count().saturating_sub(o.matches("core-dump").count());
+                + o.matches("SEGV")
+                    .count()
+                    .saturating_sub(o.matches("core-dump").count());
             if segv_count == 0 {
-                CheckResult::ok("cortex_segv", "cortex sin SEGV últimas 24h",
-                    "0 coredumps en journal".into())
+                CheckResult::ok(
+                    "cortex_segv",
+                    "cortex sin SEGV últimas 24h",
+                    "0 coredumps en journal".into(),
+                )
             } else {
-                CheckResult::fail("cortex_segv", "cortex sin SEGV últimas 24h",
+                CheckResult::fail(
+                    "cortex_segv",
+                    "cortex sin SEGV últimas 24h",
                     format!("{} menciones core-dump/SEGV", segv_count),
-                    None)
+                    None,
+                )
             }
         }
         Err(e) => CheckResult::skip("cortex_segv", "cortex SEGV check", e.to_string()),
@@ -178,18 +266,31 @@ fn check_cortex_no_segv() -> CheckResult {
 // 5. gamma-watchdog heartbeats en últimos 60s
 fn check_watchdog_alive() -> CheckResult {
     // journal como usuario no ve logs de servicios root → usar sudo
-    let out = sudo_run(&["journalctl", "-u", "sentinel-gamma-watchdog.service", "--no-pager",
-                          "--since", "90 seconds ago", "-q"]);
+    let out = sudo_run(&[
+        "journalctl",
+        "-u",
+        "sentinel-gamma-watchdog.service",
+        "--no-pager",
+        "--since",
+        "90 seconds ago",
+        "-q",
+    ]);
     match out {
         Ok(o) => {
             let beats = o.matches("\"alive\"").count();
             if beats >= 3 {
-                CheckResult::ok("watchdog_alive", "gamma-watchdog heartbeats",
-                    format!("{} beats en 90s (esperado ~5 @17s)", beats))
+                CheckResult::ok(
+                    "watchdog_alive",
+                    "gamma-watchdog heartbeats",
+                    format!("{} beats en 90s (esperado ~5 @17s)", beats),
+                )
             } else {
-                CheckResult::fail("watchdog_alive", "gamma-watchdog heartbeats",
+                CheckResult::fail(
+                    "watchdog_alive",
+                    "gamma-watchdog heartbeats",
                     format!("solo {} beats en 90s", beats),
-                    Some(format!("journal:\n{}", o)))
+                    Some(format!("journal:\n{}", o)),
+                )
             }
         }
         Err(e) => CheckResult::skip("watchdog_alive", "gamma-watchdog", e.to_string()),
@@ -198,33 +299,73 @@ fn check_watchdog_alive() -> CheckResult {
 
 // 6. Endpoint /api/v1/sentinel_status reporta RING0_PINNED_ACTIVE
 fn check_sentinel_status_http() -> CheckResult {
-    let out = run("curl", &["-s", "-m", "5", "http://localhost:8000/api/v1/sentinel_status"]);
+    let out = run(
+        "curl",
+        &[
+            "-s",
+            "-m",
+            "5",
+            "http://localhost:8000/api/v1/sentinel_status",
+        ],
+    );
     match out {
         Ok(o) => {
             if o.contains("RING0_PINNED_ACTIVE")
                 && o.contains("WHITELIST_MAP_ENGAGED")
-                && o.contains("LSM_HOOK_ACTIVE") {
-                CheckResult::ok("sentinel_status_http", "endpoint sentinel_status",
-                    o.trim().to_string())
-            } else {
-                CheckResult::fail("sentinel_status_http", "endpoint sentinel_status",
+                && o.contains("LSM_HOOK_ACTIVE")
+            {
+                CheckResult::ok(
+                    "sentinel_status_http",
+                    "endpoint sentinel_status",
                     o.trim().to_string(),
-                    Some("esperados: RING0_PINNED_ACTIVE, WHITELIST_MAP_ENGAGED, LSM_HOOK_ACTIVE".into()))
+                )
+            } else {
+                CheckResult::fail(
+                    "sentinel_status_http",
+                    "endpoint sentinel_status",
+                    o.trim().to_string(),
+                    Some(
+                        "esperados: RING0_PINNED_ACTIVE, WHITELIST_MAP_ENGAGED, LSM_HOOK_ACTIVE"
+                            .into(),
+                    ),
+                )
             }
         }
-        Err(e) => CheckResult::skip("sentinel_status_http", "endpoint sentinel_status", e.to_string()),
+        Err(e) => CheckResult::skip(
+            "sentinel_status_http",
+            "endpoint sentinel_status",
+            e.to_string(),
+        ),
     }
 }
 
 // 7. /health responde 200 y JSON válido
 fn check_health_http() -> CheckResult {
-    let out = run("curl", &["-s", "-m", "5", "-o", "/dev/null", "-w", "%{http_code}",
-                             "http://localhost:8000/health"]);
+    let out = run(
+        "curl",
+        &[
+            "-s",
+            "-m",
+            "5",
+            "-o",
+            "/dev/null",
+            "-w",
+            "%{http_code}",
+            "http://localhost:8000/health",
+        ],
+    );
     match out {
-        Ok(code) if code.trim() == "200" =>
-            CheckResult::ok("health_http", "endpoint /health", format!("HTTP {}", code.trim())),
-        Ok(code) => CheckResult::fail("health_http", "endpoint /health",
-            format!("HTTP {} (esperado 200)", code.trim()), None),
+        Ok(code) if code.trim() == "200" => CheckResult::ok(
+            "health_http",
+            "endpoint /health",
+            format!("HTTP {}", code.trim()),
+        ),
+        Ok(code) => CheckResult::fail(
+            "health_http",
+            "endpoint /health",
+            format!("HTTP {} (esperado 200)", code.trim()),
+            None,
+        ),
         Err(e) => CheckResult::skip("health_http", "endpoint /health", e.to_string()),
     }
 }
@@ -246,7 +387,9 @@ fn check_sentinel_services() -> CheckResult {
         match run("systemctl", &["is-active", &format!("{}.service", s)]) {
             Ok(o) => {
                 outputs.push(format!("{}: {}", s, o.trim()));
-                if o.trim() != "active" { down.push(*s); }
+                if o.trim() != "active" {
+                    down.push(*s);
+                }
             }
             Err(e) => {
                 outputs.push(format!("{}: error {}", s, e));
@@ -255,12 +398,18 @@ fn check_sentinel_services() -> CheckResult {
         }
     }
     if down.is_empty() {
-        CheckResult::ok("sentinel_services", "servicios systemd sentinel-*",
-            outputs.join(" | "))
+        CheckResult::ok(
+            "sentinel_services",
+            "servicios systemd sentinel-*",
+            outputs.join(" | "),
+        )
     } else {
-        CheckResult::fail("sentinel_services", "servicios systemd sentinel-*",
+        CheckResult::fail(
+            "sentinel_services",
+            "servicios systemd sentinel-*",
             format!("caídos: {}", down.join(", ")),
-            Some(outputs.join("\n")))
+            Some(outputs.join("\n")),
+        )
     }
 }
 
@@ -275,20 +424,38 @@ fn check_ebpf_trace_growing() -> CheckResult {
 
     match (mtime1, size1, size2) {
         (Some(mt), Some(s1), Some(s2)) => {
-            let age = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() as i64 - mt as i64;
+            let age = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_secs() as i64
+                - mt as i64;
             if age < 600 {
-                CheckResult::ok("ebpf_trace_log", "ebpf_trace.log vivo",
-                    format!("size {}→{} bytes, mtime hace {}s", s1, s2, age))
+                CheckResult::ok(
+                    "ebpf_trace_log",
+                    "ebpf_trace.log vivo",
+                    format!("size {}→{} bytes, mtime hace {}s", s1, s2, age),
+                )
             } else if s2 > s1 {
-                CheckResult::ok("ebpf_trace_log", "ebpf_trace.log vivo",
-                    format!("creció {} bytes en 2s", s2 - s1))
+                CheckResult::ok(
+                    "ebpf_trace_log",
+                    "ebpf_trace.log vivo",
+                    format!("creció {} bytes en 2s", s2 - s1),
+                )
             } else {
-                CheckResult::fail("ebpf_trace_log", "ebpf_trace.log vivo",
-                    format!("sin crecimiento, mtime hace {}s", age), None)
+                CheckResult::fail(
+                    "ebpf_trace_log",
+                    "ebpf_trace.log vivo",
+                    format!("sin crecimiento, mtime hace {}s", age),
+                    None,
+                )
             }
         }
-        _ => CheckResult::fail("ebpf_trace_log", "ebpf_trace.log vivo",
-            "archivo no accesible".into(), None)
+        _ => CheckResult::fail(
+            "ebpf_trace_log",
+            "ebpf_trace.log vivo",
+            "archivo no accesible".into(),
+            None,
+        ),
     }
 }
 
@@ -306,26 +473,39 @@ fn check_lattice_metrics() -> CheckResult {
     let out = run("curl", &["-s", "-m", "5", "http://localhost:8000/metrics"]);
     match out {
         Ok(o) => {
-            let retention = o.lines()
+            let retention = o
+                .lines()
                 .find(|l| l.starts_with("sentinel_liquid_lattice_retention_score "))
                 .and_then(|l| l.split_whitespace().nth(1))
                 .and_then(|v| v.parse::<f64>().ok());
-            let energy = o.lines()
+            let energy = o
+                .lines()
                 .find(|l| l.starts_with("sentinel_lattice_total_energy "))
                 .and_then(|l| l.split_whitespace().nth(1))
                 .and_then(|v| v.parse::<u64>().ok());
             match (retention, energy) {
                 (Some(r), Some(e)) => {
                     if e == 0 {
-                        CheckResult::fail("lattice_metrics", "LiquidLattice métricas",
-                            format!("total_energy=0 (sin eventos aún), retention={}", r), None)
+                        CheckResult::fail(
+                            "lattice_metrics",
+                            "LiquidLattice métricas",
+                            format!("total_energy=0 (sin eventos aún), retention={}", r),
+                            None,
+                        )
                     } else {
-                        CheckResult::ok("lattice_metrics", "LiquidLattice métricas",
-                            format!("retention={:.4}, total_energy={}", r, e))
+                        CheckResult::ok(
+                            "lattice_metrics",
+                            "LiquidLattice métricas",
+                            format!("retention={:.4}, total_energy={}", r, e),
+                        )
                     }
                 }
-                _ => CheckResult::fail("lattice_metrics", "LiquidLattice métricas",
-                    "métricas esperadas no encontradas en /metrics".into(), None)
+                _ => CheckResult::fail(
+                    "lattice_metrics",
+                    "LiquidLattice métricas",
+                    "métricas esperadas no encontradas en /metrics".into(),
+                    None,
+                ),
             }
         }
         Err(e) => CheckResult::skip("lattice_metrics", "LiquidLattice métricas", e.to_string()),
@@ -348,7 +528,10 @@ fn run_all_checks() -> Vec<CheckResult> {
 }
 
 fn hostname() -> String {
-    run("hostname", &[]).unwrap_or_else(|_| "unknown".into()).trim().to_string()
+    run("hostname", &[])
+        .unwrap_or_else(|_| "unknown".into())
+        .trim()
+        .to_string()
 }
 
 fn print_human(report: &Report) {
@@ -357,8 +540,14 @@ fn print_human(report: &Report) {
         Status::Fail => "❌",
         Status::Skip => "⚠️ ",
     };
-    println!("\n=== SENTINEL VERIFIER @ {} ({}) ===", report.host, report.timestamp_unix);
-    println!("  {} OK | {} FAIL | {} SKIP (de {})\n", report.ok, report.fail, report.skip, report.total);
+    println!(
+        "\n=== SENTINEL VERIFIER @ {} ({}) ===",
+        report.host, report.timestamp_unix
+    );
+    println!(
+        "  {} OK | {} FAIL | {} SKIP (de {})\n",
+        report.ok, report.fail, report.skip, report.total
+    );
     for r in &report.results {
         println!("  {} [{:>22}] {}", icon(r.status), r.id, r.name);
         println!("      → {}", r.evidence);
@@ -375,7 +564,9 @@ fn print_human(report: &Report) {
 async fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().collect();
     let json_mode = args.iter().any(|a| a == "--json");
-    let watch_secs: Option<u64> = args.iter().position(|a| a == "--watch")
+    let watch_secs: Option<u64> = args
+        .iter()
+        .position(|a| a == "--watch")
         .and_then(|i| args.get(i + 1))
         .and_then(|v| v.parse().ok());
 
@@ -389,7 +580,9 @@ async fn main() -> Result<()> {
             timestamp_unix: SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
             host: hostname(),
             total: results.len(),
-            ok, fail, skip,
+            ok,
+            fail,
+            skip,
             results,
         };
 

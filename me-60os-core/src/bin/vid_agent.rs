@@ -75,7 +75,8 @@ impl VidAgent {
             let state = BufferState {
                 size: current_size,
                 utilization: sim_util,
-                _timestamp_raw: (self.start_time.elapsed().as_secs_f64() * SPA::SCALE_0 as f64) as i64,
+                _timestamp_raw: (self.start_time.elapsed().as_secs_f64() * SPA::SCALE_0 as f64)
+                    as i64,
             };
 
             // 2. Predict & Act

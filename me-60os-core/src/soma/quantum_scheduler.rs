@@ -4,7 +4,7 @@
 //! # 🛡️ QUANTUM SCHEDULER - SOMA RUST 🛡️
 //!
 //! Motor de Resonancia Armónica nativo en Base-60.
-//! Migrado desde Python para operar en Ring 0 puro sin flotantes y evadiendo el GIL de Python 
+//! Migrado desde Python para operar en Ring 0 puro sin flotantes y evadiendo el GIL de Python
 //! durante lapsos de espera.
 //!
 
@@ -29,10 +29,10 @@ pub struct QuantumSchedulerCore;
 impl QuantumSchedulerCore {
     pub fn phi(t: SPA) -> SPA {
         let two_pi = SPAMath::TWO_PI;
-        
+
         let t_bio = t / SPA::from_raw(T_BIO_RAW);
         let angle1 = two_pi * t_bio;
-        
+
         let t_crys = t / SPA::from_raw(T_CRYS_RAW);
         let angle2 = two_pi * t_crys;
 
@@ -181,7 +181,10 @@ impl QuantumSchedulerDaemon {
         let start_time = Instant::now();
         let buffer_ref = self.buffer.clone_ref(py);
 
-        println!("[{}] Quantum Scheduler (SOMA C++) iniciado en Fenix.", self.name);
+        println!(
+            "[{}] Quantum Scheduler (SOMA C++) iniciado en Fenix.",
+            self.name
+        );
 
         thread::spawn(move || {
             loop {
@@ -194,24 +197,29 @@ impl QuantumSchedulerDaemon {
                 let t_raw = (elapsed_s * SPA::SCALE_0 as f64).round() as i64;
                 let t_norm = t_raw % T_CYCLE_RAW;
                 let resonance = QuantumSchedulerCore::phi(SPA::from_raw(t_norm)).to_raw();
-                
+
                 let portal_open = resonance > THETA_RAW;
-                
+
                 let (q_size, is_overflow) = Python::attach(|py| {
                     let buf = buffer_ref.borrow(py);
                     (buf.size(), buf.is_overflow())
                 });
 
                 // REVIEW: umbrales convertidos a constantes SPA (antes usaba float: 0.90 * SCALE_0 as f64)
-                const THETA_HIGH: i64 = (90 * SPA::SCALE_0) / 100;  // 0.90
-                const THETA_MED: i64  = (85 * SPA::SCALE_0) / 100;  // 0.85
-                const THETA_LOW: i64  = (80 * SPA::SCALE_0) / 100;  // 0.80
+                const THETA_HIGH: i64 = (90 * SPA::SCALE_0) / 100; // 0.90
+                const THETA_MED: i64 = (85 * SPA::SCALE_0) / 100; // 0.85
+                const THETA_LOW: i64 = (80 * SPA::SCALE_0) / 100; // 0.80
 
                 if portal_open && q_size > 0 {
-                    let batch_n = if resonance > THETA_HIGH { 5 }
-                                  else if resonance > THETA_MED { 4 }
-                                  else if resonance > THETA_LOW { 3 }
-                                  else { 2 };
+                    let batch_n = if resonance > THETA_HIGH {
+                        5
+                    } else if resonance > THETA_MED {
+                        4
+                    } else if resonance > THETA_LOW {
+                        3
+                    } else {
+                        2
+                    };
 
                     Python::attach(|py| {
                         let mut buf = buffer_ref.borrow_mut(py);
@@ -221,7 +229,7 @@ impl QuantumSchedulerDaemon {
                                 batch.push(ev);
                             }
                         }
-                        
+
                         let batch_len = batch.len();
                         for event in batch {
                             let _ = process_fn.call1(py, (event,));

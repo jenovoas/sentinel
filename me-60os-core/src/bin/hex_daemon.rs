@@ -17,14 +17,23 @@ fn main() {
     loop {
         if tick.is_multiple_of(5) {
             // Read Time Crystal live energy from Cortex local metrics HTTP endpoint
-            let crystal_energy_raw: i64 = match reqwest::blocking::get("http://127.0.0.1:8000/metrics") {
-                Ok(resp) => resp.text().ok().and_then(|body| {
-                    body.lines().find(|l| l.starts_with("sentinel_lattice_total_energy")).and_then(|l| {
-                        l.split_whitespace().nth(1).and_then(|v| v.parse::<i64>().ok())
-                    })
-                }).unwrap_or(0),
-                Err(_) => 0,
-            };
+            let crystal_energy_raw: i64 =
+                match reqwest::blocking::get("http://127.0.0.1:8000/metrics") {
+                    Ok(resp) => resp
+                        .text()
+                        .ok()
+                        .and_then(|body| {
+                            body.lines()
+                                .find(|l| l.starts_with("sentinel_lattice_total_energy"))
+                                .and_then(|l| {
+                                    l.split_whitespace()
+                                        .nth(1)
+                                        .and_then(|v| v.parse::<i64>().ok())
+                                })
+                        })
+                        .unwrap_or(0),
+                    Err(_) => 0,
+                };
 
             // Apply Salto 17 stabilization & Time-Crystal Coupled Dynamic Encryption Key Rotation
             let rift_center = (tick as usize * 17) % controller.n_nodes;

@@ -3,9 +3,9 @@
 // Mide IsochronousClock.get_nanos() vs perf_counter_ns() del SO.
 // Todo en nanos enteros (S60), sin float en la lógica de medición.
 use me60os_core::quantum_core::IsochronousClock;
-use std::time::Instant;
 use std::thread;
 use std::time::Duration;
+use std::time::Instant;
 
 fn probe_phase(name: &str, ticks: u64, clock: &mut IsochronousClock) {
     let mut max_drift: i128 = 0;
@@ -20,7 +20,9 @@ fn probe_phase(name: &str, ticks: u64, clock: &mut IsochronousClock) {
         let os_ns = t0.elapsed().as_nanos() as i128;
         // drift = diferencia cristal vs SO (en nanos)
         let drift = (crystal_ns - os_ns).abs();
-        if drift > max_drift { max_drift = drift; }
+        if drift > max_drift {
+            max_drift = drift;
+        }
         sum_drift += drift;
         samples += 1;
         // refrescar t0 cada 256 ticks para no perder precisión del contador OS
@@ -28,7 +30,11 @@ fn probe_phase(name: &str, ticks: u64, clock: &mut IsochronousClock) {
             t0 = Instant::now();
         }
     }
-    let avg = if samples > 0 { sum_drift / samples as i128 } else { 0 };
+    let avg = if samples > 0 {
+        sum_drift / samples as i128
+    } else {
+        0
+    };
     println!(
         "[{}] ticks={} max_drift_ns={} avg_drift_ns={} (tolerancia <1000000ns = 1ms)",
         name, samples, max_drift, avg

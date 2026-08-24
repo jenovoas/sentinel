@@ -132,7 +132,9 @@ impl SovereignOrbit {
         // 5. Período: T = 2*pi*sqrt(a³/mu)
         let a_cubed_raw = semi_major_axis_raw * semi_major_axis_raw * semi_major_axis_raw;
         let under_root_t_raw = a_cubed_raw / mu_raw;
-        let period = SPA::from_int(2) * SPAMath::TWO_PI * SPAMath::sqrt(SPA::from_raw(under_root_t_raw as i64));
+        let period = SPA::from_int(2)
+            * SPAMath::TWO_PI
+            * SPAMath::sqrt(SPA::from_raw(under_root_t_raw as i64));
 
         // Status
         let status = if eccentricity < SPA::new(0, 1, 0, 0, 0) {
