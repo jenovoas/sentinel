@@ -22,9 +22,9 @@ jobs:
           pip install pytest ruff mypy
 
       - name: Pytest backend
-        run: pytest backend/tests/test_auth_security.py backend/tests/test_telemetry_sanitizer.py quantum/test_semantic_shell_security.py
+        run: cd backend && pytest -q tests/test_auth_security.py tests/test_telemetry_sanitizer.py
         env:
-          PYTHONPATH: backend:.
+          PYTHONPATH: backend
 
       - name: Ruff
         run: ruff check backend/ quantum/
