@@ -6,31 +6,20 @@
 yanked = "deny"
 
 [licenses]
-# Deny GPL-3 (incompatible with Apache-2.0)
-[[licenses.deny]]
-name = "GPL-3"
-reason = "Incompatible with Apache-2.0 license"
-
-[[licenses.deny]]
-name = "GPL-3.0-only"
-reason = "Incompatible with Apache-2.0 license"
-
-[[licenses.deny]]
-name = "GPL-3.0-or-later"
-reason = "Incompatible with Apache-2.0 license"
-
-[licenses.allow]
 # Allow common permissive licenses
- licenses = [
+allow = [
     "MIT",
     "Apache-2.0",
     "Apache-2.0 WITH LLVM-exception",
     "BSD-2-Clause",
     "BSD-3-Clause",
     "ISC",
-    "Unicode-DFS-2016",
+    "Unicode-3.0",
     "Zlib",
 ]
+# Todo lo no permitido arriba se deniega por defecto (incluye GPL-3,
+# incompatible con Apache-2.0). La clave [[licenses.deny]] fue eliminada
+# en cargo-deny 0.18 (https://github.com/EmbarkStudios/cargo-deny/pull/611).
 
 [bans]
 # Disallow multiple versions of the same crate
