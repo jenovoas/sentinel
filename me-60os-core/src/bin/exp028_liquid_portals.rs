@@ -13,16 +13,27 @@
 //! - diffuse() corre Von Neumann (70% self + 30% vecinos) por step.
 //! - Portal EMERGE cuando |coherencia_A - coherencia_B| < umbral estadístico del ciclo.
 
+#![allow(
+    clippy::float_arithmetic,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation
+)] // BIN bench/exp: medicion y estadisticas en f64; conversiones acotadas por construccion
 use me60os_core::spa::SPA;
 use me60os_core::spa_math::SPAMath;
 
 const N_DIFFUSE: usize = 1; // pasos de diffuse() por step de simulación
 
 #[derive(Clone, Copy)]
-struct CrystalNode { amplitude: SPA }
+struct CrystalNode {
+    amplitude: SPA,
+}
 
 impl CrystalNode {
-    fn new() -> Self { Self { amplitude: SPA::zero() } }
+    fn new() -> Self {
+        Self {
+            amplitude: SPA::zero(),
+        }
+    }
 }
 
 struct LiquidLattice {
@@ -47,24 +58,39 @@ impl LiquidLattice {
     }
 
     /// Von Neumann: 70% self + 30% promedio vecinos
+    #[allow(clippy::needless_range_loop)] // rejilla 3x3 de tamano fijo: indices r/c son la notacion natural
     fn diffuse(&mut self) {
         let mut next = [[SPA::zero(); 3]; 3];
         for r in 0..3 {
             for c in 0..3 {
                 let mut sum = self.grid[r][c].amplitude;
                 let mut n = 1;
-                if r > 0 { sum = sum + self.grid[r - 1][c].amplitude; n += 1; }
-                if r < 2 { sum = sum + self.grid[r + 1][c].amplitude; n += 1; }
-                if c > 0 { sum = sum + self.grid[r][c - 1].amplitude; n += 1; }
-                if c < 2 { sum = sum + self.grid[r][c + 1].amplitude; n += 1; }
+                if r > 0 {
+                    sum = sum + self.grid[r - 1][c].amplitude;
+                    n += 1;
+                }
+                if r < 2 {
+                    sum = sum + self.grid[r + 1][c].amplitude;
+                    n += 1;
+                }
+                if c > 0 {
+                    sum = sum + self.grid[r][c - 1].amplitude;
+                    n += 1;
+                }
+                if c < 2 {
+                    sum = sum + self.grid[r][c + 1].amplitude;
+                    n += 1;
+                }
                 let avg = sum / SPA::from_int(n as i64);
-                let self_c = self.grid[r][c].amplitude * SPA::from_raw(9072000);  // 0.70
-                let avg_c  = avg * SPA::from_raw(3888000);                          // 0.30
+                let self_c = self.grid[r][c].amplitude * SPA::from_raw(9072000); // 0.70
+                let avg_c = avg * SPA::from_raw(3888000); // 0.30
                 next[r][c] = self_c + avg_c;
             }
         }
         for r in 0..3 {
-            for c in 0..3 { self.grid[r][c].amplitude = next[r][c]; }
+            for c in 0..3 {
+                self.grid[r][c].amplitude = next[r][c];
+            }
         }
     }
 
@@ -89,24 +115,28 @@ fn main() {
     let t_max = 6800u32; // 680s = 10 ciclos de 68s
     let three_sixty = SPA::from_int(360);
 
-    let period_bio   = SPA::from_int(17);
-    let period_crys  = SPA::from_int(17) / SPA::from_int(4); // 4.25s
-    let period_venus = SPA::from_raw(16_180_000);            // 16.18s
+    let period_bio = SPA::from_int(17);
+    let period_crys = SPA::from_int(17) / SPA::from_int(4); // 4.25s
+    let period_venus = SPA::from_raw(16_180_000); // 16.18s
 
     let mut lane_a = LiquidLattice::new();
     let mut lane_b = LiquidLattice::new();
 
     println!("🛡️ EXP-028 LIQUID PORTALS — Lane A/B + QHC + convergencia dual");
-    println!("   10 ciclos × 68s = 680s | BIO={} CRYSTAL={} VENUS={}",
-             period_bio.to_raw(), period_crys.to_raw(), period_venus.to_raw());
+    println!(
+        "   10 ciclos × 68s = 680s | BIO={} CRYSTAL={} VENUS={}",
+        period_bio.to_raw(),
+        period_crys.to_raw(),
+        period_venus.to_raw()
+    );
     println!("{:-<72}", "");
 
-    let half = SPA::from_raw(6480000);  // 0.5
-    let one  = SPA::from_raw(12960000); // 1.0
+    let half = SPA::from_raw(6480000); // 0.5
+    let one = SPA::from_raw(12960000); // 1.0
 
     let mut portal_events: Vec<f64> = Vec::new();
     let mut cycle_portals: Vec<u32> = vec![0; 10];
-    let mut cycle_diffs:  Vec<Vec<i64>> = vec![Vec::new(); 10];
+    let mut cycle_diffs: Vec<Vec<i64>> = vec![Vec::new(); 10];
 
     for step in 0..t_max {
         let t = SPA::from_int(step as i64) * dt;
@@ -122,14 +152,14 @@ fn main() {
         };
 
         // Fases de las 3 fuentes reales
-        let ph_bio  = SPAMath::sin(three_sixty * t / period_bio);
+        let ph_bio = SPAMath::sin(three_sixty * t / period_bio);
         let ph_crys = SPAMath::sin(three_sixty * t / period_crys);
-        let ph_ven  = SPAMath::sin(three_sixty * t / period_venus);
+        let ph_ven = SPAMath::sin(three_sixty * t / period_venus);
 
         // Presión = fase normalizada [0, 1]
-        let p_bio  = half + (ph_bio  * half) / one * tick_modulation / one;
+        let p_bio = half + (ph_bio * half) / one * tick_modulation / one;
         let p_crys = half + (ph_crys * half) / one * tick_modulation / one;
-        let p_ven  = half + (ph_ven  * half) / one * tick_modulation / one;
+        let p_ven = half + (ph_ven * half) / one * tick_modulation / one;
 
         // INYECCIÓN ASIMÉTRICA: Lane A recibe más BIO, Lane B más CRYSTAL.
         // (Las asimetrías son lo que la convergencia tiene que "vencer".)
@@ -158,7 +188,9 @@ fn main() {
 
     println!("🔮 PORTALES EMERGENTES POR CICLO (convergencia dual Lane A↔B):");
     for (i, diffs) in cycle_diffs.iter().enumerate() {
-        if diffs.is_empty() { continue; }
+        if diffs.is_empty() {
+            continue;
+        }
         let mut sorted = diffs.clone();
         sorted.sort();
         let median = sorted[sorted.len() / 2];
@@ -170,13 +202,23 @@ fn main() {
         let portal_count = diffs.iter().filter(|&&d| d <= threshold).count() as u32;
         cycle_portals[i] = portal_count;
         portal_events.push(portal_count as f64);
-        println!("   Ciclo {} ({}s-{}s): median={} threshold={} portales={}",
-                 i, i*68, (i+1)*68, median, threshold, portal_count);
+        println!(
+            "   Ciclo {} ({}s-{}s): median={} threshold={} portales={}",
+            i,
+            i * 68,
+            (i + 1) * 68,
+            median,
+            threshold,
+            portal_count
+        );
     }
 
     let total: u32 = cycle_portals.iter().sum();
     println!();
-    println!("🏆 TOTAL PORTALES EMERGENTES (Lane A↔B convergen) en 680s: {}", total);
+    println!(
+        "🏆 TOTAL PORTALES EMERGENTES (Lane A↔B convergen) en 680s: {}",
+        total
+    );
     println!("   Portal = |coherencia_A - coherencia_B| ≤ mediana - 0.5*MAD del ciclo");
     println!("   Umbral ESTADÍSTICO EMERGENTE — sin if hardcoded.");
     println!("{:-<72}", "");

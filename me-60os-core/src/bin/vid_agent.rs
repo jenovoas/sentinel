@@ -1,3 +1,9 @@
+#![allow(
+    clippy::float_arithmetic,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation
+)]
+// BIN bench/exp: medicion y estadisticas en f64; conversiones acotadas por construccion
 // Autor: Jaime Novoa Sepulveda — Todos los derechos reservados.
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
@@ -75,7 +81,8 @@ impl VidAgent {
             let state = BufferState {
                 size: current_size,
                 utilization: sim_util,
-                _timestamp_raw: (self.start_time.elapsed().as_secs_f64() * SPA::SCALE_0 as f64) as i64,
+                _timestamp_raw: (self.start_time.elapsed().as_secs_f64() * SPA::SCALE_0 as f64)
+                    as i64,
             };
 
             // 2. Predict & Act

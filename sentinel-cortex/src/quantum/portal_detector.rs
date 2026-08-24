@@ -72,7 +72,10 @@ impl PortalDetector {
 
     pub fn get_portal_intensity(&self, t: S60) -> S60 {
         let res = self.calculate_resonance(t);
-        if res > self.threshold { res } else { S60::zero() }
+        if res > self.threshold {
+            res
+        } else {
+            S60::zero()
+        }
     }
 }
-

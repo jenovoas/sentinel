@@ -29,4 +29,4 @@ pub use soul_verifier_s60_production::{
 };
 // pipeline preparado: integracion pendiente
 #[allow(unused_imports)]
-pub use lfm_security_pipeline::{LfmSecurityPipeline, LfmSecurityError};
+pub use lfm_security_pipeline::{LfmSecurityError, LfmSecurityPipeline};

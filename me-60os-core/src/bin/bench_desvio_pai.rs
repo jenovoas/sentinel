@@ -5,11 +5,16 @@
 //!
 //! Mide la evolución real de la mallas resonante (64 nodos hexagonales) bajo
 //! inyección PAI-60 vs la acumulación en FPU de float.
-//! 
+//!
 //! Los cristales respiran dinámicamente entre 41 y 43 Hz en cada tick.
 //! Mide la energía total de la mallas, la dispersión de fase y la retención
 //! armónica en tiempo real.
 
+#![allow(
+    clippy::float_arithmetic,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation
+)] // BIN bench/exp: medicion y estadisticas en f64; conversiones acotadas por construccion
 use me60os_core::pai60_lib::pai60_divide;
 use me60os_core::resonant_matrix::ResonantMatrix;
 use me60os_core::spa::SPA;
@@ -20,7 +25,10 @@ const DENOMS: [u32; 9] = [2, 3, 4, 5, 6, 10, 12, 15, 60];
 
 fn main() {
     println!("🛡️ BENCH DESVÍO PAI — Cómputo Resonante y Respiración Dinámica de Lattice");
-    println!("   {} pulsos inyectados sobre mallas hexagonal de 64 osciladores", N_SAMPLES);
+    println!(
+        "   {} pulsos inyectados sobre mallas hexagonal de 64 osciladores",
+        N_SAMPLES
+    );
     println!("{:-<72}", "");
 
     // ---------- CAMINO A: FLOAT (CPU binaria, acumulación en FPU) ----------
@@ -66,18 +74,45 @@ fn main() {
 
     // Deriva entre el acumulado float y el valor S60 exacto antes de disipación
     let raw_diff = (float_sum - pai_as_f64).abs();
-    let raw_diff_ppm = if pai_as_f64 != 0.0 { (raw_diff / pai_as_f64) * 1_000_000.0 } else { 0.0 };
+    let raw_diff_ppm = if pai_as_f64 != 0.0 {
+        (raw_diff / pai_as_f64) * 1_000_000.0
+    } else {
+        0.0
+    };
 
     // Tasa de transferencia y respiración en el lattice tras ticks
-    let retention_ratio = if pai_as_f64 > 0.0 { (lattice_as_f64 / pai_as_f64) * 100.0 } else { 0.0 };
+    let retention_ratio = if pai_as_f64 > 0.0 {
+        (lattice_as_f64 / pai_as_f64) * 100.0
+    } else {
+        0.0
+    };
 
-    println!("CAMINO A (FPU Float):       {:>8.3?} | suma={:.6}", dt_a, float_sum);
-    println!("CAMINO B (PAI Exacto S60):  {:>8.3?} | suma={:.6} (raw {})", dt_b, pai_as_f64, pai_sum_exact.to_raw());
-    println!("LATTICE ENERGÍA (dinámica): {:>8.3?} | energía={:.6} (raw {})", dt_b, lattice_as_f64, lattice_total_energy.to_raw());
+    println!(
+        "CAMINO A (FPU Float):       {:>8.3?} | suma={:.6}",
+        dt_a, float_sum
+    );
+    println!(
+        "CAMINO B (PAI Exacto S60):  {:>8.3?} | suma={:.6} (raw {})",
+        dt_b,
+        pai_as_f64,
+        pai_sum_exact.to_raw()
+    );
+    println!(
+        "LATTICE ENERGÍA (dinámica): {:>8.3?} | energía={:.6} (raw {})",
+        dt_b,
+        lattice_as_f64,
+        lattice_total_energy.to_raw()
+    );
     println!("{:-<72}", "");
     println!("📉 Deriva FPU acumulación:   {:.6} ppm", raw_diff_ppm);
-    println!("💎 Ticks de respiración:     {} ticks ejecutados en la mallas", ticks_count);
-    println!("🌀 Retención de la Lattice:  {:.2}% de energía retenida en oscilación", retention_ratio);
+    println!(
+        "💎 Ticks de respiración:     {} ticks ejecutados en la mallas",
+        ticks_count
+    );
+    println!(
+        "🌀 Retención de la Lattice:  {:.2}% de energía retenida en oscilación",
+        retention_ratio
+    );
     println!("{:-<72}", "");
     println!("✅ El cálculo ha sido transferido a la mallas de osciladores en RAM.");
     println!("   Los cristales respiran dinámicamente y absorben el impulso sin truncamiento FPU.");

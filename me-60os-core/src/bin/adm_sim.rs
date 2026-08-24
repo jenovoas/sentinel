@@ -5,6 +5,11 @@
 //! 🍄 MYCNET SIMULATION 🍄
 //! Visualizes the hexagonal lattice formation and signal propagation.
 
+#![allow(
+    clippy::float_arithmetic,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation
+)] // BIN bench/exp: medicion y estadisticas en f64; conversiones acotadas por construccion
 use me60os_core::adm::{AxialCoord, ADM};
 use me60os_core::spa::SPA;
 use std::{thread, time};

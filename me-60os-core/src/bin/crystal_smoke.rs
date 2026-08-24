@@ -1,11 +1,19 @@
 // Smoke test del cristal de tiempo (Rust puro, sin Python, sin kernel).
 // Verifica que IsochronousClock late con intervalo ~23.9ms y que los ticks avanzan.
+#![allow(
+    clippy::float_arithmetic,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation
+)] // BIN bench/exp: medicion y estadisticas en f64; conversiones acotadas por construccion
 use me60os_core::quantum_core::IsochronousClock;
 use std::time::Instant;
 
 fn main() {
     let mut clock = IsochronousClock::new_internal();
-    println!("💎 CRYSTAL SMOKE (Rust): intervalo {} ns (~41 Hz)", clock.tick_interval_ns);
+    println!(
+        "💎 CRYSTAL SMOKE (Rust): intervalo {} ns (~41 Hz)",
+        clock.tick_interval_ns
+    );
 
     let n = 60u64;
     let t0 = Instant::now();

@@ -8,6 +8,7 @@
 //! y la estabilización de "rifts" (rupturas de red).
 
 use crate::spa::SPA;
+#[cfg(feature = "extension-module")]
 use pyo3::prelude::*;
 // use std::collections::HashMap; // Removed unused import
 
@@ -37,9 +38,12 @@ impl HexagonalController {
         Self::new(size)
     }
 
-    pub fn py_control_rift_propagation(&mut self, rift_center_idx: usize) -> pyo3::PyResult<(i64, SPA, usize)> {
+    pub fn py_control_rift_propagation(
+        &mut self,
+        rift_center_idx: usize,
+    ) -> pyo3::PyResult<(i64, SPA, usize)> {
         self.control_rift_propagation(rift_center_idx)
-            .map_err(|e| pyo3::exceptions::PyIndexError::new_err(e))
+            .map_err(pyo3::exceptions::PyIndexError::new_err)
     }
 }
 
@@ -48,7 +52,7 @@ impl HexagonalController {
         let nodes_coords = Self::build_hex_lattice(size);
         let n_nodes = nodes_coords.len();
         let step_key = 17;
-        
+
         // Inicializar fases
         let mut phases_base60 = vec![SPA::zero(); n_nodes];
         for (n, phase) in phases_base60.iter_mut().enumerate() {
@@ -70,7 +74,7 @@ impl HexagonalController {
     pub fn get_n_nodes(&self) -> usize {
         self.n_nodes
     }
-    
+
     pub fn get_plasma_shield_active(&self) -> bool {
         self.plasma_shield_active
     }
@@ -95,7 +99,10 @@ impl HexagonalController {
 
     /// Estabiliza la propagación de un rift usando rotación Base-60.
     /// Retorna (status_code, coherence_score_SPA, affected_count)
-    pub fn control_rift_propagation(&mut self, rift_center_idx: usize) -> Result<(i64, SPA, usize), &'static str> {
+    pub fn control_rift_propagation(
+        &mut self,
+        rift_center_idx: usize,
+    ) -> Result<(i64, SPA, usize), &'static str> {
         if !self.plasma_shield_active {
             // Error Code: -1 (VOID_COLLAPSE)
             return Ok((-1, SPA::zero(), 0));
@@ -107,7 +114,7 @@ impl HexagonalController {
 
         let neighbors = self.get_neighbors(rift_center_idx);
         let affected_count = neighbors.len();
-        
+
         let center_deg = self.phases_base60[rift_center_idx].to_degrees();
 
         for (i, neighbor_idx) in neighbors.iter().enumerate() {
@@ -127,11 +134,11 @@ impl HexagonalController {
     /// 3. Pulso de fase resonante (salto-17)
     pub fn compute_crystal_coupled_key(&self, lattice_energy_raw: i64, tick: u64) -> i64 {
         let phase_constant: i64 = 4_796_296; // Constante de fase empírica (60⁴ escalada)
-        let base_pulse: i64 = 26;            // Pulso base resonante
-        
+        let base_pulse: i64 = 26; // Pulso base resonante
+
         let phase_contribution = (lattice_energy_raw.abs() % 3600) * phase_constant / 1_000_000;
         let coupled_entropy = phase_contribution + (tick as i64 * 17) + base_pulse;
-        
+
         (coupled_entropy % 60).abs()
     }
 }
@@ -154,8 +161,12 @@ impl HexagonalController {
     pub fn get_neighbors(&self, node_idx: usize) -> Vec<usize> {
         let (q, r) = self.nodes_coords[node_idx];
         let neighbor_coords = [
-            (q + 1, r), (q + 1, r - 1), (q, r - 1),
-            (q - 1, r), (q - 1, r + 1), (q, r + 1)
+            (q + 1, r),
+            (q + 1, r - 1),
+            (q, r - 1),
+            (q - 1, r),
+            (q - 1, r + 1),
+            (q, r + 1),
         ];
 
         let mut indices = Vec::new();

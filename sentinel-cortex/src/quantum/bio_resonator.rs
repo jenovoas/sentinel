@@ -57,20 +57,34 @@ impl BioResonator {
         }
     }
 
-    pub fn is_portal_open(&self) -> bool { self.coherence >= self.threshold_portal }
-    pub fn is_pilot_present(&self) -> bool { self.last_pulse.elapsed().as_millis() < self.dead_man_threshold_ms as u128 }
-    
-    pub fn set_dead_man_threshold(&mut self, ms: u64) { self.dead_man_threshold_ms = ms; }
+    pub fn is_portal_open(&self) -> bool {
+        self.coherence >= self.threshold_portal
+    }
+    pub fn is_pilot_present(&self) -> bool {
+        self.last_pulse.elapsed().as_millis() < self.dead_man_threshold_ms as u128
+    }
 
-    pub fn get_coherence_raw(&self) -> i64 { self.coherence.to_base_units() }
+    pub fn set_dead_man_threshold(&mut self, ms: u64) {
+        self.dead_man_threshold_ms = ms;
+    }
+
+    pub fn get_coherence_raw(&self) -> i64 {
+        self.coherence.to_base_units()
+    }
     // elapsed time in ms always fits u64 for any real uptime
     #[allow(clippy::cast_possible_truncation)]
-    pub fn time_since_pulse_ms(&self) -> u64 { self.last_pulse.elapsed().as_millis() as u64 }
-    pub fn reset(&mut self) { self.coherence = S60::zero(); }
+    pub fn time_since_pulse_ms(&self) -> u64 {
+        self.last_pulse.elapsed().as_millis() as u64
+    }
+    pub fn reset(&mut self) {
+        self.coherence = S60::zero();
+    }
 }
 
 impl Default for BioResonator {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 #[cfg(test)]
@@ -80,7 +94,9 @@ mod tests {
     #[test]
     fn test_bio_accumulation() {
         let mut bio = BioResonator::new();
-        for _ in 0..12 { bio.inject_bio_pulse(); }
+        for _ in 0..12 {
+            bio.inject_bio_pulse();
+        }
         assert!(bio.is_portal_open());
     }
 }

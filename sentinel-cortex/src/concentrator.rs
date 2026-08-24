@@ -1,9 +1,9 @@
 // Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
-use serde::{Deserialize, Serialize};
+use anyhow::{bail, Context, Result};
 use reqwest::Client;
-use anyhow::{Result, bail, Context};
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::process::Command;
 
@@ -74,28 +74,38 @@ pub async fn classify_intent(prompt: &str, api_key: &str) -> Result<Intent> {
     let req = VertexRequest {
         contents: vec![VertexContent {
             role: Some("user".to_string()),
-            parts: vec![VertexPart { text: prompt.to_string() }],
+            parts: vec![VertexPart {
+                text: prompt.to_string(),
+            }],
         }],
         system_instruction: Some(VertexContent {
             role: None,
-            parts: vec![VertexPart { text: system_msg.to_string() }],
+            parts: vec![VertexPart {
+                text: system_msg.to_string(),
+            }],
         }),
     };
 
     let res = client.post(url).json(&req).send().await?;
-    
+
     if !res.status().is_success() {
         let err = res.text().await?;
         bail!("Gemini API Error: {}", err);
     }
 
     let res_json = res.json::<VertexResponse>().await?;
-    let raw_text = res_json.candidates.first()
+    let raw_text = res_json
+        .candidates
+        .first()
         .and_then(|c| c.content.parts.first())
         .map(|p| p.text.trim())
         .unwrap_or("{}");
 
-    let cleaned = raw_text.trim_matches('`').replace("json", "").trim().to_string();
+    let cleaned = raw_text
+        .trim_matches('`')
+        .replace("json", "")
+        .trim()
+        .to_string();
 
     #[derive(Deserialize)]
     struct RouterResponse {
@@ -122,7 +132,12 @@ pub struct FallbackConfig {
     pub gcloud_region: Option<String>,
 }
 
-pub async fn synthesize_vertex(client: &Client, config: &FallbackConfig, system_msg: &str, user_msg: &str) -> Result<String> {
+pub async fn synthesize_vertex(
+    client: &Client,
+    config: &FallbackConfig,
+    system_msg: &str,
+    user_msg: &str,
+) -> Result<String> {
     if let Some(ref api_key) = config.gemini_api_key {
         let url = format!(
             "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={}",
@@ -150,36 +165,42 @@ pub async fn synthesize_vertex(client: &Client, config: &FallbackConfig, system_
     }
 
     // Fallback a gcloud Vertex AI
-    let project = config.gcloud_project_id.as_ref()
+    let project = config
+        .gcloud_project_id
+        .as_ref()
         .context("gcloud_project_id no configurado para Fallback de Vertex")?;
-    let region = config.gcloud_region.as_deref()
-        .unwrap_or("us-central1");
+    let region = config.gcloud_region.as_deref().unwrap_or("us-central1");
     let model = "gemini-1.5-flash";
 
-    let token_out = Command::new("gcloud").args(["auth", "print-access-token"]).output()
+    let token_out = Command::new("gcloud")
+        .args(["auth", "print-access-token"])
+        .output()
         .context("Error al ejecutar gcloud auth print-access-token")?;
-    
+
     if !token_out.status.success() {
         bail!("Error al obtener token de gcloud");
     }
-    
-    let token = String::from_utf8_lossy(&token_out.stdout).trim().to_string();
+
+    let token = String::from_utf8_lossy(&token_out.stdout)
+        .trim()
+        .to_string();
     let url = format!(
         "https://{}-aiplatform.googleapis.com/v1/projects/{}/locations/{}/publishers/google/models/{}:generateContent", 
         region, project, region, model
     );
-    
+
     let body = json!({
         "contents": [{ "role": "user", "parts": [{ "text": user_msg }] }],
         "systemInstruction": { "parts": [{ "text": system_msg }] }
     });
 
-    let res = client.post(&url)
+    let res = client
+        .post(&url)
         .header("Authorization", format!("Bearer {}", token))
         .json(&body)
         .send()
         .await?;
-        
+
     if res.status().is_success() {
         let json: VertexResponse = res.json().await?;
         if let Some(candidate) = json.candidates.first() {

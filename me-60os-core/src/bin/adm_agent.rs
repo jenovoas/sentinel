@@ -6,6 +6,11 @@
 //! Reemplazo en Rust de `network_resonance.py`
 //! Mantiene la coherencia de la red Malla (Metric Q -> SPA).
 
+#![allow(
+    clippy::float_arithmetic,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation
+)] // BIN bench/exp: medicion y estadisticas en f64; conversiones acotadas por construccion
 use me60os_core::spa::SPA;
 use std::process::Command;
 use std::thread;

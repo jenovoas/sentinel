@@ -15,12 +15,12 @@
 //! - QuantumScheduler: Adiabatic task scheduling (future)
 //! - Portal Detection: Harmonic convergence detection (future)
 
+mod buffer_system;
+pub mod concentrator;
 pub mod math;
+pub mod memory;
 pub mod quantum;
 pub mod security;
-mod buffer_system;
-pub mod memory;
-pub mod concentrator;
 
 use lazy_static::lazy_static;
 use quantum::BioResonator;

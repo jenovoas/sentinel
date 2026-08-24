@@ -559,7 +559,8 @@ pub fn sin_s60(x: S60) -> S60 {
     // Normaliza x a (-π, π] restando/restableciendo 2π simétricamente
     // (antes era a [0, 2π] que deja a x=π en el borde, donde el Taylor diverge más).
     let two_pi = S60::two_pi();
-    let pi = S60::from_raw(S60::SCALE_0 * 3 + S60::SCALE_1 * 8 + S60::SCALE_2 * 29 + S60::SCALE_3 * 44);
+    let pi =
+        S60::from_raw(S60::SCALE_0 * 3 + S60::SCALE_1 * 8 + S60::SCALE_2 * 29 + S60::SCALE_3 * 44);
 
     let mut angle = x;
     // Traer a (-2π, 2π] primero

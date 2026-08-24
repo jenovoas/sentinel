@@ -11,6 +11,11 @@
 //   Replica EXP_012_PHASE_COMPRESSION.py en Rust puro (SPA base-60).
 // -----------------------------------------------------------------------------
 
+#![allow(
+    clippy::float_arithmetic,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation
+)] // BIN bench/exp: medicion y estadisticas en f64; conversiones acotadas por construccion
 use me60os_core::quantum_core::LiquidLattice;
 use me60os_core::resonant_matrix::ResonantMatrix;
 use me60os_core::spa::SPA;
@@ -34,8 +39,14 @@ fn main() {
     let msg_a = b"ENERGY_CHANNEL_CRITICAL_DATA_BLOCK_ALPHA_01";
     let msg_b = b"PHASE_KEY";
 
-    println!("📦 Payload A (Energy): {:?}", std::str::from_utf8(msg_a).unwrap());
-    println!("📦 Payload B (Phase) : {:?}", std::str::from_utf8(msg_b).unwrap());
+    println!(
+        "📦 Payload A (Energy): {:?}",
+        std::str::from_utf8(msg_a).unwrap()
+    );
+    println!(
+        "📦 Payload B (Phase) : {:?}",
+        std::str::from_utf8(msg_b).unwrap()
+    );
 
     // Padding para A >= 16*B (requerido por retrieve: energy > phase para cobertura)
     let padding: Vec<u8> = (0u8..150u8).collect();
@@ -79,15 +90,25 @@ fn main() {
     println!("\n🔍 Recuperando Dual-Channel...");
     let (rec_a, rec_b) = lattice.retrieve_dual_channel(msg_a_padded.len(), msg_b.len());
 
-    println!("   Rec A len: {} (esperado {})", rec_a.len(), msg_a_padded.len());
+    println!(
+        "   Rec A len: {} (esperado {})",
+        rec_a.len(),
+        msg_a_padded.len()
+    );
     println!("   Rec B len: {} (esperado {})", rec_b.len(), msg_b.len());
 
     println!("   Debug B decode (snapped phases):");
     for (i, node) in lattice.buffer.lattice.iter().take(msg_b.len()).enumerate() {
         let deg = node.phase.to_raw() / SPA::SCALE_0;
         let byte_back = ((deg * 256) / 360) as u8;
-        println!("     nodo {}: phase_raw={}, deg={}, byte_back={} (orig={})",
-                 i, node.phase.to_raw(), deg, byte_back, msg_b[i]);
+        println!(
+            "     nodo {}: phase_raw={}, deg={}, byte_back={} (orig={})",
+            i,
+            node.phase.to_raw(),
+            deg,
+            byte_back,
+            msg_b[i]
+        );
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -125,8 +146,12 @@ fn main() {
     println!("   Semilla: '{}'", seed);
 
     // Damping = 0 para modo superconductor
-    for c in lane_a.crystals.iter_mut() { c.damping_factor = SPA::zero(); }
-    for c in lane_b.crystals.iter_mut() { c.damping_factor = SPA::zero(); }
+    for c in lane_a.crystals.iter_mut() {
+        c.damping_factor = SPA::zero();
+    }
+    for c in lane_b.crystals.iter_mut() {
+        c.damping_factor = SPA::zero();
+    }
 
     // Paso 1: base resonante antes de inyectar
     let base_a = lane_a.get_amplitudes();
@@ -161,14 +186,27 @@ fn main() {
     if converge {
         println!("   📖 Reconstruido: '{}' — FIDELIDAD 100% ✅", recovered);
     } else {
-        println!("   📖 Reconstruido: '{}' — FIDELIDAD DEGRADADA ⚠️", recovered);
+        println!(
+            "   📖 Reconstruido: '{}' — FIDELIDAD DEGRADADA ⚠️",
+            recovered
+        );
         ok = false;
     }
 
-    println!("\n{}", if ok { "🏆 EXP-012 COMPLETO: compressión de fase + dual channel verificados" } else { "⚠️  EXP-012: algunas pruebas fallaron" });
+    println!(
+        "\n{}",
+        if ok {
+            "🏆 EXP-012 COMPLETO: compressión de fase + dual channel verificados"
+        } else {
+            "⚠️  EXP-012: algunas pruebas fallaron"
+        }
+    );
 }
 
-fn snap_phases(lattice: &mut [me60os_core::isochronous_oscillator::IsochronousOscillator], cycles: usize) {
+fn snap_phases(
+    lattice: &mut [me60os_core::isochronous_oscillator::IsochronousOscillator],
+    cycles: usize,
+) {
     for _ in 0..cycles {
         let phases: Vec<SPA> = lattice.iter().map(|c| c.phase).collect();
         let mut new_phases = phases.clone();

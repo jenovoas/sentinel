@@ -8,16 +8,18 @@
 //! to Sentinel's Resonant Lattice in pure Base-60 fixed-point (SPA / PAI-60).
 //! Adheres strictly to the YATRA lock: NO float arithmetic allowed.
 
+use crate::memory::resonant_lattice_bridge::ResonantLatticeBridge;
 use me60os_core::pai60_lib::pai60_divide;
 use me60os_core::shm_bridge::PySharedBuffer;
 use me60os_core::spa::SPA;
-use crate::memory::resonant_lattice_bridge::ResonantLatticeBridge;
 
 /// Bridges LFM inference streams to Sentinel's resonant crystal lattice.
 // pipeline preparado: integracion pendiente
 #[allow(dead_code)]
 pub struct LfmPaiBridge;
 
+// pipeline preparado: integracion pendiente
+#[allow(dead_code)]
 impl LfmPaiBridge {
     /// Projects a discrete LFM token ID to an exact Base-60 (SPA) amplitude
     /// using the Babylonian PAI-60 reciprocal table (denominator = 60).
@@ -30,7 +32,7 @@ impl LfmPaiBridge {
         let normalized = (token_id % 3600) as i64;
         let numer = SPA::from_int(normalized);
         let denom = 60u32;
-        
+
         pai60_divide(numer, denom).unwrap_or_else(|| SPA::from_int(normalized))
     }
 
@@ -41,7 +43,11 @@ impl LfmPaiBridge {
     }
 
     /// Injects a sequence of LFM generated tokens across lattice nodes.
-    pub fn inject_token_stream(lattice: &mut ResonantLatticeBridge, tokens: &[u32], start_idx: usize) {
+    pub fn inject_token_stream(
+        lattice: &mut ResonantLatticeBridge,
+        tokens: &[u32],
+        start_idx: usize,
+    ) {
         for (i, &token) in tokens.iter().enumerate() {
             let target_node = start_idx + i;
             Self::inject_token(lattice, target_node, token);
@@ -49,7 +55,11 @@ impl LfmPaiBridge {
     }
 
     /// Projects an integer-quantized latent vector slice into the lattice.
-    pub fn project_latent_slice(lattice: &mut ResonantLatticeBridge, latent_slice: &[i64], start_idx: usize) {
+    pub fn project_latent_slice(
+        lattice: &mut ResonantLatticeBridge,
+        latent_slice: &[i64],
+        start_idx: usize,
+    ) {
         for (i, &val) in latent_slice.iter().enumerate() {
             let target_node = start_idx + i;
             let normalized = val.abs() % 3600;
@@ -58,12 +68,18 @@ impl LfmPaiBridge {
     }
 
     /// Synchronizes lattice state to POSIX Shared Memory (/dev/shm) for zero-copy IPC.
-    pub fn sync_to_shm(lattice: &ResonantLatticeBridge, buffer: &mut PySharedBuffer) -> Result<(), String> {
+    pub fn sync_to_shm(
+        lattice: &ResonantLatticeBridge,
+        buffer: &mut PySharedBuffer,
+    ) -> Result<(), String> {
         lattice.sync_to_shm(buffer)
     }
 
     /// Loads coherent lattice state from POSIX Shared Memory.
-    pub fn load_from_shm(lattice: &mut ResonantLatticeBridge, buffer: &PySharedBuffer) -> Result<(), String> {
+    pub fn load_from_shm(
+        lattice: &mut ResonantLatticeBridge,
+        buffer: &PySharedBuffer,
+    ) -> Result<(), String> {
         lattice.load_from_shm(buffer)
     }
 }
@@ -121,7 +137,8 @@ mod tests {
         let tokens = [15u32, 30u32, 45u32, 60u32];
         LfmPaiBridge::inject_token_stream(&mut source_lattice, &tokens, 0);
 
-        let crystal_size = std::mem::size_of::<me60os_core::isochronous_oscillator::IsochronousOscillator>();
+        let crystal_size =
+            std::mem::size_of::<me60os_core::isochronous_oscillator::IsochronousOscillator>();
         let total_bytes = crystal_size * num_nodes;
 
         let mut shm_buf = PySharedBuffer::new("test_lfm_shm_bridge".to_string(), total_bytes, true)
@@ -137,8 +154,14 @@ mod tests {
         LfmPaiBridge::load_from_shm(&mut target_lattice, &shm_buf).expect("Load from SHM failed");
 
         // Verify exact bit-for-bit coherence
-        assert_eq!(target_lattice.total_energy_raw(), source_lattice.total_energy_raw());
-        assert_eq!(target_lattice.amplitudes_raw(), source_lattice.amplitudes_raw());
+        assert_eq!(
+            target_lattice.total_energy_raw(),
+            source_lattice.total_energy_raw()
+        );
+        assert_eq!(
+            target_lattice.amplitudes_raw(),
+            source_lattice.amplitudes_raw()
+        );
 
         shm_buf.unlink();
     }

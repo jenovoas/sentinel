@@ -3,7 +3,8 @@ use truthsync_core::{ClaimExtractor, TruthSyncEngine};
 
 fn bench_claim_extract_short(c: &mut Criterion) {
     let extractor = ClaimExtractor::new();
-    let text = "El kernel fue actualizado correctamente. La temperatura es de 36 grados. Hace buen día.";
+    let text =
+        "El kernel fue actualizado correctamente. La temperatura es de 36 grados. Hace buen día.";
     c.bench_function("claim_extract_short", |b| {
         b.iter(|| extractor.extract(black_box(text)))
     });
@@ -39,7 +40,8 @@ fn bench_verify_clean(c: &mut Criterion) {
 
 fn bench_verify_malicious(c: &mut Criterion) {
     let mut engine = TruthSyncEngine::new();
-    let text = "El kernel fue actualizado con fake_data y mock_override. simulación no real detectada.";
+    let text =
+        "El kernel fue actualizado con fake_data y mock_override. simulación no real detectada.";
     c.bench_function("verify_malicious", |b| {
         b.iter(|| engine.verify_text(black_box(text), black_box(42)))
     });

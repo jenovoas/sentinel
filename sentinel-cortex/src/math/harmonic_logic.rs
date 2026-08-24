@@ -196,7 +196,7 @@ impl HarmonicGate for HarmonicState {
     /// Example: (3:2 + 3:2)/2 = 3:2 (True + True = True)
     fn h_or(a: HarmonicState, b: HarmonicState) -> HarmonicState {
         let sum = a.ratio + b.ratio;
-        let avg = sum / 2i64; 
+        let avg = sum / 2i64;
 
         let phase_sum = a.phase + b.phase;
         let phase_avg = phase_sum / 2i64;

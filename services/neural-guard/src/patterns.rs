@@ -62,7 +62,9 @@ impl Pattern for DdosPattern {
             let relevant_events: Vec<Event> = context
                 .event_buffer
                 .iter()
-                .filter(|e| e.event_type == "high_cpu_usage" || e.event_type == "high_network_traffic")
+                .filter(|e| {
+                    e.event_type == "high_cpu_usage" || e.event_type == "high_network_traffic"
+                })
                 .cloned()
                 .collect();
 
@@ -71,7 +73,8 @@ impl Pattern for DdosPattern {
                 confidence: 0.75,
                 severity: Severity::Critical,
                 events: relevant_events,
-                recommended_action: "Activate network firewall rules and rate limiting.".to_string(),
+                recommended_action: "Activate network firewall rules and rate limiting."
+                    .to_string(),
                 n8n_playbook: "ddos_mitigation".to_string(),
             });
         }
@@ -184,7 +187,9 @@ pub struct ContainerCrashLoopPattern;
 impl Pattern for ContainerCrashLoopPattern {
     fn check(&self, context: &PatternContext) -> Option<CorrelatedIncident> {
         let mut service_restarts: HashMap<String, i64> = HashMap::new();
-        context.event_buffer.iter()
+        context
+            .event_buffer
+            .iter()
             .filter(|e| e.event_type == "container_restarted")
             .for_each(|event| {
                 if let Some(service_name) = event.metadata["service"].as_str() {
@@ -195,13 +200,21 @@ impl Pattern for ContainerCrashLoopPattern {
 
         for (service, restarts) in service_restarts {
             if restarts > context.container_restart_threshold {
-                let relevant_events: Vec<Event> = context.event_buffer.iter().filter(|e| e.metadata["service"] == service).cloned().collect();
+                let relevant_events: Vec<Event> = context
+                    .event_buffer
+                    .iter()
+                    .filter(|e| e.metadata["service"] == service)
+                    .cloned()
+                    .collect();
                 return Some(CorrelatedIncident {
                     name: format!("Container Crash Loop: {}", service),
                     confidence: 0.98,
                     severity: Severity::Critical,
                     events: relevant_events,
-                    recommended_action: format!("Investigate logs for container '{}'. It has restarted {} times.", service, restarts),
+                    recommended_action: format!(
+                        "Investigate logs for container '{}'. It has restarted {} times.",
+                        service, restarts
+                    ),
                     n8n_playbook: "container_crash_alert".to_string(),
                 });
             }
@@ -215,13 +228,22 @@ impl Pattern for ContainerCrashLoopPattern {
 pub struct NervioAIntrusionPattern;
 impl Pattern for NervioAIntrusionPattern {
     fn check(&self, context: &PatternContext) -> Option<CorrelatedIncident> {
-        let nervio_a: Vec<_> = context.event_buffer.iter()
+        let nervio_a: Vec<_> = context
+            .event_buffer
+            .iter()
             .filter(|e| matches!(e.source, EventSource::NervioAIntrusion))
             .collect();
 
-        let has_sensitive = nervio_a.iter().any(|e| e.event_type == "sensitive_file_access");
-        let failed_count = nervio_a.iter().filter(|e| e.event_type == "failed_login").count();
-        let has_sudo = nervio_a.iter().any(|e| e.event_type == "sudo_command_executed");
+        let has_sensitive = nervio_a
+            .iter()
+            .any(|e| e.event_type == "sensitive_file_access");
+        let failed_count = nervio_a
+            .iter()
+            .filter(|e| e.event_type == "failed_login")
+            .count();
+        let has_sudo = nervio_a
+            .iter()
+            .any(|e| e.event_type == "sudo_command_executed");
 
         if has_sensitive || (failed_count > context.ssh_bruteforce_threshold && has_sudo) {
             Some(CorrelatedIncident {
@@ -229,7 +251,8 @@ impl Pattern for NervioAIntrusionPattern {
                 confidence: 0.88,
                 severity: Severity::Critical,
                 events: nervio_a.into_iter().cloned().collect(),
-                recommended_action: "Audit active sessions. Review /var/log/auth.log and auditd.".to_string(),
+                recommended_action: "Audit active sessions. Review /var/log/auth.log and auditd."
+                    .to_string(),
                 n8n_playbook: "nervio_a_intrusion_alert".to_string(),
             })
         } else {
@@ -243,12 +266,16 @@ impl Pattern for NervioAIntrusionPattern {
 pub struct NervioBIntegrityPattern;
 impl Pattern for NervioBIntegrityPattern {
     fn check(&self, context: &PatternContext) -> Option<CorrelatedIncident> {
-        let nervio_b: Vec<_> = context.event_buffer.iter()
+        let nervio_b: Vec<_> = context
+            .event_buffer
+            .iter()
             .filter(|e| matches!(e.source, EventSource::NervioBIntegrity))
             .collect();
 
         let service_down = nervio_b.iter().any(|e| e.event_type == "service_down");
-        let disk_critical = nervio_b.iter().any(|e| e.event_type == "disk_usage_critical");
+        let disk_critical = nervio_b
+            .iter()
+            .any(|e| e.event_type == "disk_usage_critical");
 
         if service_down || disk_critical {
             Some(CorrelatedIncident {
@@ -271,21 +298,25 @@ impl Pattern for NervioBIntegrityPattern {
 pub struct CrossNervioPattern;
 impl Pattern for CrossNervioPattern {
     fn check(&self, context: &PatternContext) -> Option<CorrelatedIncident> {
-        let high_a = context.event_buffer.iter().any(|e|
-            matches!(e.source, EventSource::NervioAIntrusion) &&
-            matches!(e.severity, Severity::High | Severity::Critical)
-        );
-        let high_b = context.event_buffer.iter().any(|e|
-            matches!(e.source, EventSource::NervioBIntegrity) &&
-            matches!(e.severity, Severity::High | Severity::Critical)
-        );
+        let high_a = context.event_buffer.iter().any(|e| {
+            matches!(e.source, EventSource::NervioAIntrusion)
+                && matches!(e.severity, Severity::High | Severity::Critical)
+        });
+        let high_b = context.event_buffer.iter().any(|e| {
+            matches!(e.source, EventSource::NervioBIntegrity)
+                && matches!(e.severity, Severity::High | Severity::Critical)
+        });
 
         if high_a && high_b {
-            let events: Vec<Event> = context.event_buffer.iter()
-                .filter(|e|
-                    matches!(e.source, EventSource::NervioAIntrusion | EventSource::NervioBIntegrity) &&
-                    matches!(e.severity, Severity::High | Severity::Critical)
-                )
+            let events: Vec<Event> = context
+                .event_buffer
+                .iter()
+                .filter(|e| {
+                    matches!(
+                        e.source,
+                        EventSource::NervioAIntrusion | EventSource::NervioBIntegrity
+                    ) && matches!(e.severity, Severity::High | Severity::Critical)
+                })
                 .cloned()
                 .collect();
 
@@ -294,7 +325,8 @@ impl Pattern for CrossNervioPattern {
                 confidence: 0.98,
                 severity: Severity::Critical,
                 events,
-                recommended_action: "LOCKDOWN: Intrusion + integrity breach simultaneous. Isolate node.".to_string(),
+                recommended_action:
+                    "LOCKDOWN: Intrusion + integrity breach simultaneous. Isolate node.".to_string(),
                 n8n_playbook: "intrusion_lockdown".to_string(),
             })
         } else {

@@ -21,7 +21,7 @@ use phf::Map;
 pub fn is_regular(n: u32) -> bool {
     let mut m = n;
     for p in &[2, 3, 5] {
-        while m % p == 0 {
+        while m.is_multiple_of(*p) {
             m /= p;
         }
     }

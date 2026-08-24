@@ -15,6 +15,7 @@
 use crate::isochronous_oscillator::IsochronousOscillator;
 use crate::shm_bridge::PySharedBuffer;
 use crate::spa::SPA;
+#[cfg(feature = "extension-module")]
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -97,7 +98,11 @@ impl ResonantMatrix {
             let mut hi = size;
             while lo < hi {
                 let mid = (lo + hi) >> 1;
-                if mid * mid >= size { hi = mid; } else { lo = mid + 1; }
+                if mid * mid >= size {
+                    hi = mid;
+                } else {
+                    lo = mid + 1;
+                }
             }
             lo
         };
@@ -107,12 +112,24 @@ impl ResonantMatrix {
 
             // Nearest Neighbors in Hexagonal 2D Grid Topology
             let mut neighbor_indices = Vec::with_capacity(6);
-            if i >= side { neighbor_indices.push(i - side); } // North
-            if i + side < size { neighbor_indices.push(i + side); } // South
-            if i % side > 0 { neighbor_indices.push(i - 1); } // West
-            if (i + 1) % side != 0 && i + 1 < size { neighbor_indices.push(i + 1); } // East
-            if i >= side && (i + 1) % side != 0 { neighbor_indices.push(i - side + 1); } // North-East
-            if i + side < size && i % side > 0 { neighbor_indices.push(i + side - 1); } // South-West
+            if i >= side {
+                neighbor_indices.push(i - side);
+            } // North
+            if i + side < size {
+                neighbor_indices.push(i + side);
+            } // South
+            if i % side > 0 {
+                neighbor_indices.push(i - 1);
+            } // West
+            if (i + 1) % side != 0 && i + 1 < size {
+                neighbor_indices.push(i + 1);
+            } // East
+            if i >= side && (i + 1) % side != 0 {
+                neighbor_indices.push(i - side + 1);
+            } // North-East
+            if i + side < size && i % side > 0 {
+                neighbor_indices.push(i + side - 1);
+            } // South-West
 
             for &n_idx in &neighbor_indices {
                 let amp_neighbor = self.crystals[n_idx].get_amplitude();
@@ -318,7 +335,10 @@ mod tests {
 
         let amp = lattice.get_amplitudes()[0].to_raw();
         let half = SPA::new(0, 30, 0, 0, 0).to_raw(); // 30/60 = 0;30 = 1/2
-        assert_eq!(amp, half, "inject_pai debe derivar 30/60=1/2 exacto, no 30 crudo");
+        assert_eq!(
+            amp, half,
+            "inject_pai debe derivar 30/60=1/2 exacto, no 30 crudo"
+        );
         assert_ne!(amp, 30, "no debe inyectar el entero crudo");
 
         // Fallback: denominador no regular (7) -> cae a valor entero crudo
@@ -335,7 +355,11 @@ mod tests {
         let mut l = ResonantMatrix::new(3);
         l.inject_spa(0, SPA::new(0, 30, 0, 0, 0)); // 1/2
         let amp = l.get_amplitudes()[0];
-        assert_eq!(amp, SPA::new(0, 30, 0, 0, 0), "amplitude should be 1/2 exactly");
+        assert_eq!(
+            amp,
+            SPA::new(0, 30, 0, 0, 0),
+            "amplitude should be 1/2 exactly"
+        );
         assert_ne!(amp.to_raw(), 30, "should NOT be the raw integer 30");
         assert_ne!(
             amp.to_raw(),
@@ -568,18 +592,18 @@ impl ResonantMatrix {
             total_phase_val += c.get_phase().to_raw() as i128;
         }
         let mean_phase_val = (total_phase_val / n_nodes as i128) as i64;
-        
+
         let mut total_dev_val: i128 = 0;
         for c in &self.crystals {
             total_dev_val += (c.get_phase().to_raw() - mean_phase_val).unsigned_abs() as i128;
         }
         let mut mean_dev_val = (total_dev_val / n_nodes as i128) as i64;
-        
+
         let max_dev: i64 = 180 * 12_960_000;
         if mean_dev_val > max_dev {
             mean_dev_val = max_dev;
         }
-        
+
         // Ratio de coherencia S60
         let coh_val = ((max_dev - mean_dev_val) as i128 * 12_960_000) / max_dev as i128;
         coh_val as i64
@@ -587,9 +611,10 @@ impl ResonantMatrix {
 
     #[pyo3(name = "get_hologram")]
     pub fn get_hologram_py(&self) -> Vec<(usize, i64, i64)> {
-        self.crystals.iter().enumerate().map(|(i, c)| {
-            (i, c.get_amplitude().to_raw(), c.get_phase().to_raw())
-        }).collect()
+        self.crystals
+            .iter()
+            .enumerate()
+            .map(|(i, c)| (i, c.get_amplitude().to_raw(), c.get_phase().to_raw()))
+            .collect()
     }
 }
-

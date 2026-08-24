@@ -3,8 +3,8 @@
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 use crate::models::{Event, EventSource, Severity};
 use chrono::Utc;
-use reqwest::Client;
 use redis::{Commands, RedisResult};
+use reqwest::Client;
 use uuid::Uuid;
 
 /// Un colector genérico para realizar consultas HTTP a servicios como Loki o Prometheus.
@@ -22,16 +22,27 @@ impl HttpCollector {
     }
 
     /// Realiza una consulta GET a un endpoint específico.
-    async fn query(&self, endpoint: &str, query: &str) -> Result<serde_json::Value, reqwest::Error> {
+    async fn query(
+        &self,
+        endpoint: &str,
+        query: &str,
+    ) -> Result<serde_json::Value, reqwest::Error> {
         let url = format!("{}{}", self.base_url, endpoint);
-        let response = self.client.get(&url).query(&[("query", query)]).send().await?;
+        let response = self
+            .client
+            .get(&url)
+            .query(&[("query", query)])
+            .send()
+            .await?;
         response.json().await
     }
 }
 
 impl LokiCollector {
     pub fn new(loki_url: String) -> Self {
-        Self { http: HttpCollector::new(loki_url) }
+        Self {
+            http: HttpCollector::new(loki_url),
+        }
     }
 
     pub async fn collect_logs(&self) -> Result<Vec<Event>, reqwest::Error> {
@@ -39,7 +50,10 @@ impl LokiCollector {
         // LogQL para buscar intentos de login fallidos en los logs del sistema
         let failed_login_query = r#"{job="systemd-journal"} |= "Failed password""#;
 
-        let json = self.http.query("/loki/api/v1/query_range", failed_login_query).await?;
+        let json = self
+            .http
+            .query("/loki/api/v1/query_range", failed_login_query)
+            .await?;
 
         if let Some(streams) = json["data"]["result"].as_array() {
             for stream in streams {
@@ -68,7 +82,10 @@ impl LokiCollector {
         // LogQL para contar errores 5xx de Nginx en los últimos 5 minutos
         let nginx_5xx_query = r#"sum(count_over_time({container_name="sentinel-nginx"}[5m] |~ "HTTP/1\.[01]\" 5[0-9]{2}"))"#;
 
-        let json = self.http.query("/loki/api/v1/query", nginx_5xx_query).await?;
+        let json = self
+            .http
+            .query("/loki/api/v1/query", nginx_5xx_query)
+            .await?;
 
         if let Some(results) = json["data"]["result"].as_array() {
             if let Some(first_result) = results.first() {
@@ -100,7 +117,10 @@ impl LokiCollector {
 
         // Sudo commands ejecutados
         let sudo_query = r#"{job="systemd-journal"} |= "sudo:" |= "COMMAND""#;
-        let json = self.http.query("/loki/api/v1/query_range", sudo_query).await?;
+        let json = self
+            .http
+            .query("/loki/api/v1/query_range", sudo_query)
+            .await?;
         if let Some(streams) = json["data"]["result"].as_array() {
             for stream in streams {
                 if let Some(values) = stream["values"].as_array() {
@@ -121,8 +141,12 @@ impl LokiCollector {
         }
 
         // Acceso a archivos sensibles vía auditd
-        let sensitive_query = r#"{job="systemd-journal"} |= "type=PATH" |~ "/etc/passwd|/etc/shadow|/.ssh""#;
-        let json = self.http.query("/loki/api/v1/query_range", sensitive_query).await?;
+        let sensitive_query =
+            r#"{job="systemd-journal"} |= "type=PATH" |~ "/etc/passwd|/etc/shadow|/.ssh""#;
+        let json = self
+            .http
+            .query("/loki/api/v1/query_range", sensitive_query)
+            .await?;
         if let Some(streams) = json["data"]["result"].as_array() {
             for stream in streams {
                 if let Some(values) = stream["values"].as_array() {
@@ -152,7 +176,9 @@ pub struct LokiCollector {
 
 impl PrometheusCollector {
     pub fn new(prometheus_url: String) -> Self {
-        Self { http: HttpCollector::new(prometheus_url) }
+        Self {
+            http: HttpCollector::new(prometheus_url),
+        }
     }
 
     pub async fn collect(&self) -> Result<Vec<Event>, reqwest::Error> {
@@ -161,7 +187,10 @@ impl PrometheusCollector {
         // Ejemplo: Query para CPU alto
         let cpu_query = "rate(node_cpu_seconds_total{mode='system'}[1m]) * 100 > 80";
         let json = self.http.query("/api/v1/query", cpu_query).await?;
-        let cpu_alerts = json["data"]["result"].as_array().cloned().unwrap_or_default();
+        let cpu_alerts = json["data"]["result"]
+            .as_array()
+            .cloned()
+            .unwrap_or_default();
 
         for alert in cpu_alerts {
             if let Some(value_str) = alert["value"][1].as_str() {
@@ -190,7 +219,10 @@ impl PrometheusCollector {
         let redis_memory_query = "redis_memory_used_bytes";
 
         let json = self.http.query("/api/v1/query", redis_memory_query).await?;
-        let redis_metrics = json["data"]["result"].as_array().cloned().unwrap_or_default();
+        let redis_metrics = json["data"]["result"]
+            .as_array()
+            .cloned()
+            .unwrap_or_default();
 
         for metric in redis_metrics {
             if let Some(value_str) = metric["value"][1].as_str() {
@@ -217,7 +249,10 @@ impl PrometheusCollector {
         let temp_query = "avg(node_hwmon_temp_celsius)";
 
         let json = self.http.query("/api/v1/query", temp_query).await?;
-        let results = json["data"]["result"].as_array().cloned().unwrap_or_default();
+        let results = json["data"]["result"]
+            .as_array()
+            .cloned()
+            .unwrap_or_default();
 
         for res in results {
             if let Some(value_str) = res["value"][1].as_str() {
@@ -260,10 +295,7 @@ impl RedisStreamCollector {
 
     pub async fn collect(&mut self) -> Result<Vec<Event>, Box<dyn std::error::Error>> {
         let mut con = self.client.get_connection()?;
-        let result: redis::Value = con.xread(
-            &["swarm:infra:log"],
-            &[&self.last_id],
-        )?;
+        let result: redis::Value = con.xread(&["swarm:infra:log"], &[&self.last_id])?;
 
         let mut events = Vec::new();
 
@@ -276,9 +308,12 @@ impl RedisStreamCollector {
                                 let msg_id: String = redis::from_redis_value(&msg_data[0])?;
                                 self.last_id = msg_id;
 
-                                let fields: std::collections::HashMap<String, String> = redis::from_redis_value(&msg_data[1])?;
+                                let fields: std::collections::HashMap<String, String> =
+                                    redis::from_redis_value(&msg_data[1])?;
 
-                                if fields.get("event_type") == Some(&"CONTAINER_RESTART".to_string()) {
+                                if fields.get("event_type")
+                                    == Some(&"CONTAINER_RESTART".to_string())
+                                {
                                     events.push(Event {
                                         event_type: "container_restarted".to_string(),
                                         source: EventSource::NervioBIntegrity, // System integrity event
@@ -299,9 +334,13 @@ impl RedisStreamCollector {
         }
 
         // Query for high network traffic (e.g., > 10 MB/s)
-        let net_query = "rate(node_network_receive_bytes_total{device!~'lo'}[1m]) > 10 * 1024 * 1024";
+        let net_query =
+            "rate(node_network_receive_bytes_total{device!~'lo'}[1m]) > 10 * 1024 * 1024";
         let net_json = self.http.query("/api/v1/query", net_query).await?;
-        let net_alerts = net_json["data"]["result"].as_array().cloned().unwrap_or_default();
+        let net_alerts = net_json["data"]["result"]
+            .as_array()
+            .cloned()
+            .unwrap_or_default();
 
         for alert in net_alerts {
             if let Some(value_str) = alert["value"][1].as_str() {
@@ -335,7 +374,9 @@ pub struct NervioBCollector {
 
 impl NervioBCollector {
     pub fn new(prometheus_url: String) -> Self {
-        Self { http: HttpCollector::new(prometheus_url) }
+        Self {
+            http: HttpCollector::new(prometheus_url),
+        }
     }
 
     pub async fn collect(&self) -> Result<Vec<Event>, reqwest::Error> {
@@ -363,7 +404,8 @@ impl NervioBCollector {
         let json = self.http.query("/api/v1/query", disk_query).await?;
         if let Some(results) = json["data"]["result"].as_array() {
             for res in results {
-                let usage = res["value"][1].as_str()
+                let usage = res["value"][1]
+                    .as_str()
                     .and_then(|s| s.parse::<f64>().ok())
                     .unwrap_or(0.0);
                 events.push(Event {

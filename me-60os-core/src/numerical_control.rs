@@ -18,6 +18,9 @@
 //! estaba implementada. La conversión S60->pasos de hardware es I/O de actuador,
 //! fuera del runtime de cristal. Se documenta pero no se simula.
 
+// Casts i64->usize acotados: duration_ticks es positivo (duración de interpolación).
+#![allow(clippy::cast_possible_truncation)]
+
 use crate::celestial::SVector3;
 use crate::spa::SPA;
 

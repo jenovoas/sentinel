@@ -10,6 +10,9 @@
 //! - Lyapunov Exponent (λ): Measures orbital divergence (Chaos).
 //! - Shannon Entropy (H): Measures information density.
 
+// Casts i64->usize acotados: los índices de canal son no-negativos y < N_CHANNELS.
+#![allow(clippy::cast_possible_truncation)]
+
 use crate::spa::SPA;
 use crate::spa_math::SPAMath;
 

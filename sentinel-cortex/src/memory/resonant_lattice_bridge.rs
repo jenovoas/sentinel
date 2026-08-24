@@ -113,6 +113,10 @@ impl ResonantLatticeBridge {
 }
 
 /// Helper to create shared memory buffer (ME-60OS PySharedBuffer).
-pub fn create_shared_buffer(name: &str, size: usize, create: bool) -> Result<PySharedBuffer, String> {
+pub fn create_shared_buffer(
+    name: &str,
+    size: usize,
+    create: bool,
+) -> Result<PySharedBuffer, String> {
     PySharedBuffer::new(name.to_string(), size, create).map_err(|e| e.to_string())
 }

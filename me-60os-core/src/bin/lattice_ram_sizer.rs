@@ -1,12 +1,19 @@
-// Dimensión del lattice resonante según RAM disponible (S60 puro, sin float).
-// Migra quantum_lite.get_available_memory_gb (psutil) -> sysinfo en Rust.
-//
-// Estrategia: lee RAM libre, elige el mayor anillo hexagonal (H_n=3n(n+1)+1)
-// que cabe en el presupuesto, y materializa una LiquidLattice al tamaño elegido
-// para reportar memoria real usada (en vez de estimar).
+#![allow(
+    clippy::float_arithmetic,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation
+)] // BIN bench/exp: medicion y estadisticas en f64; conversiones acotadas por construccion
+   // Dimensión del lattice resonante según RAM disponible (S60 puro, sin float).
+   // Migra quantum_lite.get_available_memory_gb (psutil) -> sysinfo en Rust.
+   //
+   // Estrategia: lee RAM libre, elige el mayor anillo hexagonal (H_n=3n(n+1)+1)
+   // que cabe en el presupuesto, y materializa una LiquidLattice al tamaño elegido
+   // para reportar memoria real usada (en vez de estimar).
 
 use me60os_core::quantum_core::LiquidLattice;
-use me60os_core::ram_meter::{available_memory_bytes, hexagonal_ring_nodes, recommend_lattice_ring};
+use me60os_core::ram_meter::{
+    available_memory_bytes, hexagonal_ring_nodes, recommend_lattice_ring,
+};
 
 const MAX_RING: usize = 400; // tope de seguridad (ring 400 ~ 480k nodos)
 
@@ -29,17 +36,24 @@ fn main() {
     let nodes = hexagonal_ring_nodes(ring);
 
     println!("🔷 Anillo hexagonal recomendado: n={}", ring);
-    println!("🔷 Nodos en malla: {} (~{:.1}k)", nodes, nodes as f64 / 1000.0);
+    println!(
+        "🔷 Nodos en malla: {} (~{:.1}k)",
+        nodes,
+        nodes as f64 / 1000.0
+    );
 
     // Materializar para medir memoria REAL usada (no estimada).
     // LiquidLattice es 3x3; para representar la malla completa usamos un vector
     // de anillos, cada uno 3x3. Reportamos conteo de celdas reales.
     let total_cells = nodes;
-    let mut lat = LiquidLattice::new(total_cells.min(9).max(1));
+    let mut lat = LiquidLattice::new(total_cells.clamp(1, 9));
     // inyectar un pulso para no dejarlo en vacío
     lat.inject_dual_channel(vec![1, 2, 3, 4, 5, 6, 7, 8], vec![0]);
     let used = std::mem::size_of_val(&lat);
-    println!("🔷 Celdas modeladas en esta instancia: {} (mem usada instancia: {} B)", lat.buffer.size, used);
+    println!(
+        "🔷 Celdas modeladas en esta instancia: {} (mem usada instancia: {} B)",
+        lat.buffer.size, used
+    );
     println!("🔷 Capacidad total de malla según RAM: {} nodos", nodes);
 
     println!("✅ DIMENSIONADO POR RAM COMPLETADO (S60, sin floats)");

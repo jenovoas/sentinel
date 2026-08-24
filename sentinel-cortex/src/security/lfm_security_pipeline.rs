@@ -65,13 +65,21 @@ impl LfmSecurityPipeline {
 
     /// Verifies and certifies an LFM output using TruthSync (<100μs en estado estacionario;
     /// la primera llamada paga la compilación del RegexSet).
-    pub fn verify_egress<'a>(&mut self, output: &'a str, lattice_energy: i64) -> VerificationResult<'a> {
+    pub fn verify_egress<'a>(
+        &mut self,
+        output: &'a str,
+        lattice_energy: i64,
+    ) -> VerificationResult<'a> {
         self.truthsync.verify_text(output, lattice_energy)
     }
 
     /// Full end-to-end egress filter: returns the text if certified (score >= 0.50),
     /// otherwise rejects with an `LfmSecurityError`.
-    pub fn audit_egress<'a>(&mut self, output: &'a str, lattice_energy: i64) -> Result<VerificationResult<'a>, LfmSecurityError> {
+    pub fn audit_egress<'a>(
+        &mut self,
+        output: &'a str,
+        lattice_energy: i64,
+    ) -> Result<VerificationResult<'a>, LfmSecurityError> {
         let verification = self.verify_egress(output, lattice_energy);
         if !verification.is_certified {
             let min_required = me60os_core::spa::SPA::SCALE_0 / 2;
@@ -101,7 +109,7 @@ mod tests {
     #[test]
     fn test_ingress_sanitizer_blocks_prompt_injections() {
         let pipeline = LfmSecurityPipeline::new();
-        
+
         // SQL Injection attack
         let malicious_sql = "DROP TABLE users; SELECT * FROM credentials;";
         assert!(pipeline.sanitize_ingress(malicious_sql).is_err());
@@ -158,7 +166,8 @@ mod tests {
         let lattice_energy = 426_291_938_943_801i64;
 
         // Contains hallucinated malicious override patterns
-        let poisoned_output = "Se aplicó fake_data y mock_override con inyección maliciosa en el sistema.";
+        let poisoned_output =
+            "Se aplicó fake_data y mock_override con inyección maliciosa en el sistema.";
         let result = pipeline.audit_egress(poisoned_output, lattice_energy);
 
         // Must be rejected

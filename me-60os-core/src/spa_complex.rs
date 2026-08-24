@@ -11,7 +11,10 @@ use crate::spa_math::SPAMath;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
-#[cfg_attr(feature = "extension-module", pyclass(module = "me60os_core"))]
+#[cfg_attr(
+    feature = "extension-module",
+    pyclass(module = "me60os_core", from_py_object)
+)]
 pub struct ComplexSPA {
     pub real: SPA,
     pub imag: SPA,
@@ -130,7 +133,9 @@ impl ComplexSPA {
         } else if let Ok(s) = other.extract::<SPA>() {
             Ok(Self::new(self.real + s, self.imag))
         } else {
-            Err(pyo3::exceptions::PyTypeError::new_err("Unsupported operand type for +"))
+            Err(pyo3::exceptions::PyTypeError::new_err(
+                "Unsupported operand type for +",
+            ))
         }
     }
 
@@ -140,7 +145,9 @@ impl ComplexSPA {
         } else if let Ok(s) = other.extract::<SPA>() {
             Ok(Self::new(self.real - s, self.imag))
         } else {
-            Err(pyo3::exceptions::PyTypeError::new_err("Unsupported operand type for -"))
+            Err(pyo3::exceptions::PyTypeError::new_err(
+                "Unsupported operand type for -",
+            ))
         }
     }
 
@@ -150,7 +157,9 @@ impl ComplexSPA {
         } else if let Ok(s) = other.extract::<SPA>() {
             Ok(*self * s)
         } else {
-            Err(pyo3::exceptions::PyTypeError::new_err("Unsupported operand type for *"))
+            Err(pyo3::exceptions::PyTypeError::new_err(
+                "Unsupported operand type for *",
+            ))
         }
     }
 
@@ -163,7 +172,9 @@ impl ComplexSPA {
         } else if let Ok(s) = other.extract::<SPA>() {
             Ok(*self / s)
         } else {
-            Err(pyo3::exceptions::PyTypeError::new_err("Unsupported operand type for /"))
+            Err(pyo3::exceptions::PyTypeError::new_err(
+                "Unsupported operand type for /",
+            ))
         }
     }
 
@@ -185,7 +196,7 @@ impl ComplexSPA {
                 } else {
                     Ok(false)
                 }
-            },
+            }
             CompareOp::Ne => {
                 if let Ok(c) = other.extract::<ComplexSPA>() {
                     Ok(self.real != c.real || self.imag != c.imag)
@@ -194,8 +205,10 @@ impl ComplexSPA {
                 } else {
                     Ok(true)
                 }
-            },
-            _ => Err(pyo3::exceptions::PyTypeError::new_err("Comparison not supported for ComplexSPA"))
+            }
+            _ => Err(pyo3::exceptions::PyTypeError::new_err(
+                "Comparison not supported for ComplexSPA",
+            )),
         }
     }
 

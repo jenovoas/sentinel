@@ -6,6 +6,11 @@
 //! Agente que mantiene el pulso 10;5,6,5 del sistema.
 //! Reemplazo de `yhwh_driver.py`.
 
+#![allow(
+    clippy::float_arithmetic,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation
+)] // BIN bench/exp: medicion y estadisticas en f64; conversiones acotadas por construccion
 use me60os_core::qhc::QhcTensor;
 use std::thread;
 use std::time::Duration;

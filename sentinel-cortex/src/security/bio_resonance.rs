@@ -41,15 +41,18 @@ impl ResonanceEngine {
     pub fn inject_pulse(&mut self, _timestamp: u64) {
         let bonus = S60::from_raw(S60::SCALE_0 / 10); // +10% coherence per pulse
         let new_coherence = self.current_coherence + bonus;
-        
+
         // Clamp to 1.0
         if new_coherence > S60::one() {
             self.current_coherence = S60::one();
         } else {
             self.current_coherence = new_coherence;
         }
-        
-        tracing::debug!("PULSE INJECTED. New Coherence: {:?}", self.current_coherence);
+
+        tracing::debug!(
+            "PULSE INJECTED. New Coherence: {:?}",
+            self.current_coherence
+        );
     }
 
     /// Decay coherence (Entropy)
@@ -67,7 +70,7 @@ impl ResonanceEngine {
     /// Check if the system is "Coherent" enough to execute (Portal check)
     pub fn is_coherent(&self) -> bool {
         // Portal opens at 90% (S60: 54/60)
-        let threshold = S60::new(0, 54, 0, 0, 0); 
+        let threshold = S60::new(0, 54, 0, 0, 0);
         self.current_coherence >= threshold
     }
 
@@ -105,7 +108,10 @@ mod tests {
             engine.inject_pulse(100 + i);
         }
         let (valid, state) = engine.verify_pulse(117);
-        assert!(valid, "Engine debía estar cargado y validar correctamente a >90%");
+        assert!(
+            valid,
+            "Engine debía estar cargado y validar correctamente a >90%"
+        );
         // Validacion S60 Logica pura
         assert_eq!(state, LogicState::Unison);
     }

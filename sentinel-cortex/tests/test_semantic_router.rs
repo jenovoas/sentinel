@@ -13,7 +13,11 @@ async fn test_classify_without_api_key() {
     // Without GOOGLE_API_KEY, should return Unknown intent
     let (intent, msg) = router.classify("test query").await;
     assert_eq!(intent, Intent::Unknown);
-    assert!(msg.contains("Missing GOOGLE_API_KEY") || msg.contains("API Request") || msg.contains("Failed"));
+    assert!(
+        msg.contains("Missing GOOGLE_API_KEY")
+            || msg.contains("API Request")
+            || msg.contains("Failed")
+    );
 }
 
 #[test]

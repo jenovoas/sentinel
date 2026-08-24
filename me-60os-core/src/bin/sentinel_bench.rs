@@ -5,6 +5,14 @@
 // Mide: latencia de tick del cristal, deriva temporal vs CLOCK_MONOTONIC,
 // I/O del lattice (ResonantMatrix), temp térmica y CPU del sistema.
 
+// BENCH: la medicion de latencia/throughput se reporta en f64 por naturaleza
+// (duracion/contador -> promedio). La logica medida sigue siendo S60 pura.
+#![allow(
+    clippy::float_arithmetic,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation
+)]
+
 use me60os_core::quantum_core::IsochronousClock;
 use me60os_core::resonant_matrix::ResonantMatrix;
 use me60os_core::spa::SPA;
@@ -88,7 +96,11 @@ fn lattice_io(phase: &str, ops: u64) {
     let per_op = elapsed / (ops as u128).max(1);
     println!(
         "[{}] lattice I/O: {} ops en {}ns => {} ns/op (~{:.1} ops/ms)",
-        phase, ops, elapsed, per_op, (ops as f64) / elapsed as f64 * 1e6
+        phase,
+        ops,
+        elapsed,
+        per_op,
+        (ops as f64) / elapsed as f64 * 1e6
     );
 }
 
@@ -108,7 +120,9 @@ fn main() {
     let cpu_pct = (busy as f64 / tot as f64) * 100.0;
     println!(
         "[{}] cpu_sistema_durante_bench={:.1}% temp_final={:.2}C",
-        phase, cpu_pct, cpu_temp()
+        phase,
+        cpu_pct,
+        cpu_temp()
     );
     println!("=== FIN [{}] ===", phase);
     // Evitar warning de import no usado

@@ -10,21 +10,32 @@
 //!   M_eff = M_static / (1 + resonance / 200)
 //! Objetivo: reducción de masa > 95% a potencia máxima.
 
+#![allow(
+    clippy::float_arithmetic,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation
+)] // BIN bench/exp: medicion y estadisticas en f64; conversiones acotadas por construccion
 use me60os_core::spa::SPA;
 
 fn main() {
     // Constantes físicas (S60 = [deg, min, sec, ...])
     let m_static = SPA::new(2, 30, 0, 0, 0); // 2.5 kg
-    let phi = SPA::new(1, 37, 4, 0, 0);      // ~1.618 (áureo)
-    let tuning = SPA::new(1, 21, 57, 0, 0);  // ~1.366 (scalar tuning)
+    let phi = SPA::new(1, 37, 4, 0, 0); // ~1.618 (áureo)
+    let tuning = SPA::new(1, 21, 57, 0, 0); // ~1.366 (scalar tuning)
     let base_scale = SPA::new(200, 0, 0, 0, 0);
     let coherence = SPA::ONE; // 100%
 
     println!("🚀 EXP-005 (Rust SPA): MERKABAH G-ZERO VALIDATION");
     println!("   Masa Estática: {} (2.5 kg)", m_static);
-    println!("   PHI: {} | TUNING: {} | BASE_SCALE: {}", phi, tuning, base_scale);
+    println!(
+        "   PHI: {} | TUNING: {} | BASE_SCALE: {}",
+        phi, tuning, base_scale
+    );
     println!("{:-<60}", "");
-    println!("{:<10} | {:<28} | {:<10}", "POWER %", "M_EFF (S60)", "REDUC %");
+    println!(
+        "{:<10} | {:<28} | {:<10}",
+        "POWER %", "M_EFF (S60)", "REDUC %"
+    );
     println!("{:-<60}", "");
 
     let mut best_reduction = 0i64;

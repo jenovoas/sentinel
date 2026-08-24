@@ -1,6 +1,9 @@
 // Autor: Jaime Novoa Sepulveda — Todos los derechos reservados.
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
+// Casts u128->u64 acotados: wait_ms < 68_000 (ciclo maestro 68s en ms), siempre < u64::MAX.
+#![allow(clippy::cast_possible_truncation)]
+
 use std::time::{Duration, Instant};
 use tokio::time::sleep;
 
@@ -13,6 +16,12 @@ pub struct ResonantLoop {
     master_cycle: Duration,
     /// Inicio del ciclo actual
     cycle_start: Instant,
+}
+
+impl Default for ResonantLoop {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl ResonantLoop {
@@ -29,11 +38,11 @@ impl ResonantLoop {
     pub async fn wait_next_pulse(&mut self) -> bool {
         let now = Instant::now();
         let elapsed = now.duration_since(self.cycle_start);
-        
+
         // Calcular tiempo restante para completar el ciclo de 17s
         let remainder = elapsed.as_millis() % self.breath_cycle.as_millis();
         let wait_ms = self.breath_cycle.as_millis() - remainder;
-        
+
         if wait_ms > 0 {
             tracing::debug!("⏳ Resonant Loop: Syncing phase ({}ms)", wait_ms);
             sleep(Duration::from_millis(wait_ms as u64)).await;

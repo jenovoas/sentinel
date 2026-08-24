@@ -1,3 +1,9 @@
+#![allow(
+    clippy::float_arithmetic,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation
+)]
+// BIN bench/exp: medicion y estadisticas en f64; conversiones acotadas por construccion
 // Autor: Jaime Novoa Sepulveda -- Todos los derechos reservados.
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
@@ -19,6 +25,7 @@
 //! - [EXT-NV] / [NV-050] Nandi & Vitiello (2026). arXiv:2606.30890 — dinámica de cristal de tiempo.
 //! - [NV-040] Nandi (2025). arXiv:2503.19688 — memory-driven time-crystalline phase (análogo al portal).
 
+#![allow(dead_code)] // EXP binario protegido (AGENTS.md): material de estudio, campos/metodos de uso futuro
 use me60os_core::hexagonal_control::HexagonalController;
 use me60os_core::physics::ResonantPhysics;
 use me60os_core::qhc::QhcTensor;
@@ -48,7 +55,10 @@ fn main() {
     let mut lane_b = HexagonalController::new(7);
 
     println!("Malla A (Security): {} nodos hexagonales", lane_a.n_nodes);
-    println!("Malla B (Observability): {} nodos hexagonales", lane_b.n_nodes);
+    println!(
+        "Malla B (Observability): {} nodos hexagonales",
+        lane_b.n_nodes
+    );
     println!("QHC: Patron 10;5,6,5 + Salto-17 cada 68 ticks");
     println!("{:-<72}", "");
 
@@ -104,8 +114,10 @@ fn main() {
         let priority = SPA::one();
         // Usar intensidad del portal como estabilidad (coherencia)
         let stability = SPA::from_raw((intensity * SPA::SCALE_0 as f64) as i64);
-        let effective_load = ResonantPhysics::calculate_effective_load(static_load, priority, stability);
-        let reduction_pct = 100.0 - (effective_load.to_base_units() as f64 / static_load.to_base_units() as f64 * 100.0);
+        let effective_load =
+            ResonantPhysics::calculate_effective_load(static_load, priority, stability);
+        let reduction_pct = 100.0
+            - (effective_load.to_base_units() as f64 / static_load.to_base_units() as f64 * 100.0);
 
         // 8. DETECCION DE PORTALES EMERGENTES (flanco de subida en intensidad)
         let prev = prev_intensity;
@@ -124,9 +136,12 @@ fn main() {
 
         // Log periodico cada 10s
         if tick % 10 == 0 && tick > 0 {
-            let bio_coh = bio_resonator.lock().unwrap().get_coherence_raw() as f64 / SPA::SCALE_0 as f64;
-            println!("T={}s | bio_coh={:.3} | portal_open={} | intensity={:.3} | reduction={:.1}%",
-                tick, bio_coh, is_portal, intensity, reduction_pct);
+            let bio_coh =
+                bio_resonator.lock().unwrap().get_coherence_raw() as f64 / SPA::SCALE_0 as f64;
+            println!(
+                "T={}s | bio_coh={:.3} | portal_open={} | intensity={:.3} | reduction={:.1}%",
+                tick, bio_coh, is_portal, intensity, reduction_pct
+            );
         }
 
         thread::sleep(Duration::from_millis(10)); // acelerado para demo
@@ -134,11 +149,14 @@ fn main() {
 
     // Reporte final
     println!("\n{:-<72}", "");
-    println!("TOTAL PORTALES EMERGENTES (sistema real): {}", portals_detected);
+    println!(
+        "TOTAL PORTALES EMERGENTES (sistema real): {}",
+        portals_detected
+    );
     println!();
 
     for (i, portals) in cycle_portals.iter().enumerate() {
-        print!("Ciclo {} ({}s-{}s): ", i, i*68, (i+1)*68);
+        print!("Ciclo {} ({}s-{}s): ", i, i * 68, (i + 1) * 68);
         if portals.is_empty() {
             println!("(ninguno)");
         } else {
@@ -185,7 +203,7 @@ fn evolve_hexagonal_coupling(lattice: &mut HexagonalController) {
     let n = lattice.n_nodes;
     let mut new_phases = vec![SPA::zero(); n];
 
-    for i in 0..n {
+    for (i, slot) in new_phases.iter_mut().enumerate() {
         let mut sum = SPA::zero();
         let mut count: i64 = 1;
 
@@ -203,13 +221,11 @@ fn evolve_hexagonal_coupling(lattice: &mut HexagonalController) {
         }
 
         // Promedio armonico (difusion) en S60 puro
-        new_phases[i] = sum / SPA::from_int(count);
+        *slot = sum / SPA::from_int(count);
     }
 
     // Aplicar (campo publico, sin unsafe)
-    for i in 0..n {
-        lattice.phases_base60[i] = new_phases[i];
-    }
+    lattice.phases_base60.copy_from_slice(&new_phases);
 }
 
 /// PortalDetector CORRECTO (grados, threshold AND individual, como vault EXP-028 y exp028_penta.rs)
@@ -247,7 +263,9 @@ impl PortalDetector {
     fn get_portal_intensity(&self, t: SPA) -> f64 {
         let (ph_bio, ph_crys, ph_ven) = self.calculate_phases(t);
         // Intensidad = promedio de las 3 fases (en 0..1)
-        let sum = ph_bio.to_base_units() as f64 + ph_crys.to_base_units() as f64 + ph_ven.to_base_units() as f64;
+        let sum = ph_bio.to_base_units() as f64
+            + ph_crys.to_base_units() as f64
+            + ph_ven.to_base_units() as f64;
         (sum / 3.0) / SPA::SCALE_0 as f64
     }
 }
@@ -291,11 +309,21 @@ impl BioResonator {
         }
     }
 
-    fn is_portal_open(&self) -> bool { self.coherence >= self.threshold_portal }
-    fn is_pilot_present(&self) -> bool { self.last_pulse.elapsed().as_millis() < self.dead_man_threshold_ms as u128 }
-    fn get_coherence_raw(&self) -> i64 { self.coherence.to_base_units() }
-    fn time_since_pulse_ms(&self) -> u64 { self.last_pulse.elapsed().as_millis() as u64 }
-    fn reset(&mut self) { self.coherence = SPA::zero(); }
+    fn is_portal_open(&self) -> bool {
+        self.coherence >= self.threshold_portal
+    }
+    fn is_pilot_present(&self) -> bool {
+        self.last_pulse.elapsed().as_millis() < self.dead_man_threshold_ms as u128
+    }
+    fn get_coherence_raw(&self) -> i64 {
+        self.coherence.to_base_units()
+    }
+    fn time_since_pulse_ms(&self) -> u64 {
+        self.last_pulse.elapsed().as_millis() as u64
+    }
+    fn reset(&mut self) {
+        self.coherence = SPA::zero();
+    }
 }
 
 /// QuantumScheduler del sistema real (simplificado de sentinel-cortex/src/quantum/quantum_scheduler.rs)
@@ -340,8 +368,11 @@ fn find_meta_portals(cycle_portals: &[Vec<f64>]) {
 
     for (phase, count) in sorted {
         if *count >= 3 {
-            println!("   META-PORTAL @ fase {:.1}s (aparece en {} ciclos)",
-                *phase as f64 / 10.0, count);
+            println!(
+                "   META-PORTAL @ fase {:.1}s (aparece en {} ciclos)",
+                *phase as f64 / 10.0,
+                count
+            );
         }
     }
 }

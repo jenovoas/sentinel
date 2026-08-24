@@ -1,6 +1,11 @@
 // Autor: Jaime Novoa Sepulveda — Todos los derechos reservados.
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
+#![allow(
+    clippy::float_arithmetic,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation
+)] // BIN bench/exp: medicion y estadisticas en f64; conversiones acotadas por construccion
 use anyhow::Result;
 use chrono::Local;
 use crossterm::{
@@ -307,12 +312,10 @@ fn main() -> Result<()> {
                             app_state.input.pop();
                             app_state.prediction.clear();
                         }
-                        KeyCode::Tab => {
-                            if !app_state.prediction.is_empty() {
-                                let p = app_state.prediction.clone();
-                                app_state.input.push_str(&p);
-                                app_state.prediction.clear();
-                            }
+                        KeyCode::Tab if !app_state.prediction.is_empty() => {
+                            let p = app_state.prediction.clone();
+                            app_state.input.push_str(&p);
+                            app_state.prediction.clear();
                         }
                         _ => {}
                     },
@@ -342,7 +345,8 @@ fn call_sentinel_ai(prompt: &str, mode: &str) -> String {
     };
 
     // 1. Intentar llamar a LFM 2.5 local en GPU (:8080)
-    let sys_msg = format!("Eres Sentinel AI en modo {mode}. Responde de forma clara, técnica y concisa.");
+    let sys_msg =
+        format!("Eres Sentinel AI en modo {mode}. Responde de forma clara, técnica y concisa.");
     let lfm_req = serde_json::json!({
         "messages": [
             {"role": "system", "content": sys_msg},
@@ -352,17 +356,29 @@ fn call_sentinel_ai(prompt: &str, mode: &str) -> String {
         "temperature": 0.3
     });
 
-    if let Ok(resp) = client.post("http://127.0.0.1:8080/v1/chat/completions").json(&lfm_req).send() {
+    if let Ok(resp) = client
+        .post("http://127.0.0.1:8080/v1/chat/completions")
+        .json(&lfm_req)
+        .send()
+    {
         if resp.status().is_success() {
             if let Ok(val) = resp.json::<serde_json::Value>() {
                 if let Some(choices) = val.get("choices").and_then(|c| c.as_array()) {
                     if let Some(first) = choices.first() {
                         if let Some(msg) = first.get("message") {
-                            let content = msg.get("content").and_then(|c| c.as_str()).unwrap_or("").trim();
+                            let content = msg
+                                .get("content")
+                                .and_then(|c| c.as_str())
+                                .unwrap_or("")
+                                .trim();
                             if !content.is_empty() {
                                 return content.to_string();
                             }
-                            let reasoning = msg.get("reasoning_content").and_then(|c| c.as_str()).unwrap_or("").trim();
+                            let reasoning = msg
+                                .get("reasoning_content")
+                                .and_then(|c| c.as_str())
+                                .unwrap_or("")
+                                .trim();
                             if !reasoning.is_empty() {
                                 return reasoning.to_string();
                             }
@@ -381,7 +397,11 @@ fn call_sentinel_ai(prompt: &str, mode: &str) -> String {
         temperature: 0.4,
     };
 
-    match client.post("http://localhost:8000/api/ai/query").json(&legacy_req).send() {
+    match client
+        .post("http://localhost:8000/api/ai/query")
+        .json(&legacy_req)
+        .send()
+    {
         Ok(resp) => {
             if let Ok(ai_resp) = resp.json::<AIQueryResponse>() {
                 ai_resp.response
@@ -389,7 +409,9 @@ fn call_sentinel_ai(prompt: &str, mode: &str) -> String {
                 "Error: No pude decodificar el pensamiento del Cortex.".into()
             }
         }
-        Err(_) => "Error de conexión: Ni LFM (:8080) ni Neocórtex (:8000) están respondiendo.".into(),
+        Err(_) => {
+            "Error de conexión: Ni LFM (:8080) ni Neocórtex (:8000) están respondiendo.".into()
+        }
     }
 }
 
@@ -540,7 +562,11 @@ fn draw_observatory_view(f: &mut Frame, area: Rect, app: &mut App) {
 
     let spark_data = app.energy_history.iter().cloned().collect::<Vec<_>>();
     let spark = Sparkline::default()
-        .block(Block::default().borders(Borders::ALL).title(" FLUJO DE ENERGÍA "))
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .title(" FLUJO DE ENERGÍA "),
+        )
         .data(&spark_data)
         .style(Style::default().fg(NEON_GREEN));
     f.render_widget(spark, left[0]);

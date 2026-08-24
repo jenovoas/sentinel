@@ -24,7 +24,7 @@ use serde::{Deserialize, Serialize};
 
 /// Resonant Crystal: Piezoelectric oscillator tuned to Base-60 mathematics.
 /// Acts as a resonant memory cell in the Quantum Matrix.
-#[cfg_attr(feature = "extension-module", pyclass)]
+#[cfg_attr(feature = "extension-module", pyclass(from_py_object))]
 #[repr(C)]
 #[derive(Clone, Debug, Copy, Serialize, Deserialize)] // Copy is needed for simple struct, but String inside prevents it? No, fixed size buffer prevents String.
                                                       // Wait, I changed it to name: [u8; 32], so it is Copy.

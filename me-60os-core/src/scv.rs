@@ -11,11 +11,12 @@
 //! 2. **Entropic Firewall**: Shannon Entropy validation (Signal vs Noise).
 
 use crate::bio::SoulVerifier; // Reuse Entropy Logic
+use crate::ebpf_cortex_bridge::CortexEvent;
 use crate::spa::SPA;
 use crate::spa_math::SPAMath;
 use regex::RegexSet;
-use crate::ebpf_cortex_bridge::CortexEvent;
 
+#[cfg(feature = "extension-module")]
 #[cfg(feature = "extension-module")]
 use pyo3::prelude::*;
 
@@ -76,9 +77,13 @@ impl EntropicFirewall {
     pub fn verify(events: &[CortexEvent]) -> bool {
         // REVIEW: entropy_signal viene de eBPF como u64 (raw SPA), siempre cabe en i64.
         //         Valor máximo típico ~5e9, muy por debajo de i64::MAX (9.2e18).
-        let spa_signals: Vec<SPA> = events.iter()
+        let spa_signals: Vec<SPA> = events
+            .iter()
             .map(|e| {
-                debug_assert!(e.entropy_signal <= i64::MAX as u64, "entropy_signal excede i64");
+                debug_assert!(
+                    e.entropy_signal <= i64::MAX as u64,
+                    "entropy_signal excede i64"
+                );
                 SPA::from_raw(e.entropy_signal as i64)
             })
             .collect();

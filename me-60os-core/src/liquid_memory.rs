@@ -65,7 +65,10 @@ impl NativeShm {
         unsafe {
             let fd = shm_open(c_name.as_ptr(), O_CREAT | O_RDWR, 0o600);
             if fd == -1 {
-                return Err(format!("shm_open(create) falló: {}", std::io::Error::last_os_error()));
+                return Err(format!(
+                    "shm_open(create) falló: {}",
+                    std::io::Error::last_os_error()
+                ));
             }
             if ftruncate(fd, size as i64) == -1 {
                 let e = std::io::Error::last_os_error();
@@ -73,14 +76,26 @@ impl NativeShm {
                 shm_unlink(c_name.as_ptr());
                 return Err(format!("ftruncate falló: {e}"));
             }
-            let ptr = mmap(ptr::null_mut(), size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+            let ptr = mmap(
+                ptr::null_mut(),
+                size,
+                PROT_READ | PROT_WRITE,
+                MAP_SHARED,
+                fd,
+                0,
+            );
             if ptr == MAP_FAILED {
                 let e = std::io::Error::last_os_error();
                 close(fd);
                 shm_unlink(c_name.as_ptr());
                 return Err(format!("mmap falló: {e}"));
             }
-            Ok(Self { ptr: ptr as *mut u8, size, fd, name: name.to_string() })
+            Ok(Self {
+                ptr: ptr as *mut u8,
+                size,
+                fd,
+                name: name.to_string(),
+            })
         }
     }
 
@@ -90,15 +105,30 @@ impl NativeShm {
         unsafe {
             let fd = shm_open(c_name.as_ptr(), O_RDWR, 0o600);
             if fd == -1 {
-                return Err(format!("shm_open(open) falló: {}", std::io::Error::last_os_error()));
+                return Err(format!(
+                    "shm_open(open) falló: {}",
+                    std::io::Error::last_os_error()
+                ));
             }
-            let ptr = mmap(ptr::null_mut(), size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+            let ptr = mmap(
+                ptr::null_mut(),
+                size,
+                PROT_READ | PROT_WRITE,
+                MAP_SHARED,
+                fd,
+                0,
+            );
             if ptr == MAP_FAILED {
                 let e = std::io::Error::last_os_error();
                 close(fd);
                 return Err(format!("mmap falló: {e}"));
             }
-            Ok(Self { ptr: ptr as *mut u8, size, fd, name: name.to_string() })
+            Ok(Self {
+                ptr: ptr as *mut u8,
+                size,
+                fd,
+                name: name.to_string(),
+            })
         }
     }
 
@@ -118,9 +148,7 @@ impl NativeShm {
             return Err("read fuera de rango".to_string());
         }
         // SAFETY: offset and len validated against self.size above; ptr.add(offset) is within mapped region
-        unsafe {
-            Ok(std::slice::from_raw_parts(self.ptr.add(offset), len).to_vec())
-        }
+        unsafe { Ok(std::slice::from_raw_parts(self.ptr.add(offset), len).to_vec()) }
     }
 }
 
@@ -272,6 +300,8 @@ mod tests {
     #[test]
     fn test_large_payload() {
         let mut mem = LiquidMemory::new(8192);
+        // Test data bounded: i % 256 ∈ [0,255], cast u32→u8 es sin pérdida (payload sintético).
+        #[allow(clippy::cast_possible_truncation)]
         let payload: Vec<u8> = (0..4096u32).map(|i| (i % 256) as u8).collect();
         mem.store("big", &payload).unwrap();
         let got = mem.retrieve("big").unwrap().unwrap();

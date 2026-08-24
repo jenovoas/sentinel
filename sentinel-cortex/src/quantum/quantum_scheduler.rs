@@ -228,8 +228,12 @@ impl QuantumScheduler {
         }
     }
 
-    pub fn queue_len(&self) -> usize { self.task_queue.len() }
-    pub fn is_queue_empty(&self) -> bool { self.task_queue.is_empty() }
+    pub fn queue_len(&self) -> usize {
+        self.task_queue.len()
+    }
+    pub fn is_queue_empty(&self) -> bool {
+        self.task_queue.is_empty()
+    }
     pub fn reset_stats(&mut self) {
         self.tasks_in_portal = 0;
         self.tasks_forced = 0;

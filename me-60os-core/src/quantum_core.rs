@@ -82,7 +82,6 @@ impl S60PID {
 
     /// Standard PID update (internal implementation)
     pub fn update_internal(&mut self, measured_raw: i64, dt_raw: i64) -> i64 {
-
         let measured = SPA::from_raw(measured_raw);
         let dt = SPA::from_raw(dt_raw);
         let error = self.setpoint - measured;
@@ -120,7 +119,7 @@ impl S60PID {
         &mut self,
         measured_raw: i64,
         dt_raw: i64,
-        lattice_errors: Vec<i64>
+        lattice_errors: Vec<i64>,
     ) -> i64 {
         let measured = SPA::from_raw(measured_raw);
         let dt = SPA::from_raw(dt_raw);
@@ -258,10 +257,10 @@ impl IsochronousClock {
 
     pub fn tick_internal(&mut self) {
         self.ticks += 1;
-        
+
         let target_ns = self.ticks as u128 * self.tick_interval_ns as u128;
         let elapsed_ns = self.start_time.elapsed().as_nanos();
-        
+
         if target_ns > elapsed_ns {
             let sleep_ns = target_ns - elapsed_ns;
             thread::sleep(Duration::from_nanos(sleep_ns as u64));
@@ -467,7 +466,7 @@ impl LiquidLattice {
             if rec_b.len() < count_b {
                 let phase = self.buffer.lattice[i].phase;
                 let phase_deg = phase.to_raw() / SPA::SCALE_0;
-                let deg_normalized = if phase_deg < 0 { 0 } else if phase_deg > 359 { 359 } else { phase_deg };
+                let deg_normalized = phase_deg.clamp(0, 359);
                 let byte_val = ((deg_normalized * 256) / 360) as u8;
                 rec_b.push(byte_val);
             }
@@ -482,4 +481,3 @@ fn pad_to_8(data: &[u8]) -> [u8; 8] {
     padded[8 - len..].copy_from_slice(&data[..len]);
     padded
 }
-

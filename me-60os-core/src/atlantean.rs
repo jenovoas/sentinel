@@ -7,6 +7,10 @@
 //! Regulador Maat: Garantiza la veracidad (Purity >= 95% = 0;57,0,0,0,0).
 //! GPU Controller: Control P adaptativo de latencia fluida (Target: 20ms = 50 FPS).
 
+// Los casts i64->usize en adjust_batch_size están acotados por el clamp [min_batch, max_batch]
+// (valores positivos de configuración), por lo que el truncamiento es seguro en target 64-bit.
+#![allow(clippy::cast_possible_truncation)]
+
 use crate::spa::SPA;
 
 /// Regulador Atlanteano (Maat Stabilizer)
@@ -104,11 +108,7 @@ impl GpuController {
         let denom = latency_msx1000 + 100;
         // scale_factor en milésimas: 1000 = 1.0; clamp [500, 1500] = [0.5, 1.5]
         let mut scale_x1000 = (self.target_latency_msx1000 * 1000) / denom;
-        if scale_x1000 < 500 {
-            scale_x1000 = 500;
-        } else if scale_x1000 > 1500 {
-            scale_x1000 = 1500;
-        }
+        scale_x1000 = scale_x1000.clamp(500, 1500);
         // new_batch = batch * scale / 1000, entero
         let new_batch = (self.current_batch_size as i64 * scale_x1000) / 1000;
         let new_batch = new_batch.clamp(self.min_batch as i64, self.max_batch as i64) as usize;
@@ -187,7 +187,7 @@ mod tests {
     fn test_gpu_clamp_min_max() {
         let mut gpu = GpuController::new();
         gpu.current_batch_size = 100; // min
-        // latencia bajísima empuja al clamp superior, no debe pasar max
+                                      // latencia bajísima empuja al clamp superior, no debe pasar max
         let b = gpu.adjust_batch_size(100);
         assert!(b >= gpu.min_batch, "respeta min_batch");
         let mut gpu2 = GpuController::new();

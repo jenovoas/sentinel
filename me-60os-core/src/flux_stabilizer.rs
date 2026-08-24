@@ -19,7 +19,7 @@
 //!   `docs/02_ciencia_y_quantum/FINAL_REPORT_RESONANCE_ARCHITECTURE.md` — estabilización de flujo.
 //! - [P-RES] Novoa, J. (2026). Nota técnica no publicada de Sentinel — algoritmo original de LCG damping base-60.
 //!   LCG determinista, damping exponencial discreto y guardrails son diseño original de Sentinel (Novoa 2026).
-//! donde todo es S60 fixed-point. Sin floats, sin scipy.
+//!   donde todo es S60 fixed-point. Sin floats, sin scipy.
 
 use crate::spa::SPA;
 
@@ -156,8 +156,11 @@ mod flux_tests {
         let mut s1 = FluxStabilizer::new();
         let mut s2 = FluxStabilizer::new();
         for _ in 0..20 {
-            assert_eq!(s1.pseudo_flux_noise(), s2.pseudo_flux_noise(),
-                "LCG debe ser determinista");
+            assert_eq!(
+                s1.pseudo_flux_noise(),
+                s2.pseudo_flux_noise(),
+                "LCG debe ser determinista"
+            );
         }
     }
 
@@ -171,8 +174,11 @@ mod flux_tests {
             let raw = n.to_raw();
             // semilla mod 1;0 = [0, 1) y menos 0;30 = [-0.5, 0.5)
             // raw range: [-6_480_000, +6_480_000)
-            assert!(raw >= -6_480_000 && raw < 6_480_000,
-                "ruido fuera de rango: {}", raw);
+            assert!(
+                raw >= -6_480_000 && raw < 6_480_000,
+                "ruido fuera de rango: {}",
+                raw
+            );
         }
     }
 
@@ -182,8 +188,14 @@ mod flux_tests {
         // y estar dentro de los guardrails [8;0, 12;0]
         let mut s = FluxStabilizer::new();
         s.stabilize(10);
-        assert!(s.current_flux >= s.limit_lower, "flux bajo guardrail inferior");
-        assert!(s.current_flux <= s.limit_upper, "flux sobre guardrail superior");
+        assert!(
+            s.current_flux >= s.limit_lower,
+            "flux bajo guardrail inferior"
+        );
+        assert!(
+            s.current_flux <= s.limit_upper,
+            "flux sobre guardrail superior"
+        );
         assert_eq!(s.history.len(), 10, "history debe tener 10 entradas");
     }
 
@@ -221,7 +233,11 @@ mod flux_tests {
         let drift = s.residual_drift().abs();
         let target_raw = s.target_sigma.to_raw().abs();
         // drift < 10% del target
-        assert!(drift < target_raw / 10,
-            "drift {} muy alto relativo a target {}", drift, target_raw);
+        assert!(
+            drift < target_raw / 10,
+            "drift {} muy alto relativo a target {}",
+            drift,
+            target_raw
+        );
     }
 }

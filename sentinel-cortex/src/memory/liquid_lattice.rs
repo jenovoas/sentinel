@@ -69,7 +69,8 @@ impl LiquidLattice {
 
                 // Average Von Neumann coupling
                 let avg_amp = (sum_amp / S60::from_int(neighbors)).unwrap_or(S60::ZERO);
-                let self_contrib = self.grid[r][c].amplitude * S60::from_raw((S60::SCALE_0 * 7) / 10);
+                let self_contrib =
+                    self.grid[r][c].amplitude * S60::from_raw((S60::SCALE_0 * 7) / 10);
                 let avg_contrib = avg_amp * S60::from_raw((S60::SCALE_0 * 3) / 10);
                 new_grid[r][c].amplitude = self_contrib + avg_contrib;
             }
@@ -131,7 +132,10 @@ mod tests {
         // Tras una difusión, la celda (0,1) y (1,0) deben haber recibido energía.
         let neighbor_right = lat.grid[0][1].amplitude;
         let neighbor_down = lat.grid[1][0].amplitude;
-        assert!(neighbor_right > S60::zero(), "energía debe propagar a (0,1)");
+        assert!(
+            neighbor_right > S60::zero(),
+            "energía debe propagar a (0,1)"
+        );
         assert!(neighbor_down > S60::zero(), "energía debe propagar a (1,0)");
     }
 
@@ -165,6 +169,10 @@ mod tests {
         let mut lat = LiquidLattice::new();
         lat.inject_entropy(2, 2, 1_000_000);
         assert_eq!(lat.grid[2][2].amplitude, S60::from_base_units(1_000_000));
-        assert_eq!(lat.grid[1][2].amplitude, S60::zero(), "vecino no debe tener energía aún");
+        assert_eq!(
+            lat.grid[1][2].amplitude,
+            S60::zero(),
+            "vecino no debe tener energía aún"
+        );
     }
 }

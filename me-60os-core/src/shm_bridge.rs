@@ -9,12 +9,13 @@
 
 use libc::{close, ftruncate, mmap, munmap, shm_open, shm_unlink};
 use libc::{MAP_FAILED, MAP_SHARED, O_CREAT, O_RDWR, PROT_READ, PROT_WRITE};
+#[cfg(feature = "extension-module")]
 use pyo3::prelude::*;
 use pyo3::types::{PyAny, PyBytes};
 use std::ffi::CString;
 use std::ptr;
 
-#[pyclass]
+#[cfg_attr(feature = "extension-module", pyclass)]
 pub struct PySharedBuffer {
     pub(crate) name: String,
     pub(crate) size: usize,
@@ -28,7 +29,7 @@ pub struct PySharedBuffer {
 unsafe impl Send for PySharedBuffer {}
 unsafe impl Sync for PySharedBuffer {}
 
-#[pymethods]
+#[cfg_attr(feature = "extension-module", pymethods)]
 impl PySharedBuffer {
     #[new]
     pub fn new(name: String, size: usize, create: bool) -> PyResult<Self> {

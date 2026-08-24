@@ -14,8 +14,8 @@ use tokio::process::Command;
 use tracing::{error, info, warn};
 
 // Importar desde el core de me60os
-use me60os_core::time_crystal::LiquidLattice;
 use me60os_core::guardian_lsm::GuardianLsm;
+use me60os_core::time_crystal::LiquidLattice;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
@@ -44,8 +44,14 @@ impl Orchestrator {
         let redis_url = format!("redis://{}:{}/", redis_host, redis_port);
         let client = redis::Client::open(redis_url)?;
 
-        let snapshot_path = get_env_var("SNAPSHOT_PATH", "/home/jnovoas/.local/state/swarm/crystal_snapshot.json");
-        let memory_path = get_env_var("MEMORY_PATH", "/home/jnovoas/SecurePenguin/memory/MEMORY.md");
+        let snapshot_path = get_env_var(
+            "SNAPSHOT_PATH",
+            "/home/jnovoas/.local/state/swarm/crystal_snapshot.json",
+        );
+        let memory_path = get_env_var(
+            "MEMORY_PATH",
+            "/home/jnovoas/SecurePenguin/memory/MEMORY.md",
+        );
 
         // Inicializar lattice con 60 slots (PAI-60 standard)
         let lattice = Arc::new(Mutex::new(LiquidLattice::new(60)));
@@ -129,7 +135,6 @@ impl Orchestrator {
             }
         }
 
-
         // 1.2 Leer respaldo RAG (Archivos)
         let memory_rules = fs::read_to_string(&self.memory_path)
             .await
@@ -211,7 +216,7 @@ impl Orchestrator {
         let task_key = format!("swarm:task:{}", task_id);
         let task_data: std::collections::HashMap<String, String> = conn.hgetall(&task_key).await?;
         if task_data.is_empty() {
-             anyhow::bail!("Tarea {} no encontrada para despacho", task_id);
+            anyhow::bail!("Tarea {} no encontrada para despacho", task_id);
         }
 
         info!(
@@ -221,7 +226,11 @@ impl Orchestrator {
 
         // --- GUARDIAN LSM CHECK ---
         let description = task_data.get("description").cloned().unwrap_or_default();
-        if !self.guardian.verify_action("soma-rs", "dispatch_task", &description).await {
+        if !self
+            .guardian
+            .verify_action("soma-rs", "dispatch_task", &description)
+            .await
+        {
             warn!("🛑 GUARDIAN: Acción bloqueada para tarea {}", task_id);
             let _: () = conn
                 .hset(&task_key, "status", "blocked_by_guardian")
@@ -232,12 +241,8 @@ impl Orchestrator {
         // --- PREPARE CONTEXT & GET REQ_ID ---
         let llm_req_id = self.prepare_context(conn, task_id, &task_data).await?;
 
-        let _: () = conn
-            .hset(&task_key, "status", "processing")
-            .await?;
-        let _: () = conn
-            .hset(&task_key, "llm_req_id", &llm_req_id)
-            .await?;
+        let _: () = conn.hset(&task_key, "status", "processing").await?;
+        let _: () = conn.hset(&task_key, "llm_req_id", &llm_req_id).await?;
 
         Command::new("/home/jnovoas/.local/bin/soma-worker")
             .arg(task_id)
@@ -267,7 +272,10 @@ impl Orchestrator {
         };
         res.map_err(|e| anyhow::anyhow!("{}", e))?;
 
-        info!("💾 Unified Crystal Snapshot guardado en {}", self.snapshot_path);
+        info!(
+            "💾 Unified Crystal Snapshot guardado en {}",
+            self.snapshot_path
+        );
         Ok(())
     }
 
@@ -278,7 +286,8 @@ impl Orchestrator {
 
         {
             let mut lattice = self.lattice.lock().await;
-            lattice.load(self.snapshot_path.clone())
+            lattice
+                .load(self.snapshot_path.clone())
                 .map_err(|e| anyhow::anyhow!("{}", e))?;
         }
 
@@ -288,18 +297,14 @@ impl Orchestrator {
             (lattice.buffer.phase.clone(), lattice.buffer.clock.ticks)
         };
 
-        let _: () = conn
-            .set("swarm:crystal:phase", &phase)
-            .await?;
+        let _: () = conn.set("swarm:crystal:phase", &phase).await?;
         let _: () = conn
             .set(
                 "swarm:crystal:coherence",
                 "600", // Default initialization
             )
             .await?;
-        let _: () = conn
-            .set("swarm:crystal:tick", ticks)
-            .await?;
+        let _: () = conn.set("swarm:crystal:tick", ticks).await?;
 
         info!(
             "📂 Unified Crystal Snapshot cargado (Phase: {}, Ticks: {})",

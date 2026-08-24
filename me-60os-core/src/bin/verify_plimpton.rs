@@ -1,3 +1,9 @@
+#![allow(
+    clippy::float_arithmetic,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation
+)]
+// BIN bench/exp: medicion y estadisticas en f64; conversiones acotadas por construccion
 // Autor: Jaime Novoa Sepulveda — Todos los derechos reservados.
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
@@ -78,7 +84,14 @@ fn main() {
         let ratio_disp = ratio_sq.to_raw() as f64 / SPA::SCALE_0 as f64;
         println!(
             "Row {:2}: a={:9.4}  (c/a)^2 = {:9.6}  ->  Base60: [{}; {}, {}, {}, {}]",
-            i + 1, a_disp, ratio_disp, d[0], d[1], d[2], d[3], d[4]
+            i + 1,
+            a_disp,
+            ratio_disp,
+            d[0],
+            d[1],
+            d[2],
+            d[3],
+            d[4]
         );
     }
 

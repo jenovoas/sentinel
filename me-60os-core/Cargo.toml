@@ -60,12 +60,14 @@ blake3 = "1.5"
 
 [features]
 extension-module = ["pyo3/extension-module", "pyo3"]
+# Los consumidores puros-Rust (sentinel-cortex, truthsync-core, neural-guard)
+# declaran la dependencia con default-features = false para no enlazar
+# simbolos de Python en sus tests (_Py_Dealloc). Los Dockerfile.beat/worker
+# construyen el .so pasando --features extension-module explicitamente.
 default = ["extension-module"]
 
-# [lints.clippy] — TEMPORARILY DOWNGRADED for clippy verification of dependents
-# RESTORED by clippy fix pipeline — DO NOT COMMIT AS IS
 [lints.clippy]
-float_arithmetic = "warn"
-float_cmp = "warn"
-cast_possible_truncation = "warn"
-cast_precision_loss = "warn"
+float_arithmetic = "deny"
+float_cmp = "deny"
+cast_possible_truncation = "deny"
+cast_precision_loss = "deny"

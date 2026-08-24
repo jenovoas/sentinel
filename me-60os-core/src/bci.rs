@@ -13,16 +13,19 @@
 //! PROTOCOL (Binary 3-byte):
 //! [CMD: u8] [VAL_H: u8] [VAL_L: u8]
 
+// Casts i64->u8 acotados: val se clampea con min(255) antes del cast (canal háptico 8-bit).
+#![allow(clippy::cast_possible_truncation)]
+
 use crate::buffer_system::ResonantBuffer;
-use crate::spa::SPA;
+use crate::ebpf_cortex_bridge::CortexEvent;
 use crate::scv::EntropicFirewall; // Import Firewall
+use crate::spa::SPA;
 use std::collections::VecDeque; // Import VecDeque
 use std::fs::{File, OpenOptions};
 use std::io::Write;
 use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
-use crate::ebpf_cortex_bridge::CortexEvent;
 
 pub struct BCISystem {
     device_path: String,
@@ -34,9 +37,7 @@ pub struct BCISystem {
 
 impl BCISystem {
     pub fn new(device_path: &str, buffer: Arc<ResonantBuffer>) -> Self {
-        let file = OpenOptions::new()
-            .append(true)
-            .open(device_path);
+        let file = OpenOptions::new().append(true).open(device_path);
 
         match file {
             Ok(f) => {
@@ -72,10 +73,7 @@ impl BCISystem {
         loop {
             // Reconnect attempt if disconnected
             if !self.connected {
-                if let Ok(f) = OpenOptions::new()
-                    .append(true)
-                    .open(&self.device_path)
-                {
+                if let Ok(f) = OpenOptions::new().append(true).open(&self.device_path) {
                     self.file = Some(f);
                     self.connected = true;
                     eprintln!("✅ BCI Reconnected!");

@@ -11,6 +11,9 @@
 //! - Dead Man's Switch (SoulVerifier)
 //! - Venus Drift Correction (Phase Reset at T=68s)
 
+// Casts i64->usize acotados: batch_size es positivo y acotado por el clamp [min, max].
+#![allow(clippy::cast_possible_truncation)]
+
 use crate::bio::SoulVerifier;
 use crate::spa::SPA;
 use std::cmp;

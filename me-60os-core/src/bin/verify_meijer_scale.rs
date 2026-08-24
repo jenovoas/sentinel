@@ -35,6 +35,11 @@
 //! ambas frecuencias por el mismo factor. La proyección Salto-17 se calcula
 //! en Hz con i128 y luego se baja a MHz para comparar.
 
+#![allow(
+    clippy::float_arithmetic,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation
+)] // BIN bench/exp: medicion y estadisticas en f64; conversiones acotadas por construccion
 use me60os_core::spa::SPA;
 use me60os_core::spa_math::SPAMath;
 
@@ -187,7 +192,11 @@ mod tests {
         let two = SPA::from_int(2);
         let tol = SPA::new(0, 6, 0, 0, 0); // 0.1
         let diff = (r - two).to_raw().abs();
-        assert!(diff < tol.to_raw(), "log60(3600) ≈ 2, got raw {}", r.to_raw());
+        assert!(
+            diff < tol.to_raw(),
+            "log60(3600) ≈ 2, got raw {}",
+            r.to_raw()
+        );
     }
 
     #[test]

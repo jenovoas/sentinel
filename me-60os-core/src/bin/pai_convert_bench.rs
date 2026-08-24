@@ -12,6 +12,11 @@
 //   a `inject`->`transduce_pulse`, que RE-ESCALA por SCALE_0. Resultado: 256/256
 //   irrecuperable (ver salida). Se deja INTENCIONALMENTE como evidencia del fallo
 //   de doble-escala. No borrar: es material de estudio para no repetir el error.
+#![allow(
+    clippy::float_arithmetic,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation
+)] // BIN bench/exp: medicion y estadisticas en f64; conversiones acotadas por construccion
 use me60os_core::resonant_matrix::ResonantMatrix;
 use me60os_core::spa::SPA;
 
@@ -29,7 +34,9 @@ fn run_raw() -> ResonantMatrix {
     for (i, &b) in stream().iter().enumerate() {
         l.inject(i, b);
     }
-    for _ in 0..STEPS { l.step(); }
+    for _ in 0..STEPS {
+        l.step();
+    }
     l
 }
 
@@ -38,7 +45,9 @@ fn run_pai() -> ResonantMatrix {
     for (i, &b) in stream().iter().enumerate() {
         l.inject_pai(i, b, 60);
     }
-    for _ in 0..STEPS { l.step(); }
+    for _ in 0..STEPS {
+        l.step();
+    }
     l
 }
 
@@ -52,7 +61,9 @@ fn run_proto() -> ResonantMatrix {
         let pulse = raw / 12960; // SCALE_0/1000
         l.inject(i, pulse);
     }
-    for _ in 0..STEPS { l.step(); }
+    for _ in 0..STEPS {
+        l.step();
+    }
     l
 }
 
@@ -68,9 +79,13 @@ fn report(name: &str, l: &mut ResonantMatrix) {
     let mut err_raw = 0u32;
     for (i, &b) in stream().iter().enumerate() {
         let recon_pai = (amps[i].to_raw() as f64 / SCALE_0 * 60.0).round() as i64;
-        if recon_pai != b { err_pai += 1; }
+        if recon_pai != b {
+            err_pai += 1;
+        }
         let recon_raw = (amps[i].to_raw() as f64 / SCALE_0).round() as i64;
-        if recon_raw != b { err_raw += 1; }
+        if recon_raw != b {
+            err_raw += 1;
+        }
     }
 
     // coherencia (desviacion de fase media, de measure_coherence_py)
@@ -87,9 +102,17 @@ fn report(name: &str, l: &mut ResonantMatrix) {
 }
 
 fn main() {
-    println!("=== BENCH CONVERSOR BINARIO->AMPLITUD (stream 0..255, {NODES} nodos, {STEPS} step) ===");
+    println!(
+        "=== BENCH CONVERSOR BINARIO->AMPLITUD (stream 0..255, {NODES} nodos, {STEPS} step) ==="
+    );
     println!("SCALE_0 = {SCALE_0}\n");
-    let mut a = run_raw();   report("A: RAW (produccion actual)", &mut a);
-    let mut b = run_pai();   report("B: PAI-60 exacto (inject_pai /60)", &mut b);
-    let mut c = run_proto(); report("C: [exp fallido para estudio] PY PROTO (byte/1000 -> transduce, doble-escala)", &mut c);
+    let mut a = run_raw();
+    report("A: RAW (produccion actual)", &mut a);
+    let mut b = run_pai();
+    report("B: PAI-60 exacto (inject_pai /60)", &mut b);
+    let mut c = run_proto();
+    report(
+        "C: [exp fallido para estudio] PY PROTO (byte/1000 -> transduce, doble-escala)",
+        &mut c,
+    );
 }

@@ -3,13 +3,13 @@
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 use crate::models::{CorrelatedIncident, Event};
 use crate::patterns::{
-    ContainerCrashLoopPattern, CrossNervioPattern, DdosPattern, NginxErrorSpikePattern,
-    NervioAIntrusionPattern, NervioBIntegrityPattern, Pattern, PatternContext, TrafficDropPattern,
-    RedisMemoryPattern, SshBruteForcePattern,
+    ContainerCrashLoopPattern, CrossNervioPattern, DdosPattern, NervioAIntrusionPattern,
+    NervioBIntegrityPattern, NginxErrorSpikePattern, Pattern, PatternContext, RedisMemoryPattern,
+    SshBruteForcePattern, TrafficDropPattern,
 };
-use std::collections::VecDeque;
-use me60os_core::spa::SPA;
 use me60os_core::physics::ResonantPhysics;
+use me60os_core::spa::SPA;
+use std::collections::VecDeque;
 
 pub struct DecisionEngine {
     event_buffer: VecDeque<Event>,
@@ -31,23 +31,30 @@ pub struct DecisionEngine {
 impl DecisionEngine {
     pub fn new() -> Self {
         dotenvy::dotenv().ok();
-        
-        let threshold_str = std::env::var("SSH_BRUTEFORCE_THRESHOLD").unwrap_or_else(|_| "5".to_string());
+
+        let threshold_str =
+            std::env::var("SSH_BRUTEFORCE_THRESHOLD").unwrap_or_else(|_| "5".to_string());
         let threshold = threshold_str.parse::<usize>().unwrap_or(5);
 
-        let nginx_threshold_str = std::env::var("NGINX_5XX_THRESHOLD").unwrap_or_else(|_| "10".to_string());
+        let nginx_threshold_str =
+            std::env::var("NGINX_5XX_THRESHOLD").unwrap_or_else(|_| "10".to_string());
         let nginx_threshold = nginx_threshold_str.parse::<u64>().unwrap_or(10);
 
-        let redis_threshold_str = std::env::var("REDIS_MEMORY_THRESHOLD_BYTES").unwrap_or_else(|_| "104857600".to_string()); // 100MB
+        let redis_threshold_str = std::env::var("REDIS_MEMORY_THRESHOLD_BYTES")
+            .unwrap_or_else(|_| "104857600".to_string()); // 100MB
         let redis_threshold = redis_threshold_str.parse::<u64>().unwrap_or(104_857_600);
 
-        let restart_threshold_str = std::env::var("CONTAINER_RESTART_THRESHOLD").unwrap_or_else(|_| "3".to_string());
+        let restart_threshold_str =
+            std::env::var("CONTAINER_RESTART_THRESHOLD").unwrap_or_else(|_| "3".to_string());
         let restart_threshold = restart_threshold_str.parse::<i64>().unwrap_or(3);
 
-        let traffic_threshold_str = std::env::var("TRAFFIC_DROP_THRESHOLD_RPS").unwrap_or_else(|_| "100".to_string());
+        let traffic_threshold_str =
+            std::env::var("TRAFFIC_DROP_THRESHOLD_RPS").unwrap_or_else(|_| "100".to_string());
         let traffic_threshold = traffic_threshold_str.parse::<u64>().unwrap_or(100);
 
-        let enable_thermal = std::env::var("ENABLE_THERMAL_COUPLING").map(|v| v == "true").unwrap_or(false);
+        let enable_thermal = std::env::var("ENABLE_THERMAL_COUPLING")
+            .map(|v| v == "true")
+            .unwrap_or(false);
 
         Self {
             event_buffer: VecDeque::with_capacity(1000),
@@ -96,7 +103,9 @@ impl DecisionEngine {
         }
 
         // 1. Buscar la lectura térmica más reciente
-        let latest_temp = self.event_buffer.iter()
+        let latest_temp = self
+            .event_buffer
+            .iter()
             .rfind(|e| e.event_type == "cpu_thermal_reading");
 
         let temp_c = match latest_temp {
@@ -118,26 +127,28 @@ impl DecisionEngine {
         let priority = SPA::one();
 
         // 3. Calcular Carga Efectiva (Inercia)
-        let load_eff = ResonantPhysics::calculate_effective_load(self.baseline_load, priority, stability);
-        
+        let load_eff =
+            ResonantPhysics::calculate_effective_load(self.baseline_load, priority, stability);
+
         // 4. Calcular Multiplicador
         // Load_eff es mínimo (~200) cuando es Estable, máximo (1000) cuando es Caos.
         // Queremos que el multiplicador sea 1.0 cuando es Estable (Mínimo).
         // Y que suba cuando hay caos.
-        let min_load = ResonantPhysics::calculate_effective_load(
-            self.baseline_load, 
-            priority, 
-            SPA::one()
-        );
+        let min_load =
+            ResonantPhysics::calculate_effective_load(self.baseline_load, priority, SPA::one());
 
         let multiplier = load_eff.to_raw() as f64 / min_load.to_raw() as f64;
-        
-        if multiplier < 1.0 { 1.0 } else { multiplier }
+
+        if multiplier < 1.0 {
+            1.0
+        } else {
+            multiplier
+        }
     }
 
     pub fn correlate(&self) -> Vec<CorrelatedIncident> {
         let multiplier = self.calculate_thermal_multiplier();
-        
+
         // Aplicar multiplicador a los umbrales
         let ssh_threshold = (self.ssh_bruteforce_threshold as f64 * multiplier) as usize;
         let nginx_threshold = (self.nginx_5xx_threshold as f64 * multiplier) as u64;

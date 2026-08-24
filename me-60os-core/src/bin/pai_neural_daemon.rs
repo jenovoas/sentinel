@@ -5,6 +5,11 @@
 //! PAI‑60 Neural Daemon
 //! Polls eBPF ring buffer, converts entropy to SPA, and updates neural memory.
 
+#![allow(
+    clippy::float_arithmetic,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation
+)] // BIN bench/exp: medicion y estadisticas en f64; conversiones acotadas por construccion
 use libbpf_rs::{MapHandle, RingBufferBuilder};
 use me60os_core::ebpf_cortex_bridge::{CortexEvent, RawCortexEvent};
 use me60os_core::neural_memory::NeuralMemory;

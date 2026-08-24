@@ -1,20 +1,28 @@
 // Autor: Jaime Novoa Sepulveda — Todos los derechos reservados.
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
+// Módulo estadístico de anomalías: inherentemente f64 (z-scores, medias, std).
+// El float vive SOLO aquí (borde I/O de métricas), nunca en el núcleo S60.
+#![allow(
+    clippy::float_arithmetic,
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation
+)]
+
 use pyo3::prelude::*;
-use std::collections::VecDeque;
 use pyo3::types::PyDict;
+use std::collections::VecDeque;
 
 #[cfg_attr(feature = "extension-module", pyclass(module = "me60os_core"))]
 pub struct AnomalyDetectorCore {
     baseline_samples: usize,
     z_score_threshold: f64,
-    
+
     cpu_window: VecDeque<f64>,
     memory_window: VecDeque<f64>,
     network_window: VecDeque<f64>,
     gpu_window: VecDeque<f64>,
-    
+
     samples_processed: usize,
     learning_phase: bool,
 
@@ -53,6 +61,7 @@ impl AnomalyDetectorCore {
     }
 
     #[pyo3(signature = (cpu, memory, network_bytes, gpu, db_connections, db_locks, memory_used_mb, memory_total_mb))]
+    #[allow(clippy::too_many_arguments)] // API pública Python: métricas completas del host
     pub fn analyze_metrics<'py>(
         &mut self,
         py: Python<'py>,
@@ -88,15 +97,22 @@ impl AnomalyDetectorCore {
         // CPU Analysis
         let cpu_mean = self.baseline_cpu_mean;
         let cpu_std = self.baseline_cpu_std;
-        let z_score = if cpu_std == 0.0 { 0.0 } else { (cpu - cpu_mean) / cpu_std };
-        
+        let z_score = if cpu_std == 0.0 {
+            0.0
+        } else {
+            (cpu - cpu_mean) / cpu_std
+        };
+
         if z_score.abs() > self.z_score_threshold {
             let severity = if cpu > 90.0 { 3 } else { 2 }; // 3=Critical, 2=Warning
             anomalies.push(self.create_anomaly_dict(
-                py, "CPU_SPIKE", severity,
+                py,
+                "CPU_SPIKE",
+                severity,
                 &format!("CPU Spike Detected: {:.1}%", cpu),
                 &format!("CPU usage at {:.1}% (z-score: {:.2})", cpu, z_score),
-                cpu, cpu_mean + (self.z_score_threshold * cpu_std)
+                cpu,
+                cpu_mean + (self.z_score_threshold * cpu_std),
             )?);
         }
 
@@ -110,10 +126,13 @@ impl AnomalyDetectorCore {
             }
             if sustained {
                 anomalies.push(self.create_anomaly_dict(
-                    py, "CPU_SPIKE", 3,
+                    py,
+                    "CPU_SPIKE",
+                    3,
                     &format!("Sustained High CPU: {:.1}%", cpu),
                     "CPU sustained above 80% for last 10 samples (~2.5 minutes)",
-                    cpu, 80.0
+                    cpu,
+                    80.0,
                 )?);
             }
         }
@@ -121,19 +140,32 @@ impl AnomalyDetectorCore {
         // Memory Analysis
         if memory > 90.0 {
             anomalies.push(self.create_anomaly_dict(
-                py, "MEMORY_SPIKE", 3,
+                py,
+                "MEMORY_SPIKE",
+                3,
                 &format!("Critical Memory Usage: {:.1}%", memory),
-                &format!("Memory at {:.1}% ({:.0} MB / {:.0} MB)", memory, memory_used_mb, memory_total_mb),
-                memory, 90.0
+                &format!(
+                    "Memory at {:.1}% ({:.0} MB / {:.0} MB)",
+                    memory, memory_used_mb, memory_total_mb
+                ),
+                memory,
+                90.0,
             )?);
         } else if memory > self.baseline_mem_mean {
-            let mem_z = if self.baseline_mem_std == 0.0 { 0.0 } else { (memory - self.baseline_mem_mean) / self.baseline_mem_std };
+            let mem_z = if self.baseline_mem_std == 0.0 {
+                0.0
+            } else {
+                (memory - self.baseline_mem_mean) / self.baseline_mem_std
+            };
             if mem_z.abs() > self.z_score_threshold {
                 anomalies.push(self.create_anomaly_dict(
-                    py, "MEMORY_SPIKE", 2,
+                    py,
+                    "MEMORY_SPIKE",
+                    2,
                     &format!("Memory Spike: {:.1}%", memory),
                     &format!("Memory usage at {:.1}% (z-score: {:.2})", memory, mem_z),
-                    memory, self.baseline_mem_mean + (self.z_score_threshold * self.baseline_mem_std)
+                    memory,
+                    self.baseline_mem_mean + (self.z_score_threshold * self.baseline_mem_std),
                 )?);
             }
         }
@@ -145,24 +177,37 @@ impl AnomalyDetectorCore {
                 let rate_change = (network_bytes - prev_bytes) / prev_bytes;
                 if rate_change > 5.0 {
                     anomalies.push(self.create_anomaly_dict(
-                        py, "NETWORK_SPIKE", 2,
+                        py,
+                        "NETWORK_SPIKE",
+                        2,
                         "Network Spike Detected",
-                        &format!("Network traffic increased by {:.0}% in one sample", rate_change * 100.0),
-                        network_bytes, prev_bytes * 5.0
+                        &format!(
+                            "Network traffic increased by {:.0}% in one sample",
+                            rate_change * 100.0
+                        ),
+                        network_bytes,
+                        prev_bytes * 5.0,
                     )?);
                 }
             }
         }
 
         if self.network_window.len() >= 10 {
-            let sum: f64 = self.network_window.iter().skip(self.network_window.len() - 10).sum();
+            let sum: f64 = self
+                .network_window
+                .iter()
+                .skip(self.network_window.len() - 10)
+                .sum();
             let avg = sum / 10.0;
             if avg > self.baseline_net_mean * 3.0 {
                 anomalies.push(self.create_anomaly_dict(
-                    py, "NETWORK_SPIKE", 2,
+                    py,
+                    "NETWORK_SPIKE",
+                    2,
                     "Sustained High Network Traffic",
                     &format!("Average network traffic {:.0} bytes/s (3x baseline)", avg),
-                    avg, self.baseline_net_mean * 3.0
+                    avg,
+                    self.baseline_net_mean * 3.0,
                 )?);
             }
         }
@@ -171,10 +216,13 @@ impl AnomalyDetectorCore {
         if let Some(g) = gpu {
             if g > 95.0 {
                 anomalies.push(self.create_anomaly_dict(
-                    py, "GPU_OVERHEAT", 3,
+                    py,
+                    "GPU_OVERHEAT",
+                    3,
                     &format!("GPU Overload: {:.1}%", g),
                     &format!("GPU usage at critical level {:.1}%", g),
-                    g, 95.0
+                    g,
+                    95.0,
                 )?);
             }
         }
@@ -183,19 +231,25 @@ impl AnomalyDetectorCore {
         if db_connections > 50 {
             let severity = if db_connections < 100 { 2 } else { 3 };
             anomalies.push(self.create_anomaly_dict(
-                py, "CONNECTION_SURGE", severity,
+                py,
+                "CONNECTION_SURGE",
+                severity,
                 &format!("DB Connection Surge: {}", db_connections),
                 &format!("Database connections at {} (threshold: 50)", db_connections),
-                db_connections as f64, 50.0
+                db_connections as f64,
+                50.0,
             )?);
         }
 
         if db_locks > 5 {
             anomalies.push(self.create_anomaly_dict(
-                py, "LOCK_DETECTED", 3,
+                py,
+                "LOCK_DETECTED",
+                3,
                 &format!("Database Lock Detected: {}", db_locks),
                 &format!("Found {} active database locks", db_locks),
-                db_locks as f64, 5.0
+                db_locks as f64,
+                5.0,
             )?);
         }
 
@@ -247,6 +301,7 @@ impl AnomalyDetectorCore {
         }
     }
 
+    #[allow(clippy::too_many_arguments)] // Constructor interno de dicts de anomalía
     fn create_anomaly_dict<'py>(
         &self,
         py: Python<'py>,
