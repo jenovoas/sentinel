@@ -7,13 +7,11 @@ Implements baseline statistical detection for pre-AI analysis
 """
 
 import logging
-from datetime import datetime, timedelta
 from enum import Enum
-from typing import List, Optional, Dict, Any
-from sqlalchemy import and_, desc
+from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.monitoring import Anomaly, AnomalyType, SeverityLevel, MetricSample
+from app.models.monitoring import Anomaly, AnomalyType, SeverityLevel
 
 logger = logging.getLogger(__name__)
 
