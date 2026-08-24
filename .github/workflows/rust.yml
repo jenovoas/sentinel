@@ -37,6 +37,8 @@ jobs:
 
       - name: Test
         run: cargo test --all --release
+        env:
+          RUSTFLAGS: "-C link-arg=-L${{ env.pythonLocation }}/lib -C link-arg=-lpython3.12"
 
       - name: Clippy
         run: cargo clippy --all -- -D warnings

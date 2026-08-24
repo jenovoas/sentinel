@@ -21,6 +21,19 @@ from app.main import app
 
 client = TestClient(app)
 
+from app.routers.backup import get_cached_status
+from app.security.auth import get_current_user, UserResponse
+
+@pytest.fixture(autouse=True)
+def reset_backup_cache_and_auth():
+    get_cached_status.cache_clear()
+    dummy_user = UserResponse(id="test_id", email="test@example.com", full_name="Test User", role="admin", is_active=True)
+    app.dependency_overrides[get_current_user] = lambda: dummy_user
+    yield
+    get_cached_status.cache_clear()
+    app.dependency_overrides.pop(get_current_user, None)
+
+
 # ============================================================================
 # FIXTURES
 # ============================================================================
@@ -134,9 +147,9 @@ def test_backup_history_endpoint(mock_backup_dir):
         backup = data[0]
         assert "filename" in backup
         assert "size_bytes" in backup
-        assert "size_mb" in backup
+        assert "size_kb" in backup
         assert "created_at" in backup
-        assert "age_hours" in backup
+        assert "age_seconds" in backup
         assert "has_checksum" in backup
 
 
@@ -291,7 +304,10 @@ def test_backup_config_defaults():
     """Test configuration defaults"""
     # Clear environment variables
     env_vars = ["BACKUP_DIR", "BACKUP_RETENTION_DAYS", "S3_ENABLED"]
-    with patch.dict(os.environ, {k: "" for k in env_vars}, clear=True):
+    modified_env = dict(os.environ)
+    for k in env_vars:
+        modified_env.pop(k, None)
+    with patch.dict(os.environ, modified_env, clear=True):
         response = client.get("/api/v1/backup/config")
         
         assert response.status_code == 200
