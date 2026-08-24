@@ -396,7 +396,7 @@ fn call_sentinel_ai(prompt: &str, mode: &str) -> String {
 // --- UI ---
 
 fn draw_ui(f: &mut Frame, app: &mut App) {
-    let size = f.size();
+    let area = f.area();
     let layout = Layout::default()
         .direction(Direction::Vertical)
         .constraints(
@@ -407,7 +407,7 @@ fn draw_ui(f: &mut Frame, app: &mut App) {
             ]
             .as_ref(),
         )
-        .split(size);
+        .split(area);
 
     draw_top_tabs(f, layout[0], app);
 

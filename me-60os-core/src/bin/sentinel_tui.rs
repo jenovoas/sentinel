@@ -332,7 +332,7 @@ fn main() -> Result<()> {
 // --- RENDERIZADO VISUAL ---
 
 fn draw_tui(f: &mut Frame, state: &mut AppState) {
-    let size = f.size();
+    let area = f.area();
 
     // 1. Layout Principal: Header (3), Cuerpo Central (Min 0), Input (3), Footer (1)
     let root = Layout::default()
@@ -343,7 +343,7 @@ fn draw_tui(f: &mut Frame, state: &mut AppState) {
             Constraint::Length(3),
             Constraint::Length(1),
         ])
-        .split(size);
+        .split(area);
 
     draw_header(f, root[0], state);
     draw_body(f, root[1], state);
