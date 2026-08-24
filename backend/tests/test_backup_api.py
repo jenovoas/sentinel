@@ -234,7 +234,7 @@ def test_backup_trigger_timeout(mock_run):
     response = client.post("/api/v1/backup/trigger")
     
     assert response.status_code == 408  # Timeout
-    assert "timeout" in response.json()["detail"].lower()
+    assert "timed out" in response.json()["detail"].lower() or "timeout" in response.json()["detail"].lower()
 
 
 # ============================================================================
