@@ -14,7 +14,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y pkg-config libelf-dev libbpf-dev build-essential
+          sudo apt-get install -y pkg-config libelf-dev libbpf-dev build-essential python3-dev
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
