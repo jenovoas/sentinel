@@ -21,10 +21,9 @@
 //! - [P-RRS] Novoa, J. (2026). *Reporte Final Resonance Architecture.* — diseño dual-lane.
 //! - [EXT-014] Heimdall: Formally Verified Automated Migration of Legacy eBPF Programs to Rust. arXiv:2605.25411.
 //!   (El flujo Security/Audit Lane usa verificación formal análoga a Heimdall para eBPF→Rust.)
-//! el core (cumple YATRA: el float solo aparece en I/O de borde si acaso).
-//! Los TODOs del .py (dual_guardian, forensic_storage, loki_client) NO se
-//! inventan: el Security WAL escribe al mismo archivo que sentinel-cortex
-//! (/var/log/sentinel/security_wal.log) de forma síncrona.
+//!   El core cumple YATRA: el float solo aparece en I/O de borde si acaso.
+//!   Security WAL escribe al mismo archivo que sentinel-cortex
+//!   (/var/log/sentinel/security_wal.log) de forma síncrona.
 
 use std::collections::HashMap;
 use std::fs::OpenOptions;
@@ -133,6 +132,12 @@ pub struct DualLaneRouter {
     misrouted_events: u64,
 }
 
+impl Default for DualLaneRouter {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl DualLaneRouter {
     pub fn new() -> Self {
         Self {
@@ -156,15 +161,12 @@ impl DualLaneRouter {
         let labels = labels.unwrap_or_default();
         let mut labels = labels;
 
-        let (lane, priority) = if self.security_sources.iter().any(|s| *s == source) {
+        let (lane, priority) = if self.security_sources.contains(&source) {
             self.security_events += 1;
             (DataLane::Security, EventPriority::Critical)
-        } else if labels.keys().any(|k| {
-            k == "threat" || k == "attack" || k == "malicious"
-        }) {
-            self.security_events += 1;
-            (DataLane::Security, EventPriority::High)
-        } else if contains_any(data.to_lowercase().as_str(), &["malicious", "blocked", "threat", "attack"]) {
+        } else if labels.keys().any(|k| k == "threat" || k == "attack" || k == "malicious")
+            || contains_any(data.to_lowercase().as_str(), &["malicious", "blocked", "threat", "attack"])
+        {
             self.security_events += 1;
             (DataLane::Security, EventPriority::High)
         } else {

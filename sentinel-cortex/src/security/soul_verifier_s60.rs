@@ -132,13 +132,6 @@ pub fn chaos_entropy_s60(signal: &[S60]) -> S60 {
 /// Square root using Newton's method in Base-60
 ///
 /// sqrt(x) via iteration: x_{n+1} = (x_n + a/x_n) / 2
-///
-/// Dup 3.1 fix: la implementación se eliminó en favor de la versión pública
-/// `crate::math::s60_math::sqrt_s60` (ver el `use` al inicio del archivo).
-/// Cualquier mejora en la convergencia (terms, threshold, overflow handling)
-/// se aplica una sola vez y úlalmentelega a todos los consumidores.
-/// Axioma VI respetado: no se elimina el archivo, sólo la función duplicada.
-
 /// Autocorrelation at lag k
 fn autocorrelation_s60(signal: &[S60], lag: usize) -> S60 {
     if lag >= signal.len() {

@@ -1,9 +1,7 @@
 // Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-#![forbid(clippy::float_arithmetic)]
-#![forbid(clippy::float_cmp)]
-#![forbid(clippy::cast_possible_truncation)]
-#![forbid(clippy::cast_precision_loss)]
+#![allow(clippy::cast_possible_truncation, clippy::cast_precision_loss)]
+#![deny(clippy::float_cmp)]
 // ⚡ TRUTHSYNC NEURAL CORE - HIGH-SPEED FACT VERIFIER (<100μs) ⚡
 
 use aho_corasick::{AhoCorasick, MatchKind};
@@ -18,12 +16,8 @@ use std::num::NonZeroUsize;
 use std::sync::LazyLock;
 use std::time::Instant;
 
-/// YATRA: all scores are SPA fixed-point (SCALE_0 = 12_960_000 = 60^4).
-/// 0.0 → SPA::zero(), 1.0 → SPA::one().
-
-// ── MEJORA #1: LazyLock global — evita recompilar RegexSet en cada ClaimExtractor::new() ──
 static FACTUAL_PATTERNS: LazyLock<RegexSet> = LazyLock::new(|| {
-    RegexSet::new(&[
+    RegexSet::new([
         r"\b(es|son|fue|fueron|ocurrió|demostró|afirma|reporta)\b",
         r"\b(porcentaje|total|medida|temperatura|latencia|grados)\b",
         r"\b(http|https|ip|nodo|proceso|kernel|ebpf)\b",
@@ -55,6 +49,7 @@ pub struct VerificationResult<'a> {
     pub is_certified: bool,
 }
 
+#[derive(Default)]
 pub struct ClaimExtractor;
 
 impl ClaimExtractor {
@@ -85,14 +80,14 @@ impl ClaimExtractor {
                 .iter()
                 .map(|s| s.trim())
                 .filter(|s| !s.is_empty())
-                .map(|s| map_claim(s))
+                .map(map_claim)
                 .collect()
         } else {
             sentences
                 .par_iter()
                 .map(|s| s.trim())
                 .filter(|s| !s.is_empty())
-                .map(|s| map_claim(s))
+                .map(map_claim)
                 .collect()
         }
     }
@@ -157,8 +152,8 @@ impl TruthSyncEngine {
         } else {
             let mut hasher = Sha3_512::new();
             hasher.update(text.as_bytes());
-            hasher.update(&lattice_energy.to_le_bytes());
-            hasher.update(&s60_constant.to_raw().to_le_bytes());
+            hasher.update(lattice_energy.to_le_bytes());
+            hasher.update(s60_constant.to_raw().to_le_bytes());
             let d = hasher.finalize();
             let mut arr = [0u8; 64];
             arr.copy_from_slice(&d);

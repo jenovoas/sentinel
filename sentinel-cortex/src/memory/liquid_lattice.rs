@@ -145,7 +145,7 @@ mod tests {
         let retained = lat.total_amplitude().to_base_units();
         // > 72% de lo inyectado (1.0 unidad). Nota: el Rust usa 0.7 self + 0.3 avg,
         // así que la energía NO se conserva exacta pero se retiene bien.
-        let threshold = (injected as i64 * 72) / 100;
+        let threshold = (injected * 72) / 100;
         assert!(
             retained > threshold,
             "retención debe superar 72%: retenido={}, umbral={}",

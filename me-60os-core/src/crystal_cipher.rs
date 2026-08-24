@@ -57,7 +57,7 @@ impl CrystalCipher {
             c.oscillate(dt);
         }
         self.pulse += 1;
-        if self.pulse % 4 == 0 {
+        if self.pulse.is_multiple_of(4) {
             self.rotate();
         }
     }

@@ -8,6 +8,7 @@
 //! y la estabilización de "rifts" (rupturas de red).
 
 use crate::spa::SPA;
+#[cfg(feature = "extension-module")]
 use pyo3::prelude::*;
 // use std::collections::HashMap; // Removed unused import
 

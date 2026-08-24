@@ -119,7 +119,7 @@ export const useAnalytics = () => {
         acc[a.metric] = [...(acc[a.metric] ?? []), a];
         return acc;
       },
-      { cpu: [], memory: [], gpu: [], network: [] }
+      { cpu: [], memory: [], gpu: [], network: [], hostCpu: [], hostMemory: [], hostGpu: [], hostNetwork: [] }
     );
   }, [anomalies]);
 

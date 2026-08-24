@@ -155,7 +155,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({
 }) => {
   if (!isOpen || !type) return null;
 
-  const { title, color } = getTitleAndColor(type);
+  const { title } = getTitleAndColor(type);
 
   return (
     <div

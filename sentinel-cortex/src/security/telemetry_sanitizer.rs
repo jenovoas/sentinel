@@ -8,6 +8,7 @@
 //! by validating and sanitizing telemetry data in pure Rust (zero external dependencies).
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct SanitizationResult {
     pub is_safe: bool,
     pub confidence: f64,
@@ -16,6 +17,7 @@ pub struct SanitizationResult {
     pub original_prompt: String,
 }
 
+#[allow(dead_code)]
 pub struct TelemetrySanitizer {
     enabled: bool,
     dangerous_keywords: Vec<(&'static str, &'static str)>,
@@ -28,6 +30,7 @@ impl Default for TelemetrySanitizer {
     }
 }
 
+#[allow(dead_code)]
 impl TelemetrySanitizer {
     pub fn new(enabled: bool) -> Self {
         let dangerous_keywords = vec![

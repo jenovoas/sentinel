@@ -15,7 +15,7 @@ fn main() {
     let mut tick = 0u64;
 
     loop {
-        if tick % 5 == 0 {
+        if tick.is_multiple_of(5) {
             // Read Time Crystal live energy from Cortex local metrics HTTP endpoint
             let crystal_energy_raw: i64 = match reqwest::blocking::get("http://127.0.0.1:8000/metrics") {
                 Ok(resp) => resp.text().ok().and_then(|body| {

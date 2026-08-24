@@ -15,13 +15,19 @@ use crate::ebpf_cortex_bridge::CortexEvent;
 use crate::spa::SPA;
 use pyo3::prelude::*;
 
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Clone)]
 pub struct LIFNeuron {
     pub v_membrane: SPA,
     pub v_threshold: SPA,
     pub decay_factor: SPA,
     pub spike_count: u64,
+}
+
+impl Default for LIFNeuron {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl LIFNeuron {

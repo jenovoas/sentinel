@@ -52,6 +52,7 @@ fn main() {
     println!("QHC: Patron 10;5,6,5 + Salto-17 cada 68 ticks");
     println!("{:-<72}", "");
 
+    #[allow(dead_code)]
     const DT_S: u64 = 1; // 1s por tick (coincide con qhc_agent/hex_daemon)
     const TOTAL_TICKS: u64 = 680; // 680s = 10 ciclos x 68s
 
@@ -105,7 +106,7 @@ fn main() {
         // Usar intensidad del portal como estabilidad (coherencia)
         let stability = SPA::from_raw((intensity * SPA::SCALE_0 as f64) as i64);
         let effective_load = ResonantPhysics::calculate_effective_load(static_load, priority, stability);
-        let reduction_pct = 100.0 - (effective_load.to_base_units() as f64 / static_load.to_base_units() as f64 * 100.0);
+        let reduction_pct = 100.0 - (effective_load.to_raw() as f64 / static_load.to_raw() as f64 * 100.0);
 
         // 8. DETECCION DE PORTALES EMERGENTES (flanco de subida en intensidad)
         let prev = prev_intensity;
@@ -247,12 +248,13 @@ impl PortalDetector {
     fn get_portal_intensity(&self, t: SPA) -> f64 {
         let (ph_bio, ph_crys, ph_ven) = self.calculate_phases(t);
         // Intensidad = promedio de las 3 fases (en 0..1)
-        let sum = ph_bio.to_base_units() as f64 + ph_crys.to_base_units() as f64 + ph_ven.to_base_units() as f64;
+        let sum = ph_bio.to_raw() as f64 + ph_crys.to_raw() as f64 + ph_ven.to_raw() as f64;
         (sum / 3.0) / SPA::SCALE_0 as f64
     }
 }
 
 /// BioResonator del sistema real (adaptado de sentinel-cortex/src/quantum/bio_resonator.rs)
+#[allow(dead_code)]
 struct BioResonator {
     coherence: SPA,
     decay_factor: SPA,
@@ -262,6 +264,7 @@ struct BioResonator {
     dead_man_threshold_ms: u64,
 }
 
+#[allow(dead_code)]
 impl BioResonator {
     fn new() -> Self {
         Self {
@@ -293,12 +296,13 @@ impl BioResonator {
 
     fn is_portal_open(&self) -> bool { self.coherence >= self.threshold_portal }
     fn is_pilot_present(&self) -> bool { self.last_pulse.elapsed().as_millis() < self.dead_man_threshold_ms as u128 }
-    fn get_coherence_raw(&self) -> i64 { self.coherence.to_base_units() }
+    fn get_coherence_raw(&self) -> i64 { self.coherence.to_raw() }
     fn time_since_pulse_ms(&self) -> u64 { self.last_pulse.elapsed().as_millis() as u64 }
     fn reset(&mut self) { self.coherence = SPA::zero(); }
 }
 
 /// QuantumScheduler del sistema real (simplificado de sentinel-cortex/src/quantum/quantum_scheduler.rs)
+#[allow(dead_code)]
 struct QuantumScheduler {
     bio: Arc<Mutex<BioResonator>>,
     portal_detector: PortalDetector,

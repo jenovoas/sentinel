@@ -135,8 +135,8 @@ mod tests {
             .map(|d| d.as_nanos() as i64)
             .unwrap_or(seed_offset.wrapping_mul(997));
         // Mapeo a rango fisiológico: BPM 60-100 → valor S60 60-100
-        let bpm = 60 + ((nanos.wrapping_add(seed_offset * 997)) % 41).unsigned_abs() as i64;
-        bpm
+        
+        60 + ((nanos.wrapping_add(seed_offset * 997)) % 41).unsigned_abs() as i64
     }
 
     #[test]

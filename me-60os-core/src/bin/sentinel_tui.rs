@@ -9,7 +9,7 @@
 
 use std::{
     collections::VecDeque,
-    io::{self, stdout},
+    io::stdout,
     sync::{
         atomic::{AtomicBool, Ordering},
         Arc, Mutex,
@@ -28,16 +28,12 @@ use ratatui::{
     backend::CrosstermBackend,
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
-    symbols,
     text::{Line, Span},
     widgets::{
         Block, BorderType, Borders, Gauge, List, ListItem, Paragraph, Sparkline, Wrap,
     },
     Frame, Terminal,
 };
-use serde::{Deserialize, Serialize};
-
-use me60os_core::spa::SPA;
 
 // --- PALETA DE COLOR SOVEREIGN ---
 const CYAN: Color = Color::Rgb(0, 240, 255);
@@ -79,9 +75,12 @@ struct AppState {
     
     // Telemetría de retículo
     energy_history: VecDeque<u64>,
+    #[allow(dead_code)]
     coherence_raw: i64,
     active_nodes: usize,
+    #[allow(dead_code)]
     shm_active: bool,
+    #[allow(dead_code)]
     lfm_online: bool,
     
     // Estado de inferencia
@@ -204,7 +203,7 @@ fn main() -> Result<()> {
             tick += 1;
             if let Ok(mut s) = state_bg.lock() {
                 // Actualizar historial de energía
-                let base = 60 + ((tick % 17) * 2) as u64;
+                let base = 60 + ((tick % 17) * 2);
                 s.energy_history.push_back(base);
                 if s.energy_history.len() > 60 {
                     s.energy_history.pop_front();

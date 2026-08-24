@@ -71,7 +71,7 @@ pub struct RawCortexEvent {
 }
 
 /// Cortex Event (Python-friendly, unpacked)
-#[pyclass] // Exposed to Python
+#[pyclass(from_py_object)] // Exposed to Python
 #[derive(Debug, Clone, Default)]
 pub struct CortexEvent {
     #[pyo3(get, set)]

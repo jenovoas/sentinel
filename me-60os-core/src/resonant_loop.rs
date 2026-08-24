@@ -15,6 +15,12 @@ pub struct ResonantLoop {
     cycle_start: Instant,
 }
 
+impl Default for ResonantLoop {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ResonantLoop {
     pub fn new() -> Self {
         Self {

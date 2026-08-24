@@ -6,11 +6,12 @@ CC        ?= gcc
 LLVM_STRIP ?= llvm-strip
 BPFTOOL   ?= bpftool
 
+TARGET_ARCH := $(shell uname -m)
 ARCH := $(shell uname -m | sed 's/x86_64/x86/' | sed 's/aarch64/arm64/')
 
 CFLAGS_BPF  := -g -O2 -target bpf -D__TARGET_ARCH_$(ARCH) \
-               -I/usr/include/$(ARCH)-linux-gnu -I.
-CFLAGS_USER := -g -O2 -Wall -I/usr/include/$(ARCH)-linux-gnu -I.
+               -I/usr/include/$(TARGET_ARCH)-linux-gnu -I.
+CFLAGS_USER := -g -O2 -Wall -I/usr/include/$(TARGET_ARCH)-linux-gnu -I.
 LIBS_BPF    := -lbpf -lelf -lz
 
 # ─── Kernel programs ──────────────────────────────────────────────────────────

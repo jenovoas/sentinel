@@ -20,11 +20,11 @@ fn main() {
     println!("N = {N} pasos\n");
 
     // --- FLOAT64 ---
-    let phi_f: f64 = 1.6180339887498949;
+    let phi_f: f64 = 1.618_033_988_749_895;
     let mut xf: f64 = 1.0;
     let t0 = std::time::Instant::now();
     for _ in 0..N {
-        xf = xf * phi_f;
+        xf *= phi_f;
     }
     let ns_f = t0.elapsed().as_nanos() as f64 / (N as f64);
 

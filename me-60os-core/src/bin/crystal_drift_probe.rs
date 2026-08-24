@@ -24,7 +24,7 @@ fn probe_phase(name: &str, ticks: u64, clock: &mut IsochronousClock) {
         sum_drift += drift;
         samples += 1;
         // refrescar t0 cada 256 ticks para no perder precisión del contador OS
-        if samples % 256 == 0 {
+        if samples.is_multiple_of(256) {
             t0 = Instant::now();
         }
     }

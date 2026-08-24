@@ -12,6 +12,7 @@
 //! - Ver `research/CONTROL_SYSTEMS_THEORY.md` (si existe) para teoría de control discreto base-60.
 
 use crate::spa::SPA;
+#[cfg(feature = "extension-module")]
 use pyo3::prelude::*;
 
 #[cfg_attr(feature = "extension-module", pyclass(module = "me60os_core"))]
@@ -26,7 +27,7 @@ pub struct S60PID {
 
 #[cfg_attr(feature = "extension-module", pymethods)]
 impl S60PID {
-    #[new]
+    #[cfg_attr(feature = "extension-module", new)]
     pub fn new(kp: SPA, ki: SPA, kd: SPA, setpoint: SPA) -> Self {
         Self {
             kp,

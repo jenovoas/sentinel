@@ -11,7 +11,6 @@ pub struct PatternDetector {
 }
 
 #[allow(dead_code)]
-#[allow(dead_code)]
 impl PatternDetector {
     pub fn new() -> Self {
         Self {

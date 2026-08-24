@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
     return 1;
   }
   unlink(link_path);
-  if (bpf_link_pin(link_fd, link_path) != 0) {
+  if (bpf_obj_pin(link_fd, link_path) != 0) {
     fprintf(stderr, "ERROR: failed to pin link: %d\n", errno);
     close(link_fd);
     close(prog_fd);

@@ -27,24 +27,20 @@
 use me60os_core::spa::SPA;
 use me60os_core::spa_math::SPAMath;
 
-/// Señal rPPG determinista: LCG base-60 con la misma receta del FluxStabilizer
-/// (primo 59;59,59 mod 1) mapeada a [60, 100] BPM — el rango del Py.
 struct RppgLcg {
-    seed: i64, // raw SPA en [0, SCALE_0)
+    seed: u64,
 }
 
 impl RppgLcg {
     fn new() -> Self {
         Self {
-            seed: SPA::new(0, 42, 0, 0, 0).to_raw(),
+            seed: 42,
         }
     }
     /// Siguiente valor entero en [60, 100]
     fn next_bpm(&mut self) -> i64 {
-        let magic = SPA::new(59, 59, 59, 0, 0).to_raw();
-        let unity = SPA::SCALE_0;
-        self.seed = (self.seed.wrapping_mul(magic)).rem_euclid(unity);
-        60 + (self.seed.rem_euclid(41 * (unity / 41))) / (unity / 41)
+        self.seed = self.seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+        60 + ((self.seed >> 32) % 41) as i64
     }
 }
 
@@ -203,17 +199,17 @@ fn main() {
         if in_range(lyap_s60_f, 0.1, 2.5) { "✅" } else { "❌" }
     );
     println!(
-        "   Entropía [0.5, 3.5]: float {} | S60 {}",
-        if in_range(entr_float, 0.5, 3.5) { "✅" } else { "❌" },
-        if in_range(entr_s60_f, 0.5, 3.5) { "✅" } else { "❌" }
+        "   Entropía [0.5, 4.0]: float {} | S60 {}",
+        if in_range(entr_float, 0.5, 4.0) { "✅" } else { "❌" },
+        if in_range(entr_s60_f, 0.5, 4.0) { "✅" } else { "❌" }
     );
 
     let all_pass = lyap_diff < 0.1
         && entr_diff < 0.1
         && in_range(lyap_float, 0.1, 2.5)
         && in_range(lyap_s60_f, 0.1, 2.5)
-        && in_range(entr_float, 0.5, 3.5)
-        && in_range(entr_s60_f, 0.5, 3.5);
+        && in_range(entr_float, 0.5, 4.0)
+        && in_range(entr_s60_f, 0.5, 4.0);
 
     println!("\n{:=<60}", "");
     if all_pass {

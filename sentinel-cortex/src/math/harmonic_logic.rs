@@ -60,8 +60,6 @@ impl HarmonicState {
         }
     }
 
-    /// Define Standard Harmonic Logic Constants
-
     // TRUE: Perfect Fifth (3:2 = 1.5 = 1;30)
     pub fn logic_true() -> Self {
         HarmonicState::new(1, 30, 0)
@@ -251,6 +249,12 @@ impl HarmonicGate for HarmonicState {
 pub struct HarmonicProcessor {
     context: HarmonicState, // The current "thought" or harmonic context
     tick: u64,
+}
+
+impl Default for HarmonicProcessor {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl HarmonicProcessor {

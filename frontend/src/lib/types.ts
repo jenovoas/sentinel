@@ -27,6 +27,10 @@ export type HistoryState = {
   memory: MetricHistory;
   gpu: MetricHistory;
   network: MetricHistory;
+  hostCpu?: MetricHistory;
+  hostMemory?: MetricHistory;
+  hostGpu?: MetricHistory;
+  hostNetwork?: MetricHistory;
 };
 
 export type AnomalyPoint = {

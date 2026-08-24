@@ -15,6 +15,7 @@
 
 use crate::spa::SPA;
 use crate::spa_math::SPAMath;
+#[cfg(feature = "extension-module")]
 use pyo3::prelude::*;
 
 #[cfg(feature = "extension-module")]
@@ -364,13 +365,12 @@ impl QuantumRiftDetector {
         let mut detected = false;
         for i in 0..self.n_nodes {
             for j in (i + 1)..self.n_nodes {
-                if i < matrix.len() && j < matrix.len() {
-                    if matrix[i][j] > self.threshold {
+                if i < matrix.len() && j < matrix.len()
+                    && matrix[i][j] > self.threshold {
                         detected = true;
                         rift_nodes.insert(i);
                         rift_nodes.insert(j);
                     }
-                }
             }
         }
         let mut nodes: Vec<usize> = rift_nodes.into_iter().collect();

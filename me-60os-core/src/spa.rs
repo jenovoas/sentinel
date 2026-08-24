@@ -19,7 +19,7 @@ use serde::{Deserialize, Serialize};
 use pyo3::prelude::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[cfg_attr(feature = "extension-module", pyclass(module = "me60os_core", eq, eq_int))]
+#[cfg_attr(feature = "extension-module", pyclass(module = "me60os_core", eq, eq_int, from_py_object))]
 pub enum SPAError {
     DivisionByZero,
 }
@@ -36,7 +36,7 @@ impl std::error::Error for SPAError {}
 
 /// Sexagesimal (Base-60) Fixed-Point Number.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Serialize, Deserialize)]
-#[cfg_attr(feature = "extension-module", pyclass(module = "me60os_core"))]
+#[cfg_attr(feature = "extension-module", pyclass(module = "me60os_core", from_py_object))]
 pub struct SPA {
     pub components: [i64; 5],
 }

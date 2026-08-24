@@ -94,7 +94,7 @@ pub fn ln_s60(x: &S60) -> Result<S60, S60Error> {
 
         // Divide by (2n + 1)
         let divisor_val = 2 * n + 1;
-        let divisor_s60 = S60::new(divisor_val as i32, 0, 0, 0, 0).unwrap();
+        let divisor_s60 = S60::new(divisor_val, 0, 0, 0, 0).unwrap();
         let term = match z_power / divisor_s60 {
             Ok(val) => val,
             Err(_) => break,
@@ -495,7 +495,7 @@ pub fn cross_correlation_s60(signal_a: &[S60], signal_b: &[S60]) -> Result<S60, 
     // Compute sqrt using Newton-Raphson method
     let sqrt_denom = sqrt_s60(&denominator)?;
 
-    Ok((numerator / sqrt_denom)?)
+    numerator / sqrt_denom
 }
 
 /// Square root in S60 using Newton-Raphson method

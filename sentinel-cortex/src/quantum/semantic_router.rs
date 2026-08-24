@@ -66,6 +66,12 @@ pub struct SemanticRouter {
     project_id: String,
 }
 
+impl Default for SemanticRouter {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl SemanticRouter {
     pub fn new() -> Self {
         dotenvy::dotenv().ok(); // Load .env

@@ -103,12 +103,7 @@ impl GpuController {
         // evitar división por cero: +100 milésimas (0.1 ms), igual que el legacy (+0.1)
         let denom = latency_msx1000 + 100;
         // scale_factor en milésimas: 1000 = 1.0; clamp [500, 1500] = [0.5, 1.5]
-        let mut scale_x1000 = (self.target_latency_msx1000 * 1000) / denom;
-        if scale_x1000 < 500 {
-            scale_x1000 = 500;
-        } else if scale_x1000 > 1500 {
-            scale_x1000 = 1500;
-        }
+        let scale_x1000 = ((self.target_latency_msx1000 * 1000) / denom).clamp(500, 1500);
         // new_batch = batch * scale / 1000, entero
         let new_batch = (self.current_batch_size as i64 * scale_x1000) / 1000;
         let new_batch = new_batch.clamp(self.min_batch as i64, self.max_batch as i64) as usize;

@@ -264,7 +264,7 @@ fn main() -> Result<()> {
                     InputMode::Insert => match key.code {
                         KeyCode::Esc => app_state.input_mode = InputMode::Normal,
                         KeyCode::Enter => {
-                            let cmd = app_state.input.drain(..).collect::<String>();
+                            let cmd = std::mem::take(&mut app_state.input);
                             if !cmd.is_empty() {
                                 app_state
                                     .chat_history
@@ -307,13 +307,12 @@ fn main() -> Result<()> {
                             app_state.input.pop();
                             app_state.prediction.clear();
                         }
-                        KeyCode::Tab => {
-                            if !app_state.prediction.is_empty() {
+                        KeyCode::Tab
+                            if !app_state.prediction.is_empty() => {
                                 let p = app_state.prediction.clone();
                                 app_state.input.push_str(&p);
                                 app_state.prediction.clear();
                             }
-                        }
                         _ => {}
                     },
                 }

@@ -35,7 +35,7 @@ fn main() {
     // LiquidLattice es 3x3; para representar la malla completa usamos un vector
     // de anillos, cada uno 3x3. Reportamos conteo de celdas reales.
     let total_cells = nodes;
-    let mut lat = LiquidLattice::new(total_cells.min(9).max(1));
+    let mut lat = LiquidLattice::new(total_cells.clamp(1, 9));
     // inyectar un pulso para no dejarlo en vacío
     lat.inject_dual_channel(vec![1, 2, 3, 4, 5, 6, 7, 8], vec![0]);
     let used = std::mem::size_of_val(&lat);

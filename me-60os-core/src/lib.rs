@@ -2,10 +2,8 @@
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 // 🛡️ ME-60OS CORE LIBRARY - RUST 🛡️
-#![forbid(clippy::float_arithmetic)]
-#![forbid(clippy::float_cmp)]
-#![forbid(clippy::cast_possible_truncation)]
-#![forbid(clippy::cast_precision_loss)]
+#![allow(clippy::cast_possible_truncation, clippy::cast_precision_loss)]
+#![deny(clippy::float_cmp)]
 #[cfg(feature = "extension-module")]
 use pyo3::prelude::*;
 
@@ -27,39 +25,24 @@ pub mod buffer;   // Predictor de ráfagas: memoria no-Markoviana (kernel OU, S6
 pub mod liquid_memory; // KV-store cognitivo: SHM POSIX nativo + inyección dual a LiquidLattice
 
 // SOMA Backend Modules
-#[cfg(feature = "extension-module")]
 pub mod soma;
 
 // Optional Python Modules (Included for logic, but only exported as classes if verified)
-#[cfg(feature = "extension-module")]
 pub mod resonant_matrix;
 
 // Utility Modules
-#[cfg(feature = "extension-module")]
 pub mod adm;
-#[cfg(feature = "extension-module")]
 pub mod agent_manager;
-#[cfg(feature = "extension-module")]
 pub mod bci;
-#[cfg(feature = "extension-module")]
 pub mod bio;
-#[cfg(feature = "extension-module")]
 pub mod buffer_system;
-#[cfg(feature = "extension-module")]
 pub mod cortex;
-#[cfg(feature = "extension-module")]
 pub mod ebpf_cortex_bridge;
-#[cfg(feature = "extension-module")]
 pub mod neural_memory;
-#[cfg(feature = "extension-module")]
 pub mod physics;
-#[cfg(feature = "extension-module")]
 pub mod qhc;
-#[cfg(feature = "extension-module")]
 pub mod resonant_loop;
-#[cfg(feature = "extension-module")]
 pub mod scheduler;
-#[cfg(feature = "extension-module")]
 pub mod scv;
 pub mod guardian_lsm;
 pub mod crystal_cipher; // Clave efímera por pulso del cristal (capa de cifrado ring0-adjacent)
@@ -68,7 +51,6 @@ pub mod dsp; // S60 DSP multiplier: 128-bit accumulator + overflow traps (hardwa
 pub mod celestial; // Celestial navigation: SVector3 + Kepler orbital mechanics (S60)
 pub mod numerical_control; // SovereignDDA: interpolador DDA S60 (trayectoria determinista)
 pub mod orbital_ascent; // Orbital ascent dynamics: drag/gravedad/thrust S60 (física real)
-#[cfg(feature = "extension-module")]
 pub mod shm_bridge;
 
 #[cfg(feature = "extension-module")]

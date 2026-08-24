@@ -200,9 +200,9 @@ async fn main() {
                     let me60os_ev = me60os_core::ebpf_cortex_bridge::CortexEvent::new(
                         event.timestamp_ns,
                         event_type_code,
-                        event.pid as u32,
+                        event.pid,
                         event.entropy_s60_raw,
-                        event.severity as u8,
+                        event.severity,
                     );
                     nm.ingest_event(me60os_ev, entropy_spa);
                 }
@@ -617,7 +617,7 @@ async fn handle_socket(mut socket: WebSocket, state: Arc<AppState>) {
             }
         };
 
-        if socket.send(Message::Text(payload.into())).await.is_err() {
+        if socket.send(Message::Text(payload)).await.is_err() {
             tracing::info!("🔌 Connection Dropped (Investor UI Disconnected)");
             break;
         }

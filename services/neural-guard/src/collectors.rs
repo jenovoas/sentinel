@@ -71,7 +71,7 @@ impl LokiCollector {
         let json = self.http.query("/loki/api/v1/query", nginx_5xx_query).await?;
 
         if let Some(results) = json["data"]["result"].as_array() {
-            if let Some(first_result) = results.get(0) {
+            if let Some(first_result) = results.first() {
                 if let Some(value_str) = first_result["value"][1].as_str() {
                     if let Ok(count) = value_str.parse::<u64>() {
                         if count > 0 {

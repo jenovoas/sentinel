@@ -34,6 +34,12 @@ pub struct SemanticShell {
     runtime: tokio::runtime::Runtime,
 }
 
+impl Default for SemanticShell {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl SemanticShell {
     pub fn new() -> Self {
         let runtime = Builder::new_current_thread()

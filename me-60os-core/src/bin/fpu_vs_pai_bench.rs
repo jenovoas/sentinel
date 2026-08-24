@@ -7,6 +7,8 @@
 //! 1) FPU Flotante (IEEE 754 Float64): Truncamiento en cada iteración, deriva y colapso.
 //! 2) ALU Entera ($S60$ Base-60): Operaciones de enteros de 64 bits/128 bits sin FPU.
 
+#![allow(clippy::float_cmp)]
+
 use me60os_core::pai60_lib::pai60_divide;
 use me60os_core::spa::SPA;
 use std::time::Instant;
@@ -28,7 +30,7 @@ fn main() {
     for i in 1..=N_STEPS {
         let step_ratio = ((i % 7) + 1) as f64 / 7.0; // 1/7, 2/7, etc. (periódicos)
         let prev = fpu_val;
-        fpu_val = fpu_val + step_ratio;
+        fpu_val += step_ratio;
         
         // Detectar si el truncamiento IEEE 754 alteró la precisión binaria
         if (fpu_val - prev) != step_ratio {

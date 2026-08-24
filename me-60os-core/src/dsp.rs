@@ -19,10 +19,6 @@
 
 use crate::spa::SPA;
 
-/// Límite de registro acumulador DSP (128-bit con signo).
-const MAX_INT128: i128 = i128::MAX; // 2^127 - 1 approx; usamos i128 completo
-const MIN_INT128: i128 = i128::MIN;
-
 /// Error de restricción de hardware DSP.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DspConstraintError {
@@ -56,10 +52,7 @@ impl S60DSP {
 
     /// Verifica que el valor intermedio cabe en el acumulador DSP (128-bit).
     #[inline]
-    fn check_128(val: i128) -> Result<(), DspConstraintError> {
-        if val > MAX_INT128 || val < MIN_INT128 {
-            return Err(DspConstraintError::AccumulatorMeltdown(val));
-        }
+    fn check_128(_val: i128) -> Result<(), DspConstraintError> {
         Ok(())
     }
 

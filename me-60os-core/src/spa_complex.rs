@@ -11,7 +11,7 @@ use crate::spa_math::SPAMath;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
-#[cfg_attr(feature = "extension-module", pyclass(module = "me60os_core"))]
+#[cfg_attr(feature = "extension-module", pyclass(module = "me60os_core", from_py_object))]
 pub struct ComplexSPA {
     pub real: SPA,
     pub imag: SPA,
@@ -81,6 +81,10 @@ impl Neg for ComplexSPA {
     }
 }
 
+// Constantes
+pub const I: ComplexSPA = ComplexSPA::new(SPA::new(0, 0, 0, 0, 0), SPA::new(1, 0, 0, 0, 0));
+pub const ONE: ComplexSPA = ComplexSPA::new(SPA::new(1, 0, 0, 0, 0), SPA::new(0, 0, 0, 0, 0));
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -94,10 +98,6 @@ mod tests {
         assert_eq!(sum.imag, SPA::new(1, 45, 0, 0, 0));
     }
 }
-
-// Constantes
-pub const I: ComplexSPA = ComplexSPA::new(SPA::new(0, 0, 0, 0, 0), SPA::new(1, 0, 0, 0, 0));
-pub const ONE: ComplexSPA = ComplexSPA::new(SPA::new(1, 0, 0, 0, 0), SPA::new(0, 0, 0, 0, 0));
 
 // --- PYO3 PYTHON BINDINGS ---
 #[cfg(feature = "extension-module")]

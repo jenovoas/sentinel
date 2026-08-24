@@ -179,7 +179,9 @@ int main(void)
                 }
             } else if (out[i].data.fd == tfd) {
                 __u64 exp;
-                read(tfd, &exp, sizeof(exp));
+                if (read(tfd, &exp, sizeof(exp)) < 0) {
+                    continue;
+                }
 
                 struct timespec ts;
                 clock_gettime(CLOCK_MONOTONIC, &ts);

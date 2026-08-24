@@ -14,7 +14,6 @@ int main(int argc, char **argv) {
   struct bpf_program *prog;
   struct bpf_map *map;
   int err;
-  char pin_dir[PATH_MAX];
   char pin_path[PATH_MAX];
 
   if (argc < 3) {

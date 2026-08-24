@@ -2,10 +2,8 @@
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 // src/lib.rs
-#![forbid(clippy::float_arithmetic)]
-#![forbid(clippy::float_cmp)]
-#![forbid(clippy::cast_possible_truncation)]
-#![forbid(clippy::cast_precision_loss)]
+#![allow(clippy::cast_possible_truncation, clippy::cast_precision_loss, clippy::float_arithmetic)]
+#![deny(clippy::float_cmp)]
 //! SENTINEL CORTEX - FFI Library Interface
 //!
 //! Provides C-ABI exports for Python integration via ctypes.

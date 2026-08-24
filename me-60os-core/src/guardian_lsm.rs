@@ -79,7 +79,7 @@ impl GuardianLsm {
 
         // 1. Actualizar mapa eBPF en kernel mediante bpftool (si existe el pin)
         let _ = tokio::process::Command::new("bpftool")
-            .args(&[
+            .args([
                 "map", "update", "pinned", "/sys/fs/bpf/sentinel/float_block_map",
                 "key", "hex", &format!("{:02x} {:02x} {:02x} {:02x}",
                     pid & 0xff, (pid >> 8) & 0xff, (pid >> 16) & 0xff, (pid >> 24) & 0xff),

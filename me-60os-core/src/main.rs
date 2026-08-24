@@ -47,7 +47,7 @@ fn main() {
             cortex.consume_buffer(); // Direct access
 
             // C. SYNC (Persistence)
-            if agent_manager.tick_count % 360 == 0 {
+            if agent_manager.tick_count.is_multiple_of(360) {
                 cortex.sync_persistence();
                 println!(
                     "[RUST] Tick {} | Synchronizing Neural State...",

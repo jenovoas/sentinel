@@ -14,8 +14,10 @@ use me60os_core::spa::SPA;
 use crate::memory::resonant_lattice_bridge::ResonantLatticeBridge;
 
 /// Bridges LFM inference streams to Sentinel's resonant crystal lattice.
+#[allow(dead_code)]
 pub struct LfmPaiBridge;
 
+#[allow(dead_code)]
 impl LfmPaiBridge {
     /// Projects a discrete LFM token ID to an exact Base-60 (SPA) amplitude
     /// using the Babylonian PAI-60 reciprocal table (denominator = 60).

@@ -11,6 +11,7 @@
 use crate::isochronous_oscillator::IsochronousOscillator;
 use crate::shm_bridge::PySharedBuffer;
 use crate::spa::SPA;
+#[cfg(feature = "extension-module")]
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -300,6 +301,193 @@ impl ResonantMatrix {
     }
 }
 
+#[cfg_attr(feature = "extension-module", pymethods)]
+impl ResonantMatrix {
+    #[cfg_attr(feature = "extension-module", new)]
+    pub fn __new__(rings: usize) -> Self {
+        // Hexagonal number formula: H_n = 3n(n+1) + 1
+        // Ring 150 ~= 68,000 nodes
+        let size = 3 * rings * (rings + 1) + 1;
+        Self::new(size)
+    }
+
+    #[cfg_attr(feature = "extension-module", pyo3(name = "inject"))]
+    pub fn inject_py(&mut self, data: &[u8]) {
+        // Map bytes to pressure
+        for (i, &byte) in data.iter().enumerate() {
+            if i >= self.crystals.len() {
+                break;
+            }
+            // Interpret byte as pressure (0-255)
+            self.crystals[i].transduce_pulse(byte as i64);
+        }
+    }
+
+    #[cfg_attr(feature = "extension-module", pyo3(name = "step"))]
+    pub fn step_py(&mut self) {
+        self.step();
+    }
+
+    #[cfg_attr(feature = "extension-module", pyo3(name = "stabilize"))]
+    pub fn stabilize_wrapper(&mut self, cycles: usize) {
+        self.stabilize_py(cycles);
+    }
+
+    pub fn save_snapshot(&self, buffer: &mut PySharedBuffer) -> Result<(), String> {
+        self.sync_to_shm(buffer)
+    }
+
+    pub fn load_snapshot(&mut self, buffer: &PySharedBuffer) -> Result<(), String> {
+        self.load_from_shm(buffer)
+    }
+
+    /// Returns size of a single crystal struct (for Python to allocate SHM)
+    #[cfg_attr(feature = "extension-module", staticmethod)]
+    pub fn get_node_size() -> usize {
+        std::mem::size_of::<IsochronousOscillator>()
+    }
+
+    pub fn count_nodes(&self) -> usize {
+        self.crystals.len()
+    }
+
+    pub fn active_memory_usage(&self) -> usize {
+        self.crystals.len() * std::mem::size_of::<IsochronousOscillator>()
+    }
+
+    #[cfg_attr(feature = "extension-module", pyo3(name = "set_context"))]
+    pub fn set_context_py(&mut self, index: usize, payload: String) {
+        if index < self.crystals.len() {
+            self.context_data.insert(index, payload);
+        }
+    }
+
+    #[cfg_attr(feature = "extension-module", pyo3(name = "get_context"))]
+    pub fn get_context_py(&self, index: usize) -> Option<String> {
+        self.context_data.get(&index).cloned()
+    }
+
+    #[cfg_attr(feature = "extension-module", pyo3(name = "save_crystal"))]
+    pub fn save_crystal_py(&self, path: String) -> Result<(), String> {
+        use flate2::write::GzEncoder;
+        use flate2::Compression;
+        use std::fs::File;
+        use std::io::Write;
+
+        let file = File::create(&path)
+            .map_err(|e| e.to_string())?;
+
+        let mut encoder = GzEncoder::new(file, Compression::default());
+        let encoded: Vec<u8> = serde_json::to_vec(self)
+            .map_err(|e| e.to_string())?;
+
+        encoder
+            .write_all(&encoded)
+            .map_err(|e| e.to_string())?;
+
+        Ok(())
+    }
+
+    #[cfg_attr(feature = "extension-module", pyo3(name = "load_crystal"))]
+    pub fn load_crystal_py(&mut self, path: String) -> Result<(), String> {
+        use flate2::read::GzDecoder;
+        use std::fs::File;
+        use std::io::Read;
+
+        let file = File::open(&path)
+            .map_err(|e| e.to_string())?;
+
+        let mut decoder = GzDecoder::new(file);
+        let mut buffer = Vec::new();
+        decoder
+            .read_to_end(&mut buffer)
+            .map_err(|e| e.to_string())?;
+
+        let decoded: ResonantMatrix = serde_json::from_slice(&buffer)
+            .map_err(|e| e.to_string())?;
+
+        self.crystals = decoded.crystals;
+        self.context_data = decoded.context_data;
+        self.coupling_factor = decoded.coupling_factor;
+        self.dt = decoded.dt;
+
+        Ok(())
+    }
+
+    #[cfg_attr(feature = "extension-module", pyo3(name = "set_node_state"))]
+    pub fn set_node_state_py(&mut self, index: usize, amp: SPA, phase: SPA) {
+        if index < self.crystals.len() {
+            self.crystals[index].amplitude = amp;
+            self.crystals[index].phase = phase;
+        }
+    }
+
+    #[cfg_attr(feature = "extension-module", pyo3(name = "get_node_amp_raw"))]
+    pub fn get_node_amp_raw_py(&self, index: usize) -> Option<SPA> {
+        if index < self.crystals.len() {
+            Some(self.crystals[index].amplitude)
+        } else {
+            None
+        }
+    }
+
+    #[cfg_attr(feature = "extension-module", pyo3(name = "get_node_phase_raw"))]
+    pub fn get_node_phase_raw_py(&self, index: usize) -> Option<SPA> {
+        if index < self.crystals.len() {
+            Some(self.crystals[index].phase)
+        } else {
+            None
+        }
+    }
+
+    #[cfg_attr(feature = "extension-module", pyo3(name = "total_energy"))]
+    pub fn total_energy_py(&self) -> i64 {
+        self.total_energy().to_raw()
+    }
+
+    #[cfg_attr(feature = "extension-module", pyo3(name = "measure_coherence"))]
+    pub fn measure_coherence_py(&mut self) -> i64 {
+        // Implementación rápida de coherencia S60
+        let n_nodes = self.crystals.len();
+        if n_nodes == 0 {
+            return SPA::new(1, 0, 0, 0, 0).to_raw();
+        }
+
+        // Bug 4.3 fix: el acumulador se mantuvo en i64, lo que puede desbordarse
+        // silenciosamente con redes grandes (p. ej. hexagonal ring 150 ≈ 68000 nodos,
+        // ver comentario en `__new__` líneas 305-309) si las fases crecen.
+        // Pasamos el acumulador a i128 (cheap en x86_64) para mantener la promesa
+        // YATRA de exactitud sin clamping silencioso.
+        let mut total_phase_val: i128 = 0;
+        for c in &self.crystals {
+            total_phase_val += c.get_phase().to_raw() as i128;
+        }
+        let mean_phase_val = (total_phase_val / n_nodes as i128) as i64;
+        
+        let mut total_dev_val: i128 = 0;
+        for c in &self.crystals {
+            total_dev_val += (c.get_phase().to_raw() - mean_phase_val).unsigned_abs() as i128;
+        }
+        let mut mean_dev_val = (total_dev_val / n_nodes as i128) as i64;
+        
+        let max_dev: i64 = 180 * 12_960_000;
+        if mean_dev_val > max_dev {
+            mean_dev_val = max_dev;
+        }
+        
+        // Ratio de coherencia S60
+        let coh_val = ((max_dev - mean_dev_val) as i128 * 12_960_000) / max_dev as i128;
+        coh_val as i64
+    }
+
+    #[cfg_attr(feature = "extension-module", pyo3(name = "get_hologram"))]
+    pub fn get_hologram_py(&self) -> Vec<(usize, i64, i64)> {
+        self.crystals.iter().enumerate().map(|(i, c)| {
+            (i, c.get_amplitude().to_raw(), c.get_phase().to_raw())
+        }).collect()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -397,195 +585,6 @@ mod tests {
 
         // Energy should decrease due to damping but not increase
         assert!(final_energy <= initial_energy);
-    }
-}
-
-#[cfg_attr(feature = "extension-module", pymethods)]
-impl ResonantMatrix {
-    #[new]
-    pub fn __new__(rings: usize) -> Self {
-        // Hexagonal number formula: H_n = 3n(n+1) + 1
-        // Ring 150 ~= 68,000 nodes
-        let size = 3 * rings * (rings + 1) + 1;
-        Self::new(size)
-    }
-
-    #[pyo3(name = "inject")]
-    pub fn inject_py(&mut self, data: &[u8]) {
-        // Map bytes to pressure
-        for (i, &byte) in data.iter().enumerate() {
-            if i >= self.crystals.len() {
-                break;
-            }
-            // Interpret byte as pressure (0-255)
-            self.crystals[i].transduce_pulse(byte as i64);
-        }
-    }
-
-    #[pyo3(name = "step")]
-    pub fn step_py(&mut self) {
-        self.step();
-    }
-
-    #[pyo3(name = "stabilize")]
-    pub fn stabilize_wrapper(&mut self, cycles: usize) {
-        self.stabilize_py(cycles);
-    }
-
-    pub fn save_snapshot(&self, buffer: &mut PySharedBuffer) -> PyResult<()> {
-        self.sync_to_shm(buffer)
-            .map_err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>)
-    }
-
-    pub fn load_snapshot(&mut self, buffer: &PySharedBuffer) -> PyResult<()> {
-        self.load_from_shm(buffer)
-            .map_err(PyErr::new::<pyo3::exceptions::PyRuntimeError, _>)
-    }
-
-    /// Returns size of a single crystal struct (for Python to allocate SHM)
-    #[staticmethod]
-    pub fn get_node_size() -> usize {
-        std::mem::size_of::<IsochronousOscillator>()
-    }
-
-    pub fn count_nodes(&self) -> usize {
-        self.crystals.len()
-    }
-
-    pub fn active_memory_usage(&self) -> usize {
-        self.crystals.len() * std::mem::size_of::<IsochronousOscillator>()
-    }
-
-    #[pyo3(name = "set_context")]
-    pub fn set_context_py(&mut self, index: usize, payload: String) {
-        if index < self.crystals.len() {
-            self.context_data.insert(index, payload);
-        }
-    }
-
-    #[pyo3(name = "get_context")]
-    pub fn get_context_py(&self, index: usize) -> Option<String> {
-        self.context_data.get(&index).cloned()
-    }
-
-    #[pyo3(name = "save_crystal")]
-    pub fn save_crystal_py(&self, path: String) -> PyResult<()> {
-        use flate2::write::GzEncoder;
-        use flate2::Compression;
-        use std::fs::File;
-        use std::io::Write;
-
-        let file = File::create(&path)
-            .map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(e.to_string()))?;
-
-        let mut encoder = GzEncoder::new(file, Compression::default());
-        let encoded: Vec<u8> = serde_json::to_vec(self)
-            .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
-
-        encoder
-            .write_all(&encoded)
-            .map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(e.to_string()))?;
-
-        Ok(())
-    }
-
-    #[pyo3(name = "load_crystal")]
-    pub fn load_crystal_py(&mut self, path: String) -> PyResult<()> {
-        use flate2::read::GzDecoder;
-        use std::fs::File;
-        use std::io::Read;
-
-        let file = File::open(&path)
-            .map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(e.to_string()))?;
-
-        let mut decoder = GzDecoder::new(file);
-        let mut buffer = Vec::new();
-        decoder
-            .read_to_end(&mut buffer)
-            .map_err(|e| PyErr::new::<pyo3::exceptions::PyIOError, _>(e.to_string()))?;
-
-        let decoded: ResonantMatrix = serde_json::from_slice(&buffer)
-            .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
-
-        self.crystals = decoded.crystals;
-        self.context_data = decoded.context_data;
-        self.coupling_factor = decoded.coupling_factor;
-        self.dt = decoded.dt;
-
-        Ok(())
-    }
-
-    #[pyo3(name = "set_node_state")]
-    pub fn set_node_state_py(&mut self, index: usize, amp: SPA, phase: SPA) {
-        if index < self.crystals.len() {
-            self.crystals[index].amplitude = amp;
-            self.crystals[index].phase = phase;
-        }
-    }
-
-    #[pyo3(name = "get_node_amp_raw")]
-    pub fn get_node_amp_raw_py(&self, index: usize) -> Option<SPA> {
-        if index < self.crystals.len() {
-            Some(self.crystals[index].amplitude)
-        } else {
-            None
-        }
-    }
-
-    #[pyo3(name = "get_node_phase_raw")]
-    pub fn get_node_phase_raw_py(&self, index: usize) -> Option<SPA> {
-        if index < self.crystals.len() {
-            Some(self.crystals[index].phase)
-        } else {
-            None
-        }
-    }
-
-    #[pyo3(name = "total_energy")]
-    pub fn total_energy_py(&self) -> i64 {
-        self.total_energy().to_raw()
-    }
-
-    #[pyo3(name = "measure_coherence")]
-    pub fn measure_coherence_py(&mut self) -> i64 {
-        // Implementación rápida de coherencia S60
-        let n_nodes = self.crystals.len();
-        if n_nodes == 0 {
-            return SPA::new(1, 0, 0, 0, 0).to_raw();
-        }
-
-        // Bug 4.3 fix: el acumulador se mantuvo en i64, lo que puede desbordarse
-        // silenciosamente con redes grandes (p. ej. hexagonal ring 150 ≈ 68000 nodos,
-        // ver comentario en `__new__` líneas 305-309) si las fases crecen.
-        // Pasamos el acumulador a i128 (cheap en x86_64) para mantener la promesa
-        // YATRA de exactitud sin clamping silencioso.
-        let mut total_phase_val: i128 = 0;
-        for c in &self.crystals {
-            total_phase_val += c.get_phase().to_raw() as i128;
-        }
-        let mean_phase_val = (total_phase_val / n_nodes as i128) as i64;
-        
-        let mut total_dev_val: i128 = 0;
-        for c in &self.crystals {
-            total_dev_val += (c.get_phase().to_raw() - mean_phase_val).unsigned_abs() as i128;
-        }
-        let mut mean_dev_val = (total_dev_val / n_nodes as i128) as i64;
-        
-        let max_dev: i64 = 180 * 12_960_000;
-        if mean_dev_val > max_dev {
-            mean_dev_val = max_dev;
-        }
-        
-        // Ratio de coherencia S60
-        let coh_val = ((max_dev - mean_dev_val) as i128 * 12_960_000) / max_dev as i128;
-        coh_val as i64
-    }
-
-    #[pyo3(name = "get_hologram")]
-    pub fn get_hologram_py(&self) -> Vec<(usize, i64, i64)> {
-        self.crystals.iter().enumerate().map(|(i, c)| {
-            (i, c.get_amplitude().to_raw(), c.get_phase().to_raw())
-        }).collect()
     }
 }
 

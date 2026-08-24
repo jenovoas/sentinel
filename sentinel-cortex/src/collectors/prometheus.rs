@@ -83,7 +83,7 @@ impl PrometheusCollector {
             .as_str()
             .ok_or("No value found")?;
         
-        Ok(parse_prometheus_value_to_s60(value_str)?)
+        parse_prometheus_value_to_s60(value_str)
     }
 }
 
@@ -94,7 +94,7 @@ fn parse_prometheus_value_to_s60(s: &str) -> Result<S60, Box<dyn std::error::Err
         return Err("Cannot parse NaN or Inf to S60".into());
     }
 
-    let (mantissa_str, exp_val) = if let Some(idx) = s.find(|c: char| c == 'e' || c == 'E') {
+    let (mantissa_str, exp_val) = if let Some(idx) = s.find(['e', 'E']) {
         let mant = &s[..idx];
         let exp: i32 = s[idx + 1..].parse()?;
         (mant, exp)

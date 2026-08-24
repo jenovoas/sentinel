@@ -30,7 +30,7 @@ impl QhcTensor {
 
     /// Calcula corrección de drift (Salto-17)
     pub fn calculate_drift_correction(&self, current_ticks: u64) -> u64 {
-        if current_ticks > 0 && current_ticks % self.correction_interval == 0 {
+        if current_ticks > 0 && current_ticks.is_multiple_of(self.correction_interval) {
             return self.correction_ns;
         }
         0

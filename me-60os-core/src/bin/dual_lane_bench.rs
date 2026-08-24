@@ -53,7 +53,7 @@ fn main() {
     eprintln!("Loss rate: {:.4}", sec_col.loss_rate());
     eprintln!("Avg latency ms: {}", sec_col.avg_latency_ms());
     assert_eq!(sec_lines, 50);
-    assert_eq!(sec_col.loss_rate(), 0.0);
+    assert!(sec_col.loss_rate() < 1e-9);
 
     // 3. Observability buffer + reorder por timestamp
     let mut obs_col = ObservabilityLaneCollector::new(obs_wal.clone());

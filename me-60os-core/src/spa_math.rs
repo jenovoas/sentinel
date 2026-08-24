@@ -197,7 +197,7 @@ impl SPAMath {
             k += 1;
         }
         while m < one {
-            m = m * 2; // multiplicación exacta (no pierde nada)
+            m *= 2; // multiplicación exacta (no pierde nada)
             k -= 1;
         }
 

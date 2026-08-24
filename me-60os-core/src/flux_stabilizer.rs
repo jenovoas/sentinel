@@ -18,8 +18,8 @@
 //! - [P-RRS] Novoa, J. (2026). *Reporte Final Resonance Architecture.*
 //!   `docs/02_ciencia_y_quantum/FINAL_REPORT_RESONANCE_ARCHITECTURE.md` — estabilización de flujo.
 //! - [P-RES] Novoa, J. (2026). Nota técnica no publicada de Sentinel — algoritmo original de LCG damping base-60.
-//!   LCG determinista, damping exponencial discreto y guardrails son diseño original de Sentinel (Novoa 2026).
-//! donde todo es S60 fixed-point. Sin floats, sin scipy.
+//!   LCG determinista, damping exponencial discreto y guardrails son diseño original de Sentinel (Novoa 2026),
+//!   donde todo es S60 fixed-point. Sin floats, sin scipy.
 
 use crate::spa::SPA;
 
@@ -171,7 +171,7 @@ mod flux_tests {
             let raw = n.to_raw();
             // semilla mod 1;0 = [0, 1) y menos 0;30 = [-0.5, 0.5)
             // raw range: [-6_480_000, +6_480_000)
-            assert!(raw >= -6_480_000 && raw < 6_480_000,
+            assert!((-6_480_000..6_480_000).contains(&raw),
                 "ruido fuera de rango: {}", raw);
         }
     }

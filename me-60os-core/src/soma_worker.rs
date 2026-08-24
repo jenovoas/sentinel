@@ -158,11 +158,7 @@ impl WorkerApp {
         started_at: u64,
         completed_at: u64,
     ) -> (SPA, Option<String>) {
-        let elapsed = if completed_at > started_at {
-            completed_at - started_at
-        } else {
-            0
-        };
+        let elapsed = completed_at.saturating_sub(started_at);
         let scope_base = scope.split(':').next().unwrap_or("default");
 
         let min_time = match scope_base {

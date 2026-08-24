@@ -52,7 +52,7 @@ fn main() {
     let qhc = QhcTensor::new();
 
     let crystal_size = if lane_a.count_nodes() > 0 {
-        (lane_a.active_memory_usage() as usize) / lane_a.count_nodes()
+        lane_a.active_memory_usage() / lane_a.count_nodes()
     } else {
         std::mem::size_of::<SPA>() * 5 // fallback aproximado
     };

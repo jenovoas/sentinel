@@ -14,6 +14,7 @@ use thiserror::Error;
 use truthsync_core::{TruthSyncEngine, VerificationResult};
 
 #[derive(Debug, Error)]
+#[allow(dead_code)]
 pub enum LfmSecurityError {
     #[error("Prompt bloqueado por sanitizador de seguridad: {patterns:?}")]
     PromptBlocked { patterns: Vec<String> },
@@ -26,6 +27,7 @@ pub enum LfmSecurityError {
 }
 
 /// Integrated Security & TruthSync pipeline for LFM inference.
+#[allow(dead_code)]
 pub struct LfmSecurityPipeline {
     sanitizer: TelemetrySanitizer,
     truthsync: TruthSyncEngine,
@@ -37,6 +39,7 @@ impl Default for LfmSecurityPipeline {
     }
 }
 
+#[allow(dead_code)]
 impl LfmSecurityPipeline {
     pub fn new() -> Self {
         Self {
