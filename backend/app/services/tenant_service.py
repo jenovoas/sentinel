@@ -4,7 +4,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.tenant import Tenant
-from app.schemas import TenantCreate, TenantUpdate
+from app.schemas import TenantCreate
 
 async def get_tenant(db: AsyncSession, tenant_id: str):
     result = await db.execute(select(Tenant).where(Tenant.id == tenant_id))
