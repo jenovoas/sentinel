@@ -58,7 +58,7 @@ aes-gcm = "0.10"
 blake3 = "1.5"
 
 [features]
-extension-module = ["pyo3/extension-module", "pyo3", "pyo3/auto-initialize"]
+extension-module = ["pyo3/extension-module", "pyo3"]
 default = ["extension-module"]
 
 [lints.clippy]
