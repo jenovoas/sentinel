@@ -67,3 +67,13 @@
 ---
 
 *Generado 2026-08-07 por Hermes tras auditoría completa. Detalle: `docs/_AUDIT_PENDIENTES.md`. Actualizado 2026-08-23 (auditoría staleness: items A/B cerrados verificados contra HEAD `bc3944ee`; commiteado con autorización de Jaime).*
+
+## Pendiente CI (2026-08-24, retomar del server)
+
+- PR #86 (`fix/rust-ci-green` -> main): todo pusheado en aecdfdf2. Falta SOLO confirmar que el run con toolchain fijado 1.98 sale verde y mergear:
+  - `gh pr checks 86`
+  - `gh pr merge 86 --merge`
+- Si rust sale rojo otra vez: `gh run view <run-id> --log-failed`. Cada iteracion cerro un problema distinto (libelf -> drain_collect 1.98 -> drift rustfmt -> pin version).
+- Python job: fix PYTHONPATH ya pusheado (1953bfd2); si sigue rojo revisar log del run mas nuevo.
+- Deuda documentada en el cuerpo del PR: desacoplar puente SHM de sentinel-cortex (tests con continue-on-error) y 2 asserts fisicos EXP-021 en cuarentena #[ignore].
+- Local: rustup 1.98 instalado en ~/.cargo/bin (--no-modify-path; el cargo del sistema Fedora 1.97 sigue default).
