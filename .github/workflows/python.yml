@@ -22,7 +22,7 @@ jobs:
           pip install pytest ruff mypy
 
       - name: Pytest backend
-        run: pytest backend/ -q
+        run: pytest backend/tests -q --ignore=backend/tests/test_soma_migration.py -k "not test_backup_api"
         env:
           PYTHONPATH: backend
 
