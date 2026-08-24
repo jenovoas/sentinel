@@ -7,7 +7,7 @@ Stores all metrics samples for Phase 2 analysis and Phase 3 AI integration
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional, Dict, Tuple
 
 from sqlalchemy import select, and_, desc
@@ -351,7 +351,7 @@ class MetricsHistoryService:
         Returns:
             Number of records deleted
         """
-        cutoff_date = datetime.utcnow() - timedelta(days=days_to_keep)
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_to_keep)
 
         stmt = select(MetricSample).where(
             MetricSample.sampled_at < cutoff_date

@@ -7,7 +7,7 @@ Endpoints for retrieving historical metrics, anomalies, and reports
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -84,7 +84,7 @@ async def get_statistics(
     db: AsyncSession = Depends(get_db),
 ):
     """Get aggregate statistics for the last N hours"""
-    end_time = datetime.utcnow()
+    end_time = datetime.now(timezone.utc)
     start_time = end_time - timedelta(hours=hours)
 
     stats = await MetricsHistoryService.compute_statistics(db, start_time, end_time)
@@ -100,7 +100,7 @@ async def get_anomalies(
     db: AsyncSession = Depends(get_db),
 ):
     """Get anomalies detected in the last N hours"""
-    end_time = datetime.utcnow()
+    end_time = datetime.now(timezone.utc)
     start_time = end_time - timedelta(hours=hours)
 
     anomalies = await MetricsHistoryService.get_anomalies_in_range(
@@ -177,7 +177,7 @@ async def resolve_anomaly(
         raise HTTPException(status_code=404, detail="Anomaly not found")
 
     anomaly.is_resolved = True
-    anomaly.resolved_at = datetime.utcnow()
+    anomaly.resolved_at = datetime.now(timezone.utc)
     anomaly.resolution_notes = resolution_notes
 
     await db.flush()
@@ -195,7 +195,7 @@ async def export_metrics_csv(
     db: AsyncSession = Depends(get_db),
 ):
     """Export metrics to CSV format"""
-    end_time = datetime.utcnow()
+    end_time = datetime.now(timezone.utc)
     start_time = end_time - timedelta(hours=hours)
 
     metrics, _ = await MetricsHistoryService.get_metrics_for_export(db, start_time, end_time)
@@ -223,7 +223,7 @@ async def export_anomalies_json(
     db: AsyncSession = Depends(get_db),
 ):
     """Export anomalies to JSON format"""
-    end_time = datetime.utcnow()
+    end_time = datetime.now(timezone.utc)
     start_time = end_time - timedelta(hours=hours)
 
     anomalies = await MetricsHistoryService.get_anomalies_in_range(db, start_time, end_time)

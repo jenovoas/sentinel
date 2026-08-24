@@ -4,7 +4,7 @@
 from app.celery_app import celery_app
 import logging
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy import text
 from app.database import AsyncSessionLocal
 
@@ -20,7 +20,7 @@ def cleanup_old_audit_logs(days: int = 90):
 
         async def run_cleanup():
             async with AsyncSessionLocal() as session:
-                cutoff_date = datetime.utcnow() - timedelta(days=days)
+                cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
                 await session.execute(
                     text("DELETE FROM audit_logs WHERE created_at < :cutoff_date"),
                     {"cutoff_date": cutoff_date}

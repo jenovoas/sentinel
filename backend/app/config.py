@@ -16,7 +16,7 @@ Environment Variables:
     - ALLOWED_ORIGINS: CORS allowed origins (comma-separated)
 """
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 import os
 from typing import List
 
@@ -122,10 +122,10 @@ class Settings(BaseSettings):
     vertex_model_name: str = os.getenv("VERTEX_MODEL_NAME", "gemini-2.5-flash-001")
     """Vertex AI Model Name (e.g., gemini-2.5-flash-001, gemini-3.0-pro-001)."""
 
-    class Config:
-        """Pydantic configuration for Settings."""
-        env_file = ".env"
-        case_sensitive = False
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=False,
+    )
 
 
 # Global settings instance (singleton pattern)

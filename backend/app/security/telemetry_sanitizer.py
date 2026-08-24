@@ -17,7 +17,7 @@ This module blocks:
 import re
 import logging
 from typing import Dict, List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 from .schemas import SanitizationResult, SanitizedLog
 
@@ -214,7 +214,7 @@ class TelemetrySanitizer:
             original=log,
             safe_for_llm=result.is_safe,
             confidence=result.confidence,
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             blocked_patterns=result.blocked_patterns
         )
     

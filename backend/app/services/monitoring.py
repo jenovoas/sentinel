@@ -5,7 +5,7 @@ import asyncio
 import logging
 import os
 import subprocess
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List
 
 import psutil
@@ -358,7 +358,7 @@ async def get_dashboard_snapshot() -> Dict[str, Any]:
     ]
 
     return {
-        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "db_health": db_health,
         "db_stats": db_stats,
         "db_activity": db_activity,
