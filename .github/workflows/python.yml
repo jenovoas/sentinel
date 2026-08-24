@@ -24,7 +24,8 @@ jobs:
       - name: Pytest backend
         run: cd backend && pytest -q
         env:
-          PYTHONPATH: backend
+          # cwd=backend: '.' hace importable el paquete app/ (backend/backend no existe)
+          PYTHONPATH: .
 
       - name: Pytest quantum
         run: cd quantum && pytest -q

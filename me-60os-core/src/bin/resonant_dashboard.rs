@@ -269,7 +269,7 @@ fn main() -> Result<()> {
                     InputMode::Insert => match key.code {
                         KeyCode::Esc => app_state.input_mode = InputMode::Normal,
                         KeyCode::Enter => {
-                            let cmd = app_state.input.drain(..).collect::<String>();
+                            let cmd = std::mem::take(&mut app_state.input);
                             if !cmd.is_empty() {
                                 app_state
                                     .chat_history
