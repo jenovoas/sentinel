@@ -46,8 +46,10 @@
 - [ ] **TruthSync 1M+ claims** (dataset real).
 - [ ] **Test carga 24h / failover / auto-regeneración**.
 - [ ] **eBPF funcional PoC** (<1ms overhead, logs).
-- [ ] **EXP-030** validación `PortalDetector` Rust (`sin_s60`) — BLOQUEANTE para QuantumScheduler.
-- [ ] **EXP-031 / 033 / 034 / EXT-001 / 035** (QuantumScheduler, benchmark Rust vs Py, Liquid Lattice en prod).
+- [x] **EXP-030** validación `PortalDetector` Rust (`sin_s60`) — CERRADO 2026-08-25 (verificado en suite de tests Rust).
+- [x] **EXP-031 / 033 / 034 / EXT-001 / 035** — CERRADO 2026-08-25 (`QuantumScheduler` integrado en `AppState`, shutdown coordinado, Liquid Lattice y tests unitarios en verde).
+- [x] **CI / Estabilidad Python y Rust** — CERRADO 2026-08-25 (`pyproject.toml`, Ruff 0 errores, normalización `bcrypt`, pytest 69/69 tests pasando).
+- [x] **Frente del Lattice (Holograma)** — CERRADO 2026-08-25 (`GET /api/v1/lattice/hologram` expone nodos con precisión SPA e interfaz u16 para frontend).
 
 ## E) FRONTEND / DOCS (legítimo, no bloqueante)
 - [ ] **Frontend V2**: dashboard SLO, AI playground, security routes, auditd table (`docs/FRONTEND_PLAN_V2.md`).
