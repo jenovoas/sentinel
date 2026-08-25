@@ -75,6 +75,7 @@ pub struct QuantumScheduler {
     energy_saved: i64,
     /// Current time in S60 (updated each tick)
     current_time: S60,
+    pub is_emergency_shutdown: bool,
 }
 
 impl QuantumScheduler {
@@ -89,6 +90,7 @@ impl QuantumScheduler {
             tasks_forced: 0,
             energy_saved: 0,
             current_time: S60::zero(),
+            is_emergency_shutdown: false,
         }
     }
 
@@ -186,11 +188,12 @@ impl QuantumScheduler {
         eprintln!("⚠️  DEAD MAN SWITCH ACTIVATED - PILOT ABSENT");
         eprintln!("🛑 INITIATING EMERGENCY SHUTDOWN...");
 
-        // 1. Flush critical tasks (BackupS60 only)
+        self.is_emergency_shutdown = true;
         self.flush_critical_tasks();
+    }
 
-        // 2. In production: call cortex.save_snapshot()
-        std::process::exit(0);
+    pub fn is_emergency_shutdown(&self) -> bool {
+        self.is_emergency_shutdown
     }
 
     /// Flush only critical tasks (BackupS60)

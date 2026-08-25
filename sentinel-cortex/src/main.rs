@@ -45,6 +45,10 @@ pub(crate) struct AppState {
     #[allow(dead_code)]
     pattern_detector: Arc<engine::patterns::PatternDetector>,
     neural_memory: Arc<Mutex<me60os_core::neural_memory::NeuralMemory>>,
+    #[allow(dead_code)]
+    quantum_scheduler: Arc<Mutex<quantum::quantum_scheduler::QuantumScheduler>>,
+    #[allow(dead_code)]
+    bio_resonator: Arc<Mutex<quantum::bio_resonator::BioResonator>>,
 }
 
 #[tokio::main]
@@ -100,6 +104,10 @@ async fn main() {
     let pattern_detector = Arc::new(engine::patterns::PatternDetector::new());
     let truthsync = Arc::new(Mutex::new(truthsync_core::TruthSyncEngine::new()));
     let neural_memory = Arc::new(Mutex::new(me60os_core::neural_memory::NeuralMemory::new()));
+    let bio_resonator = Arc::new(Mutex::new(quantum::bio_resonator::BioResonator::new()));
+    let quantum_scheduler = Arc::new(Mutex::new(
+        quantum::quantum_scheduler::QuantumScheduler::new(bio_resonator.clone()),
+    ));
 
     let state = Arc::new(AppState {
         resonance: resonance.clone(),
@@ -110,25 +118,36 @@ async fn main() {
         liquid_lattice: liquid_lattice.clone(),
         pattern_detector: pattern_detector.clone(),
         neural_memory: neural_memory.clone(),
+        quantum_scheduler: quantum_scheduler.clone(),
+        bio_resonator: bio_resonator.clone(),
     });
 
-    // 1. Start Bio-Resonance Engine (17s Pulse) in a background task
     let resonance_task = resonance.clone();
     let processor_task = processor.clone();
+    let scheduler_task = quantum_scheduler.clone();
     tokio::spawn(async move {
         tracing::info!("Resonance Engine active. Syncing to 17s Pulse...");
-        let mut tick = 0;
+        let start_time = std::time::Instant::now();
+        let mut last_second: u64 = 0;
         loop {
-            sleep(Duration::from_secs(1)).await;
-            tick += 1;
+            sleep(Duration::from_millis(250)).await;
+            let elapsed_secs = start_time.elapsed().as_secs();
+            if elapsed_secs == last_second {
+                continue;
+            }
+            last_second = elapsed_secs;
+            let tick = elapsed_secs;
 
-            // Decay entropy every second
             {
                 let mut res = resonance_task.lock().unwrap();
                 res.tick_entropy();
             }
+            {
+                let mut sched = scheduler_task.lock().unwrap();
+                sched.tick(math::s60::S60::from_int(tick as i32));
+            }
 
-            if tick % 17 == 0 {
+            if tick > 0 && tick % 17 == 0 {
                 let mut res = resonance_task.lock().unwrap();
                 let (valid, coherence) = res.verify_pulse(tick);
                 tracing::info!(
@@ -363,6 +382,7 @@ async fn main() {
         .route("/health", get(health_handler))
         .route("/metrics", get(metrics_prometheus_handler))
         .route("/api/v1/lattice", get(lattice_status_handler))
+        .route("/api/v1/lattice/hologram", get(lattice_hologram_handler))
         .route("/api/v1/telemetry", get(telemetry_ws_handler))
         .route("/api/v1/sentinel_status", get(sentinel_status_handler))
         .route("/api/v1/truth_claim", post(truth_claim_handler))
@@ -468,6 +488,59 @@ async fn lattice_status_handler(
         node_count: 64,
         amplitudes: lat.amplitudes_raw(),
         phases: lat.phases_raw(),
+    })
+}
+
+#[derive(Serialize)]
+pub struct HologramNodeSnapshot {
+    pub index: usize,
+    pub amplitude_raw: i64,
+    pub phase_raw: i64,
+    pub amplitude_u16: u16,
+    pub phase_u16: u16,
+}
+
+#[derive(Serialize)]
+pub struct LatticeHologramResponse {
+    pub total_energy: i64,
+    pub node_count: usize,
+    pub coherence_raw: i64,
+    pub nodes: Vec<HologramNodeSnapshot>,
+}
+
+async fn lattice_hologram_handler(
+    axum::extract::State(state): axum::extract::State<Arc<AppState>>,
+) -> Json<LatticeHologramResponse> {
+    let lat = state.lattice.lock().unwrap();
+    let amps = lat.amplitudes_raw();
+    let phases = lat.phases_raw();
+    let total_energy = lat.total_energy_raw();
+    let coherence_raw = state.resonance.lock().unwrap().get_coherence_raw();
+
+    let node_count = amps.len();
+    let mut nodes = Vec::with_capacity(node_count);
+    const SCALE_0: i64 = 12_960_000;
+
+    for i in 0..node_count {
+        let a = amps[i];
+        let p = phases[i];
+        let a_u16 = ((a.abs() as u128 * 65535) / SCALE_0 as u128).min(65535) as u16;
+        let p_u16 = ((p.rem_euclid(SCALE_0) as u128 * 65535) / SCALE_0 as u128) as u16;
+
+        nodes.push(HologramNodeSnapshot {
+            index: i,
+            amplitude_raw: a,
+            phase_raw: p,
+            amplitude_u16: a_u16,
+            phase_u16: p_u16,
+        });
+    }
+
+    Json(LatticeHologramResponse {
+        total_energy,
+        node_count,
+        coherence_raw,
+        nodes,
     })
 }
 #[derive(Serialize)]
@@ -859,6 +932,10 @@ mod tests {
         let liquid_lattice = Arc::new(Mutex::new(memory::liquid_lattice::LiquidLattice::new()));
         let pattern_detector = Arc::new(engine::patterns::PatternDetector::new());
         let neural_memory = Arc::new(Mutex::new(me60os_core::neural_memory::NeuralMemory::new()));
+        let bio_resonator = Arc::new(Mutex::new(quantum::bio_resonator::BioResonator::new()));
+        let quantum_scheduler = Arc::new(Mutex::new(
+            quantum::quantum_scheduler::QuantumScheduler::new(bio_resonator.clone()),
+        ));
         let (tx_bpf, _) = broadcast::channel(100);
 
         let state = Arc::new(AppState {
@@ -870,11 +947,14 @@ mod tests {
             liquid_lattice,
             pattern_detector,
             neural_memory,
+            quantum_scheduler,
+            bio_resonator,
         });
 
         Router::new()
             .route("/api/v1/sentinel_status", get(sentinel_status_handler))
             .route("/api/v1/truth_claim", post(truth_claim_handler))
+            .route("/api/v1/lattice/hologram", get(lattice_hologram_handler))
             .with_state(state)
     }
 
@@ -964,5 +1044,30 @@ mod tests {
         assert_eq!(json.get("claim_valid").unwrap(), false);
         assert_eq!(json.get("sentinel_score").unwrap(), 0.0);
         assert_eq!(json.get("ring0_intercepts").unwrap(), 1);
+    }
+
+    #[tokio::test]
+    async fn test_lattice_hologram_handler_smoke() {
+        let app = make_test_app();
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri("/api/v1/lattice/hologram")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
+
+        assert!(json.get("total_energy").is_some());
+        assert!(json.get("node_count").is_some());
+        assert!(json.get("coherence_raw").is_some());
+        assert!(json.get("nodes").is_some());
     }
 }
