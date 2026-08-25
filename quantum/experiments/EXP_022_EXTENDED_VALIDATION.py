@@ -19,10 +19,11 @@ CRITERIOS DE ÉXITO:
 - Sin fallos en edge cases
 """
 
-import sys
-import os
 import math
+import os
+import sys
 import time
+
 # REVIEW: path absoluto reemplazado por relativo al proyecto
 _project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 if _project_root not in sys.path:
@@ -58,23 +59,23 @@ def calculate_lyapunov_float(signal):
     """Float version (calibrated)"""
     if len(signal) < 2:
         return 0.0
-    
+
     sum_div = 0.0
     count = 0
-    
+
     for i in range(len(signal) - 2):
         d1 = abs(signal[i + 1] - signal[i])
         d2 = abs(signal[i + 2] - signal[i + 1])
-        
+
         if d1 > 0.0001:
             ratio = d2 / d1
             if ratio > 0.0:
                 sum_div += abs(math.log(ratio))
                 count += 1
-    
+
     if count == 0:
         return 0.0
-    
+
     raw_lambda = sum_div / count
     return max(0.1, min(2.5, raw_lambda * 0.5))
 
@@ -82,15 +83,15 @@ def calculate_lyapunov_s60(signal):
     """S60 version (calibrated)"""
     if len(signal) < 2:
         return S60(0, 0, 0, 0, 0)
-    
+
     sum_div = S60(0, 0, 0, 0, 0)
     count = 0
     threshold = S60(0, 0, 0, 1, 0)
-    
+
     for i in range(len(signal) - 2):
         d1 = abs(signal[i + 1] - signal[i])
         d2 = abs(signal[i + 2] - signal[i + 1])
-        
+
         if d1 > threshold:
             try:
                 ratio = d2 / d1
@@ -104,18 +105,18 @@ def calculate_lyapunov_s60(signal):
             # REVIEW: bare except reemplazado por Exception
             except Exception:
                 continue
-    
+
     if count == 0:
         return S60(0, 0, 0, 0, 0)
-    
+
     count_s60 = S60(count, 0, 0, 0, 0)
     raw_lambda = sum_div / count_s60
     half = S60(0, 30, 0, 0, 0)
     scaled = raw_lambda * half
-    
+
     min_val = S60(0, 6, 0, 0, 0)
     max_val = S60(2, 30, 0, 0, 0)
-    
+
     if scaled < min_val:
         return min_val
     elif scaled > max_val:
@@ -143,30 +144,30 @@ for sig_idx in range(NUM_SIGNALS):
     # Generar señal con entropía real
     signal_float = []
     signal_s60 = []
-    
+
     for i in range(SIGNAL_LENGTH):
         entropy_bytes = os.urandom(2)
         raw_value = int.from_bytes(entropy_bytes, 'big')
         normalized = 60 + (raw_value % 41)  # Rango [60, 100] BPM
-        
+
         signal_float.append(float(normalized))
         signal_s60.append(S60(normalized, 0, 0, 0, 0))
-    
+
     # Calcular Lyapunov
     try:
         lyap_float = calculate_lyapunov_float(signal_float)
         lyap_s60 = calculate_lyapunov_s60(signal_s60)
         lyap_s60_float = lyap_s60.to_base_units() / S60.SCALE_0
-        
+
         divergence = abs(lyap_float - lyap_s60_float)
         divergences_lyap.append(divergence)
         lyap_float_values.append(lyap_float)
         lyap_s60_values.append(lyap_s60_float)
-        
+
     except Exception as e:
         failed_signals += 1
         continue
-    
+
     # Progreso cada 100 señales
     if (sig_idx + 1) % 100 == 0:
         elapsed = time.time() - start_time
@@ -191,20 +192,20 @@ if len(divergences_lyap) > 0:
     mean_div = sum(divergences_lyap) / len(divergences_lyap)
     variance = sum((d - mean_div) ** 2 for d in divergences_lyap) / len(divergences_lyap)
     std_div = math.sqrt(variance)
-    
+
     max_div = max(divergences_lyap)
     min_div = min(divergences_lyap)
-    
+
     # Percentiles
     sorted_divs = sorted(divergences_lyap)
     p50 = sorted_divs[len(sorted_divs) // 2]
     p95 = sorted_divs[int(len(sorted_divs) * 0.95)]
     p99 = sorted_divs[int(len(sorted_divs) * 0.99)]
-    
+
     # Conteo bajo threshold
     under_threshold = sum(1 for d in divergences_lyap if d < THRESHOLD_99PCT)
     pct_under = (under_threshold / len(divergences_lyap)) * 100
-    
+
     print(f"\n📈 Divergencia Lyapunov (S60 vs Float):")
     print(f"   Mean:     {mean_div:.6f} {'✅' if mean_div < THRESHOLD_MEAN else '❌'} (threshold: {THRESHOLD_MEAN})")
     print(f"   Std Dev:  {std_div:.6f} {'✅' if std_div < THRESHOLD_STD else '❌'} (threshold: {THRESHOLD_STD})")
@@ -214,21 +215,21 @@ if len(divergences_lyap) > 0:
     print(f"   P95:      {p95:.6f}")
     print(f"   P99:      {p99:.6f}")
     print(f"   < {THRESHOLD_99PCT}: {pct_under:.2f}% {'✅' if pct_under >= 99 else '❌'} (target: 99%)")
-    
+
     # Distribución de valores
     mean_lyap_float = sum(lyap_float_values) / len(lyap_float_values)
     mean_lyap_s60 = sum(lyap_s60_values) / len(lyap_s60_values)
-    
+
     print(f"\n📊 Distribución de Valores:")
     print(f"   Float mean: {mean_lyap_float:.4f}")
     print(f"   S60 mean:   {mean_lyap_s60:.4f}")
-    
+
     # Edge cases
     edge_cases = []
     for i, div in enumerate(divergences_lyap):
         if div > 0.05:  # Divergencia significativa
             edge_cases.append((i, div, lyap_float_values[i], lyap_s60_values[i]))
-    
+
     if edge_cases:
         print(f"\n⚠️  Edge Cases Detectados ({len(edge_cases)}):")
         for idx, div, f_val, s_val in edge_cases[:5]:  # Mostrar primeros 5
@@ -271,7 +272,7 @@ else:
         print(f"   ❌ Solo {pct_under:.2f}% bajo threshold")
     if failed_signals > 0:
         print(f"   ❌ {failed_signals} señales fallidas")
-    
+
     print("\n🎯 RECOMENDACIÓN: REVISAR IMPLEMENTACIÓN")
 
 print("\n" + "=" * 70)

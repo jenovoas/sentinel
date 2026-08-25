@@ -9,10 +9,11 @@ Provider:
 
 import logging
 import os
-import httpx
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
-from app.core.prompts import AIMode, SYSTEM_PROMPTS
+
+from app.core.prompts import SYSTEM_PROMPTS, AIMode
 from app.security import TelemetrySanitizer, get_current_user
 
 # Configure Logger
@@ -47,7 +48,7 @@ class AIQuery(BaseModel):
     mode: AIMode = Field(AIMode.GENERAL, description="Persona mode for the AI")
     max_tokens: int = Field(1024, description="Maximum tokens to generate", ge=10, le=8192)
     temperature: float = Field(0.4, description="Temperature for generation", ge=0.0, le=1.0)
-    
+
 
 class AIResponse(BaseModel):
     """AI query response"""
@@ -85,7 +86,7 @@ async def query_ai(query: AIQuery, current_user = Depends(get_current_user)):
 
     try:
         import vertexai
-        from vertexai.generative_models import GenerativeModel, GenerationConfig
+        from vertexai.generative_models import GenerationConfig, GenerativeModel
 
         vertexai.init(
             project=GOOGLE_CLOUD_PROJECT,

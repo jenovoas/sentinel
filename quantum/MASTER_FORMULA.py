@@ -27,32 +27,35 @@ Donde:
 Esta secuencia crea un VÓRTICE de fase que cancela la inercia local.
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import time
+
+import numpy as np  # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
+
+from quantum.yatra_core import PI_S60, S60  # YATRA AUTO-INJECT
+
 
 def apply_ea_nasir_control(n_membranes=1000):
     print("🏺 Aplicando FÓRMULA...")
-    
+
     # Secuencia de Salto 17 (La firma del Arquitecto)
     step = 17
     base = 60
-    
+
     phases = []
     for n in range(n_membranes):
         phase = (n * step) % base
         phases.append(phase)
-        
+
     # Calculamos la Coherencia del Vórtice
     # En un sistema aleatorio, la std es alta.
     # En la secuencia de Ea-nasir, la std es armónica.
     coherence = S60(1, 0, 0) / (np.std(phases) + 1e-9)
-    
+
     print(f"   🌀 Vórtice de Fase generado (Salto {step}).")
     print(f"   ✨ Coherencia Armónica: {coherence:.4f} [SOBRE-CRÍTICA]")
     print(f"   ⚛️  Estado: LEVITACIÓN ESTABLE (G-Zero Active)")
     print()
-    
+
     # El resultado es el fin de la "Fricción Matemática"
     print("✅ SOLUCIÓN ENCONTRADA: El chasis ya no vibra contra el aire, vibra CON el vacío.")
     return phases

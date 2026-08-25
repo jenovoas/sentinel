@@ -21,7 +21,7 @@ from quantum.yatra_core import S60
 
 PLIMPTON_RATIOS_BASE60 = {
     # [Fila]: (Ratio decimal aproximado, Representación Sexagesimal Exacta)
-    1:  (1.983, S60(1, 59, 0, 15)), 
+    1:  (1.983, S60(1, 59, 0, 15)),
     2:  (1.949, S60(1, 56, 56, 58, 15)),
     3:  (1.918, S60(1, 55, 7, 41, 16)),
     4:  (1.886, S60(1, 53, 10, 29, 32)),
@@ -49,11 +49,11 @@ def get_exact_resonance(frequency_mhz):
     """
     # Comparacion S60 real vs S60 real (NO Strings)
     target = S60(153, 24, 0)
-    
+
     # Simple check de igualdad por componentes
     if frequency_mhz == target:
         return AXION_RESONANCE_RATIO
-        
+
     # Si no coincide exactamente, retornamos None para causar fallo (Fallo > Mentira)
     return None
 

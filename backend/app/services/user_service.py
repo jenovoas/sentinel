@@ -7,6 +7,7 @@ Supports both legacy (tenant_id) and new (organization_id) schemas
 """
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.user import User
 from app.schemas import UserCreate
 from app.security import get_password_hash, verify_password
@@ -33,7 +34,7 @@ async def create_user(db: AsyncSession, user: UserCreate):
     Create a new user. Supports both legacy tenant_id and new organization_id.
     """
     hashed_password = get_password_hash(user.password)
-    
+
     # Determine organization/tenant ID
     org_id = getattr(user, 'organization_id', None) or getattr(user, 'tenant_id', None)
     if not org_id:

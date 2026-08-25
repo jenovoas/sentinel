@@ -10,14 +10,16 @@ Acts as the bridge between Sentinel and automated remediation.
 Events are queued and sent to N8N webhooks with proper authentication.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
-from pydantic import BaseModel, Field
-from typing import Literal, Optional, Dict, Any
-from datetime import datetime
-from app.security import get_current_admin_user
-import httpx
-import os
 import logging
+import os
+from datetime import datetime
+from typing import Any, Dict, Literal, Optional
+
+import httpx
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from pydantic import BaseModel, Field
+
+from app.security import get_current_admin_user
 
 router = APIRouter(prefix="/api/v1/failsafe", tags=["fail-safe"])
 logger = logging.getLogger(__name__)
@@ -37,7 +39,7 @@ class FailSafeEvent(BaseModel):
     """Event to trigger fail-safe playbook"""
     playbook: Literal[
         "backup_recovery",
-        "intrusion_lockdown", 
+        "intrusion_lockdown",
         "health_failsafe",
         "integrity_check",
         "offboarding",
@@ -88,11 +90,11 @@ async def send_to_n8n(playbook: str, event_data: Dict[str, Any]) -> bool:
         True if successful, False otherwise
     """
     webhook_url = PLAYBOOK_WEBHOOKS.get(playbook)
-    
+
     if not webhook_url:
         logger.error(f"Unknown playbook: {playbook}")
         return False
-    
+
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.post(
@@ -107,14 +109,14 @@ async def send_to_n8n(playbook: str, event_data: Dict[str, Any]) -> bool:
                     "Content-Type": "application/json",
                 }
             )
-            
+
             if response.status_code == 200:
                 logger.info(f"✓ Sent event to {playbook} playbook")
                 return True
             else:
                 logger.error(f"✗ N8N webhook failed: {response.status_code}")
                 return False
-                
+
     except Exception as e:
         logger.error(f"✗ Error sending to N8N: {e}")
         return False
@@ -146,7 +148,7 @@ async def trigger_failsafe(
             f"🛡️ Fail-safe triggered: {event.playbook} "
             f"(severity: {event.severity}, wait: {event.wait_time_minutes}m)"
         )
-        
+
         # In production, you'd queue this with Redis/Celery
         # For now, send immediately in background
         background_tasks.add_task(
@@ -160,14 +162,14 @@ async def trigger_failsafe(
                 "wait_time_minutes": event.wait_time_minutes,
             }
         )
-        
+
         return {
             "status": "queued",
             "playbook": event.playbook,
             "message": f"Fail-safe playbook '{event.playbook}' queued for execution",
             "wait_time_minutes": event.wait_time_minutes,
         }
-        
+
     except Exception as e:
         logger.error(f"Error triggering fail-safe: {e}")
         raise HTTPException(
@@ -188,7 +190,7 @@ async def get_failsafe_status():
     """
     # TODO: Implement proper tracking with database
     # For now, return mock data
-    
+
     return {
         "status": "active",
         "last_auto_remediation": "2 hours ago",

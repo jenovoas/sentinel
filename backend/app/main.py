@@ -24,19 +24,18 @@ Performance:
 Start with: uvicorn app.main:app --host 0.0.0.0 --port 8000
 """
 
-from contextlib import asynccontextmanager
-import logging
 import os
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
 
-from app.config import get_settings, get_allowed_origins
+from app.config import get_allowed_origins, get_settings
+from app.database import check_db_connection, close_db, init_db
 from app.logging_config import setup_logging
-from app.database import init_db, close_db, check_db_connection
-from app.routers import health, users, tenants, dashboard, analytics, ai, auth, backup, failsafe
+from app.routers import ai, analytics, auth, backup, dashboard, failsafe, health, tenants, users
 from app.shutdown import setup_signal_handlers  # Graceful shutdown
 
 settings = get_settings()
@@ -63,33 +62,33 @@ async def lifespan(app: FastAPI):
     # STARTUP - Runs once when the application starts
     # ========================================================================
     logger.info("🚀 Starting Sentinel API...")
-    
+
     # Create logs directory
     os.makedirs("logs", exist_ok=True)
-    
+
     # Initialize database (create tables, extensions)
     # This is async and uses asyncpg driver
     await init_db()
     logger.info("✅ Database initialized (using asyncpg driver)")
-    
+
     # Verify database connectivity
     db_status = await check_db_connection()
     if db_status.get("db_connection", False):
-        logger.info(f"✅ Database connection verified")
+        logger.info("✅ Database connection verified")
     else:
         logger.error(f"❌ Database connection failed: {db_status.get('error', 'Unknown error')}")
-    
+
     # Setup graceful shutdown handlers
     setup_signal_handlers(app)
     logger.info("✅ Graceful shutdown handlers configured")
-    
+
     yield  # Application runs here
-    
+
     # ========================================================================
     # SHUTDOWN - Runs once when the application stops
     # ========================================================================
     logger.info("👋 Shutting down Sentinel API...")
-    
+
     # Close all database connections
     # Important for clean shutdown and preventing connection leaks
     await close_db()

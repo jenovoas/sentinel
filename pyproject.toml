@@ -1,0 +1,41 @@
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+exclude = [
+    ".git",
+    ".venv",
+    "node_modules",
+    "target",
+    "ebpf",
+    "scratch",
+    "logs",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+]
+ignore = [
+    "E501",  # line length
+    "E701",  # multiple statements on one line (colon)
+    "E702",  # multiple statements on one line (semicolon)
+    "E741",  # ambiguous variable name
+    "E743",  # ambiguous function name
+    "E722",  # bare except
+    "E402",  # module level import not at top
+    "W291",  # trailing whitespace
+    "W293",  # blank line with whitespace
+    "W292",  # missing newline at end of file
+    "F841",  # unused local variables
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "quantum", "yatra_core", "yatra_math", "sovereign_math"]
+
+[tool.ruff.lint.per-file-ignores]
+"quantum/*" = ["F401", "F541", "F821", "F811", "E701", "E702", "E741", "E743"]
+"backend/tests/*" = ["F401", "F811"]
+

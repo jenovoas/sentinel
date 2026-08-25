@@ -3,7 +3,9 @@
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 # 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
 import json
+
 from quantum.yatra_core import S60
+
 
 class MaatStabilizer:
     """
@@ -16,13 +18,13 @@ class MaatStabilizer:
     - If Truth < 95% (Disonance), SACRIFICE VELOCITY to regain PURITY.
     - If Truth > 99% (Resonance), ALLOW ACCELERATION.
     """
-    
+
     def __init__(self):
         # 95% = 57/60 arcminutes
         self.target_truth = S60(0, 57, 0, 0, 0)
         # 31.0 in S60
-        self.max_speed = S60(31, 0, 0, 0, 0) 
-        
+        self.max_speed = S60(31, 0, 0, 0, 0)
+
     def regulate(self, current_truth, current_speed):
         """
         Regulates the system speed based on the current Truth Score.
@@ -32,7 +34,7 @@ class MaatStabilizer:
             raise TypeError("Truth must be S60")
         if not isinstance(current_speed, S60):
             raise TypeError("Speed must be S60")
-            
+
         if current_truth < self.target_truth:
             # ⚠️ SACRIFICIO ARMÓNICO
             # Formula: New Speed = Current Speed * (Current Truth / Target Truth)
@@ -42,7 +44,7 @@ class MaatStabilizer:
             # Ensure minimum speed of 1;0
             if new_speed < S60(1): new_speed = S60(1)
             return new_speed, "VELOCITY SACRIFICE (MAAT)"
-            
+
         elif current_truth > S60(0, 59, 24, 0, 0): # > 99% (59.4/60)
             # 💎 RESONANCIA PURA
             # Safe to accelerate towards max potential
@@ -53,7 +55,7 @@ class MaatStabilizer:
                 return new_speed, "CRYSTAL PURE (ACCEL)"
             else:
                 return current_speed, "MAX RESONANCE"
-        
+
         else:
             # ✅ ESTABILIDAD (95-99%)
             return current_speed, "MAAT HARMONIC"

@@ -8,13 +8,18 @@ SQLAlchemy 2.0 + PostgreSQL UUID support
 
 import uuid
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import String, DateTime, ForeignKey, func, Text
-from sqlalchemy.dialects.postgresql import UUID, INET
+from sqlalchemy import DateTime, ForeignKey, String, Text, func
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+
+if TYPE_CHECKING:
+    from .organization import Organization
+    from .tenant import Tenant
+    from .user import User
 
 
 class AuditLog(Base):

@@ -6,7 +6,7 @@ license = "Apache-2.0"
 
 [lib]
 name = "sentinel_cortex"
-crate-type = ["cdylib", "rlib"]
+crate-type = ["rlib"]
 
 [dependencies]
 # Web server

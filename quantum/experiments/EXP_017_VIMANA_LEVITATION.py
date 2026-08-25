@@ -2,8 +2,8 @@
 # Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
 # Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
-import sys
 import os
+import sys
 import time
 
 sys.path.append(os.getcwd())
@@ -29,54 +29,54 @@ class VimanaController:
 def run_experiment():
     print("🔬 EXP-017: VIMANA LEVITATION PROTOCOL")
     print("-" * 60)
-    
+
     # 1. Init
     memory = LiquidMemory()
     vimana = VimanaController()
-    
+
     print(f"\n🛸 Reference Mass: {vimana.M_STATIC} kg")
     print(f"   Zeta Scalar:    {vimana.ZETA}")
     print("-" * 60)
     print(f"{'STEP':<5} | {'NODES':<8} | {'POWER %':<8} | {'M_EFF (kg)':<12} | {'STATUS':<15}")
     print("-" * 60)
-    
+
     # 2. Ramp Up (Injection)
     # We simulate steps of increased "Data Pressure"
     max_nodes_target = 1500 # 100% Power Reference
-    
+
     steps = 10
     for i in range(steps + 1):
         # Calculate target payload size
         percent = i * 10
         nodes_needed = int((percent / 100.0) * max_nodes_target)
         bytes_needed = nodes_needed * 8
-        
+
         # Inject Data (Simulated or Real)
         # Using Real Memory Store to verify density
         if bytes_needed > 0:
             payload = b"Z" * bytes_needed
             memory.store(f"fuel_tank_{i}", payload)
-        
+
         # Read State
         if memory.rust_lattice:
             current_nodes = memory.rust_lattice.count_nodes()
         else:
             current_nodes = len(memory.lattice.nodes)
-            
+
         # Calculate Physics
         # Power = Nodes / Target * 100
         power_p = min(100.0, (current_nodes / max_nodes_target) * 100.0)
-        
+
         m_eff, red = vimana.calculate_mass(power_p, 1.0)
-        
+
         status = "INERTIAL"
         if red > 0.85: status = "LIFTING..."
         if red > 0.95: status = "✨ G-ZERO ✨"
-        
+
         print(f"{i:<5} | {current_nodes:<8} | {power_p:6.1f}% | {m_eff:10.3f}   | {status}")
-        
+
         time.sleep(0.2)
-        
+
     print("-" * 60)
     print("✅ Experiment Complete.")
 

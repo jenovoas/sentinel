@@ -8,8 +8,8 @@ Revises: '4c53459a200b'
 Create Date: 2025-12-13 21:08:17.207135
 
 """
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.

@@ -1,12 +1,12 @@
 # Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
 # Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
-from typing import List, Optional, Dict, Any
 import logging
-from google.cloud import aiplatform
-from google.oauth2 import service_account
+from typing import Any, Dict, Optional
+
 import vertexai
-from vertexai.generative_models import GenerativeModel, Part, Content, HarmCategory, HarmBlockThreshold
+from vertexai.generative_models import GenerativeModel, HarmBlockThreshold, HarmCategory
+
 from app.config import get_settings
 
 # Configure logging
@@ -45,11 +45,11 @@ class VertexService:
         try:
             # Initialize Vertex AI SDK
             vertexai.init(project=self.project_id, location=self.location)
-            
+
             # Load the model
             self._model = GenerativeModel(self.model_name)
             self._initialized = True
-            
+
             logger.info(f"✨ Vertex AI Initialized: {self.model_name} @ {self.location}")
             return True
         except Exception as e:
@@ -57,8 +57,8 @@ class VertexService:
             return False
 
     async def generate_content(
-        self, 
-        prompt: str, 
+        self,
+        prompt: str,
         system_instruction: Optional[str] = None,
         temperature: float = 0.0, # Vertex uses floats for params, acceptable for I/O
         max_output_tokens: int = 8192
@@ -93,12 +93,12 @@ class VertexService:
                 HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
                 HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
             }
-            
+
             # Create content structure (Vertex SDK format)
             # System instruction is passed at model init or generation depending on SDK version
-            # For simplicity in this v1, we prepend system instruction if provided, 
+            # For simplicity in this v1, we prepend system instruction if provided,
             # or update usage when SDK fully supports efficient system_instruction arg in this flow.
-            
+
             full_prompt = prompt
             if system_instruction:
                 # Gemini 1.5+ supports system_instruction, but for safety in generic calls:
@@ -106,8 +106,8 @@ class VertexService:
                     self.model_name,
                     system_instruction=[system_instruction]
                 )
-            
-            # Execute generation (blocking call, ideal to run in threadpool if high load, 
+
+            # Execute generation (blocking call, ideal to run in threadpool if high load,
             # but standard for initial integration)
             response = self._model.generate_content(
                 full_prompt,
@@ -134,7 +134,7 @@ class VertexService:
             "model": self.model_name,
             "project": self.project_id
         }
-        
+
         if not self._initialized:
              # Try to init
              if self.initialize():
@@ -151,7 +151,7 @@ class VertexService:
         except Exception as e:
             status["status"] = "error"
             status["error"] = str(e)
-            
+
         return status
 
 # Singleton instance

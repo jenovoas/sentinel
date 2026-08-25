@@ -14,17 +14,17 @@ Handles all security-related functionality including:
 from datetime import datetime, timedelta
 from typing import Optional
 
+import bcrypt
 import jwt
-from jwt.exceptions import InvalidTokenError as JWTError
-from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from jwt.exceptions import InvalidTokenError as JWTError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
 from app.database import get_db
-from app.models.user import User, UserRole
+from app.models.user import User
 from app.schemas.auth import TokenData
 
 settings = get_settings()
@@ -32,10 +32,6 @@ settings = get_settings()
 # ============================================================================
 # PASSWORD HASHING
 # ============================================================================
-
-# Context for password hashing and verification
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 
 def get_password_hash(password: str) -> str:
     """
@@ -47,7 +43,9 @@ def get_password_hash(password: str) -> str:
     Returns:
         str: Hashed password
     """
-    return pwd_context.hash(password)
+    pwd_bytes = password.encode("utf-8")[:72]
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(pwd_bytes, salt).decode("utf-8")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -61,7 +59,25 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     Returns:
         bool: True if password matches, False otherwise
     """
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        pwd_bytes = plain_password.encode("utf-8")[:72]
+        hash_bytes = hashed_password.encode("utf-8")
+        return bcrypt.checkpw(pwd_bytes, hash_bytes)
+    except Exception:
+        return False
+
+
+class _PwdContextCompat:
+    @staticmethod
+    def hash(secret: str) -> str:
+        return get_password_hash(secret)
+
+    @staticmethod
+    def verify(secret: str, hashed: str) -> bool:
+        return verify_password(secret, hashed)
+
+
+pwd_context = _PwdContextCompat()
 
 
 # ============================================================================
@@ -84,16 +100,16 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
         str: Encoded JWT token
     """
     to_encode = data.copy()
-    
+
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(
             minutes=settings.access_token_expire_minutes
         )
-    
+
     to_encode.update({"exp": expire})
-    
+
     return jwt.encode(
         to_encode,
         settings.secret_key,
@@ -116,7 +132,7 @@ def create_refresh_token(data: dict) -> str:
         days=settings.refresh_token_expire_days
     )
     to_encode.update({"exp": expire, "type": "refresh"})
-    
+
     return jwt.encode(
         to_encode,
         settings.secret_key,
@@ -152,7 +168,7 @@ async def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    
+
     try:
         payload = jwt.decode(
             token,
@@ -160,15 +176,15 @@ async def get_current_user(
             algorithms=[settings.algorithm]
         )
         username: str = payload.get("sub")
-        
+
         if username is None:
             raise credential_exception
-            
+
         token_data = TokenData(username=username)
-        
+
     except JWTError:
         raise credential_exception
-    
+
     return token_data
 
 
@@ -189,7 +205,7 @@ async def get_current_active_user(
     """
     if current_user is None:
         raise HTTPException(status_code=400, detail="Inactive user")
-    
+
     return current_user
 
 

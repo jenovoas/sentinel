@@ -251,14 +251,14 @@ async def get_repo_activity(repo_path: str = "/app") -> Dict[str, Any]:
         repo_path,
         ["rev-parse", "--git-dir"],
     )
-    
+
     if not check_result.get("ok"):
         # Not a git repo, return empty data without warning (expected in container volumes)
         return {
             "recent_commits": [],
             "working_tree": [],
         }
-    
+
     log_result = await _run_in_executor(
         _run_git,
         repo_path,

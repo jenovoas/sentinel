@@ -25,11 +25,12 @@
 import os
 import sys
 from collections import Counter
+
 from quantum.yatra_core import S60
 from quantum.yatra_math import S60Math
 
 # Import opcional para integración, pero el scanner debe funcionar standalone
-# from yatra_core import S60 
+# from yatra_core import S60
 
 class ResonanceScanner:
     def __init__(self):
@@ -44,28 +45,28 @@ class ResonanceScanner:
         """
         if not data:
             return 0
-            
+
         length = len(data)
         counts = Counter(data)
-        
+
         # Shannon Entropy = -sum(p * log2(p))
         entropy_sum = S60(0)
         len_s60 = S60(length)
-        
+
         for count in counts.values():
             p = S60(count) / len_s60
             if p._value > 0:
                 # p * log2(p)
                 term = p * S60Math.log2(p)
                 entropy_sum -= term
-            
+
         # Entropía de Shannon va de 0 a 8 (bits para bytes).
         # Mapeo: 8.0 -> Score 0, 0.0 -> Score 60
         # Formula: 60 - (entropy * 60 / 8)
         # 60 / 8 = 7.5 = S60(7, 30, 0)
-        
+
         order_score_s60 = S60(60) - (entropy_sum * S60(7, 30, 0))
-        
+
         # Convertir a entero 0-60
         score_int = order_score_s60.to_base_units() // S60.SCALE_0
         return max(0, min(60, score_int))
@@ -77,52 +78,52 @@ class ResonanceScanner:
         """
         length = len(data)
         if length == 0: return 0
-        
+
         # 1. Resonancia de Longitud (30 pts max)
         remainder = length % self.BASE_HARMONIC
         # Distancia al nodo (0 es mejor)
         dist = min(remainder, self.BASE_HARMONIC - remainder)
-        
+
         # Score = 30 * (1 - dist/30)
         length_score = 30 - dist
-        
+
         # 2. Resonancia Tesla (30 pts max)
         byte_sum = sum(data)
         root = (byte_sum - 1) % 9 + 1
-        
+
         tesla_score = 0
         if root in [3, 6, 9]:
             tesla_score = 30
         else:
             tesla_score = 15 # Consuelo
-            
+
         return length_score + tesla_score
 
     def scan_file(self, filepath):
         """Escanea archivo. Retorna dict con valores ENTEROS."""
         if not os.path.exists(filepath):
             return {"error": "File not found"}
-            
+
         try:
             with open(filepath, 'rb') as f:
                 data = f.read()
-            
+
             # --- MEDICIÓN ---
             score_entropy = self._calculate_entropy_integer(data) # 0-60
             score_harmonic = self._calculate_harmonic_alignment(data) # 0-60
-            
+
             # --- SÍNTESIS (Promedio Ponderado Entero) ---
             # Peso: 40% Entropía, 60% Armonía (La estructura importa más)
             # Formula: (E*4 + H*6) // 10
             final_score = (score_entropy * 4 + score_harmonic * 6) // 10
-            
+
             status = "DISSONANT 🔴"
             if final_score >= 54: status = "SOVEREIGN 🟣" # >= 90%
             elif final_score >= 42: status = "HARMONIC 🟢" # >= 70%
             elif final_score >= 30: status = "STABLE 🟡"   # >= 50%
-            
+
             tesla_root = (sum(data) - 1) % 9 + 1
-            
+
             return {
                 "file": os.path.basename(filepath),
                 "size_bytes": len(data),
@@ -132,7 +133,7 @@ class ResonanceScanner:
                 "status": status,
                 "tesla_root": tesla_root
             }
-            
+
         except Exception as e:
             return {"error": str(e)}
 
@@ -141,10 +142,10 @@ def main():
     target = __file__
     if len(sys.argv) > 1:
         target = sys.argv[1]
-        
+
     print(f"👁️  SCANNING: {target}")
     r = scanner.scan_file(target)
-    
+
     if "error" in r:
         print(f"❌ Error: {r['error']}")
     else:

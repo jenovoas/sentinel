@@ -18,19 +18,22 @@ y coherencia del vacío cuántico.
 Genera una traza de datos real para análisis de ondas.
 """
 
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
-import sys
 import os
+import sys
+
+import numpy as np  # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from sovereign_math import S60, SovereignLUT, S60_from_float
-from optomechanical_simulator import OptomechanicalSystem, MembraneParameters, OpticalParameters
+from optomechanical_simulator import MembraneParameters, OpticalParameters, OptomechanicalSystem
+
+from sovereign_math import S60, S60_from_float, SovereignLUT
+
 
 def produce_listening_trace(target_mhz=S60(153, 24, 0), steps=200000):
     print(f"🧘 SINTONIZACIÓN FINA: {target_mhz} MHz")
     dt = S60(1, 0, 0) / (200e6 * 10) 
     f_hz = target_mhz * 1e6
-    vacuum_f = S60(153, 24, 0)e6
+    vacuum_f = S60(153, 24, 0) * 1e6
     
     m_params = MembraneParameters(mass=1e-15, frequency=f_hz, quality_factor=1e7)
     omega = 2 * PI_S60 * f_hz

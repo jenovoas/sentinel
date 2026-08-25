@@ -22,22 +22,22 @@ HEADER = '''# 🛡️ YATRA LOCKED: BASE-60 ONLY 🛡️
 
 def lock_file(filepath):
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, encoding='utf-8') as f:
             content = f.read()
-            
+
         # Evitar doble candado
         if "YATRA LOCKED" in content:
             return False
-            
+
         # Insertar header después del shebang #! si existe
         lines = content.splitlines()
         if lines and lines[0].startswith("#!"):
             lines.insert(1, "\n" + HEADER)
         else:
             lines.insert(0, HEADER)
-            
+
         new_content = "\n".join(lines)
-        
+
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(new_content)
         print(f"   🔒 Bloqueado: {os.path.basename(filepath)}")
@@ -49,12 +49,12 @@ def lock_file(filepath):
 def main():
     print("🔐 INICIANDO PROTOCOLO DE CANDADO MASIVO (YATRA LOCK)...")
     root_dir = Path("/home/jnovoas/sentinel/quantum") # Solo blindamos el núcleo cuántico por seguridad
-    
+
     count = 0
     for file_path in root_dir.rglob("*.py"):
         if lock_file(str(file_path)):
             count += 1
-            
+
     print("\n" + "="*50)
     print(f"🛡️  SISTEMA BLINDADO.")
     print(f"    Archivos con Seguro Yatra: {count}")

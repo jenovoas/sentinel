@@ -8,11 +8,12 @@
 # Simula pipeline de multiplicación hardware con acumulador 128-bit.
 # -------------------------------------------------------------------------------------
 
-import sys
 import os
+import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from quantum.yatra_core import S60
+
 
 class DSPConstraintError(Exception):
     pass
@@ -28,7 +29,7 @@ class S60DSP:
     MIN_INT64 = -2**63
     MAX_INT128 = 2**127 - 1
     MIN_INT128 = -2**127
-    
+
     # 12960000 hardcoded to avoid class attr ambiguity
     SCALE = 12960000
 
@@ -54,18 +55,18 @@ class S60DSP:
         """
         raw_a = a._value
         raw_b = b._value
-        
+
         # Paso 1: Acumulación de alta precisión
         intermediate = raw_a * raw_b
         S60DSP._check_128(intermediate)
-        
+
         # Paso 2: Barrel Shifter / Divisor Algebraico
         # S60 usa division floor, en hardware sería shift+sub o dedicated divider
         res_raw = intermediate // S60DSP.SCALE
-        
+
         # Paso 3: Writeback a registro
         S60DSP._check_64(res_raw, "Writeback")
-        
+
         return S60._from_raw(res_raw)
 
     @staticmethod
@@ -77,18 +78,18 @@ class S60DSP:
         S60DSP._check_128(intermediate)
         res_raw = intermediate // S60DSP.SCALE
         # No check 64, permitimos 128 bits de salida
-        S60DSP._check_128(res_raw) 
+        S60DSP._check_128(res_raw)
         return S60._from_raw(res_raw)
 
 class SynthesisBench:
     def run(self):
         print("⚡ INICIANDO TESTBENCH DSP S60 (128-BIT ACCUMULATOR)...")
         dsp = S60DSP()
-        
+
         # 1. Caso Trivial (1 * 1)
         r1 = dsp.mul_pipeline(S60(1), S60(1))
         print(f"   ✅ [DSP] 1 * 1 = {r1}")
-        
+
         # 2. Caso Nominal (Navegación LEO: 7000km * 7km/s)
         # r = 7,000,000 m
         # v = 7,000 m/s
@@ -99,7 +100,7 @@ class SynthesisBench:
         v = S60(7000)
         ang_momentum = dsp.mul_pipeline(r, v)
         print(f"   ✅ [DSP] LEO Momentum (r*v) OK: {ang_momentum}")
-        
+
         # 3. Caso Límite Int64
         # Multiplicación que da resultado > MAX_INT64
         # MAX_INT64_S60 = 9e18 / 1.29e7 = 7e11 (700 Billones)
@@ -111,11 +112,11 @@ class SynthesisBench:
             print("   ❌ FALLO: No detectó overflow de registro")
         except DSPConstraintError as e:
             print(f"   ✅ ÉXITO: Trap de registro 64-bit activo -> {e}")
-            
+
         # 4. Caso Deep Space (Wide Output)
         print(f"   [DSP] Probando Wide Pipeline (1T * 1T)...")
         res_wide = dsp.mul_wide_pipeline(big, big)
         print(f"   ✅ ÉXITO: Wide Pipeline soportó carga masiva: {res_wide}")
-        
+
 if __name__ == "__main__":
     SynthesisBench().run()

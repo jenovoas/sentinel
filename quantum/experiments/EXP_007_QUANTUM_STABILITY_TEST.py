@@ -11,12 +11,15 @@
 #   depolarizante generado con entropía física (os.urandom).
 # -----------------------------------------------------------------------------
 
-import sys, os
+import os
+import sys
+
 sys.path.append(os.getcwd())
 
-from quantum.yatra_core import S60
-from quantum.sovereign_crystal import SovereignCrystal
 from quantum.quantum_noise_s60 import QuantumNoise
+from quantum.sovereign_crystal import SovereignCrystal
+from quantum.yatra_core import S60
+
 
 class QuantumStabilityBench:
     def __init__(self, noise_strength=S60(0, 0, 15)):  # p ≈ 0.004
@@ -102,11 +105,11 @@ def run_experiment_007():
     # Comparación de pérdidas relativas
     # Si Super conserva más energía que Control, es una victoria
     # Nota: abs() es necesario porque el ruido puede causar cambios de fase (signo negativo en amplitud)
-    
+
     abs_loss_c = abs(loss_c._value) if hasattr(loss_c, '_value') else abs(loss_c)
     abs_loss_s = abs(loss_s._value) if hasattr(loss_s, '_value') else abs(loss_s)
 
-    if abs_loss_s < abs_loss_c: 
+    if abs_loss_s < abs_loss_c:
         print("\n✅ Conclusión: El modo superconductor mantiene coherencia cuántica superior.")
     else:
         print("\n⚠️ Observación: El ruido ha afectado significativamente a ambos sistemas.")

@@ -22,10 +22,12 @@ Gates incluidos:
 Todos los gates son unitarios y verificados matemáticamente.
 """
 
+from typing import List, Union
+
+from quantum.complex_s60 import ComplexS60
 from quantum.yatra_core import S60
 from quantum.yatra_math import S60Math
-from quantum.complex_s60 import ComplexS60
-from typing import List, Union
+
 
 class AdvancedGates:
     """
@@ -33,7 +35,7 @@ class AdvancedGates:
     
     Todos los gates son matrices unitarias (U†U = I).
     """
-    
+
     @staticmethod
     def T() -> List[List[ComplexS60]]:
         """
@@ -47,12 +49,12 @@ class AdvancedGates:
         """
         # e^(iπ/4) = cos(45°) + i*sin(45°)
         phase = ComplexS60.exp_i_theta(S60(45))  # 45° = π/4 radianes
-        
+
         return [
             [ComplexS60(S60(1), S60(0)), ComplexS60(S60(0), S60(0))],
             [ComplexS60(S60(0), S60(0)), phase]
         ]
-    
+
     @staticmethod
     def S() -> List[List[ComplexS60]]:
         """
@@ -66,12 +68,12 @@ class AdvancedGates:
         """
         # i = e^(iπ/2) = cos(90°) + i*sin(90°) = 0 + i
         i = ComplexS60(S60(0), S60(1))
-        
+
         return [
             [ComplexS60(S60(1), S60(0)), ComplexS60(S60(0), S60(0))],
             [ComplexS60(S60(0), S60(0)), i]
         ]
-    
+
     @staticmethod
     def Toffoli() -> List[List[S60]]:
         """
@@ -85,17 +87,17 @@ class AdvancedGates:
         # Toffoli es 8x8 (2^3 qubits)
         dim = 8
         T = [[S60(0) for _ in range(dim)] for _ in range(dim)]
-        
+
         # Identidad para las primeras 6 filas
         for i in range(6):
             T[i][i] = S60(1)
-        
+
         # Intercambiar |110⟩ ↔ |111⟩ (filas 6 y 7)
         T[6][7] = S60(1)
         T[7][6] = S60(1)
-        
+
         return T
-    
+
     @staticmethod
     def verify_unitary_complex(U: List[List[ComplexS60]], tolerance: S60 = S60(0, 1, 0)) -> bool:
         """
@@ -109,7 +111,7 @@ class AdvancedGates:
             True si U es unitaria dentro de la tolerancia
         """
         n = len(U)
-        
+
         # Calcular U†U
         for i in range(n):
             for j in range(n):
@@ -118,17 +120,17 @@ class AdvancedGates:
                 for k in range(n):
                     # Conjugado transpuesto: U*_ki = conj(U_ik)
                     sum_val += U[k][i].conjugate() * U[k][j]
-                
+
                 # Verificar diagonal = 1, off-diagonal = 0
                 expected = ComplexS60(S60(1), S60(0)) if i == j else ComplexS60(S60(0), S60(0))
                 diff_real = abs(sum_val.real - expected.real)
                 diff_imag = abs(sum_val.imag - expected.imag)
-                
+
                 if diff_real > tolerance or diff_imag > tolerance:
                     return False
-        
+
         return True
-    
+
     @staticmethod
     def apply_gate(gate: List[List[S60]], state: List[S60]) -> List[S60]:
         """
@@ -143,11 +145,11 @@ class AdvancedGates:
         """
         n = len(state)
         new_state = [S60(0) for _ in range(n)]
-        
+
         for i in range(n):
             for j in range(n):
                 new_state[i] += gate[i][j] * state[j]
-        
+
         return new_state
 
 

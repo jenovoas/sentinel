@@ -22,12 +22,14 @@ Usage:
 import logging
 import os
 from typing import Optional
+
 import redis.asyncio as redis
 from redis.asyncio.sentinel import Sentinel
 
 logger = logging.getLogger(__name__)
 
 from app.config import get_settings
+
 settings = get_settings()
 
 # REDIS_MODE: 'standalone' or 'sentinel'
@@ -48,7 +50,7 @@ def get_sentinel() -> Sentinel:
         Sentinel: Redis Sentinel instance
     """
     global _sentinel
-    
+
     if _sentinel is None:
         # List of Sentinel instances
         # In production, these should be from environment variables
@@ -57,16 +59,16 @@ def get_sentinel() -> Sentinel:
             ('redis-sentinel-2', 26379),
             ('redis-sentinel-3', 26379),
         ]
-        
+
         _sentinel = Sentinel(
             sentinels,
             socket_timeout=0.5,
             socket_connect_timeout=0.5,
             decode_responses=True,  # Automatically decode bytes to strings
         )
-        
+
         logger.info(f"✅ Redis Sentinel initialized with {len(sentinels)} sentinels")
-    
+
     return _sentinel
 
 
@@ -129,17 +131,17 @@ async def check_redis_health() -> dict:
 
     try:
         sentinel = get_sentinel()
-        
+
         # Get master info
         master_info = await sentinel.discover_master('mymaster')
-        
+
         # Get replicas info
         replicas_info = await sentinel.discover_slaves('mymaster')
-        
+
         # Check if we can connect to master
         master = await get_redis_master()
         await master.ping()
-        
+
         return {
             "status": "healthy",
             "master": {
@@ -152,7 +154,7 @@ async def check_redis_health() -> dict:
                 for r in replicas_info
             ]
         }
-        
+
     except Exception as e:
         logger.error(f"Redis sentinel health check failed: {e}")
         return {
@@ -171,37 +173,37 @@ async def test_failover():
     Only use in testing environments.
     """
     logger.warning("⚠️ Testing Redis failover - this will cause brief interruption!")
-    
+
     try:
         # 1. Get current master
         sentinel = get_sentinel()
         master_info = await sentinel.discover_master('mymaster')
         logger.info(f"Current master: {master_info[0]}:{master_info[1]}")
-        
+
         # 2. Force failover
         await sentinel.sentinel_failover('mymaster')
         logger.info("Failover triggered...")
-        
+
         # 3. Wait for new master
         import asyncio
         await asyncio.sleep(5)
-        
+
         # 4. Get new master
         new_master_info = await sentinel.discover_master('mymaster')
         logger.info(f"New master: {new_master_info[0]}:{new_master_info[1]}")
-        
+
         # 5. Verify we can still write
         master = await get_redis_master()
         await master.set("failover_test", "success")
         value = await master.get("failover_test")
-        
+
         if value == "success":
             logger.info("✅ Failover test successful!")
             return True
         else:
             logger.error("❌ Failover test failed - could not write to new master")
             return False
-            
+
     except Exception as e:
         logger.error(f"❌ Failover test failed: {e}")
         return False
@@ -210,19 +212,19 @@ async def test_failover():
 # Example usage
 if __name__ == "__main__":
     import asyncio
-    
+
     async def main():
         # Test connection
         master = await get_redis_master()
         await master.set("test_key", "test_value")
-        
+
         slave = await get_redis_slave()
         value = await slave.get("test_key")
-        
+
         print(f"Value from slave: {value}")
-        
+
         # Check health
         health = await check_redis_health()
         print(f"Redis health: {health}")
-    
+
     asyncio.run(main())

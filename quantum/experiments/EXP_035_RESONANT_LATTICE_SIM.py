@@ -16,7 +16,7 @@
 #
 
 import matplotlib.pyplot as plt
-import numpy as np # Usado solo para std dev y visualización, no para la lógica de simulación.
+import numpy as np  # Usado solo para std dev y visualización, no para la lógica de simulación.
 
 # --- Simulación de Aritmética de Punto Fijo (Fixed-Point) ---
 # En lugar de floats (0 a 2*PI), usamos enteros (0 a MAX_PHASE)
@@ -59,7 +59,7 @@ class ResonantCrystal:
         total_phase_diff = 0
         for neighbor_phase in neighbor_phases:
             total_phase_diff += s60_diff(current_phase, neighbor_phase)
-        
+
         avg_phase_diff = total_phase_diff // len(neighbor_phases)
 
         # Ajustar la fase propia para acercarse a la de los vecinos
@@ -120,7 +120,7 @@ def run_simulation():
     Ejecuta la simulación completa y genera la visualización.
     """
     print("🚀 Iniciando simulación de Resonant Memory (Liquid Lattice)...")
-    
+
     lattice = LiquidLattice(num_crystals=10)
     num_steps = 100
     coherence_history = []
@@ -148,22 +148,22 @@ def run_simulation():
     # 4. Visualizar los resultados
     plt.style.use('dark_background')
     fig, ax = plt.subplots(figsize=(12, 7))
-    
+
     ax.plot(coherence_history, color='cyan', marker='o', markersize=4, linestyle='-')
-    
+
     ax.set_title("Evolución de la Coherencia de la Red (Liquid Lattice)", fontsize=16, color='white')
     ax.set_xlabel("Pasos de Simulación", fontsize=12, color='gray')
     ax.set_ylabel("Nivel de Coherencia (0=Caos, 1=Perfecta)", fontsize=12, color='gray')
-    
+
     ax.set_ylim(0, 1.1)
     ax.grid(True, which='both', linestyle='--', linewidth=0.5, color='gray')
-    
+
     # Marcar el punto de perturbación
     ax.axvline(x=0, color='red', linestyle='--', linewidth=2, label='Perturbación Introducida')
-    
+
     ax.legend()
     fig.tight_layout()
-    
+
     # Guardar la visualización
     output_path = "resonant_lattice_coherence.png"
     plt.savefig(output_path)

@@ -16,20 +16,21 @@
 # LIQUID LATTICE STORAGE (DISTRIBUTED HOLOGRAM) - NATIVE RUST DELEGATION
 # -----------------------------------------------------------------------------
 # Bypasses physical amplitude limits (~32 Bytes/Crystal) by distributing
-# data across a hexagonal lattice. 
+# data across a hexagonal lattice.
 # MIGRADO A RUST: Toda la lógica de memoria e hidratación reside en me-60os.
 # -----------------------------------------------------------------------------
 
-import sys
 import os
+import sys
 from typing import List, Tuple
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
-from yatra_core import S60
 from quantum_lattice_engine import QuantumLatticeEngine
+
+from yatra_core import S60
 
 try:
     from me60os_core import ResonantMatrix
@@ -46,7 +47,7 @@ class LiquidLatticeStorage(QuantumLatticeEngine):
     Sistema de almacenamiento cuántico distribuido.
     Delegado integralmente al núcleo de alto rendimiento Rust (me-60os_core).
     """
-    
+
     # Límite int64 de Rust es 8 bytes, más el shift dejamos margen:
     CHUNK_SIZE = 6  # Bytes per crystal (Safe limit < 8 bytes)
     SECTORS = 256
@@ -57,7 +58,7 @@ class LiquidLatticeStorage(QuantumLatticeEngine):
         self._matrix = ResonantMatrix(rings)
         self.rings = rings
         self.log_dir = log_dir
-        
+
         print(f"🌊 Liquid Lattice Storage Online (RUST BACKED) | Virtual Rings: {rings}")
         print(f"   Nodes (Memory footprint): {self._matrix.count_nodes()} | Size: {self._matrix.active_memory_usage()} bytes")
 
@@ -65,18 +66,18 @@ class LiquidLatticeStorage(QuantumLatticeEngine):
         try:
             val_int = int.from_bytes(data_chunk, byteorder='big')
             length = len(data_chunk)
-            
+
             # Encajamos en escala base de SPA (max int64)
             # Como CHUNK_SIZE=6, cabemos en 48 bits, más 8 bits p/length = 56 bits (seguro para sign i64)
             encoded_val = (val_int << 8) | length
-            
+
             # Extraemos componentes base 60
             v0 = encoded_val % 60
             v1 = (encoded_val // 60) % 60
             v2 = (encoded_val // 3600) % 60
             v3 = (encoded_val // 216000) % 60
-            vp = encoded_val // 12960000 
-            
+            vp = encoded_val // 12960000
+
             return S60(vp, v3, v2, v1, v0)
         except OverflowError:
             return S60(0)
@@ -84,8 +85,8 @@ class LiquidLatticeStorage(QuantumLatticeEngine):
     def _s60_to_bytes(self, val: S60) -> bytes:
         try:
             # Reconstituir el entero original desde SPA
-            encoded_int = (val._value) // S60.SCALE_0 
-            
+            encoded_int = (val._value) // S60.SCALE_0
+
             length = encoded_int & 0xFF
             data_int = encoded_int >> 8
             if length == 0: return b''
@@ -107,12 +108,12 @@ class LiquidLatticeStorage(QuantumLatticeEngine):
     def _phase_to_byte(self, phase: S60) -> int:
         norm_phase = self._s60_mod(phase, S60(360))
         if self.SECTOR_WIDTH.to_base_units() == 0: return 0
-        
+
         # En Rust o acá (S60 puros):
         # norm_phase / sector_width + 0.5
         ratio_raw = norm_phase.to_base_units() * S60.SCALE_0 // self.SECTOR_WIDTH.to_base_units()
         ratio_raw += S60.SCALE_0 // 2
-        
+
         idx = ratio_raw // S60.SCALE_0
         return idx % 256
 
@@ -130,16 +131,16 @@ class LiquidLatticeStorage(QuantumLatticeEngine):
         """
         chunks_a = self.fragment_data(payload_a, self.CHUNK_SIZE)
         chunks_b = self.fragment_data(payload_b, 1)
-        
+
         count = max(len(chunks_a), len(chunks_b))
-        
+
         print(f"💉 Dual Injection (Rust): {len(chunks_a)} Energy Chunks | {len(chunks_b)} Phase Chunks")
         print(f"   Activating {count} nodes...")
-        
+
         for i in range(count):
             energy = self._bytes_to_s60(chunks_a[i]) if i < len(chunks_a) else S60(0)
             phase = self._byte_to_phase(chunks_b[i][0] if len(chunks_b[i]) > 0 else 0) if i < len(chunks_b) else S60(0)
-            
+
             self._matrix.set_node_state(i, energy, phase)
 
     def inject_holograph(self, payload: bytes):
@@ -165,11 +166,11 @@ class LiquidLatticeStorage(QuantumLatticeEngine):
 if __name__ == "__main__":
     storage = LiquidLatticeStorage(rings=2)
     msg = b"SENTINEL_LIQUID_CORE_ACTIVE_V1"
-    
+
     print(f"\n🧪 Test 1: Injection")
     storage.inject_holograph(msg)
-    
+
     print(f"\n🧪 Test 2: Liquid Stabilization")
     storage.stabilize_fluid(cycles=3)
-    
+
     print("\n✅ SUCCESS: Carga y estabilización delegada exitosamente a Rust.")

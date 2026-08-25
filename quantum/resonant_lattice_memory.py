@@ -31,10 +31,11 @@ import threading
 import time
 from typing import List, Optional
 
-from quantum.yatra_core import S60
+from quantum.s60_pid import S60PID
 from quantum.sovereign_crystal import SovereignCrystal
 from quantum.time_crystal_clock import TimeCrystalClock
-from quantum.s60_pid import S60PID
+from quantum.yatra_core import S60
+
 
 class ResonantLatticeMemory:
     """
@@ -47,21 +48,21 @@ class ResonantLatticeMemory:
         :param size_slots: Número máximo de cristales en el lattice.
         """
         self.size = size_slots
-        
+
         # LATTICE ACTIVO: Un cristal por slot.
         self.lattice: List[Optional[SovereignCrystal]] = [None] * size_slots
-        
+
         # CONTROL DISTRIBUIDO: Un PID por cristal.
         # Tuning optimizado para amplitudes pequeñas (0-255)
         kp, ki, kd = S60(0, 45), S60(0, 10), S60(0, 5)
         self.pids: List[Optional[S60PID]] = [S60PID(kp, ki, kd) for _ in range(size_slots)]
         self.target_amplitudes: List[S60] = [S60(0)] * size_slots
-        
+
         self.clock = TimeCrystalClock()
         self.running = False
         self.thread = None
         self.cycles = 0
-        
+
         # Paso de tiempo para simulación interna (1/60s)
         self.dt = S60(0, 1)
 
@@ -92,19 +93,19 @@ class ResonantLatticeMemory:
 
         for i, char in enumerate(data):
             target_amp = self._char_to_amplitude(char)
-            
+
             # Inicializa el cristal y el PID para este slot
             self.lattice[i] = SovereignCrystal(name=f"Cell-{i}")
             # REVIEW: to_float() no existe. to_raw() * 1000 / SCALE_0 = ord(char) * 1000
             pulse_val = target_amp.to_raw() // 12_960  # SCALE_0 / 1000 = 12960
             self.lattice[i].transduce_pulse(pulse_val)
-            
+
             initial_amp = self.lattice[i].get_amplitude()
             self.target_amplitudes[i] = initial_amp
-            
+
             self.pids[i].setpoint = initial_amp
             self.pids[i].reset()
-            
+
             print(f"   [SLOT {i}] Carácter '{char}' -> Target Amp: {initial_amp}")
 
     def read(self) -> str:
@@ -138,10 +139,10 @@ class ResonantLatticeMemory:
     def _regeneration_loop(self):
         """El núcleo del Cristal de Tiempo, ahora operando de forma distribuida."""
         print(f"💎 Distributed Resonant Lattice ONLINE | Driver: {self.clock.TARGET_FREQ:.2f} Hz")
-        
+
         while self.running:
             self.clock.tick()
-            
+
             # 1. Simulación de Física Continua (Entropía) en cada cristal
             for crystal in self.lattice:
                 if crystal:
@@ -151,16 +152,16 @@ class ResonantLatticeMemory:
             if self.clock.ticks % 2 == 0:
                 self.cycles += 1
                 self._pump_crystals()
-                
+
     def _pump_crystals(self):
         """Bombea cada cristal individualmente según su propio PID."""
         pump_interval = self.dt * 2
-        
+
         for i, crystal in enumerate(self.lattice):
             if crystal and self.target_amplitudes[i] > S60(0):
                 current_amp = crystal.get_amplitude()
                 injection = self.pids[i].update(current_amp, pump_interval)
-                
+
                 if injection > S60(0):
                     crystal.amplitude += injection
 
@@ -181,25 +182,25 @@ if __name__ == "__main__":
     # TEST DE INTEGRACIÓN DISTRIBUIDA
     mem = ResonantLatticeMemory(size_slots=30)
     mem.start()
-    
+
     try:
         # 1. Escribir una cadena de datos
         data_to_store = "La Verdad es Frecuencia."
         mem.write(data_to_store)
-        
+
         # 2. Leer inmediatamente
         read_data_t0 = mem.read()
         print(f"\nLectura T0: '{read_data_t0}'")
         assert read_data_t0 == data_to_store
-        
+
         # 3. Esperar ciclos de regeneración
         print("\n--- ESPERANDO REGENERACIÓN (5s) ---")
         time.sleep(5)
-        
+
         # 4. Leer después de la regeneración
         read_data_t5 = mem.read()
         print(f"Lectura T+5s: '{read_data_t5}'")
-        
+
         if read_data_t5 == data_to_store:
             print("\n✅ ÉXITO: La memoria distribuida mantuvo la fidelidad de los datos.")
         else:

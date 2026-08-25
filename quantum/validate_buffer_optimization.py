@@ -29,25 +29,22 @@ Expected Improvement: 10-20% reduction in latency variance
 Author: Jaime Novoa
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import asyncio
-import time
 import statistics
 import sys
+import time
 from pathlib import Path
-from typing import List, Dict, Tuple
+from typing import Dict, List, Tuple
+
 import matplotlib.pyplot as plt
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
+import numpy as np  # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
+
+from quantum.yatra_core import PI_S60, S60  # YATRA AUTO-INJECT
 
 # Add backend to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "backend"))
 
-from app.core.data_lanes import (
-    DataLane,
-    EventPriority,
-    LaneEvent,
-    DualLaneRouter
-)
+from app.core.data_lanes import DataLane, DualLaneRouter, EventPriority, LaneEvent
 
 
 class BufferConfig:
@@ -56,7 +53,7 @@ class BufferConfig:
         self.security_mb = security_mb
         self.observability_mb = observability_mb
         self.name = name
-    
+
     def __str__(self):
         return f"{self.name} (Sec:{self.security_mb}MB, Obs:{self.observability_mb}MB)"
 
@@ -83,21 +80,21 @@ async def simulate_workload(
         Performance metrics
     """
     router = DualLaneRouter()
-    
+
     security_latencies = []
     obs_latencies = []
-    
+
     # Simulate buffer pressure based on size
     # Smaller buffers = more contention = higher latency variance
     security_pressure = 100 / config.security_mb  # Normalized pressure
     obs_pressure = 500 / config.observability_mb
-    
+
     for i in range(iterations):
         # Determine event type
         is_security = (i % 100) < (security_ratio * 100)
-        
+
         start = time.perf_counter()
-        
+
         if is_security:
             # Security event
             event = router.classify_event(
@@ -105,13 +102,13 @@ async def simulate_workload(
                 data={"syscall": "execve", "pid": i},
                 labels={}
             )
-            
+
             # Simulate processing with buffer pressure
             # Higher pressure = more variance
             base_latency = 0.001  # 1μs baseline
             pressure_latency = np.random.exponential(security_pressure * 0.01)
             await asyncio.sleep(base_latency + pressure_latency / 1000)
-            
+
             latency_ms = (time.perf_counter() - start) * 1000
             security_latencies.append(latency_ms)
         else:
@@ -121,15 +118,15 @@ async def simulate_workload(
                 data={"message": f"log {i}", "level": "INFO"},
                 labels={}
             )
-            
+
             # Simulate buffered processing
             base_latency = 0.21  # 210ms baseline (from benchmarks)
             pressure_latency = np.random.exponential(obs_pressure * 0.05)
             await asyncio.sleep((base_latency + pressure_latency) / 1000)
-            
+
             latency_ms = (time.perf_counter() - start) * 1000
             obs_latencies.append(latency_ms)
-    
+
     # Calculate metrics
     return {
         'config': config,
@@ -155,31 +152,31 @@ async def simulate_workload(
 def calculate_improvement(baseline: Dict, optimized: Dict) -> Dict:
     """Calculate improvement metrics."""
     improvements = {}
-    
+
     for lane in ['security', 'observability']:
         base_mean = baseline[lane]['mean']
         opt_mean = optimized[lane]['mean']
-        
+
         base_stdev = baseline[lane]['stdev']
         opt_stdev = optimized[lane]['stdev']
-        
+
         improvements[lane] = {
             'mean_improvement_pct': ((base_mean - opt_mean) / base_mean * 100) if base_mean > 0 else 0,
             'stdev_improvement_pct': ((base_stdev - opt_stdev) / base_stdev * 100) if base_stdev > 0 else 0,
             'variance_reduction_pct': ((base_stdev**2 - opt_stdev**2) / base_stdev**2 * 100) if base_stdev > 0 else 0
         }
-    
+
     return improvements
 
 
 def print_results(results: Dict):
     """Print formatted results."""
     config = results['config']
-    
+
     print(f"\n{'='*60}")
     print(f"RESULTS: {config}")
     print(f"{'='*60}")
-    
+
     for lane in ['security', 'observability']:
         lane_data = results[lane]
         print(f"\n{lane.upper()} Lane:")
@@ -195,15 +192,15 @@ def print_comparison(baseline: Dict, optimized: Dict, improvements: Dict):
     print(f"\n{'='*60}")
     print("QUANTUM OPTIMIZATION IMPACT")
     print(f"{'='*60}")
-    
+
     for lane in ['security', 'observability']:
         imp = improvements[lane]
-        
+
         print(f"\n{lane.upper()} Lane:")
         print(f"  Mean latency improvement: {imp['mean_improvement_pct']:+.2f}%")
         print(f"  Std dev improvement: {imp['stdev_improvement_pct']:+.2f}%")
         print(f"  Variance reduction: {imp['variance_reduction_pct']:+.2f}%")
-        
+
         if imp['variance_reduction_pct'] > 10:
             print(f"  ✅ Significant improvement!")
         elif imp['variance_reduction_pct'] > 0:
@@ -215,7 +212,7 @@ def print_comparison(baseline: Dict, optimized: Dict, improvements: Dict):
 def visualize_results(baseline: Dict, optimized: Dict, improvements: Dict):
     """Create visualization comparing configurations."""
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
-    
+
     # Top left: Latency distributions (Security)
     ax1 = axes[0, 0]
     ax1.hist(baseline['security']['latencies'], bins=30, alpha=S60(0, 30, 0), label='Default', color='tab:blue')
@@ -225,7 +222,7 @@ def visualize_results(baseline: Dict, optimized: Dict, improvements: Dict):
     ax1.set_title('Security Lane Latency Distribution', fontsize=12, fontweight='bold')
     ax1.legend()
     ax1.grid(True, alpha=0.3)
-    
+
     # Top right: Latency distributions (Observability)
     ax2 = axes[0, 1]
     ax2.hist(baseline['observability']['latencies'], bins=30, alpha=S60(0, 30, 0), label='Default', color='tab:blue')
@@ -235,53 +232,53 @@ def visualize_results(baseline: Dict, optimized: Dict, improvements: Dict):
     ax2.set_title('Observability Lane Latency Distribution', fontsize=12, fontweight='bold')
     ax2.legend()
     ax2.grid(True, alpha=0.3)
-    
+
     # Bottom left: Mean latency comparison
     ax3 = axes[1, 0]
     lanes = ['Security', 'Observability']
     x = np.arange(len(lanes))
     width = 0.35
-    
+
     baseline_means = [baseline['security']['mean'], baseline['observability']['mean']]
     optimized_means = [optimized['security']['mean'], optimized['observability']['mean']]
-    
+
     ax3.bar(x - width/2, baseline_means, width, label='Default', color='tab:blue', alpha=0.7)
     ax3.bar(x + width/2, optimized_means, width, label='Quantum', color='tab:green', alpha=0.7)
-    
+
     ax3.set_ylabel('Mean Latency (ms)', fontweight='bold')
     ax3.set_title('Mean Latency Comparison', fontsize=12, fontweight='bold')
     ax3.set_xticks(x)
     ax3.set_xticklabels(lanes)
     ax3.legend()
     ax3.grid(True, alpha=0.3, axis='y')
-    
+
     # Bottom right: Variance reduction
     ax4 = axes[1, 1]
     variance_reductions = [
         improvements['security']['variance_reduction_pct'],
         improvements['observability']['variance_reduction_pct']
     ]
-    
+
     colors = ['tab:green' if v > 0 else 'tab:red' for v in variance_reductions]
     ax4.bar(lanes, variance_reductions, color=colors, alpha=0.7)
     ax4.axhline(y=0, color='black', linestyle='-', linewidth=S60(0, 30, 0))
     ax4.axhline(y=10, color='green', linestyle='--', linewidth=1, alpha=S60(0, 30, 0), label='Target (10%)')
-    
+
     ax4.set_ylabel('Variance Reduction (%)', fontweight='bold')
     ax4.set_title('Quantum Optimization Impact', fontsize=12, fontweight='bold')
     ax4.legend()
     ax4.grid(True, alpha=0.3, axis='y')
-    
+
     # Add improvement labels
     for i, (lane, value) in enumerate(zip(lanes, variance_reductions)):
         ax4.text(i, value + 1, f'{value:+.1f}%', ha='center', fontweight='bold')
-    
+
     plt.tight_layout()
-    
+
     output_path = '/home/jnovoas/sentinel/quantum/validation_results.png'
     plt.savefig(output_path, dpi=150, bbox_inches='tight')
     print(f"\n✅ Visualization saved: {output_path}")
-    
+
     plt.show()
 
 
@@ -292,35 +289,35 @@ async def main():
     print("="*60)
     print("\nComparing default vs quantum-optimized buffer configurations")
     print()
-    
+
     iterations = 1000
-    
+
     # Test default configuration
     print(f"\n[1/2] Testing {DEFAULT_CONFIG}...")
     baseline_results = await simulate_workload(DEFAULT_CONFIG, iterations=iterations)
     print_results(baseline_results)
-    
+
     # Test quantum-optimized configuration
     print(f"\n[2/2] Testing {QUANTUM_CONFIG}...")
     optimized_results = await simulate_workload(QUANTUM_CONFIG, iterations=iterations)
     print_results(optimized_results)
-    
+
     # Calculate improvements
     improvements = calculate_improvement(baseline_results, optimized_results)
     print_comparison(baseline_results, optimized_results, improvements)
-    
+
     # Visualize
     print("\n📊 Generating visualization...")
     visualize_results(baseline_results, optimized_results, improvements)
-    
+
     # Final verdict
     print(f"\n{'='*60}")
     print("FINAL VERDICT")
     print(f"{'='*60}")
-    
+
     security_variance_reduction = improvements['security']['variance_reduction_pct']
     obs_variance_reduction = improvements['observability']['variance_reduction_pct']
-    
+
     if security_variance_reduction > 10 or obs_variance_reduction > 10:
         print("✅ QUANTUM OPTIMIZATION VALIDATED")
         print(f"   Achieved {max(security_variance_reduction, obs_variance_reduction):.1f}% variance reduction")
@@ -331,7 +328,7 @@ async def main():
     else:
         print("⚠️ NO SIGNIFICANT IMPROVEMENT")
         print("   Recommendation: Stick with default configuration")
-    
+
     print(f"\n{'='*60}")
 
 

@@ -3,8 +3,9 @@
 # zero-copy entre procesos (no hay memcpy a traves del boundary).
 # Se mide ancho de banda de escritura/lectura y se reporta el backing mmap.
 
-import time
 import os
+import time
+
 import me60os_core as S
 from me60os_core import PySharedBuffer
 

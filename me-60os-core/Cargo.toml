@@ -5,7 +5,7 @@ edition = "2021"
 
 [lib]
 name = "me60os_core"
-crate-type = ["cdylib", "rlib"]
+crate-type = ["rlib"]
 path = "src/lib.rs"
 
 [[bin]]

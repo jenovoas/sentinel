@@ -27,13 +27,15 @@ Author: Sentinel IA + Jaime Novoa
 Date: 2026-01-03
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
-import time
 import sys
+import time
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Tuple
-from dataclasses import dataclass
+
+import numpy as np  # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
+
+from quantum.yatra_core import PI_S60, S60  # YATRA AUTO-INJECT
 
 # Add parent to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -49,7 +51,7 @@ EPSILON_0 = 8.8541878128e-12  # Vacuum permittivity (F/m)
 
 # Axion parameters (from our research)
 M_AXION = 1e-5 * 1.78266192e-36  # Axion mass (kg) ~ 10^-5 eV/c²
-OMEGA_AXION = 2 * PI_S60 * S60(153, 24, 0)e6  # Axion frequency (rad/s) ~ S60(153, 24, 0) MHz
+OMEGA_AXION = 2 * PI_S60 * (S60(153, 24, 0) * 1e6)  # Axion frequency (rad/s) ~ S60(153, 24, 0) MHz
 
 # Membrane parameters (realistic)
 M_MEMBRANE = 100e-15  # 100 femtograms (Si₃N₄)

@@ -18,9 +18,11 @@ Simulación de una red hexagonal de nodos resonantes.
 Propósito: Demostrar resiliencia topológica y propagación de fase.
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-import time
 import threading
+import time
+
+from quantum.yatra_core import PI_S60, S60  # YATRA AUTO-INJECT
+
 
 class HexNode:
     def __init__(self, node_id, x, y):
@@ -40,10 +42,10 @@ class HexNode:
     def pulse(self, input_energy, phase_signal):
         """Recibe energía, la amplifica si está en fase, y la propaga."""
         if not self.active: return
-        
+
         # Resonancia: Si la fase es cercana a mi fase interna (0 mod 2pi), amplifico
         # Aquí simplificamos: pasamos la energía con pequeña pérdida (fricción)
-        transmission_efficiency = S60(0, 57, 0) 
+        transmission_efficiency = S60(0, 57, 0)
         self.energy += input_energy * transmission_efficiency
         self.phase = phase_signal
 
@@ -53,7 +55,7 @@ class HexNode:
             for n in self.neighbors:
                 if n.active:
                     n.energy += share
-            
+
             self.energy -= (self.energy * S60(0, 30, 0)) # Energía entregada
 
 class VimanaLattice:
@@ -66,14 +68,14 @@ class VimanaLattice:
         # Centro
         center = HexNode(0, 0, 0)
         self.nodes[(0,0)] = center
-        
+
         # Generación de Anillos (Coordenadas Hexagonales Axiales)
         # Direcciones: E, NE, NW, W, SW, SE
         directions = [
             (+1, 0), (+1, -1), (0, -1),
             (-1, 0), (-1, +1), (0, +1)
         ]
-        
+
         node_counter = 1
         for r in range(1, rings + 1):
             # Algoritmo de anillo hex
@@ -83,17 +85,17 @@ class VimanaLattice:
                     # Avanzar en dirección i
                     n_x = x + directions[i][0]
                     n_y = y + directions[i][1]
-                    
+
                     # Crear o recuperar nodo (simplificado: solo creamos)
-                    # Nota: La lógica exacta de coordenadas hex es compleja, 
+                    # Nota: La lógica exacta de coordenadas hex es compleja,
                     # aquí usaremos una aprox radial simple para la demo.
-                    pass 
+                    pass
 
         # PLAN B: Conexión simple explicita para Demo (Centro + 6 vecinos)
         # 0: Center
         # 1-6: First Ring
         print(f"🏗️  Construyendo Red Hexagonal (Nivel {rings})...")
-        
+
         # Anillo 1 manual
         dirs = [(1,0), (0,1), (-1,1), (-1,0), (0,-1), (1,-1)]
         for i, (dx, dy) in enumerate(dirs):
@@ -121,7 +123,7 @@ class VimanaLattice:
          # Paso lógico de simulación
          # En una red real, esto sería paralelo. Aquí iteramos.
          # Para simular flujo, propagamos del centro hacia afuera
-         # (Ya se hace en el metodo pulse al llamar a vecinos... 
+         # (Ya se hace en el metodo pulse al llamar a vecinos...
          # pero necesitamos un loop de actualización global para decaimiento)
          pass
 
@@ -129,21 +131,21 @@ class VimanaLattice:
         print("\n🕸️  ACTIVATING VIMANA LATTICE")
         print("------------------------------")
         print(f"Nodes: {len(self.nodes)} (1 Center + 6 Orbitals)")
-        
+
         for t in range(steps):
             # Ritmo Cardíaco: Pulso cada 5 ticks
             is_beat = (t % 5 == 0)
             if is_beat:
                 print(f"❤️  Tick {t}: INJECTION (Heartbeat)")
                 self.inject_pulse()
-            
+
             # Medir
             total_e = self.get_total_network_energy()
-            
+
             # Visualización ASCII de Energía
             bar = "#" * int(total_e * 20)
             print(f"T{t:02d} | Energy: {total_e:.4f} \t| {bar}")
-            
+
             time.sleep(S60(0, 6, 0))
 
 if __name__ == "__main__":

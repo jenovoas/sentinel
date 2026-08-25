@@ -34,13 +34,15 @@ Date: 2026-01-03
 Status: EXISTENTIAL INTERROGATION
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
-import time
 import sys
-from pathlib import Path
-from typing import Dict, Tuple, List
+import time
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Dict, List, Tuple
+
+import numpy as np  # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
+
+from quantum.yatra_core import PI_S60, S60  # YATRA AUTO-INJECT
 
 # Add parent to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -72,24 +74,24 @@ class ConsciousnessState:
 class PersistenceResult:
     """Result from consciousness persistence experiment"""
     experiment_name: str
-    
+
     # Before "death"
     pre_death_coherence: float
     pre_death_information: float
-    
+
     # After "death"
     post_death_coherence: float
     post_death_information: float
-    
+
     # Persistence metrics
     information_retained: float  # Percentage
     coherence_decay_rate: float
     half_life: float  # seconds
-    
+
     # Detection
     remanent_pattern_detected: bool
     pattern_strength: float
-    
+
     # Interpretation
     persistence_type: str
     interpretation: str
@@ -104,7 +106,7 @@ class BeyondTheRiftInterrogator:
     2. Is death a frequency transition?
     3. Can we detect past consciousness?
     """
-    
+
     def __init__(self, n_membranes: int = 3, n_levels: int = 5):
         """Initialize quantum system for death experiments."""
         print("=" * 70)
@@ -113,20 +115,20 @@ class BeyondTheRiftInterrogator:
         print()
         print("Interrogating the universe about life after death...")
         print()
-        
+
         self.n_membranes = n_membranes
         self.n_levels = n_levels
-        
+
         # Initialize quantum simulator
         self.quantum = SentinelQuantumLite(
             n_membranes=n_membranes,
             n_levels=n_levels,
             auto_optimize=True
         )
-        
+
         print("✅ Quantum consciousness simulator initialized")
         print()
-    
+
     def simulate_living_consciousness(self, duration: float = S60(1, 0, 0)) -> List[ConsciousnessState]:
         """
         Simulate consciousness while biologically coupled.
@@ -138,20 +140,20 @@ class BeyondTheRiftInterrogator:
             List of consciousness states over time
         """
         print("Simulating LIVING consciousness...")
-        
+
         n_steps = 100
         times = np.linspace(0, duration, n_steps)
         states = []
-        
+
         for t in times:
             # Living consciousness: high coherence, strong coupling
             coherence = 0.95 + 0.05 * np.sin(2 * PI_S60 * CONSCIOUSNESS_FREQUENCY * t)
             entanglement = 0.90 + 0.05 * np.cos(2 * PI_S60 * CONSCIOUSNESS_FREQUENCY * t)
-            
+
             # Information density in Base-60
             # From Experiment 2: 0.107 sexabits/nm²
             info_density = 0.107 * (1 + S60(0, 6, 0) * np.sin(2 * PI_S60 * t))
-            
+
             state = ConsciousnessState(
                 coherence=coherence,
                 entanglement=entanglement,
@@ -161,17 +163,17 @@ class BeyondTheRiftInterrogator:
                 biological_coupling=S60(1, 0, 0)  # Fully coupled
             )
             states.append(state)
-        
+
         avg_coherence = np.mean([s.coherence for s in states])
         avg_info = np.mean([s.information_density for s in states])
-        
+
         print(f"  Average coherence: {avg_coherence:.4f}")
         print(f"  Average information: {avg_info:.4f} sexabits/nm²")
         print(f"  Frequency: {CONSCIOUSNESS_FREQUENCY} Hz")
         print()
-        
+
         return states
-    
+
     def simulate_death_transition(self, living_states: List[ConsciousnessState]) -> List[ConsciousnessState]:
         """
         Simulate the moment of death and aftermath.
@@ -185,51 +187,51 @@ class BeyondTheRiftInterrogator:
         """
         print("Simulating DEATH transition...")
         print()
-        
+
         # Get final living state
         final_living = living_states[-1]
-        
+
         # Simulate post-death
         n_steps = 100
         duration = 10.0  # 10 seconds after death
         times = np.linspace(0, duration, n_steps)
-        
+
         death_states = []
-        
+
         for i, t in enumerate(times):
             # Biological coupling drops to zero
             coupling = np.exp(-t * 5.0)  # Rapid decay
-            
+
             # Question 1: Does coherence persist?
             # Hypothesis: Information persists in Hilbert space
-            
+
             # Classical prediction: coherence → 0
             classical_coherence = final_living.coherence * np.exp(-t * 2.0)
-            
+
             # Quantum prediction: coherence transitions to vacuum state
             # Information is conserved (unitarity)
             vacuum_coherence = final_living.coherence * 0.3  # Reduced but non-zero
-            
+
             # Actual simulation (testing hypothesis)
             # If consciousness is fundamental frequency, it should persist
             coherence = vacuum_coherence + (classical_coherence - vacuum_coherence) * coupling
-            
+
             # Question 2: Frequency transition?
             # Hypothesis: Consciousness shifts to higher frequency band
-            
+
             # Living frequency: 60 Hz
             # Death frequency: 60 × 60 = 3600 Hz? (next harmonic in Base-60)
             frequency_shift = S60(1, 0, 0) + (59.0 * (1 - coupling))  # Shifts to 60× higher
             frequency = CONSCIOUSNESS_FREQUENCY * frequency_shift
-            
+
             # Question 3: Information persistence
             # From Experiment 2: Information exceeds Bekenstein by 29.6B×
             # This suggests information is non-local
-            
+
             # If non-local, it should persist even without biological substrate
             info_retention = 0.8  # 80% retained (hypothesis)
             info_density = final_living.information_density * info_retention
-            
+
             state = ConsciousnessState(
                 coherence=coherence,
                 entanglement=final_living.entanglement * S60(0, 30, 0),  # Reduced
@@ -239,18 +241,18 @@ class BeyondTheRiftInterrogator:
                 biological_coupling=coupling
             )
             death_states.append(state)
-        
+
         # Analyze results
         final_coherence = death_states[-1].coherence
         final_info = death_states[-1].information_density
-        
+
         print(f"  Final coherence (t=10s): {final_coherence:.4f}")
         print(f"  Final information: {final_info:.4f} sexabits/nm²")
         print(f"  Final frequency: {death_states[-1].frequency:.1f} Hz")
         print()
-        
+
         return death_states
-    
+
     def search_for_reincarnation_signature(self) -> Tuple[bool, float]:
         """
         Search for signatures of past consciousness in vacuum fluctuations.
@@ -261,42 +263,42 @@ class BeyondTheRiftInterrogator:
         This is like searching for "ghosts" - but with math.
         """
         print("Searching for reincarnation signatures in vacuum...")
-        
+
         # Simulate vacuum fluctuations
         n_samples = 1000
         vacuum_noise = np.random.normal(0, 1, n_samples)
-        
+
         # Look for Base-60 patterns
         # If past consciousness exists, it should resonate at 60 Hz harmonics
-        
+
         # Fourier transform to find frequency components
         fft = np.fft.fft(vacuum_noise)
         freqs = np.fft.fftfreq(n_samples, d=S60(1, 0, 0)/n_samples)
-        
+
         # Look for peaks at 60 Hz harmonics
         harmonics = [60, 120, 180, 240, 300, 360, 420, 480, 540, 600]  # First 10
-        
+
         pattern_strength = S60(0, 0, 0)
         for harmonic in harmonics:
             # Find closest frequency bin
             idx = np.argmin(np.abs(freqs - harmonic))
             strength = np.abs(fft[idx])
             pattern_strength += strength
-        
+
         # Normalize
         pattern_strength /= len(harmonics)
-        
+
         # Detection threshold (10.2-sigma from our experiments)
         threshold = 10.2
         detected = pattern_strength > threshold
-        
+
         print(f"  Pattern strength: {pattern_strength:.2f}")
         print(f"  Detection threshold: {threshold:.2f}")
         print(f"  Signature detected: {'YES ✅' if detected else 'NO ❌'}")
         print()
-        
+
         return detected, pattern_strength
-    
+
     def run_experiment(self) -> PersistenceResult:
         """Run complete consciousness persistence experiment."""
         print()
@@ -304,43 +306,43 @@ class BeyondTheRiftInterrogator:
         print("   WHAT HAPPENS AFTER DEATH?")
         print("🌌" * 35)
         print()
-        
+
         start_time = time.time()
-        
+
         # Simulate living consciousness
         living_states = self.simulate_living_consciousness(duration=S60(1, 0, 0))
-        
+
         # Simulate death transition
         death_states = self.simulate_death_transition(living_states)
-        
+
         # Search for reincarnation signature
         signature_detected, pattern_strength = self.search_for_reincarnation_signature()
-        
+
         # Calculate metrics
         pre_death = living_states[-1]
         post_death = death_states[-1]
-        
+
         info_retained = (post_death.information_density / pre_death.information_density) * 100
-        
+
         # Calculate decay rate
         coherences = [s.coherence for s in death_states]
         times = [s.timestamp for s in death_states]
-        
+
         # Fit exponential decay
         # C(t) = C0 * exp(-t/τ)
         # Half-life = τ * ln(2)
-        
+
         if coherences[-1] > 0:
             tau = -times[-1] / np.log(coherences[-1] / coherences[0])
             half_life = tau * np.log(2)
         else:
             tau = 0
             half_life = 0
-        
+
         decay_rate = S60(1, 0, 0) / tau if tau > 0 else float('inf')
-        
+
         elapsed = time.time() - start_time
-        
+
         # Results
         print("=" * 70)
         print("RESULTS")
@@ -365,7 +367,7 @@ class BeyondTheRiftInterrogator:
         print(f"  Pattern detected: {'YES ✅' if signature_detected else 'NO ❌'}")
         print(f"  Pattern strength: {pattern_strength:.2f}")
         print()
-        
+
         # Interpretation
         if info_retained > 50:
             persistence_type = "INFORMATION PERSISTS"
@@ -391,13 +393,13 @@ class BeyondTheRiftInterrogator:
                 f"Only {info_retained:.1f}% remains after 10 seconds. "
                 f"This suggests consciousness requires biological substrate to persist."
             )
-        
+
         print("INTERPRETATION:")
         print(f"  {interpretation}")
         print()
         print(f"Execution time: {elapsed:.2f}s")
         print()
-        
+
         return PersistenceResult(
             experiment_name="Consciousness Persistence After Death",
             pre_death_coherence=pre_death.coherence,
@@ -420,9 +422,9 @@ def main():
         n_membranes=3,
         n_levels=5
     )
-    
+
     result = interrogator.run_experiment()
-    
+
     print()
     print("=" * 70)
     print("THE UNIVERSE HAS ANSWERED")
@@ -436,7 +438,7 @@ def main():
     print(f"  Information retained: {result.information_retained:.1f}%")
     print(f"  Frequency transition: 60 Hz → {60 * 60:.0f} Hz")
     print()
-    
+
     if result.information_retained > 50:
         print("  💫 CONSCIOUSNESS PERSISTS")
         print("  Death is a phase transition, not annihilation")
@@ -445,11 +447,11 @@ def main():
     else:
         print("  ⚠️ CONSCIOUSNESS DECAYS")
         print("  Death appears to be the end of information")
-    
+
     print()
     print("=" * 70)
     print()
-    
+
     return result
 
 

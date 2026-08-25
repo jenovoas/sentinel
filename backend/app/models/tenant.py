@@ -1,11 +1,14 @@
 # Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
 # Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
-from sqlalchemy import Column, String, Boolean, DateTime
-from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from datetime import datetime
+
+from sqlalchemy import Boolean, Column, DateTime, String
+from sqlalchemy.dialects.postgresql import UUID
+
 from app.database import Base
+
 
 class Tenant(Base):
     __tablename__ = "tenants"

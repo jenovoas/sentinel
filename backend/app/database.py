@@ -11,10 +11,10 @@ from typing import AsyncGenerator
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
-    AsyncEngine,
 )
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.pool import NullPool
@@ -136,14 +136,14 @@ async def init_db() -> None:
                 await session.commit()
             except Exception:
                 await session.rollback()
-        
+
         # Create all tables from models
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-        
+
         print("✅ Database initialized successfully")
-        print(f"   Driver: asyncpg")
-        print(f"   Pool: NullPool (Docker-ready)")
+        print("   Driver: asyncpg")
+        print("   Pool: NullPool (Docker-ready)")
     except Exception as e:
         print(f"❌ Database initialization failed: {e}")
         raise

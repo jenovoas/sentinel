@@ -12,18 +12,24 @@ This router handles all tenant-related endpoints, including:
 - Tenant deletion
 """
 
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.database import get_db
 from app.models.user import User
-from app.schemas import TenantCreate, TenantUpdate, TenantResponse
+from app.schemas import TenantCreate, TenantResponse, TenantUpdate
+from app.security import get_current_admin_user, get_current_user
 from app.services.tenant_service import (
     create_tenant as create_tenant_service,
-    get_tenants,
+)
+from app.services.tenant_service import (
     get_tenant as get_tenant_service,
 )
-from app.security import get_current_user, get_current_admin_user
-from typing import List
+from app.services.tenant_service import (
+    get_tenants,
+)
 
 router = APIRouter(prefix="/api/v1/tenants", tags=["tenants"])
 
@@ -92,11 +98,11 @@ async def update_tenant(
     db_tenant = await get_tenant_service(db, tenant_id=tenant_id)
     if not db_tenant:
         raise HTTPException(status_code=404, detail="Tenant not found")
-    
+
     update_data = tenant.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(db_tenant, field, value)
-    
+
     db.add(db_tenant)
     await db.commit()
     await db.refresh(db_tenant)
@@ -118,7 +124,7 @@ async def delete_tenant(
     db_tenant = await get_tenant_service(db, tenant_id=tenant_id)
     if not db_tenant:
         raise HTTPException(status_code=404, detail="Tenant not found")
-    
+
     await db.delete(db_tenant)
     await db.commit()
     return None

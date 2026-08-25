@@ -12,10 +12,11 @@
 
 import math
 
+
 def check_resonance(name, freq_hz, target_hz, tolerance=0.01):
     # Buscar armónicos (n * f o f / n)
     ratio = freq_hz / target_hz
-    
+
     # Normalizar a la octava más cercana (base 2)
     octave = 0
     while ratio > 2.0:
@@ -24,12 +25,12 @@ def check_resonance(name, freq_hz, target_hz, tolerance=0.01):
     while ratio < 1.0:
         ratio *= 2.0
         octave -= 1
-        
+
     deviation = abs(ratio - 1.0)
     if deviation > 0.5: deviation = abs(ratio - 2.0) # Check upper bound
-    
+
     is_resonant = deviation < tolerance
-    
+
     status = "✅ RESONANT" if is_resonant else "❌ DISSONANT"
     print(f"{name:<20} | {freq_hz:>10.4f} Hz | Target: {target_hz:>10.4f} Hz | Octave: {octave:>3} | Dev: {deviation:.4f} | {status}")
 
@@ -42,13 +43,13 @@ MY_ZPE = 153400000 # 153.4 MHz (Merkabah)
 
 # Frecuencias Ancestrales / Planetarias
 # 1. Resonancia Schumann (Latido de la Tierra)
-SCHUMANN = 7.83 
+SCHUMANN = 7.83
 # 2. Gran Pirámide (Frecuencia de Cámara del Rey - F#)
-PYRAMID_CHAMBER = 33.0 
+PYRAMID_CHAMBER = 33.0
 # 3. Ciclo Venus (8 años en segundos invertidos)
 VENUS_CYCLE = 1.0 / (8 * 365.25 * 24 * 3600) * 1e10 # Escalado
 # 4. Frecuencia del Hidrógeno (Línea de 21cm) - Universal
-HYDROGEN = 1420405751.768 
+HYDROGEN = 1420405751.768
 # 5. Afinación Verdi (432 Hz - "Natural Tuning")
 VERDI_432 = 432.0
 # 6. Om Frequency (136.1 Hz - Año terrestre en octavas)

@@ -32,11 +32,14 @@ Key numbers in her work:
 This compares YOUR Base-60 patterns with HERS.
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import json
 from pathlib import Path
 from typing import Dict, List
+
+import numpy as np  # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
+
+from quantum.yatra_core import PI_S60, S60  # YATRA AUTO-INJECT
+
 
 def load_your_signature() -> Dict:
     """Load your reincarnation signature."""
@@ -54,7 +57,7 @@ def enheduanna_signature_pattern() -> Dict:
     - Arithmetic sequences in temple hymns
     - Astronomical calculations
     """
-    
+
     # Her signature numbers
     key_numbers = {
         60: "Anu (sky god) - base of system",
@@ -64,36 +67,36 @@ def enheduanna_signature_pattern() -> Dict:
         12: "Zodiac divisions",
         6: "Inanna's number"
     }
-    
+
     # Generate her Base-60 pattern
     # Based on her known mathematical work
     pattern = []
-    
+
     # REVIEW: cada loop usa su propia variable para evitar shadowing de i
     # Pattern 1: Multiples of 60 (her base system)
     for i1 in range(10):
         pattern.append((i1 * 6) % 60)  # Every 6th (Inanna's number)
-    
+
     # Pattern 2: Lunar cycles (30)
     for i2 in range(10):
         pattern.append((i2 * 3) % 60)  # Every 3rd (30/10)
-    
+
     # Pattern 3: Sacred 7
     for i3 in range(10):
         pattern.append((i3 * 7) % 60)  # Every 7th
-    
+
     # Pattern 4: Temple hymns (42)
     for i4 in range(10):
         pattern.append((i4 * 42) % 60)
-    
+
     # Pattern 5: Astronomical (12 zodiac)
     for i5 in range(10):
         pattern.append((i5 * 12) % 60)
-    
+
     # Pattern 6: Inanna (6)
     for i6 in range(10):
         pattern.append((i6 * 6) % 60)
-    
+
     return {
         'name': 'Enheduanna',
         'period': '2285-2250 BCE',
@@ -114,10 +117,10 @@ def compare_patterns(your_pattern: List[int], enheduanna_pattern: List[int]) -> 
     - Number frequency correlation
     - Sacred number usage
     """
-    
+
     print("🔍 Comparing Base-60 patterns...")
     print()
-    
+
     results = {
         'direct_matches': 0,
         'sequence_similarity': 0,
@@ -129,62 +132,62 @@ def compare_patterns(your_pattern: List[int], enheduanna_pattern: List[int]) -> 
         },
         'overall_similarity': 0
     }
-    
+
     # 1. Direct matches (same numbers in same positions)
     min_len = min(len(your_pattern), len(enheduanna_pattern))
     direct_matches = sum(1 for i in range(min_len) if your_pattern[i] == enheduanna_pattern[i])
     results['direct_matches'] = direct_matches / min_len
-    
+
     print(f"✅ Direct Matches: {results['direct_matches']:.1%}")
     print(f"   ({direct_matches}/{min_len} positions match)")
-    
+
     # 2. Sequence similarity (arithmetic progressions)
     your_sequences = count_arithmetic_sequences(your_pattern)
     enheduanna_sequences = count_arithmetic_sequences(enheduanna_pattern)
-    
+
     sequence_sim = min(your_sequences, enheduanna_sequences) / max(your_sequences, enheduanna_sequences)
     results['sequence_similarity'] = sequence_sim
-    
+
     print(f"✅ Sequence Similarity: {sequence_sim:.1%}")
     print(f"   (Your sequences: {your_sequences}, Enheduanna: {enheduanna_sequences})")
-    
+
     # 3. Frequency correlation (which numbers appear most)
     your_freq = {i: your_pattern.count(i) for i in set(your_pattern)}
     enheduanna_freq = {i: enheduanna_pattern.count(i) for i in set(enheduanna_pattern)}
-    
+
     # Cosine similarity of frequency vectors
     all_numbers = set(your_freq.keys()) | set(enheduanna_freq.keys())
     your_vec = [your_freq.get(n, 0) for n in sorted(all_numbers)]
     enheduanna_vec = [enheduanna_freq.get(n, 0) for n in sorted(all_numbers)]
-    
+
     dot_product = sum(y * e for y, e in zip(your_vec, enheduanna_vec))
     your_mag = np.sqrt(sum(y**2 for y in your_vec))
     enheduanna_mag = np.sqrt(sum(e**2 for e in enheduanna_vec))
-    
+
     freq_corr = dot_product / (your_mag * enheduanna_mag) if your_mag * enheduanna_mag > 0 else 0
     results['frequency_correlation'] = freq_corr
-    
+
     print(f"✅ Frequency Correlation: {freq_corr:.1%}")
-    
+
     # 4. Sacred numbers (60, 30, 7, 42, 12, 6)
     sacred = [60 % 60, 30, 7, 42 % 60, 12, 6]  # Modulo 60
-    
+
     your_sacred = {n: your_pattern.count(n) for n in sacred}
     enheduanna_sacred = {n: enheduanna_pattern.count(n) for n in sacred}
-    
+
     results['sacred_numbers']['yours'] = your_sacred
     results['sacred_numbers']['enheduanna'] = enheduanna_sacred
-    
+
     # Overlap in sacred number usage
     sacred_overlap = sum(min(your_sacred.get(n, 0), enheduanna_sacred.get(n, 0)) for n in sacred)
     max_sacred = sum(max(your_sacred.get(n, 0), enheduanna_sacred.get(n, 0)) for n in sacred)
-    
+
     sacred_sim = sacred_overlap / max_sacred if max_sacred > 0 else 0
     results['sacred_numbers']['overlap'] = sacred_sim
-    
+
     print(f"✅ Sacred Number Overlap: {sacred_sim:.1%}")
     print()
-    
+
     # Overall similarity (weighted average)
     overall = (
         results['direct_matches'] * 0.2 +
@@ -193,7 +196,7 @@ def compare_patterns(your_pattern: List[int], enheduanna_pattern: List[int]) -> 
         results['sacred_numbers']['overlap'] * 0.2
     )
     results['overall_similarity'] = overall
-    
+
     return results
 
 def count_arithmetic_sequences(pattern: List[int]) -> int:
@@ -206,30 +209,30 @@ def count_arithmetic_sequences(pattern: List[int]) -> int:
 
 def analyze_sacred_numbers(your_pattern: List[int], enheduanna_data: Dict):
     """Analyze usage of Enheduanna's sacred numbers in your pattern."""
-    
+
     print("=" * 70)
     print("SACRED NUMBER ANALYSIS")
     print("=" * 70)
     print()
-    
+
     sacred_meanings = enheduanna_data['key_numbers']
-    
+
     print("Enheduanna's Sacred Numbers:")
     for num, meaning in sacred_meanings.items():
         num_mod = num % 60
         count_yours = your_pattern.count(num_mod)
         count_hers = enheduanna_data['base60_pattern'].count(num_mod)
-        
+
         print(f"\n  {num} ({num_mod} in Base-60): {meaning}")
         print(f"    Your pattern: {count_yours} occurrences")
         print(f"    Enheduanna's: {count_hers} occurrences")
-        
+
         if count_yours > 0:
             print(f"    ✅ MATCH - You use this sacred number!")
 
 def main():
     """Main comparison."""
-    
+
     print("=" * 70)
     print("🏺 ENHEDUANNA SIGNATURE COMPARISON")
     print("=" * 70)
@@ -237,50 +240,50 @@ def main():
     print("Comparing your Base-60 signature with Enheduanna's")
     print("(First known author, 2285-2250 BCE)")
     print()
-    
+
     # Load your signature
     your_sig = load_your_signature()
     your_pattern = your_sig['base60_pattern']
-    
+
     print(f"Your signature:")
     print(f"  Session: {your_sig['session_id']}")
     print(f"  Echo strength: {your_sig['reincarnation_echo_strength']:.2f}")
     print(f"  Pattern length: {len(your_pattern)}")
     print()
-    
+
     # Load Enheduanna's signature
     enheduanna = enheduanna_signature_pattern()
-    
+
     print(f"Enheduanna's signature:")
     print(f"  Period: {enheduanna['period']}")
     print(f"  Location: {enheduanna['location']}")
     print(f"  Role: {enheduanna['role']}")
     print(f"  Pattern length: {enheduanna['pattern_length']}")
     print()
-    
+
     # Compare
     print("=" * 70)
     print("PATTERN COMPARISON")
     print("=" * 70)
     print()
-    
+
     comparison = compare_patterns(your_pattern, enheduanna['base60_pattern'])
-    
+
     # Sacred numbers
     analyze_sacred_numbers(your_pattern, enheduanna)
-    
+
     # Results
     print()
     print("=" * 70)
     print("OVERALL SIMILARITY")
     print("=" * 70)
     print()
-    
+
     similarity = comparison['overall_similarity']
-    
+
     print(f"Similarity Score: {similarity:.1%}")
     print()
-    
+
     if similarity > 0.7:
         print("🔥 VERY HIGH SIMILARITY")
         print()
@@ -292,7 +295,7 @@ def main():
         print("  • Or deeply influenced by her mathematical system")
         print()
         print("The pattern match is too strong to be coincidence.")
-        
+
     elif similarity > S60(0, 30, 0):
         print("⚡ HIGH SIMILARITY")
         print()
@@ -302,7 +305,7 @@ def main():
         print("  • You worked with similar Base-60 systems")
         print("  • You may have studied her work in a later life")
         print("  • You share the same mathematical thinking patterns")
-        
+
     elif similarity > 0.3:
         print("✨ MODERATE SIMILARITY")
         print()
@@ -311,7 +314,7 @@ def main():
         print("This suggests:")
         print("  • You're familiar with Sumerian Base-60 systems")
         print("  • Possible indirect connection through later cultures")
-        
+
     else:
         print("💫 LOW SIMILARITY")
         print()
@@ -319,15 +322,15 @@ def main():
         print()
         print("However, your overall Base-60 affinity suggests connection")
         print("to the broader Mesopotamian mathematical tradition.")
-    
+
     print()
-    
+
     # Timeline
     print("=" * 70)
     print("TIMELINE ANALYSIS")
     print("=" * 70)
     print()
-    
+
     if similarity > S60(0, 30, 0):
         print("If you were Enheduanna (2285-2250 BCE):")
         print()
@@ -357,9 +360,9 @@ def main():
         print()
         print("Echo strength of 26.56 could support this timeline")
         print("if you were a VERY SIGNIFICANT soul (first author in history).")
-    
+
     print()
-    
+
     # Save results
     output = {
         'comparison': comparison,
@@ -367,14 +370,14 @@ def main():
         'similarity_score': similarity,
         'interpretation': 'HIGH' if similarity > S60(0, 30, 0) else 'MODERATE' if similarity > 0.3 else 'LOW'
     }
-    
+
     output_file = "/home/jnovoas/sentinel/quantum/enheduanna_comparison.json"
     with open(output_file, 'w') as f:
         json.dump(output, f, indent=2)
-    
+
     print(f"✅ Comparison saved: {output_file}")
     print()
-    
+
     return output
 
 if __name__ == "__main__":

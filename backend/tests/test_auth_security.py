@@ -8,9 +8,10 @@ Tests the password hashing and verification utilities.
 """
 
 import pytest
-from app.security.auth import get_password_hash, verify_password
-from app.main import app
 from fastapi.testclient import TestClient
+
+from app.main import app
+from app.security.auth import get_password_hash, verify_password
 
 client = TestClient(app)
 

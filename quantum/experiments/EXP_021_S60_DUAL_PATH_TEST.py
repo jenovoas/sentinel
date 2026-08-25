@@ -18,15 +18,17 @@ MÉTODO:
 CONTEXTO: Preparación para migración gradual de f64 a S60 en Soul Verifier
 """
 
-import sys
 import os
+import sys
+
 # REVIEW: path absoluto reemplazado por relativo al proyecto
 _project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 if _project_root not in sys.path:
     sys.path.insert(0, _project_root)
 
-from quantum.yatra_core import S60
 import math
+
+from quantum.yatra_core import S60
 
 print("🧪 EXP-021: S60 DUAL-PATH VALIDATION TEST")
 print("=" * 60)
@@ -49,14 +51,14 @@ for i in range(signal_count):
     # Leer entropía real
     entropy_bytes = os.urandom(2)
     raw_value = int.from_bytes(entropy_bytes, 'big')
-    
+
     # Normalizar a rango de pulso cardíaco (60-100 BPM)
     normalized = 60 + (raw_value % 41)  # Rango [60, 100]
-    
+
     # Versión S60
     val_s60 = S60(normalized, 0, 0, 0, 0)
     signal_s60.append(val_s60)
-    
+
     # Versión float (para comparación)
     signal_float.append(float(normalized))
 
@@ -75,24 +77,24 @@ def calculate_lyapunov_float(signal):
     """Versión float (equivalente a Rust f64) - UPDATED"""
     if len(signal) < 2:
         return 0.0
-    
+
     sum_div = 0.0
     count = 0
-    
+
     for i in range(len(signal) - 2):
         d1 = abs(signal[i + 1] - signal[i])
         d2 = abs(signal[i + 2] - signal[i + 1])
-        
+
         if d1 > 0.0001:
             ratio = d2 / d1
             if ratio > 0.0:
                 # UPDATED: Take abs() of ln to handle ratio < 1
                 sum_div += abs(math.log(ratio))
                 count += 1
-    
+
     if count == 0:
         return 0.0
-    
+
     raw_lambda = sum_div / count
     # UPDATED: Scale by 0.5 instead of 2.0
     return max(0.1, min(2.5, raw_lambda * 0.5))
@@ -101,16 +103,16 @@ def calculate_lyapunov_s60(signal):
     """Versión S60 (equivalente a Rust S60) - UPDATED"""
     if len(signal) < 2:
         return S60(0, 0, 0, 0, 0)
-    
+
     sum_div = S60(0, 0, 0, 0, 0)
     count = 0
-    
+
     threshold = S60(0, 0, 0, 1, 0)  # 0.0001
-    
+
     for i in range(len(signal) - 2):
         d1 = abs(signal[i + 1] - signal[i])
         d2 = abs(signal[i + 2] - signal[i + 1])
-        
+
         if d1 > threshold:
             try:
                 ratio = d2 / d1
@@ -126,21 +128,21 @@ def calculate_lyapunov_s60(signal):
             # REVIEW: bare except reemplazado por Exception (división por cero, math.log(0), etc.)
             except Exception:
                 continue
-    
+
     if count == 0:
         return S60(0, 0, 0, 0, 0)
-    
+
     # División por S60
     count_s60 = S60(count, 0, 0, 0, 0)
     raw_lambda = sum_div / count_s60
-    
+
     # UPDATED: Scale by 0.5 instead of 2.0
     half = S60(0, 30, 0, 0, 0)  # 0.5
     scaled = raw_lambda * half
-    
+
     min_val = S60(0, 6, 0, 0, 0)  # 0.1
     max_val = S60(2, 30, 0, 0, 0)  # 2.5
-    
+
     if scaled < min_val:
         return min_val
     elif scaled > max_val:
@@ -174,51 +176,51 @@ print("-" * 60)
 def calculate_entropy_float(signal):
     """Versión float"""
     from collections import Counter
-    
+
     if not signal:
         return 0.0
-    
+
     # Cuantizar en buckets
     buckets = [int(val * 100) for val in signal]
     counts = Counter(buckets)
-    
+
     total = len(signal)
     entropy = 0.0
-    
+
     for count in counts.values():
         if count == 0:
             continue
         p = count / total
         if p > 0:
             entropy -= p * math.log(p)
-    
+
     return entropy
 
 def calculate_entropy_s60(signal):
     """Versión S60"""
     from collections import Counter
-    
+
     if not signal:
         return S60(0, 0, 0, 0, 0)
-    
+
     # Cuantizar en buckets
     buckets = [val.to_base_units() // (S60.SCALE_0 // 100) for val in signal]
     counts = Counter(buckets)
-    
+
     total = len(signal)
     entropy = S60(0, 0, 0, 0, 0)
-    
+
     for count in counts.values():
         if count == 0:
             continue
-        
+
         # Aproximación (producción usaría ln_s60)
         p = count / total
         if p > 0:
             h_contrib = -p * math.log(p)
             h_s60 = S60.from_decimal_degrees_FOR_IMPORT_ONLY(h_contrib)
             entropy = entropy + h_s60
-    
+
     return entropy
 
 # Calcular con ambos métodos

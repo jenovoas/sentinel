@@ -23,10 +23,10 @@ RUTAS:
 4. UNKNOWN: Intención no clara.
 """
 
-import sys
-import os
 import asyncio
 import logging
+import os
+import sys
 from typing import Dict, Tuple
 
 # Ensure backend/quantum modules are visible
@@ -44,7 +44,7 @@ class SemanticRouter:
     """
     Enrutador semántico que usa Gemini para decidir qué herramienta activar.
     """
-    
+
     def __init__(self):
         self.ai = vertex_service
         logger.info("🧠 Semantic Router Initialized")
@@ -56,7 +56,7 @@ class SemanticRouter:
         Returns:
             (route_type, reasoning)
         """
-        
+
         system_prompt = """
         You are the Routing Cortex for the Sentinel System.
         Your job is to classify the USER INPUT into one of the following CATEGORIES.
@@ -83,22 +83,22 @@ class SemanticRouter:
         OUTPUT FORMAT:
         Return ONLY a JSON string: {"category": "CATEGORY_NAME", "reason": "Short explanation"}
         """
-        
+
         try:
             response = await self.ai.generate_content(
                 prompt=f"USER INPUT: {user_input}",
                 system_instruction=system_prompt,
                 temperature=0.0 # Deterministic routing
             )
-            
+
             # Simple parsing (assuming Gemini follows instructions well, fallback if not)
             import json
             # Limpiar posible markdown ```json ... ```
             clean_resp = response.replace("```json", "").replace("```", "").strip()
             data = json.loads(clean_resp)
-            
+
             return data.get("category", "UNKNOWN"), data.get("reason", "No reason provided")
-            
+
         except Exception as e:
             logger.error(f"Routing Error: {e}")
             return "UNKNOWN", "Error in classification"
@@ -106,14 +106,14 @@ class SemanticRouter:
 async def test_router():
     router = SemanticRouter()
     print("🧠 Testing Router...")
-    
+
     inputs = [
         "Explain to me how the Time Crystal works",
         "Start the dashboard please",
         "What happens if I delete yatra_core.py?",
         "Hello world"
     ]
-    
+
     for i in inputs:
         cat, reason = await router.classify_intent(i)
         print(f"\n📥 '{i}'\n   ➡ {cat} ({reason})")

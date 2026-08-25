@@ -17,16 +17,15 @@ Health Check Consumers:
 - Custom watchdog scripts
 """
 
-from fastapi import APIRouter, Response, status, Depends
-from datetime import datetime
-from typing import Dict, Any
 import asyncio
-import asyncpg
-import redis.asyncio as redis
-import httpx
+from datetime import datetime
+from typing import Any, Dict
 
-from app.security import get_current_admin_user, get_current_user
+import asyncpg
+from fastapi import APIRouter, Depends, Response, status
+
 from app.models.user import User
+from app.security import get_current_admin_user, get_current_user
 
 router = APIRouter()
 
@@ -52,16 +51,16 @@ async def check_database() -> Dict[str, Any]:
     try:
         import os
         from time import time
-        
+
         # Get DB config from environment (consistent with docker-compose.yml)
         db_host = os.getenv("DATABASE_HOST", os.getenv("POSTGRES_HOST", "localhost"))
         db_port = os.getenv("DATABASE_PORT", os.getenv("POSTGRES_PORT", "5432"))
         db_user = os.getenv("DATABASE_USER", os.getenv("POSTGRES_USER", "postgres"))
         db_pass = os.getenv("DATABASE_PASSWORD", os.getenv("POSTGRES_PASSWORD", "postgres"))
         db_name = os.getenv("DATABASE_NAME", os.getenv("POSTGRES_DB", "sentinel"))
-        
+
         start = time()
-        
+
         # Connection using asyncpg
         conn = await asyncpg.connect(
             user=db_user,
@@ -71,26 +70,26 @@ async def check_database() -> Dict[str, Any]:
             database=db_name,
             timeout=5.0  # 5 second timeout
         )
-        
+
         # Simple query to verify database is responsive
         result = await conn.fetchval("SELECT 1")
-        
+
         # Check if we're connected to primary or replica
         is_primary = await conn.fetchval(
             "SELECT NOT pg_is_in_recovery()"
         )
-        
+
         await conn.close()
-        
+
         latency = (time() - start) * 1000  # Convert to ms
-        
+
         return {
             "status": "healthy",
             "latency_ms": round(latency, 2),
             "is_primary": is_primary,
             "host": db_host
         }
-        
+
     except Exception as e:
         return {
             "status": "unhealthy",
@@ -114,68 +113,69 @@ async def check_redis() -> Dict[str, Any]:
     """
     try:
         from time import time
-        
+
         # Try to use Sentinel client if available
         try:
-            from app.redis_client import get_redis_master, check_redis_health
-            
+            from app.redis_client import check_redis_health, get_redis_master
+
             start = time()
-            
+
             # Get master connection via Sentinel
             master = await get_redis_master()
-            
+
             # Ping Redis
             await master.ping()
-            
+
             # Test set/get
             test_key = "health_check_test"
             await master.set(test_key, "ok", ex=10)
             value = await master.get(test_key)
-            
+
             latency = (time() - start) * 1000
-            
+
             if value != "ok":
                 raise Exception("Redis set/get test failed")
-            
+
             # Get cluster info
             cluster_info = await check_redis_health()
-            
+
             return {
                 "status": cluster_info.get("status", "healthy"),
                 "latency_ms": round(latency, 2),
                 "mode": cluster_info.get("mode", "sentinel"),
                 "cluster": cluster_info
             }
-            
+
         except Exception:
             # Fallback to simple Redis if Sentinel not configured
             import os
+
             import redis.asyncio as redis
-            
+
             redis_url = os.getenv("REDIS_URL", "redis://redis:6379")
-            
+
             start = time()
-            
+
             r = redis.from_url(redis_url, decode_responses=True)
             await r.ping()
-            
+
             test_key = "health_check_test"
             await r.set(test_key, "ok", ex=10)
             value = await r.get(test_key)
-            
+
             await r.close()
-            
+
             latency = (time() - start) * 1000
-            
+
             if value != "ok":
                 raise Exception("Redis set/get test failed")
-            
+
             return {
                 "status": "healthy",
                 "latency_ms": round(latency, 2),
                 "mode": "standalone"
             }
-        
+
     except Exception as e:
         return {
             "status": "unhealthy",
@@ -206,19 +206,19 @@ async def health_check(response: Response):
         check_database(),
         check_redis(),
     )
-    
+
     # Determine overall health
     # Critical: Database and Redis must be healthy
     critical_healthy = (
         isinstance(db_check, dict) and db_check.get("status") == "healthy" and
         isinstance(redis_check, dict) and redis_check.get("status") == "healthy"
     )
-    
+
     overall_status = "healthy" if critical_healthy else "unhealthy"
-    
+
     # Calculate uptime
     uptime_seconds = (datetime.now() - startup_time).total_seconds()
-    
+
     health_data = {
         "status": overall_status,
         "timestamp": datetime.now().isoformat(),
@@ -229,13 +229,13 @@ async def health_check(response: Response):
             "redis": redis_check,
         }
     }
-    
+
     # Set HTTP status code
     if overall_status == "unhealthy":
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
     else:
         response.status_code = status.HTTP_200_OK
-    
+
     return health_data
 
 
@@ -262,20 +262,20 @@ async def readiness_check(response: Response):
         check_database(),
         check_redis()
     )
-    
+
     # Check if dependencies are healthy
     dependencies_healthy = (
         db_check.get("status") == "healthy" and
         redis_check.get("status") == "healthy"
     )
-    
+
     # Check if we should accept requests
     # Primary always accepts, standby only if explicitly enabled
     can_serve = (app_role == "primary") or accept_requests
-    
+
     # Overall readiness
     ready = dependencies_healthy and can_serve
-    
+
     readiness_data = {
         "ready": ready,
         "timestamp": datetime.now().isoformat(),
@@ -286,13 +286,13 @@ async def readiness_check(response: Response):
             "redis": redis_check.get("status"),
         }
     }
-    
+
     # Set HTTP status code
     if ready:
         response.status_code = status.HTTP_200_OK
     else:
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
-    
+
     return readiness_data
 
 
@@ -333,10 +333,10 @@ async def promote_to_primary(
     This endpoint is protected (authentication and admin required)
     """
     global app_role, accept_requests
-    
+
     app_role = "primary"
     accept_requests = True
-    
+
     return {
         "status": "promoted",
         "role": app_role,
@@ -358,10 +358,10 @@ async def demote_to_standby(
     This endpoint is protected (authentication and admin required)
     """
     global app_role, accept_requests
-    
+
     app_role = "standby"
     accept_requests = False
-    
+
     return {
         "status": "demoted",
         "role": app_role,
@@ -382,31 +382,31 @@ async def prometheus_metrics(current_user = Depends(get_current_user)):
         check_database(),
         check_redis(),
     )
-    
+
     uptime = (datetime.now() - startup_time).total_seconds()
-    
+
     # Prometheus format
     metrics = []
-    
+
     # Health status (1 = healthy, 0 = unhealthy)
     metrics.append(f'sentinel_health{{component="database"}} {1 if db_check.get("status") == "healthy" else 0}')
     metrics.append(f'sentinel_health{{component="redis"}} {1 if redis_check.get("status") == "healthy" else 0}')
-    
+
     # Latencies
     if "latency_ms" in db_check:
         metrics.append(f'sentinel_dependency_latency_ms{{component="database"}} {db_check["latency_ms"]}')
     if "latency_ms" in redis_check:
         metrics.append(f'sentinel_dependency_latency_ms{{component="redis"}} {redis_check["latency_ms"]}')
-    
+
     # Role (1 = primary, 0 = standby)
     metrics.append(f'sentinel_role{{role="{app_role}"}} {1 if app_role == "primary" else 0}')
-    
+
     # Uptime
     metrics.append(f'sentinel_uptime_seconds {uptime}')
-    
+
     # Accept requests flag
     metrics.append(f'sentinel_accept_requests {1 if accept_requests else 0}')
-    
+
     return Response(
         content="\n".join(metrics) + "\n",
         media_type="text/plain"

@@ -18,12 +18,13 @@ Orquestador ligero para sistemas soberanos.
 Optimizado para hardware local (Sin GUI/API en background).
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-import sys
-import os
-import time
 import json
+import os
+import sys
+import time
 from datetime import datetime
+
+from quantum.yatra_core import PI_S60, S60  # YATRA AUTO-INJECT
 
 # REVIEW: paths absolutos reemplazados por relativos al proyecto
 _QUANTUM_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -62,19 +63,19 @@ class SentinelModularCLI:
         print("\033[1;34m\n[SWITCH 1] Auditando Trinidad (Cristal de Tiempo)...\033[0m")
         # REVIEW: path absoluto reemplazado por relativo
         status_file = os.path.join(_QUANTUM_DIR, "perpetual_engine_status.json")
-        
+
         if os.path.exists(status_file):
             try:
-                with open(status_file, "r") as f:
+                with open(status_file) as f:
                     data = json.load(f)
-                
+
                 physics = data.get("physics", {})
                 coherence = physics.get("coherence", S60(0, 0, 0))
                 energy = data.get("energy", S60(0, 0, 0))
-                
+
                 print(f"📊 Coherencia: {coherence:.4f} (Base-60)")
                 print(f"⚡ Energía:    {energy:.4f} AU")
-                
+
                 if coherence > 0.9:
                     print("✅ Resultado: Trinidad Sincronizada (ARMÓNICO).")
                 else:
@@ -117,14 +118,14 @@ class SentinelModularCLI:
             print("  [A] Auditoría Total (TruthSync)")
             print("  [S] Semantic Shell (Human Interface)")
             print("  [Q] Salir (Cesto de Enki)")
-            
+
             choice = input("\n> ").strip().upper()
-            
+
             if choice == '1': self.run_switch_1()
             elif choice == '2': self.run_switch_2()
             elif choice == '3': self.run_switch_3()
             elif choice == '4': self.run_switch_4()
-            elif choice == 'A': 
+            elif choice == 'A':
                 os.system("python3 /home/jnovoas/sentinel/quantum/TRUTHSYNC_FULL_SYSTEM_AUDIT.py")
             elif choice == 'S':
                 # [NUEVO v2.0] Semantic Shell
@@ -134,7 +135,7 @@ class SentinelModularCLI:
                 break
             else:
                 print("⚠️ Opción no válida en Base-60.")
-            
+
             input("\nPresione Enter para continuar...")
 
 if __name__ == "__main__":

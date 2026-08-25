@@ -7,7 +7,7 @@
 # SENTINEL TELEMETRY BRIDGE (WATCHDOG)
 # ------------------------------------------------------------
 # Puente observacional desacoplado para el Quantum Lattice Engine.
-# 
+#
 # Integraciones:
 # 1. Prometheus: Exposición de métricas (Custom HTTP Server)
 # 2. AIOps Shield: Sanitización de logs en tiempo real
@@ -15,48 +15,51 @@
 # 4. TruthSync: Validación de anomalías con el Oráculo
 # ------------------------------------------------------------
 
-import time
-import json
 import csv
+import glob
+import json
 import os
 import sys
-import glob
+import time
 
 # REVIEW: SCALE_0_F para conversión S60→float solo en frontera Prometheus
 SCALE_0_F = 12_960_000.0
-import threading
 import asyncio
-from http.server import HTTPServer, BaseHTTPRequestHandler
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 try:
-    import redis
     import redis.asyncio as aioredis
+
+    import redis
 except ImportError:
     redis = None
     aioredis = None
 
 
 # Core Integrations
-from quantum.yatra_core import S60
-from backend.app.services.aiops_shield import AIOpsShield, ThreatLevel
 from backend.app.core.forensic_wal import ForensicWAL
+from backend.app.services.aiops_shield import AIOpsShield, ThreatLevel
+
 from quantum.truthsync_verification import TruthSyncClient
+from quantum.yatra_core import S60
+
 
 # --- 1. Custom Prometheus Exporter (No external deps) ---
 class PrometheusRegistry:
     def __init__(self):
         self._metrics = {}
-    
+
     def gauge(self, name, help_text, value=0.0):
         self._metrics[name] = {"type": "gauge", "help": help_text, "value": value}
-    
+
     def counter(self, name, help_text, value=0.0):
         if name not in self._metrics:
             self._metrics[name] = {"type": "counter", "help": help_text, "value": 0.0}
         self._metrics[name]["value"] += value
-        
+
     def set(self, name, value):
         if name in self._metrics:
             self._metrics[name]["value"] = value
@@ -95,7 +98,7 @@ class TelemetryBridge:
     def __init__(self, port=8000):
         self.port = port
         self.running = False
-        
+
         # Redis Pub/Sub (Async)
         self.redis_client = None
         self.pubsub = None
@@ -106,10 +109,10 @@ class TelemetryBridge:
         self.shield = AIOpsShield()
         self.truthsync = TruthSyncClient()
         self.wal = ForensicWAL(base_path=Path(log_dir) / "wal_storage")
-        
+
         # Init Metrics
         self._init_metrics()
-        
+
     def _init_metrics(self):
         REGISTRY.gauge("sentinel_coherence_ratio", "Resonance coherence (0-1)")
         REGISTRY.gauge("sentinel_energy_total", "Total system energy")
@@ -121,12 +124,12 @@ class TelemetryBridge:
     async def _process_row(self, row: Dict[str, str]):
         """Procesa una fila del CSV"""
         tick = int(row['tick'])
-        
+
         # Reconstrucción Pura desde valor raw
         energy_s60 = S60._from_raw(int(row['energy_total_raw']))
         coherence_s60 = S60._from_raw(int(row['coherence_raw']))
         drift_s60 = S60._from_raw(int(row['drift_raw']))
-        
+
         # 1. Update Metrics
         # REVIEW: to_float() no existe en SPA Rust nativo. Se usa to_raw() / SCALE_0.
         #         Conversión a float solo en frontera Prometheus.
@@ -134,16 +137,16 @@ class TelemetryBridge:
         REGISTRY.set("sentinel_coherence_ratio", coherence_s60.to_raw() / SCALE_0_F)
         REGISTRY.set("sentinel_drift_seconds", drift_s60.to_raw() / SCALE_0_F)
         REGISTRY.inc("sentinel_ticks_total")
-        
+
         # 2. AIOps Shield Sanitization (Simulada sobre el contenido raw)
         # En producción, esto analizaría logs de texto libre. Aquí validamos estructura.
         log_payload = f"TICK:{tick} E_RAW:{energy_s60.to_raw()} C_RAW:{coherence_s60.to_raw()}"
         sanitization = self.shield.sanitize(log_payload)
-        
+
         if sanitization.threat_level != ThreatLevel.SAFE:
             print(f"🛡️ [SHIELD] Threat Blocked: {sanitization.patterns_detected}")
             REGISTRY.inc("sentinel_threats_detected")
-            
+
             # 3. Forensic WAL (Loguear ataque)
             await self.wal.write({
                 "type": "THREAT_DETECTED",
@@ -160,14 +163,14 @@ class TelemetryBridge:
         if coherence_s60 < THRESHOLD_COHERENCE:
             # Usamos float solo para display en el log
             print(f"⚖️ [TRUTHSYNC] Low Coherence ({coherence_s60}). Validating...")
-            
+
             # Call TruthSync Oracle
             is_valid = self.truthsync.verify_data("COHERENCE_CHECK", {
                 "tick": tick,
                 "coherence_raw": coherence_s60.to_raw(),
                 "energy_raw": energy_s60.to_raw()
             })
-            
+
             if not is_valid:
                  REGISTRY.inc("sentinel_truthsync_alerts")
                  # Log crítico inmutable
@@ -183,7 +186,7 @@ class TelemetryBridge:
             return
 
         print("👀 Watchdog Loop Started. Escuchando en 'sentinel:telemetry:stream'...")
-        
+
         while self.running:
             try:
                 message = await self.pubsub.get_message(ignore_subscribe_messages=True, timeout=1.0)
@@ -197,11 +200,11 @@ class TelemetryBridge:
 
     def start(self):
         self.running = True
-        
+
         # Start Prometheus Server
         server_thread = threading.Thread(target=self._run_server, daemon=True)
         server_thread.start()
-        
+
         # Start Async Watchdog
         asyncio.run(self.main_async_loop())
 
@@ -217,7 +220,7 @@ class TelemetryBridge:
                 self.pubsub = pubsub
                 await self.pubsub.subscribe("sentinel:telemetry:stream")
                 await self._watch_loop()
-        
+
 
     def stop(self):
         self.running = False

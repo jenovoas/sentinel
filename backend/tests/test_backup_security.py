@@ -2,13 +2,16 @@
 # Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 
-import pytest
 import os
 import tempfile
+from unittest.mock import MagicMock, patch
+
+import pytest
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
-from unittest.mock import patch, MagicMock
+
 from app.routers import backup
+
 
 def test_trigger_backup_logic_unauthorized_path():
     # 3 calls to abspath: __file__, backup_script, project_root

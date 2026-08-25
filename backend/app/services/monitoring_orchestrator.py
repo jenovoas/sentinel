@@ -7,15 +7,13 @@ Integrates metrics collection, anomaly detection, and historical storage
 """
 
 import logging
-from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Any, Dict
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.services.monitoring import get_dashboard_snapshot
 from app.services.anomaly_detector import get_anomaly_detector, save_anomalies
 from app.services.metrics_history import MetricsHistoryService
-
+from app.services.monitoring import get_dashboard_snapshot
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +55,7 @@ class MonitoringOrchestrator:
             net_stats = snapshot["network"]
             db_stats_info = snapshot["db_stats"]
             wifi_info = net_stats.get("wifi", {})
-            
+
             sample = await MetricsHistoryService.store_metric_sample(
                 session,
                 cpu=snapshot["system"]["cpu_percent"],

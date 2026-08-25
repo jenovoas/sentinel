@@ -28,7 +28,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "backend"))
 
 # Import AIOpsShield patterns
 from aiops_shield import AIOpsShield
-
 from quantum_sentinel_bridge import (
     AnomalyPatternAnalyzer,
     OptimizationResult,

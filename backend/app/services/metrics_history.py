@@ -8,14 +8,12 @@ Stores all metrics samples for Phase 2 analysis and Phase 3 AI integration
 
 import logging
 from datetime import datetime, timedelta
-from typing import List, Optional, Dict, Tuple
+from typing import Dict, List, Optional, Tuple
 
-from sqlalchemy import select, and_, desc
+from sqlalchemy import and_, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.monitoring import MetricSample, Anomaly, AnomalyType, SeverityLevel
-from app.services.monitoring import get_dashboard_snapshot
-
+from app.models.monitoring import Anomaly, AnomalyType, MetricSample, SeverityLevel
 
 logger = logging.getLogger(__name__)
 

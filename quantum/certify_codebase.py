@@ -20,13 +20,14 @@ y los registra en el sistema TruthSync (Postgres/N8N) como "Facts Verificados".
 Esto protege el trabajo real de futuras alucinaciones o modificaciones no autorizadas.
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import hashlib
-import os
-import sys
 import json
+import os
 import subprocess
+import sys
 from datetime import datetime
+
+from quantum.yatra_core import PI_S60, S60  # YATRA AUTO-INJECT
 
 # Archivos críticos que definen la realidad física del sistema
 CRITICAL_FILES = [
@@ -45,16 +46,16 @@ CRITICAL_FILES = [
     "../backend/app/routers/quantum.py", # Critical Backend Logic
     "../backend/app/routers/ai.py",      # AI Identity Logic
     "../backend/app/security/telemetry_sanitizer.py", # Security Sanitizer
-    
+
     # CRITICAL SERVICES (REAL WORK) - PROTECTED
     "../backend/app/services/aiops_shield_llama3.py",   # Llama3 Security Analysis
     "../backend/app/services/truth_algorithm_llama3.py", # Truth Synthesis
     "../backend/app/services/perpetual_engine.py",       # ZPE Logic Controller
-    
+
     # HA & FAILSAFE LAYER - PROTECTED
     "../backend/app/routers/failsafe.py",                # N8N Bridge
     "../backend/app/routers/backup.py",                  # Backup Logic
-    
+
     # CORTEX & SUB-CORTEX - PROTECTED
     "../backend/app/routers/cortex.py",                  # Cortex API
     "../backend/app/services/cortex_engine.py",          # Decision Engine
@@ -78,7 +79,7 @@ CRITICAL_FILES = [
     "enheduanna_comparison.py",          # Identity Verification
     "celestial_navigation.py",           # Star Mapping
     "foreign_energy_detector.py",        # External Entity Detection
-    
+
     # DOCUMENTATION & RESEARCH - PROTECTED IP
     "../docs/MASTER_SECURITY_IP_CONSOLIDATION.md",  # Patent Strategy
     "../docs/AIOPSDOOM_DEFENSE.md",                 # Core Innovation
@@ -91,7 +92,7 @@ CRITICAL_FILES = [
     "../research/FRACTAL_SOUL_RESEARCH.md",         # Consciousness Research
     "../research/DIGITAL_ARCHAEOLOGY.md",           # Historical Analysis
     "../research/SACRED_GEOMETRY_PATTERNS.md",      # Geometric Patterns
-    
+
     # PHASE 7: SILICON SYNTHESIS - FROZEN
     "hardware_synthesis.py",             # Synthesis Simulator
     "numerical_control_unit.py",         # NCU Driver
@@ -129,7 +130,7 @@ def register_fact_in_db(filename, file_hash, status_label="Verified"):
     """Inserta el hash en la DB Postgres como una verdad verificada."""
     claim = f"File Integrity: {filename} (Status: {status_label})"
     source = '["certify_codebase.py", "user_manual_audit"]'
-    
+
     # Comando SQL para insertar
     sql = f"""
     INSERT INTO verified_facts (claim, claim_hash, trust_score, sources)
@@ -138,26 +139,26 @@ def register_fact_in_db(filename, file_hash, status_label="Verified"):
         verification_count = verified_facts.verification_count + 1,
         verified_at = NOW();
     """
-    
+
     # Ejecutar via Docker Exec (ya que psql local no está)
     cmd = [
-        "docker", "exec", "sentinel-postgres", 
-        "psql", "-U", "sentinel_user", "-d", "sentinel_db", 
+        "docker", "exec", "sentinel-postgres",
+        "psql", "-U", "sentinel_user", "-d", "sentinel_db",
         "-c", sql
     ]
-    
+
     result = subprocess.run(cmd, capture_output=True, text=True)
     return result.returncode == 0
 
 def main():
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    
+
     print("=" * 60)
     print("🛡️  SENTINEL INTEGRITY CERTIFICATION PROTOCOL")
     print("=" * 60)
-    
+
     results = []
-    
+
     # Procesar Archivos Críticos (Verified)
     for filename in CRITICAL_FILES:
         process_file(base_dir, filename, "Verified", results)
@@ -173,21 +174,21 @@ def main():
     for res in results:
         icon = "🔒" if res["status"] == "SECURED" else "❌"
         print(f"{icon} {res['file']:<40} | {res['status']}")
-    
+
     print("\nLos archivos han sido sellados digitalmente.")
 
 def process_file(base_dir, filename, label, results):
     filepath = os.path.join(base_dir, filename)
     file_hash = calculate_file_hash(filepath)
-    
+
     if file_hash:
         print(f"\n📄 Procesando: {filename}")
         print(f"   SHA-256: {file_hash}")
         print(f"   Estado:  {label}")
-        
+
         # Intentar registrar en DB
         success = register_fact_in_db(filename, file_hash, label)
-        
+
         if success:
             print("   ✅ CERTIFICADO: Hash registrado en TruthSync DB.")
             results.append({"file": filename, "status": f"SECURED ({label})", "hash": file_hash})

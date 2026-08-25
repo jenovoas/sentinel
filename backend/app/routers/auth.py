@@ -1,20 +1,22 @@
 # Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
 # Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
+from datetime import timedelta
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.database import get_db
 from app.schemas.auth import Token
-from app.services.user_service import authenticate_user
 from app.security import create_access_token
-from datetime import timedelta
+from app.services.user_service import authenticate_user
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
 @router.post("/login", response_model=Token)
 async def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(), 
+    form_data: OAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -30,7 +32,7 @@ async def login_for_access_token(
     access_token_expires = timedelta(minutes=30)
     access_token = create_access_token(
         data={
-            "user_id": str(user.id), 
+            "user_id": str(user.id),
             "tenant_id": str(user.organization_id),  # Use organization_id (backward compatible key)
         },
         expires_delta=access_token_expires,

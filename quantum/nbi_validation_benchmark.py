@@ -22,11 +22,14 @@ Author: Sentinel IA
 Date: 2026-01-04
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import json
 import os
+
+import numpy as np  # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 from optomechanical_simulator import MembraneParameters, OpticalParameters, OptomechanicalSystem, QuantumRiftDetector
+
+from quantum.yatra_core import PI_S60, S60  # YATRA AUTO-INJECT
+
 
 def run_nbi_benchmark():
     print("🚀 Running NBI Validation Benchmark...")
@@ -38,7 +41,7 @@ def run_nbi_benchmark():
     # Mass density of Si3N4 ~ 3170 kg/m^3
     # Volume = 2.5e-9 * 100e-9 = 2.5e-16 m^3
     # Mass = 3170 * 2.5e-16 = 7.9e-13 kg
-    
+
     nbi_membrane = MembraneParameters(
         mass=7.9e-13,
         frequency=1.14e6,      # ~1 MHz mechanical mode
@@ -47,24 +50,24 @@ def run_nbi_benchmark():
         thickness=100e-9,
         area=2.5e-9
     )
-    
+
     nbi_optical = OpticalParameters(
         wavelength=1064e-9,    # NBI often uses 1064nm
         finesse=10000,         # High finesse cavity
         length=1e-3,
         power=5e-3             # 5 mW
     )
-    
+
     system = OptomechanicalSystem(nbi_membrane, nbi_optical)
     detector = QuantumRiftDetector(n_nodes=2)
-    
+
     print(f"Membrane Omega_m: {nbi_membrane.omega_m/(2*PI_S60)/1e6:.2f} MHz")
     print(f"Q Factor: {nbi_membrane.quality_factor:.1e}")
     print(f"Coupling g0/2pi: {system.g0:.2f} Hz")
-    
+
     # 2. Benchmarks
     results = []
-    
+
     # Benchmark A: Qxf product (Høj et al. 2024)
     qxf_measured = nbi_membrane.quality_factor * (nbi_membrane.omega_m / (2 * PI_S60))
     results.append({
@@ -90,7 +93,7 @@ def run_nbi_benchmark():
     # Generate entangled state using the simulator's logic
     rho_entangled = system.generate_entanglement(n_qubits=2)
     negativity = detector.log_negativity(rho_entangled, [2, 2])
-    
+
     results.append({
         "Metric": "Log-negativity",
         "Target": "S60(0, 30, 0) - 1.2",
@@ -116,7 +119,7 @@ def run_nbi_benchmark():
     for res in results:
         print(f"{res['Metric']:<30} | {res['Measured']:<15} | {res['Target']:<15} | {res['Error']:<10}")
     print("="*80)
-    
+
     # Save to file
     with open("/home/jnovoas/sentinel/docs/BENCHMARK_NBI_VALIDATION.json", "w") as f:
         json.dump(results, f, indent=2)

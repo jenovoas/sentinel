@@ -14,8 +14,8 @@
 # ACCIÓN: dejar en olvido (Python legacy). El runtime es Rust.
 # Verificado por: lectura del fuente, no por fe.
 # -----------------------------------------------------------------------------
-import sys
 import os
+import sys
 
 # Agregamos me-60os al path para cargar el módulo compilado
 ME60OS_PATH = os.path.expanduser("~/Development/me-60os")
@@ -43,11 +43,11 @@ class CrystalMemoryCore:
         # Yatra restriction: No floats. Pulse must be integer [0-255] for inject
         if not isinstance(pulse_intensity, int):
             raise ValueError("Directiva Cristalina: pulse_intensity debe ser entero (S60 compatible)")
-            
+
         self.matrix.set_context(index, context_payload)
         # Inject recibe bytes, simulamos el pulso
         self.matrix.inject(bytes([pulse_intensity % 256]))
-        
+
     def resonate(self, steps=1):
         """Hace evolucionar la matriz, distribuyendo la memoria simpaticamente"""
         for _ in range(steps):
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     # Prueba de estres masivo
     crystal = CrystalMemoryCore(rings=200) # ~120,600 nodos
     crystal.imprint_memory(0, "Axioma de Inicialización: Yo Soy.", 255)
-    
+
     import time
     start = time.time()
     for _ in range(100):

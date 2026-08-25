@@ -3,6 +3,7 @@
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 from enum import Enum
 
+
 class AIMode(str, Enum):
     GENERAL = "general"
     SECURITY = "security"

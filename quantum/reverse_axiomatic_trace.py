@@ -26,9 +26,12 @@ Author: Sentinel IA
 Date: 2026-01-03
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import json
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
+
+import numpy as np  # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
+
+from quantum.yatra_core import PI_S60, S60  # YATRA AUTO-INJECT
+
 
 def trace_1540():
     print("=" * 70)
@@ -36,22 +39,22 @@ def trace_1540():
     print("   Target Value: 1540")
     print("=" * 70)
     print()
-    
+
     timeline_file = "/home/jnovoas/sentinel/quantum/memory_archive/complete_timeline_updated.json"
     with open(timeline_file) as f:
         timeline = json.load(f)
-        
+
     print(f"Scanning {len(timeline)} lives for resonance with '1540'...")
     print()
-    
+
     hits = []
-    
+
     # 1. DATE CORRELATION (Is it a year?)
     # 1540 CE is in the 'Lost Years' (Life 9/10 boundary).
     # 1540 BCE is in the 'Kassite Period' (Life 1/2 boundary).
-    
+
     print("--- CHRONOLOGICAL SCAN ---")
-    
+
     # Check 1540 CE
     diff_ce = abs(1540 - 1650) # Approx distance to Life 10 (Mei Wending)
     if diff_ce < 150:
@@ -73,10 +76,10 @@ def trace_1540():
     print(f"      25 = Utu (Sun). 40 = Enki (Wisdom).")
     print(f"      This is a THEOLOGICAL FORMULA.")
     hits.append(("Formula", "Sun + Wisdom Combination"))
-    
+
     print()
     print("--- AXIOMATIC CONCLUSION ---")
-    
+
     if hits:
         best_hit = hits[2] # The Mathematical scan is usually strongest for the Architect
         print(f"The strongest axiomatic trace is: {best_hit[0]} -> {best_hit[1]}")

@@ -20,13 +20,16 @@ Comparamos:
 Si el motor es honesto, el Caso 2 debe mostrar DISONANCIA (Estabilidad negativa).
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
-import sys
 import os
+import sys
+
+import numpy as np  # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
+
+from quantum.yatra_core import PI_S60, S60  # YATRA AUTO-INJECT
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from signal_stabilization_study import SignalStabilizerStudy
+
 
 def integrity_proof():
     study = SignalStabilizerStudy(target_f_mhz=S60(153, 24, 0))
@@ -47,13 +50,13 @@ def integrity_proof():
     print("\n[TEST 2] Sintonía Errónea (INTENCIÓN A 155.0 MHz)...")
     # Modificamos temporalmente el estudio para usar una frecuencia de intención errónea
     def run_mismatched():
-        m_params = study.run_simulation.__globals__['MembraneParameters'](mass=1e-15, frequency=S60(153, 24, 0)e6)
-        omega = 2 * PI_S60 * S60(153, 24, 0)e6
+        m_params = study.run_simulation.__globals__['MembraneParameters'](mass=1e-15, frequency=S60(153, 24, 0) * 1e6)
+        omega = 2 * PI_S60 * (S60(153, 24, 0) * 1e6)
         dt = study.dt
         steps = study.steps
         np.random.seed(42)
         vacuum_noise = np.random.normal(0, 2e-12, steps)
-        vacuum_signal = np.cos(2 * PI_S60 * S60(153, 24, 0)e6 * np.arange(steps) * dt)
+        vacuum_signal = np.cos(2 * PI_S60 * (S60(153, 24, 0) * 1e6) * np.arange(steps) * dt)
         
         x, p = S60(0, 0, 0), S60(0, 0, 0)
         errs = []
@@ -68,7 +71,7 @@ def integrity_proof():
             p += (force - (omega/1e6)*p) * dt
             x += (p/1e-15) * dt
             if i > steps - 10000:
-                errs.append(abs(x/max(abs(x),1e-25) - np.cos(2 * PI_S60 * S60(153, 24, 0)e6 * t)))
+                errs.append(abs(x/max(abs(x),1e-25) - np.cos(2 * PI_S60 * (S60(153, 24, 0) * 1e6) * t)))
         return np.mean(errs)
 
     err_fail = run_mismatched()

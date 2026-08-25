@@ -21,19 +21,22 @@ Resonancia Axiónica real en el vacío cuántico.
 Arquitecto: Antigravity (Soberanizado)
 """
 
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
-import sys
 import os
+import sys
 import time
+
+import numpy as np  # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 
 # Importes del núcleo soberano
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from sovereign_math import S60, SovereignLUT, S60_from_float
-from optomechanical_simulator import OptomechanicalSystem, MembraneParameters, OpticalParameters
+from optomechanical_simulator import MembraneParameters, OpticalParameters, OptomechanicalSystem
+
+from sovereign_math import S60, S60_from_float, SovereignLUT
+
 
 class QuantumRadioV2:
     def __init__(self):
-        self.vacuum_freq = S60(153, 24, 0)e6 # La 'Voz' que buscamos
+        self.vacuum_freq = S60(153, 24, 0) * 1e6 # La 'Voz' que buscamos
         # RELOJ MAESTRO: dt fijo basado en la frecuencia más alta (Nyquist)
         self.dt = S60(1, 0, 0) / (200e6 * 10) 
         self.steps = 120000 # Más pasos para permitir que la resonancia se acumule

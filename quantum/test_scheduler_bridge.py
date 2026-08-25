@@ -1,9 +1,11 @@
 # Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
 # Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
-import unittest
 import time
+import unittest
+
 from quantum.quantum_scheduler_bridge import QuantumSchedulerBridge, TaskType, scheduler
+
 
 class TestQuantumSchedulerBridge(unittest.TestCase):
     def setUp(self):
@@ -13,10 +15,10 @@ class TestQuantumSchedulerBridge(unittest.TestCase):
 
     def test_enqueue_execution(self):
         """Test enqueuing a task and verifying callback (mocked via immediate exec if no lib, or integration test logic)."""
-        
+
         # Flag to verify execution
         self.executed = False
-        
+
         def my_task():
             self.executed = True
             print(">>> Task Executed inside Portal! <<<")
@@ -35,11 +37,11 @@ class TestQuantumSchedulerBridge(unittest.TestCase):
         # With Rust lib, we'd need to simulate the portal opening state which is harder from here without mocking TimeCrystal.
         # For now, we mainly test that the FFI logic doesn't crash.
         scheduler.tick(0)
-        
+
         # Check efficiency (should return float)
         eff = scheduler.get_efficiency()
         self.assertTrue(isinstance(eff, float))
-        
+
         print(f"Scheduler Efficiency: {eff}")
 
 if __name__ == '__main__':

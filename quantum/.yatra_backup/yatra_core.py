@@ -58,16 +58,16 @@ class S60:
         S60(1, 30, 0, 0, 0) = 1.5 grados
         Interno: 1*12960000 + 30*216000 = 19,440,000 unidades
     """
-    
+
     # Constantes de escala BASE-60 (pre-calculadas, inmutables)
     SCALE_0 = 12960000  # 60^4 (grados)
     SCALE_1 = 216000    # 60^3 (minutos)
     SCALE_2 = 3600      # 60^2 (segundos)
     SCALE_3 = 60        # 60^1 (tercios)
     SCALE_4 = 1         # 60^0 (cuartos)
-    
+
     __slots__ = ['_value']  # Optimización de memoria
-    
+
     def __init__(self, d=0, m=0, s=0, t=0, q=0):
         """
         Inicializa S60 desde componentes sexagesimales.
@@ -92,7 +92,7 @@ class S60:
                 raise DecimalContaminationError(
                     f"CRITICAL: Tipo inválido '{type(c)}'. Solo enteros permitidos."
                 )
-        
+
         # Conversión a fixed-point (MATEMÁTICA BASE-60)
         # Valor = d*60^4 + m*60^3 + s*60^2 + t*60 + q
         self._value = (
@@ -102,7 +102,7 @@ class S60:
             t * self.SCALE_3 +
             q * self.SCALE_4
         )
-    
+
     @classmethod
     def _from_raw(cls, raw_value: int):
         """
@@ -117,50 +117,50 @@ class S60:
         obj = cls.__new__(cls)
         obj._value = raw_value
         return obj
-    
+
     def __repr__(self):
         """Formato Yatra Estandarizado: S60[GGG; MM, SS, TT, QQ]"""
         val = abs(self._value)
         sign = "-" if self._value < 0 else ""
-        
+
         # Extraer componentes (MATEMÁTICA BASE-60)
         d = val // self.SCALE_0
         val %= self.SCALE_0
-        
+
         m = val // self.SCALE_1
         val %= self.SCALE_1
-        
+
         s = val // self.SCALE_2
         val %= self.SCALE_2
-        
+
         t = val // self.SCALE_3
         val %= self.SCALE_3
-        
+
         q = val
-        
+
         return f"S60[{sign}{d:03d}; {m:02d}, {s:02d}, {t:02d}, {q:02d}]"
-    
+
     # ========================================================================
     # OPERACIONES ARITMÉTICAS (BASE-60 FIXED-POINT)
     # ========================================================================
-    
+
     def __add__(self, other):
         """Suma: una sola adición de enteros."""
         if not isinstance(other, S60):
             raise TypeError("Solo se puede sumar S60 con S60")
         return S60._from_raw(self._value + other._value)
-    
+
     def __sub__(self, other):
         """Resta: una sola resta de enteros."""
         if not isinstance(other, S60):
             raise TypeError("Solo se puede restar S60 con S60")
         return S60._from_raw(self._value - other._value)
-    
+
     def __mul__(self, scalar):
         """Multiplicación escalar (int) o S60 * S60."""
         if isinstance(scalar, float):
             raise DecimalContaminationError("Multiplicación por escalar float prohibida.")
-        
+
         if isinstance(scalar, S60):
             # S60 * S60: multiplicar valores y re-escalar
             result = (self._value * scalar._value) // self.SCALE_0
@@ -169,11 +169,11 @@ class S60:
             return S60._from_raw(self._value * scalar)
         else:
             raise TypeError(f"Solo se puede multiplicar S60 por int o S60, no {type(scalar)}")
-    
+
     def __rmul__(self, scalar):
         """Multiplicación reversa (int * S60 o S60 * S60)."""
         return self.__mul__(scalar)
-    
+
     def __floordiv__(self, divisor: int):
         """División entera: una sola división de enteros."""
         if isinstance(divisor, float):
@@ -183,7 +183,7 @@ class S60:
         if divisor == 0:
             raise ZeroDivisionError("División por cero.")
         return S60._from_raw(self._value // divisor)
-    
+
     def __truediv__(self, divisor):
         """
         División verdadera S60 / S60 o S60 / int.
@@ -192,7 +192,7 @@ class S60:
         if isinstance(divisor, S60):
             if divisor._value == 0:
                 raise ZeroDivisionError("División por cero")
-            
+
             # División con re-escalado y redondeo (+ divisor//2 para redondear)
             num = self._value * self.SCALE_0
             den = divisor._value
@@ -200,7 +200,7 @@ class S60:
             sign = 1 if (num ^ den) >= 0 else -1
             result = (abs(num) + abs(den) // 2) // abs(den)
             return S60._from_raw(result * sign)
-        
+
         elif isinstance(divisor, int):
             if divisor == 0:
                 raise ZeroDivisionError("División por cero")
@@ -208,56 +208,56 @@ class S60:
             sign = 1 if (self._value ^ divisor) >= 0 else -1
             result = (abs(self._value) + abs(divisor) // 2) // abs(divisor)
             return S60._from_raw(result * sign)
-        
+
         else:
             raise TypeError(f"No se puede dividir S60 por {type(divisor)}")
-    
+
     # ========================================================================
     # OPERADORES UNARIOS
     # ========================================================================
-    
+
     def __neg__(self):
         """Negación unaria (-x)."""
         return S60._from_raw(-self._value)
-    
+
     def __abs__(self):
         """Valor absoluto."""
         return S60._from_raw(abs(self._value))
-    
+
     # ========================================================================
     # COMPARACIONES (FIXED-POINT PURO)
     # ========================================================================
-    
+
     def __lt__(self, other):
         """Menor que (<)."""
         if not isinstance(other, S60):
             raise TypeError("Solo se puede comparar S60 con S60")
         return self._value < other._value
-    
+
     def __le__(self, other):
         """Menor o igual (<=)."""
         if not isinstance(other, S60):
             raise TypeError("Solo se puede comparar S60 con S60")
         return self._value <= other._value
-    
+
     def __gt__(self, other):
         """Mayor que (>)."""
         if not isinstance(other, S60):
             raise TypeError("Solo se puede comparar S60 con S60")
         return self._value > other._value
-    
+
     def __ge__(self, other):
         """Mayor o igual (>=)."""
         if not isinstance(other, S60):
             raise TypeError("Solo se puede comparar S60 con S60")
         return self._value >= other._value
-    
+
     def __eq__(self, other):
         """Igual (==)"""
         if not isinstance(other, S60):
             return False
         return self._value == other._value
-    
+
     def __ne__(self, other):
         """Diferente (!=)."""
         return not self.__eq__(other)
@@ -270,7 +270,7 @@ class S60:
             # e.g. x^-2 = 1 / x^2
             res = (self**abs(power))
             return S60(1) / res
-        
+
         result = S60(1)
         base = self
         while power > 0:
@@ -291,11 +291,11 @@ class S60:
     def __bool__(self):
         """True si el valor es distinto de cero."""
         return self._value != 0
-    
+
     # ========================================================================
     # UTILIDADES
     # ========================================================================
-    
+
     def to_base_units(self):
         """
         Retorna el valor interno en unidades mínimas (int puro).
@@ -312,7 +312,7 @@ class S60:
             S60(1, 30, 0, 0, 0).to_base_units() → 19,440,000
         """
         return self._value
-    
+
     @classmethod
     def from_decimal_degrees_FOR_IMPORT_ONLY(cls, decimal_val):
         """
@@ -338,7 +338,7 @@ class S60:
         t = int(rem)
         rem = (rem - t) * 60
         q = int(rem)  # Truncamiento puro
-        
+
         return cls(d, m, s, t, q)
 
 
@@ -364,7 +364,7 @@ def demo_yatra():
     """Demostración del sistema Yatra."""
     print("🔱 INICIANDO YATRA-CORE SYSTEM CHECK (FIXED-POINT MODE)...")
     print("-" * 60)
-    
+
     # 1. Verificar arquitectura
     print("\n1. Arquitectura Fixed-Point Base-60:")
     test = S60(1, 30, 0, 0, 0)
@@ -373,23 +373,23 @@ def demo_yatra():
     expected = 1*12960000 + 30*216000
     print(f"   Esperado: 1*60^4 + 30*60^3 = {expected}")
     print(f"   Verificación: {test._value == expected} ✅")
-    
+
     # 2. Prueba Aritmética
     print("\n2. Aritmética de Resonancia:")
     print(f"   Aldebaran Base: {STAR_ALDEBARAN}")
-    
+
     adjustment = YATRA_SALTO_17 * 5
     result = STAR_ALDEBARAN + adjustment
-    
+
     print(f"   Ajuste (Salto 17 x 5): {adjustment}")
     print(f"   Posición Ajustada: {result}")
-    
+
     # 3. Verificación de precisión
     print(f"\n3. Cierre de Ciclo (1/17 * 17):")
     full_cycle_17 = YATRA_SALTO_17 * 17
     print(f"   Resultado: {full_cycle_17}")
     print(f"   Esperado:  S60[001; 00, 00, ...] aprox")
-    
+
     # 4. Test de pureza
     print("\n4. Test de Pureza (debe rechazar float):")
     try:
@@ -397,7 +397,7 @@ def demo_yatra():
         print("   ❌ FALLO: Aceptó float")
     except DecimalContaminationError as e:
         print(f"   ✅ ÉXITO: Rechazó float")
-    
+
     # 5. Test de operaciones
     print("\n5. Test de Operaciones:")
     a = S60(10, 0, 0, 0, 0)
@@ -410,7 +410,7 @@ def demo_yatra():
     print(f"   a // 2 = {a // 2}")
     print(f"   a < b = {a < b}")
     print(f"   a > b = {a > b}")
-    
+
     print("\n" + "=" * 60)
     print("✅ YATRA-CORE: FIXED-POINT BASE-60 OPERATIVO")
     print("   - Matemática: Base-60 pura (60^4, 60^3, 60^2, 60, 1)")

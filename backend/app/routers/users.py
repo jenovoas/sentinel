@@ -12,14 +12,18 @@ This router handles all user-related endpoints, including:
 - User deletion
 """
 
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.database import get_db
 from app.models.user import User
-from app.schemas import UserCreate, UserUpdate, UserResponse
-from app.services.user_service import create_user as create_user_service, get_users, get_user as get_user_service
+from app.schemas import UserCreate, UserResponse, UserUpdate
 from app.security import get_current_user
-from typing import List
+from app.services.user_service import create_user as create_user_service
+from app.services.user_service import get_user as get_user_service
+from app.services.user_service import get_users
 
 router = APIRouter(prefix="/api/v1/users", tags=["users"])
 
@@ -89,11 +93,11 @@ async def update_user(
     db_user = await get_user_service(db, user_id=user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
-    
+
     update_data = user.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(db_user, field, value)
-    
+
     db.add(db_user)
     await db.commit()
     await db.refresh(db_user)
@@ -115,7 +119,7 @@ async def delete_user(
     db_user = await get_user_service(db, user_id=user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
-    
+
     await db.delete(db_user)
     await db.commit()
     return None

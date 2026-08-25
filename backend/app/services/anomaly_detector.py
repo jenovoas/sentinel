@@ -7,13 +7,12 @@ Implements baseline statistical detection for pre-AI analysis
 """
 
 import logging
-from datetime import datetime, timedelta
 from enum import Enum
-from typing import List, Optional, Dict, Any
-from sqlalchemy import and_, desc
+from typing import List, Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.monitoring import Anomaly, AnomalyType, SeverityLevel, MetricSample
+from app.models.monitoring import Anomaly, AnomalyType, SeverityLevel
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +39,7 @@ except ImportError:
     sys.path.append(str(Path(__file__).parent.parent.parent))
     # Try specific build directory if exists
     sys.path.append(str(Path(__file__).parent.parent.parent / "build"))
-    
+
     try:
         import me60os_core
     except ImportError:
@@ -74,7 +73,7 @@ class AnomalyDetector:
         memory_used_mb: float = 0,
         memory_total_mb: float = 0,
     ) -> List[Anomaly]:
-        
+
         if self._core is None:
             return []
 
@@ -96,8 +95,8 @@ class AnomalyDetector:
                 atype = AnomalyType(a["anomaly_type"])
             except ValueError:
                 # Fallback genérico si el enum no está mapeado
-                atype = AnomalyType.CPU_SPIKE 
-                
+                atype = AnomalyType.CPU_SPIKE
+
             anomalies.append(Anomaly(
                 anomaly_type=atype,
                 severity=severity_mapped,

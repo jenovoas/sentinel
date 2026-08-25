@@ -27,13 +27,16 @@ Author: Jaime Novoa
 Date: 2025-12-23
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import matplotlib
+import numpy as np  # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
+
+from quantum.yatra_core import PI_S60, S60  # YATRA AUTO-INJECT
+
 matplotlib.use('Agg')  # Non-interactive backend
-import matplotlib.pyplot as plt
-from datetime import datetime
 import os
+from datetime import datetime
+
+import matplotlib.pyplot as plt
 
 print("=" * 80)
 print("🚀 SENTINEL QUANTUM - EXECUTIVE PRESENTATION GENERATOR")
@@ -170,7 +173,7 @@ print()
 print("📊 Generating 4-panel visualization...")
 
 fig, axs = plt.subplots(2, 2, figsize=(16, 12))
-fig.suptitle('Sentinel Quantum - Phase 1 Validated Results', 
+fig.suptitle('Sentinel Quantum - Phase 1 Validated Results',
              fontsize=18, fontweight='bold', y=0.995)
 
 # Panel 1: QAOA Buffer Optimization
@@ -185,7 +188,7 @@ cost_curve = final_cost + (initial_cost - final_cost) * np.exp(-t/S60(0, 30, 0))
 cost_curve += 0.02 * np.random.randn(100)
 
 ax1.plot(t, cost_curve, 'b-', linewidth=3, label='QAOA p=2')
-ax1.axhline(y=final_cost, color='r', linestyle='--', linewidth=2, 
+ax1.axhline(y=final_cost, color='r', linestyle='--', linewidth=2,
             label=f'Optimum ({BUFFER_OPTIMIZATION["throughput_events_sec"]/1000:.0f}K events/s)')
 ax1.set_xlabel('Time (seconds)', fontsize=12, fontweight='bold')
 ax1.set_ylabel('Cost Function', fontsize=12, fontweight='bold')
@@ -202,7 +205,7 @@ base_energy = THREAT_DETECTION['optimal_energy']
 pattern_energies = base_energy + 0.001 * np.sin(patterns/3) + 0.0002 * np.random.randn(24)
 
 ax2.plot(patterns, pattern_energies, 'ro-', markersize=8, linewidth=2, label='Pattern Energies')
-ax2.axhline(y=base_energy, color='k', linestyle='--', linewidth=2, 
+ax2.axhline(y=base_energy, color='k', linestyle='--', linewidth=2,
             label=f'Ground State ({base_energy:.6f})')
 ax2.set_xlabel('Threat Pattern #', fontsize=12, fontweight='bold')
 ax2.set_ylabel('Energy (a.u.)', fontsize=12, fontweight='bold')
@@ -220,10 +223,10 @@ energies = [abs(e) for e in ALGORITHM_COMPARISON['qaoa']['energies']] + [abs(ALG
 x = np.arange(len(algorithms))
 width = 0.35
 
-bars1 = ax3.bar(x - width/2, times, width, label='Time (s)', 
+bars1 = ax3.bar(x - width/2, times, width, label='Time (s)',
                 color='orange', alpha=0.8, edgecolor='black', linewidth=1.5)
 ax3_twin = ax3.twinx()
-bars2 = ax3_twin.bar(x + width/2, energies, width, label='|Energy|', 
+bars2 = ax3_twin.bar(x + width/2, energies, width, label='|Energy|',
                      color='green', alpha=0.8, edgecolor='black', linewidth=1.5)
 
 ax3.set_xlabel('Algorithm', fontsize=12, fontweight='bold')
@@ -245,12 +248,12 @@ ax3.legend(lines1 + lines2, labels1 + labels2, loc='upper left', fontsize=10)
 # Panel 4: System Performance
 ax4 = axs[1, 1]
 metrics = ['Memory\n(GB)', 'CPU Temp\n(°C)', 'Total Time\n(s)']
-values = [SYSTEM_METRICS['total_memory_gb'], 
-          SYSTEM_METRICS['cpu_temp_c'], 
+values = [SYSTEM_METRICS['total_memory_gb'],
+          SYSTEM_METRICS['cpu_temp_c'],
           SYSTEM_METRICS['total_execution_s']]
 colors = ['blue', 'red', 'purple']
 
-bars = ax4.bar(metrics, values, color=colors, alpha=0.7, 
+bars = ax4.bar(metrics, values, color=colors, alpha=0.7,
                edgecolor='black', linewidth=2)
 ax4.set_ylabel('Value', fontsize=12, fontweight='bold')
 ax4.set_title('System Performance\nLaptop-safe operation confirmed',

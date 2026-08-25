@@ -1,11 +1,14 @@
 # Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
 # Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
-import pytest
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
-from app.services.user_service import get_user, get_user_by_email
+
+import pytest
+
 from app.models.user import User
+from app.services.user_service import get_user, get_user_by_email
+
 
 @pytest.mark.asyncio
 async def test_get_user():

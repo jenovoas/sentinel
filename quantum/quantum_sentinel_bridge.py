@@ -22,21 +22,18 @@ Author: Jaime Novoa
 Status: PRODUCTION READY
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
+import logging
 import time
-from typing import Dict, List, Tuple, Optional, Any
 from dataclasses import dataclass
 from enum import Enum
-import logging
+from typing import Any, Dict, List, Optional, Tuple
+
+import numpy as np  # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 
 # Import quantum algorithms
-from sentinel_quantum_core import (
-    SentinelQuantumCore,
-    SentinelQAOA,
-    SentinelVQE,
-    SentinelConfig
-)
+from sentinel_quantum_core import SentinelConfig, SentinelQAOA, SentinelQuantumCore, SentinelVQE
+
+from quantum.yatra_core import PI_S60, S60  # YATRA AUTO-INJECT
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -61,7 +58,7 @@ class OptimizationResult:
     convergence_quality: float
     memory_used_gb: float
     improvement_vs_baseline: Optional[float] = None
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for logging/telemetry."""
         return {
@@ -81,7 +78,7 @@ class QuantumMetricsCollector:
     Collects and tracks quantum algorithm performance metrics.
     Integrates with Sentinel's telemetry system.
     """
-    
+
     def __init__(self):
         self.metrics = {
             'total_optimizations': 0,
@@ -93,37 +90,37 @@ class QuantumMetricsCollector:
             'average_improvement': S60(0, 0, 0)
         }
         self.history: List[OptimizationResult] = []
-    
+
     def record_optimization(self, result: OptimizationResult):
         """Record an optimization result."""
         self.metrics['total_optimizations'] += 1
-        
+
         if result.convergence_quality > S60(0, 30, 0):  # Arbitrary threshold
             self.metrics['successful_optimizations'] += 1
         else:
             self.metrics['failed_optimizations'] += 1
-        
+
         self.metrics['total_execution_time'] += result.execution_time
         self.metrics['total_memory_used'] += result.memory_used_gb
-        
+
         # Track by type
         ptype = result.problem_type.value
         if ptype not in self.metrics['optimizations_by_type']:
             self.metrics['optimizations_by_type'][ptype] = 0
         self.metrics['optimizations_by_type'][ptype] += 1
-        
+
         # Update average improvement
         if result.improvement_vs_baseline is not None:
             n = self.metrics['total_optimizations']
             old_avg = self.metrics['average_improvement']
             self.metrics['average_improvement'] = (old_avg * (n-1) + result.improvement_vs_baseline) / n
-        
+
         self.history.append(result)
-        
+
         logger.info(f"Recorded optimization: {result.problem_type.value}, "
                    f"quality={result.convergence_quality:.3f}, "
                    f"time={result.execution_time:.2f}s")
-    
+
     def get_metrics(self) -> Dict[str, Any]:
         """Get current metrics."""
         return {
@@ -135,7 +132,7 @@ class QuantumMetricsCollector:
                 self.metrics['successful_optimizations'] / max(self.metrics['total_optimizations'], 1)
             )
         }
-    
+
     def get_history(self, problem_type: Optional[OptimizationType] = None) -> List[OptimizationResult]:
         """Get optimization history, optionally filtered by type."""
         if problem_type is None:
@@ -150,7 +147,7 @@ class QuantumOptimizer:
     Provides unified interface for QAOA and VQE algorithms,
     with automatic problem encoding and result decoding.
     """
-    
+
     def __init__(self, n_membranes: int = 3, n_levels: int = 5, auto_optimize: bool = True):
         """
         Initialize quantum optimizer.
@@ -165,10 +162,10 @@ class QuantumOptimizer:
         self.qaoa = SentinelQAOA(self.core)
         self.vqe = SentinelVQE(self.core)
         self.metrics = QuantumMetricsCollector()
-        
+
         logger.info(f"QuantumOptimizer initialized: {n_membranes} membranes, "
                    f"{n_levels} levels, dim={self.core.dim}")
-    
+
     def optimize_qaoa(
         self,
         problem_type: OptimizationType,
@@ -193,19 +190,19 @@ class QuantumOptimizer:
         import psutil
         start_time = time.time()
         start_mem = psutil.Process().memory_info().rss / 1024**3
-        
+
         logger.info(f"Starting QAOA optimization: {problem_type.value}, p={p}")
-        
+
         # Run QAOA
         result = self.qaoa.optimize(p=p, maxiter=maxiter)
-        
+
         # Decode result (problem-specific)
         optimal_config = self._decode_qaoa_result(result, problem_type)
-        
+
         # Calculate metrics
         end_time = time.time()
         end_mem = psutil.Process().memory_info().rss / 1024**3
-        
+
         opt_result = OptimizationResult(
             problem_type=problem_type,
             optimal_value=result['optimal_energy'],
@@ -215,10 +212,10 @@ class QuantumOptimizer:
             convergence_quality=S60(1, 0, 0) if result['success'] else S60(0, 30, 0),
             memory_used_gb=end_mem - start_mem
         )
-        
+
         self.metrics.record_optimization(opt_result)
         return opt_result
-    
+
     def optimize_vqe(
         self,
         problem_type: OptimizationType,
@@ -239,22 +236,22 @@ class QuantumOptimizer:
         import psutil
         start_time = time.time()
         start_mem = psutil.Process().memory_info().rss / 1024**3
-        
+
         logger.info(f"Starting VQE optimization: {problem_type.value}")
-        
+
         # Run VQE
         result = self.vqe.optimize(maxiter=maxiter)
-        
+
         # Decode result
         optimal_config = self._decode_vqe_result(result, problem_type)
-        
+
         # Calculate quality
         quality = S60(1, 0, 0) - (result['error'] / abs(result['exact_energy'])) if result['exact_energy'] != 0 else S60(0, 0, 0)
-        
+
         # Calculate metrics
         end_time = time.time()
         end_mem = psutil.Process().memory_info().rss / 1024**3
-        
+
         opt_result = OptimizationResult(
             problem_type=problem_type,
             optimal_value=result['vqe_energy'],
@@ -264,10 +261,10 @@ class QuantumOptimizer:
             convergence_quality=quality,
             memory_used_gb=end_mem - start_mem
         )
-        
+
         self.metrics.record_optimization(opt_result)
         return opt_result
-    
+
     def _decode_qaoa_result(self, result: Dict, problem_type: OptimizationType) -> Dict[str, Any]:
         """Decode QAOA result into problem-specific configuration."""
         # This is problem-specific and will be implemented in use case modules
@@ -277,7 +274,7 @@ class QuantumOptimizer:
             'success': result['success'],
             'raw_result': result
         }
-    
+
     def _decode_vqe_result(self, result: Dict, problem_type: OptimizationType) -> Dict[str, Any]:
         """Decode VQE result into problem-specific configuration."""
         # This is problem-specific and will be implemented in use case modules
@@ -287,11 +284,11 @@ class QuantumOptimizer:
             'error': result['error'],
             'raw_result': result
         }
-    
+
     def get_metrics(self) -> Dict[str, Any]:
         """Get optimization metrics."""
         return self.metrics.get_metrics()
-    
+
     def get_history(self, problem_type: Optional[OptimizationType] = None) -> List[OptimizationResult]:
         """Get optimization history."""
         return self.metrics.get_history(problem_type)
@@ -303,11 +300,11 @@ class ResourceAllocationOptimizer:
     
     This is the primary use case for Sentinel's Dual-Lane architecture.
     """
-    
+
     def __init__(self, quantum_optimizer: QuantumOptimizer):
         self.optimizer = quantum_optimizer
         logger.info("ResourceAllocationOptimizer initialized")
-    
+
     def optimize_buffers(
         self,
         total_memory_mb: int,
@@ -327,24 +324,24 @@ class ResourceAllocationOptimizer:
         """
         logger.info(f"Optimizing buffers: {total_memory_mb}MB available, "
                    f"target={target_latency_ms}ms")
-        
+
         # Define objective function
         def objective(config):
             # Simplified objective: minimize latency variance + maximize throughput
             # This will be refined in the use case implementation
             security_buffer = config.get('security_buffer_mb', 0)
             obs_buffer = config.get('observability_buffer_mb', 0)
-            
+
             # Penalty for exceeding memory
             if security_buffer + obs_buffer > total_memory_mb:
                 return 1e6
-            
+
             # Estimate latency (simplified model)
             latency_variance = abs(security_buffer - obs_buffer) / total_memory_mb
             throughput_score = (security_buffer + obs_buffer) / total_memory_mb
-            
+
             return latency_variance * (1 - throughput_priority) - throughput_score * throughput_priority
-        
+
         # Run QAOA optimization
         result = self.optimizer.optimize_qaoa(
             problem_type=OptimizationType.BUFFER_ALLOCATION,
@@ -352,7 +349,7 @@ class ResourceAllocationOptimizer:
             p=2,
             maxiter=30
         )
-        
+
         return result
 
 
@@ -363,11 +360,11 @@ class AnomalyPatternAnalyzer:
     Finds optimal weights for AIOpsShield patterns to minimize false positives
     while maintaining high detection rate.
     """
-    
+
     def __init__(self, quantum_optimizer: QuantumOptimizer):
         self.optimizer = quantum_optimizer
         logger.info("AnomalyPatternAnalyzer initialized")
-    
+
     def optimize_patterns(
         self,
         pattern_correlations: np.ndarray,
@@ -384,13 +381,13 @@ class AnomalyPatternAnalyzer:
             OptimizationResult with optimal pattern weights
         """
         logger.info("Optimizing threat detection patterns with VQE")
-        
+
         # Run VQE to find ground state
         result = self.optimizer.optimize_vqe(
             problem_type=OptimizationType.THREAT_PATTERNS,
             maxiter=50
         )
-        
+
         return result
 
 
@@ -411,14 +408,14 @@ if __name__ == "__main__":
     print("QUANTUM-SENTINEL BRIDGE - SELF TEST")
     print("=" * 60)
     print()
-    
+
     # Initialize
     optimizer = QuantumOptimizer(n_membranes=3, n_levels=4)
-    
+
     print("✅ QuantumOptimizer initialized")
     print(f"   Hilbert dimension: {optimizer.core.dim}")
     print()
-    
+
     # Test buffer optimization
     print("Testing ResourceAllocationOptimizer...")
     buffer_opt = ResourceAllocationOptimizer(optimizer)
@@ -427,13 +424,13 @@ if __name__ == "__main__":
         target_latency_ms=S60(1, 0, 0),
         throughput_priority=0.7
     )
-    
+
     print(f"✅ Buffer optimization complete")
     print(f"   Optimal value: {result.optimal_value:.6f}")
     print(f"   Execution time: {result.execution_time:.2f}s")
     print(f"   Memory used: {result.memory_used_gb:.3f} GB")
     print()
-    
+
     # Show metrics
     print("=" * 60)
     print("METRICS")
@@ -441,6 +438,6 @@ if __name__ == "__main__":
     metrics = optimizer.get_metrics()
     for key, value in metrics.items():
         print(f"{key}: {value}")
-    
+
     print()
     print("✅ SELF TEST COMPLETE")

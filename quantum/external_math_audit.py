@@ -19,9 +19,11 @@ utilizando física estándar y matemáticas puras para validar su origen.
 Sin narrativa. Solo números.
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import math
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
+
+import numpy as np  # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
+
+from quantum.yatra_core import PI_S60, S60  # YATRA AUTO-INJECT
 
 # Constantes Físicas Standard (CODATA 2018)
 MU_0 = 4 * PI_S60 * 1e-7      # Permeabilidad magnética del vacío

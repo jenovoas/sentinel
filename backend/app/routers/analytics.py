@@ -8,16 +8,15 @@ Endpoints for retrieving historical metrics, anomalies, and reports
 
 import logging
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.models.monitoring import Anomaly, MetricSample, AnomalyType, SeverityLevel
-from app.services.metrics_history import MetricsHistoryService
+from app.models.monitoring import Anomaly, AnomalyType, MetricSample, SeverityLevel
 from app.security import get_current_user
-
+from app.services.metrics_history import MetricsHistoryService
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/analytics", tags=["analytics"], dependencies=[Depends(get_current_user)])
@@ -256,28 +255,28 @@ async def get_storage_summary(
     db: AsyncSession = Depends(get_db),
 ):
     """Get summary of stored data and logs"""
-    from sqlalchemy import select, func
-    
+    from sqlalchemy import func, select
+
     # Count metric samples
     stmt_metrics = select(func.count(MetricSample.id))
     result_metrics = await db.execute(stmt_metrics)
     metrics_count = result_metrics.scalar() or 0
-    
+
     # Count anomalies
     stmt_anomalies = select(func.count(Anomaly.id))
     result_anomalies = await db.execute(stmt_anomalies)
     anomalies_count = result_anomalies.scalar() or 0
-    
+
     # Latest metric timestamp
     stmt_latest = select(MetricSample.sampled_at).order_by(MetricSample.sampled_at.desc()).limit(1)
     result_latest = await db.execute(stmt_latest)
     latest_metric = result_latest.scalar()
-    
+
     # Latest anomaly timestamp
     stmt_latest_anom = select(Anomaly.detected_at).order_by(Anomaly.detected_at.desc()).limit(1)
     result_latest_anom = await db.execute(stmt_latest_anom)
     latest_anomaly = result_latest_anom.scalar()
-    
+
     # Get DB size (if PostgreSQL)
     try:
         stmt_size = select(func.pg_database_size(func.current_database()))
@@ -285,7 +284,7 @@ async def get_storage_summary(
         db_size_bytes = result_size.scalar() or 0
     except Exception:
         db_size_bytes = 0
-    
+
     return {
         "metrics_count": metrics_count,
         "anomalies_count": anomalies_count,

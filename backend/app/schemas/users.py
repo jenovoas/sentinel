@@ -9,7 +9,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from app.models.user import UserRole
 
@@ -32,7 +32,7 @@ class OrganizationUpdate(BaseModel):
 
 class OrganizationInDB(OrganizationBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: UUID
     created_at: datetime
     updated_at: Optional[datetime]
@@ -69,7 +69,7 @@ class UserUpdate(BaseModel):
 
 class UserInDB(UserBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: UUID
     organization_id: UUID
     is_active: bool

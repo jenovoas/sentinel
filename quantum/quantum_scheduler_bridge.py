@@ -22,8 +22,8 @@ Author: Jaime Novoa (Migrated to Rust FFI)
 """
 
 import ctypes
-import os
 import logging
+import os
 from enum import IntEnum
 
 # Configure logging
@@ -120,7 +120,7 @@ class QuantumSchedulerBridge:
 
         # Create C callback wrapper
         c_callback = CALLBACK_TYPE(python_func)
-        
+
         # IMPORTANT: We must keep a reference to c_callback, otherwise
         # Python's GC will collect it and Rust will crash when calling it.
         self.callbacks.append(c_callback)

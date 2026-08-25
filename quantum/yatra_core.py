@@ -16,8 +16,8 @@
 # 4. Cualquier modificación de cálculo debe hacerse en la librería nativa Rust.
 # -------------------------------------------------------------------------------------
 
-import sys
 import os
+import sys
 
 # Asegurar que el módulo nativo compilado (me60os_core.so) sea encontrado
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -32,14 +32,12 @@ try:
     S60.SCALE_2 = 3600      # 60^2
     S60.SCALE_3 = 60        # 60^1
     S60.SCALE_4 = 1         # 60^0
-    
+
     # Alias para compatibilidad legacy si fuera necesario
     S60.from_decimal_degrees = S60.from_decimal_degrees_FOR_IMPORT_ONLY
-    
+
 except ImportError as e:
-    print("CRITICAL: No se pudo importar la librería nativa Rust me60os_core.so")
-    print(f"Error: {e}")
-    sys.exit(1)
+    raise ImportError(f"No se pudo importar la librería nativa Rust me60os_core.so: {e}") from e
 
 class DecimalContaminationError(TypeError):
     """Se lanza cuando se detecta un intento de usar lógica flotante sucia."""
@@ -69,7 +67,7 @@ def demo_yatra():
     """Demostración del sistema Yatra, ahora potenciado por Rust."""
     print("🔱 INICIANDO YATRA-CORE SYSTEM CHECK (RUST NATIVE FIXED-POINT MODE)...")
     print("-" * 60)
-    
+
     # 1. Verificar arquitectura
     print("\n1. Arquitectura Fixed-Point Base-60 (RUST NATIVE):")
     test = S60(1, 30, 0, 0, 0)
@@ -78,23 +76,23 @@ def demo_yatra():
     expected = 1*12960000 + 30*216000
     print(f"   Esperado: 1*60^4 + 30*60^3 = {expected}")
     print(f"   Verificación: {test.to_base_units() == expected} ✅")
-    
+
     # 2. Prueba Aritmética
     print("\n2. Aritmética de Resonancia:")
     print(f"   Aldebaran Base: {STAR_ALDEBARAN}")
-    
+
     adjustment = YATRA_SALTO_17 * 5
     result = STAR_ALDEBARAN + adjustment
-    
+
     print(f"   Ajuste (Salto 17 x 5): {adjustment}")
     print(f"   Posición Ajustada: {result}")
-    
+
     # 3. Verificación de precisión
     print(f"\n3. Cierre de Ciclo (1/17 * 17):")
     full_cycle_17 = YATRA_SALTO_17 * 17
     print(f"   Resultado: {full_cycle_17}")
     print(f"   Esperado:  S60[001; 00, 00, 00, 00] aprox")
-    
+
     # 4. Test de operaciones
     print("\n4. Test de Operaciones:")
     a = S60(10, 0, 0, 0, 0)
@@ -107,7 +105,7 @@ def demo_yatra():
     print(f"   a // 2 = {a // 2}")
     print(f"   a < b = {a < b}")
     print(f"   a > b = {a > b}")
-    
+
     print("\n" + "=" * 60)
     print("✅ YATRA-CORE: RUST NATIVE OPERATIVO")
     print("   - Matemática: Base-60 pura (Rust backend)")

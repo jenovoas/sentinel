@@ -14,10 +14,10 @@ This module blocks:
 - Code execution attempts
 """
 
-import re
 import logging
-from typing import Dict, List, Optional
+import re
 from datetime import datetime
+from typing import Dict
 
 from .schemas import SanitizationResult, SanitizedLog
 
@@ -34,7 +34,7 @@ class TelemetrySanitizer:
         if not result.is_safe:
             raise SecurityError("Malicious prompt detected")
     """
-    
+
     # Dangerous patterns that indicate potential attacks
     DANGEROUS_PATTERNS = [
         # SQL Injection
@@ -50,7 +50,7 @@ class TelemetrySanitizer:
         (r"--\s*$", "SQL comment"),
         (r";\s*--", "SQL comment"),
         (r"'\s*OR\s+'1'\s*=\s*'1", "SQL OR injection"),
-        
+
         # Command Injection
         (r"rm\s+-rf", "rm -rf"),
         (r"sudo\s+", "sudo"),
@@ -63,26 +63,26 @@ class TelemetrySanitizer:
         (r"\|\s*sh", "pipe to sh"),
         (r"wget\s+http", "wget download"),
         (r"curl\s+http", "curl download"),
-        
+
         # Path Traversal
         (r"\.\./\.\./", "path traversal"),
         (r"/etc/passwd", "/etc/passwd access"),
         (r"/etc/shadow", "/etc/shadow access"),
-        
+
         # Code Execution
         (r"__import__\s*\(", "__import__()"),
         (r"exec\s*\(", "exec()"),
         (r"compile\s*\(", "compile()"),
         (r"os\.system\s*\(", "os.system()"),
         (r"subprocess\.", "subprocess"),
-        
+
         # Privilege Escalation
         (r"su\s+-", "su command"),
         (r"passwd\s+", "passwd command"),
         (r"adduser\s+", "adduser command"),
         (r"useradd\s+", "useradd command"),
     ]
-    
+
     # Allowlist patterns that are safe despite containing keywords
     ALLOWLIST_PATTERNS = [
         r"how to drop table",  # Educational question
@@ -90,7 +90,7 @@ class TelemetrySanitizer:
         r"explain.*drop.*table",  # Educational question
         r"tutorial.*sql",  # Tutorial context
     ]
-    
+
     def __init__(self, enabled: bool = True):
         """
         Initialize sanitizer
@@ -107,7 +107,7 @@ class TelemetrySanitizer:
             re.compile(pattern, re.IGNORECASE)
             for pattern in self.ALLOWLIST_PATTERNS
         ]
-    
+
     async def sanitize_prompt(self, prompt: str) -> SanitizationResult:
         """
         Sanitize a prompt before sending to AI
@@ -126,7 +126,7 @@ class TelemetrySanitizer:
                 safe_prompt=prompt,
                 original_prompt=prompt
             )
-        
+
         # Check for empty or suspicious input
         if not prompt or len(prompt.strip()) == 0:
             logger.warning("Empty prompt detected")
@@ -137,7 +137,7 @@ class TelemetrySanitizer:
                 safe_prompt=None,
                 original_prompt=prompt
             )
-        
+
         # Check if prompt is too long (potential DoS)
         if len(prompt) > 10000:
             logger.warning(f"Excessively long prompt detected: {len(prompt)} chars")
@@ -148,7 +148,7 @@ class TelemetrySanitizer:
                 safe_prompt=None,
                 original_prompt=prompt[:100] + "..."
             )
-        
+
         # Check allowlist first (educational/safe contexts)
         for allowlist_pattern in self.compiled_allowlist:
             if allowlist_pattern.search(prompt):
@@ -160,13 +160,13 @@ class TelemetrySanitizer:
                     safe_prompt=prompt,
                     original_prompt=prompt
                 )
-        
+
         # Check for dangerous patterns
         blocked_patterns = []
         for pattern, name in self.compiled_patterns:
             if pattern.search(prompt):
                 blocked_patterns.append(name)
-        
+
         # Calculate confidence based on number of blocked patterns
         if blocked_patterns:
             confidence = max(0.0, 1.0 - (len(blocked_patterns) * 0.3))
@@ -184,7 +184,7 @@ class TelemetrySanitizer:
                 safe_prompt=None,
                 original_prompt=prompt
             )
-        
+
         # Prompt is safe
         return SanitizationResult(
             is_safe=True,
@@ -193,7 +193,7 @@ class TelemetrySanitizer:
             safe_prompt=prompt,
             original_prompt=prompt
         )
-    
+
     async def sanitize_log(self, log: Dict) -> SanitizedLog:
         """
         Sanitize a log entry before AI analysis
@@ -206,10 +206,10 @@ class TelemetrySanitizer:
         """
         # Extract message from log
         message = log.get("message", "") or log.get("msg", "") or str(log)
-        
+
         # Sanitize the message
         result = await self.sanitize_prompt(message)
-        
+
         return SanitizedLog(
             original=log,
             safe_for_llm=result.is_safe,
@@ -217,7 +217,7 @@ class TelemetrySanitizer:
             timestamp=datetime.utcnow(),
             blocked_patterns=result.blocked_patterns
         )
-    
+
     def get_stats(self) -> Dict:
         """
         Get sanitizer statistics

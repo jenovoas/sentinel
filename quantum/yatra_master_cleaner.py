@@ -53,18 +53,18 @@ DOC_MAP = {
 }
 
 SAFE_FILES = [
-    "yatra_core.py", "yatra_guard.py", "yatra_master_cleaner.py", 
+    "yatra_core.py", "yatra_guard.py", "yatra_master_cleaner.py",
     "yatra_flight_benchmark.py", "sovereign_math.py", "quantum_scanner.py"
 ]
 
 def clean_code(filepath):
     """Purifica un archivo Python."""
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, encoding='utf-8') as f:
             content = f.read()
-        
+
         original_content = content
-        
+
         # 1. Inyectar Import si no existe y vamos a usar S60
         if "S60" not in content and "yatra_core" not in content:
             # Buscar donde están los imports
@@ -74,7 +74,7 @@ def clean_code(filepath):
                     lines.insert(i, "from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT")
                     content = '\n'.join(lines)
                     break
-        
+
         # 2. Reemplazos Regex
         for pattern, replacement in FLOAT_MAP.items():
             # Buscamos números exactos rodeados de límites de palabra o espacios
@@ -98,14 +98,14 @@ def clean_code(filepath):
 def clean_doc(filepath):
     """Purifica un archivo Markdown."""
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, encoding='utf-8') as f:
             content = f.read()
-            
+
         original_content = content
-        
+
         for pattern, replacement in DOC_MAP.items():
             content = re.sub(pattern, replacement, content)
-            
+
         if content != original_content:
             with open(filepath, 'w', encoding='utf-8') as f:
                 f.write(content)
@@ -119,28 +119,28 @@ def clean_doc(filepath):
 def main():
     print("🔥 INICIANDO PURIFICACIÓN MASIVA (PROTOCOL YATRA)...")
     root_dir = Path("/home/jnovoas/dev/sentinel")
-    
+
     code_count = 0
     doc_count = 0
-    
+
     # Recorrer todo
     for file_path in root_dir.rglob("*"):
         if file_path.is_dir(): continue
         if "venv" in str(file_path) or ".git" in str(file_path): continue
-        
+
         fname = file_path.name
-        
+
         # Modo Código
         if fname.endswith(".py"):
             if fname in SAFE_FILES: continue
             if clean_code(str(file_path)):
                 code_count += 1
-                
+
         # Modo Documentación
         elif fname.endswith(".md"):
              if clean_doc(str(file_path)):
                 doc_count += 1
-                
+
     print("\n" + "="*50)
     print(f"🏆 REPORTE FINAL DE PURIFICACIÓN:")
     print(f"   Scripts de Código Limpiados:  {code_count}")

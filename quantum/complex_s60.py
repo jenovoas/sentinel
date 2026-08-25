@@ -15,8 +15,9 @@
 # 3. Cualquier modificación debe hacerse en la librería nativa Rust.
 # -------------------------------------------------------------------------------------
 
-import sys
 import os
+import sys
+
 from quantum.yatra_core import S60, DecimalContaminationError
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -32,7 +33,7 @@ except ImportError as e:
 
 class ComplexS60:
     """Wrapper para operaciones complejas delegadas a Rust (ComplexSPA)."""
-    
+
     def __init__(self, real, imag=None):
         if isinstance(real, ComplexSPA):
             self._z = real
@@ -48,7 +49,7 @@ class ComplexS60:
     @property
     def imag(self):
         return self._z.imag
-    
+
     def __add__(self, other):
         if isinstance(other, ComplexS60):
             return ComplexS60(self._z + other._z)
@@ -74,13 +75,13 @@ class ComplexS60:
 
     def conjugate(self):
         return ComplexS60(self._z.py_conjugate())
-    
+
     def magnitude(self):
         return self._z.py_magnitude()
-        
+
     def __abs__(self):
         return self.magnitude()
-    
+
     def __eq__(self, other):
         if isinstance(other, ComplexS60):
             return self._z == other._z
@@ -88,14 +89,14 @@ class ComplexS60:
 
     def __repr__(self):
         return f"ComplexS60({self.real}, {self.imag})"
-    
+
     def __str__(self):
         return str(self._z).replace("ComplexSPA", "ComplexS60")
-        
+
     @staticmethod
     def from_polar(magnitude: S60, phase: S60):
         return ComplexS60(ComplexSPA.py_from_polar(magnitude, phase))
-    
+
     @staticmethod
     def exp_i_theta(theta: S60):
         return ComplexS60(ComplexSPA.py_exp_i_theta(theta))
@@ -110,7 +111,7 @@ def demo_complex():
     print("🔱 COMPLEX S60: CHECKING NATIVE RUST DELEGATION...")
     c1 = ComplexS60(S60(2), S60(3))
     c2 = ComplexS60(S60(1), S60(1))
-    
+
     print(f"c1 = {c1}")
     print(f"c2 = {c2}")
     print(f"c1 + c2 = {c1 + c2}")

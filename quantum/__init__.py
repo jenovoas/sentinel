@@ -23,11 +23,7 @@ __project__ = "Sentinel Cortex™"
 
 # Core quantum simulator
 try:
-    from .core_simulator import (
-        QubitState,
-        QuantumGates,
-        QuantumCircuit
-    )
+    from .core_simulator import QuantumCircuit, QuantumGates, QubitState
     _CORE_AVAILABLE = True
 except ImportError:
     _CORE_AVAILABLE = False
@@ -38,7 +34,7 @@ try:
         MembraneParameters,
         OpticalParameters,
         OptomechanicalSystem,
-        QuantumRiftDetector
+        QuantumRiftDetector,
     )
     _OPTO_AVAILABLE = True
 except ImportError:
@@ -46,24 +42,15 @@ except ImportError:
 
 # Advanced quantum core
 try:
-    from .sentinel_quantum_core import (
-        SentinelConfig,
-        SentinelQuantumCore,
-        SentinelRiftDetector as AdvancedRiftDetector,
-        SentinelQAOA,
-        SentinelVQE
-    )
+    from .sentinel_quantum_core import SentinelConfig, SentinelQAOA, SentinelQuantumCore, SentinelVQE
+    from .sentinel_quantum_core import SentinelRiftDetector as AdvancedRiftDetector
     _ADVANCED_AVAILABLE = True
 except ImportError:
     _ADVANCED_AVAILABLE = False
 
 # Lightweight version (always try to import)
 try:
-    from .quantum_lite import (
-        QuantumResourceManager,
-        SentinelQuantumLite,
-        demo_rift_detection
-    )
+    from .quantum_lite import QuantumResourceManager, SentinelQuantumLite, demo_rift_detection
     _LITE_AVAILABLE = True
 except ImportError:
     _LITE_AVAILABLE = False
@@ -76,7 +63,7 @@ def check_installation():
     print(f"  Optomechanical: {'✅' if _OPTO_AVAILABLE else '❌'}")
     print(f"  Advanced Core:  {'✅' if _ADVANCED_AVAILABLE else '❌'}")
     print(f"  Lite Version:   {'✅' if _LITE_AVAILABLE else '❌'}")
-    
+
     if not any([_CORE_AVAILABLE, _OPTO_AVAILABLE, _ADVANCED_AVAILABLE, _LITE_AVAILABLE]):
         print("\n⚠️ No hay módulos Yatra operativos. Verificar integridad de yatra_core.py.")
 
@@ -84,7 +71,7 @@ def check_installation():
 def quick_start():
     """Run a quick demo to verify installation."""
     print("🚀 Sentinel Quantum Quick Start\n")
-    
+
     if _LITE_AVAILABLE:
         print("Running lightweight demo (safe for laptops)...")
         from .quantum_lite import demo_rift_detection

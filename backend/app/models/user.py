@@ -9,13 +9,16 @@ SQLAlchemy 2.0 + PostgreSQL UUID support
 import uuid
 from datetime import datetime
 from enum import Enum as PyEnum
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import String, Boolean, DateTime, ForeignKey, Enum, func
+from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, String, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+
+if TYPE_CHECKING:
+    from .organization import Organization
 
 
 # Role enum for user permissions

@@ -6,10 +6,11 @@
 Test de integración: Qwen Coordinator con telemetría real desde Redis.
 No usa datos inventados — lee el estado actual del enjambre.
 """
-import urllib.request
 import json
-import time
 import sys
+import time
+import urllib.request
+
 import redis
 
 LLM_HOST = "10.10.10.50:11434"

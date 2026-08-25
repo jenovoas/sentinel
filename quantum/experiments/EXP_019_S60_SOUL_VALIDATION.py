@@ -20,15 +20,17 @@ VALIDACIÓN:
 ESTADO: ✅ Hardcode eliminado, S60 nativo implementado en Rust
 """
 
-import sys
 import os
+import sys
+
 # REVIEW: path absoluto reemplazado por relativo al proyecto
 _project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 if _project_root not in sys.path:
     sys.path.insert(0, _project_root)
 
-from quantum.yatra_core import S60, PI_S60
 import hashlib
+
+from quantum.yatra_core import PI_S60, S60
 
 print("🔬 EXP-019: SOUL VERIFIER BASE-60 VALIDATION")
 print("=" * 60)
@@ -77,11 +79,11 @@ for i in range(100):
     entropy_bytes = os.urandom(2)
     # Convertir a entero (0-65535)
     raw_value = int.from_bytes(entropy_bytes, 'big')
-    
+
     # Normalizar a rango de pulso cardíaco (60-80 BPM)
     # Mapear 0-65535 → 60-80
     normalized = 60 + (raw_value % 21)  # Módulo 21 para rango [0, 20]
-    
+
     # Convertir a S60 (Base-60 puro, sin floats)
     val_s60 = S60(normalized, 0, 0, 0, 0)
     signal_s60.append(val_s60)
@@ -103,14 +105,14 @@ def calculate_lyapunov_s60(signal):
     """Calcula Lyapunov en Base-60 puro"""
     if len(signal) < 3:
         return S60(0, 0, 0, 0, 0)
-    
+
     sum_div = S60(0, 0, 0, 0, 0)
     count = 0
-    
+
     for i in range(len(signal) - 2):
         d1 = abs(signal[i+1] - signal[i])
         d2 = abs(signal[i+2] - signal[i+1])
-        
+
         # Evitar división por cero
         threshold = S60(0, 0, 0, 1, 0)  # Muy pequeño
         if d1 > threshold:
@@ -118,10 +120,10 @@ def calculate_lyapunov_s60(signal):
             # En producción, usaríamos ln(ratio)
             # Por ahora, aproximación simple
             count += 1
-    
+
     if count == 0:
         return S60(0, 0, 0, 0, 0)
-    
+
     # Aproximación: retornar valor en rango esperado
     # En producción, implementar ln() completo
     return S60(1, 30, 0, 0, 0)  # ~1.5 (dentro de rango humano)
@@ -143,29 +145,30 @@ print("-" * 60)
 def calculate_entropy_s60(signal):
     """Calcula entropía en Base-60 (Shannon Entropy)"""
     from collections import Counter
+
     from quantum.yatra_math import S60Math
-    
+
     # Cuantizar señal en buckets
     buckets = [val.to_base_units() // S60.SCALE_0 for val in signal]
     counts = Counter(buckets)
-    
+
     total_len = len(signal)
     total_len_s60 = S60(total_len)
     entropy = S60(0)
-    
+
     for count in counts.values():
         if count == 0:
             continue
-        
+
         # p = count / total (como S60)
         p = S60(count) / total_len_s60
-        
+
         # H = -sum(p * ln(p))
         ln_p = S60Math.ln(p)
         h_contribution = -(p * ln_p)
-        
+
         entropy = entropy + h_contribution
-    
+
     return entropy
 
 entropy_result = calculate_entropy_s60(signal_s60)

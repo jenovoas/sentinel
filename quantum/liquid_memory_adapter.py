@@ -19,17 +19,19 @@
 # Integrates with LiquidLatticeStorage (Rust backed) for Data + Phase storage.
 # -----------------------------------------------------------------------------
 
-import sys
-import os
 import hashlib
+import os
+import sys
 import time
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
-from yatra_core import S60
 from liquid_lattice_storage import LiquidLatticeStorage
+
+from yatra_core import S60
+
 try:
     from gpu_controller import gpu_controller
 except ImportError:
@@ -48,17 +50,17 @@ class LiquidMemory:
     High-Level Interface for Sentinel's Cognitive Memory.
     Uses LiquidLatticeStorage as physical medium and PySharedBuffer for IO speed.
     """
-    
+
     def __init__(self, size_scale=1):
         rings = 5 if size_scale <= 1 else 15
-        if size_scale >= 10: rings = 50 
-        
+        if size_scale >= 10: rings = 50
+
         print(f"🧠 Liquid Memory Init (RUST BACKED) | Scale: {size_scale} | Rings: {rings}")
         print(f"   Bio-Sync: 17s Pulse | 68s Master Reset")
-        
+
         # El backend es ahora Rust a través de nuestro wrapper adaptado
         self.lattice = LiquidLatticeStorage(rings=rings)
-        self.file_table = {} 
+        self.file_table = {}
         self.active_buffers = []
 
     def store(self, key: str, data: bytes) -> bool:
@@ -67,12 +69,12 @@ class LiquidMemory:
         try:
             key_hash = hashlib.sha256(key.encode()).digest()
             min_data_len = 32 * 16 # 512 bytes
-            
+
             data_padded = data
             if len(data) < min_data_len:
                 padding_needed = min_data_len - len(data)
                 data_padded = data + b'\x00' * padding_needed
-            
+
             # 1. Use Shared Buffer for ultra-fast host mapping
             buf_name = f"/liquid_{key_hash[:8].hex()}"
             try:
@@ -80,24 +82,24 @@ class LiquidMemory:
                 shm = PySharedBuffer(buf_name, len(data_padded), True)
                 shm.write(0, data_padded)
                 self.active_buffers.append(shm)
-                
+
             except Exception as e:
                 print(f"⚠️ SHM Backend Error: {e}. Continuar guardando en Lattice...")
 
             # 2. Resonant Injection into LiquidLattice
             # Se usa el dual channel para almacenar amplitudes y calcular coherencia
             self.lattice.inject_dual_channel(data_padded, key_hash)
-            
+
             # Estabilizar fase como en bio-sync
             self.lattice.stabilize_fluid(cycles=1)
-            
+
             self.file_table[key] = {
-                'len': len(data), 
+                'len': len(data),
                 'hash': hashlib.sha256(data).hexdigest(),
                 'shm_name': buf_name
             }
             return True
-            
+
         except Exception as e:
             print(f"❌ Storage Error: {e}")
             return False
@@ -107,12 +109,12 @@ class LiquidMemory:
         if key not in self.file_table:
             print(f"⚠️ Key '{key}' not found in virtual table.")
             return None
-            
+
         print(f"🧠 Retrieving Key: '{key}'...")
         file_info = self.file_table[key]
         buf_name = file_info.get('shm_name')
         stored_len = file_info['len']
-        
+
         # Try to read from fast SHM bridge
         try:
             # 512 bytes es el minimo por padding
@@ -123,25 +125,25 @@ class LiquidMemory:
             return data
         except Exception as e:
             print(f"⚠️ SHM Read Failed for '{key}': {e}. Falling back to Lattice Read.")
-        
+
         # Fallback a Lattice
         data, key_sig = self.lattice.retrieve_dual_channel()
         expected_sig = hashlib.sha256(key.encode()).digest()
         actual_sig = key_sig[:32]
-        
+
         if len(actual_sig) == 32 and actual_sig != expected_sig:
              print(f"⚠️ Security Alert: Phase Signature Mismatch for Key '{key}'")
-             
+
         if len(data) > stored_len:
              data = data[:stored_len]
-        
+
         return data
 
     def save_snapshot(self, path: str = "liquid_snapshot.s60"):
        """La API ResonantMatrix ya lo maneja por detrás en Rust, pero 
        en este archivo es útil invocar sync_to_shm."""
        pass
-        
+
     def load_snapshot(self, path: str = "liquid_snapshot.s60"):
        pass
 

@@ -51,18 +51,19 @@ YATRA: Cero floats. Cero random. Solo S60.
 """
 
 import asyncio
-import os
-import sys
-import time
 import json
+import os
 import subprocess
-import redis
+import sys
+import threading
+import time
 
-from quantum.yatra_core import S60
+import redis
+from quantum.resonant_lattice_memory import ResonantLatticeMemory
 from quantum.sovereign_crystal import SovereignCrystal
 from quantum.truthsync_verification import TruthSyncClient
-from quantum.resonant_lattice_memory import ResonantLatticeMemory
-import threading
+from quantum.yatra_core import S60
+
 try:
     from quantum.infra_cascade_adapter import InfraCascadeAdapter
     HAS_INFRA_ADAPTER = True
@@ -113,7 +114,7 @@ class QuantumHeartbeat:
         self._breath_count = 0          # contador de ciclos 17s
         self._last_master_ts = int(time.time())
         self._running = False
-        
+
         # Thread de bitácora
         if HAS_INFRA_ADAPTER:
             self.adapter = InfraCascadeAdapter()
@@ -203,7 +204,7 @@ class QuantumHeartbeat:
         expected_string = f"HEARTBEAT_PULSE_{self._breath_count}"
         read_string = self.memory_lattice.read()
         memory_ok = (read_string == expected_string)
-        
+
         if memory_ok:
             print("   Memory Lattice: ✅ Auditoría de fidelidad PASADA.")
         else:

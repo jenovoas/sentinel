@@ -2,13 +2,14 @@
 # Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
 # Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
-import os
-import sys
-import redis
-import time
 import json
-import socket
 import logging
+import os
+import socket
+import sys
+import time
+
+import redis
 
 # YATRA LOCKED: Zero floats, only S60 integers
 CLUSTER_NODES = ["kingu", "sentinel", "centurion", "fenix", "llm"]
@@ -22,8 +23,10 @@ if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
 from ai_buffer_cascade import AIBufferCascade
-from yatra_core import S60
 from hexagonal_control import HexagonalController
+
+from yatra_core import S60
+
 
 class InfraCascadeAdapter:
     def __init__(self, redis_host='10.10.10.2'):
@@ -40,7 +43,7 @@ class InfraCascadeAdapter:
             node_idx = CLUSTER_NODES.index(node)
         except ValueError:
             node_idx = 99
-        
+
         # Consideramos un reinicio de servicio como una friccion +1
         # Omitimos floats, pura suma de tensores indexados
         return (node_idx, 1)
@@ -66,16 +69,16 @@ class InfraCascadeAdapter:
                     for stream_name, messages in streams:
                         for message_id, event in messages:
                             last_id = message_id
-                            
+
                             # Procesamos solo si es un fallo o reinicio
                             if event.get('old_state') != event.get('new_state'):
                                 node = event.get('node', 'sentinel')
                                 rift = self.container_event_to_rift(event)
-                                
+
                                 # Simulacion QHC (YATRA)
                                 result = self.cascade.cascade_buffer(rift)
                                 self.publish_prediction(node, result)
-                                
+
             except redis.exceptions.ConnectionError:
                 self.logger.error("Pierde conexion Redis. Reintentando...")
                 time.sleep(5)

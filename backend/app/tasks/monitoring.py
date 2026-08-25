@@ -7,13 +7,11 @@ Async tasks for metrics collection, anomaly detection, and historical storage
 """
 
 import logging
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.celery_app import celery_app
 from app.database import AsyncSessionLocal
 from app.services.metrics_history import MetricsHistoryService
 from app.services.monitoring_orchestrator import MonitoringOrchestrator
-
 
 logger = logging.getLogger("monitoring.tasks")
 

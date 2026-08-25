@@ -18,8 +18,9 @@
 # 4. Cualquier modificación de cálculo debe hacerse en la librería nativa Rust.
 # -------------------------------------------------------------------------------------
 
-import sys
 import os
+import sys
+
 from yatra_core import S60, DecimalContaminationError
 
 # Asegurar que el módulo nativo compilado (me60os_core.so) sea encontrado

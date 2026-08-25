@@ -16,9 +16,10 @@ Environment Variables:
     - ALLOWED_ORIGINS: CORS allowed origins (comma-separated)
 """
 
-from pydantic_settings import BaseSettings
 import os
 from typing import List
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -28,42 +29,42 @@ class Settings(BaseSettings):
     All settings have sensible defaults for development. In production,
     ensure critical values like SECRET_KEY are properly set via environment.
     """
-    
+
     # ============================================================================
     # DATABASE CONFIGURATION
     # ============================================================================
     database_url: str = os.getenv(
-        "DATABASE_URL", 
+        "DATABASE_URL",
         "postgresql+asyncpg://sentinel_user:sentinel_password@localhost:5432/sentinel_db"
     )
     """PostgreSQL connection string for the application database."""
-    
+
     # ============================================================================
     # CACHE CONFIGURATION
     # ============================================================================
     redis_url: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
     """Redis connection string for caching and session management."""
-    
+
     # ============================================================================
     # APPLICATION METADATA
     # ============================================================================
     app_name: str = os.getenv("APP_NAME", "Sentinel")
     """Application name displayed in API documentation."""
-    
+
     app_version: str = os.getenv("APP_VERSION", "1.0.0")
     """Application version for API versioning and documentation."""
-    
+
     environment: str = os.getenv("FASTAPI_ENV", "development")
     """Deployment environment (development/production)."""
-    
+
     debug: bool = environment == "development"
     """Enable debug mode in development environment."""
-    
+
     # ============================================================================
     # SECURITY CONFIGURATION
     # ============================================================================
     secret_key: str = os.getenv(
-        "SECRET_KEY", 
+        "SECRET_KEY",
         "your-secret-key-change-in-production-min-32-chars-xyz123"
     )
     """
@@ -72,35 +73,35 @@ class Settings(BaseSettings):
     WARNING: Change this in production to a secure random string!
     Use: openssl rand -hex 32
     """
-    
+
     algorithm: str = os.getenv("ALGORITHM", "HS256")
     """JWT algorithm for token signing."""
-    
+
     access_token_expire_minutes: int = int(
         os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
     )
     """JWT access token expiration time in minutes."""
-    
+
     refresh_token_expire_days: int = int(
         os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7")
     )
     """Refresh token expiration time in days."""
-    
+
     # ============================================================================
     # ASYNC TASK CONFIGURATION (CELERY)
     # ============================================================================
     celery_broker_url: str = os.getenv(
-        "CELERY_BROKER_URL", 
+        "CELERY_BROKER_URL",
         "redis://localhost:6379/0"
     )
     """Redis URL for Celery message broker."""
-    
+
     celery_result_backend: str = os.getenv(
-        "CELERY_RESULT_BACKEND", 
+        "CELERY_RESULT_BACKEND",
         "redis://localhost:6379/1"
     )
     """Redis URL for storing Celery task results."""
-    
+
     # ============================================================================
     # LOGGING CONFIGURATION
     # ============================================================================
@@ -122,10 +123,11 @@ class Settings(BaseSettings):
     vertex_model_name: str = os.getenv("VERTEX_MODEL_NAME", "gemini-2.5-flash-001")
     """Vertex AI Model Name (e.g., gemini-2.5-flash-001, gemini-3.0-pro-001)."""
 
-    class Config:
-        """Pydantic configuration for Settings."""
-        env_file = ".env"
-        case_sensitive = False
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=False,
+        extra="ignore",
+    )
 
 
 # Global settings instance (singleton pattern)

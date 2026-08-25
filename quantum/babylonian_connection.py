@@ -30,36 +30,39 @@ If you encoded it, your signature should show:
 - Mesopotamian location hints
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 import json
 from pathlib import Path
 
+import numpy as np  # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
+
+from quantum.yatra_core import PI_S60, S60  # YATRA AUTO-INJECT
+
+
 def analyze_babylonian_connection():
     """Analyze connection to ancient Babylon and Plimpton 322."""
-    
+
     print("=" * 70)
     print("🏺 BABYLONIAN CONNECTION ANALYSIS")
     print("=" * 70)
     print()
     print("Checking for connection to Plimpton 322 (1800 BCE)")
     print()
-    
+
     # Load signature
     sig_file = "/home/jnovoas/sentinel/quantum/signatures/reincarnation_signature_f24f37e2488dbcea.json"
     with open(sig_file) as f:
         sig = json.load(f)
-    
+
     print("📊 Your Signature:")
     print(f"   Echo strength: {sig['reincarnation_echo_strength']:.2f}")
     print(f"   Estimated lives: {int(sig['reincarnation_echo_strength'] / 5)}")
     print(f"   Base-60 pattern length: {len(sig['base60_pattern'])}")
     print()
-    
+
     # Analysis
     print("🔍 Analyzing for Babylonian markers...")
     print()
-    
+
     markers = {
         'base60_affinity': 0,
         'mathematical_knowledge': 0,
@@ -67,32 +70,32 @@ def analyze_babylonian_connection():
         'ancient_echoes': 0,
         'mesopotamian_hints': 0
     }
-    
+
     # 1. Base-60 affinity
     # Your pattern uses Base-60 naturally
     unique_digits = len(set(sig['base60_pattern']))
     base60_affinity = unique_digits / 60.0
     markers['base60_affinity'] = base60_affinity
-    
+
     print(f"✅ Base-60 Affinity: {base60_affinity:.2%}")
     print(f"   (Using {unique_digits}/60 possible digits)")
-    
+
     # 2. Mathematical knowledge
     # Check for patterns that suggest mathematical thinking
     pattern = sig['base60_pattern']
-    
+
     # Look for sequences (mathematical patterns)
     sequences = 0
     for i in range(len(pattern) - 2):
         if pattern[i+1] - pattern[i] == pattern[i+2] - pattern[i+1]:
             sequences += 1
-    
+
     math_score = min(sequences / 10.0, S60(1, 0, 0))
     markers['mathematical_knowledge'] = math_score
-    
+
     print(f"✅ Mathematical Patterns: {math_score:.2%}")
     print(f"   (Found {sequences} arithmetic sequences)")
-    
+
     # 3. Astronomical knowledge
     # Plimpton 322 may have been used for astronomy
     # Check if pattern has astronomical numbers (60, 360, etc.)
@@ -100,32 +103,32 @@ def analyze_babylonian_connection():
     astro_matches = sum(1 for p in pattern if p in astro_numbers)
     astro_score = min(astro_matches / 20.0, S60(1, 0, 0))
     markers['astronomical_knowledge'] = astro_score
-    
+
     print(f"✅ Astronomical Markers: {astro_score:.2%}")
     print(f"   (Found {astro_matches} astronomical numbers)")
-    
+
     # 4. Ancient echoes
     # Echo strength of 26.56 suggests ~5 lives
     # But if you go back to 1800 BCE, that's 3800 years
     # At ~400 years per life, that's ~9-10 lives
-    
+
     # Check if echo strength could support Babylonian connection
     years_to_babylon = 3800
     years_per_life = 400  # From East Asia analysis
     lives_to_babylon = years_to_babylon / years_per_life
-    
+
     # Your echo strength supports ~5 lives
     # But Babylon would need ~9-10 lives
-    
+
     # HOWEVER: If you were a SIGNIFICANT soul (scholar, mathematician)
     # Your echo could be STRONGER and reach further back
-    
+
     ancient_echo_score = min(sig['reincarnation_echo_strength'] / 20.0, S60(1, 0, 0))
     markers['ancient_echoes'] = ancient_echo_score
-    
+
     print(f"✅ Ancient Echo Strength: {ancient_echo_score:.2%}")
     print(f"   (Echo: {sig['reincarnation_echo_strength']:.2f}, needed: ~20+ for Babylon)")
-    
+
     # 5. Mesopotamian hints
     # Check pattern for numbers significant in Mesopotamia
     # 60 (base), 3600 (60²), 216000 (60³)
@@ -133,33 +136,33 @@ def analyze_babylonian_connection():
     meso_matches = sum(1 for p in pattern if p % 6 == 0 or p % 7 == 0)
     meso_score = min(meso_matches / 30.0, S60(1, 0, 0))
     markers['mesopotamian_hints'] = meso_score
-    
+
     print(f"✅ Mesopotamian Number Patterns: {meso_score:.2%}")
     print(f"   (Found {meso_matches} Mesopotamian-style numbers)")
     print()
-    
+
     # Overall score
     total_score = sum(markers.values()) / len(markers)
-    
+
     print("=" * 70)
     print("BABYLONIAN CONNECTION SCORE")
     print("=" * 70)
     print()
-    
+
     for marker, score in markers.items():
         bar = "█" * int(score * 20)
         print(f"{marker.replace('_', ' ').title():30} {bar} {score:.1%}")
-    
+
     print()
     print(f"OVERALL SCORE: {total_score:.1%}")
     print()
-    
+
     # Interpretation
     print("=" * 70)
     print("INTERPRETATION")
     print("=" * 70)
     print()
-    
+
     if total_score > 0.6:
         print("🔥 STRONG CONNECTION TO BABYLONIAN MATHEMATICS")
         print()
@@ -190,14 +193,14 @@ def analyze_babylonian_connection():
         print()
         print("You didn't just 'learn' about Plimpton 322.")
         print("You REMEMBER creating it.")
-        
+
     elif total_score > 0.4:
         print("⚡ MODERATE CONNECTION TO BABYLONIAN MATHEMATICS")
         print()
         print("Your signature shows some markers of Babylonian influence.")
         print("You may have been influenced by or studied Babylonian mathematics")
         print("in a later life (possibly the East Asian scholar life).")
-        
+
     else:
         print("💫 WEAK DIRECT CONNECTION")
         print()
@@ -206,15 +209,15 @@ def analyze_babylonian_connection():
         print("  • Later cultures that inherited Babylonian mathematics")
         print("  • East Asian astronomical systems (also used Base-60)")
         print("  • Universal mathematical truth (Base-60 is optimal)")
-    
+
     print()
-    
+
     # Timeline analysis
     print("=" * 70)
     print("TIMELINE ANALYSIS")
     print("=" * 70)
     print()
-    
+
     print("If you encoded Plimpton 322 (~1800 BCE):")
     print()
     print("  1800 BCE: Babylonian mathematician/scribe")
@@ -242,7 +245,7 @@ def analyze_babylonian_connection():
     print("Echo strength of 26.56 could support this timeline")
     print("if you were a SIGNIFICANT soul (mathematician/scholar).")
     print()
-    
+
     # Save analysis
     output = {
         'markers': markers,
@@ -250,14 +253,14 @@ def analyze_babylonian_connection():
         'interpretation': 'STRONG' if total_score > 0.6 else 'MODERATE' if total_score > 0.4 else 'WEAK',
         'plimpton_connection': total_score > 0.6
     }
-    
+
     output_file = "/home/jnovoas/sentinel/quantum/babylonian_analysis.json"
     with open(output_file, 'w') as f:
         json.dump(output, f, indent=2)
-    
+
     print(f"✅ Analysis saved: {output_file}")
     print()
-    
+
     return output
 
 if __name__ == "__main__":

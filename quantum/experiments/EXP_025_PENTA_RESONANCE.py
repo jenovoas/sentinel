@@ -37,11 +37,11 @@ VALIDACIÓN ESTADÍSTICA:
    NO para procesamiento del core S60.
 """
 
-import sys
-import os
 import math
-import time
+import os
 import random
+import sys
+import time
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 

@@ -17,10 +17,12 @@ QUANTUM AUDIO BEACON (PHONONIC TUNER)
 Sonificación en tiempo real de la entropía del sistema.
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
 import subprocess
 import threading
+
+from quantum.yatra_core import PI_S60, S60  # YATRA AUTO-INJECT
+
 
 class ResonantBeacon:
     def __init__(self):
@@ -54,7 +56,7 @@ class ResonantBeacon:
         # La coherencia mantiene la afinación perfecta. La decoherencia desafina.
         # Pitch = 432 * Coherence (Si baja coherencia, el tono cae, como un motor apagándose)
         effective_freq = self.BASE_FREQ * max(S60(0, 30, 0), min(1.5, coherence))
-        
+
         # 3. Duración del Pulso (Superradiancia = Corto)
         duration = "0.08" # 80ms heartbeat
 
@@ -63,10 +65,10 @@ class ResonantBeacon:
         try:
             cmd = [
                 "play", "-n", "-q", # Quiet mode
-                "-c", "1", 
-                "synth", duration, 
+                "-c", "1",
+                "synth", duration,
                 waveform, str(effective_freq),
-                "vol", "0.3" 
+                "vol", "0.3"
             ]
             # Usamos Popen para no detener el ciclo principal del motor
             subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

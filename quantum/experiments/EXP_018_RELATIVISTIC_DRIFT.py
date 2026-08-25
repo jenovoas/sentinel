@@ -2,13 +2,13 @@
 # Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
 # Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
-import sys
 import os
+import sys
 import time
 
 sys.path.append(os.getcwd())
-from quantum.time_crystal_clock import TimeCrystalClock
 from quantum.experiments.EXP_017_VIMANA_LEVITATION import VimanaController
+from quantum.time_crystal_clock import TimeCrystalClock
 from quantum.yatra_core import S60
 
 # -----------------------------------------------------------------------------
@@ -26,10 +26,10 @@ from quantum.yatra_core import S60
 def run_experiment():
     print("🔬 EXP-018: RELATIVISTIC DRIFT PROTOCOL")
     print("-" * 60)
-    
+
     clock = TimeCrystalClock()
     vimana = VimanaController()
-    
+
     # Baseline
     print(f"💎 Clock Interval: {clock.TICK_INTERVAL_NS} ns")
     print(f"🛸 Base Mass:      {vimana.M_STATIC} kg")
@@ -38,41 +38,41 @@ def run_experiment():
     print("-" * 60)
 
     power_levels = [0, 25, 50, 75, 90, 100]
-    
+
     for power in power_levels:
         # 1. Set Environment (Simulated Mass)
         m_eff, red = vimana.calculate_mass(float(power), 1.0)
-        
+
         # 2. Run Clock for a burst (simulate passage of time under this gravity)
         # We run 50 ticks per power level
         clock_samples = 50
         burst_drifts = []
-        
+
         t_start = time.perf_counter_ns()
         for _ in range(clock_samples):
             # Pass Mass Reduction Factor as Relativistic Bias
             # red is 0.0 (inertial) to ~0.96 (G-Zero)
             clock.tick(relativistic_bias=red)
-            
+
             # Capture last drift
             if clock.drift_history:
                 burst_drifts.append(clock.drift_history[-1])
         t_end = time.perf_counter_ns()
-        
+
         # 3. Analyze
         if burst_drifts:
             avg_drift = sum(burst_drifts) // len(burst_drifts)
         else:
             avg_drift = 0
-            
+
         status = "INERTIAL"
         if red > 0.95: status = "G-ZERO"
-        
+
         print(f"{power:<6}% | {m_eff:<10.3f} | {avg_drift:<15} | {status}")
-        
+
     print("-" * 60)
     print("✅ Experiment Complete.")
-    
+
     # Interpretation hint
     print("\n🤔 INTERPRETATION:")
     print("Si el DRIFT cambia significativamente con la POTENCIA, existe acoplamiento.")

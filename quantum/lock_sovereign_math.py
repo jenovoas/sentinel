@@ -18,10 +18,11 @@ Este script actúa como el 'Muro de Faraday' para el código de Sentinel.
 Protege la Base-60 contra la contaminación decimal Base-10.
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import os
-import sys
 import re
+import sys
+
+from quantum.yatra_core import PI_S60, S60  # YATRA AUTO-INJECT
 
 # Directorios protegidos
 PROTECTED_PATHS = ["/home/jnovoas/sentinel/quantum/"]
@@ -38,13 +39,13 @@ def scan_for_decimal_friction(filepath):
     Busca patrones de floats decimales con alta precisión que suelen ser
     reemplazos erróneos de ratios sexagesimales.
     """
-    with open(filepath, 'r') as f:
+    with open(filepath) as f:
         content = f.read()
 
     # Patrón: Floats con más de 8 decimales que no son PHI
     # O intentos específicos de reemplazar 1.534 exacto por basura IEEE 754
     impure_patterns = [
-        r"1\.534000\d+", 
+        r"1\.534000\d+",
         r"9\.2227\d+",
         r"9:" + r"13:" + r"22"
     ]
@@ -77,7 +78,7 @@ def validate_all():
                     if not passed:
                         print(f"❌ ERROR EN {file}: {msg}")
                         return False
-    
+
     print("✅ [SOVEREIGN FILTER] Todos los ratios son puros. Resonancia Estable.")
     return True
 

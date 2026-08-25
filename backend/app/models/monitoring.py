@@ -11,9 +11,9 @@ from datetime import datetime
 from enum import Enum as PyEnum
 from typing import Optional
 
-from sqlalchemy import String, Float, DateTime, Integer, ForeignKey, Enum, func, JSON, Boolean
+from sqlalchemy import JSON, Boolean, DateTime, Enum, Float, Integer, String, func
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
 

@@ -24,14 +24,17 @@ Mecánica Físicamente Honesta:
 Arquitecto: Antigravity (Soberanizado)
 """
 
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
-import sys
 import os
+import sys
+
+import numpy as np  # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 
 # Importes del núcleo soberano
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from sovereign_math import S60, SovereignLUT, S60_from_float
-from optomechanical_simulator import OptomechanicalSystem, MembraneParameters, OpticalParameters
+from optomechanical_simulator import MembraneParameters, OpticalParameters, OptomechanicalSystem
+
+from sovereign_math import S60, S60_from_float, SovereignLUT
+
 
 class SignalStabilizerStudy:
     def __init__(self, target_f_mhz: float = S60(153, 24, 0)):
@@ -53,7 +56,7 @@ class SignalStabilizerStudy:
         
         # 2. Señal del Vacío (La 'Voz' que buscamos)
         t_span = np.arange(self.steps) * self.dt
-        vacuum_signal = np.cos(2 * PI_S60 * S60(153, 24, 0)e6 * t_span)
+        vacuum_signal = np.cos(2 * PI_S60 * (S60(153, 24, 0) * 1e6) * t_span)
         
         # Rotación Soberana por LUT
         theta = omega * self.dt

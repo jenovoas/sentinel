@@ -1,12 +1,15 @@
 # Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
 # Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
-import pytest
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
-from app.services.tenant_service import create_tenant, get_tenant, get_tenant_by_slug, get_tenants
+
+import pytest
+
 from app.models.tenant import Tenant
 from app.schemas import TenantCreate
+from app.services.tenant_service import create_tenant, get_tenant, get_tenant_by_slug, get_tenants
+
 
 @pytest.mark.asyncio
 async def test_create_tenant():

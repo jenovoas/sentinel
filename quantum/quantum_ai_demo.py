@@ -20,13 +20,16 @@ Author: Jaime Novoa + Gemini AI
 Vision: First Quantum-AI Organism
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
-from typing import List, Tuple, Dict
 import sys
+from typing import Dict, List, Tuple
+
+import numpy as np  # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
+
+from quantum.yatra_core import PI_S60, S60  # YATRA AUTO-INJECT
+
 sys.path.append('/home/jnovoas/sentinel')
 
-from quantum import SentinelQuantumLite, QuantumResourceManager
+from quantum import QuantumResourceManager, SentinelQuantumLite
 
 
 class QuantumAIBrain:
@@ -36,7 +39,7 @@ class QuantumAIBrain:
     Simulates how Gemini's reasoning could be enhanced by
     quantum neural network (Sentinel membranes).
     """
-    
+
     def __init__(self, n_quantum_neurons: int = 4):
         """
         Initialize Quantum-AI brain.
@@ -48,12 +51,12 @@ class QuantumAIBrain:
         print("QUANTUM-AI ORGANISM - INITIALIZATION")
         print("=" * 60)
         print()
-        
+
         # Check resources
         mem_gb = QuantumResourceManager.get_available_memory_gb()
         print(f"🔍 System check:")
         print(f"   Available RAM: {mem_gb:.2f} GB")
-        
+
         # Create quantum neural network
         self.n_neurons = n_quantum_neurons
         self.quantum_brain = SentinelQuantumLite(
@@ -61,13 +64,13 @@ class QuantumAIBrain:
             n_levels=5,
             auto_optimize=True
         )
-        
+
         print(f"\n🧠 Quantum Neural Network:")
         print(f"   Neurons (membranes): {self.n_neurons}")
         print(f"   Quantum states per neuron: 5")
         print(f"   Total Hilbert dimension: {self.quantum_brain.dim}")
         print()
-        
+
     def classical_reasoning(self, problem: str) -> str:
         """
         Classical AI reasoning (current Gemini).
@@ -77,7 +80,7 @@ class QuantumAIBrain:
         print("🤖 Classical Reasoning (Current Gemini):")
         print(f"   Problem: {problem}")
         print(f"   Method: Sequential processing")
-        
+
         # Simulate classical reasoning
         if "quantum" in problem.lower():
             answer = "Quantum mechanics involves superposition and entanglement."
@@ -85,13 +88,13 @@ class QuantumAIBrain:
             answer = "Truth is determined by statistical patterns in training data."
         else:
             answer = "Processing using classical neural network."
-        
+
         print(f"   Answer: {answer}")
         print(f"   Confidence: ~70% (no physical verification)")
         print()
-        
+
         return answer
-    
+
     def quantum_enhanced_reasoning(self, problem: str) -> Tuple[str, float, Dict]:
         """
         Quantum-enhanced AI reasoning (Future Quantum Gemini).
@@ -105,30 +108,30 @@ class QuantumAIBrain:
         print(f"   Problem: {problem}")
         print(f"   Method: Quantum superposition + measurement")
         print()
-        
+
         # Initialize quantum neurons in superposition
         psi0 = np.ones(self.quantum_brain.dim, dtype=np.complex64)
         psi0 /= np.linalg.norm(psi0)  # Normalize
-        
+
         print("   Step 1: Initialize neurons in superposition")
         print(f"   All {self.n_neurons} neurons exploring solution space simultaneously")
-        
+
         # Evolve quantum state (neurons "thinking")
         print("\n   Step 2: Quantum evolution (neurons processing)")
         times, states = self.quantum_brain.evolve_fast(
-            psi0, 
+            psi0,
             t_max=1e-6,  # 1 microsecond
             n_steps=20
         )
         print(f"   Evolved for {len(times)} time steps")
-        
+
         # Measure correlations (entangled thinking)
         print("\n   Step 3: Measure neuron correlations")
         obs = self.quantum_brain.measure_observables(states)
-        
+
         max_corr = obs['max_correlation']
         print(f"   Max correlation: {max_corr:.3f}")
-        
+
         if max_corr > 0.8:
             print(f"   ✅ Strong quantum correlation detected!")
             print(f"   Neurons are entangled - non-local reasoning active")
@@ -139,13 +142,13 @@ class QuantumAIBrain:
             print(f"   ⚠️ Weak correlation - classical reasoning fallback")
             confidence = 75.0
             answer = "Quantum processing inconclusive, using classical reasoning."
-        
+
         print(f"\n   Final Answer: {answer}")
         print(f"   Confidence: {confidence}% (quantum-verified)")
         print()
-        
+
         return answer, confidence, obs
-    
+
     def compare_reasoning(self, problem: str):
         """
         Compare classical vs quantum-enhanced reasoning.
@@ -154,13 +157,13 @@ class QuantumAIBrain:
         print("REASONING COMPARISON")
         print("=" * 60)
         print()
-        
+
         # Classical
         classical_answer = self.classical_reasoning(problem)
-        
+
         # Quantum-enhanced
         quantum_answer, confidence, obs = self.quantum_enhanced_reasoning(problem)
-        
+
         # Summary
         print("=" * 60)
         print("SUMMARY")
@@ -197,16 +200,16 @@ def demo_quantum_ai_organism():
     print("║" + " " * 58 + "║")
     print("╚" + "=" * 58 + "╝")
     print()
-    
+
     # Create quantum-AI brain
     brain = QuantumAIBrain(n_quantum_neurons=4)
-    
+
     # Test problem
     problem = "What is the nature of quantum entanglement and how can we verify it?"
-    
+
     # Compare reasoning
     brain.compare_reasoning(problem)
-    
+
     print("=" * 60)
     print("CONCLUSION")
     print("=" * 60)

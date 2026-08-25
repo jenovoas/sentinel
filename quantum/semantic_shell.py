@@ -18,9 +18,9 @@ Permite al operador hablar con el sistema y que este ejecute acciones
 o enseñe conceptos (Modo Maestro).
 """
 
-import sys
-import os
 import asyncio
+import os
+import sys
 import time
 
 # Ensure imports work
@@ -39,10 +39,10 @@ class SemanticShell:
         print("🔌 Iniciando enlace neuronal (Cargando Router)...")
         self.router = SemanticRouter()
         self.running = True
-        
+
     def clear(self):
         os.system('clear')
-        
+
     def print_banner(self):
         print("\033[1;35m" + "="*60)
         print("  🧠  SENTINEL SEMANTIC SHELL v2.0  🧠")
@@ -53,13 +53,13 @@ class SemanticShell:
 
     async def process_command(self, user_input):
         print(f"\033[1;30mThinking...\033[0m", end="\r")
-        
+
         # 1. Routing
         category, reason = await self.router.classify_intent(user_input)
-        
+
         print(f"🤖 ENTENDIDO: \033[1;36m{category}\033[0m")
         # print(f"   Razón: {reason}")
-        
+
         # 2. Execution Dispatch
         if category == "QUERY_ORACLE":
             print("\n🔮 Invocando al Oráculo (Modo Maestro)...")
@@ -67,24 +67,24 @@ class SemanticShell:
             # Pass the query wrapper in quotes to handle spaces safely
             cmd = f'python3 quantum/quantum_oracle_cli.py "{user_input}"'
             os.system(cmd)
-            
+
         elif category == "SYSTEM_ACTION":
             print("\n⚙️ Ejecutando Acción de Sistema...")
             self.execute_system_action(user_input, reason)
-            
+
         elif category == "SAFETY_CHECK":
             print("\n🛡️ Verificación de Seguridad...")
             # For now, we lean on the explanation provided by Gemini in 'reason'
             # In future v2.1, we can call yatra_guard directly
             print(f"   DICTAMEN DEL GUARDIÁN: {reason}")
-            
+
         elif category == "UNKNOWN":
             print("\n❓ No estoy seguro de cómo proceder con eso en este plano de realidad.")
             print(f"   Contexto AI: {reason}")
-            
+
         else:
             print("⚠️ Error de categorización.")
-            
+
     def execute_system_action(self, user_input, reason):
         # Heuristic mapping for v2.0 (To be enhanced with dedicated tool calling)
         u = user_input.lower()
@@ -103,19 +103,19 @@ class SemanticShell:
     async def repl_loop(self):
         self.clear()
         self.print_banner()
-        
+
         while self.running:
             try:
                 user_input = input("\n\033[1;32mOperador > \033[0m").strip()
-                
+
                 if not user_input: continue
                 if user_input.lower() in ['exit', 'q', 'quit', 'salir']:
                     self.running = False
                     print("\n🔌 Desconectando enlace neural...")
                     break
-                    
+
                 await self.process_command(user_input)
-                
+
             except KeyboardInterrupt:
                 self.running = False
                 print("\n\n🔌 Interrupción detectada.")

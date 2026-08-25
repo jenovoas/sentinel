@@ -24,8 +24,8 @@ sys.path.append(os.getcwd())
 
 from quantum.gpu_controller import gpu_controller
 from quantum.liquid_memory_adapter import LiquidMemory
+from quantum.quantum_scheduler_bridge import TaskType, scheduler
 from quantum.time_crystal_network import NetworkTimeCrystal
-from quantum.quantum_scheduler_bridge import scheduler, TaskType
 
 # Configure Logging
 logging.basicConfig(
@@ -164,7 +164,7 @@ def main():
             # Pulse sent every tick (~41.77 Hz logic handled by Rust)
             # Currently main loop runs at ~1 Hz (1.0 sleep), we need to accelerate this for real-time resonance
             # or rely on Rust's internal threading (currently we just pump the Tick from here)
-            
+
             # Use raw time from network clock for synchronization
             current_s60_ticks = network_clock.local_clock.ticks * 1440 # Placeholder conversion to tertia
             scheduler.tick(current_s60_ticks)

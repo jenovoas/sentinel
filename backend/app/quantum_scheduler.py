@@ -18,14 +18,8 @@ depende del estado del sistema en el momento de ejecución.
 Resultado validado: 62.9% ahorro energético vs scheduler tradicional.
 """
 
-import math
-import time
 import logging
-import threading
-import functools
-from collections import deque
-from dataclasses import dataclass, field
-from typing import Callable, Any
+import time
 
 logger = logging.getLogger("quantum_scheduler")
 

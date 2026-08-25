@@ -1,10 +1,12 @@
 # Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
 # Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
+import logging
+
 from celery import Celery
+
 from app.config import get_settings
 from app.quantum_scheduler import T_BIO, T_CYCLE
-import logging
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
