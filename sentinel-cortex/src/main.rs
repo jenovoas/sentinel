@@ -835,6 +835,37 @@ pub struct TruthClaimResponse {
     pub ring0_intercepts: u32,
 }
 
+fn write_security_wal(entry: &str) {
+    let default_path = std::path::Path::new("/var/log/sentinel/security_wal.log");
+    let fallback_path = std::path::Path::new("/tmp/sentinel_security_wal.log");
+
+    if let Some(parent) = default_path.parent() {
+        let _ = std::fs::create_dir_all(parent);
+    }
+
+    let write_res = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(default_path)
+        .and_then(|mut file| {
+            use std::io::Write;
+            file.write_all(entry.as_bytes())?;
+            file.sync_all()
+        });
+
+    if write_res.is_err() {
+        let _ = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(fallback_path)
+            .and_then(|mut file| {
+                use std::io::Write;
+                file.write_all(entry.as_bytes())?;
+                file.sync_all()
+            });
+    }
+}
+
 pub(crate) async fn truth_claim_handler(
     axum::extract::State(state): axum::extract::State<Arc<AppState>>,
     Json(payload): Json<TruthClaimRequest>,
@@ -844,7 +875,6 @@ pub(crate) async fn truth_claim_handler(
         payload.engine
     );
 
-    // 🛡️ AIOpsShield Phase 1: Neutralización de AIOpsDoom (Inyección de Prompt / Comandos Destructivos)
     let payload_lower = payload.claim_payload.to_lowercase();
     let is_aiopsdoom_attack = payload_lower.contains("drop database")
         || payload_lower.contains("rm -rf")
@@ -853,21 +883,16 @@ pub(crate) async fn truth_claim_handler(
 
     if is_aiopsdoom_attack {
         tracing::warn!(
-            "🚨 AIOpsShield INTERCEPCIÓN EN VIVO: Ataque AIOpsDoom detectado en claim_payload!"
+            "AIOpsShield INTERCEPCION EN VIVO: Ataque AIOpsDoom detectado en claim_payload!"
         );
 
-        // Carril 1: Security & Audit Lane — Escribir inmediatamente en Security WAL sin buffers
         let wal_entry = format!(
             "{{\"ts\":\"{}\",\"lane\":\"security\",\"event\":\"AIOPSDOOM_INTERCEPTION\",\"engine\":\"{}\",\"payload\":\"{}\"}}\n",
             chrono::Utc::now().to_rfc3339(),
             payload.engine,
             payload.claim_payload.replace('"', "\\\"")
         );
-        let _ = std::fs::OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open("/var/log/sentinel/security_wal.log")
-            .and_then(|mut file| std::io::Write::write_all(&mut file, wal_entry.as_bytes()));
+        write_security_wal(&wal_entry);
 
         return Json(TruthClaimResponse {
             claim_valid: false,

@@ -169,7 +169,14 @@ impl ResonantMatrix {
         let numer = SPA::from_int(value);
         let amp = match crate::pai60_lib::pai60_divide(numer, denominator) {
             Some(a) => a,
-            None => SPA::from_int(value), // fallback: denominador no regular en tabla
+            None => {
+                if denominator > 0 {
+                    let raw = (value as i128 * SPA::SCALE_0 as i128) / (denominator as i128);
+                    SPA::from_raw(raw as i64)
+                } else {
+                    SPA::from_int(value)
+                }
+            }
         };
         // Suma la amplitud SPA ya calculada directo al oscilador.
         // NO usar transduce_pulse(amp.to_raw()): ese metodo espera un entero y
@@ -520,10 +527,9 @@ mod tests {
         );
         assert_ne!(amp, 30, "no debe inyectar el entero crudo");
 
-        // Fallback: denominador no regular (7) -> cae a valor entero crudo
         let mut lattice2 = ResonantMatrix::new(3);
         lattice2.inject_pai(0, 21, 7);
-        assert_eq!(lattice2.get_amplitudes()[0], SPA::from_int(21));
+        assert_eq!(lattice2.get_amplitudes()[0], SPA::from_int(3));
     }
 
     #[test]
@@ -604,5 +610,15 @@ mod tests {
 
         // Energy should decrease due to damping but not increase
         assert!(final_energy <= initial_energy);
+    }
+
+    #[test]
+    fn test_inject_pai_non_regular_scaling() {
+        let mut matrix = ResonantMatrix::new(3);
+        matrix.inject_pai(0, 1, 2);
+        assert_eq!(matrix.get_amplitudes()[0].to_raw(), 6_480_000);
+
+        matrix.inject_pai(1, 1, 17);
+        assert_eq!(matrix.get_amplitudes()[1].to_raw(), 762_352);
     }
 }
