@@ -20,6 +20,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
     { label: "Dashboard",    href: "/dashboard",         icon: "📊" },
+    { label: "Lattice S60",  href: "/dashboard/lattice", icon: "💎", badge: "Live" },
     { label: "AI Playground",href: "/ai/playground",     icon: "🤖", badge: "AI" },
     { label: "Security",     href: "/security/watchdog", icon: "🔒", badge: "New" },
     { label: "Metrics",      href: "/metrics",           icon: "📈" },

@@ -65,3 +65,18 @@ export type AnalyticsSample = {
 };
 
 export type DetailModalType = "metrics" | "anomalies" | "database" | null;
+
+export interface HologramNode {
+  index: number;
+  amplitude_raw: number;
+  phase_raw: number;
+  amplitude_u16: number;
+  phase_u16: number;
+}
+
+export interface LatticeHologramData {
+  total_energy: number;
+  node_count: number;
+  coherence_raw: number;
+  nodes: HologramNode[];
+}
