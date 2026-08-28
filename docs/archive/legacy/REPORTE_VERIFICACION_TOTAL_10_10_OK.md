@@ -1,4 +1,6 @@
 # 🟢 Reporte Final: Verificación de Invariantes Sentinel (10/10 OK)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor Target:** Fan (`10.88.0.1`)  
 > **Herramienta:** `sentinel-verifier`  
@@ -43,4 +45,3 @@
 - Purga completa de los registros históricos de SEGV previos a la corrección del mapa Array eBPF.
 - Módulos PAI y Cifrado Dinámico operando y exportando telemetría viva a Grafana/Prometheus.
 - Prueba de estrés con 1,000 peticiones concurrentes superada con $100\%$ de éxito HTTP 200 y cero caídas.
-

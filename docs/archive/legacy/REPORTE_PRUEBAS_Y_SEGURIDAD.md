@@ -1,4 +1,6 @@
 # 🧪 Reporte de Pruebas Manuales y Análisis de Seguridad de Sentinel
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Entorno:** Servidor Fan (`10.88.0.1`) — Producción Física  
 > **Fecha:** 29 de Julio, 2026  
@@ -48,4 +50,3 @@ A partir de la inspección del sistema en producción en Fan, se han identificad
 ### 🚨 Hallazgo 5: Intentos de Fallback en Redis sin Cifrado (TLS)
 - **Vulnerabilidad:** La conexión a Redis (`redis://127.0.0.1:6379`) no usa TLS (`rediss://`).
 - **Remediación:** Si el tráfico de Redis cruza la red hacia el nodo de laptop, debe encriptarse a través de la interfaz WireGuard `wg0` o usar TLS habilitado en Redis.
-

@@ -1,4 +1,6 @@
 # 📊 Ajuste Fino de la Consulta Loki en Grafana para Trazas eBPF
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Loki Query Anterior:** `{job="sentinel_file_logs", filename=~"/var/log/sentinel/ebpf_trace.log"}`  
@@ -23,4 +25,3 @@ Al ejecutar la consulta desde la API de Loki:
 ```
 
 El stream de trazas del kernel eBPF `ebpf-forwarder` se renderiza de inmediato en el Panel 7 de Grafana.
-

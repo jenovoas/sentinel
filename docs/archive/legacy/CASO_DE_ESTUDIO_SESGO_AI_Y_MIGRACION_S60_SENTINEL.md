@@ -1,4 +1,6 @@
 # 📖 Caso de Estudio: Sesgo en Modelos de IA vs. Arquitectura Real Sexagesimal (S60)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Autor del Sistema:** Jaime Novoa Sepúlveda  
 > **Evaluación:** Análisis de la degradación por catalogación "Legacy" vs. Código Real Nativo  
@@ -24,4 +26,3 @@ En el desarrollo de sistemas complejos que desafían las convenciones tradiciona
 
 2. **Verificación Empírica**:
    - Validación constante vía `sentinel-verifier` obteniendo resultado impecable de **10/10 OK** con evidencia registrada en journalctl y métricas Prometheus.
-

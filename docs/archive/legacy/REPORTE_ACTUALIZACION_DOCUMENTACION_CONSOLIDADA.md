@@ -1,4 +1,6 @@
 # 📚 Reporte de Actualización de Documentación Consolidada
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Documento Consolidado Creado:** [`docs/00_vision_y_arquitectura_global/ARCHITECTURE_STATUS_2026.md`](file:///home/jnovoas/Proyectos/sentinel/docs/00_vision_y_arquitectura_global/ARCHITECTURE_STATUS_2026.md)  
 > **Índice General Actualizado:** [`docs/DOCUMENTATION_INDEX.md`](file:///home/jnovoas/Proyectos/sentinel/docs/DOCUMENTATION_INDEX.md)  
@@ -15,4 +17,3 @@
 2. **Documentación Consolidada de Producción (2026)**:
    - **`ARCHITECTURE_STATUS_2026.md`**: Resume el estado 100% verificado del runtime en Fan (3/3 LSMs, XDP Dual-Lane `eth0`/`wg0`, `god_mode_uids` en `BPF_MAP_TYPE_ARRAY`, 128 Nodos Dual-Lane, `LiquidLattice 3x3`, `PAI-Neural SNN` LIF y `truthsync-core` con Plimpton 322).
    - Indexado formalmente al inicio de `docs/DOCUMENTATION_INDEX.md`.
-

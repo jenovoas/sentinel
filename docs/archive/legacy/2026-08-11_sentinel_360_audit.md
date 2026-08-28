@@ -1,4 +1,6 @@
 # Auditoria 360 de Sentinel — 2026-08-11
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 **slug**: `sentinel-audit-360`
 **baseline**: `main` / `origin/main` (HEAD `fb15c746558393c7fa48ecf80ac25abefb73bb6f`)

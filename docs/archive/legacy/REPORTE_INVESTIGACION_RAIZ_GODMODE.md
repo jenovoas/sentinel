@@ -1,4 +1,6 @@
 # 🔬 Investigación de Causa Raíz Físico-Matemática: `god_mode_uids` en Ring-0
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Componente:** `ebpf/guardian_alpha_lsm.c` (Map ID 24)  
@@ -30,4 +32,3 @@ Para resolver esto desde la arquitectura C/Rust de raíz:
 ### 🟢 Por qué esta es la Solución Real y Arquitectónica:
 - En un `ARRAY` map de BPF, los elementos se asignan contiguousmente en RAM al cargar el programa en kernel y **jamás colisionan con NULL ni devuelven basura**.
 - Cero loops en userspace. Cero escrituras repetidas. Cero consumo de CPU.
-

@@ -1,4 +1,6 @@
 # ⚡ TruthSync Core - Certificación de Integración de Alta Velocidad (<100μs)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Crate:** `truthsync-core`  
 > **Ubicación:** `sentinel/truthsync-core`  
@@ -37,4 +39,3 @@ Se implementó el crate nativo `truthsync-core` en Rust dentro del workspace uni
   }
   ```
   *(Nota: `ring0_intercepts` expone el tiempo exacto de verificación en microsegundos: **400μs** totales procesando hashing SHA3 + Aho-Corasick + Rayon).*
-

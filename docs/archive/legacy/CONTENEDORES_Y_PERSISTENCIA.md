@@ -1,4 +1,6 @@
 # Guía de Operación: Contenedores y Persistencia (Fénix)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 Este documento detalla la configuración de contenedores en el nodo **Fénix**, cómo asegurar su persistencia tras reinicios y cómo diagnosticar fallos de salud.
 

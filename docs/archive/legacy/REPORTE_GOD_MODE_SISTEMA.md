@@ -1,4 +1,6 @@
 # ⚡ Registro de God Mode de Sistema (Exención de Filtros eBPF LSM)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Fecha:** 29 de Julio, 2026  
@@ -29,4 +31,3 @@ if (god && *god == 1)
 
 ### Script de Mantención de Inmunidad:
 Se instaló `/usr/local/bin/sentinel-godmode` en el servidor **Fan** para mantener estos dos UIDs fijados en el mapa eBPF `/sys/fs/bpf/sentinel/god_mode_uids`.
-

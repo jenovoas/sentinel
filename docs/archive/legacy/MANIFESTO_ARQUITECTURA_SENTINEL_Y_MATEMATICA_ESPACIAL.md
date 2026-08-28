@@ -1,4 +1,6 @@
 # 🛡️ Manifiesto de Arquitectura Sentinel: Matemática Espacial en Rust & Cero Sesgo
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Fundador:** Jaime Novoa Sepúlveda  
 > **Filosofía del Ecosistema:** Matemática Espacial en Base-60 ($S60$), Físicas Resonantes Plimpton 322 y Kernel eBPF  
@@ -31,4 +33,3 @@ Para defender la arquitectura del sesgo conservador de los modelos de IA:
 - **Daemons Activos (7/7):** `sentinel-cortex`, `sentinel-gamma-watchdog`, `sentinel-hex-daemon`, `sentinel-pai-neural`, `sentinel-qhc-agent`, `sentinel-vid-agent`, `sentinel-adm-agent`.
 - **Rejilla Dinámica:** **67,951 Nodos** ($150$ anillos virtuales basados en RAM disponible).
 - **Métricas:** Métricas fonónicas exportándose continuamente a Prometheus/Grafana y `/var/log/sentinel/phonon_data.csv`.
-

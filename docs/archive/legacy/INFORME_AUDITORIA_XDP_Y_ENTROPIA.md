@@ -1,4 +1,6 @@
 # 🔬 Informe de Auditoría Crítica: Programa XDP y Fuente de Entropía Térmica en Fan
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Fecha:** 29 de Julio, 2026  
@@ -37,4 +39,3 @@ let temp_millicelsius: i64 = std::fs::read_to_string("/sys/class/thermal/thermal
    - Reemplazar la lectura estática por una fuente de entropía real de kernel/CPU disponible en Fan (como la varianza de Jitter en microsegundos de `/proc/stat` o el generador de entropía de hardware del kernel `/proc/sys/kernel/random/entropy_avail` acoplado al tiempo exacto en nanosegundos).
 2. **Compilar e Inyectar el Programa XDP Real (`ebpf/xdp_firewall.c`)**:
    - Compilar `xdp_firewall.c` y vincularlo directamente a la interfaz `eth0` mediante `ip link set dev eth0 xdp obj xdp_firewall.o sec xdp`.
-

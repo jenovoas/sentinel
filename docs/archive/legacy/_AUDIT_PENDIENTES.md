@@ -1,4 +1,6 @@
 # 🔍 AUDITORÍA DE PLANIFICACIONES Y PENDIENTES — Sentinel (desde el día 1)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Auditor:** Hermes · **Fecha:** 2026-08-07
 > **Método:** Leo CADA archivo de plan/todo/pendiente/roadmap del repo (tracked + borrados vía `git log --all --diff-filter=D`), verifico cada ítem contra código/git real, y registro línea por línea.
@@ -377,4 +379,3 @@
 - **DECISIONES**: (1) Marqué toda la era Gemini (patentes/funding/visiones) como FUERA DE ALCANCE por tu directiva. (2) Solo lo verificado como PENDIENTE real va al TODO unificado (secciones A-F). (3) No borré ni reescribí ningún doc existente (respeté AXIOMA VI); creé SOLO este archivo de auditoría nuevo.
 - **HONESTIDAD**: El decoder de minimax (paste_3) NO está en el código — lo registré como PENDIENTE, no como hecho. No inventé "listo".
 - **SIGUIENTE**: Este archivo está sin commitear (tu decisión al final). El TODO unificado (A-F) es la base para un `docs/TODO.md` consolidado si lo mandas.
-

@@ -1,4 +1,6 @@
 # 🔬 Reporte de Verificación Empírica: Fase 4 (AIOpsShield & Security WAL)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Endpoint:** `POST /api/v1/truth_claim`  
@@ -42,4 +44,3 @@ Comprobamos la escritura append-only sin buffers en `/var/log/sentinel/security_
 ## 🟢 Dictamen Técnico:
 1. **AIOpsShield Activo**: Neutralización comprobada de la inyección de prompt destructivo.
 2. **Security Lane Activo**: Escritura append-only directa en disco fsync (`security_wal.log`) garantizando que los eventos de seguridad omitan colas de observabilidad y no generen desorden en Loki.
-

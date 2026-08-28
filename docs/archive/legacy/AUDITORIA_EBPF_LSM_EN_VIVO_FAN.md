@@ -1,4 +1,6 @@
 # 🔬 Auditoría en Vivo de Ring-0 eBPF & LSM en Fan (`10.88.0.1`)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Comando de Verificación:** `bpftool prog show`, `bpftool map show`, `bpftool map dump`  
@@ -49,4 +51,3 @@ key: 00 00 00 00  value: ef   <-- UID 0 (root) = 0xEF (¡NO ES 0x01 PASSTHROUGH!
 1. **Reparar la entrada de UID 0 (`root`) en `god_mode_uids`**: Actualizar la clave `00 00 00 00` con el valor exacto `01 00 00 00` (Passthrough / Dios).
 2. **Poblar la Whitelist de Ejecución (`whitelist_map`)**: Cargar las rutas absolutas de binarios administrativos (`/usr/bin/sshd`, `/usr/bin/systemctl`, `/usr/bin/bash`, `/usr/bin/python3`, `/home/jnovoas/.local/bin/sentinel-cortex`) antes de conmutar el LSM a modo enforzamiento.
 3. **Re-conectar y graficar la tasa de intercepción LSM en Grafana**: Agregar la métrica eBPF real al dashboard.
-

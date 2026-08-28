@@ -1,4 +1,6 @@
 # 🔬 Solución Definitiva y Diseño del Mecanismo de Seguridad Ring-0
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Componentes:** `guardian_alpha_lsm.c`, `ai_guardian.c`, `god_mode_uids` (Map ID 24)  
@@ -39,4 +41,3 @@ Para garantizar que el mapa `god_mode_uids` se mantenga invulnerable y libre de 
    - Crear `/usr/local/bin/sentinel-godmode-daemon.sh` corriendo en un bucle ligero de baja prioridad que reaplique `bpftool map update pinned /sys/fs/bpf/sentinel/god_mode_uids key hex 00 00 00 00 value hex 01` (UID 0) y `key hex e9 03 00 00 value hex 01` (UID 1001) para asegurar que el Passthrough esté forzado en un 100% del tiempo.
 2. **Habilitación Segura del Enforzamiento AI**:
    - Registrar explícitamente solo los PIDs/procesos AI de prueba en `alpha_ai_agents` para validar el bloqueo eBPF de Ring-0 sin poner en riesgo ningún binario de administración o de clientes web.
-

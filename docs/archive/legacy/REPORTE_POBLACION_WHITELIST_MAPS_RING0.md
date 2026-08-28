@@ -1,4 +1,6 @@
 # 🛡️ Reporte de Población de Whitelist Maps en Ring-0 eBPF (`whitelist_map`)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Mapas BPF Target:** `whitelist_map` (ID 25 - `guardian_execve`) y `whitelist_map` (ID 48 - `guardian_cognitive`)  
@@ -40,4 +42,3 @@ Escribimos las claves binarias exactas de 256 bytes con valor `0x01` en ambos ma
 
 ## 🔒 Estado de Enforzamiento del Ring-0:
 Con `god_mode_uids` (ID 24) en `0x01` para `jnovoas` y `root`, y `whitelist_map` (ID 25/48) poblados con los binarios de administración del sistema, **el kernel Linux en Fan está preparado para ejecutar el bloqueo activo de cualquier proceso no autorizado fuera de la lista blanca**.
-

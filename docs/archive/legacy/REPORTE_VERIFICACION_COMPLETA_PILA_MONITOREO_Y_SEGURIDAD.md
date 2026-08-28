@@ -1,4 +1,6 @@
 # 📊 Reporte Integrado de Monitoreo, Sensores, Eventos y Seguridad (Master Dashboard v6.0)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor Target:** Fan (`10.88.0.1`)  
 > **Grafana Master URL:** `http://10.88.0.1:3001/d/a5s799/securepenguin-e28094-monitoreo`  
@@ -33,4 +35,3 @@ El Master Dashboard `SecurePenguin — Monitoreo` ha sido actualizado a la **ver
 Toda la pila de **monitoreo, sensores de inercia, eventos del Carril 1 Security WAL, XDP pre-stack e intercepciones de AIOpsShield** está 100% reflejada, conectada e ingiriendo métricas en directo.
 
 El sistema se encuentra en un estado totalmente limpio y listo para iniciar la batería de **pruebas de carga concurrente y estrés**.
-

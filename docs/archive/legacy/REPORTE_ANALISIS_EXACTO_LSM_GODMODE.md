@@ -1,4 +1,6 @@
 # 🔬 Análisis Técnico y Físico del Comportamiento de `god_mode_uids` en Ring-0
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Programa eBPF LSM:** [`guardian_alpha_lsm.c`](file:///home/jnovoas/Proyectos/sentinel/ebpf/guardian_alpha_lsm.c#L103-L107)  
@@ -40,4 +42,3 @@ if (uid == 0 || (god && *god == 1))
 ### 🟢 Ventajas de la Solución Directa en Ring-0:
 - **Cero CPU / Cero Escrituras**: No requiere scripts, daemons ni escrituras repetitivas en memoria.
 - **Inmunidad Físicamente Incondicional**: UID 0 (`root`) queda protegido a nivel de bytecode eBPF dentro de la propia función LSM en el kernel.
-

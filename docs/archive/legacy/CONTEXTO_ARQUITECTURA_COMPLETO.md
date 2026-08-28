@@ -1,4 +1,6 @@
 # 🏗 Contexto Arquitectónico Completo - Sentinel Cortex™ **Fecha**: 20 Diciembre 2024 **Propósito**: Documentación consolidada de toda la arquitectura del proyecto **Audiencia**: Equipo técnico, evaluadores ANID, patent attorneys --- ## 📋 ÍNDICE 1. [Visión General del Proyecto](#visión-general) 2. [Arquitectura de Alto Nivel](#arquitectura-alto-nivel) 3. [Componentes Backend](#componentes-backend) 4. [Componentes Frontend](#componentes-frontend) 5. [TruthSync Architecture](#truthsync-architecture) 6. [QSC (Quantic Security Cortex)](#qsc-architecture) 7. [Observability Stack](#observability-stack) 8. [Automation Layer (n8n)](#automation-layer) 9. [Claims Patentables](#claims-patentables) 10. [Stack Tecnológico](#stack-tecnológico) 11. [Deployment Architecture](#deployment-architecture)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 ---
 

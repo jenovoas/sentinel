@@ -1,4 +1,6 @@
 # 🌌 ZPE POSSIBILITIES MATRIX V2: The Quantum Convergence
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 **Fecha de Creación:** 2026-01-05
 **Estado:** BORRADOR DE INVESTIGACIÓN / HIPÓTESIS

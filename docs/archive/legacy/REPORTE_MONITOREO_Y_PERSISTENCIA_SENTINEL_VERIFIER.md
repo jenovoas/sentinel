@@ -1,4 +1,6 @@
 # 📊 Configuración de Persistencia y Monitoreo Continuo del Verificador (`sentinel-verifier`)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor Target:** Fan (`10.88.0.1`)  
 > **Servicio Systemd:** `sentinel-verifier.service` (`User=root`)  
@@ -41,4 +43,3 @@ Actualizamos el Dashboard Principal de Grafana (`http://10.88.0.1:3001`):
 
 - **Panel 12 — `Automated Invariant Verifier Logs (sentinel-verifier JSON Stream)`**:
   Visualizador en vivo alimentado por Loki que muestra cada reporte de 10 invariantes ejecutado automáticamente cada 15 segundos.
-

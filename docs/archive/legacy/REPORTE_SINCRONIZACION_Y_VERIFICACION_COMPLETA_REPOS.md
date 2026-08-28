@@ -1,4 +1,6 @@
 # 📊 Reporte de Sincronización Total de Repositorios y Verificación (Laptop ↔ Fan)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Origen (Laptop):** `/home/jnovoas/Proyectos/sentinel/`  
 > **Destino (Servidor Fan):** `fan:/home/jnovoas/Proyectos/sentinel/`  
@@ -49,4 +51,3 @@ Tras completar la sincronización, ejecutamos el binario `sentinel-verifier` dir
 
 ## 🟢 Dictamen de Integración:
 Ambos entornos (**Laptop ↔ Fan**) se encuentran en **100% de paridad y sincronización de fuentes**. Tu verificador en Rust confirma la salud de los 3 LSMs, las 6 rutas pineadas, el ringbuffer y los servicios activos.
-

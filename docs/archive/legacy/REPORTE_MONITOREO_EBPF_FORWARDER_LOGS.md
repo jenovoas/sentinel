@@ -1,4 +1,6 @@
 # 📊 Integración de Monitoreo de Trazas eBPF (`sentinel-ebpf-forwarder.service`)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Servicio:** `sentinel-ebpf-forwarder.service` (`PID 1533` - `bpftool prog tracelog`)  
@@ -28,4 +30,3 @@ Actualizamos el Dashboard Maestro (`http://10.88.0.1:3001/d/ap295k/69db56b`) agr
 - **Panel 7**: `Ring-0 Kernel eBPF Syscall Trace Stream (ebpf-forwarder)`
 - **Fuente**: Loki 3.4
 - **Propósito**: Stream visual en directo de cada llamada a sistema e intercepción eBPF acoplada a las pruebas de carga y estrés.
-

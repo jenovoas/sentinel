@@ -1,4 +1,6 @@
 # 🔬 Reporte de Integración: Módulos PAI-60 y Cifrado Dinámico Hexagonal
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor Target:** Fan (`10.88.0.1`)  
 > **Módulos Integrados:**  
@@ -32,4 +34,3 @@ Jul 29 21:08:53 fan hex_daemon[3134955]: 🔷 TICK 0015 | Hex Lattice Nodes: 127
 ```
 
 Todos los módulos PAI (`pai_neural_daemon`, `qhc_agent`, `vid_agent`, `adm_agent`, `hex_daemon`) están operando con cifrado dinámico y pulso YHWH continuo.
-

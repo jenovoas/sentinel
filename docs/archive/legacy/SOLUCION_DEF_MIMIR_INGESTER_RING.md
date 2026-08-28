@@ -1,4 +1,6 @@
 # 🛠️ Diagnóstico y Solución Definitiva: Mimir Ingester & Ring Setup (`sentinel-mimir`)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Contenedor:** `sentinel-mimir`  
@@ -62,4 +64,3 @@ blocks_storage:
    - Retorna: **`ready`** (tras transcurrir los 15s de estabilización del ingester ring).
 2. **Prueba de Consulta API (`GET /prometheus/api/v1/query?query=up`)**:
    - Retorna: **`{"status":"success","data":{"resultType":"vector","result":[]}}`** (Éxito absoluto sin errores de quorum ni unhealthy instances).
-

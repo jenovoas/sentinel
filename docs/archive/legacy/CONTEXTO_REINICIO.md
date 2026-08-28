@@ -1,4 +1,6 @@
 # 🛡️ YATRA PROTOCOL: ESTADO DE SESIÓN (CONTEXTO DE REINICIO) 🛡️
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 **Última actualización**: 2026-03-18T06:52:00Z  
 **NOTA IMPORTANTE:** Este servidor (Fenix) es **CPU-only** (sin GPU). Todo el contexto de GPU NVIDIA (GTX 1050, 3GB VRAM) corresponde a la laptop de desarrollo (ifenix).

@@ -1,4 +1,6 @@
 # 💎 Reporte de Asignación Dinámica de Rejilla por RAM (`LiquidLatticeStorage`)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor Target:** Fan (`10.88.0.1` — 5.8 GB RAM disponible)  
 > **Fórmula de Anillos Hexagonales:** $N = 3r^2 + 3r + 1$  
@@ -39,4 +41,3 @@ Y la suite de pruebas automatizadas `sentinel-verifier` confirma estado perfecto
 === SENTINEL VERIFIER @ fan ===
   10 OK | 0 FAIL | 0 SKIP (de 10)
 ```
-

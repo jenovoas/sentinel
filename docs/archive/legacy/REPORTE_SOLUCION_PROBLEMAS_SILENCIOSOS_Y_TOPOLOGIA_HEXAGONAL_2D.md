@@ -1,4 +1,6 @@
 # 🛠️ Reporte Técnico: Resolución de Problemas Silenciosos & Difusión Hexagonal 2D Real
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor Target:** Fan (`10.88.0.1`)  
 > **Fecha:** 29 de Julio, 2026  
@@ -28,4 +30,3 @@
 === SENTINEL VERIFIER @ fan ===
   10 OK | 0 FAIL | 0 SKIP (de 10)
 ```
-

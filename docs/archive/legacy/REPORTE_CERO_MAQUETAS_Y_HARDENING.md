@@ -1,4 +1,6 @@
 # 🛡️ Certificación de Producción Cero-Maquetas y Endurecimiento de Seguridad (Fan)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Entorno:** Servidor Fan (`10.88.0.1`) — Producción Física  
 > **Fecha:** 29 de Julio, 2026  
@@ -28,4 +30,3 @@
 3. **Restricción de Puertos y Servicios (Hallazgos 4 y 5 Remediados)**:
    - Grafana corre de forma segura en puerto `3001` local.
    - Redis corre en localhost `127.0.0.1:6379`.
-

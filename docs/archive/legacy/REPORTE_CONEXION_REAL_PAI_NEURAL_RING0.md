@@ -1,4 +1,6 @@
 # 🔬 Reporte de Conexión Real: PAI-Neural Daemon a Ring-0 eBPF Map (`cortex_events`)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor Target:** Fan (`10.88.0.1`)  
 > **Servicio Systemd:** `sentinel-pai-neural.service`  
@@ -28,4 +30,3 @@ Jul 29 20:54:12 fan pai_neural_daemon[3132613]: 🚀 Daemon Active. Polling for 
 ```
 
 El daemon **`pai_neural_daemon` está formalmente conectado y polleando eventos en vivo directamente desde el Ring-0 eBPF del kernel**.
-

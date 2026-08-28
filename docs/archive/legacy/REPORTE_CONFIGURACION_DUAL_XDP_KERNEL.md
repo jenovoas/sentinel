@@ -1,4 +1,6 @@
 # 🔬 Reporte de Configuración Arquitectónica XDP Dual-Lane en Kernel
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Interfaz Red Externa (`eth0`):** `xdp_firewall_prog` (XDP Nativo / Driver Mode)  
@@ -26,4 +28,3 @@ Debido a que el kernel de Linux impide la coexistencia simultánea de XDP Driver
 ## 🔗 2. Ingestion eBPF Bridge
 
 El RingBuffer `burst_events` (Map ID 306, `max_entries 262144`) en `/sys/fs/bpf/` alimenta directamente las lecturas de eventos de tráfico real del kernel hacia `sentinel-cortex` y `me-60os-core`, eliminando cualquier interpolación o maquillaje en el puente.
-

@@ -1,4 +1,6 @@
 # 📊 Reporte Final de Auditoría y Verificación de la Capa de Monitoreo y Logs
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Componentes:** Grafana (`:3001`), Loki 3.4 (`:3100`), Prometheus (`:9091`), Mimir (`:8080`)  
@@ -28,4 +30,3 @@ Ejecutamos consultas API directas hacia Loki para confirmar la recepción de tra
    - Consulta `up` confirmada: `sentinel_cortex` (`1`), `node_exporter` (`1`).
 3. **Grafana Master (`http://10.88.0.1:3001`)**:
    - Dashboard por defecto (`SecurePenguin — Monitoreo`) renderizando los 7 paneles con datos reales en tiempo real (Temperatura de CPU, Retention Score $S60$, Memoria RAM, Tiempos de CPU y Stream Log de Ring-0).
-

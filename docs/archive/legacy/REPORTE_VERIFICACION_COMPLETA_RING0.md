@@ -1,4 +1,6 @@
 # 🔬 Reporte Oficial de Auditoría y Verificación del Ring-0 (eBPF & LSM)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor de Producción:** Fan (`10.88.0.1`)  
 > **Herramienta:** `bpftool` (Interrogación directa de la memoria de kernel)  
@@ -30,4 +32,3 @@
 No existe **ningún pendiente bloqueante** en el Ring-0.
 - Los mapas eBPF están totalmente sincronizados y poblados.
 - Las cuentas de administración (`root` y `jnovoas`) y las aplicaciones de clientes (`bakery-api`, `postgres`, `nginx`) tienen inmunidad y permisos explícitos en el kernel.
-

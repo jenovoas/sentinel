@@ -1,4 +1,6 @@
 # 🔍 Estado Actual y Diagnóstico de Loki y Prometheus en Fan (`10.88.0.1`)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Loki API:** `http://10.88.0.1:3100`  
@@ -45,4 +47,3 @@ En Grafana (`http://10.88.0.1:3001`), Loki está registrado con el **OrgID / Hea
   ```logql
   rate({job="sentinel_file_logs", filename="/var/log/sentinel/ebpf_trace.log"}[1m])
   ```
-

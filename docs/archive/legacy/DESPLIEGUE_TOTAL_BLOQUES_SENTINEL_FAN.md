@@ -1,4 +1,6 @@
 # 🚀 Despliegue Consolidado Total: Bloques 1, 2 y 3 del Plan Maestro v3.0 en Fan
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Estado:** 🟢 **DESPLEGADO Y OPERATIVO**  
@@ -44,4 +46,3 @@
 ### 4. 🔑 Kernel God Mode Systemwide — Bloque 3 (Guardian-Alpha)
 - **Implementación:** `ebpf/guardian_alpha_lsm.c` + `god_mode_uids` map pin
 - **Permisos:** Inmunidad absoluta en Ring-0 para `UID 0` (`root`) y `UID 1001` (`jnovoas`).
-

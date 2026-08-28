@@ -1,4 +1,6 @@
 # 🏛️ Arquitectura Consolidada y Registro de Conocimiento de Sentinel
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Fecha de Consolidación:** 29 de Julio, 2026
 > **Estado:** 🟢 Producción Activa (Laptop ↔ Servidor Fan)
@@ -80,4 +82,3 @@ Proyectos/sentinel/
    - `GET http://10.88.0.1:8000/health` — Health check
    - `GET http://10.88.0.1:8000/api/v1/lattice` — Estado raw de los 64 nodos del Cristal de Tiempo
    - `GET http://10.88.0.1:8000/metrics` — Formato estándar Prometheus
-

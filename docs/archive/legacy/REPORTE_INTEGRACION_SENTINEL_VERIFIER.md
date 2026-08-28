@@ -1,4 +1,6 @@
 # 🔬 Reporte de Integración del Verificador Autónomo `sentinel-verifier` (Rust)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Ubicación del Crate:** [`sentinel-verifier/`](file:///home/jnovoas/Proyectos/sentinel/sentinel-verifier/)  
 > **Binario en Fan:** `/home/jnovoas/.local/bin/sentinel-verifier`  
@@ -27,4 +29,3 @@ El crate en Rust [`sentinel-verifier/src/main.rs`](file:///home/jnovoas/Proyecto
 ## 📈 2. Integración al Ciclo de Vida y Pruebas de Estrés
 
 El ejecutable `sentinel-verifier` se integra como **juez inmutable y autónomo** que evaluará el estado del sistema antes, durante y después de la batería de pruebas de carga.
-

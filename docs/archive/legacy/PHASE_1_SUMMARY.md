@@ -1,4 +1,6 @@
 # Sentinel Quantum Integration - Phase 1 Complete ✅
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 **Date**: 2025-12-23  
 **Execution Time**: 10.06 seconds  

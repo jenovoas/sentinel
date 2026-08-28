@@ -1,4 +1,6 @@
 # 📊 Integración Final de Grafana Mimir (`sentinel-mimir`) mediante `remote_write`
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Mimir API:** `http://10.88.0.1:8080/prometheus`  
@@ -53,4 +55,3 @@
 El datasource `Mimir` (ID: `2`, UID: `eftiuu1b0t98gd`) en Grafana se encuentra leyendo directamente de Mimir en `http://localhost:8080/prometheus`. 
 
 Tanto **Mimir** (almacenamiento masivo TSDB a largo plazo) como **Loki** (recolección centralizada de logs) y **Prometheus** (scrapeer de baja latencia) están totalmente engranados y operando en producción.
-

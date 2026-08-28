@@ -1,4 +1,6 @@
 # 🦀 Reporte de Migración Nativa a Rust: MaatStabilizer & GpuController
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Módulo de Origen (Python):** `quantum/atlantic_regulator.py` & `quantum/gpu_controller.py`  
 > **Nuevo Módulo Nativo Rust:** [`me-60os-core/src/atlantean.rs`](file:///home/jnovoas/Proyectos/sentinel/me-60os-core/src/atlantean.rs)  
@@ -29,4 +31,3 @@ let (regulated_speed, status) = maat.regulate(current_truth, current_speed);
 let elapsed_ms = latency_start.elapsed().as_secs_f64() * 1000.0;
 let batch_size = gpu_ctrl.adjust_batch_size(elapsed_ms);
 ```
-

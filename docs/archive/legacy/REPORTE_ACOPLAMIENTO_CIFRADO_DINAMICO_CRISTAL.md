@@ -1,4 +1,6 @@
 # 💎 Reporte de Integración: Cifrado Dinámico Acoplado al Cristal de Tiempo ($S60$)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor Target:** Fan (`10.88.0.1`)  
 > **Módulo:** `me60os_core::hexagonal_control` & `hex_daemon`  
@@ -22,4 +24,3 @@ donde $\psi_{\text{scaled}} = 4\,796\,296$ corresponde al ratio trigonométrico 
 ## 📊 2. Lectura Continua en Vivo (`hex_daemon`)
 
 En [`me-60os-core/src/bin/hex_daemon.rs`](file:///home/jnovoas/Proyectos/sentinel/me-60os-core/src/bin/hex_daemon.rs), el daemon lee en cada tick la energía viva del cristal expuesta por `sentinel-cortex` (`sentinel_lattice_total_energy`) y deriva la clave dinámica sexagesimal.
-

@@ -1,4 +1,6 @@
 # 🔍 Diagnóstico y Solución de Paneles "No Data" en Grafana Master
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor Target:** Fan  
 > **Dashboard:** `SecurePenguin — Monitoreo` (`uid: a5s799`)  
@@ -41,4 +43,3 @@ En la captura de pantalla provista:
    - Promtail ahora escanea y transmite en vivo los logs de `/var/log/sentinel/sentinel_verifier.log` y del Journal de Linux.
 3. **Flujo de Trazas Habilitado**:
    - Los paneles se actualizarán automáticamente en los próximos ciclos de refresco de 5s en Grafana.
-

@@ -1,4 +1,6 @@
 # 📋 Registro de Tareas Pendientes para Completar la Fase de Despliegue y Pruebas
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor Target:** Fan (`10.88.0.1`)  
 > **Fecha:** 29 de Julio, 2026
@@ -25,4 +27,3 @@
   1. Registrar latencias de verificación (p95 y p99).
   2. Evaluar el comportamiento de difusión y estabilidad de la rejilla `LiquidLattice 3x3` (EXP-009) en Grafana (`http://10.88.0.1:3001`).
   3. Medir el consumo de RAM/CPU bajo carga pesada.
-

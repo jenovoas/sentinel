@@ -1,4 +1,6 @@
 # 📊 Monitoreo Integrado de los 7 Daemons Activos de Sentinel en Fan
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Grafana Master:** `http://10.88.0.1:3001`  
@@ -32,4 +34,3 @@ Toda la pila de **7 servicios systemd** de Sentinel se encuentra siendo ingerida
 5. **`Daemons Memory Usage (7 Services)`** (Timeseries): Consumo continuo de RAM (rango 236K - 1.9M - 142M).
 6. **`Daemons CPU Consumed Time (7 Services)`** (Timeseries): Consumo continuo de ciclos CPU por proceso.
 7. **`Loki Logs - Combined Journal Streams (7 Services)`** (Logs Panel): Logstream unificado de los 7 daemons en tiempo real.
-

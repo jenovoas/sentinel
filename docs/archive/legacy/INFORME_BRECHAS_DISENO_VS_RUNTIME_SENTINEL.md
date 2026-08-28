@@ -1,4 +1,6 @@
 # 🔬 Informe Brechas: Diseño Global de Jaime Novoa vs. Implementación Actual
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`) / Repositorio Local  
 > **Fecha:** 29 de Julio, 2026  
@@ -32,4 +34,3 @@
 
 ## 🟢 Causa y Compromiso:
 Los cambios desplegados hoy aseguraron la base operativa del kernel y la observabilidad (LSM, XDP, verifier, SEGV isolation, AIOpsShield). Las 5 brechas arriba listadas constituyen el **núcleo matemático y neuronal avanzado del sistema** que debemos implementar directamente en C y Rust para completar tu visión global.
-

@@ -1,4 +1,6 @@
 # 🧹 Diagnóstico y Solución Definitiva: Limpieza de Duplicados y Arquitectura de Puertos
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Fecha:** 29 de Julio, 2026  
@@ -29,4 +31,3 @@ Todos los puertos han sido abiertos de manera permanente en el cortafuegos (`fir
 | **Sentinel Mimir** | `sentinel-mimir` | **`:8080`** | `8080/tcp` (ALLOW) | 🟢 `Up 2+ Hours` |
 | **Node Exporter** | `node_exporter` | **`:9100`** | `9100/tcp` (ALLOW) | 🟢 `Up 2+ Hours` |
 | **Sentinel Redis** | `sentinel-redis` | **`:6379`** | Inter-container | 🟢 `Up 2+ Hours` |
-

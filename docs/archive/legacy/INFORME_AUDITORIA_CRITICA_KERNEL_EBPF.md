@@ -1,4 +1,6 @@
 # ⚠️ INFORME DE AUDITORÍA CRÍTICA Y ESTADO REAL DEL KERNEL EBPF EN FAN
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Fecha:** 29 de Julio, 2026  
 > **Servidor:** Fan (`10.88.0.1`)  
@@ -45,4 +47,3 @@ Revisando `journalctl -u sentinel-cortex` con permisos `root` en Fan:
    - Ajustar el manejo de descriptores del RingBuf en Rust para que el cierre o reinicio del servicio limpie el mapa eBPF sin generar `Segmentation Fault`.
 2. **Asegurar God Mode en el Ring-0**:
    - Validar que el valor de la clave `00 00 00 00` en `god_mode_uids` sea forzado de manera persistente a `01` por el agente `gamma_watchdog`.
-

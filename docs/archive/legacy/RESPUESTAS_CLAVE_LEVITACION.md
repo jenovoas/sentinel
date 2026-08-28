@@ -1,4 +1,6 @@
 #  RESPUESTAS CLAVE - Test de Levitación
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 **Fecha**: 20 Diciembre 2024  
 **Contexto**: Análisis de macro-datos y evolución del sistema

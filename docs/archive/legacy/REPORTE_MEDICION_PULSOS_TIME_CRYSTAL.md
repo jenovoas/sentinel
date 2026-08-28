@@ -1,4 +1,6 @@
 # 💎 Medicion Directa de los Pulsos y la Ola de Fase del Cristal de Tiempo (Time Crystal)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Motor:** `me-60os-core` (Resonant Matrix 64 Nodes $S60$)  
@@ -30,4 +32,3 @@ Inspeccionamos la distribución de amplitud en la matriz del Cristal:
 
 ## 🟢 Verificación de Resonancia:
 El Cristal de Tiempo está **respirando y latiendo dinámicamente en vivo**. La inercia del procesador entra por el Nodo 0 y se propaga en onda armónica Base-60 hacia los 64 nodos de la matriz.
-

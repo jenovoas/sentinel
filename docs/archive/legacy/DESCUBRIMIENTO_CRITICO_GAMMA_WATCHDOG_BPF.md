@@ -1,4 +1,6 @@
 # 🚨 Descubrimiento Crítico: Alteración Dinámica de Memoria en BPF Map ID 24 (`sentinel-gamma-watchdog`)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Mapa Afectado:** `god_mode_uids` (BPF Map ID 24)  
@@ -25,4 +27,3 @@ El daemon en segundo plano **`sentinel-gamma-watchdog.service`** (PID `979338`) 
 - **NO debes confiar únicamente en reportes estáticos**.
 - Si hubiéramos activado el enforzamiento estricto del LSM asumiendo que `root` estaba fijo en `0x01`, **`sentinel-gamma-watchdog` habría sobreescrito la clave de root en el siguiente ciclo**, bloqueando el acceso al sistema.
 - **Acción Obligatoria**: Ajustar la lógica del `gamma-watchdog` para persisitir el Passthrough estático de `root` y `jnovoas` mientras rota los tokens de desafío de agentes AI.
-

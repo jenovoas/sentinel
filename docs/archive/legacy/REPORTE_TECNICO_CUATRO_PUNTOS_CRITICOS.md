@@ -1,4 +1,6 @@
 # 🔬 Reporte Técnico y Análisis de los 4 Puntos Críticos (Sin Interpretaciones)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor Target:** Fan (`10.88.0.1`)  
 > **Fecha:** 29 de Julio, 2026
@@ -40,4 +42,3 @@
 - Al ejecutar `cat /sys/kernel/debug/tracing/trace_pipe` directamente en Fan, el kernel responde:
   `cat: /sys/kernel/debug/tracing/trace_pipe: Device or resource busy`.
 - **Diagnóstico**: `bpftool prog tracelog` mantiene bloqueado en exclusiva el `trace_pipe` del kernel leyendo las trazas. Por eso no imprime logs nuevos en journald y redirige todo hacia `/var/log/sentinel/ebpf_trace.log`.
-

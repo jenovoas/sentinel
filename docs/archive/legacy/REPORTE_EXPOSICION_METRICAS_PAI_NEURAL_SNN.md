@@ -1,4 +1,6 @@
 # 📊 Reporte de Exportación de Métricas: PAI-Neural SNN en Capa Cortex Prometheus
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor Target:** Fan (`10.88.0.1`)  
 > **Endpoint:** `http://127.0.0.1:8000/metrics`  
@@ -22,4 +24,3 @@ sentinel_pai_snn_spikes_total 0
 
 ## 🟢 2. Integración en Capa de Telemetría:
 Ahora Prometheus y Grafana (Panel 11 & Master) pueden graficar tanto la retención de `LiquidLattice 3x3` como la **tasa de disparos neuronales SNN LIF de PAI-60** a medida que ingresan eventos Ring-0.
-

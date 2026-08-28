@@ -1,4 +1,6 @@
 # 📊 Monitoreo Completo de los Nodos de la Rejilla Resonante (`Lattice Nodes 0 a 63`)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Prometheus Endpoint:** `http://127.0.0.1:8000/metrics`  
@@ -31,4 +33,3 @@ Actualizamos el Dashboard Master (`http://10.88.0.1:3001/d/a5s799/securepenguin-
   - Gráfico en vivo de la evolución de fase de todos los nodos.
 * **Panel 4 — `Hex Lattice Nodes Status (127 Nodes - sentinel-hex-daemon)`**:
   - Contador en vivo de los nodos activos en el clúster.
-

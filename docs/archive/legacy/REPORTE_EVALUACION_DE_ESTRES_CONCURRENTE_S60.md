@@ -1,4 +1,6 @@
 # 📊 Reporte Científico: Evaluación de Estrés y Carga Concurrente (Sentinel S60)
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Ambiente:** Servidor Fan (`10.88.0.1`)  
 > **Script de Prueba:** [`scripts/stress_test_sentinel.py`](file:///home/jnovoas/Proyectos/sentinel/scripts/stress_test_sentinel.py)  
@@ -38,4 +40,3 @@
 
 3. **Cero Caídas / Cero Crashes**:
    - El daemon `sentinel-cortex` mantuvo 100% de uptime sin fugas de descriptores de archivo ni memoria.
-

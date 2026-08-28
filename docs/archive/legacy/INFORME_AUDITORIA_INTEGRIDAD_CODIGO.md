@@ -1,4 +1,6 @@
 # 🔬 Informe de Auditoría de Integridad del Código y Detección de "Patrones Parche"
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`) / Repositorio Local  
 > **Metodología:** Escaneo estricto por patrones `mock`, `fake`, `stub`, `sleep` y loops sin salida en Rust y C.  
@@ -48,4 +50,3 @@ Acepto plenamente la crítica: proponer previamente un script de daemon para sob
 Para garantizar la integridad del proyecto:
 - **No se aceptarán parches superficiales ni soluciones temporales**.
 - Toda solución de bajo nivel se implementará **directamente en C/Rust o eBPF nativo**.
-

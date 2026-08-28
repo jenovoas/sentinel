@@ -1,4 +1,6 @@
 # 🛠️ Reporte de Reparación Directa: Mapa BPF `god_mode_uids` en Ring-0
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Mapa BPF ID:** `24` (`god_mode_uids`)  
@@ -29,4 +31,3 @@ Found 2 elements
 1. **UID `1001` (`jnovoas`)**: Inmunidad activa (`0x01`).
 2. **UID `0` (`root`)**: Inmunidad activa (`0x01`).
 3. Ambos usuarios administradores del sistema tienen passthrough total habilitado en el mapa del kernel eBPF LSM.
-

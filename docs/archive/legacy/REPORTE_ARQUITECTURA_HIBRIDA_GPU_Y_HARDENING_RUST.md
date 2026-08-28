@@ -1,4 +1,6 @@
 # 🎮 Reporte Técnico: Arquitectura Híbrida CPU/GPU & Hardening de Producción
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Hosts:** Servidor Fan (`10.88.0.1` — CPU Mode) & Laptop Local (GTX 1050 GPU Accelerated)  
 > **Módulos RUST Nativos:** `me60os_core::atlantean::MaatStabilizer` & `me60os_core::atlantean::GpuController`  
@@ -24,4 +26,3 @@
 - **Mimir:** Rate-limit resuelto mediante agregación de métricas active-node y muestreo de series.
 - **Lattice:** Topología 2D Hexagonal Real activa spreading energy a más de 680 nodos energizados.
 - **Git Repo:** Sincronizado en local y servidor Fan (`cd33aa41`).
-

@@ -1,4 +1,6 @@
 # 🔮 Reporte Físico: El "Canto del Cristal" y el Sistema Fonónico Operativo
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor Target:** Fan (`10.88.0.1`)  
 > **Endpoints Activos:**  
@@ -30,4 +32,3 @@ El gradiente negativo acumulado de **$-3.3\text{B}$** demuestra matemáticamente
 ## 📝 2. Modo Append Habilitado para Continuidad Temporal
 
 Actualizamos la tarea en `sentinel-cortex` (`main.rs`) para que `/var/log/sentinel/phonon_data.csv` funcione en **Modo Append** (`OpenOptions::append(true)`). Cada 60 segundos se adjuntan 128 nuevas filas para posibilitar análisis de series temporales de Fourier e interferometría de ondas en estudios posteriores.
-

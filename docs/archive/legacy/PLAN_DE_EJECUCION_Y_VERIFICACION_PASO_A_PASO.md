@@ -1,4 +1,6 @@
 # 🗺️ Plan Maestro de Ejecución, Integración y Validación Empírica paso a paso
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor:** Fan (`10.88.0.1`)  
 > **Workspace Fuente:** `/home/jnovoas/Proyectos/sentinel`  
@@ -52,4 +54,3 @@
 - **Acción**:
   - Ejecutar prueba de tráfico concurrente con las defensas activadas.
   - Monitorear `LiquidLattice` en Grafana y registrar el valor de `retention_score`.
-

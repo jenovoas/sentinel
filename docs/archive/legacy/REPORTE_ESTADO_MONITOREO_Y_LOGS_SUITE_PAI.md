@@ -1,4 +1,6 @@
 # 📊 Reporte de Monitoreo y Guardado de Logs de la Suite PAI / ME-60OS
+> ⚠️ **FAN (157.254.174.40) DECOMISIONADO 2026-08-28** — Este es un reporte histórico que menciona `fan`. Producción actual `kingu` (68.211.176.190:4222), desarrollo `fenix` (20.226.112.222). No usar `fan` como target.
+
 
 > **Servidor Target:** Fan (`10.88.0.1`)  
 > **Servicios Auditados:**  
@@ -33,4 +35,3 @@ Promtail lee el journald de sistema en Fan (`/var/log/journal`) y transmite las 
 En Grafana (`http://10.88.0.1:3001`):
 - Los logs se pueden consultar en vivo mediante la query LogQL:
   `{syslog_identifier=~"pai_neural_daemon|hex_daemon|qhc_agent|vid_agent"}`
-
