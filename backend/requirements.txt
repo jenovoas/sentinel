@@ -22,7 +22,7 @@ asyncpg==0.31.0
 # Synchronous driver for migrations
 psycopg2-binary==2.9.12
 # Database migrations
-alembic==1.19.1
+alembic==1.19.2
 
 # ============================================================================
 # DATA VALIDATION
@@ -79,6 +79,6 @@ pytest-cov==7.1.0
 # ============================================================================
 # VERTEX AI INTEGRATION
 # ============================================================================
-google-cloud-aiplatform==2.0.1
-google-auth==2.57.0
-google-genai==2.20.0
+google-cloud-aiplatform==2.1.0
+google-auth==2.57.1
+google-genai==2.22.0
