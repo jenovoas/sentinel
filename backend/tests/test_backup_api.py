@@ -2,12 +2,12 @@
 # Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
-Unit Tests for Backup API Router
+Pruebas unitarias para el router de la API de copias de seguridad
 
-Tests all backup API endpoints for correct behavior, error handling,
-and response validation.
+Prueba todos los endpoints de la API de copias de seguridad para verificar
+su comportamiento correcto, el manejo de errores y la validación de respuestas.
 
-Run with: pytest backend/tests/test_backup_api.py -v
+Ejecutar con: pytest backend/tests/test_backup_api.py -v
 """
 
 import os
@@ -25,12 +25,12 @@ from app.security import get_current_admin_user
 client = TestClient(app)
 
 # ============================================================================
-# FIXTURES
+# ACCESORIOS DE PRUEBA
 # ============================================================================
 
 @pytest.fixture(autouse=True)
 def override_admin_user():
-    """Ensure backup endpoints that require admin authentication pass in unit tests"""
+    """Garantiza que los endpoints que requieren autenticación de administrador pasen en las pruebas unitarias."""
     mock_admin = MagicMock(spec=User)
     mock_admin.is_admin = True
     mock_admin.role = UserRole.ADMIN
@@ -40,16 +40,16 @@ def override_admin_user():
 
 @pytest.fixture
 def mock_backup_dir(tmp_path):
-    """Create a temporary backup directory with test files"""
+    """Crea un directorio temporal de copias de seguridad con archivos de prueba."""
     backup_dir = tmp_path / "backups"
     backup_dir.mkdir()
 
-    # Create test backup files
+    # Crea archivos de copias de seguridad de prueba.
     for i in range(3):
         backup_file = backup_dir / f"sentinel_backup_20251215_16000{i}.sql.gz"
         backup_file.write_text("test backup data")
 
-        # Create checksum file
+        # Crea el archivo de suma de comprobación.
         checksum_file = backup_dir / f"sentinel_backup_20251215_16000{i}.sql.gz.sha256"
         checksum_file.write_text("abc123def456")
 
@@ -58,7 +58,7 @@ def mock_backup_dir(tmp_path):
 
 @pytest.fixture
 def mock_log_file(tmp_path):
-    """Create a temporary log file with test data"""
+    """Crea un archivo de registro temporal con datos de prueba."""
     log_file = tmp_path / "backup.log"
     log_content = """[2025-12-15 16:00:00] [INFO] Starting backup process...
 [2025-12-15 16:00:15] [INFO] Backup created: sentinel_backup_20251215_160000.sql.gz (236K)
@@ -70,18 +70,18 @@ def mock_log_file(tmp_path):
 
 
 # ============================================================================
-# TESTS: /api/v1/backup/status
+# PRUEBAS: /api/v1/backup/status
 # ============================================================================
 
 def test_backup_status_endpoint_success(mock_backup_dir, mock_log_file):
-    """Test backup status returns valid data"""
+    """Comprueba que el estado de las copias de seguridad devuelva datos válidos."""
     with patch.dict(os.environ, {"BACKUP_DIR": mock_backup_dir, "LOG_FILE": mock_log_file}):
         response = client.get("/api/v1/backup/status")
 
         assert response.status_code == 200
         data = response.json()
 
-        # Validate response structure
+        # Valida la estructura de la respuesta.
         assert "health" in data
         assert data["health"] in ["healthy", "warning", "critical"]
 
@@ -100,7 +100,7 @@ def test_backup_status_endpoint_success(mock_backup_dir, mock_log_file):
 
 
 def test_backup_status_endpoint_no_backups():
-    """Test backup status with no backups"""
+    """Comprueba el estado de las copias de seguridad cuando no existen copias."""
     with tempfile.TemporaryDirectory() as tmp_dir:
         with patch.dict(os.environ, {"BACKUP_DIR": tmp_dir}):
             response = client.get("/api/v1/backup/status")
@@ -113,27 +113,27 @@ def test_backup_status_endpoint_no_backups():
 
 
 def test_backup_status_caching():
-    """Test that status is cached for performance"""
+    """Comprueba que el estado se almacene en caché para mejorar el rendimiento."""
     with tempfile.TemporaryDirectory() as tmp_dir:
         with patch.dict(os.environ, {"BACKUP_DIR": tmp_dir}):
-            # First request
+            # Primera solicitud.
             response1 = client.get("/api/v1/backup/status")
             assert response1.status_code == 200
 
-            # Second request (should be cached)
+            # Segunda solicitud (debería provenir de la caché).
             response2 = client.get("/api/v1/backup/status")
             assert response2.status_code == 200
 
-            # Responses should be identical (from cache)
+            # Las respuestas deberían ser idénticas (provenientes de la caché).
             assert response1.json() == response2.json()
 
 
 # ============================================================================
-# TESTS: /api/v1/backup/history
+# PRUEBAS: /api/v1/backup/history
 # ============================================================================
 
 def test_backup_history_endpoint(mock_backup_dir):
-    """Test backup history returns paginated results"""
+    """Comprueba que el historial de copias de seguridad devuelva resultados paginados."""
     with patch.dict(os.environ, {"BACKUP_DIR": mock_backup_dir}):
         response = client.get("/api/v1/backup/history?limit=10&offset=0")
 
@@ -143,7 +143,7 @@ def test_backup_history_endpoint(mock_backup_dir):
         assert isinstance(data, list)
         assert len(data) == 3
 
-        # Validate backup file structure
+        # Valida la estructura del archivo de copia de seguridad.
         backup = data[0]
         assert "filename" in backup
         assert "size_bytes" in backup
@@ -154,45 +154,45 @@ def test_backup_history_endpoint(mock_backup_dir):
 
 
 def test_backup_history_pagination():
-    """Test pagination works correctly"""
+    """Comprueba que la paginación funcione correctamente."""
     with tempfile.TemporaryDirectory() as tmp_dir:
-        # Create 10 test backups
+        # Crea 10 copias de seguridad de prueba.
         for i in range(10):
             backup_file = os.path.join(tmp_dir, f"sentinel_backup_2025121{i}_160000.sql.gz")
             with open(backup_file, 'w') as f:
                 f.write("test")
 
         with patch.dict(os.environ, {"BACKUP_DIR": tmp_dir}):
-            # Get first 5
+            # Obtiene las primeras 5.
             response1 = client.get("/api/v1/backup/history?limit=5&offset=0")
             assert response1.status_code == 200
             assert len(response1.json()) == 5
 
-            # Get next 5
+            # Obtiene las siguientes 5.
             response2 = client.get("/api/v1/backup/history?limit=5&offset=5")
             assert response2.status_code == 200
             assert len(response2.json()) == 5
 
 
 def test_backup_history_invalid_params():
-    """Test validation of query parameters"""
-    # Limit too high
+    """Comprueba la validación de los parámetros de consulta."""
+    # Límite demasiado alto.
     response = client.get("/api/v1/backup/history?limit=1000")
     assert response.status_code == 422  # Validation error
 
-    # Negative offset
+    # Desplazamiento negativo.
     response = client.get("/api/v1/backup/history?offset=-1")
     assert response.status_code == 422
 
 
 # ============================================================================
-# TESTS: /api/v1/backup/trigger
+# PRUEBAS: /api/v1/backup/trigger
 # ============================================================================
 
 @patch('subprocess.run')
 def test_backup_trigger_success(mock_run):
-    """Test successful backup trigger"""
-    # Mock successful backup execution
+    """Comprueba el inicio correcto de una copia de seguridad."""
+    # Simula una ejecución correcta de la copia de seguridad.
     mock_run.return_value = MagicMock(
         returncode=0,
         stdout="Backup completed successfully",
@@ -211,8 +211,8 @@ def test_backup_trigger_success(mock_run):
 
 @patch('subprocess.run')
 def test_backup_trigger_failure(mock_run):
-    """Test failed backup trigger"""
-    # Mock failed backup execution
+    """Comprueba el inicio fallido de una copia de seguridad."""
+    # Simula una ejecución fallida de la copia de seguridad.
     mock_run.return_value = MagicMock(
         returncode=1,
         stdout="",
@@ -230,22 +230,22 @@ def test_backup_trigger_failure(mock_run):
 
 @patch('subprocess.run')
 def test_backup_trigger_timeout(mock_run):
-    """Test backup trigger timeout"""
+    """Comprueba el tiempo de espera agotado al iniciar una copia de seguridad."""
     import subprocess
     mock_run.side_effect = subprocess.TimeoutExpired(cmd="backup.sh", timeout=300)
 
     response = client.post("/api/v1/backup/trigger")
 
-    assert response.status_code == 408  # Timeout
+    assert response.status_code == 408  # Tiempo de espera agotado.
     assert "timeout" in response.json()["detail"].lower()
 
 
 # ============================================================================
-# TESTS: /api/v1/backup/logs
+# PRUEBAS: /api/v1/backup/logs
 # ============================================================================
 
 def test_backup_logs_endpoint(mock_log_file):
-    """Test backup logs returns recent lines"""
+    """Comprueba que los registros de copias de seguridad devuelvan las líneas recientes."""
     with patch.dict(os.environ, {"LOG_FILE": mock_log_file}):
         response = client.get("/api/v1/backup/logs?lines=10")
 
@@ -259,7 +259,7 @@ def test_backup_logs_endpoint(mock_log_file):
 
 
 def test_backup_logs_no_file():
-    """Test logs endpoint when file doesn't exist"""
+    """Comprueba el endpoint de registros cuando el archivo no existe."""
     with patch.dict(os.environ, {"LOG_FILE": "/nonexistent/file.log"}):
         response = client.get("/api/v1/backup/logs")
 
@@ -271,18 +271,18 @@ def test_backup_logs_no_file():
 
 
 def test_backup_logs_line_limit():
-    """Test log line limit validation"""
-    # Too many lines
+    """Comprueba la validación del límite de líneas de registro."""
+    # Demasiadas líneas.
     response = client.get("/api/v1/backup/logs?lines=10000")
-    assert response.status_code == 422  # Validation error
+    assert response.status_code == 422  # Error de validación.
 
 
 # ============================================================================
-# TESTS: /api/v1/backup/config
+# PRUEBAS: /api/v1/backup/config
 # ============================================================================
 
 def test_backup_config_endpoint():
-    """Test backup configuration endpoint"""
+    """Comprueba el endpoint de configuración de copias de seguridad."""
     with patch.dict(os.environ, {
         "BACKUP_DIR": "/custom/backup/dir",
         "BACKUP_RETENTION_DAYS": "14",
@@ -301,8 +301,8 @@ def test_backup_config_endpoint():
 
 
 def test_backup_config_defaults():
-    """Test configuration defaults"""
-    # Clear environment variables
+    """Comprueba los valores predeterminados de la configuración."""
+    # Limpia las variables de entorno.
     env_vars = ["BACKUP_DIR", "BACKUP_RETENTION_DAYS", "S3_ENABLED"]
     with patch.dict(os.environ, {k: "" for k in env_vars}, clear=True):
         response = client.get("/api/v1/backup/config")
@@ -310,17 +310,17 @@ def test_backup_config_defaults():
         assert response.status_code == 200
         data = response.json()
 
-        # Should use defaults
+        # Debería utilizar los valores predeterminados.
         assert data["retention_days"] == 7
         assert data["s3_enabled"] is False
 
 
 # ============================================================================
-# TESTS: /api/v1/backup/health
+# PRUEBAS: /api/v1/backup/health
 # ============================================================================
 
 def test_backup_health_endpoint():
-    """Test health check endpoint"""
+    """Comprueba el endpoint de verificación de salud."""
     response = client.get("/api/v1/backup/health")
 
     assert response.status_code == 200
@@ -331,30 +331,30 @@ def test_backup_health_endpoint():
 
 
 # ============================================================================
-# INTEGRATION TESTS
+# PRUEBAS DE INTEGRACIÓN
 # ============================================================================
 
 def test_full_backup_workflow(mock_backup_dir, mock_log_file):
-    """Test complete backup workflow"""
+    """Comprueba el flujo completo de copias de seguridad."""
     with patch.dict(os.environ, {"BACKUP_DIR": mock_backup_dir, "LOG_FILE": mock_log_file}):
-        # 1. Check initial status
+        # 1. Comprueba el estado inicial.
         status_response = client.get("/api/v1/backup/status")
         assert status_response.status_code == 200
         initial_count = status_response.json()["metrics"]["total_backups"]
 
-        # 2. Get configuration
+        # 2. Obtiene la configuración.
         config_response = client.get("/api/v1/backup/config")
         assert config_response.status_code == 200
 
-        # 3. Get history
+        # 3. Obtiene el historial.
         history_response = client.get("/api/v1/backup/history")
         assert history_response.status_code == 200
 
-        # 4. Get logs
+        # 4. Obtiene los registros.
         logs_response = client.get("/api/v1/backup/logs")
         assert logs_response.status_code == 200
 
-        # All endpoints should work
+        # Todos los endpoints deberían funcionar.
         assert all([
             status_response.status_code == 200,
             config_response.status_code == 200,
@@ -364,24 +364,24 @@ def test_full_backup_workflow(mock_backup_dir, mock_log_file):
 
 
 # ============================================================================
-# ERROR HANDLING TESTS
+# PRUEBAS DE MANEJO DE ERRORES
 # ============================================================================
 
 def test_error_handling_invalid_backup_dir():
-    """Test graceful handling of invalid backup directory"""
+    """Comprueba el manejo controlado de un directorio de copias de seguridad no válido."""
     with patch.dict(os.environ, {"BACKUP_DIR": "/invalid/path/that/does/not/exist"}):
         response = client.get("/api/v1/backup/status")
 
-        # Should not crash, should return empty results
+        # No debería fallar; debería devolver resultados vacíos.
         assert response.status_code == 200
         data = response.json()
         assert data["metrics"]["total_backups"] == 0
 
 
 def test_error_handling_corrupted_log():
-    """Test handling of corrupted log file"""
+    """Comprueba el manejo de un archivo de registro dañado."""
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.log') as f:
-        # Write invalid data
+        # Escribe datos no válidos.
         f.write("\x00\x01\x02\x03")
         log_file = f.name
 
@@ -389,18 +389,18 @@ def test_error_handling_corrupted_log():
         with patch.dict(os.environ, {"LOG_FILE": log_file}):
             response = client.get("/api/v1/backup/logs")
 
-            # Should handle gracefully
+            # Debería manejarlo de forma controlada.
             assert response.status_code in [200, 500]
     finally:
         os.unlink(log_file)
 
 
 # ============================================================================
-# PERFORMANCE TESTS
+# PRUEBAS DE RENDIMIENTO
 # ============================================================================
 
 def test_status_endpoint_performance(mock_backup_dir):
-    """Test status endpoint responds quickly"""
+    """Comprueba que el endpoint de estado responda rápidamente."""
     with patch.dict(os.environ, {"BACKUP_DIR": mock_backup_dir}):
         start_time = time.time()
         response = client.get("/api/v1/backup/status")
@@ -408,6 +408,6 @@ def test_status_endpoint_performance(mock_backup_dir):
 
         assert response.status_code == 200
 
-        # Should respond in less than 1 second
+        # Debería responder en menos de 1 segundo.
         response_time = end_time - start_time
         assert response_time < 1.0, f"Response took {response_time}s (should be <1s)"

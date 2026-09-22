@@ -2,9 +2,9 @@
 # Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
-Unit Tests for Authentication Security
+Pruebas unitarias de seguridad de autenticación
 
-Tests the password hashing and verification utilities.
+Prueba las utilidades de hash y verificación de contraseñas.
 """
 
 import pytest
@@ -16,7 +16,7 @@ from app.security.auth import get_password_hash, verify_password
 client = TestClient(app)
 
 def test_unauthenticated_endpoints_return_401():
-    """Verify that all newly protected endpoints return 401 Unauthorized for anonymous requests"""
+    """Comprueba que todos los endpoints protegidos recientemente devuelvan 401 No autorizado para solicitudes anónimas."""
     protected = [
         ("POST", "/api/v1/ai/api/v1/ai/query", {"prompt": "test"}),
         ("POST", "/api/v1/users/api/v1/users/", {"username": "test", "password": "pwd", "email": "test@test.com"}),
@@ -45,16 +45,16 @@ def test_unauthenticated_endpoints_return_401():
         assert response.status_code == 401, f"{method} {path} should require authentication, got {response.status_code}"
 
 def test_password_hashing():
-    """Verify that password hashing works and is non-reversible"""
+    """Comprueba que el hash de contraseñas funcione y no sea reversible."""
     password = "secret_password_123"
     hashed = get_password_hash(password)
 
     assert hashed != password
-    assert hashed.startswith("$2b$") or hashed.startswith("$2a$")  # bcrypt prefix
+    assert hashed.startswith("$2b$") or hashed.startswith("$2a$")  # Prefijo de bcrypt.
     assert verify_password(password, hashed) is True
 
 def test_verify_password_failure():
-    """Verify that password verification fails for incorrect passwords"""
+    """Comprueba que la verificación de contraseña falle para contraseñas incorrectas."""
     password = "secret_password_123"
     wrong_password = "wrong_password_123"
     hashed = get_password_hash(password)
@@ -62,7 +62,7 @@ def test_verify_password_failure():
     assert verify_password(wrong_password, hashed) is False
 
 def test_empty_password():
-    """Verify behavior with empty strings"""
+    """Comprueba el comportamiento con cadenas vacías."""
     password = ""
     hashed = get_password_hash(password)
 
@@ -70,7 +70,7 @@ def test_empty_password():
     assert verify_password(password, hashed) is True
 
 def test_password_consistency():
-    """Verify that same password results in different hashes (due to salt) but both verify"""
+    """Comprueba que una misma contraseña produzca hashes diferentes debido a la sal, pero que ambos se verifiquen."""
     password = "consistent_password"
     hash1 = get_password_hash(password)
     hash2 = get_password_hash(password)
@@ -80,14 +80,14 @@ def test_password_consistency():
     assert verify_password(password, hash2) is True
 
 def test_long_password():
-    """Verify behavior with long passwords"""
+    """Comprueba el comportamiento con contraseñas largas."""
     password = "a" * 100
     hashed = get_password_hash(password)
 
     assert verify_password(password, hashed) is True
 
 def test_special_characters():
-    """Verify behavior with special and unicode characters"""
+    """Comprueba el comportamiento con caracteres especiales y Unicode."""
     password = "P@$$w0rd_with_ñ_and_🚀"
     hashed = get_password_hash(password)
 
