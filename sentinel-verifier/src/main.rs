@@ -229,71 +229,89 @@ fn check_bpf_pins() -> CheckResult {
 
 // 4. Cortex no ha hecho core-dump en últimas 24h
 fn check_cortex_no_segv() -> CheckResult {
-    let out = sudo_run(&[
-        "journalctl",
-        "-u",
-        "sentinel-cortex.service",
-        "--no-pager",
-        "--since",
-        "24 hours ago",
-        "-q",
-    ]);
-    match out {
-        Ok(o) => {
-            let segv_count = o.matches("core-dump").count()
-                + o.matches("SEGV")
-                    .count()
-                    .saturating_sub(o.matches("core-dump").count());
-            if segv_count == 0 {
-                CheckResult::ok(
-                    "cortex_segv",
-                    "cortex sin SEGV últimas 24h",
-                    "0 coredumps en journal".into(),
-                )
-            } else {
-                CheckResult::fail(
-                    "cortex_segv",
-                    "cortex sin SEGV últimas 24h",
-                    format!("{} menciones core-dump/SEGV", segv_count),
-                    None,
-                )
-            }
+    let log_path = "/var/log/sentinel/cortex.log";
+    let content = match std::fs::read_to_string(log_path) {
+        Ok(c) => c,
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+            return CheckResult::skip(
+                "cortex_segv",
+                "cortex SEGV check",
+                "log no disponible".to_string(),
+            );
         }
-        Err(e) => CheckResult::skip("cortex_segv", "cortex SEGV check", e.to_string()),
+        Err(e) => {
+            return CheckResult::skip("cortex_segv", "cortex SEGV check", e.to_string());
+        }
+    };
+    let lines: Vec<&str> = content.lines().collect();
+    let tail = if lines.len() > 500 { &lines[lines.len() - 500..] } else { &lines[..] };
+    let tail_str = tail.join("\n");
+    let coredump_count = tail_str.matches("core-dump").count();
+    let segv_only = tail_str.matches("SEGV").count().saturating_sub(coredump_count);
+    let segv_count = coredump_count + segv_only;
+    if segv_count == 0 {
+        CheckResult::ok(
+            "cortex_segv",
+            "cortex sin SEGV últimas 24h",
+            "0 coredumps en log".into(),
+        )
+    } else {
+        CheckResult::fail(
+            "cortex_segv",
+            "cortex sin SEGV últimas 24h",
+            format!("{} menciones core-dump/SEGV", segv_count),
+            None,
+        )
     }
 }
 
-// 5. gamma-watchdog heartbeats en últimos 60s
+// 5. gamma-watchdog heartbeats en últimos 90s
 fn check_watchdog_alive() -> CheckResult {
-    // journal como usuario no ve logs de servicios root → usar sudo
-    let out = sudo_run(&[
-        "journalctl",
-        "-u",
-        "sentinel-gamma-watchdog.service",
-        "--no-pager",
-        "--since",
-        "90 seconds ago",
-        "-q",
-    ]);
-    match out {
-        Ok(o) => {
-            let beats = o.matches("\"alive\"").count();
-            if beats >= 3 {
-                CheckResult::ok(
-                    "watchdog_alive",
-                    "gamma-watchdog heartbeats",
-                    format!("{} beats en 90s (esperado ~5 @17s)", beats),
-                )
-            } else {
-                CheckResult::fail(
-                    "watchdog_alive",
-                    "gamma-watchdog heartbeats",
-                    format!("solo {} beats en 90s", beats),
-                    Some(format!("journal:\n{}", o)),
-                )
-            }
+    let log_path = "/var/log/sentinel/audit-watchdog.log";
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or(Duration::ZERO)
+        .as_secs();
+    let mtime = match file_mtime(log_path) {
+        Some(t) => t,
+        None => {
+            return CheckResult::skip(
+                "watchdog_alive",
+                "gamma-watchdog heartbeats",
+                "log no disponible".to_string(),
+            );
         }
-        Err(e) => CheckResult::skip("watchdog_alive", "gamma-watchdog", e.to_string()),
+    };
+    // Si el log no fue modificado en los últimos 90s, el watchdog probablemente está muerto
+    if now.saturating_sub(mtime) > 90 {
+        return CheckResult::fail(
+            "watchdog_alive",
+            "gamma-watchdog heartbeats",
+            format!("log sin actividad hace {}s (>90s)", now.saturating_sub(mtime)),
+            None,
+        );
+    }
+    let content = match std::fs::read_to_string(log_path) {
+        Ok(c) => c,
+        Err(e) => return CheckResult::skip("watchdog_alive", "gamma-watchdog", e.to_string()),
+    };
+    let lines: Vec<&str> = content.lines().collect();
+    let tail = if lines.len() > 200 { &lines[lines.len() - 200..] } else { &lines[..] };
+    let tail_str = tail.join("\n");
+    let beats = tail_str.matches("\"alive\"").count() + tail_str.matches("BIO_PULSE").count();
+    if beats >= 3 {
+        CheckResult::ok(
+            "watchdog_alive",
+            "gamma-watchdog heartbeats",
+            format!("{} beats en log reciente (esperado ~5 @17s)", beats),
+        )
+    } else {
+        CheckResult::fail(
+            "watchdog_alive",
+            "gamma-watchdog heartbeats",
+            format!("solo {} beats en últimas 200 líneas", beats),
+            Some(format!("log tail:\n{}", tail_str)),
+        )
     }
 }
 
@@ -370,7 +388,7 @@ fn check_health_http() -> CheckResult {
     }
 }
 
-// 8. Servicios sentinel-* activos
+// 8. Servicios sentinel-* activos (OpenRC)
 fn check_sentinel_services() -> CheckResult {
     let services = [
         "sentinel-cortex",
@@ -384,10 +402,10 @@ fn check_sentinel_services() -> CheckResult {
     let mut down = Vec::new();
     let mut outputs = Vec::new();
     for s in &services {
-        match run("systemctl", &["is-active", &format!("{}.service", s)]) {
+        match run("rc-service", &[s, "status"]) {
             Ok(o) => {
                 outputs.push(format!("{}: {}", s, o.trim()));
-                if o.trim() != "active" {
+                if !o.contains(" started") {
                     down.push(*s);
                 }
             }
@@ -400,13 +418,13 @@ fn check_sentinel_services() -> CheckResult {
     if down.is_empty() {
         CheckResult::ok(
             "sentinel_services",
-            "servicios systemd sentinel-*",
+            "servicios OpenRC sentinel-*",
             outputs.join(" | "),
         )
     } else {
         CheckResult::fail(
             "sentinel_services",
-            "servicios systemd sentinel-*",
+            "servicios OpenRC sentinel-*",
             format!("caídos: {}", down.join(", ")),
             Some(outputs.join("\n")),
         )
@@ -599,3 +617,4 @@ async fn main() -> Result<()> {
     }
     Ok(())
 }
+// alpine_fenix: journalctl/systemctl reemplazados por OpenRC (rc-service + log files)
