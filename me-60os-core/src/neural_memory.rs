@@ -13,9 +13,10 @@
 
 use crate::ebpf_cortex_bridge::CortexEvent;
 use crate::spa::SPA;
+#[cfg(feature = "extension-module")]
 use pyo3::prelude::*;
 
-#[pyclass(from_py_object)]
+#[cfg_attr(feature = "extension-module", pyclass(from_py_object))]
 #[derive(Clone)]
 pub struct LIFNeuron {
     pub v_membrane: SPA,
@@ -65,11 +66,19 @@ impl LIFNeuron {
     }
 }
 
+#[cfg(feature = "extension-module")]
 #[pyclass]
 pub struct NeuralMemory {
     #[pyo3(get)]
     pub processed: usize,
     #[pyo3(get)]
+    pub total_spikes: u64,
+    neurons: Vec<LIFNeuron>,
+}
+
+#[cfg(not(feature = "extension-module"))]
+pub struct NeuralMemory {
+    pub processed: usize,
     pub total_spikes: u64,
     neurons: Vec<LIFNeuron>,
 }
@@ -113,6 +122,7 @@ impl NeuralMemory {
 }
 
 // C. Python Bindings (PyO3)
+#[cfg(feature = "extension-module")]
 #[pymethods]
 impl NeuralMemory {
     #[new]

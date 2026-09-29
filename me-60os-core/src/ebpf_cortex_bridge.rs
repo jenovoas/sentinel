@@ -55,6 +55,7 @@ const SEVERITY_HIGH: u8 = 2;
 #[allow(dead_code)]
 const SEVERITY_CRITICAL: u8 = 3;
 
+#[cfg(feature = "extension-module")]
 use pyo3::prelude::*;
 
 /// Raw Cortex Event (Packed, matching C layout)
@@ -70,7 +71,8 @@ pub struct RawCortexEvent {
 }
 
 /// Cortex Event (Python-friendly, unpacked)
-#[pyclass(from_py_object)] // Exposed to Python
+#[cfg(feature = "extension-module")]
+#[pyclass(from_py_object)]
 #[derive(Debug, Clone, Default)]
 pub struct CortexEvent {
     #[pyo3(get, set)]
@@ -85,10 +87,22 @@ pub struct CortexEvent {
     pub severity: u8,
 }
 
+/// Cortex Event (plain, no Python bindings)
+#[cfg(not(feature = "extension-module"))]
+#[derive(Debug, Clone, Default)]
+pub struct CortexEvent {
+    pub timestamp_ns: u64,
+    pub event_type: u32,
+    pub pid: u32,
+    pub entropy_signal: u64,
+    pub severity: u8,
+}
+
+#[cfg(feature = "extension-module")]
 #[pymethods]
 impl CortexEvent {
     #[new]
-    pub fn new(
+    pub fn py_new(
         timestamp_ns: u64,
         event_type: u32,
         pid: u32,
@@ -107,6 +121,22 @@ impl CortexEvent {
 
 impl CortexEvent {
     // Constructor from RawCortexEvent (Internal Rust only)
+    pub fn new(
+        timestamp_ns: u64,
+        event_type: u32,
+        pid: u32,
+        entropy_signal: u64,
+        severity: u8,
+    ) -> Self {
+        Self {
+            timestamp_ns,
+            event_type,
+            pid,
+            entropy_signal,
+            severity,
+        }
+    }
+
     pub fn from_raw_event(raw_event: RawCortexEvent) -> Self {
         Self {
             timestamp_ns: raw_event.timestamp_ns,

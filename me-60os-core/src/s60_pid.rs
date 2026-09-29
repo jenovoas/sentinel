@@ -25,9 +25,7 @@ pub struct S60PID {
     pub _integral: SPA,
 }
 
-#[cfg_attr(feature = "extension-module", pymethods)]
 impl S60PID {
-    #[cfg_attr(feature = "extension-module", new)]
     pub fn new(kp: SPA, ki: SPA, kd: SPA, setpoint: SPA) -> Self {
         Self {
             kp,
@@ -70,5 +68,14 @@ impl S60PID {
     pub fn reset(&mut self) {
         self._prev_error = SPA::zero();
         self._integral = SPA::zero();
+    }
+}
+
+#[cfg(feature = "extension-module")]
+#[pymethods]
+impl S60PID {
+    #[new]
+    pub fn py_new(kp: SPA, ki: SPA, kd: SPA, setpoint: SPA) -> Self {
+        Self::new(kp, ki, kd, setpoint)
     }
 }
