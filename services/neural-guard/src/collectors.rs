@@ -48,7 +48,8 @@ impl LokiCollector {
     pub async fn collect_logs(&self) -> Result<Vec<Event>, reqwest::Error> {
         let mut events = Vec::new();
         // LogQL para buscar intentos de login fallidos en los logs del sistema
-        let failed_login_query = r#"{job="systemd-journal"} |= "Failed password""#;
+        // alpine_fenix: Alpine usa syslog (Promtail) en lugar de systemd-journal
+        let failed_login_query = r#"{job="syslog"} |= "Failed password""#;
 
         let json = self
             .http
@@ -116,7 +117,8 @@ impl LokiCollector {
         let mut events = Vec::new();
 
         // Sudo commands ejecutados
-        let sudo_query = r#"{job="systemd-journal"} |= "sudo:" |= "COMMAND""#;
+        // alpine_fenix: Alpine usa syslog (Promtail) en lugar de systemd-journal
+        let sudo_query = r#"{job="syslog"} |= "sudo:" |= "COMMAND""#;
         let json = self
             .http
             .query("/loki/api/v1/query_range", sudo_query)
@@ -141,8 +143,9 @@ impl LokiCollector {
         }
 
         // Acceso a archivos sensibles vía auditd
+        // alpine_fenix: Alpine usa syslog (Promtail) en lugar de systemd-journal
         let sensitive_query =
-            r#"{job="systemd-journal"} |= "type=PATH" |~ "/etc/passwd|/etc/shadow|/.ssh""#;
+            r#"{job="syslog"} |= "type=PATH" |~ "/etc/passwd|/etc/shadow|/.ssh""#;
         let json = self
             .http
             .query("/loki/api/v1/query_range", sensitive_query)
