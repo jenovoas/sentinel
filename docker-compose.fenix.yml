@@ -308,4 +308,3 @@ volumes:
 networks:
   sentinel_internal:
     driver: bridge
-    internal: true
