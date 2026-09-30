@@ -1,0 +1,24 @@
+#!/sbin/openrc-run
+
+name="sentinel-stack"
+description="Sentinel Docker Compose stack"
+
+start() {
+    ebegin "Starting Sentinel Docker stack"
+    cd /opt/sentinel || { eend 1; return 1; }
+    docker compose -f docker-compose.fenix.yml up -d
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping Sentinel Docker stack"
+    cd /opt/sentinel || { eend 1; return 1; }
+    docker compose -f docker-compose.fenix.yml stop
+    eend $?
+}
+
+depend() {
+    need docker
+    after firewall
+    before sentinel-cortex
+}
