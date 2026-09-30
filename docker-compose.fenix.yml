@@ -98,7 +98,7 @@ services:
     container_name: sentinel-node-exporter
     pid: host
     volumes:
-      - /:/host:ro,rslave
+      - /:/host:ro
     command:
       - "--path.rootfs=/host"
     networks:

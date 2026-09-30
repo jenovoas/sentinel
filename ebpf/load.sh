@@ -29,8 +29,14 @@ for obj in burst_sensor.o xdp_firewall.o; do
     if [ ! -f "$obj" ]; then
         warn "$obj no encontrado — saltando"; continue
     fi
-    sudo ip link set dev $IFACE xdp obj "$obj" sec xdp && ok "$obj anclado en $IFACE" \
-        || err "fallo XDP $obj (¿otro XDP activo en $IFACE?)"
+    if sudo ip link set dev "$IFACE" xdp obj "$obj" sec xdp; then
+        ok "$obj anclado en $IFACE"
+    elif sudo bpftool prog load "$obj" "/sys/fs/bpf/${obj%.o}_xdp" type xdp \
+         && sudo bpftool net attach xdp pinned "/sys/fs/bpf/${obj%.o}_xdp" dev "$IFACE"; then
+        ok "$obj cargado/anclado vía bpftool en $IFACE"
+    else
+        err "fallo XDP $obj (¿otro XDP activo en $IFACE?)"
+    fi
 done
 
 # ─── TC ───────────────────────────────────────────────────────────────────────
@@ -48,7 +54,7 @@ echo -e "\n${BOLD}── Meta-Guardian (Gamma) ───────────
 if [ -f guardian_gamma.o ]; then
     sudo mkdir -p /sys/fs/bpf/sentinel
     if sudo bpftool prog loadall guardian_gamma.o /sys/fs/bpf/sentinel/gamma \
-         autoattach pinmaps /sys/fs/bpf/sentinel 2>/dev/null; then
+         autoattach pinmaps /sys/fs/bpf 2>/dev/null; then
         ok "guardian_gamma cargado (kprobes activos)"
     else
         err "fallo al cargar guardian_gamma"

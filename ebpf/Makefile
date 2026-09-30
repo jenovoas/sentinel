@@ -70,9 +70,8 @@ load-tc: $(TC_OBJS)
 
 load-gamma: $(META_OBJS)
 	# Gamma se carga DESPUÉS de los otros Guardians (necesita sus prog_id)
-	sudo mkdir -p /sys/fs/bpf/sentinel
 	sudo bpftool prog loadall guardian_gamma.o /sys/fs/bpf/sentinel/gamma \
-		autoattach pinmaps /sys/fs/bpf/sentinel
+		autoattach pinmaps /sys/fs/bpf
 
 unload-gamma:
 	sudo rm -rf /sys/fs/bpf/sentinel/gamma
