@@ -4,6 +4,7 @@
 mod actions;
 mod buffer_system;
 mod collectors;
+mod dashboard;
 mod ebpf_cortex_bridge;
 mod engine;
 mod math;
@@ -387,6 +388,23 @@ async fn main() {
         .route("/api/v1/sentinel_status", get(sentinel_status_handler))
         .route("/api/v1/truth_claim", post(truth_claim_handler))
         .route("/api/v1/phonon_lattice", get(phonon_lattice_handler))
+        .route(
+            "/api/v1/backup/status",
+            get(dashboard::backup_status_handler),
+        )
+        .route(
+            "/api/v1/failsafe/status",
+            get(dashboard::failsafe_status_handler),
+        )
+        .route(
+            "/api/v1/analytics/statistics",
+            get(dashboard::analytics_statistics_handler),
+        )
+        .route(
+            "/api/v1/analytics/anomalies",
+            get(dashboard::analytics_anomalies_handler),
+        )
+        .route("/api/v1/ai/health", get(dashboard::ai_health_handler))
         .layer(tower_http::trace::TraceLayer::new_for_http())
         .with_state(state);
 

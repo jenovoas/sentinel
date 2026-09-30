@@ -15,14 +15,12 @@ use tracing::{error, info, warn};
 
 // Importar desde el core de me60os
 use me60os_core::guardian_lsm::GuardianLsm;
+use me60os_core::soma_runtime::{memory_path, redis_url, snapshot_path, worker_binary};
 use me60os_core::time_crystal::LiquidLattice;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
-// --- Configuración Dinámica ---
-fn get_env_var(key: &str, default: &str) -> String {
-    std::env::var(key).unwrap_or_else(|_| default.to_string())
-}
+// --- Configuración dinámica ---
 
 /// Umbral de coherencia para despachar tareas: 600/1000 = 0.60 (escala Base-60, sin floats)
 const UMBRAL_DISPATCH: u64 = 600;
@@ -39,19 +37,9 @@ struct Orchestrator {
 
 impl Orchestrator {
     async fn new() -> Result<Self> {
-        let redis_host = get_env_var("REDIS_HOST", "localhost");
-        let redis_port = get_env_var("REDIS_PORT", "6379");
-        let redis_url = format!("redis://{}:{}/", redis_host, redis_port);
-        let client = redis::Client::open(redis_url)?;
-
-        let snapshot_path = get_env_var(
-            "SNAPSHOT_PATH",
-            "/home/jnovoas/.local/state/swarm/crystal_snapshot.json",
-        );
-        let memory_path = get_env_var(
-            "MEMORY_PATH",
-            "/home/jnovoas/SecurePenguin/memory/MEMORY.md",
-        );
+        let client = redis::Client::open(redis_url())?;
+        let snapshot_path = snapshot_path();
+        let memory_path = memory_path();
 
         // Inicializar lattice con 60 slots (PAI-60 standard)
         let lattice = Arc::new(Mutex::new(LiquidLattice::new(60)));
@@ -244,7 +232,7 @@ impl Orchestrator {
         let _: () = conn.hset(&task_key, "status", "processing").await?;
         let _: () = conn.hset(&task_key, "llm_req_id", &llm_req_id).await?;
 
-        Command::new("/home/jnovoas/.local/bin/soma-worker")
+        Command::new(worker_binary())
             .arg(task_id)
             .arg(&llm_req_id)
             .spawn()?;

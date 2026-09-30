@@ -50,6 +50,7 @@ pub mod physics;
 pub mod qhc;
 pub mod resonant_loop;
 pub mod scheduler;
+pub mod soma_runtime;
 pub mod scv;
 pub mod shm_bridge;
 

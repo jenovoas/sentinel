@@ -13,6 +13,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tracing::{error, info, warn};
 
 // Importar tipos del core
+use me60os_core::soma_runtime::redis_url;
 use me60os_core::spa::SPA;
 
 // --- SCV Constants & Regex ---
@@ -69,10 +70,7 @@ struct WorkerApp {
 
 impl WorkerApp {
     async fn new(task_id: String, llm_req_id: String) -> Result<Self> {
-        let redis_host = std::env::var("REDIS_HOST").unwrap_or_else(|_| "localhost".to_string());
-        let redis_port = std::env::var("REDIS_PORT").unwrap_or_else(|_| "6379".to_string());
-        let redis_url = format!("redis://{}:{}/", redis_host, redis_port);
-        let client = redis::Client::open(redis_url)?;
+        let client = redis::Client::open(redis_url())?;
         let conn = client.get_multiplexed_async_connection().await?;
         Ok(Self {
             conn,
@@ -99,6 +97,32 @@ impl WorkerApp {
         anyhow::bail!("Timeout esperando al LLM Gateway")
     }
 
+    fn entropy_score(text: &str) -> SPA {
+        let bytes = text.as_bytes();
+        if bytes.is_empty() {
+            return SPA::zero();
+        }
+
+        let mut frequencies = [0u32; 256];
+        let mut transitions = 0u64;
+        for (index, byte) in bytes.iter().enumerate() {
+            frequencies[*byte as usize] += 1;
+            if index > 0 && bytes[index - 1] != *byte {
+                transitions += 1;
+            }
+        }
+
+        let unique = frequencies.iter().filter(|count| **count > 0).count() as u64;
+        let scale = SPA::SCALE_0 as u64;
+        let diversity_denominator = bytes.len().min(256) as u64;
+        let diversity = unique * scale / diversity_denominator;
+        let transition_denominator = (bytes.len().saturating_sub(1) as u64).max(1);
+        let transition_score = transitions * scale / transition_denominator;
+        let score = (diversity * 60 / 100 + transition_score * 40 / 100).min(scale);
+
+        SPA::from_raw(score as i64)
+    }
+
     // SCV Layer 1: Semántica (Aritmética SPA)
     fn check_semantic(&self, text: &str) -> (SPA, Vec<String>) {
         let mut issues = Vec::new();
@@ -123,9 +147,8 @@ impl WorkerApp {
         // blocked_penalty = blocked.min(1.0) -> if >0 SCALE_0 else 0
         let blocked_penalty = if blocked > 0 { one } else { SPA::zero() };
 
-        // Simple entropy (Integer approximation)
-        // placeholder entropy logic using SPA
-        let entropy_score = SPA::from_raw(SPA::SCALE_0 / 2); // 0.5 center
+        // Entropía estructural determinista: diversidad de bytes y transiciones.
+        let entropy_score = Self::entropy_score(text);
 
         // weighted: (1.0 - blocked_penalty)*0.4 + (allowed_score)*0.3 + (entropy)*0.3
         // 0.4 = 40/100, 0.3 = 30/100
@@ -350,4 +373,24 @@ async fn main() -> Result<()> {
 
     let worker = WorkerApp::new(task_id, llm_req_id).await?;
     worker.run().await
+}
+
+#[cfg(test)]
+mod tests {
+    use super::WorkerApp;
+
+    #[test]
+    fn structural_entropy_distinguishes_repetition_from_diversity() {
+        let repetitive = WorkerApp::entropy_score("aaaaaaaa");
+        let diverse = WorkerApp::entropy_score("abcdefgh");
+
+        assert!(diverse.to_raw() > repetitive.to_raw());
+        assert!(repetitive.to_raw() < 12_960_000);
+        assert!(diverse.to_raw() <= 12_960_000);
+    }
+
+    #[test]
+    fn structural_entropy_is_zero_for_empty_text() {
+        assert_eq!(WorkerApp::entropy_score("").to_raw(), 0);
+    }
 }
