@@ -227,6 +227,23 @@ impl ResonantMatrix {
         self.dt = dt;
     }
 
+    /// Applies a shared QHC phase shift to every crystal in the lattice.
+    pub fn apply_phase_shift(&mut self, shift: SPA) {
+        for crystal in &mut self.crystals {
+            crystal.phase = crystal.phase + shift;
+        }
+    }
+
+    /// Warms up the lattice with its configured damping and coupling.
+    ///
+    /// This is the supported stabilization path. It deliberately preserves each
+    /// crystal's configured damping factor instead of forcing a zero-damping mode.
+    pub fn warm_up(&mut self, cycles: usize) {
+        for _ in 0..cycles {
+            self.step();
+        }
+    }
+
     /// Stabilizes the lattice using linear diffusion (fluid dynamics).
     /// Used to smooth out phase differences (Liquid State).
     pub fn stabilize_py(&mut self, cycles: usize) {
@@ -611,6 +628,26 @@ mod tests {
 
         // Energy should decrease due to damping but not increase
         assert!(final_energy <= initial_energy);
+    }
+    #[test]
+    fn test_warm_up_uses_configured_damping_and_dual_lanes_converge() {
+        let mut lane_a = ResonantMatrix::new(9);
+        let mut lane_b = ResonantMatrix::new(9);
+        lane_a.warm_up(60);
+        lane_b.warm_up(60);
+
+        lane_a.inject_pai(0, 89, 1);
+        lane_b.inject_pai(0, 89, 1);
+        let initial_energy = lane_a.total_energy();
+
+        for _ in 0..10 {
+            lane_a.step();
+            lane_b.step();
+            assert_eq!(lane_a.get_amplitudes(), lane_b.get_amplitudes());
+            assert!(lane_a.total_energy() <= initial_energy);
+        }
+
+        assert!(lane_a.get_amplitudes()[0] > SPA::zero());
     }
 
     #[test]

@@ -40,6 +40,7 @@ once_cell = "1.19"
 phf = { version = "0.11", features = ["macros"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+parking_lot = "0.12"
 reqwest = { version = "0.12", features = ["blocking", "json"] }
 ratatui = "0.30.2"
 crossterm = { version = "0.27", features = ["events"] }
