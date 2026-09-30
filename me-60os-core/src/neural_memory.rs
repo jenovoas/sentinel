@@ -41,14 +41,8 @@ impl LIFNeuron {
     }
 
     pub fn integrate(&mut self, current: SPA) -> bool {
-        // Boost raw pressure into SPA scale so thermal/ring0 input dynamically charges membrane
-        let current_scaled = if current.to_raw() > 0 && current.to_raw() < SPA::SCALE_0 {
-            SPA::from_raw(current.to_raw() * (SPA::SCALE_0 / 100))
-        } else {
-            current
-        };
+        self.v_membrane = self.v_membrane + current;
 
-        self.v_membrane = self.v_membrane + current_scaled;
         if self.v_membrane >= self.v_threshold {
             self.v_membrane = SPA::zero(); // Reset
             self.spike_count += 1;

@@ -51,6 +51,20 @@ pub(crate) struct AppState {
     bio_resonator: Arc<Mutex<quantum::bio_resonator::BioResonator>>,
 }
 
+/// Numerador sexagesimal de borde (`(user+sys) mod 60 + 20`, o 35 si no hay `/proc/stat`)
+/// convertido una sola vez: `pai60_divide(from_int(sample), 60)`.
+/// Cristal, carga efectiva, memoria líquida y LIF reciben este SPA. No hay segunda escala.
+pub(crate) fn thermal_amplitude(sample: i64) -> me60os_core::spa::SPA {
+    me60os_core::pai60_lib::pai60_divide(me60os_core::spa::SPA::from_int(sample), 60)
+        .expect("60 es denominador regular de la tabla PAI-60")
+}
+
+fn thermal_half(amplitude: me60os_core::spa::SPA) -> me60os_core::spa::SPA {
+    me60os_core::pai60_lib::pai60_divide(amplitude, 2)
+        .unwrap_or_else(|| amplitude / me60os_core::spa::SPA::from_int(2))
+}
+
+
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt::init();
@@ -246,8 +260,8 @@ async fn main() {
             // Measure loop tick latency and adjust GPU batch size dynamically
             let latency_start = std::time::Instant::now();
 
-            // Extract dynamic CPU work deltatime entropy from /proc/stat
-            let entropy_pressure: i64 = std::fs::read_to_string("/proc/stat")
+            // Borde OS: jiffies decimales. Salen de la cadena en la línea siguiente.
+            let sample = std::fs::read_to_string("/proc/stat")
                 .ok()
                 .and_then(|s| {
                     s.lines().next().and_then(|line| {
@@ -255,20 +269,21 @@ async fn main() {
                         if parts.len() > 4 {
                             let user: i64 = parts[1].parse().ok()?;
                             let sys: i64 = parts[3].parse().ok()?;
-                            Some((user + sys) % 60 + 20) // Dynamic S60 noise range
+                            Some((user + sys).rem_euclid(60) + 20)
                         } else {
                             None
                         }
                     })
                 })
                 .unwrap_or(35);
+            let thermal = thermal_amplitude(sample);
 
             // Execute Maat Harmonic Regulation (Truth vs Speed)
-            let current_truth = me60os_core::spa::SPA::new(0, 58, 0, 0, 0); // 58/60 = 96.6% Verdad
+            let current_truth = me60os_core::spa::SPA::new(0, 58, 0, 0, 0); // 58/60
             let (regulated_speed, status) = maat.regulate(current_truth, current_speed);
             current_speed = regulated_speed;
 
-            // Latencia en milésimas de ms (entero, YATRA-LOCKED: sin float)
+            // Latencia en milésimas de ms (entero de borde, no entra al retículo)
             let elapsed_msx1000 = latency_start.elapsed().as_micros() as i64 / 1_000;
             let batch_size = gpu_ctrl.adjust_batch_size(elapsed_msx1000);
             tracing::trace!(
@@ -278,71 +293,44 @@ async fn main() {
                 batch_size
             );
 
-            // AUDIT-360: scope mutex to critical section (inject + step), release before oscillate writes
             {
                 let mut lat = lattice_thermal.lock().unwrap();
                 let node_count = lat.amplitudes_raw().len();
-                // Inject multi-point harmonic thermal pulses across central hexagonal rings (Node 0, ring centers)
-                // PRUEBA PAI-60: si SENTINEL_PAI_CONVERT=1, la amplitud se deriva via pai60_divide
-                // (razon recíproca exacta base-60) en vez de meter i64 crudo como presion.
-                let pai_convert = std::env::var("SENTINEL_PAI_CONVERT")
-                    .map(|v| v == "1")
-                    .unwrap_or(false);
-                if pai_convert {
-                    // denominador 60 = escala base-60 (S60). value en [0,60).
-                    let v = entropy_pressure.rem_euclid(60);
-                    lat.inject_pai(0, v, 60);
-                    if node_count > 100 {
-                        let step_ring = node_count / 7;
-                        for ring_idx in 1..7 {
-                            lat.inject_pai(ring_idx * step_ring, v / 2, 60);
-                        }
-                    }
-                } else {
-                    lat.inject(0, entropy_pressure);
-                    if node_count > 100 {
-                        let step_ring = node_count / 7;
-                        for ring_idx in 1..7 {
-                            lat.inject(ring_idx * step_ring, entropy_pressure / 2);
-                        }
+                let half = thermal_half(thermal);
+                lat.inject_spa(0, thermal);
+                if node_count > 100 {
+                    let step_ring = node_count / 7;
+                    for ring_idx in 1..7 {
+                        lat.inject_spa(ring_idx * step_ring, half);
                     }
                 }
                 lat.step();
-            } // drop lat lock here
+            }
 
-            // Calculate Resonant Physics Inertial Damping & Effective Load Reduction (outside lock)
-            let static_load = me60os_core::spa::SPA::from_raw(entropy_pressure);
-            let priority = me60os_core::spa::SPA::new(1, 0, 0, 0, 0); // 1.0 Priority Unit
-            let stability = me60os_core::spa::SPA::from_raw(
-                (entropy_pressure % 60 + 1) * (me60os_core::spa::SPA::SCALE_0 / 60),
-            );
+            let priority = me60os_core::spa::SPA::one();
             let effective_load = me60os_core::physics::ResonantPhysics::calculate_effective_load(
-                static_load,
+                thermal,
                 priority,
-                stability,
+                thermal,
             );
 
-            // Inject entropy & diffuse in EXP-009 LiquidLattice 3x3 grid continuously using effective load
             {
                 let mut ll = liquid_lattice_thermal.lock().unwrap();
-                ll.inject_entropy(1, 1, effective_load.to_raw()); // Center cell (1,1)
+                ll.inject_entropy(1, 1, effective_load.to_raw());
                 ll.diffuse();
             }
 
-            // Continuous pulse of PAI-Neural SNN LIF memory with thermal CPU noise
             {
                 let mut nm = neural_memory_thermal.lock().unwrap();
+                let thermal_raw = thermal.to_raw().max(0) as u64;
                 let thermal_ev = me60os_core::ebpf_cortex_bridge::CortexEvent::new(
                     chrono::Utc::now().timestamp_nanos_opt().unwrap_or(0) as u64,
-                    18, // Watchdog/Resonance Event Type
+                    18,
                     std::process::id() as u32,
-                    entropy_pressure as u64,
+                    thermal_raw,
                     0,
                 );
-                nm.ingest_event(
-                    thermal_ev,
-                    me60os_core::spa::SPA::from_raw(entropy_pressure),
-                );
+                nm.ingest_event(thermal_ev, thermal);
             }
         }
     });
@@ -1094,5 +1082,18 @@ mod tests {
         assert!(json.get("node_count").is_some());
         assert!(json.get("coherence_raw").is_some());
         assert!(json.get("nodes").is_some());
+    }
+
+    #[test]
+    fn thermal_amplitude_is_one_pai_fraction() {
+        let one = thermal_amplitude(60);
+        assert_eq!(one.to_components(), me60os_core::spa::SPA::from_int(1).to_components());
+        let half_unit = thermal_amplitude(30);
+        assert_eq!(half_unit.to_components(), [0, 30, 0, 0, 0]);
+        assert_eq!(thermal_half(half_unit).to_components(), [0, 15, 0, 0, 0]);
+        assert_ne!(
+            half_unit.to_raw(),
+            me60os_core::spa::SPA::from_int(30).to_raw()
+        );
     }
 }
