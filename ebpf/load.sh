@@ -25,7 +25,7 @@ done
 
 # ─── XDP ──────────────────────────────────────────────────────────────────────
 echo -e "\n${BOLD}── XDP Programs ──────────────────────────────────────────${NC}"
-for obj in burst_sensor.o xdp_firewall.o; do
+for obj in xdp_firewall.o; do
     if [ ! -f "$obj" ]; then
         warn "$obj no encontrado — saltando"; continue
     fi

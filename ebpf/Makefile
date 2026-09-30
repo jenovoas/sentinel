@@ -61,8 +61,9 @@ load-lsm: $(LSM_OBJS)
 	sudo $(BPFTOOL) prog load float_detector.o      /sys/fs/bpf/float_detector      type lsm
 
 load-xdp: $(XDP_OBJS)
-	sudo bpftool prog load burst_sensor.o /sys/fs/bpf/burst_sensor_xdp type xdp
-	sudo bpftool net attach xdp pinned /sys/fs/bpf/burst_sensor_xdp dev eth0
+	# eth0 admite un único programa XDP; el firewall es la política activa.
+	sudo bpftool net detach xdp dev eth0 2>/dev/null || true
+	sudo rm -f /sys/fs/bpf/xdp_firewall_xdp
 	sudo bpftool prog load xdp_firewall.o /sys/fs/bpf/xdp_firewall_xdp type xdp
 	sudo bpftool net attach xdp pinned /sys/fs/bpf/xdp_firewall_xdp dev eth0
 
