@@ -69,6 +69,8 @@ load-xdp: $(XDP_OBJS)
 
 load-tc: $(TC_OBJS)
 	sudo tc qdisc add dev eth0 clsact 2>/dev/null || true
+	sudo tc filter del dev eth0 ingress 2>/dev/null || true
+	sudo rm -f /sys/fs/bpf/tc_firewall
 	sudo bpftool prog load tc_firewall.o /sys/fs/bpf/tc_firewall type classifier
 	sudo tc filter add dev eth0 ingress bpf da pinned /sys/fs/bpf/tc_firewall
 load-gamma: $(META_OBJS)

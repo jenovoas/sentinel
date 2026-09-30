@@ -42,8 +42,11 @@ done
 # ─── TC ───────────────────────────────────────────────────────────────────────
 echo -e "\n${BOLD}── TC Programs ───────────────────────────────────────────${NC}"
 if [ -f tc_firewall.o ]; then
-    sudo tc qdisc add dev $IFACE clsact 2>/dev/null || true
-    sudo tc filter add dev $IFACE ingress bpf da obj tc_firewall.o sec tc \
+    sudo tc qdisc add dev "$IFACE" clsact 2>/dev/null || true
+    sudo tc filter del dev "$IFACE" ingress 2>/dev/null || true
+    sudo rm -f /sys/fs/bpf/tc_firewall
+    sudo bpftool prog load tc_firewall.o /sys/fs/bpf/tc_firewall type classifier \
+        && sudo tc filter add dev "$IFACE" ingress bpf da pinned /sys/fs/bpf/tc_firewall \
         && ok "tc_firewall anclado en $IFACE" || err "fallo TC"
 else
     warn "tc_firewall.o no encontrado — saltando"
