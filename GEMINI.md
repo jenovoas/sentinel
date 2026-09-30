@@ -26,8 +26,8 @@ ALWAYS prefer MCP graph tools over grep/glob/file-search for code discovery.
 
 # Despliegue operativo
 
-- Nodo único: `fenix`, Alpine Linux, IP pública `172.233.24.102`.
-- Rama de producción: `alpine_fenix`.
+- Nodo único por ahora: `fenix`, Alpine Linux, IP pública `172.233.24.102`. El segundo servidor espera a que Fenix esté listo. Sin gasto de datacenter.
+- Rama de producción: `fenix_alpine`. `alpine_fenix` no se usa.
 - Daemons nativos: OpenRC; stack auxiliar: Docker Compose; TLS: Nginx.
 - `soma_orchestrator` y `soma_worker` permanecen WIP y están excluidos del
   arranque; `neural-guard` sigue con motor de correlación parcial.

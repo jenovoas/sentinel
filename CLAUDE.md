@@ -53,7 +53,7 @@ en Ring-0, y el puente PyO3 hacia `quantum/*.py` es **legacy** (estudio/puente d
 | Capa | Tecnología |
 |------|-----------|
 | Sistema operativo | Alpine Linux, kernel `6.18.40-0-virt` |
-| Producción | Rama `alpine_fenix` |
+| Producción | Rama `fenix_alpine` |
 | Daemons nativos | OpenRC (`/etc/init.d/sentinel-*`) |
 | Contenedores | Docker Compose (`docker-compose.fenix.yml`) |
 | Proxy TLS | Nginx + Let's Encrypt |
@@ -126,7 +126,7 @@ en sentinel‑cortex/src/math/. Si aún no existe la que necesitas, abre un issu
 ## Restricciones Clave (actualizado)
 
 - Prohibidos floats en lógica S60 (Candado YATRA)
-* Producción operativa: un solo nodo `fenix` con Alpine/OpenRC/Docker Compose; no añadir VMs, nodos ni asumir la topología histórica Fenix/Kingu.
+- Producción actual: un solo nodo `fenix` (Alpine/OpenRC/Docker Compose) hasta terminar este servidor e instalar el otro. No contratar datacenter ni añadir nodos mientras tanto. No asumir la topología histórica Fenix/Kingu.
 - Experimentos con numeración secuencial; EXP‑023/024/025 restaurados 2026‑07‑30
 - `internal/` está en .gitignore — el trabajo exploratorio vive ahí
 - Todo documento nuevo o actualizado debe agregarse a la cola de traducción (ver `ENGLISH_MD_LIST.md`)
