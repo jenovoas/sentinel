@@ -18,7 +18,10 @@ services:
     networks:
       - sentinel_internal
     ports:
-      - "127.0.0.1:5432:5432"
+      - target: 5432
+        published: "5432"
+        host_ip: 127.0.0.1
+        mode: host
     healthcheck:
       test:
         [
@@ -40,7 +43,10 @@ services:
     networks:
       - sentinel_internal
     ports:
-      - "127.0.0.1:6379:6379"
+      - target: 6379
+        published: "6379"
+        host_ip: 127.0.0.1
+        mode: host
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
     deploy:
       resources:
@@ -63,7 +69,10 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
-      - "127.0.0.1:3100:3000"
+      - target: 3000
+        published: "3100"
+        host_ip: 127.0.0.1
+        mode: host
 
     # Nginx del host publica cortex.pinguinoseguro.cl.
     deploy:
@@ -84,7 +93,10 @@ services:
     networks:
       - sentinel_internal
     ports:
-      - "127.0.0.1:9090:9090"
+      - target: 9090
+        published: "9090"
+        host_ip: 127.0.0.1
+        mode: host
 
     # Nginx aplica TLS y autenticación básica.
     deploy:
@@ -154,7 +166,10 @@ services:
     networks:
       - sentinel_internal
     ports:
-      - "127.0.0.1:3001:3000"
+      - target: 3000
+        published: "3001"
+        host_ip: 127.0.0.1
+        mode: host
 
     # Nginx del host termina TLS.
     deploy:
@@ -244,7 +259,10 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
-      - "127.0.0.1:5678:5678"
+      - target: 5678
+        published: "5678"
+        host_ip: 127.0.0.1
+        mode: host
 
     # Nginx del host publica n8n.
     deploy:
