@@ -3,9 +3,9 @@
 > **Despliegue operativo 2026-09-29/30:** `fenix` es, por ahora, el nodo único.
 > Alpine Linux, kernel `6.18.40-0-virt`, IP pública `172.233.24.102`. No hay
 > segundo servidor ni gasto de datacenter hasta terminar Fenix e instalar el
-> otro. La única rama Alpine es `fenix_alpine`. Daemons nativos: OpenRC.
+> otro. La única rama Alpine es `alpine_fenix`. Daemons nativos: OpenRC.
 > Stack auxiliar: Docker Compose. TLS: Nginx del host. No asumir systemd,
-> Kingu, WireGuard ni la rama histórica `alpine_fenix`.
+> Kingu ni WireGuard. No sustituir `alpine_fenix` por `fenix_alpine`.
 
 > **LECTURA OBLIGATORIA ANTES DE EMITIR JUICIOS SOBRE EL PROYECTO:**
 > [`sentinel-scientific-foundation.md`](file:///home/jnovoas/.config/Code/User/workspaceStorage/7c63ffead990815376933d02c94d88c9/GitHub.copilot-chat/memory-tool/memories/repo/sentinel-scientific-foundation.md)

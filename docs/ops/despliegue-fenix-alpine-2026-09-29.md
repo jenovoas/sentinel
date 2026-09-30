@@ -5,9 +5,8 @@ hasta terminar este servidor e instalar el segundo. No contratar datacenter
 ni levantar un segundo nodo mientras tanto. Kingu y WireGuard no forman
 parte de este arranque; el segundo servidor se decide cuando Fenix esté listo.
 
-La rama que contiene este despliegue es `fenix_alpine`. Los commits se
-publicaron primero en `alpine_fenix` y se trajeron aquí el 2026-09-30.
-No volver a usar `alpine_fenix`.
+La rama de este despliegue es `alpine_fenix`. Es la única rama Alpine.
+No usar `fenix_alpine`, `develop` ni `main` para este trabajo.
 
 ## Nodo
 
