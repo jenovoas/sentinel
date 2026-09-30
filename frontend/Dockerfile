@@ -7,7 +7,7 @@ COPY package*.json ./
 RUN npm config set fetch-retries 10
 RUN npm config set fetch-retry-mintimeout 100000
 RUN npm config set fetch-retry-maxtimeout 600000
-RUN npm install -g npm@latest
+RUN npm install -g npm@10
 RUN npm install --legacy-peer-deps
 
 COPY . .
@@ -20,7 +20,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install -g npm@latest
+RUN npm install -g npm@10
 RUN npm install --legacy-peer-deps --omit=dev
 
 COPY --from=builder /app/.next ./.next
