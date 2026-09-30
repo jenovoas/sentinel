@@ -15,5 +15,6 @@ start_pre() {
 
 depend() {
     need net
+    need sentinel-ebpf-load
     after sentinel-cortex
 }

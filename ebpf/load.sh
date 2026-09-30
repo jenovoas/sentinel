@@ -11,6 +11,15 @@ err()  { echo -e "${RED}❌ $*${NC}"; }
 
 cd "$(dirname "$0")"
 
+# Make the finite boot action deterministic after a prior partial load.
+sudo pkill -f gamma_watchdog 2>/dev/null || true
+sudo bpftool net detach xdp dev "$IFACE" 2>/dev/null || true
+sudo rm -rf /sys/fs/bpf/sentinel/gamma
+sudo rm -f /sys/fs/bpf/known_peer_prog_ids \
+    /sys/fs/bpf/gamma_heartbeat /sys/fs/bpf/rate_limit /sys/fs/bpf/events \
+    /sys/fs/bpf/sentinel/events /sys/fs/bpf/xdp_firewall_xdp \
+    /sys/fs/bpf/tc_firewall
+
 # ─── LSM ──────────────────────────────────────────────────────────────────────
 echo -e "\n${BOLD}── LSM Programs ──────────────────────────────────────────${NC}"
 for prog in guardian_alpha_lsm lsm_ai_guardian ai_guardian guardian_cognitive float_detector; do
