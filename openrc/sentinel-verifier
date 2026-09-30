@@ -1,0 +1,20 @@
+#!/sbin/openrc-run
+
+name="sentinel-verifier"
+description="Sentinel system invariant verifier"
+command="/usr/local/bin/sentinel-verifier"
+command_args="--watch 15 --json"
+command_user="root"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/var/log/sentinel/verifier.log"
+error_log="/var/log/sentinel/verifier.err"
+
+start_pre() {
+    checkpath --directory --owner root:root --mode 0755 /var/log/sentinel
+}
+
+depend() {
+    need net
+    need sentinel-cortex
+}

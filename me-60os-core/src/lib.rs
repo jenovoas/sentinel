@@ -48,6 +48,7 @@ pub mod numerical_control; // SovereignDDA: interpolador DDA S60 (trayectoria de
 pub mod orbital_ascent; // Orbital ascent dynamics: drag/gravedad/thrust S60 (física real)
 pub mod physics;
 pub mod qhc;
+pub mod qhc_ipc;
 pub mod resonant_loop;
 pub mod scheduler;
 pub mod scv;

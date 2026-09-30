@@ -97,64 +97,83 @@ impl DecisionEngine {
         }
     }
 
-    fn calculate_thermal_multiplier(&self) -> f64 {
+    fn temperature_celsius(value: &serde_json::Value) -> i64 {
+        let serialized = value
+            .as_i64()
+            .map(|number| number.to_string())
+            .or_else(|| value.as_str().map(str::to_owned))
+            .or_else(|| value.is_number().then(|| value.to_string()));
+
+        serialized
+            .and_then(|number| number.split(['.', 'e', 'E']).next()?.parse::<i64>().ok())
+            .unwrap_or(40)
+    }
+
+    fn scale_threshold(value: u64, multiplier: SPA) -> u64 {
+        let scale = SPA::SCALE_0 as u128;
+        let multiplier_raw = multiplier.to_raw().max(SPA::SCALE_0) as u128;
+        let scaled = u128::from(value)
+            .checked_mul(multiplier_raw)
+            .unwrap_or(u128::MAX)
+            / scale;
+
+        scaled.min(u128::from(u64::MAX)) as u64
+    }
+
+    fn calculate_thermal_multiplier(&self) -> SPA {
         if !self.enable_thermal_coupling {
-            return 1.0;
+            return SPA::one();
         }
 
-        // 1. Buscar la lectura térmica más reciente
-        let latest_temp = self
+        let temp_c = self
             .event_buffer
             .iter()
-            .rfind(|e| e.event_type == "cpu_thermal_reading");
+            .rfind(|event| event.event_type == "cpu_thermal_reading")
+            .map(|event| Self::temperature_celsius(&event.metadata["celsius"]))
+            .unwrap_or(40)
+            .clamp(40, 90);
 
-        let temp_c = match latest_temp {
-            Some(e) => e.metadata["celsius"].as_f64().unwrap_or(40.0),
-            None => 40.0, // Baseline normal
-        };
-
-        // 2. Mapear temperatura a estabilidad (0.0 a 1.0)
-        // 40C -> 1.0 (Soberano), 90C -> 0.0 (Caos)
-        let stability_raw = if temp_c <= 40.0 {
-            1.0
-        } else if temp_c >= 90.0 {
-            0.0
+        let scale = SPA::SCALE_0 as i128;
+        let stability_raw = if temp_c <= 40 {
+            scale
+        } else if temp_c >= 90 {
+            0
         } else {
-            (90.0 - temp_c) / 50.0
+            i128::from(90 - temp_c) * scale / 50
         };
-
-        let stability = SPA::new(0, (stability_raw * 60.0) as i64, 0, 0, 0);
+        let stability = SPA::from_raw(stability_raw as i64);
         let priority = SPA::one();
 
-        // 3. Calcular Carga Efectiva (Inercia)
         let load_eff =
             ResonantPhysics::calculate_effective_load(self.baseline_load, priority, stability);
-
-        // 4. Calcular Multiplicador
-        // Load_eff es mínimo (~200) cuando es Estable, máximo (1000) cuando es Caos.
-        // Queremos que el multiplicador sea 1.0 cuando es Estable (Mínimo).
-        // Y que suba cuando hay caos.
         let min_load =
             ResonantPhysics::calculate_effective_load(self.baseline_load, priority, SPA::one());
+        let denominator = min_load.to_raw();
 
-        let multiplier = load_eff.to_raw() as f64 / min_load.to_raw() as f64;
-
-        if multiplier < 1.0 {
-            1.0
-        } else {
-            multiplier
+        if denominator <= 0 {
+            return SPA::one();
         }
+
+        let multiplier_raw =
+            (i128::from(load_eff.to_raw()) * scale / i128::from(denominator)).max(scale);
+        SPA::from_raw(multiplier_raw.min(i128::from(i64::MAX)) as i64)
     }
 
     pub fn correlate(&self) -> Vec<CorrelatedIncident> {
         let multiplier = self.calculate_thermal_multiplier();
 
-        // Aplicar multiplicador a los umbrales
-        let ssh_threshold = (self.ssh_bruteforce_threshold as f64 * multiplier) as usize;
-        let nginx_threshold = (self.nginx_5xx_threshold as f64 * multiplier) as u64;
-        let redis_threshold = (self.redis_memory_threshold_bytes as f64 * multiplier) as u64;
-        let restart_threshold = (self.container_restart_threshold as f64 * multiplier) as i64;
-        let traffic_threshold = self.traffic_drop_threshold; // El umbral de caída no debería escalar con la temperatura
+        // Aplicar multiplicadores en escala SPA, sin conversiones flotantes.
+        let ssh_threshold =
+            Self::scale_threshold(self.ssh_bruteforce_threshold as u64, multiplier) as usize;
+        let nginx_threshold = Self::scale_threshold(self.nginx_5xx_threshold, multiplier);
+        let redis_threshold =
+            Self::scale_threshold(self.redis_memory_threshold_bytes, multiplier);
+        let restart_threshold = Self::scale_threshold(
+            self.container_restart_threshold.max(0) as u64,
+            multiplier,
+        )
+        .min(i64::MAX as u64) as i64;
+        let traffic_threshold = self.traffic_drop_threshold;
 
         let mut incidents = Vec::new();
 
@@ -175,9 +194,51 @@ impl DecisionEngine {
             }
         }
 
-        // Note: Pattern 1 (DDoS) was not fully implemented. It can be added
-        // as a new struct implementing the `Pattern` trait when ready.
+        // Cada patrón recibe umbrales ya normalizados en escala entera.
 
         incidents
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::DecisionEngine;
+    use crate::models::{Event, EventSource, Severity};
+    use chrono::Utc;
+    use serde_json::json;
+    use uuid::Uuid;
+
+    fn thermal_event(value: &str) -> Event {
+        Event {
+            id: Uuid::new_v4(),
+            source: EventSource::NervioCThermal,
+            timestamp: Utc::now(),
+            severity: Severity::Info,
+            event_type: "cpu_thermal_reading".to_string(),
+            metadata: json!({ "celsius": value }),
+        }
+    }
+
+    #[test]
+    fn parses_decimal_temperature_without_floating_point() {
+        assert_eq!(
+            DecisionEngine::temperature_celsius(&json!("65.9")),
+            65
+        );
+        assert_eq!(DecisionEngine::temperature_celsius(&json!(72)), 72);
+    }
+
+    #[test]
+    fn thermal_multiplier_is_integer_and_non_decreasing_with_heat() {
+        let mut cool = DecisionEngine::new();
+        cool.enable_thermal_coupling = true;
+        cool.add_event(thermal_event("40"));
+
+        let mut hot = DecisionEngine::new();
+        hot.enable_thermal_coupling = true;
+        hot.add_event(thermal_event("90"));
+
+        assert!(hot.calculate_thermal_multiplier().to_raw()
+            >= cool.calculate_thermal_multiplier().to_raw());
     }
 }

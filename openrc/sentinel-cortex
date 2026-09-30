@@ -1,0 +1,31 @@
+#!/sbin/openrc-run
+
+name="sentinel-cortex"
+description="Sentinel Cortex API"
+command="/usr/local/bin/sentinel-cortex"
+command_user="jnovoas"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/var/log/sentinel/cortex.log"
+error_log="/var/log/sentinel/cortex.err"
+
+if [ -r /etc/conf.d/sentinel-cortex ]; then
+    . /etc/conf.d/sentinel-cortex
+fi
+export REDIS_URL
+export EBPF_MONITOR_PATH
+: "${REDIS_URL:=redis://127.0.0.1:6379}"
+: "${EBPF_MONITOR_PATH:=/sys/fs/bpf}"
+
+start_pre() {
+    checkpath --directory --owner root:root --mode 0755 /var/log/sentinel
+    checkpath --file --owner jnovoas:jnovoas --mode 0640 "$output_log"
+    checkpath --file --owner jnovoas:jnovoas --mode 0640 "$error_log"
+}
+
+depend() {
+    need net
+    need sentinel-stack
+    need sentinel-ebpf-load
+    after firewall
+}

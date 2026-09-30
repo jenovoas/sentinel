@@ -4,6 +4,7 @@
 mod actions;
 mod buffer_system;
 mod collectors;
+mod dashboard;
 mod ebpf_cortex_bridge;
 mod engine;
 mod math;
@@ -11,6 +12,7 @@ mod memory;
 mod metrics;
 mod models;
 mod quantum;
+mod qhc_client;
 mod security;
 
 use axum::extract::ws::{Message, WebSocket, WebSocketUpgrade};
@@ -33,6 +35,7 @@ struct HealthStatus {
     status: String,
     version: String,
     metrics: MetricsSnapshot,
+    qhc: qhc_client::QhcStatus,
 }
 
 pub(crate) struct AppState {
@@ -49,6 +52,7 @@ pub(crate) struct AppState {
     quantum_scheduler: Arc<Mutex<quantum::quantum_scheduler::QuantumScheduler>>,
     #[allow(dead_code)]
     bio_resonator: Arc<Mutex<quantum::bio_resonator::BioResonator>>,
+    qhc: Arc<parking_lot::Mutex<qhc_client::QhcStatus>>,
 }
 
 /// Numerador sexagesimal de borde (`(user+sys) mod 60 + 20`, o 35 si no hay `/proc/stat`)
@@ -123,6 +127,7 @@ async fn main() {
         quantum::quantum_scheduler::QuantumScheduler::new(bio_resonator.clone()),
     ));
 
+    let qhc = Arc::new(parking_lot::Mutex::new(qhc_client::QhcStatus::unavailable()));
     let state = Arc::new(AppState {
         resonance: resonance.clone(),
         metrics: metrics.clone() as Arc<dyn MetricsRepository>,
@@ -134,13 +139,16 @@ async fn main() {
         neural_memory: neural_memory.clone(),
         quantum_scheduler: quantum_scheduler.clone(),
         bio_resonator: bio_resonator.clone(),
+        qhc: qhc.clone(),
     });
+    qhc_client::spawn(qhc);
 
     let resonance_task = resonance.clone();
     let processor_task = processor.clone();
     let scheduler_task = quantum_scheduler.clone();
+    let qhc_task = state.qhc.clone();
     tokio::spawn(async move {
-        tracing::info!("Resonance Engine active. Syncing to 17s Pulse...");
+        tracing::info!("Resonance Engine active. Syncing to QHC pulse...");
         let start_time = std::time::Instant::now();
         let mut last_second: u64 = 0;
         loop {
@@ -150,7 +158,9 @@ async fn main() {
                 continue;
             }
             last_second = elapsed_secs;
-            let tick = elapsed_secs;
+            let local_tick = elapsed_secs;
+            let qhc_tick = qhc_client::live_tick(&qhc_task.lock());
+            let tick = qhc_tick.unwrap_or(local_tick);
 
             {
                 let mut res = resonance_task.lock().unwrap();
@@ -165,10 +175,11 @@ async fn main() {
                 let mut res = resonance_task.lock().unwrap();
                 let (valid, coherence) = res.verify_pulse(tick);
                 tracing::info!(
-                    "PULSE CHECK (T={}): Valid={}, Coherence={:?}",
+                    "PULSE CHECK (T={}): Valid={}, Coherence={:?}, QHC={}",
                     tick,
                     valid,
-                    coherence
+                    coherence,
+                    qhc_tick.is_some()
                 );
 
                 if valid {
@@ -373,8 +384,26 @@ async fn main() {
         .route("/api/v1/lattice/hologram", get(lattice_hologram_handler))
         .route("/api/v1/telemetry", get(telemetry_ws_handler))
         .route("/api/v1/sentinel_status", get(sentinel_status_handler))
+        .route("/api/v1/qhc/status", get(qhc_client::status_handler))
         .route("/api/v1/truth_claim", post(truth_claim_handler))
         .route("/api/v1/phonon_lattice", get(phonon_lattice_handler))
+        .route(
+            "/api/v1/backup/status",
+            get(dashboard::backup_status_handler),
+        )
+        .route(
+            "/api/v1/failsafe/status",
+            get(dashboard::failsafe_status_handler),
+        )
+        .route(
+            "/api/v1/analytics/statistics",
+            get(dashboard::analytics_statistics_handler),
+        )
+        .route(
+            "/api/v1/analytics/anomalies",
+            get(dashboard::analytics_anomalies_handler),
+        )
+        .route("/api/v1/ai/health", get(dashboard::ai_health_handler))
         .layer(tower_http::trace::TraceLayer::new_for_http())
         .with_state(state);
 
@@ -448,6 +477,7 @@ async fn health_handler(
     axum::extract::State(state): axum::extract::State<Arc<AppState>>,
 ) -> Json<HealthStatus> {
     let bio_coherence = state.resonance.lock().unwrap().get_coherence_raw();
+    let qhc = state.qhc.lock().clone();
     Json(HealthStatus {
         status: "OK".to_string(),
         version: env!("CARGO_PKG_VERSION").to_string(),
@@ -456,6 +486,7 @@ async fn health_handler(
             efficiency: state.metrics.get_scheduler_efficiency().to_base_units(),
             timestamp_s60: 0, // Placeholder
         },
+        qhc,
     })
 }
 
@@ -951,6 +982,7 @@ mod tests {
         ));
         let (tx_bpf, _) = broadcast::channel(100);
 
+        let qhc = Arc::new(parking_lot::Mutex::new(qhc_client::QhcStatus::unavailable()));
         let state = Arc::new(AppState {
             resonance,
             metrics,
@@ -962,10 +994,12 @@ mod tests {
             neural_memory,
             quantum_scheduler,
             bio_resonator,
+            qhc,
         });
 
         Router::new()
             .route("/api/v1/sentinel_status", get(sentinel_status_handler))
+            .route("/api/v1/qhc/status", get(qhc_client::status_handler))
             .route("/api/v1/truth_claim", post(truth_claim_handler))
             .route("/api/v1/lattice/hologram", get(lattice_hologram_handler))
             .with_state(state)
@@ -994,6 +1028,28 @@ mod tests {
         assert!(json.get("xdp_firewall").is_some());
         assert!(json.get("lsm_cognitive").is_some());
         assert!(json.get("s60_resonance").is_some());
+    }
+    #[tokio::test]
+    async fn test_qhc_status_handler_reports_unavailable_without_agent() {
+        let app = make_test_app();
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri("/api/v1/qhc/status")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(json["connected"], false);
+        assert_eq!(json["stale"], true);
+        assert_eq!(json["last_error"], "qhc_agent_unavailable");
     }
 
     #[tokio::test]

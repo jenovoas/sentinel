@@ -22,6 +22,15 @@ ALWAYS prefer MCP graph tools over grep/glob/file-search for code discovery.
 - Who calls it: `trace_path(project="sentinel", function_name="OrderHandler", direction="inbound")`
 - Read source: `get_code_snippet(project="sentinel", qualified_name="pkg/orders.OrderHandler")`
 <!-- codebase-memory-mcp:end -->
+---
+
+# Despliegue operativo
+
+- Nodo único: `fenix`, Alpine Linux, IP pública `172.233.24.102`.
+- Rama de producción: `alpine_fenix`.
+- Daemons nativos: OpenRC; stack auxiliar: Docker Compose; TLS: Nginx.
+- `soma_orchestrator` y `soma_worker` permanecen WIP y están excluidos del
+  arranque; `neural-guard` sigue con motor de correlación parcial.
 
 ---
 

@@ -7,6 +7,26 @@ use redis::{Commands, RedisResult};
 use reqwest::Client;
 use uuid::Uuid;
 
+fn parse_prometheus_scaled(value: &str, scale: u64) -> Option<u64> {
+    let (whole, fraction) = value.split_once('.').unwrap_or((value, ""));
+    let whole = whole.parse::<u64>().ok()?;
+    let fraction = fraction.trim_end_matches('0');
+    if fraction.is_empty() {
+        return whole.checked_mul(scale);
+    }
+
+    let digits = fraction.len().min(18);
+    let fraction_value = fraction[..digits].parse::<u64>().ok()?;
+    let denominator = 10u64.checked_pow(digits as u32)?;
+    whole
+        .checked_mul(scale)?
+        .checked_add(fraction_value.checked_mul(scale)? / denominator)
+}
+
+fn parse_prometheus_integer(value: &str) -> Option<u64> {
+    parse_prometheus_scaled(value, 1)
+}
+
 /// Un colector genérico para realizar consultas HTTP a servicios como Loki o Prometheus.
 struct HttpCollector {
     client: Client,
@@ -48,7 +68,8 @@ impl LokiCollector {
     pub async fn collect_logs(&self) -> Result<Vec<Event>, reqwest::Error> {
         let mut events = Vec::new();
         // LogQL para buscar intentos de login fallidos en los logs del sistema
-        let failed_login_query = r#"{job="systemd-journal"} |= "Failed password""#;
+        // alpine_fenix: Alpine usa syslog (Promtail) en lugar de systemd-journal
+        let failed_login_query = r#"{job="syslog"} |= "Failed password""#;
 
         let json = self
             .http
@@ -116,7 +137,8 @@ impl LokiCollector {
         let mut events = Vec::new();
 
         // Sudo commands ejecutados
-        let sudo_query = r#"{job="systemd-journal"} |= "sudo:" |= "COMMAND""#;
+        // alpine_fenix: Alpine usa syslog (Promtail) en lugar de systemd-journal
+        let sudo_query = r#"{job="syslog"} |= "sudo:" |= "COMMAND""#;
         let json = self
             .http
             .query("/loki/api/v1/query_range", sudo_query)
@@ -141,8 +163,9 @@ impl LokiCollector {
         }
 
         // Acceso a archivos sensibles vía auditd
+        // alpine_fenix: Alpine usa syslog (Promtail) en lugar de systemd-journal
         let sensitive_query =
-            r#"{job="systemd-journal"} |= "type=PATH" |~ "/etc/passwd|/etc/shadow|/.ssh""#;
+            r#"{job="syslog"} |= "type=PATH" |~ "/etc/passwd|/etc/shadow|/.ssh""#;
         let json = self
             .http
             .query("/loki/api/v1/query_range", sensitive_query)
@@ -194,7 +217,7 @@ impl PrometheusCollector {
 
         for alert in cpu_alerts {
             if let Some(value_str) = alert["value"][1].as_str() {
-                if let Ok(value_int) = value_str.parse::<f64>().map(|f| f as u64) {
+                if let Some(value_int) = parse_prometheus_integer(value_str) {
                     if value_int > 0 {
                         events.push(Event {
                             event_type: "high_cpu_usage".to_string(),
@@ -226,7 +249,7 @@ impl PrometheusCollector {
 
         for metric in redis_metrics {
             if let Some(value_str) = metric["value"][1].as_str() {
-                if let Ok(memory_bytes) = value_str.parse::<f64>().map(|f| f as u64) {
+                if let Some(memory_bytes) = parse_prometheus_integer(value_str) {
                     events.push(Event {
                         event_type: "redis_memory_usage".to_string(),
                         source: EventSource::Prometheus,
@@ -256,7 +279,7 @@ impl PrometheusCollector {
 
         for res in results {
             if let Some(value_str) = res["value"][1].as_str() {
-                if let Ok(temp_c) = value_str.parse::<f64>() {
+                if let Some(temp_c) = parse_prometheus_scaled(value_str, 1) {
                     events.push(Event {
                         event_type: "cpu_thermal_reading".to_string(),
                         source: EventSource::NervioCThermal,
@@ -333,27 +356,39 @@ impl RedisStreamCollector {
             }
         }
 
-        // Query for high network traffic (e.g., > 10 MB/s)
-        let net_query =
-            "rate(node_network_receive_bytes_total{device!~'lo'}[1m]) > 10 * 1024 * 1024";
+        // Queryar una muestra continua permite detectar tanto picos como caídas.
+        let net_query = "rate(node_network_receive_bytes_total{device!~'lo'}[1m])";
         let net_json = self.http.query("/api/v1/query", net_query).await?;
-        let net_alerts = net_json["data"]["result"]
+        let net_samples = net_json["data"]["result"]
             .as_array()
             .cloned()
             .unwrap_or_default();
 
-        for alert in net_alerts {
-            if let Some(value_str) = alert["value"][1].as_str() {
-                if let Ok(value_float) = value_str.parse::<f64>() {
-                    if value_float > 0.0 {
+        for sample in net_samples {
+            if let Some(value_str) = sample["value"][1].as_str() {
+                if let Some(value_bytes_per_sec) = parse_prometheus_integer(value_str) {
+                    let metadata = serde_json::json!({
+                        "host": sample["metric"]["instance"],
+                        "device": sample["metric"]["device"],
+                        "value_bytes_per_sec": value_bytes_per_sec,
+                    });
+                    events.push(Event {
+                        event_type: "network_traffic_sample".to_string(),
+                        source: EventSource::Prometheus,
+                        severity: Severity::Info,
+                        metadata: metadata.clone(),
+                        ..Default::default()
+                    });
+
+                    if value_bytes_per_sec > 10 * 1024 * 1024 {
                         events.push(Event {
                             event_type: "high_network_traffic".to_string(),
                             source: EventSource::Prometheus,
                             severity: Severity::High,
                             metadata: serde_json::json!({
-                                "host": alert["metric"]["instance"],
-                                "device": alert["metric"]["device"],
-                                "value_bytes_per_sec": value_float,
+                                "host": sample["metric"]["instance"],
+                                "device": sample["metric"]["device"],
+                                "value_bytes_per_sec": value_bytes_per_sec,
                                 "description": "Network traffic over 10MB/s."
                             }),
                             ..Default::default()
@@ -404,10 +439,10 @@ impl NervioBCollector {
         let json = self.http.query("/api/v1/query", disk_query).await?;
         if let Some(results) = json["data"]["result"].as_array() {
             for res in results {
-                let usage = res["value"][1]
+                let usage_percent = res["value"][1]
                     .as_str()
-                    .and_then(|s| s.parse::<f64>().ok())
-                    .unwrap_or(0.0);
+                    .and_then(|s| parse_prometheus_scaled(s, 100))
+                    .unwrap_or(0);
                 events.push(Event {
                     event_type: "disk_usage_critical".to_string(),
                     source: EventSource::NervioBIntegrity,
@@ -415,7 +450,7 @@ impl NervioBCollector {
                     metadata: serde_json::json!({
                         "mountpoint": res["metric"]["mountpoint"],
                         "instance": res["metric"]["instance"],
-                        "usage_percent": (usage * 100.0) as u64,
+                        "usage_percent": usage_percent,
                     }),
                     ..Default::default()
                 });

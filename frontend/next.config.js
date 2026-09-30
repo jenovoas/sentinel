@@ -8,7 +8,7 @@ const nextConfig = {
       afterFiles: [
         {
           source: '/api/v1/:path*',
-          destination: 'http://cortex:8000/api/v1/:path*',
+          destination: 'http://host.docker.internal:8000/api/v1/:path*',
         },
       ],
     };

@@ -1,0 +1,20 @@
+#!/sbin/openrc-run
+
+name="sentinel-pai-neural"
+description="Sentinel PAI-60 neural daemon"
+command="/usr/local/bin/pai_neural_daemon"
+command_user="root"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/var/log/sentinel/pai-neural.log"
+error_log="/var/log/sentinel/pai-neural.err"
+
+start_pre() {
+    checkpath --directory --owner root:root --mode 0755 /var/log/sentinel
+}
+
+depend() {
+    need net
+    need sentinel-ebpf-load
+    after sentinel-cortex
+}

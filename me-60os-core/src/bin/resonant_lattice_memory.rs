@@ -81,27 +81,17 @@ fn main() {
     println!("   Regla: doble malla o no hay portal (memoria accesible solo si A∧B convergen).");
     println!("{:-<72}", "");
 
-    // P0.1 — MODO SUPERCONDUCTOR: cada malla sostiene amplitud tras step()
-    // (sin esto, apply_entropy decae y la lectura da basura). damping_factor=0
-    // anula la pérdida por tick en los cristales de cada lane independiente.
-    for c in lane_a.crystals.iter_mut() {
-        c.damping_factor = SPA::zero();
-    }
-    for c in lane_b.crystals.iter_mut() {
-        c.damping_factor = SPA::zero();
-    }
-
+    // P0.1 — PRECALENTAMIENTO: estabiliza ambas mallas con el damping configurado
+    // por IsochronousOscillator. No se fuerza damping=0: la retención se prueba
+    // con la pérdida física configurada y la difusión de vecinos.
     let data = "Yo Soy";
 
-    // BOMBEO QHC: sincroniza ambas mallas cada tick (10;5,6,5 + Salto-17).
-    // El cristal resuena PRIMERO (estabiliza la malla en modo superconductor).
-    let dt = SPA::from_int(1) / SPA::from_int(10);
-    for step in 0..60u32 {
-        let t = SPA::from_int(step as i64) * dt;
-        let _mod = qhc.apply_modulation(t, step as u64); // mismo pulso a ambas
-        let _ = _mod;
-
-        // El cristal bombea: ambas mallas respiran.
+    // BOMBEO QHC: aplica el mismo desplazamiento de fase a ambas mallas.
+    let warmup_cycles = 60u64;
+    for step in 0..warmup_cycles {
+        let phase_shift = qhc.apply_modulation(SPA::zero(), step);
+        lane_a.apply_phase_shift(phase_shift);
+        lane_b.apply_phase_shift(phase_shift);
         lane_a.step();
         lane_b.step();
     }

@@ -61,18 +61,22 @@ load-lsm: $(LSM_OBJS)
 	sudo $(BPFTOOL) prog load float_detector.o      /sys/fs/bpf/float_detector      type lsm
 
 load-xdp: $(XDP_OBJS)
-	sudo ip link set dev eth0 xdp obj burst_sensor.o  sec xdp
-	sudo ip link set dev eth0 xdp obj xdp_firewall.o  sec xdp
+	# eth0 admite un único programa XDP; el firewall es la política activa.
+	sudo bpftool net detach xdp dev eth0 2>/dev/null || true
+	sudo rm -f /sys/fs/bpf/xdp_firewall_xdp
+	sudo bpftool prog load xdp_firewall.o /sys/fs/bpf/xdp_firewall_xdp type xdp
+	sudo bpftool net attach xdp pinned /sys/fs/bpf/xdp_firewall_xdp dev eth0
 
 load-tc: $(TC_OBJS)
 	sudo tc qdisc add dev eth0 clsact 2>/dev/null || true
-	sudo tc filter add dev eth0 ingress bpf da obj tc_firewall.o sec tc
-
+	sudo tc filter del dev eth0 ingress 2>/dev/null || true
+	sudo rm -f /sys/fs/bpf/tc_firewall
+	sudo bpftool prog load tc_firewall.o /sys/fs/bpf/tc_firewall type classifier
+	sudo tc filter add dev eth0 ingress bpf da pinned /sys/fs/bpf/tc_firewall
 load-gamma: $(META_OBJS)
 	# Gamma se carga DESPUÉS de los otros Guardians (necesita sus prog_id)
-	sudo mkdir -p /sys/fs/bpf/sentinel
 	sudo bpftool prog loadall guardian_gamma.o /sys/fs/bpf/sentinel/gamma \
-		autoattach pinmaps /sys/fs/bpf/sentinel
+		autoattach pinmaps /sys/fs/bpf
 
 unload-gamma:
 	sudo rm -rf /sys/fs/bpf/sentinel/gamma
