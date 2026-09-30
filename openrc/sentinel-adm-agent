@@ -1,0 +1,19 @@
+#!/sbin/openrc-run
+
+name="sentinel-adm-agent"
+description="Sentinel ADM mesh agent"
+command="/usr/local/bin/adm_agent"
+command_user="jnovoas"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/var/log/sentinel/adm.log"
+error_log="/var/log/sentinel/adm.err"
+
+start_pre() {
+    checkpath --directory --owner root:root --mode 0755 /var/log/sentinel
+}
+
+depend() {
+    need net
+    after sentinel-cortex
+}

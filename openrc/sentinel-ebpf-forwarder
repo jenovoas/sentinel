@@ -1,0 +1,20 @@
+#!/sbin/openrc-run
+
+name="sentinel-ebpf-forwarder"
+description="Sentinel eBPF trace forwarder"
+command="/usr/sbin/bpftool"
+command_args="prog tracelog"
+command_user="root"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/var/log/sentinel/ebpf.log"
+error_log="/var/log/sentinel/ebpf.err"
+
+start_pre() {
+    checkpath --directory --owner root:root --mode 0755 /var/log/sentinel
+}
+
+depend() {
+    need net
+    after sentinel-cortex
+}

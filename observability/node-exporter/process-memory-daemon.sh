@@ -2,7 +2,7 @@
 # Ejecutar script de métricas de procesos cada 60 segundos
 # Asumir que /var/lib/node_exporter/textfile_collector está montado o disponible en el host
 
-SCRIPT="/home/jnovoas/sentinel/observability/node-exporter/process-memory.sh"
+SCRIPT="/opt/sentinel/observability/node-exporter/process-memory.sh"
 OUTPUT_DIR="/var/lib/node_exporter/textfile_collector"
 
 mkdir -p "$OUTPUT_DIR"

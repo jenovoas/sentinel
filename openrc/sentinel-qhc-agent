@@ -1,0 +1,19 @@
+#!/sbin/openrc-run
+
+name="sentinel-qhc-agent"
+description="Sentinel QHC phase harmonic driver"
+command="/usr/local/bin/qhc_agent"
+command_user="jnovoas"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/var/log/sentinel/qhc.log"
+error_log="/var/log/sentinel/qhc.err"
+
+start_pre() {
+    checkpath --directory --owner root:root --mode 0755 /var/log/sentinel
+}
+
+depend() {
+    need net
+    need sentinel-cortex
+}

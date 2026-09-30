@@ -17,6 +17,8 @@ services:
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro,z
     networks:
       - sentinel_internal
+    ports:
+      - "127.0.0.1:5432:5432"
     healthcheck:
       test:
         [
@@ -37,6 +39,8 @@ services:
       - redis_data:/data
     networks:
       - sentinel_internal
+    ports:
+      - "127.0.0.1:6379:6379"
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
     deploy:
       resources:
@@ -44,42 +48,8 @@ services:
           memory: 256M
     restart: unless-stopped
 
-  # ── CORTEX NATIVO (Axum/Rust) ──────────────────────────────────────────────────
-
-  cortex:
-    build:
-      context: ./sentinel-cortex
-      dockerfile: Dockerfile
-    container_name: sentinel-cortex
-    shm_size: 512mb
-    privileged: true
-    cap_add:
-      - SYS_ADMIN
-      - BPF
-      - PERFMON
-      - NET_ADMIN
-    environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-sentinel_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-sentinel_db}
-      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
-      RUST_LOG: info
-      SECRET_KEY: ${SECRET_KEY}
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - sentinel_internal
-    ports:
-      - "127.0.0.1:8000:8000"
-    volumes:
-      - /sys/fs/bpf:/sys/fs/bpf:rw
-
-    # Nginx del host termina TLS y publica este puerto local.
-
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-    restart: unless-stopped
+  # Cortex runs as the native Alpine/OpenRC daemon. The container is intentionally omitted
+  # to avoid binding a second process to :8000 and to preserve direct eBPF/SHM access.
 
   frontend:
     build:

@@ -10,7 +10,7 @@ fi
 LOG_FILE="/var/log/audit/audit.log"
 if [[ ! -f "$LOG_FILE" ]]; then
   echo "[ERROR] No existe $LOG_FILE. ¿auditd está instalado y corriendo?"
-  echo "Sugerencia: sudo systemctl status auditd"
+  echo "Sugerencia: rc-service auditd status"
   exit 1
 fi
 
@@ -18,8 +18,8 @@ tail -F "$LOG_FILE" | grep -E "(exec-watchdog|file-watchdog|ptrace-watchdog)" | 
   echo "🚨 ALERTA: $(date): $line"
   if echo "$line" | grep -q "type=SYSCALL.*syscall=execve.*uid=[1-9]"; then
     echo "💥 EXPLOIT DETECTADO! Reiniciando auditd..."
-    if command -v systemctl >/dev/null 2>&1; then
-      sudo systemctl restart auditd || echo "[WARN] No se pudo reiniciar auditd"
+    if command -v rc-service >/dev/null 2>&1; then
+      rc-service auditd restart || echo "[WARN] No se pudo reiniciar auditd"
     fi
   fi
 done
