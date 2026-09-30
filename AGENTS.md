@@ -1,11 +1,12 @@
 # ARQUITECTURA Y DIRECTIVAS PARA AGENTES E IA (REGLAS DE ORO DEL PROYECTO SENTINEL)
 
-> **Despliegue operativo 2026-09-29/30:** `fenix` es, por ahora, el nodo único.
-> Alpine Linux, kernel `6.18.40-0-virt`, IP pública `172.233.24.102`. No hay
-> segundo servidor ni gasto de datacenter hasta terminar Fenix e instalar el
-> otro. La única rama Alpine es `alpine_fenix`. Daemons nativos: OpenRC.
-> Stack auxiliar: Docker Compose. TLS: Nginx del host. No asumir systemd,
-> Kingu ni WireGuard. No sustituir `alpine_fenix` por `fenix_alpine`.
+> **RAMA. Una sola.** `alpine_fenix`.
+> Prohibido crear ramas. Prohibido hacer checkout, commit, merge o push de `main`.
+> Prohibido usar `develop` u otra rama: son systemd, y Alpine no tiene systemd.
+> Un agente no escribe política de ramas. Si un archivo contradice esta frase, manda esta frase.
+>
+> **Nodo, por ahora uno.** `fenix`, Alpine, kernel `6.18.40-0-virt`, IP `172.233.24.102`.
+> Sin segundo servidor y sin datacenter hasta terminar Fenix. OpenRC, Docker Compose, Nginx.
 
 > **LECTURA OBLIGATORIA ANTES DE EMITIR JUICIOS SOBRE EL PROYECTO:**
 > [`sentinel-scientific-foundation.md`](file:///home/jnovoas/.config/Code/User/workspaceStorage/7c63ffead990815376933d02c94d88c9/GitHub.copilot-chat/memory-tool/memories/repo/sentinel-scientific-foundation.md)

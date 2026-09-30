@@ -53,7 +53,7 @@ en Ring-0, y el puente PyO3 hacia `quantum/*.py` es **legacy** (estudio/puente d
 | Capa | Tecnología |
 |------|-----------|
 | Sistema operativo | Alpine Linux, kernel `6.18.40-0-virt` |
-| Producción | Rama `alpine_fenix` |
+| Rama | `alpine_fenix` únicamente. Prohibido crear ramas. Prohibido usar `main`. |
 | Daemons nativos | OpenRC (`/etc/init.d/sentinel-*`) |
 | Contenedores | Docker Compose (`docker-compose.fenix.yml`) |
 | Proxy TLS | Nginx + Let's Encrypt |
