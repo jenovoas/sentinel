@@ -71,7 +71,7 @@ services:
     networks:
       - sentinel_internal
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - "host.docker.internal:172.18.0.1"
     ports:
       - target: 3000
         published: "3100"
@@ -318,3 +318,6 @@ volumes:
 networks:
   sentinel_internal:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
