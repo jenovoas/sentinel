@@ -60,6 +60,8 @@ services:
       - NEXT_PUBLIC_API_URL=https://cortex.pinguinoseguro.cl/api
     networks:
       - sentinel_internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "127.0.0.1:3000:3000"
 
