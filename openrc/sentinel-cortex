@@ -26,5 +26,6 @@ start_pre() {
 depend() {
     need net
     need docker
+    need sentinel-ebpf-load
     after firewall
 }
