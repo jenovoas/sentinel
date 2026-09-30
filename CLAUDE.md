@@ -39,8 +39,8 @@ en Ring-0, y el puente PyO3 hacia `quantum/*.py` es **legacy** (estudio/puente d
                         PAI-60, ResonantMatrix, IsochronousOscillator, QHC, Guardian LSM,
                         Dual-Lane + 32 bins (EXP-XXX, benches, daemons nativos, TUI)
     truthsync-core/     Motor de verificación de claims sobre energía del lattice
-    sentinel-verifier/  Verificador de invariantes runtime (systemd --watch 15 --json)
-    services/neural-guard/  Correlación de eventos + playbooks n8n
+    sentinel-verifier  Verificador de invariantes runtime (OpenRC `--watch 15 --json`)
+    services/neural-guard  Correlación de eventos + playbooks n8n; motor parcial
     ebpf/               Hooks LSM/kernel: guardian_alpha_lsm.c (ACTIVO), guardian_cognitive,
                         float_detector, gamma_watchdog; ai_guardian.c DESACTIVADO
     quantum/            LEGADO: .py con headers LEGACY BRIDGE / MIGRADO — estudio,
@@ -48,18 +48,23 @@ en Ring-0, y el puente PyO3 hacia `quantum/*.py` es **legacy** (estudio/puente d
     observability/      Dashboards Prometheus + Grafana
     constraints/        YATRA_SPEC.md — el contrato aritmético inmutable
 
-## Stack Tecnológico (SERVIDOR FENIX — Solo CPU)
+## Stack Tecnológico (FENIX — Alpine Linux, nodo único, solo CPU)
 
 | Capa | Tecnología |
 |------|-----------|
-| Tipos base | Rust: SPA `[i64;5]` escala 60⁴=12,960,000 (me-60os-core); S60 `i64` (sentinel-cortex) |
-| Refuerzo kernel | eBPF / hooks LSM (guardian_alpha_lsm ACTIVO; ai_guardian DESACTIVADO) |
-| Puente Python | PyO3 — LEGADO (runtime 100% Rust) |
-| IPC | Memoria compartida /dev/shm (6× más rápida que IPC serializado) |
-| Observabilidad | Prometheus + Grafana |
-| Contenedores | Podman (rootless) |
-| Inferencia IA | Ollama solo‑CPU (modelo phi3:mini) |
+| Sistema operativo | Alpine Linux, kernel `6.18.40-0-virt` |
+| Producción | Rama `alpine_fenix` |
+| Daemons nativos | OpenRC (`/etc/init.d/sentinel-*`) |
+| Contenedores | Docker Compose (`docker-compose.fenix.yml`) |
+| Proxy TLS | Nginx + Let's Encrypt |
+| Tipos base | Rust: SPA `[i64;5]` escala 60⁴=12,960,000; S60 `i64` |
+| Refuerzo kernel | eBPF / hooks LSM + XDP/TC |
+| IPC | Memoria compartida POSIX en `/dev/shm` |
+| Observabilidad | Prometheus + Grafana + Loki + Promtail |
 
+El workspace incluye `soma_orchestrator` y `soma_worker` como WIP; no forman
+parte del arranque operativo. `neural-guard` se ejecuta en Compose con el motor
+de correlación todavía parcial.
 ## El Candado YATRA — Regla No Negociable
 
 **NUNCA usar f32, f64, ni ningún tipo de punto flotante en lógica base‑60.**
@@ -121,7 +126,7 @@ en sentinel‑cortex/src/math/. Si aún no existe la que necesitas, abre un issu
 ## Restricciones Clave (actualizado)
 
 - Prohibidos floats en lógica S60 (Candado YATRA)
-- Prohibidas nuevas VMs / instancias cloud — todo corre como contenedores Podman rootless en el único nodo FENIX
+* Producción operativa: un solo nodo `fenix` con Alpine/OpenRC/Docker Compose; no añadir VMs, nodos ni asumir la topología histórica Fenix/Kingu.
 - Experimentos con numeración secuencial; EXP‑023/024/025 restaurados 2026‑07‑30
 - `internal/` está en .gitignore — el trabajo exploratorio vive ahí
 - Todo documento nuevo o actualizado debe agregarse a la cola de traducción (ver `ENGLISH_MD_LIST.md`)

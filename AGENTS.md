@@ -1,10 +1,10 @@
 # ARQUITECTURA Y DIRECTIVAS PARA AGENTES E IA (REGLAS DE ORO DEL PROYECTO SENTINEL)
 
-> **Infraestructura compartida 2026-08-26:** `fenix` se usa para desarrollo y
-> compilación, además de `dns1.pinguinoseguro.cl`; `kingu` para producción
-> contenerizada, Traefik y `dns2.pinguinoseguro.cl`. Este aviso no sustituye la
-> verificación del nodo/runtimes activos. Referencia:
-> `/home/jnovoas/proyectos/sysdocs/02-topologia-y-metodologia-transicion-2026-08-26.md`.
+> **Despliegue operativo 2026-09-30:** `fenix` es el nodo único de Sentinel,
+> Alpine Linux `6.18.40-0-virt`, IP pública `172.233.24.102`. La rama de
+> producción es `alpine_fenix`; los daemons nativos usan OpenRC, Docker Compose
+> aloja el stack auxiliar y Nginx termina TLS. No asumir systemd, Kingu ni
+> Podman para este despliegue.
 
 > **LECTURA OBLIGATORIA ANTES DE EMITIR JUICIOS SOBRE EL PROYECTO:**
 > [`sentinel-scientific-foundation.md`](file:///home/jnovoas/.config/Code/User/workspaceStorage/7c63ffead990815376933d02c94d88c9/GitHub.copilot-chat/memory-tool/memories/repo/sentinel-scientific-foundation.md)
