@@ -2,12 +2,15 @@
 
 name="sentinel-ebpf-load"
 description="Sentinel eBPF guardians, XDP, TC and Gamma loader"
-command="/opt/sentinel/ebpf/load.sh"
-command_user="root"
-oneshot="yes"
+start() {
+    ebegin "Loading Sentinel eBPF guardians"
+    /opt/sentinel/ebpf/load.sh
+    eend $?
+}
 
-# The loader is a finite boot action; Gamma watchdog continues under load.sh.
-command_background="no"
+stop() {
+    return 0
+}
 
 start_pre() {
     checkpath --directory --owner root:root --mode 0755 /var/log/sentinel /var/run/sentinel
