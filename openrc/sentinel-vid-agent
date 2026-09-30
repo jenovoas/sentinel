@@ -11,6 +11,8 @@ error_log="/var/log/sentinel/vid.err"
 
 start_pre() {
     checkpath --directory --owner root:root --mode 0755 /var/log/sentinel
+    checkpath --file --owner jnovoas:jnovoas --mode 0640 "$output_log"
+    checkpath --file --owner jnovoas:jnovoas --mode 0640 "$error_log"
 }
 
 depend() {

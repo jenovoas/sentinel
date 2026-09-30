@@ -55,6 +55,11 @@ if [ -f guardian_gamma.o ]; then
     sudo mkdir -p /sys/fs/bpf/sentinel
     if sudo bpftool prog loadall guardian_gamma.o /sys/fs/bpf/sentinel/gamma \
          autoattach pinmaps /sys/fs/bpf 2>/dev/null; then
+        if [ ! -e /sys/fs/bpf/sentinel/events ]; then
+            events_id="$(sudo bpftool map show pinned /sys/fs/bpf/events \
+                | awk 'NR == 1 { sub(/:/, "", $1); print $1 }')"
+            sudo bpftool map pin id "$events_id" /sys/fs/bpf/sentinel/events
+        fi
         ok "guardian_gamma cargado (kprobes activos)"
     else
         err "fallo al cargar guardian_gamma"
