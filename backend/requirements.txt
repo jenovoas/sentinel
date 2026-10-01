@@ -44,7 +44,7 @@ redis==8.1.0
 # AUTHENTICATION & SECURITY
 # ============================================================================
 # JWT token generation and validation
-PyJWT==2.15.0
+PyJWT==2.15.1
 # Password hashing with bcrypt
 bcrypt==5.0.0
 # Password utilities
