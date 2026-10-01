@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "@remotion/cli": "^4.0.515",
-    "@remotion/player": "^4.0.515",
-    "remotion": "^4.0.515"
+    "@remotion/cli": "^4.0.532",
+    "@remotion/player": "^4.0.532",
+    "remotion": "^4.0.532"
   },
   "scripts": {
     "doctor": "npx react-doctor@latest"
