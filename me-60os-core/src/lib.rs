@@ -26,6 +26,7 @@ pub mod time_crystal; // Wrapper // KV-store cognitivo: SHM POSIX nativo + inyec
 
 // SOMA Backend Modules
 pub mod soma;
+pub mod soma_runtime;
 
 // Optional Python Modules (Included for logic, but only exported as classes if verified)
 pub mod resonant_matrix;

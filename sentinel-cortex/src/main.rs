@@ -890,32 +890,6 @@ pub(crate) async fn truth_claim_handler(
         payload.engine
     );
 
-    let payload_lower = payload.claim_payload.to_lowercase();
-    let is_aiopsdoom_attack = payload_lower.contains("drop database")
-        || payload_lower.contains("rm -rf")
-        || payload_lower.contains("shutdown")
-        || payload_lower.contains("systemctl stop");
-
-    if is_aiopsdoom_attack {
-        tracing::warn!(
-            "AIOpsShield INTERCEPCION EN VIVO: Ataque AIOpsDoom detectado en claim_payload!"
-        );
-
-        let wal_entry = format!(
-            "{{\"ts\":\"{}\",\"lane\":\"security\",\"event\":\"AIOPSDOOM_INTERCEPTION\",\"engine\":\"{}\",\"payload\":\"{}\"}}\n",
-            chrono::Utc::now().to_rfc3339(),
-            payload.engine,
-            payload.claim_payload.replace('"', "\\\"")
-        );
-        write_security_wal(&wal_entry);
-
-        return Json(TruthClaimResponse {
-            claim_valid: false,
-            sentinel_score: 0.0,
-            truthsync_cache_hit: false,
-            ring0_intercepts: 1,
-        });
-    }
 
     let lat = state.lattice.lock().unwrap();
     let total_energy = lat.total_energy_raw();

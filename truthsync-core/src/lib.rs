@@ -116,6 +116,10 @@ impl TruthSyncEngine {
             "mock_override",
             "simulación no real",
             "desbloqueo no autorizado",
+            "drop database",
+            "rm -rf",
+            "shutdown",
+            "systemctl stop",
         ];
         let ac = AhoCorasick::builder()
             .match_kind(MatchKind::LeftmostFirst)
@@ -137,9 +141,11 @@ impl TruthSyncEngine {
         let start = Instant::now();
         let claims = self.extractor.extract(text);
 
-        // Check for disinformation patterns with Aho-Corasick (LeftmostFirst)
+        // El patrón se busca en minúsculas. El digest sigue sobre el texto original,
+        // ligado a la energía del lattice.
+        let scan = text.to_lowercase();
         let mut malic_count = 0i64;
-        for _ in self.disinformation_patterns.find_iter(text) {
+        for _ in self.disinformation_patterns.find_iter(&scan) {
             malic_count += 1;
         }
 
@@ -282,6 +288,23 @@ mod tests {
             malicious.overall_trust_score,
             clean.overall_trust_score
         );
+    }
+
+    #[test]
+    fn test_live_attack_strings_apply_spa_penalty() {
+        let mut engine = TruthSyncEngine::new();
+        let stem = "El kernel fue actualizado.";
+        let clean = engine.verify_text(stem, 42);
+        for extra in ["drop database", "rm -rf", "shutdown", "systemctl stop"] {
+            let hit_text = format!("{stem} {extra}");
+            let hit = engine.verify_text(&hit_text, 42);
+            assert!(
+                hit.overall_trust_score < clean.overall_trust_score,
+                "{extra}: hit={} clean={}",
+                hit.overall_trust_score.to_raw(),
+                clean.overall_trust_score.to_raw()
+            );
+        }
     }
 
     #[test]
