@@ -1,9 +1,8 @@
 # ARQUITECTURA Y DIRECTIVAS PARA AGENTES E IA (REGLAS DE ORO DEL PROYECTO SENTINEL)
 
-> **RAMA. Una sola.** `alpine_fenix`.
-> Prohibido crear ramas. Prohibido hacer checkout, commit, merge o push de `main`.
-> Prohibido usar `develop` u otra rama: son systemd, y Alpine no tiene systemd.
-> Un agente no escribe política de ramas. Si un archivo contradice esta frase, manda esta frase.
+> **RAMAS POR ENTORNO.** `main` corresponde al entorno systemd. `alpine_fenix` corresponde al entorno Alpine/OpenRC. Son ramas independientes y no se deben mezclar.
+> Los cambios de systemd se aplican únicamente en `main`; los cambios de Alpine se aplican únicamente en `alpine_fenix`. Se permite hacer checkout, commit y push en la rama del entorno correspondiente.
+> Prohibido hacer merge entre `main` y `alpine_fenix`, copiar configuraciones de una plataforma a la otra o usar `develop` u otra rama como sustituto de estos entornos.
 >
 > **Nodo, por ahora uno.** `fenix`, Alpine, kernel `6.18.40-0-virt`, IP `172.233.24.102`.
 > Sin segundo servidor y sin datacenter hasta terminar Fenix. OpenRC, Docker Compose, Nginx.
