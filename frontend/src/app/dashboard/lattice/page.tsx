@@ -25,7 +25,7 @@ export default function LatticeDashboardPage() {
     isLoading,
     isConnected,
     lastUpdated,
-    activeCyclePhase,
+    error,
     refetch,
   } = useLatticeHologram({
     pollingIntervalMs: pollingRate,
@@ -33,10 +33,12 @@ export default function LatticeDashboardPage() {
     maxNodes: 91,
   });
 
-  const nodes = data?.nodes || [];
-  const totalEnergy = data?.total_energy || 0;
-  const coherenceRaw = data?.coherence_raw || 0;
-  const coherenceNorm = (coherenceRaw / 12960000).toFixed(4);
+  const nodes = data?.nodes ?? [];
+  const totalEnergy = data?.total_energy ?? null;
+  const coherenceRaw = data?.coherence_raw ?? null;
+  const nodeCount = data?.node_count ?? null;
+  const centerPhaseRaw = nodes.find((node) => node.index === 0)?.phase_raw ?? null;
+  const coherenceNorm = coherenceRaw === null ? "N/D" : (coherenceRaw / 12960000).toFixed(4);
 
   return (
     <div className="min-h-screen bg-[#06090e] text-white p-6 md:p-8 space-y-6">
@@ -52,7 +54,7 @@ export default function LatticeDashboardPage() {
             </h1>
           </div>
           <p className="text-gray-400 text-sm mt-1">
-            Visualizador de Fase y Amplitud de Cristales de Tiempo · Shm Zero-Copy · Plimpton 322
+            Snapshot de amplitud y fase del retículo mantenido por Cortex
           </p>
         </div>
 
@@ -105,7 +107,9 @@ export default function LatticeDashboardPage() {
           <div className="text-2xl font-mono font-black text-cyan-300 mt-2">
             {coherenceNorm}
           </div>
-          <p className="text-[11px] text-gray-500 mt-1">Raw: {coherenceRaw.toLocaleString()} u</p>
+          <p className="text-[11px] text-gray-500 mt-1">
+            Raw: {coherenceRaw === null ? "N/D" : `${coherenceRaw.toLocaleString()} u`}
+          </p>
         </div>
 
         <div className="bg-[#0b1017]/80 border border-white/10 rounded-3xl p-5 backdrop-blur-md">
@@ -114,9 +118,11 @@ export default function LatticeDashboardPage() {
             <Zap className="w-4 h-4 text-amber-400" />
           </div>
           <div className="text-2xl font-mono font-black text-amber-300 mt-2">
-            {(totalEnergy / 1000000).toFixed(2)}M
+            {totalEnergy === null ? "N/D" : `${(totalEnergy / 1000000).toFixed(2)}M`}
           </div>
-          <p className="text-[11px] text-gray-500 mt-1">Total SPA: {totalEnergy.toLocaleString()}</p>
+          <p className="text-[11px] text-gray-500 mt-1">
+            Total SPA: {totalEnergy === null ? "N/D" : totalEnergy.toLocaleString()}
+          </p>
         </div>
 
         <div className="bg-[#0b1017]/80 border border-white/10 rounded-3xl p-5 backdrop-blur-md">
@@ -125,31 +131,44 @@ export default function LatticeDashboardPage() {
             <Layers className="w-4 h-4 text-emerald-400" />
           </div>
           <div className="text-2xl font-mono font-black text-emerald-300 mt-2">
-            {nodes.length} Nodos
+            {nodeCount === null ? "N/D" : `${nodeCount.toLocaleString()} Nodos`}
           </div>
-          <p className="text-[11px] text-gray-500 mt-1">Hex Ring Topología 60⁴</p>
+          <p className="text-[11px] text-gray-500 mt-1">
+            {nodeCount === null ? "Conteo no disponible" : `Visualizando ${nodes.length.toLocaleString()} nodos`}
+          </p>
         </div>
 
         <div className="bg-[#0b1017]/80 border border-white/10 rounded-3xl p-5 backdrop-blur-md">
           <div className="flex items-center justify-between text-gray-400 text-xs font-mono">
-            <span>VENTANA DE FASE 17s</span>
+            <span>FASE RAW · NODO CENTRAL</span>
             <Activity className="w-4 h-4 text-purple-400" />
           </div>
           <div className="text-2xl font-mono font-black text-purple-300 mt-2">
-            {(activeCyclePhase * 17).toFixed(1)}s / 17s
+            {centerPhaseRaw === null ? "N/D" : centerPhaseRaw.toLocaleString()}
           </div>
-          <p className="text-[11px] text-gray-500 mt-1">Ciclo armónico maestro</p>
+          <p className="text-[11px] text-gray-500 mt-1">Lectura del snapshot de Cortex</p>
         </div>
       </div>
+
+      {error && (
+        <div role="status" className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+          {data
+            ? `Cortex no responde; se conserva la última lectura de ${lastUpdated?.toLocaleTimeString() ?? "hora no disponible"}.`
+            : isLoading
+              ? "Conectando con Cortex…"
+              : "Datos del retículo no disponibles."}
+          <span className="ml-2 text-amber-100/70">{error}</span>
+        </div>
+      )}
 
       {/* Main Visualizer Area + Inspector Panel */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-3 h-[620px]">
           <HexagonalLatticeViewer
             nodes={nodes}
+            totalNodeCount={nodeCount}
             totalEnergy={totalEnergy}
             coherenceRaw={coherenceRaw}
-            activeCyclePhase={activeCyclePhase}
             isConnected={isConnected}
             onSelectNode={setSelectedNode}
             selectedNodeIndex={selectedNode?.index}

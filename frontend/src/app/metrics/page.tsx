@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,8 +8,57 @@ import Link from "next/link";
 
 type MetricTab = "overview" | "host" | "database" | "network" | "ai";
 
+type MetricSample = {
+    sampled_at: string;
+    cpu_percent: number | null;
+    memory_percent: number | null;
+    memory_used_mb: number | null;
+    gpu_percent: number | null;
+    network_bytes_sent: number | null;
+    network_bytes_recv: number | null;
+    db_connections_active: number | null;
+    db_locks: number | null;
+};
+
+type MetricsResponse = {
+    available: boolean;
+    persisted: boolean;
+    sample_count: number;
+    retention_capacity: number;
+    samples: MetricSample[];
+};
+
 export default function MetricsPage() {
     const [activeTab, setActiveTab] = useState<MetricTab>("overview");
+    const [metrics, setMetrics] = useState<MetricsResponse | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        let active = true;
+        const loadMetrics = async () => {
+            try {
+                const response = await fetch("/api/v1/analytics/metrics/recent?hours=24&limit=200", { cache: "no-store" });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const result = (await response.json()) as MetricsResponse;
+                if (!active) return;
+                setMetrics(result);
+                setError(null);
+            } catch (err) {
+                if (!active) return;
+                setError(err instanceof Error ? err.message : "No se pudieron cargar las métricas");
+            } finally {
+                if (active) setLoading(false);
+            }
+        };
+
+        void loadMetrics();
+        const intervalId = window.setInterval(() => void loadMetrics(), 15_000);
+        return () => {
+            active = false;
+            window.clearInterval(intervalId);
+        };
+    }, []);
 
     const tabs: { id: MetricTab; label: string; icon: string }[] = [
         { id: "overview", label: "Overview", icon: "📊" },
@@ -34,6 +83,32 @@ export default function MetricsPage() {
         }
     };
 
+    const latestSample = metrics?.samples.length ? metrics.samples[metrics.samples.length - 1] : null;
+    const metricRows: { label: string; value: number | null; unit: string }[] = (() => {
+        switch (activeTab) {
+            case "overview":
+            case "host":
+                return [
+                    { label: "CPU", value: latestSample?.cpu_percent ?? null, unit: "%" },
+                    { label: "Memoria", value: latestSample?.memory_percent ?? null, unit: "%" },
+                    { label: "Memoria usada", value: latestSample?.memory_used_mb ?? null, unit: "MB" },
+                    { label: "GPU", value: latestSample?.gpu_percent ?? null, unit: "%" },
+                ];
+            case "database":
+                return [
+                    { label: "Conexiones activas", value: latestSample?.db_connections_active ?? null, unit: "" },
+                    { label: "Locks", value: latestSample?.db_locks ?? null, unit: "" },
+                ];
+            case "network":
+                return [
+                    { label: "Bytes enviados desde muestra anterior", value: latestSample?.network_bytes_sent ?? null, unit: "B" },
+                    { label: "Bytes recibidos desde muestra anterior", value: latestSample?.network_bytes_recv ?? null, unit: "B" },
+                ];
+            case "ai":
+                return [{ label: "GPU", value: latestSample?.gpu_percent ?? null, unit: "%" }];
+        }
+    })();
+
     return (
         <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-gray-100">
             <div
@@ -51,7 +126,7 @@ export default function MetricsPage() {
                                 Technical Metrics
                             </h1>
                             <p className="text-gray-300 mt-2 max-w-2xl">
-                                Detailed performance metrics powered by Grafana
+                                Muestras reales recolectadas por Cortex; las métricas no expuestas se indican como N/D.
                             </p>
                         </div>
                         <Link href="/dashboard">
@@ -65,18 +140,10 @@ export default function MetricsPage() {
                     <div className="flex items-start gap-3">
                         <span className="text-2xl">ℹ️</span>
                         <div>
-                            <p className="text-cyan-400 font-semibold mb-1">Embedded Grafana Dashboards</p>
+                            <p className="text-cyan-400 font-semibold mb-1">Fuente: Cortex</p>
                             <p className="text-sm text-gray-300">
-                                These dashboards are embedded from your Grafana instance running on port 3001.
-                                For full functionality and customization, visit{" "}
-                                <a
-                                    href="http://localhost:3001"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-cyan-400 hover:text-cyan-300 underline"
-                                >
-                                    Grafana directly
-                                </a>.
+                                Esta vista consulta el historial en memoria de Cortex cada 15 segundos. El historial no es persistente;
+                                GPU, base de datos y cualquier fuente sin muestra se muestran como N/D.
                             </p>
                         </div>
                     </div>
@@ -107,93 +174,46 @@ export default function MetricsPage() {
                 {/* Dashboard Card */}
                 <Card className="bg-white/5 backdrop-blur-xl border-white/10">
                     <CardHeader>
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between gap-4">
                             <div>
                                 <CardTitle className="flex items-center gap-2">
-                                    <span className="text-cyan-400">
-                                        {tabs.find((t) => t.id === activeTab)?.icon}
-                                    </span>
-                                    {tabs.find((t) => t.id === activeTab)?.label}
+                                    <span className="text-cyan-400">{tabs.find((tab) => tab.id === activeTab)?.icon}</span>
+                                    {tabs.find((tab) => tab.id === activeTab)?.label}
                                 </CardTitle>
                                 <CardDescription>{getTabDescription(activeTab)}</CardDescription>
                             </div>
                             <div className="flex gap-2">
-                                <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
-                                    Live
+                                <Badge variant="outline" className={error
+                                    ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                                    : "bg-cyan-500/10 text-cyan-400 border-cyan-500/20"}>
+                                    {loading ? "Cargando" : error ? "Cortex no disponible" : metrics?.available ? "Muestras disponibles" : "Sin muestras"}
                                 </Badge>
-                                <Badge variant="outline" className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20">
-                                    5s refresh
+                                <Badge variant="outline" className="bg-white/5 text-gray-400 border-white/10">
+                                    Actualización: 15 s
                                 </Badge>
                             </div>
                         </div>
                     </CardHeader>
                     <CardContent>
-                        {/* Temporary: Direct links until dashboards are created */}
-                        <div className="relative w-full bg-slate-900/50 rounded-lg overflow-hidden border border-white/10 p-12">
-                            <div className="text-center space-y-6">
-                                <div className="text-6xl">📊</div>
-                                <div>
-                                    <h3 className="text-2xl font-semibold text-white mb-2">
-                                        Grafana Dashboard: {tabs.find((t) => t.id === activeTab)?.label}
-                                    </h3>
-                                    <p className="text-gray-400 mb-6">
-                                        {getTabDescription(activeTab)}
-                                    </p>
-                                </div>
-
-                                <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 max-w-2xl mx-auto">
-                                    <p className="text-yellow-400 font-semibold mb-2">⚠️ Dashboard Not Yet Created</p>
-                                    <p className="text-sm text-gray-300">
-                                        This dashboard needs to be created in Grafana first.
-                                        Click below to open Grafana and create the <strong>{activeTab}</strong> dashboard.
-                                    </p>
-                                </div>
-
-                                <div className="flex gap-4 justify-center">
-                                    <a
-                                        href="http://localhost:3001"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="px-6 py-3 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-lg hover:bg-cyan-500/30 transition-all font-medium"
-                                    >
-                                        Open Grafana →
-                                    </a>
-                                    <a
-                                        href="http://localhost:9090"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="px-6 py-3 bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-lg hover:bg-orange-500/30 transition-all font-medium"
-                                    >
-                                        Open Prometheus →
-                                    </a>
-                                </div>
-
-                                <div className="text-left bg-slate-800/50 rounded-lg p-4 max-w-2xl mx-auto">
-                                    <p className="text-sm text-gray-400 mb-2 font-semibold">Quick Setup:</p>
-                                    <ol className="text-sm text-gray-300 space-y-1 list-decimal list-inside">
-                                        <li>Open Grafana (admin / admin)</li>
-                                        <li>Add Prometheus data source (http://prometheus:9090)</li>
-                                        <li>Create new dashboard</li>
-                                        <li>Add panels with Prometheus queries</li>
-                                        <li>Save with ID: <code className="bg-slate-700 px-2 py-0.5 rounded">sentinel-{activeTab}</code></li>
-                                    </ol>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Fallback message */}
-                        <div className="mt-4 text-center">
-                            <p className="text-sm text-gray-400">
-                                Need help creating dashboards?{" "}
-                                <a
-                                    href="https://grafana.com/docs/grafana/latest/dashboards/"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-cyan-400 hover:text-cyan-300 underline"
-                                >
-                                    View Grafana Documentation
-                                </a>
+                        {error && (
+                            <p role="status" className="mb-4 rounded-lg border border-rose-500/20 bg-rose-500/10 p-3 text-sm text-rose-300">
+                                No se pudo actualizar Cortex ({error}).{metrics ? " Se conserva la última respuesta válida." : ""}
                             </p>
+                        )}
+                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                            {metricRows.map((metric) => (
+                                <div key={metric.label} className="rounded-lg border border-white/10 bg-slate-900/50 p-4">
+                                    <p className="text-sm text-gray-400">{metric.label}</p>
+                                    <p className="mt-2 font-mono text-2xl font-semibold text-cyan-300">
+                                        {metric.value === null ? "N/D" : `${metric.value.toLocaleString()} ${metric.unit}`.trim()}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 border-t border-white/10 pt-4 text-sm text-gray-400">
+                            <span>Muestras recibidas: {metrics?.sample_count ?? "N/D"}</span>
+                            <span>Última muestra: {latestSample ? new Date(latestSample.sampled_at).toLocaleString() : "N/D"}</span>
+                            <span>Almacenamiento: {metrics ? (metrics.persisted ? "persistente" : "solo memoria; no persistente") : "N/D"}</span>
                         </div>
                     </CardContent>
                 </Card>
@@ -202,33 +222,30 @@ export default function MetricsPage() {
                 <div className="grid gap-4 md:grid-cols-4 mt-6">
                     <Card className="bg-white/5 backdrop-blur-xl border-white/10">
                         <CardContent className="p-6">
-                            <p className="text-sm text-gray-400 mb-1">Prometheus</p>
-                            <p className="text-2xl font-semibold text-emerald-400">✅ Active</p>
-                            <p className="text-xs text-gray-500 mt-1">Scraping every 15s</p>
+                            <p className="text-sm text-gray-400 mb-1">Muestras en memoria</p>
+                            <p className="text-2xl font-semibold text-cyan-400">{metrics?.sample_count ?? "N/D"}</p>
+                            <p className="text-xs text-gray-500 mt-1">Capacidad máxima: {metrics?.retention_capacity?.toLocaleString() ?? "N/D"}</p>
                         </CardContent>
                     </Card>
-
                     <Card className="bg-white/5 backdrop-blur-xl border-white/10">
                         <CardContent className="p-6">
-                            <p className="text-sm text-gray-400 mb-1">Grafana</p>
-                            <p className="text-2xl font-semibold text-emerald-400">✅ Online</p>
-                            <p className="text-xs text-gray-500 mt-1">Port 3001</p>
+                            <p className="text-sm text-gray-400 mb-1">Persistencia</p>
+                            <p className="text-2xl font-semibold text-gray-300">{metrics ? (metrics.persisted ? "Activa" : "No") : "N/D"}</p>
+                            <p className="text-xs text-gray-500 mt-1">Historial volátil de Cortex</p>
                         </CardContent>
                     </Card>
-
                     <Card className="bg-white/5 backdrop-blur-xl border-white/10">
                         <CardContent className="p-6">
-                            <p className="text-sm text-gray-400 mb-1">Loki</p>
-                            <p className="text-2xl font-semibold text-emerald-400">✅ Ready</p>
-                            <p className="text-xs text-gray-500 mt-1">Log aggregation</p>
+                            <p className="text-sm text-gray-400 mb-1">Telemetría de GPU</p>
+                            <p className="text-2xl font-semibold text-gray-400">{latestSample?.gpu_percent == null ? "N/D" : `${latestSample.gpu_percent}%`}</p>
+                            <p className="text-xs text-gray-500 mt-1">No suministrada por Cortex</p>
                         </CardContent>
                     </Card>
-
                     <Card className="bg-white/5 backdrop-blur-xl border-white/10">
                         <CardContent className="p-6">
-                            <p className="text-sm text-gray-400 mb-1">Data Retention</p>
-                            <p className="text-2xl font-semibold text-cyan-400">15d</p>
-                            <p className="text-xs text-gray-500 mt-1">Metrics stored</p>
+                            <p className="text-sm text-gray-400 mb-1">Telemetría de DB</p>
+                            <p className="text-2xl font-semibold text-gray-400">{latestSample?.db_connections_active == null ? "N/D" : latestSample.db_connections_active}</p>
+                            <p className="text-xs text-gray-500 mt-1">Conexiones activas; N/D si no se informa</p>
                         </CardContent>
                     </Card>
                 </div>

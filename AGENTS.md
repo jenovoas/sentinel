@@ -8,6 +8,9 @@
 >
 > **Nodo actual, por ahora uno.** `fenix`, Alpine, kernel `6.18.40-0-virt`, IP `172.233.24.102`.
 > El sistema está en desarrollo activo, **construyéndose con estándar estricto de producción** para preparar el despliegue final. Sin segundo servidor y sin datacenter hasta terminar Fenix. OpenRC, Docker Compose, Nginx.
+>
+> **CABLEADO Y TOPOLOGÍA OBLIGATORIA:** Ver [`docs/ops/CABLEADO_Y_TOPOLOGIA_CANONICA.md`](docs/ops/CABLEADO_Y_TOPOLOGIA_CANONICA.md).
+> Prohibido usar IPs antiguas (10.88.0.1, 172.18.0.1 fija, etc.). La comunicación entre contenedores usa exclusivamente nombres de servicio DNS (postgres, redis, prometheus, loki, n8n); Cortex atiende en 127.0.0.1:8000 detrás de Nginx TLS (*.pinguinoseguro.cl).
 
 > **LECTURA OBLIGATORIA ANTES DE EMITIR JUICIOS SOBRE EL PROYECTO:**
 > Ver [`docs/archive/legacy/base60_mathematics.md`](docs/archive/legacy/base60_mathematics.md) y nota en vault `personalvault/Matemáticas/mathematical_model.md`.

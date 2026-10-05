@@ -3,9 +3,9 @@ import { HologramNode } from "../../lib/types";
 
 interface HexagonalLatticeViewerProps {
   nodes: HologramNode[];
-  totalEnergy: number;
-  coherenceRaw: number;
-  activeCyclePhase: number;
+  totalNodeCount: number | null;
+  totalEnergy: number | null;
+  coherenceRaw: number | null;
   isConnected: boolean;
   onSelectNode?: (node: HologramNode | null) => void;
   selectedNodeIndex?: number | null;
@@ -21,9 +21,9 @@ interface NodeLayout {
 
 export const HexagonalLatticeViewer: React.FC<HexagonalLatticeViewerProps> = ({
   nodes,
+  totalNodeCount,
   totalEnergy,
   coherenceRaw,
-  activeCyclePhase,
   isConnected,
   onSelectNode,
   selectedNodeIndex = null,
@@ -100,8 +100,6 @@ export const HexagonalLatticeViewer: React.FC<HexagonalLatticeViewerProps> = ({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let animFrameId: number;
-
     const render = () => {
       const { width, height } = dimensions;
       ctx.clearRect(0, 0, width, height);
@@ -144,16 +142,14 @@ export const HexagonalLatticeViewer: React.FC<HexagonalLatticeViewerProps> = ({
       }
 
       // Draw each crystal node
-      const time = Date.now() / 1000;
       for (const item of layout) {
         const { node, x, y } = item;
         const normAmp = node.amplitude_u16 / 65535;
         const isSelected = selectedNodeIndex === node.index;
         const isHovered = hoveredNode?.index === node.index;
 
-        const pulseScale = 1 + 0.15 * Math.sin(time * 2 + (node.index * 17) / 10);
         const baseRadius = 6 + normAmp * 8;
-        const nodeRadius = (isSelected || isHovered ? baseRadius * 1.3 : baseRadius) * pulseScale;
+        const nodeRadius = isSelected || isHovered ? baseRadius * 1.3 : baseRadius;
 
         // Outer aura gradient
         const auraGrad = ctx.createRadialGradient(x, y, 1, x, y, nodeRadius * 2.8);
@@ -208,14 +204,9 @@ export const HexagonalLatticeViewer: React.FC<HexagonalLatticeViewerProps> = ({
         }
       }
 
-      animFrameId = requestAnimationFrame(render);
     };
 
     render();
-
-    return () => {
-      cancelAnimationFrame(animFrameId);
-    };
   }, [layout, dimensions, selectedNodeIndex, hoveredNode]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -272,48 +263,24 @@ export const HexagonalLatticeViewer: React.FC<HexagonalLatticeViewerProps> = ({
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 text-xs text-white">
           <div className={`w-2.5 h-2.5 rounded-full ${isConnected ? "bg-emerald-400 animate-pulse" : "bg-amber-400"}`} />
           <span className="font-mono font-bold tracking-wider uppercase">
-            {isConnected ? "Cortex Live SHM" : "Lattice Emulation"}
+            {isConnected ? "Cortex conectado" : "Cortex no disponible"}
           </span>
         </div>
         <div className="px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 text-[11px] text-gray-300 font-mono">
-          <span>Nodos: </span>
-          <span className="text-cyan-400 font-bold">{nodes.length}</span>
+          <span>Nodos visibles: </span>
+          <span className="text-cyan-400 font-bold">
+            {totalNodeCount === null ? "N/D" : `${nodes.length}/${totalNodeCount}`}
+          </span>
           <span className="mx-2">·</span>
           <span>Coherencia: </span>
-          <span className="text-emerald-400 font-bold">{((coherenceRaw / 12960000) * 100).toFixed(1)}%</span>
+          <span className="text-emerald-400 font-bold">
+            {coherenceRaw === null ? "N/D" : `${((coherenceRaw / 12960000) * 100).toFixed(1)}%`}
+          </span>
           <span className="mx-2">·</span>
           <span>Energía: </span>
-          <span className="text-amber-400 font-bold">{totalEnergy.toLocaleString()}</span>
-        </div>
-      </div>
-
-      {/* 17s Breathing Phase Indicator */}
-      <div className="absolute top-4 right-4 pointer-events-none flex items-center gap-3 px-4 py-2 rounded-xl bg-black/60 backdrop-blur-md border border-white/10">
-        <div className="flex flex-col items-end">
-          <span className="text-[10px] uppercase font-mono tracking-widest text-gray-400">Pulso Armónico 17s</span>
-          <span className="text-sm font-mono font-bold text-cyan-300">
-            {(activeCyclePhase * 17).toFixed(1)}s / 17.0s
+          <span className="text-amber-400 font-bold">
+            {totalEnergy === null ? "N/D" : totalEnergy.toLocaleString()}
           </span>
-        </div>
-        <div className="w-8 h-8 relative flex items-center justify-center">
-          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-            <path
-              className="text-gray-800"
-              strokeWidth="3"
-              stroke="currentColor"
-              fill="none"
-              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-            />
-            <path
-              className="text-cyan-400 transition-all duration-100"
-              strokeDasharray={`${activeCyclePhase * 100}, 100`}
-              strokeWidth="3"
-              strokeLinecap="round"
-              stroke="currentColor"
-              fill="none"
-              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-            />
-          </svg>
         </div>
       </div>
 
