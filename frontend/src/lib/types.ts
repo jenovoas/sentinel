@@ -43,6 +43,12 @@ export type AnomalyPoint = {
   metricValue?: number;
 };
 
+export type AnalyticsAnomalyFeed = {
+  available: boolean;
+  scope: "current_snapshot";
+  anomalies: AnomalyPoint[];
+};
+
 export type StorageSummary = {
   available: boolean;
   storage_type: "in_memory";

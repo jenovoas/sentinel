@@ -28,6 +28,7 @@ export const useAnalytics = () => {
     hostNetwork: [],
   } as any);
   const [anomalies, setAnomalies] = useState<AnomalyPoint[]>([]);
+  const [anomaliesAvailable, setAnomaliesAvailable] = useState(false);
   const [storage, setStorage] = useState<StorageSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -96,8 +97,9 @@ export const useAnalytics = () => {
   }, [normalizeNetworkPercent]);
 
   const loadAnomalies = useCallback(async () => {
-    const data = await AnalyticsAPI.getAnomalies(24, 200);
-    setAnomalies(data);
+    const feed = await AnalyticsAPI.getAnomalies(200);
+    setAnomalies(feed.anomalies);
+    setAnomaliesAvailable(feed.available);
   }, []);
 
   const loadStorage = useCallback(async () => {
@@ -138,6 +140,7 @@ export const useAnalytics = () => {
   return {
     history,
     anomalies,
+    anomaliesAvailable,
     storage,
     loading,
     anomaliesByMetric,

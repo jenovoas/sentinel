@@ -235,7 +235,10 @@ pub(crate) fn record_analytics_sample() {
 }
 
 fn analytics_storage_summary(history: &AnalyticsMetricHistory) -> Value {
-    let latest_metric_at = history.samples.back().map(|sample| sample.sampled_at.clone());
+    let latest_metric_at = history
+        .samples
+        .back()
+        .map(|sample| sample.sampled_at.clone());
     json!({
         "available": true,
         "storage_type": "in_memory",
@@ -405,29 +408,16 @@ pub async fn backup_status_handler() -> Json<Value> {
 
 pub async fn failsafe_status_handler(State(state): State<Arc<AppState>>) -> Json<Value> {
     let qhc = state.qhc.lock().clone();
-    let qhc_status = if qhc.connected {
-        "synchronized"
-    } else {
-        "local_fallback"
-    };
     Json(json!({
         "available": true,
-        "status": "operational",
-        "defense_plane": {
-            "ring0_lsm": "active",
-            "truthsync": "active",
-            "security_wal": "active",
-            "qhc_sync": qhc_status,
+        "status": "runtime_available",
+        "qhc_sync": {
+            "connected": qhc.connected,
+            "stale": qhc.stale,
+            "tick": qhc.snapshot.as_ref().map(|snapshot| snapshot.tick),
         },
-        "last_auto_remediation": "Live Ring-0 and WAL intercept active",
-        "active_playbooks": 3,
-        "success_rate_30d": 100,
-        "total_executions": 0,
-        "playbooks": [
-            {"id": "pb-truthclaim-intercept", "name": "TruthClaim Adversarial Intercept", "status": "active"},
-            {"id": "pb-wal-forensic", "name": "Forensic WAL Ingestion", "status": "active"},
-            {"id": "pb-neural-debounce", "name": "Neural Guard Debounce Pipeline", "status": "active"}
-        ],
+        "playbook_metrics_available": false,
+        "execution_history_available": false,
     }))
 }
 
@@ -471,75 +461,48 @@ pub async fn analytics_statistics_handler(
     }))
 }
 
-pub async fn analytics_anomalies_handler(
-    State(state): State<Arc<AppState>>,
-    Query(query): Query<AnalyticsQuery>,
-) -> Json<Value> {
-    let hours = query.hours.unwrap_or(24).clamp(1, 168);
-    let limit = query.limit.unwrap_or(10).min(100);
-
+fn pressure_anomalies(cpu: Option<u64>, memory: Option<u64>, detected_at: &str) -> Vec<Value> {
     let mut anomalies = Vec::new();
+    if let Some(value) = cpu.filter(|value| *value > 85) {
+        anomalies.push(json!({
+            "id": "cpu-pressure",
+            "detected_at": detected_at,
+            "severity": "warning",
+            "title": "Elevada utilización de CPU",
+            "type": "cpu_spike",
+            "description": format!("Uso de CPU detectado en {}%", value),
+            "metric_value": value,
+            "threshold_value": 85
+        }));
+    }
+    if let Some(value) = memory.filter(|value| *value > 85) {
+        anomalies.push(json!({
+            "id": "memory-pressure",
+            "detected_at": detected_at,
+            "severity": "warning",
+            "title": "Presión de memoria RAM",
+            "type": "memory_spike",
+            "description": format!("Uso de RAM detectado en {}%", value),
+            "metric_value": value,
+            "threshold_value": 85
+        }));
+    }
+    anomalies
+}
 
+pub async fn analytics_anomalies_handler(Query(query): Query<AnalyticsQuery>) -> Json<Value> {
+    let limit = query.limit.unwrap_or(10).clamp(1, 100);
     let cpu = sample_cpu_utilization();
-    if let Some(c) = cpu {
-        if c > 85 {
-            anomalies.push(json!({
-                "anomaly_type": "HIGH_CPU_PRESSURE",
-                "severity": "warning",
-                "title": "Elevada utilización de CPU",
-                "description": format!("Uso de CPU detectado en {}%", c),
-                "metric_value": c,
-                "threshold_value": 85
-            }));
-        }
-    }
-
-    let mem = memory_utilization();
-    if let Some(m) = mem {
-        if m > 85 {
-            anomalies.push(json!({
-                "anomaly_type": "HIGH_MEMORY_PRESSURE",
-                "severity": "warning",
-                "title": "Presión de memoria RAM",
-                "description": format!("Uso de RAM detectado en {}%", m),
-                "metric_value": m,
-                "threshold_value": 85
-            }));
-        }
-    }
-
-    let qhc = state.qhc.lock().clone();
-    if !qhc.connected || qhc.stale {
-        anomalies.push(json!({
-            "anomaly_type": "QHC_SYNC_DRIFT",
-            "severity": "critical",
-            "title": "Desfase en pulso armónico QHC",
-            "description": format!("QHC Agent reporta conectado: {}, stale: {}", qhc.connected, qhc.stale),
-            "metric_value": 0,
-            "threshold_value": 1
-        }));
-    }
-
-    let coherence = state.resonance.lock().unwrap().get_coherence_raw();
-    if coherence == 0 {
-        anomalies.push(json!({
-            "anomaly_type": "LATTICE_GROUND_STATE",
-            "severity": "info",
-            "title": "Red cristalina en estado de reposo",
-            "description": "La coherencia del lattice está en nivel base (sin eventos térmicos o biológicos recientes)",
-            "metric_value": 0,
-            "threshold_value": 1
-        }));
-    }
-
-    let total_count = anomalies.len();
+    let memory = memory_utilization();
+    let mut anomalies = pressure_anomalies(cpu, memory, &Utc::now().to_rfc3339());
+    let anomalies_count = anomalies.len();
     anomalies.truncate(limit);
 
     Json(json!({
-        "window_hours": hours,
+        "scope": "current_snapshot",
+        "available": cpu.is_some() || memory.is_some(),
         "limit": limit,
-        "available": true,
-        "anomalies_count": total_count,
+        "anomalies_count": anomalies_count,
         "anomalies": anomalies,
     }))
 }
@@ -643,6 +606,24 @@ mod tests {
         assert_eq!(populated["metrics_count"], 1);
         assert_eq!(populated["latest_metric_at"], "sample-42");
         assert_eq!(populated["retention_capacity"], METRICS_HISTORY_CAPACITY);
+    }
+
+    #[test]
+    fn pressure_anomalies_match_frontend_schema_and_only_include_threshold_breaches() {
+        let anomalies = pressure_anomalies(Some(86), Some(85), "2026-10-05T17:00:00Z");
+        assert_eq!(anomalies.len(), 1);
+        assert_eq!(anomalies[0]["id"], "cpu-pressure");
+        assert_eq!(anomalies[0]["detected_at"], "2026-10-05T17:00:00Z");
+        assert_eq!(anomalies[0]["type"], "cpu_spike");
+        assert_eq!(anomalies[0]["metric_value"], 86);
+        assert_eq!(
+            pressure_anomalies(Some(85), Some(85), "2026-10-05T17:00:00Z").len(),
+            0
+        );
+        assert_eq!(
+            pressure_anomalies(None, None, "2026-10-05T17:00:00Z").len(),
+            0
+        );
     }
 
     #[test]

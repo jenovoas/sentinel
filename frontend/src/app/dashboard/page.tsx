@@ -20,7 +20,7 @@ interface AIInsight {
     message: string;
 }
 
-interface SecurityAlert {
+interface ResourceAlert {
     severity: "low" | "medium" | "high";
     message: string;
     count: number;
@@ -47,7 +47,7 @@ export default function DashboardPage() {
     });
 
     const [aiInsights, setAiInsights] = useState<AIInsight[]>([]);
-    const [securityAlerts, setSecurityAlerts] = useState<SecurityAlert[]>([]);
+    const [resourceAlerts, setResourceAlerts] = useState<ResourceAlert[]>([]);
     const [anomaliesAvailable, setAnomaliesAvailable] = useState(false);
     const [systemLogs, setSystemLogs] = useState<SystemLogsState>({ available: false, logs: [] });
 
@@ -68,7 +68,7 @@ export default function DashboardPage() {
                     if (typeof cpu === "number" && typeof memory === "number") {
                         if (cpu > 95 || memory > 95) {
                             setSystemStatus("critical");
-                        } else if (cpu > 90 || memory > 90) {
+                        } else if (cpu > 85 || memory > 85) {
                             setSystemStatus("warning");
                         } else {
                             setSystemStatus("healthy");
@@ -79,7 +79,7 @@ export default function DashboardPage() {
                 }
 
                 // Fetch anomalies
-                const anomaliesRes = await fetch("/api/v1/analytics/anomalies?hours=24&limit=10");
+                const anomaliesRes = await fetch("/api/v1/analytics/anomalies?limit=10", { cache: "no-store" });
                 const anomaliesData = await anomaliesRes.json();
 
                 const anomalyRecords = anomaliesData?.anomalies;
@@ -87,19 +87,19 @@ export default function DashboardPage() {
                 setAnomaliesAvailable(hasAnomalyData);
 
                 if (hasAnomalyData) {
-                    const unresolved = anomalyRecords.filter((a: any) => !a.is_resolved);
-                    setAiInsights(unresolved.slice(0, 3).map((a: any) => ({
-                        type: a.severity === "critical" ? "warning" : "optimization",
+                    const currentBreaches = anomalyRecords;
+                    setAiInsights(currentBreaches.slice(0, 3).map((a: any) => ({
+                        type: "warning",
                         message: a.title || a.description,
                     })));
-                    setSecurityAlerts(unresolved.slice(0, 5).map((a: any) => ({
+                    setResourceAlerts(currentBreaches.slice(0, 5).map((a: any) => ({
                         severity: a.severity === "critical" ? "high" : a.severity === "warning" ? "medium" : "low",
                         message: a.title,
                         count: 1,
                     })));
                 } else {
                     setAiInsights([]);
-                    setSecurityAlerts([]);
+                    setResourceAlerts([]);
                 }
 
                 try {
@@ -246,13 +246,13 @@ export default function DashboardPage() {
                             <div className="flex items-center justify-between">
                                 <CardTitle className="flex items-center gap-2">
                                     <span className="text-purple-400">💡</span>
-                                    AI Insights
+                                    Presión de recursos
                                 </CardTitle>
                                 <Badge variant="outline" className="bg-purple-500/10 text-purple-400 border-purple-500/20">
                                     {aiInsights.length} new
                                 </Badge>
                             </div>
-                            <CardDescription>Automatic analysis and recommendations</CardDescription>
+                            <CardDescription>Alertas en tiempo actual basadas en umbrales de CPU y RAM</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-3">
@@ -290,33 +290,33 @@ export default function DashboardPage() {
                             <div className="flex items-center justify-between">
                                 <CardTitle className="flex items-center gap-2">
                                     <span className="text-rose-400">🔒</span>
-                                    Security Alerts
+                                    Alertas de recursos
                                 </CardTitle>
                                 <Badge
                                     variant="outline"
                                     className={anomaliesAvailable
-                                        ? securityAlerts.length === 0
+                                        ? resourceAlerts.length === 0
                                             ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                             : "bg-amber-500/10 text-amber-400 border-amber-500/20"
                                         : "bg-gray-500/10 text-gray-400 border-gray-500/20"}
                                 >
                                     {!anomaliesAvailable
                                         ? "Unavailable"
-                                        : securityAlerts.length === 0
+                                        : resourceAlerts.length === 0
                                             ? "No active alerts"
                                             : "Alerts active"}
                                 </Badge>
                             </div>
-                            <CardDescription>Last 24 hours</CardDescription>
+                            <CardDescription>Lectura actual; el runtime no conserva historial de alertas</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-3">
-                                {securityAlerts.length === 0 && (
+                                {resourceAlerts.length === 0 && (
                                     <p className="text-sm text-gray-400">
                                         {anomaliesAvailable ? "No active alerts" : "Live alert data unavailable"}
                                     </p>
                                 )}
-                                {securityAlerts.map((alert, i) => (
+                                {resourceAlerts.map((alert, i) => (
                                     <div
                                         key={i}
                                         className={`rounded-lg p-3 border flex items-center justify-between ${alert.severity === "high"
@@ -343,9 +343,9 @@ export default function DashboardPage() {
                                 ))}
                             </div>
                             <div className="mt-4">
-                                <Link href="/security/watchdog">
+                                <Link href="/analytics">
                                     <Button variant="outline" className="w-full">
-                                        View All Alerts
+                                        Ver métricas activas
                                     </Button>
                                 </Link>
                             </div>

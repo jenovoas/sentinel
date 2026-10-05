@@ -13,23 +13,16 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
-interface Playbook {
-    name: string;
-    display_name: string;
-    status: 'idle' | 'waiting' | 'triggered' | 'success' | 'failed';
-    last_run: string | null;
-    last_outcome: string | null;
-    execution_count: number;
-    success_rate: number;
-}
-
 interface FailSafeStatus {
+    available: boolean;
     status: string;
-    last_auto_remediation: string;
-    active_playbooks: number;
-    success_rate_30d: number;
-    total_executions: number;
-    playbooks: Playbook[];
+    qhc_sync: {
+        connected: boolean;
+        stale: boolean;
+        tick: number | null;
+    };
+    playbook_metrics_available: boolean;
+    execution_history_available: boolean;
 }
 
 export function FailSafeSecurityCard() {
@@ -55,30 +48,6 @@ export function FailSafeSecurityCard() {
         } finally {
             setLoading(false);
         }
-    };
-
-    const getStatusBadge = (playbookStatus: string) => {
-        const colors = {
-            idle: "bg-slate-500/10 text-slate-400 border-slate-500/20",
-            waiting: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-            triggered: "bg-orange-500/10 text-orange-400 border-orange-500/20",
-            success: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-            failed: "bg-rose-500/10 text-rose-400 border-rose-500/20",
-        };
-
-        const labels = {
-            idle: "✓ Idle",
-            waiting: "⏳ Waiting",
-            triggered: "⚡ Triggered",
-            success: "✓ Success",
-            failed: "✗ Failed",
-        };
-
-        return (
-            <Badge variant="outline" className={colors[playbookStatus as keyof typeof colors]}>
-                {labels[playbookStatus as keyof typeof labels]}
-            </Badge>
-        );
     };
 
     if (loading) {
@@ -120,76 +89,41 @@ export function FailSafeSecurityCard() {
                         Fail-Safe Security
                     </CardTitle>
                     <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
-                        {status.status === 'active' ? 'ACTIVE' : 'INACTIVE'}
+                        {status.available ? 'RUNTIME DISPONIBLE' : 'NO DISPONIBLE'}
                     </Badge>
                 </div>
-                <CardDescription>Automated response when primary systems fail</CardDescription>
+                <CardDescription>Estado de sincronización QHC expuesto por Cortex; no hay historial de playbooks.</CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
-                    {/* Summary Stats */}
-                    <div className="grid grid-cols-3 gap-3">
-                        <div className="text-center p-2 rounded bg-slate-800/30">
-                            <p className="text-2xl font-bold text-emerald-400">{status.active_playbooks}</p>
-                            <p className="text-xs text-gray-400">Active Playbooks</p>
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className="text-center p-3 rounded bg-slate-800/30">
+                            <p className="text-lg font-bold text-cyan-400">
+                                {status.qhc_sync.connected && !status.qhc_sync.stale ? "Sincronizado" : "Sin sincronizar"}
+                            </p>
+                            <p className="text-xs text-gray-400">Estado QHC</p>
                         </div>
-                        <div className="text-center p-2 rounded bg-slate-800/30">
-                            <p className="text-2xl font-bold text-cyan-400">{status.success_rate_30d}%</p>
-                            <p className="text-xs text-gray-400">Success Rate</p>
-                        </div>
-                        <div className="text-center p-2 rounded bg-slate-800/30">
-                            <p className="text-2xl font-bold text-purple-400">{status.total_executions}</p>
-                            <p className="text-xs text-gray-400">Total Runs</p>
+                        <div className="text-center p-3 rounded bg-slate-800/30">
+                            <p className="text-lg font-bold text-gray-300">
+                                {status.qhc_sync.tick == null ? "No disponible" : status.qhc_sync.tick}
+                            </p>
+                            <p className="text-xs text-gray-400">Último tick QHC</p>
                         </div>
                     </div>
 
-                    {/* Last Auto-Remediation */}
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-slate-800/50">
-                        <div>
-                            <p className="text-sm text-gray-400">Last Auto-Remediation</p>
-                            <p className="text-lg font-semibold text-white">{status.last_auto_remediation}</p>
-                        </div>
-                        <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                    <div className="rounded-lg bg-slate-800/50 p-3 text-sm text-gray-300">
+                        <p>Conteos de ejecuciones, tasas de éxito e historial de playbooks no están expuestos por el runtime.</p>
                     </div>
 
-                    {/* Top 3 Playbooks */}
-                    <div className="space-y-2">
-                        <p className="text-xs text-gray-400 font-semibold uppercase">Recent Playbooks</p>
-                        {status.playbooks.slice(0, 3).map((playbook) => (
-                            <div
-                                key={playbook.name}
-                                className="flex items-center justify-between p-3 rounded-lg bg-slate-800/30 hover:bg-slate-800/50 transition-colors"
-                            >
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <p className="text-sm font-medium text-white">{playbook.display_name}</p>
-                                        {getStatusBadge(playbook.status)}
-                                    </div>
-                                    <p className="text-xs text-gray-400">
-                                        {playbook.last_run ? `Last run: ${playbook.last_run}` : 'Never executed'}
-                                    </p>
-                                    {playbook.last_outcome && (
-                                        <p className="text-xs text-gray-500 mt-1">{playbook.last_outcome}</p>
-                                    )}
-                                </div>
-                                <div className="text-right ml-4">
-                                    <p className="text-sm font-semibold text-cyan-400">{playbook.execution_count}</p>
-                                    <p className="text-xs text-gray-500">runs</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Actions */}
                     <div className="flex gap-2">
-                        <Link href="/admin/failsafe" className="flex-1">
+                        <Link href="/security/watchdog" className="flex-1">
                             <Button variant="outline" className="w-full">
-                                View All Playbooks
+                                Ver watchdog
                             </Button>
                         </Link>
-                        <Link href="/admin/failsafe/history" className="flex-1">
+                        <Link href="/analytics" className="flex-1">
                             <Button variant="outline" className="w-full">
-                                Execution History
+                                Ver métricas
                             </Button>
                         </Link>
                     </div>

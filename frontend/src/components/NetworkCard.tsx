@@ -12,10 +12,10 @@ import type { ClientNetworkInfo } from "@/hooks/useNetworkInfo";
 import { MiniChart } from "./MiniChart";
 
 export interface NetworkInfo {
-  net_bytes_sent: number;
-  net_bytes_recv: number;
-  net_packets_sent: number;
-  net_packets_recv: number;
+  net_bytes_sent?: number | null;
+  net_bytes_recv?: number | null;
+  net_packets_sent?: number | null;
+  net_packets_recv?: number | null;
   wifi?: {
     ssid: string;
     signal: number;
@@ -29,8 +29,8 @@ interface NetworkCardProps {
   history?: Array<{ timestamp: number; value: number }>;
 }
 
-const formatBytes = (bytes: number): string => {
-  if (!Number.isFinite(bytes)) return "-";
+const formatBytes = (bytes: number | null | undefined): string => {
+  if (bytes == null || !Number.isFinite(bytes)) return "No disponible";
   const units = ["B", "KB", "MB", "GB"];
   const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
   const value = bytes / 1024 ** i;
@@ -49,14 +49,22 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
     );
   }
 
-  const totalBytes = (network?.net_bytes_sent ?? 0) + (network?.net_bytes_recv ?? 0);
-  const totalGB = totalBytes / (1024 * 1024 * 1024);
+  const hasTrafficCounters =
+    typeof network?.net_bytes_sent === "number" &&
+    Number.isFinite(network.net_bytes_sent) &&
+    typeof network?.net_bytes_recv === "number" &&
+    Number.isFinite(network.net_bytes_recv);
+  const totalGB = hasTrafficCounters
+    ? ((network!.net_bytes_sent! + network!.net_bytes_recv!) / (1024 * 1024 * 1024))
+    : null;
 
   // WiFi signal color psychology
   const getWiFiSignalColor = () => {
     if (!effectiveWifi?.connected)
       return { color: "text-gray-500", bg: "bg-gray-500/10", label: "Desconectado" };
-    const signal = (effectiveWifi as any)?.signal ?? (effectiveWifi as any)?.signalStrength ?? 0;
+    const signal = (effectiveWifi as any)?.signal ?? (effectiveWifi as any)?.signalStrength;
+    if (typeof signal !== "number" || !Number.isFinite(signal))
+      return { color: "text-gray-500", bg: "bg-gray-500/10", label: "Señal no disponible" };
     if (signal >= 75) return { color: "text-emerald-400", bg: "bg-emerald-400/10", label: "Excelente" };
     if (signal >= 50) return { color: "text-cyan-400", bg: "bg-cyan-400/10", label: "Bueno" };
     if (signal >= 25) return { color: "text-amber-400", bg: "bg-amber-400/10", label: "Moderado" };
@@ -67,7 +75,8 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
 
   // Render WiFi signal bars
   const renderSignalBars = () => {
-    if (!effectiveWifi?.connected) {
+    const signal = (effectiveWifi as any)?.signal ?? (effectiveWifi as any)?.signalStrength;
+    if (!effectiveWifi?.connected || typeof signal !== "number" || !Number.isFinite(signal)) {
       return (
         <div className="flex items-center gap-1">
           {[1, 2, 3, 4].map((i) => (
@@ -80,8 +89,7 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
       );
     }
 
-    const signal = ((effectiveWifi as any)?.signal ?? (effectiveWifi as any)?.signalStrength ?? 0) as number;
-    const bars = Math.ceil((signal / 100) * 4);
+    const bars = Math.ceil((Math.max(0, Math.min(signal, 100)) / 100) * 4);
     return (
       <div className="flex items-end gap-1">
         {[1, 2, 3, 4].map((i) => (
@@ -110,7 +118,7 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
           <h3 className="text-sm font-semibold text-gray-200 group-hover:text-orange-300 transition-colors">Red</h3>
         </div>
         <div className="text-xs px-2 py-1 rounded-full bg-orange-400/10 text-orange-300">
-          {totalGB.toFixed(1)} GB
+          {totalGB === null ? "N/D" : `${totalGB.toFixed(1)} GB`}
         </div>
       </div>
 
@@ -132,13 +140,13 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
           <div className="bg-white/5 rounded-lg p-2.5 hover:bg-white/10 transition-colors">
             <p className="text-xs text-gray-400 mb-1">📤 Paquetes</p>
             <p className="text-sm font-mono text-orange-300">
-              {(network.net_packets_sent / 1000).toFixed(1)}k
+              {network.net_packets_sent == null ? "N/D" : `${(network.net_packets_sent / 1000).toFixed(1)}k`}
             </p>
           </div>
           <div className="bg-white/5 rounded-lg p-2.5 hover:bg-white/10 transition-colors">
             <p className="text-xs text-gray-400 mb-1">📥 Paquetes</p>
             <p className="text-sm font-mono text-orange-300">
-              {(network.net_packets_recv / 1000).toFixed(1)}k
+              {network.net_packets_recv == null ? "N/D" : `${(network.net_packets_recv / 1000).toFixed(1)}k`}
             </p>
           </div>
         </div>
@@ -153,9 +161,7 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
                 <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z" />
               </svg>
               <span className="text-xs font-medium text-gray-300">
-                {effectiveWifi.connected
-                  ? effectiveWifi.ssid || (effectiveWifi as any)?.frequency ? "Conectado" : "Conectado"
-                  : "Desconectado"}
+                {effectiveWifi.connected ? effectiveWifi.ssid || "Conectado" : "Desconectado"}
               </span>
             </div>
             {renderSignalBars()}
@@ -165,7 +171,9 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
             <div className="flex items-center justify-between text-xs mb-2">
               <span className={`${wifiState.color} font-semibold`}>{wifiState.label}</span>
               <span className="text-gray-400">
-                {((effectiveWifi as any)?.signal ?? (effectiveWifi as any)?.signalStrength ?? 0)}%
+                {(effectiveWifi as any)?.signal ?? (effectiveWifi as any)?.signalStrength ?? "N/D"}{
+                  typeof ((effectiveWifi as any)?.signal ?? (effectiveWifi as any)?.signalStrength) === "number" ? "%" : ""
+                }
               </span>
             </div>
           )}

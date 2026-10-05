@@ -27,7 +27,7 @@ ChartJS.register(
 );
 
 export default function AnalyticsPage() {
-  const { history, anomalies, storage, loading } = useAnalytics();
+  const { history, anomalies, anomaliesAvailable, storage, loading } = useAnalytics();
   const [hostHistory, setHostHistory] = useState<any[]>([]);
   const [systemLogs, setSystemLogs] = useState<any>({ logs: [], summary: null });
 
@@ -189,7 +189,7 @@ export default function AnalyticsPage() {
       .map(selector)
       .filter((value): value is number => typeof value === "number" && Number.isFinite(value));
   const summarize = (values: number[]) => ({
-    current: values.at(-1) ?? null,
+    current: values.length ? values[values.length - 1] : null,
     avg: values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null,
     max: values.length ? Math.max(...values) : null,
   });
@@ -199,7 +199,7 @@ export default function AnalyticsPage() {
     gpu: summarize(metricValues((sample) => sample.gpu_percent)),
     wifi: {
       ...summarize(metricValues((sample) => sample.network?.wifi?.signal)),
-      ssid: hostHistory.at(-1)?.network?.wifi?.ssid || "No disponible",
+      ssid: hostHistory[hostHistory.length - 1]?.network?.wifi?.ssid || "No disponible",
     },
   };
   const formatPercent = (value: number | null) =>
@@ -298,8 +298,10 @@ export default function AnalyticsPage() {
         <section className="mt-8 grid gap-6 md:grid-cols-2">
           <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-6">
             <h3 className="text-xl font-semibold text-white mb-4">Anomalías Detectadas</h3>
-            {anomalies.length === 0 ? (
-              <p className="text-gray-400 text-sm">No se detectaron anomalías en las últimas 24h</p>
+            {!anomaliesAvailable ? (
+              <p className="text-gray-400 text-sm">La fuente de métricas para anomalías no está disponible</p>
+            ) : anomalies.length === 0 ? (
+              <p className="text-gray-400 text-sm">No hay anomalías activas en la lectura actual de CPU/RAM</p>
             ) : (
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {anomalies.slice(0, 5).map((a, i) => (

@@ -9,88 +9,42 @@
 
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAnalytics, useDetailModal } from "@/hooks/useAnalytics";
+import { AnalyticsAPI } from "@/lib/api";
 import { StorageCard } from "@/components/StorageCard";
 import { DetailModal } from "@/components/DetailModal";
 import { NetworkCard } from "@/components/NetworkCard";
 import { useNetworkInfo } from "@/hooks/useNetworkInfo";
 import { MiniChart } from "@/components/MiniChart";
 
-const API_PATH = "/api/v1/dashboard/status";
-
 type DashboardData = {
-  timestamp: string;
-  db_health: { status: "healthy" | "unhealthy" };
-  db_stats: {
-    connections_total: number;
-    connections_active: number;
-    connections_idle: number;
-    db_size_bytes: number;
-    locks: number;
-  };
-  db_activity: Array<{
-    pid: number;
-    user: string;
-    state: string;
-    wait_event: string;
-    duration_seconds: number;
-    query: string;
-  }>;
-  system: {
-    cpu_percent: number;
-    mem_percent: number;
-    mem_used: number;
-    mem_total: number;
-  };
-  gpu: {
-    gpu_percent: number;
-    gpu_memory_percent: number;
-    gpu_memory_used: number;
-    gpu_memory_total: number;
-    gpu_name: string;
-    gpu_temp: number;
-  };
-  network: {
-    net_bytes_sent: number;
-    net_bytes_recv: number;
-    net_packets_sent: number;
-    net_packets_recv: number;
-    wifi?: {
-      ssid: string;
-      signal: number;
-      connected: boolean;
-    };
-  };
-  repo_activity: {
-    recent_commits: Array<{ hash: string; author: string; when: string; message: string }>;
-    working_tree: string[];
-    git_warning?: string;
-  };
-  admin_suggestions: string[];
-  thresholds: {
-    cpu_percent: number;
-    mem_percent: number;
-    connections: number;
-    log_file: string;
-  };
+  sampled_at: string;
+  cpu_percent: number | null;
+  memory_percent: number | null;
+  memory_used_mb: number | null;
+  gpu_percent: number | null;
+  network_bytes_sent: number | null;
+  network_bytes_recv: number | null;
+};
+
+type RuntimeHealth = {
+  available: boolean;
+  status: string;
+  subsystems?: Record<string, string>;
 };
 
 type FetchState = {
   loading: boolean;
-  error?: string;
   data?: DashboardData;
-};
-
-type NotesState = {
-  text: string;
+  runtime?: RuntimeHealth;
 };
 
 // ============ Utility Functions ============
 
-const formatBytes = (bytes: number) => {
-  if (!Number.isFinite(bytes)) return "-";
+const formatBytes = (bytes: number | null | undefined) => {
+  if (bytes == null || !Number.isFinite(bytes)) return "No disponible";
   const units = ["B", "KB", "MB", "GB", "TB"];
   const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
   const value = bytes / 1024 ** i;
@@ -109,14 +63,14 @@ const CircularStat = ({
   onClick,
   history,
 }: {
-  value: number;
+  value: number | null;
   label: string;
   hint?: string;
   color: string;
   onClick?: () => void;
   history?: Array<{ timestamp: number; value: number }>;
 }) => {
-  const safe = Number.isFinite(value) ? Math.max(0, Math.min(value, 100)) : 0;
+  const safe = value !== null && Number.isFinite(value) ? Math.max(0, Math.min(value, 100)) : null;
   return (
     <div
       onClick={onClick}
@@ -125,10 +79,10 @@ const CircularStat = ({
       <div className="flex items-center gap-4">
         <div
           className="relative h-20 w-20 rounded-full grid place-items-center transition-transform duration-300 group-hover:scale-110"
-          style={{ background: `conic-gradient(${color} ${safe}%, rgba(255,255,255,0.08) ${safe}% 100%)` }}
+          style={{ background: safe === null ? "rgba(255,255,255,0.08)" : `conic-gradient(${color} ${safe}%, rgba(255,255,255,0.08) ${safe}% 100%)` }}
         >
           <div className="h-14 w-14 rounded-full bg-slate-950/80 grid place-items-center text-white font-semibold text-lg transition-all duration-300 group-hover:bg-slate-900/90">
-            {safe.toFixed(0)}%
+            {safe === null ? "N/D" : `${safe.toFixed(0)}%`}
           </div>
         </div>
         <div className="flex-1">
@@ -173,16 +127,17 @@ const StatCard = ({
   </div>
 );
 
-const Pill = ({ status }: { status: "healthy" | "unhealthy" }) => {
+const Pill = ({ status }: { status: string }) => {
   const isHealthy = status === "healthy";
+  const label = isHealthy ? "Operativo" : status === "degraded" ? "Degradado" : "No disponible";
   return (
     <span
       className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
-        isHealthy ? "bg-emerald-500/10 text-emerald-200" : "bg-rose-500/10 text-rose-200"
+        isHealthy ? "bg-emerald-500/10 text-emerald-200" : "bg-amber-500/10 text-amber-200"
       }`}
     >
-      <span className={`h-2 w-2 rounded-full ${isHealthy ? "bg-emerald-400" : "bg-rose-400"}`} />
-      {isHealthy ? "Healthy" : "Unhealthy"}
+      <span className={`h-2 w-2 rounded-full ${isHealthy ? "bg-emerald-400" : "bg-amber-400"}`} />
+      {label}
     </span>
   );
 };
@@ -192,8 +147,7 @@ const Pill = ({ status }: { status: "healthy" | "unhealthy" }) => {
 export default function DashboardPage() {
   const router = useRouter();
   const [state, setState] = useState<FetchState>({ loading: true });
-  const [notes, setNotes] = useState<NotesState>({ text: "" });
-  const { anomalies, storage } = useAnalytics();
+  const { anomalies, anomaliesAvailable, storage } = useAnalytics();
   const { modal, open, close } = useDetailModal();
 
   const API_REFRESH_MS = 15000;
@@ -201,15 +155,29 @@ export default function DashboardPage() {
   const [hostSample, setHostSample] = useState<any>(null);
 
   const load = async () => {
-    try {
-      setState((s) => ({ ...s, loading: true, error: undefined }));
-      const res = await fetch(API_PATH, { cache: "no-store" });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = (await res.json()) as DashboardData;
-      setState({ loading: false, data: json });
-    } catch (err) {
-      setState({ loading: false, error: err instanceof Error ? err.message : "Error" });
-    }
+    setState((current) => ({ ...current, loading: true }));
+    const [samples, runtime] = await Promise.all([
+      AnalyticsAPI.getRecentMetrics(1),
+      fetch("/api/v1/ai/health", { cache: "no-store" })
+        .then(async (response) => {
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          return (await response.json()) as RuntimeHealth;
+        })
+        .catch((): RuntimeHealth => ({ available: false, status: "unavailable" })),
+    ]);
+    const latest = samples[samples.length - 1];
+    const data: DashboardData | undefined = latest
+      ? {
+          sampled_at: latest.sampled_at,
+          cpu_percent: latest.cpu_percent,
+          memory_percent: latest.memory_percent,
+          memory_used_mb: latest.memory_used_mb,
+          gpu_percent: latest.gpu_percent,
+          network_bytes_sent: latest.network_bytes_sent,
+          network_bytes_recv: latest.network_bytes_recv,
+        }
+      : undefined;
+    setState({ loading: false, data, runtime });
   };
 
   useEffect(() => {
@@ -224,51 +192,26 @@ export default function DashboardPage() {
       try {
         const res = await fetch("/api/host-metrics?limit=60", { cache: "no-store" });
         const json = await res.json();
-        if (json?.ok && json.history) setHostSample(json.history);
-      } catch {}
+        setHostSample(res.ok && json?.ok && Array.isArray(json.history) ? json.history : []);
+      } catch {
+        setHostSample([]);
+      }
     };
     fetchHostHistory();
     const id = setInterval(fetchHostHistory, 60000);
     return () => clearInterval(id);
   }, []);
 
-  useEffect(() => {
-    const saved = window.localStorage.getItem("sentinel-dashboard-notes");
-    if (saved) setNotes({ text: saved });
-  }, []);
-
-  useEffect(() => {
-    window.localStorage.setItem("sentinel-dashboard-notes", notes.text);
-  }, [notes]);
-
-  const { data, loading, error } = state;
-
-  const computeIssues = (data?: DashboardData) => {
-    if (!data) return [] as string[];
-    const issues: string[] = [];
-    if (data.db_health.status !== "healthy")
-      issues.push("DB reporta unhealthy (ver logs y conexión).");
-    if (data.system.cpu_percent > data.thresholds.cpu_percent)
-      issues.push(`CPU > umbral (${data.system.cpu_percent.toFixed(1)}%).`);
-    if (data.system.mem_percent > data.thresholds.mem_percent)
-      issues.push(`Memoria > umbral (${data.system.mem_percent.toFixed(1)}%).`);
-    if (data.db_stats.connections_total > data.thresholds.connections)
-      issues.push(`Conexiones totales altas (${data.db_stats.connections_total}).`);
-    if (data.db_stats.locks > 5)
-      issues.push(`Locks detectados (${data.db_stats.locks}); revisar bloqueos.`);
-    if ((data.db_activity?.length ?? 0) > 0) {
-      const longRunning = data.db_activity.find((q) => q.duration_seconds > 60);
-      if (longRunning) issues.push("Hay queries activas (>60s); revisar qué bloquean.");
-    }
-    return issues;
-  };
-
-  const issues = computeIssues(data);
-
-  const ratio = useMemo(() => {
-    if (!data) return 0;
-    return Math.min((data.db_stats.connections_active / (data.thresholds.connections || 1)) * 100, 999);
-  }, [data]);
+  const { data, loading, runtime } = state;
+  const latestHostSample = hostSample?.[hostSample.length - 1];
+  const cpuValue = latestHostSample?.cpu_percent ?? data?.cpu_percent ?? null;
+  const memoryValue = latestHostSample?.mem_percent ?? data?.memory_percent ?? null;
+  const gpuValue = latestHostSample?.gpu_percent ?? data?.gpu_percent ?? null;
+  const networkInfo = latestHostSample?.network;
+  const issues = [
+    ...(cpuValue !== null && cpuValue > 85 ? [`CPU sobre el umbral de 85% (${cpuValue.toFixed(1)}%).`] : []),
+    ...(memoryValue !== null && memoryValue > 85 ? [`RAM sobre el umbral de 85% (${memoryValue.toFixed(1)}%).`] : []),
+  ];
 
   return (
     <main className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-gray-100">
@@ -281,14 +224,14 @@ export default function DashboardPage() {
           <div>
             <p className="text-sm uppercase tracking-[0.25em] text-cyan-200/70">Sentinel</p>
             <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-white">
-              Operational Dashboard (Dev)
+              Dashboard Operacional
             </h1>
             <p className="text-gray-300 mt-2 max-w-2xl">
-              Salud de base de datos, sistema y sugerencias rápidas para mantenimiento.
+              Métricas actuales del runtime Rust y sensores de host con fuente identificada.
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Pill status={data?.db_health.status ?? "healthy"} />
+            <Pill status={runtime?.available ? runtime.status : "unavailable"} />
             <button
               onClick={load}
               className="rounded-xl border border-white/10 bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:border-cyan-400/50 hover:bg-white/15 active:scale-[0.99] transition"
@@ -298,101 +241,78 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        {/* System Metrics Grid */}
+        {/* Métricas con fuente confirmada */}
         <section className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
           <CircularStat
-            value={hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.cpu_percent ?? 0 : data?.system.cpu_percent ?? 0}
+            value={cpuValue}
             label="CPU"
-            hint={`Umbral ${data?.thresholds.cpu_percent ?? 0}%`}
+            hint={latestHostSample?.cpu_percent != null ? "Fuente: historial del host" : "Fuente: Cortex"}
             color="#22d3ee"
-            history={
-              hostSample?.map((s: any) => ({
-                timestamp: new Date(s.timestamp).getTime(),
-                value: s.cpu_percent,
-              }))
-            }
+            history={hostSample?.flatMap((sample: any) =>
+              typeof sample.cpu_percent === "number"
+                ? [{ timestamp: new Date(sample.timestamp).getTime(), value: sample.cpu_percent }]
+                : []
+            )}
           />
           <CircularStat
-            value={hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.mem_percent ?? 0 : data?.system.mem_percent ?? 0}
+            value={memoryValue}
             label="Memoria"
-            hint={`${formatBytes(data?.system.mem_used ?? 0)} / ${formatBytes(data?.system.mem_total ?? 0)}`}
+            hint={`Uso detectado: ${formatBytes(data?.memory_used_mb == null ? null : data.memory_used_mb * 1024 * 1024)}`}
             color="#34d399"
-            history={
-              hostSample?.map((s: any) => ({
-                timestamp: new Date(s.timestamp).getTime(),
-                value: s.mem_percent,
-              }))
-            }
+            history={hostSample?.flatMap((sample: any) =>
+              typeof sample.mem_percent === "number"
+                ? [{ timestamp: new Date(sample.timestamp).getTime(), value: sample.mem_percent }]
+                : []
+            )}
           />
           <CircularStat
-            value={hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.gpu_percent ?? 0 : data?.gpu.gpu_percent ?? 0}
+            value={gpuValue}
             label="GPU"
-            hint={
-              data?.gpu.gpu_name !== "N/A"
-                ? `${data?.gpu.gpu_name} • ${data?.gpu.gpu_temp ?? 0}°C`
-                : "No detectada"
-            }
+            hint={gpuValue === null ? "No hay fuente GPU disponible" : "Fuente: historial del host"}
             color="#a78bfa"
-            history={
-              hostSample?.map((s: any) => ({
-                timestamp: new Date(s.timestamp).getTime(),
-                value: s.gpu_percent,
-              }))
-            }
-          />
-          <CircularStat
-            value={
-              (() => {
-                const networkData = hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.network : data?.network;
-                if (!networkData) return 0;
-                const total = networkData.net_bytes_sent + networkData.net_bytes_recv;
-                const gb = total / (1024 * 1024 * 1024);
-                return Math.min(gb * 10, 100);
-              })()
-            }
-            label="Red (total)"
-            hint={`↑ ${formatBytes(hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.network?.net_bytes_sent ?? 0 : data?.network.net_bytes_sent ?? 0)} ↓ ${formatBytes(hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.network?.net_bytes_recv ?? 0 : data?.network.net_bytes_recv ?? 0)}`}
-            color="#fb923c"
-            history={
-              hostSample?.map((s: any) => ({
-                timestamp: new Date(s.timestamp).getTime(),
-                value: Math.min(((s.network?.net_bytes_sent + s.network?.net_bytes_recv) / (1024 * 1024 * 1024)) * 10, 100),
-              }))
-            }
+            history={hostSample?.flatMap((sample: any) =>
+              typeof sample.gpu_percent === "number"
+                ? [{ timestamp: new Date(sample.timestamp).getTime(), value: sample.gpu_percent }]
+                : []
+            )}
           />
           <StatCard
-            label="Conexiones"
-            value={`${data?.db_stats.connections_active ?? 0} / ${data?.thresholds.connections ?? 0}`}
-            hint={`Totales: ${data?.db_stats.connections_total ?? 0} • Locks: ${data?.db_stats.locks ?? 0}`}
-            accent="bg-gradient-to-r from-fuchsia-400 to-cyan-400"
-            history={
-              hostSample?.map((s: any) => ({
-                timestamp: new Date(s.timestamp).getTime(),
-                value: s.cpu_percent, // Placeholder - podríamos añadir conexiones a host-metrics
-              }))
-            }
+            label="Tráfico desde la última muestra"
+            value={`↑ ${formatBytes(data?.network_bytes_sent)} / ↓ ${formatBytes(data?.network_bytes_recv)}`}
+            hint="Delta de contadores de red del runtime entre muestras (~15 s)"
+            accent="bg-gradient-to-r from-orange-400 to-amber-400"
+          />
+          <StatCard
+            label="Estado del runtime"
+            value={runtime?.available ? runtime.status : "No disponible"}
+            hint={data ? `Última muestra: ${new Date(data.sampled_at).toLocaleTimeString()}` : "Esperando primera muestra"}
+            accent="bg-gradient-to-r from-cyan-400 to-emerald-400"
           />
         </section>
 
         {/* Network & Storage Cards */}
         <section className="mt-6 grid gap-4 md:grid-cols-4">
-          <NetworkCard 
-            network={hostSample?.length > 0 ? hostSample[hostSample.length - 1]?.network : data?.network} 
-            clientNetwork={clientNetwork}
-            history={
-              hostSample?.map((s: any) => ({
-                timestamp: new Date(s.timestamp).getTime(),
-                value: s.network?.wifi?.signal ?? 0,
-              }))
+          <NetworkCard
+            network={
+              typeof networkInfo?.net_bytes_sent === "number" &&
+              typeof networkInfo?.net_bytes_recv === "number"
+                ? networkInfo
+                : undefined
             }
+            clientNetwork={clientNetwork}
+            history={hostSample?.flatMap((sample: any) =>
+              typeof sample.network?.wifi?.signal === "number"
+                ? [{ timestamp: new Date(sample.timestamp).getTime(), value: sample.network.wifi.signal }]
+                : []
+            )}
           />
           <StorageCard
-            label="Métricas guardadas"
-            value={storage?.metrics_count ?? 0}
+            label="Muestras en memoria"
+            value={storage?.metrics_count ?? "No disponible"}
             hint={
               storage?.latest_metric_at
-                ? `Última: ${new Date(storage.latest_metric_at).toLocaleTimeString()}`
-                : "Sin datos"
+                ? `No persistentes • última: ${new Date(storage.latest_metric_at).toLocaleTimeString()}`
+                : "Sin muestras disponibles"
             }
             onClick={() => open("metrics")}
             color={{
@@ -403,13 +323,9 @@ export default function DashboardPage() {
             }}
           />
           <StorageCard
-            label="Anomalías detectadas"
-            value={storage?.anomalies_count ?? 0}
-            hint={
-              storage?.latest_anomaly_at
-                ? `Última: ${new Date(storage.latest_anomaly_at).toLocaleTimeString()}`
-                : "Sin eventos"
-            }
+            label="Alertas de CPU/RAM activas"
+            value={anomaliesAvailable ? anomalies.length : "No disponible"}
+            hint={anomaliesAvailable ? "Lectura actual; no es historial persistido" : "Fuente de métricas no disponible"}
             onClick={() => open("anomalies")}
             color={{
               bg: "amber",
@@ -419,9 +335,9 @@ export default function DashboardPage() {
             }}
           />
           <StorageCard
-            label="Base de datos (tamaño)"
-            value={formatBytes(storage?.db_size_bytes ?? 0)}
-            hint={`Estado: ${storage?.status === "healthy" ? "✓ Datos fluyen" : "⚠ Sin datos"}`}
+            label="Base de datos"
+            value="No disponible"
+            hint="El runtime Cortex no entrega métricas de base de datos"
             onClick={() => router.push("/db")}
             color={{
               bg: "emerald",
@@ -435,78 +351,44 @@ export default function DashboardPage() {
         {/* Detail Modal */}
         <DetailModal isOpen={modal.isOpen} onClose={close} type={modal.type} storage={storage} anomalies={anomalies} />
 
-        {/* Database Activity & Suggestions */}
-        <section className="mt-6 grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-6 shadow-[0_30px_80px_-50px_rgba(14,165,233,0.45)]">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <p className="text-sm text-gray-400">Tamaño de base</p>
-                <p className="text-2xl font-semibold text-white">
-                  {formatBytes(data?.db_stats.db_size_bytes ?? 0)}
-                </p>
+        <section className="mt-6 grid gap-6 lg:grid-cols-2">
+          <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-6">
+            <h3 className="text-lg font-semibold text-white mb-4">Estado del runtime</h3>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between gap-4">
+                <span className="text-gray-400">Última muestra</span>
+                <span className="text-cyan-200">
+                  {data ? new Date(data.sampled_at).toLocaleString() : "No disponible"}
+                </span>
               </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-400">Última muestra</p>
-                <p className="text-sm font-semibold text-cyan-200">
-                  {data ? new Date(data.timestamp).toLocaleString() : "-"}
-                </p>
+              <div className="flex justify-between gap-4">
+                <span className="text-gray-400">Almacenamiento de métricas</span>
+                <span className="text-gray-200">
+                  {storage ? `${storage.storage_type}; ${storage.persisted ? "persistente" : "solo memoria"}` : "No disponible"}
+                </span>
               </div>
-            </div>
-            <div className="mt-6 rounded-xl bg-black/40 border border-white/5 p-5">
-              <div className="flex items-center justify-between text-sm mb-2 text-gray-300">
-                <span>Uso de conexiones</span>
-                <span>{ratio.toFixed(0)}%</span>
-              </div>
-              <div className="h-2 w-full rounded-full bg-white/5 overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-emerald-400"
-                  style={{ width: `${Math.min(ratio, 100)}%` }}
-                />
-              </div>
-              <p className="text-xs text-gray-400 mt-3">
-                Umbral configurado: {data?.thresholds.connections ?? 0} conexiones.
-              </p>
+              {runtime?.subsystems && Object.entries(runtime.subsystems).map(([name, status]) => (
+                <div className="flex justify-between gap-4" key={name}>
+                  <span className="text-gray-400">{name}</span>
+                  <span className="text-gray-200">{status}</span>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-6 space-y-4">
-            <h3 className="text-lg font-semibold text-white mb-3">Sugerencias rápidas</h3>
-            <ul className="space-y-3 text-sm text-gray-200">
-              {(
-                data?.admin_suggestions ?? [
-                  "Ejecuta VACUUM en ventana de mantenimiento",
-                  "Revisa bloqueos prolongados",
-                  "Termina conexiones idle > 15m",
-                ]
-              ).map((s, idx) => (
-                <li key={idx} className="flex gap-3">
-                  <span className="mt-1 h-2 w-2 rounded-full bg-cyan-400" aria-hidden />
-                  <span>{s}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div className="pt-2 border-t border-white/5">
-              <h4 className="text-sm font-semibold text-white mb-2">Posibles bugs / fallas a investigar</h4>
+          <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-6">
+            <h3 className="text-lg font-semibold text-white mb-3">Presión del sistema</h3>
+            {!anomaliesAvailable ? (
+              <p className="text-sm text-gray-400">La fuente de métricas no está disponible.</p>
+            ) : issues.length === 0 ? (
+              <p className="text-sm text-gray-300">Sin superaciones de umbral en la lectura actual.</p>
+            ) : (
               <ul className="space-y-2 text-sm text-amber-100">
-                {issues.length === 0 ? <li className="text-gray-300">Sin alertas automáticas por ahora.</li> : null}
-                {issues.map((item, idx) => (
-                  <li key={idx} className="flex gap-2">
-                    <span className="mt-1 h-2 w-2 rounded-full bg-amber-400" aria-hidden />
-                    <span>{item}</span>
-                  </li>
-                ))}
+                {issues.map((issue) => <li key={issue}>{issue}</li>)}
               </ul>
-            </div>
+            )}
           </div>
         </section>
-
-        {/* More sections... */}
-        {error ? (
-          <div className="mt-6 rounded-xl border border-rose-500/40 bg-rose-500/10 text-rose-100 px-4 py-3 text-sm">
-            Error al cargar el dashboard: {error}
-          </div>
-        ) : null}
 
         {loading ? <div className="mt-6 text-sm text-gray-300">Cargando métricas…</div> : null}
       </div>
