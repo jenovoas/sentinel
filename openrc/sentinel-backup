@@ -18,7 +18,7 @@ depend() {
 }
 
 start_pre() {
-    checkpath -d -m 0750 -o root:root /var/lib/sentinel/backups
+    checkpath -d -m 0755 -o root:root /var/lib/sentinel/backups
     checkpath -d -m 0750 -o root:root /var/log/sentinel
     checkpath -d -m 0755 -o root:root /run/sentinel
 }
