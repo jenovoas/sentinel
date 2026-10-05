@@ -2789,10 +2789,10 @@ impl QuanticKeyManager {
 
 ## 🛡️ 3. Security WAL & TruthSync Engine
 
-**Estado revisado 2026-10-05** (documento base actualizado por última vez en Git el 2026-08-18, commit `0ca3b8f7`):
+**Estado revisado 2026-10-05** (contenido base consolidado el 2026-08-18 en `0ca3b8f7`; revisión de vigencia incorporada en `6c83b2ff`):
 - `POST /api/v1/truth_claim` bloquea patrones críticos detectados por `truthsync-core` con HTTP 403 y registra un evento JSONL mediante append + `sync_all()` en `/var/log/sentinel/security_wal.log`; usa `/tmp/sentinel_security_wal.log` como fallback. Si ambos destinos fallan, responde HTTP 503 y `security_event_logged: false`.
 - La respuesta separa `verification_time_us` de `ring0_intercepts`; este handler de Cortex no mide intercepciones del kernel, por lo que el campo es `null`.
-- Esta ruta describe el código del checkout local `alpine_fenix` sobre `HEAD 32928f80` y las pruebas focalizadas que pasaron el 2026-10-05; no demuestra el estado desplegado en Fenix.
+- Esta ruta describe el checkout local `alpine_fenix` en `HEAD 6c83b2ff`; las suites Rust de Cortex (101 pruebas entre unidad e integración), TruthSync (17) y Neural Guard (5) pasaron el 2026-10-05. No demuestra el estado desplegado en Fenix.
 - **Plimpton 322 Fila 17**: El documento original afirmaba integración de la constante sexagesimal $\psi = 4.7962963$ en `truthsync-core`; esta afirmación histórica no se verifica con la prueba de seguridad descrita arriba.
 
 ---

@@ -2,7 +2,7 @@
 
 Consolidated master document.
 
-> **Revisión de vigencia — 2026-10-05:** Git muestra que este consolidado se generó/modificó por última vez el 2026-08-18 (`0ca3b8f7`), y mezcla afirmaciones fechadas en 2024–2026. No acredita estado legal, patentabilidad, presentación ni valoración actuales. Las estimaciones monetarias y afirmaciones de novedad son históricas y no están verificadas aquí. El plazo del 2026-02-15 ya venció; la situación de presentación no se ha comprobado. Las rutas de evidencia deben verificarse contra el código del checkout antes de citarlas como vigentes.
+> **Revisión de vigencia — 2026-10-05:** el consolidado histórico se generó el 2026-08-18 (`0ca3b8f7`) y esta revisión quedó incorporada en `6c83b2ff`. Mezcla afirmaciones fechadas en 2024–2026. No acredita estado legal, patentabilidad, presentación ni valoración actuales. Las estimaciones monetarias y afirmaciones de novedad son históricas y no están verificadas aquí. El plazo del 2026-02-15 ya venció; la situación de presentación no se ha comprobado. Las rutas de evidencia deben verificarse contra el código del checkout antes de citarlas como vigentes.
 
 
 <!-- SOURCE: IP_CONSOLIDATION_6_CLAIMS.md -->

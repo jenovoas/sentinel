@@ -2,7 +2,9 @@
 
 Consolidated master document.
 
-> **Vigencia revisada — 2026-10-05:** Git muestra que este consolidado se generó/modificó por última vez el 2026-08-18 (`0ca3b8f7`). Las conclusiones siguientes son históricas, no resultados de una ejecución actual. En el checkout sobre `HEAD 32928f80`, `quantum/test_all.py` coordina cinco módulos y no toda la suite; existen al menos 17 archivos `quantum/test*.py` y el orquestador no incluye `test_yatra_hook.py`. El `5/5` documentado corresponde a una auditoría antigua que cita `backend/poc/test_integration.py`, ruta que no existe en el checkout. La suite Python no se ejecutó durante esta actualización; su estado actual queda pendiente.
+> **Vigencia revisada — 2026-10-05:** el contenido histórico de este consolidado se generó el 2026-08-18 (`0ca3b8f7`); esta revisión quedó incorporada en `6c83b2ff`. En el checkout sobre `HEAD 6c83b2ff`, `quantum/test_all.py` coordina cinco módulos, no toda la suite; hay al menos 17 archivos `quantum/test*.py` y el orquestador no incluye `test_yatra_hook.py`. El `5/5` de otras secciones corresponde a una auditoría antigua que cita `backend/poc/test_integration.py`, ruta inexistente en el checkout actual.
+>
+> **Ejecución actual:** `python3 quantum/test_all.py` terminó con resumen del orquestador `2/5`, pero su salida contiene fallos explícitos incluso en dos módulos que el resumen marca aprobados; por tanto, `2/5` no es un recuento fiable de pruebas aprobadas. Se observaron: comparación `SPA > SPA` no implementada, métodos `S60Math` (`tan`, `atan`, `asin`, `acos`, `atan2`) ausentes, acceso a `SPA._value` inexistente y un módulo `redis` sin `Redis`/`exceptions`. La suite Python no queda validada; estos experimentos legacy se preservan.
 
 
 <!-- SOURCE: TEST_AUDIT_REPORT.md -->
