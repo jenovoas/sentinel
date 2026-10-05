@@ -134,50 +134,64 @@ impl EbpfBridge {
                 ringbuf_path
             };
 
-            // Safely open pinned map with error fallback
-            let map_res = std::panic::catch_unwind(|| {
-                MapHandle::from_pinned_path(&map_path)
-            });
+            loop {
+                // 1. Intentar abrir el mapa pineado
+                let map_res = std::panic::catch_unwind(|| {
+                    MapHandle::from_pinned_path(&map_path)
+                });
 
-            let map = match map_res {
-                Ok(Ok(map)) => map,
-                Ok(Err(e)) => {
-                    tracing::warn!("eBPF pinned map unavailable at {}: {}. Running in non-blocking fallback mode.", map_path, e);
-                    return Ok(());
-                }
-                Err(_) => {
-                    tracing::warn!("Panic prevented during libbpf MapHandle initialization. Fallback mode engaged.");
-                    return Ok(());
-                }
-            };
-
-            let mut builder = RingBufferBuilder::new();
-            let tx = tx.clone();
-            let buffer = buffer.clone();
-
-            builder.add(&map, move |data: &[u8]| -> i32 {
-                if let Some(event) = EbpfBridge::parse_event(data) {
-                    if let Some(ref resonant) = buffer {
-                        let entropy = S60::from_raw(event.entropy_s60_raw as i64);
-                        resonant.push(entropy);
+                let map = match map_res {
+                    Ok(Ok(map)) => map,
+                    Ok(Err(e)) => {
+                        tracing::debug!("eBPF pinned map no disponible en {}: {}. Reintentando en 2s...", map_path, e);
+                        std::thread::sleep(Duration::from_secs(2));
+                        continue;
                     }
+                    Err(_) => {
+                        tracing::debug!("Pánico prevenido en MapHandle. Reintentando en 2s...");
+                        std::thread::sleep(Duration::from_secs(2));
+                        continue;
+                    }
+                };
 
-                    let _ = tx.blocking_send(event);
+                // 2. Construir RingBuffer
+                let mut builder = RingBufferBuilder::new();
+                let tx_clone = tx.clone();
+                let buffer_clone = buffer.clone();
+
+                if let Err(e) = builder.add(&map, move |data: &[u8]| -> i32 {
+                    if let Some(event) = EbpfBridge::parse_event(data) {
+                        if let Some(resonant) = &buffer_clone {
+                            let entropy = S60::from_raw(event.entropy_s60_raw as i64);
+                            resonant.push(entropy);
+                        }
+                        let _ = tx_clone.blocking_send(event);
+                    }
+                    0
+                }) {
+                    tracing::warn!("Fallo al añadir mapa a RingBufferBuilder: {}. Reintentando en 2s...", e);
+                    std::thread::sleep(Duration::from_secs(2));
+                    continue;
                 }
-                0
-            })?;
 
-            if let Ok(ringbuf) = builder.build() {
-                loop {
-                    if let Err(e) = ringbuf.poll(Duration::from_millis(100)) {
-                        std::thread::sleep(Duration::from_millis(100));
-                        tracing::debug!("RingBuf poll status: {:?}", e);
+                // 3. Polling continuo con reconexión ante error
+                match builder.build() {
+                    Ok(ringbuf) => {
+                        tracing::info!("🔗 eBPF Cortex Bridge conectado con éxito al ringbuffer en {}", map_path);
+                        loop {
+                            if let Err(e) = ringbuf.poll(Duration::from_millis(100)) {
+                                tracing::warn!("RingBuf poll status: {:?}. Reconectando...", e);
+                                std::thread::sleep(Duration::from_millis(500));
+                                break;
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        tracing::warn!("Fallo al construir RingBuffer: {:?}. Reintentando...", e);
+                        std::thread::sleep(Duration::from_secs(2));
                     }
                 }
-            } else {
-                tracing::warn!("Failed to build RingBuf from map. Fallback engaged.");
             }
-            Ok(())
         })
         .await??;
 

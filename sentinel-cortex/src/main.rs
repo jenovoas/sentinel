@@ -162,7 +162,16 @@ async fn main() {
     let liquid_lattice = Arc::new(Mutex::new(memory::liquid_lattice::LiquidLattice::new()));
     let pattern_detector = Arc::new(engine::patterns::PatternDetector::new());
     let truthsync = Arc::new(Mutex::new(truthsync_core::TruthSyncEngine::new()));
-    let neural_memory = Arc::new(Mutex::new(me60os_core::neural_memory::NeuralMemory::new()));
+
+    let crystal_path = std::path::Path::new("/var/lib/sentinel/snn_weights.crystal");
+    let fallback_path = std::path::Path::new("/tmp/snn_weights.crystal");
+    let initial_neural_memory = me60os_core::neural_memory::NeuralMemory::load_from_crystal(crystal_path)
+        .or_else(|_| me60os_core::neural_memory::NeuralMemory::load_from_crystal(fallback_path))
+        .unwrap_or_else(|_| {
+            tracing::info!("Inicializando nueva NeuralMemory SNN (sin checkpoint .crystal previo)");
+            me60os_core::neural_memory::NeuralMemory::new()
+        });
+    let neural_memory = Arc::new(Mutex::new(initial_neural_memory));
     let bio_resonator = Arc::new(Mutex::new(quantum::bio_resonator::BioResonator::new()));
     let quantum_scheduler = Arc::new(Mutex::new(
         quantum::quantum_scheduler::QuantumScheduler::new(bio_resonator.clone()),
@@ -460,6 +469,21 @@ async fn main() {
         .route("/api/v1/ai/health", get(dashboard::ai_health_handler))
         .layer(tower_http::trace::TraceLayer::new_for_http())
         .with_state(state);
+
+    // 8. Tarea de persistencia periódica de NeuralMemory a formato binario .crystal (Liquid Persistence)
+    let nm_periodic = neural_memory.clone();
+    tokio::spawn(async move {
+        let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(60));
+        loop {
+            interval.tick().await;
+            let nm = nm_periodic.lock().unwrap();
+            let primary = std::path::Path::new("/var/lib/sentinel/snn_weights.crystal");
+            let fallback = std::path::Path::new("/tmp/snn_weights.crystal");
+            if let Err(_) = nm.save_to_crystal(primary) {
+                let _ = nm.save_to_crystal(fallback);
+            }
+        }
+    });
 
     // 4. Start Server
     // 7. Periodically export phononic data as CSV for scientific study
