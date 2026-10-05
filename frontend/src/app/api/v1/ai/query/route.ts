@@ -4,10 +4,11 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
-        // Forward request to backend (use Docker service name)
-    const backendUrl = "http://cortex:8000";
+        const backendUrl =
+            process.env.CORTEX_INTERNAL_URL ||
+            process.env.NEXT_PUBLIC_API_URL ||
+            "https://cortex.pinguinoseguro.cl";
         console.log(`[AI Proxy] Forwarding to ${backendUrl}/api/v1/ai/query`);
-        console.log(`[AI Proxy] Body:`, body);
 
         const response = await fetch(`${backendUrl}/api/v1/ai/query`, {
             method: "POST",
@@ -42,7 +43,10 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
     try {
-    const backendUrl = "http://cortex:8000";
+        const backendUrl =
+            process.env.CORTEX_INTERNAL_URL ||
+            process.env.NEXT_PUBLIC_API_URL ||
+            "https://cortex.pinguinoseguro.cl";
         const response = await fetch(`${backendUrl}/api/v1/ai/health`);
         const data = await response.json();
         return NextResponse.json(data);

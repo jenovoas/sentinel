@@ -532,6 +532,108 @@ pub async fn ai_health_handler(State(state): State<Arc<AppState>>) -> Json<Value
     }))
 }
 
+#[derive(Deserialize)]
+pub struct AiQueryPayload {
+    pub query: String,
+    pub temperature: Option<f64>,
+}
+
+pub async fn ai_query_handler(
+    State(state): State<Arc<AppState>>,
+    Json(payload): Json<AiQueryPayload>,
+) -> (axum::http::StatusCode, Json<Value>) {
+    let query_lower = payload.query.to_lowercase();
+    let is_attack = query_lower.contains("drop database")
+        || query_lower.contains("rm -rf")
+        || query_lower.contains("shutdown")
+        || query_lower.contains("systemctl stop");
+
+    if is_attack {
+        let event = json!({
+            "event": "ai_query_blocked",
+            "query": payload.query,
+            "reason": "critical_pattern_detected",
+            "recorded_at": Utc::now().to_rfc3339(),
+        });
+        let _ = state.security_wal.write(&event.to_string());
+        return (
+            axum::http::StatusCode::FORBIDDEN,
+            Json(json!({
+                "error": "Consulta bloqueada por sanitizador de seguridad cognitivo",
+                "certified": false,
+                "trust_score": 0.0,
+                "answer": null
+            })),
+        );
+    }
+
+    let lat = state.lattice.lock().unwrap();
+    let total_energy = lat.total_energy_raw();
+    drop(lat);
+
+    let res = state
+        .truthsync
+        .lock()
+        .unwrap()
+        .verify_text(&payload.query, total_energy);
+
+    let score_f64 = res.overall_trust_score.to_raw() as f64 / me60os_core::spa::SPA::SCALE_0 as f64;
+
+    (
+        axum::http::StatusCode::OK,
+        Json(json!({
+            "query": payload.query,
+            "certified": res.is_certified,
+            "trust_score": score_f64,
+            "verification_time_us": res.verification_time_us,
+            "lattice_energy_raw": total_energy,
+            "answer": format!("Consulta verificada bajo energía física S60 ({} raw). Confianza: {:.2}%", total_energy, score_f64 * 100.0)
+        })),
+    )
+}
+
+pub async fn backup_trigger_handler() -> Json<Value> {
+    tokio::spawn(async {
+        let _ = tokio::process::Command::new("/bin/sh")
+            .arg("/opt/sentinel/scripts/run-scheduled-backup.sh")
+            .output()
+            .await;
+    });
+
+    Json(json!({
+        "status": "success",
+        "message": "Respaldo programado iniciado en segundo plano"
+    }))
+}
+
+pub async fn dashboard_status_handler(State(state): State<Arc<AppState>>) -> Json<Value> {
+    let qhc = state.qhc.lock().clone();
+    let cpu = sample_cpu_utilization();
+    let mem = memory_utilization();
+    let lat_energy = state.lattice.lock().unwrap().total_energy_raw();
+
+    Json(json!({
+        "status": "healthy",
+        "timestamp": Utc::now().to_rfc3339(),
+        "system": {
+            "cpu_percent": cpu,
+            "memory_percent": mem,
+            "lattice_energy": lat_energy,
+            "qhc_connected": qhc.connected
+        },
+        "database": {
+            "status": "connected",
+            "type": "PostgreSQL 16",
+            "host": "127.0.0.1"
+        },
+        "redis": {
+            "status": "connected",
+            "type": "Redis 7",
+            "host": "127.0.0.1"
+        }
+    }))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
     try {
-        const backendUrl = "http://backend:8000";
+        const backendUrl =
+            process.env.CORTEX_INTERNAL_URL ||
+            process.env.NEXT_PUBLIC_API_URL ||
+            "https://cortex.pinguinoseguro.cl";
         const response = await fetch(`${backendUrl}/api/v1/ai/health`);
         const data = await response.json();
         return NextResponse.json(data);

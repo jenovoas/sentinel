@@ -71,15 +71,15 @@ export default function MetricsPage() {
     const getTabDescription = (tab: MetricTab): string => {
         switch (tab) {
             case "overview":
-                return "High-level system health and performance metrics";
+                return "Últimas métricas del host reportadas por Cortex";
             case "host":
-                return "CPU, Memory, Disk, and GPU utilization";
+                return "CPU y memoria del host; disco y GPU no disponibles en este contrato";
             case "database":
-                return "PostgreSQL connections, queries, and performance";
+                return "Conexiones y locks solo cuando Cortex informa esos campos";
             case "network":
-                return "Network traffic, latency, and throughput";
+                return "Bytes enviados y recibidos entre muestras consecutivas";
             case "ai":
-                return "Ollama inference latency and GPU utilization";
+                return "Telemetría de IA/GPU no expuesta en las muestras actuales";
         }
     };
 
@@ -255,11 +255,11 @@ export default function MetricsPage() {
                     <div className="flex items-start gap-3">
                         <span className="text-2xl">💡</span>
                         <div>
-                            <p className="text-blue-400 font-semibold mb-1">About These Metrics</p>
+                            <p className="text-blue-400 font-semibold mb-1">Alcance de estas métricas</p>
                             <p className="text-sm text-gray-300">
-                                Sentinel uses Prometheus for metrics collection, Grafana for visualization, and Loki for log aggregation.
-                                All metrics are scraped every 15 seconds and stored for 15 days. For custom dashboards and advanced queries,
-                                access Grafana directly at <strong>localhost:3001</strong> (admin / REDACTED_PASSWORD).
+                                Los valores proceden del endpoint de analítica de Cortex y su historial en memoria, limitado a la capacidad informada arriba.
+                                El historial no sobrevive a un reinicio. Esta página no verifica disponibilidad de Prometheus, Grafana o Loki;
+                                esas integraciones se muestran como no disponibles hasta exponer una comprobación real.
                             </p>
                         </div>
                     </div>

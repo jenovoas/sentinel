@@ -447,6 +447,18 @@ async fn main() {
             get(dashboard::backup_status_handler),
         )
         .route(
+            "/api/v1/backup/trigger",
+            post(dashboard::backup_trigger_handler),
+        )
+        .route(
+            "/api/v1/ai/query",
+            post(dashboard::ai_query_handler),
+        )
+        .route(
+            "/api/v1/dashboard/status",
+            get(dashboard::dashboard_status_handler),
+        )
+        .route(
             "/api/v1/failsafe/status",
             get(dashboard::failsafe_status_handler),
         )

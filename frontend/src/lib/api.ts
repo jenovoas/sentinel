@@ -15,20 +15,25 @@ const API_BASE = "";
 
 export const AnalyticsAPI = {
   /**
-   * Fetch recent metric samples from the analytics endpoint
+   * Fetch recent metric samples and preserve the backend availability signal.
    */
-  async getRecentMetrics(limit = 200): Promise<AnalyticsSample[]> {
+  async getRecentMetricsFeed(limit = 200): Promise<{ available: boolean; samples: AnalyticsSample[] }> {
     try {
       const res = await fetch(`${API_BASE}/api/v1/analytics/metrics/recent?limit=${limit}`, {
         cache: "no-store",
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = (await res.json()) as { samples: AnalyticsSample[] };
-      return json.samples ?? [];
+      const json = (await res.json()) as { available: boolean; samples: AnalyticsSample[] };
+      return { available: json.available === true, samples: json.samples ?? [] };
     } catch (err) {
-      console.error("[AnalyticsAPI] getRecentMetrics error:", err);
-      return [];
+      console.error("[AnalyticsAPI] getRecentMetricsFeed error:", err);
+      return { available: false, samples: [] };
     }
+  },
+
+  async getRecentMetrics(limit = 200): Promise<AnalyticsSample[]> {
+    const feed = await this.getRecentMetricsFeed(limit);
+    return feed.samples;
   },
 
   /**
