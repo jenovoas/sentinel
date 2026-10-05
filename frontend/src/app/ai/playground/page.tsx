@@ -108,7 +108,7 @@ export default function AIPlaygroundPage() {
                             <CardContent className="space-y-4">
                                 <div>
                                     <textarea
-                                        placeholder="Enter your prompt here... (Ctrl+Enter to submit)"
+                                        placeholder="Escribe el texto que deseas verificar… (Ctrl+Enter para enviar)"
                                         value={prompt}
                                         onChange={(e) => setPrompt(e.target.value)}
                                         onKeyDown={handleKeyPress}

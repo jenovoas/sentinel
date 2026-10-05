@@ -7,8 +7,8 @@ import { WipModal } from "@/components/WipModal";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Sentinel - Control Tower",
-  description: "Enterprise observability and security platform with AI-powered insights",
+  title: "Sentinel — Panel de control",
+  description: "Interfaz de Sentinel Cortex para métricas de runtime, presión de recursos y verificación TruthSync.",
 };
 
 export default function RootLayout({
@@ -17,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body className={inter.className}>
         <WipModal />
         <Navigation />

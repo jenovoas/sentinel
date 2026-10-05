@@ -76,13 +76,18 @@ fn recent_metric_samples(
     samples
 }
 
-fn env_flag(name: &str) -> Option<bool> {
-    let value = std::env::var(name).ok()?;
+fn parse_env_flag(value: &str) -> Option<bool> {
     match value.trim().to_ascii_lowercase().as_str() {
         "1" | "true" | "yes" => Some(true),
         "0" | "false" | "no" => Some(false),
         _ => None,
     }
+}
+
+fn env_flag(name: &str) -> Option<bool> {
+    std::env::var(name)
+        .ok()
+        .and_then(|value| parse_env_flag(&value))
 }
 
 fn now_unix_secs() -> u64 {
@@ -614,10 +619,7 @@ pub async fn ai_query_handler(
 pub async fn backup_trigger_handler() -> (axum::http::StatusCode, Json<Value>) {
     let script = std::env::var_os("SENTINEL_BACKUP_SCRIPT")
         .unwrap_or_else(|| "/opt/sentinel/scripts/run-scheduled-backup.sh".into());
-    let mut child = match tokio::process::Command::new("/bin/sh")
-        .arg(script)
-        .spawn()
-    {
+    let mut child = match tokio::process::Command::new("/bin/sh").arg(script).spawn() {
         Ok(child) => child,
         Err(error) => {
             tracing::error!(error = %error, "No se pudo iniciar el proceso de respaldo");
@@ -702,6 +704,24 @@ mod tests {
             db_connections_active: None,
             db_locks: None,
         }
+    }
+
+    #[test]
+    fn ai_query_payload_requires_the_query_field() {
+        let payload: AiQueryPayload =
+            serde_json::from_value(json!({ "query": "verificar esto" })).unwrap();
+        assert_eq!(payload.query, "verificar esto");
+        assert!(
+            serde_json::from_value::<AiQueryPayload>(json!({ "prompt": "legacy field" })).is_err()
+        );
+    }
+
+    #[test]
+    fn backup_flags_distinguish_false_from_unconfigured_values() {
+        assert_eq!(parse_env_flag(" YES "), Some(true));
+        assert_eq!(parse_env_flag("false"), Some(false));
+        assert_eq!(parse_env_flag(""), None);
+        assert_eq!(parse_env_flag("configured-later"), None);
     }
 
     #[test]
