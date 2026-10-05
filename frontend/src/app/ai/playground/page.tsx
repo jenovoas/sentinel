@@ -8,16 +8,12 @@ import Link from "next/link";
 
 export default function AIPlaygroundPage() {
     const [prompt, setPrompt] = useState("");
-    const [model, setModel] = useState("phi3:mini");
-    const [maxTokens, setMaxTokens] = useState(100);
-    const [temperature, setTemperature] = useState(0.3);
     const [response, setResponse] = useState("");
     const [loading, setLoading] = useState(false);
     const [history, setHistory] = useState<Array<{
         prompt: string;
         response: string;
         timestamp: Date;
-        model: string;
     }>>([]);
 
     const examplePrompts = [
@@ -39,40 +35,23 @@ export default function AIPlaygroundPage() {
             const res = await fetch("/api/v1/ai/query", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    prompt,
-                    max_tokens: maxTokens,
-                    temperature,
-                }),
+                body: JSON.stringify({ query: prompt }),
             });
 
             const data = await res.json();
-
-            if (data.response) {
-                setResponse(data.response);
-
-                // Add to history
-                setHistory([
-                    {
-                        prompt,
-                        response: data.response,
-                        timestamp: new Date(),
-                        model: data.model || model,
-                    },
-                    ...history,
-                ]);
-            } else if (data.error) {
-                // Show backend error
-                setResponse(`Error: ${data.error}`);
-            } else if (data.detail) {
-                // Show FastAPI error detail
-                setResponse(`Error: ${data.detail}`);
-            } else {
-                setResponse("Error: No response from AI");
+            if (!res.ok) {
+                throw new Error(data.error || `HTTP ${res.status}`);
             }
+
+            const verification = JSON.stringify(data, null, 2);
+            setResponse(verification);
+            setHistory((previous) => [
+                { prompt, response: verification, timestamp: new Date() },
+                ...previous,
+            ]);
         } catch (error) {
             console.error("AI query error:", error);
-            setResponse("Error: Failed to connect to AI service. Please try again.");
+            setResponse(`No se pudo verificar la consulta: ${error instanceof Error ? error.message : "error de conexión"}`);
         } finally {
             setLoading(false);
         }
@@ -100,12 +79,12 @@ export default function AIPlaygroundPage() {
                 <header className="mb-8">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-sm uppercase tracking-[0.25em] text-purple-200/70">Sentinel AI</p>
+                            <p className="text-sm uppercase tracking-[0.25em] text-purple-200/70">Sentinel · TruthSync</p>
                             <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-white">
-                                AI Playground
+                                Verificación de consultas
                             </h1>
                             <p className="text-gray-300 mt-2 max-w-2xl">
-                                Interact with local AI (Ollama + phi3:mini) for system insights and analysis
+                                TruthSync verifica el texto enviado; Cortex no tiene conectado un generador de respuestas IA.
                             </p>
                         </div>
                         <Link href="/dashboard">
@@ -122,9 +101,9 @@ export default function AIPlaygroundPage() {
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <span className="text-purple-400">💬</span>
-                                    Query Input
+                                    Texto para verificar
                                 </CardTitle>
-                                <CardDescription>Ask questions about your system metrics and anomalies</CardDescription>
+                                <CardDescription>La verificación no genera ni responde preguntas.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div>
@@ -138,49 +117,9 @@ export default function AIPlaygroundPage() {
                                     />
                                 </div>
 
-                                <div className="grid gap-4 md:grid-cols-3">
-                                    <div>
-                                        <label className="text-sm text-gray-400 mb-2 block">Model</label>
-                                        <select
-                                            value={model}
-                                            onChange={(e) => setModel(e.target.value)}
-                                            className="w-full rounded-lg bg-slate-900/50 border border-white/10 p-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-                                        >
-                                            <option value="phi3:mini">phi3:mini (1.3B)</option>
-                                            <option value="llama3.2:1b">llama3.2:1b</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label className="text-sm text-gray-400 mb-2 block">
-                                            Max Tokens: {maxTokens}
-                                        </label>
-                                        <input
-                                            type="range"
-                                            min="10"
-                                            max="500"
-                                            step="10"
-                                            value={maxTokens}
-                                            onChange={(e) => setMaxTokens(Number(e.target.value))}
-                                            className="w-full"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="text-sm text-gray-400 mb-2 block">
-                                            Temperature: {temperature.toFixed(1)}
-                                        </label>
-                                        <input
-                                            type="range"
-                                            min="0"
-                                            max="1"
-                                            step="0.1"
-                                            value={temperature}
-                                            onChange={(e) => setTemperature(Number(e.target.value))}
-                                            className="w-full"
-                                        />
-                                    </div>
-                                </div>
+                                <p className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3 text-sm text-amber-200/80">
+                                    El contrato actual acepta solo el texto de consulta y devuelve resultados de verificación TruthSync; no hay selección de modelo ni parámetros de generación.
+                                </p>
 
                                 <Button
                                     onClick={handleQuery}
@@ -190,12 +129,12 @@ export default function AIPlaygroundPage() {
                                     {loading ? (
                                         <>
                                             <span className="animate-spin mr-2">⏳</span>
-                                            Generating...
+                                            Verificando…
                                         </>
                                     ) : (
                                         <>
                                             <span className="mr-2">🤖</span>
-                                            Generate Response
+                                            Verificar consulta
                                         </>
                                     )}
                                 </Button>
@@ -209,7 +148,7 @@ export default function AIPlaygroundPage() {
                                     <div className="flex items-center justify-between">
                                         <CardTitle className="flex items-center gap-2">
                                             <span className="text-purple-400">✨</span>
-                                            AI Response
+                                            Resultado de verificación TruthSync
                                         </CardTitle>
                                         <div className="flex gap-2">
                                             <Button
@@ -290,7 +229,7 @@ export default function AIPlaygroundPage() {
                                                         {item.timestamp.toLocaleTimeString()}
                                                     </p>
                                                     <Badge variant="outline" className="text-xs">
-                                                        {item.model}
+                                                        TruthSync
                                                     </Badge>
                                                 </div>
                                                 <p className="text-sm font-medium text-purple-400 mb-2 line-clamp-2">
@@ -313,11 +252,9 @@ export default function AIPlaygroundPage() {
                     <div className="flex items-start gap-3">
                         <span className="text-2xl">ℹ️</span>
                         <div>
-                            <p className="text-purple-400 font-semibold mb-1">Local AI Processing</p>
+                            <p className="text-purple-400 font-semibold mb-1">Verificación local de TruthSync</p>
                             <p className="text-sm text-gray-300">
-                                All queries are processed locally using Ollama with phi3:mini model.
-                                Your data never leaves your infrastructure. First query may take 7-10s
-                                (model loading), subsequent queries ~1-2s.
+                                La ruta de Cortex valida la consulta y devuelve campos de verificación. No genera respuestas de texto ni expone modelo, latencia estimada o garantías sobre el procesamiento de red.
                             </p>
                         </div>
                     </div>

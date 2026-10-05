@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +30,33 @@ const NAV_ITEMS: NavItem[] = [
 export function Navigation() {
     const pathname = usePathname();
     const [menuOpen, setMenuOpen] = useState(false);
+    const [cortexResponding, setCortexResponding] = useState<boolean | null>(null);
+
+    useEffect(() => {
+        let active = true;
+        let controller: AbortController | undefined;
+        const checkCortex = async () => {
+            controller?.abort();
+            controller = new AbortController();
+            try {
+                const response = await fetch("/api/v1/dashboard/status", {
+                    cache: "no-store",
+                    signal: controller.signal,
+                });
+                if (active) setCortexResponding(response.ok);
+            } catch {
+                if (active) setCortexResponding(false);
+            }
+        };
+
+        void checkCortex();
+        const interval = window.setInterval(checkCortex, 30_000);
+        return () => {
+            active = false;
+            controller?.abort();
+            window.clearInterval(interval);
+        };
+    }, []);
 
     const isActive = (href: string) =>
         href === "/dashboard"
@@ -127,9 +154,19 @@ export function Navigation() {
 
                     {/* Status indicator — derecha */}
                     <div className="desktop-status" style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexShrink: 0 }}>
-                        <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#34d399", display: "inline-block", animation: "pulse 2s infinite" }} />
-                        <span style={{ color: "#94a3b8", fontSize: "0.85rem" }}>Online</span>
-                        <span style={{ color: "#475569", fontSize: "0.75rem", marginLeft: "0.5rem" }}>v2.0.0</span>
+                        <span
+                            aria-hidden="true"
+                            style={{
+                                width: "8px",
+                                height: "8px",
+                                borderRadius: "50%",
+                                background: cortexResponding === true ? "#34d399" : cortexResponding === false ? "#fb7185" : "#94a3b8",
+                                display: "inline-block",
+                            }}
+                        />
+                        <span style={{ color: "#94a3b8", fontSize: "0.85rem" }}>
+                            {cortexResponding === true ? "Cortex responde" : cortexResponding === false ? "Cortex no disponible" : "Verificando Cortex…"}
+                        </span>
                         <Link
                             href="https://www.pinguinoseguro.cl"
                             style={{

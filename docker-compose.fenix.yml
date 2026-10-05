@@ -68,6 +68,7 @@ services:
     container_name: sentinel-frontend
     environment:
       - NEXT_PUBLIC_API_URL=https://cortex.pinguinoseguro.cl/api
+      - CORTEX_INTERNAL_URL=http://host.docker.internal:8000
     networks:
       - sentinel_internal
     extra_hosts:

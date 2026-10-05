@@ -4,11 +4,14 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
-        const backendUrl =
-            process.env.CORTEX_INTERNAL_URL ||
-            process.env.NEXT_PUBLIC_API_URL ||
-            "https://cortex.pinguinoseguro.cl";
-        console.log(`[AI Proxy] Forwarding to ${backendUrl}/api/v1/ai/query`);
+        const configuredUrl = (process.env.CORTEX_INTERNAL_URL || process.env.NEXT_PUBLIC_API_URL || "").trim();
+        if (!configuredUrl) {
+            return NextResponse.json(
+                { error: "La URL de Cortex no está configurada" },
+                { status: 503 }
+            );
+        }
+        const backendUrl = configuredUrl.replace(/\/+$/, "").replace(/\/api$/, "");
 
         const response = await fetch(`${backendUrl}/api/v1/ai/query`, {
             method: "POST",
@@ -30,31 +33,35 @@ export async function POST(request: NextRequest) {
         }
 
         const data = await response.json();
-        console.log(`[AI Proxy] Success, response length: ${data.response?.length || 0}`);
         return NextResponse.json(data);
     } catch (error) {
         console.error("[AI Proxy] Error:", error);
         return NextResponse.json(
-            { error: "Failed to connect to AI service", details: String(error) },
+            { error: "No se pudo conectar con Cortex", details: String(error) },
             { status: 500 }
         );
     }
 }
 
 export async function GET() {
+    const configuredUrl = (process.env.CORTEX_INTERNAL_URL || process.env.NEXT_PUBLIC_API_URL || "").trim();
+    if (!configuredUrl) {
+        return NextResponse.json(
+            { error: "La URL de Cortex no está configurada", available: false },
+            { status: 503 }
+        );
+    }
+
+    const backendUrl = configuredUrl.replace(/\/+$/, "").replace(/\/api$/, "");
     try {
-        const backendUrl =
-            process.env.CORTEX_INTERNAL_URL ||
-            process.env.NEXT_PUBLIC_API_URL ||
-            "https://cortex.pinguinoseguro.cl";
-        const response = await fetch(`${backendUrl}/api/v1/ai/health`);
+        const response = await fetch(`${backendUrl}/api/v1/ai/health`, { cache: "no-store" });
         const data = await response.json();
-        return NextResponse.json(data);
+        return NextResponse.json(data, { status: response.status });
     } catch (error) {
         console.error("AI health check error:", error);
         return NextResponse.json(
-            { error: "Failed to connect to AI service", enabled: false },
-            { status: 500 }
+            { error: "No se pudo conectar con Cortex", available: false },
+            { status: 503 }
         );
     }
 }

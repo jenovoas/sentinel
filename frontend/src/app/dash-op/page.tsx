@@ -349,7 +349,14 @@ export default function DashboardPage() {
         </section>
 
         {/* Detail Modal */}
-        <DetailModal isOpen={modal.isOpen} onClose={close} type={modal.type} storage={storage} anomalies={anomalies} />
+        <DetailModal
+          isOpen={modal.isOpen}
+          onClose={close}
+          type={modal.type}
+          storage={storage}
+          anomalies={anomalies}
+          anomaliesAvailable={anomaliesAvailable}
+        />
 
         <section className="mt-6 grid gap-6 lg:grid-cols-2">
           <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-6">

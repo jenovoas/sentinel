@@ -76,11 +76,13 @@ fn recent_metric_samples(
     samples
 }
 
-fn env_flag(name: &str) -> bool {
-    matches!(
-        std::env::var(name).as_deref(),
-        Ok("1") | Ok("true") | Ok("TRUE") | Ok("yes") | Ok("YES")
-    )
+fn env_flag(name: &str) -> Option<bool> {
+    let value = std::env::var(name).ok()?;
+    match value.trim().to_ascii_lowercase().as_str() {
+        "1" | "true" | "yes" => Some(true),
+        "0" | "false" | "no" => Some(false),
+        _ => None,
+    }
 }
 
 fn now_unix_secs() -> u64 {
@@ -392,8 +394,7 @@ fn backup_status() -> Value {
             "backup_dir": backup_dir,
             "retention_days": std::env::var("SENTINEL_BACKUP_RETENTION_DAYS")
                 .ok()
-                .and_then(|value| value.parse::<u64>().ok())
-                .unwrap_or(30),
+                .and_then(|value| value.parse::<u64>().ok()),
             "s3_enabled": env_flag("SENTINEL_BACKUP_S3_ENABLED"),
             "minio_enabled": env_flag("SENTINEL_BACKUP_MINIO_ENABLED"),
             "encryption_enabled": env_flag("SENTINEL_BACKUP_ENCRYPTION_ENABLED"),

@@ -9,10 +9,10 @@ import { BackupStatusCard } from "@/components/backup/BackupStatusCard";
 import { FailSafeSecurityCard } from "@/components/failsafe/FailSafeSecurityCard";
 
 interface SLOData {
-    availability: { value: number | null; target: number };
-    errorRate: { value: number | null; target: number };
-    latency: { value: number | null; target: number };
-    aiResponse: { value: number | null; target: number };
+    availability: { value: number | null; target: number | null };
+    errorRate: { value: number | null; target: number | null };
+    latency: { value: number | null; target: number | null };
+    aiResponse: { value: number | null; target: number | null };
 }
 
 interface AIInsight {
@@ -23,7 +23,6 @@ interface AIInsight {
 interface ResourceAlert {
     severity: "low" | "medium" | "high";
     message: string;
-    count: number;
 }
 
 interface SystemLog {
@@ -39,12 +38,12 @@ interface SystemLogsState {
 }
 
 export default function DashboardPage() {
-    const [sloData] = useState<SLOData>({
-        availability: { value: null, target: 99.9 },
-        errorRate: { value: null, target: 1.0 },
-        latency: { value: null, target: 100 },
-        aiResponse: { value: null, target: 3.0 },
-    });
+    const sloData: SLOData = {
+        availability: { value: null, target: null },
+        errorRate: { value: null, target: null },
+        latency: { value: null, target: null },
+        aiResponse: { value: null, target: null },
+    };
 
     const [aiInsights, setAiInsights] = useState<AIInsight[]>([]);
     const [resourceAlerts, setResourceAlerts] = useState<ResourceAlert[]>([]);
@@ -52,39 +51,30 @@ export default function DashboardPage() {
     const [systemLogs, setSystemLogs] = useState<SystemLogsState>({ available: false, logs: [] });
 
     const [systemStatus, setSystemStatus] = useState<"healthy" | "warning" | "critical" | "unknown">("unknown");
+    const [snapshotCheckedAt, setSnapshotCheckedAt] = useState<string | null>(null);
 
     // Fetch real data from backend
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Fetch statistics
-                const statsRes = await fetch("/api/v1/analytics/statistics?hours=24");
-                const statsData = await statsRes.json();
-
-                // SLOs remain unavailable until the backend provides measured history.
-                if (statsData) {
-                    const cpu = statsData.cpu?.current;
-                    const memory = statsData.memory?.current;
-                    if (typeof cpu === "number" && typeof memory === "number") {
-                        if (cpu > 95 || memory > 95) {
-                            setSystemStatus("critical");
-                        } else if (cpu > 85 || memory > 85) {
-                            setSystemStatus("warning");
-                        } else {
-                            setSystemStatus("healthy");
-                        }
-                    } else {
-                        setSystemStatus("unknown");
-                    }
-                }
-
-                // Fetch anomalies
+                // Fetch the current pressure snapshot and use Cortex's own thresholds.
                 const anomaliesRes = await fetch("/api/v1/analytics/anomalies?limit=10", { cache: "no-store" });
+                if (!anomaliesRes.ok) throw new Error(`HTTP ${anomaliesRes.status}`);
                 const anomaliesData = await anomaliesRes.json();
+                setSnapshotCheckedAt(new Date().toLocaleTimeString());
 
                 const anomalyRecords = anomaliesData?.anomalies;
                 const hasAnomalyData = anomaliesData?.available === true && Array.isArray(anomalyRecords);
                 setAnomaliesAvailable(hasAnomalyData);
+                setSystemStatus(
+                    !hasAnomalyData
+                        ? "unknown"
+                        : anomalyRecords.some((a: any) => a.severity === "critical")
+                            ? "critical"
+                            : anomalyRecords.length > 0
+                                ? "warning"
+                                : "healthy"
+                );
 
                 if (hasAnomalyData) {
                     const currentBreaches = anomalyRecords;
@@ -95,7 +85,6 @@ export default function DashboardPage() {
                     setResourceAlerts(currentBreaches.slice(0, 5).map((a: any) => ({
                         severity: a.severity === "critical" ? "high" : a.severity === "warning" ? "medium" : "low",
                         message: a.title,
-                        count: 1,
                     })));
                 } else {
                     setAiInsights([]);
@@ -150,8 +139,8 @@ export default function DashboardPage() {
         }
     };
 
-    const getSLOStatus = (value: number | null, target: number, inverse = false) => {
-        if (value === null || !Number.isFinite(value)) return "unavailable" as const;
+    const getSLOStatus = (value: number | null, target: number | null, inverse = false) => {
+        if (value === null || target === null || !Number.isFinite(value) || !Number.isFinite(target)) return "unavailable" as const;
         const ratio = inverse ? target / value : value / target;
         if (ratio >= 1.0) return "good";
         if (ratio >= 0.9) return "warning";
@@ -170,10 +159,10 @@ export default function DashboardPage() {
                 <header className="mb-8">
                     <p className="text-sm uppercase tracking-[0.25em] text-cyan-200/70">Sentinel</p>
                     <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-white">
-                        Executive Dashboard
+                        Dashboard de Sentinel
                     </h1>
                     <p className="text-gray-300 mt-2 max-w-2xl">
-                        Business-level insights powered by AI and real-time security monitoring
+                        Vista de métricas de Cortex, presión actual de recursos y fuentes disponibles.
                     </p>
                 </header>
 
@@ -184,56 +173,57 @@ export default function DashboardPage() {
                             <div className="flex items-center gap-3 mb-2">
                                 <span className="text-4xl">{getStatusIcon(systemStatus)}</span>
                                 <h2 className="text-2xl font-semibold">
-                                    {systemStatus === "healthy" && "Resource Usage Normal"}
-                                    {systemStatus === "warning" && "High Resource Usage"}
-                                    {systemStatus === "critical" && "Critical Resource Usage"}
-                                    {systemStatus === "unknown" && "Resource Status Unavailable"}
+                                    {systemStatus === "healthy" && "Sin presión CPU/RAM detectada en el snapshot"}
+                                    {systemStatus === "warning" && "Presión CPU/RAM detectada"}
+                                    {systemStatus === "critical" && "Anomalía crítica reportada"}
+                                    {systemStatus === "unknown" && "Snapshot CPU/RAM no disponible"}
                                 </h2>
                             </div>
                             <p className="text-sm opacity-80" suppressHydrationWarning>
-                                Last updated: {new Date().toLocaleTimeString()}
+                                Consulta del snapshot CPU/RAM: {snapshotCheckedAt ?? "N/D"}
                             </p>
                         </div>
                         <div className="text-right">
                             <p className="text-3xl font-bold">
                                 {sloData.availability.value === null ? "N/A" : `${sloData.availability.value}%`}
                             </p>
-                            <p className="text-sm opacity-80">Uptime (Target: {sloData.availability.target}%)</p>
+                            <p className="text-sm opacity-80">Disponibilidad · objetivo: {sloData.availability.target === null ? "N/D" : `${sloData.availability.target}%`}</p>
                         </div>
                     </div>
                 </div>
 
                 {/* SLO Cards */}
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-white mb-4">Service Level Objectives</h2>
+                    <h2 className="text-2xl font-semibold text-white mb-2">Objetivos y mediciones de servicio</h2>
+                    <p className="mb-4 text-sm text-gray-400">Cortex no publica actualmente valores ni umbrales SLO; los campos se muestran como N/D.</p>
                     <div className="grid gap-4 md:grid-cols-4">
                         <SLOCard
                             title="Availability"
                             value={sloData.availability.value === null ? "N/A" : `${sloData.availability.value}%`}
-                            target={`${sloData.availability.target}%`}
+                            target={sloData.availability.target === null ? "N/D" : `${sloData.availability.target}%`}
                             status={getSLOStatus(sloData.availability.value, sloData.availability.target)}
                             description="System uptime"
                         />
                         <SLOCard
                             title="Error Rate"
                             value={sloData.errorRate.value === null ? "N/A" : `${sloData.errorRate.value}%`}
-                            target={`<${sloData.errorRate.target}%`}
+                            target={sloData.errorRate.target === null ? "N/D" : `<${sloData.errorRate.target}%`}
                             status={getSLOStatus(sloData.errorRate.value, sloData.errorRate.target, true)}
                             description="Failed requests"
                         />
                         <SLOCard
                             title="Latency P95"
                             value={sloData.latency.value === null ? "N/A" : `${sloData.latency.value}ms`}
-                            target={`<${sloData.latency.target}ms`}
+                            target={sloData.latency.target === null ? "N/D" : `<${sloData.latency.target}ms`}
                             status={getSLOStatus(sloData.latency.value, sloData.latency.target, true)}
                             description="Response time"
                         />
                         <SLOCard
-                            title="AI Response"
+                            title="Tiempo de verificación"
                             value={sloData.aiResponse.value === null ? "N/A" : `${sloData.aiResponse.value}s`}
-                            target={`<${sloData.aiResponse.target}s`}
+                            target={sloData.aiResponse.target === null ? "N/D" : `<${sloData.aiResponse.target}s`}
                             status={getSLOStatus(sloData.aiResponse.value, sloData.aiResponse.target, true)}
-                            description="AI inference time"
+                            description="Medición no disponible"
                         />
                     </div>
                 </section>
@@ -277,7 +267,7 @@ export default function DashboardPage() {
                             <div className="mt-4">
                                 <Link href="/ai/playground">
                                     <Button variant="outline" className="w-full">
-                                        Ask AI for Details
+                                        Verificar texto con TruthSync
                                     </Button>
                                 </Link>
                             </div>
@@ -337,7 +327,7 @@ export default function DashboardPage() {
                                                         : "bg-slate-500/20 text-slate-400 border-slate-500/30"
                                             }
                                         >
-                                            {alert.count}
+                                            {alert.severity === "high" ? "Crítica" : alert.severity === "medium" ? "Advertencia" : "Información"}
                                         </Badge>
                                     </div>
                                 ))}
@@ -367,18 +357,18 @@ export default function DashboardPage() {
                             <Card className="bg-purple-500/10 backdrop-blur-xl border-purple-500/20 hover:bg-purple-500/20 transition-colors cursor-pointer">
                                 <CardContent className="p-6 text-center">
                                     <span className="text-4xl mb-2 block">🤖</span>
-                                    <p className="font-semibold text-purple-400">Ask AI</p>
-                                    <p className="text-xs text-gray-400 mt-1">Query insights</p>
+                                    <p className="font-semibold text-purple-400">TruthSync</p>
+                                    <p className="text-xs text-gray-400 mt-1">Verificar un texto</p>
                                 </CardContent>
                             </Card>
                         </Link>
 
-                        <Link href="/metrics/host">
+                        <Link href="/metrics">
                             <Card className="bg-cyan-500/10 backdrop-blur-xl border-cyan-500/20 hover:bg-cyan-500/20 transition-colors cursor-pointer">
                                 <CardContent className="p-6 text-center">
                                     <span className="text-4xl mb-2 block">📊</span>
                                     <p className="font-semibold text-cyan-400">View Metrics</p>
-                                    <p className="text-xs text-gray-400 mt-1">Detailed dashboards</p>
+                                    <p className="text-xs text-gray-400 mt-1">Métricas disponibles de Cortex</p>
                                 </CardContent>
                             </Card>
                         </Link>
@@ -388,7 +378,7 @@ export default function DashboardPage() {
                                 <CardContent className="p-6 text-center">
                                     <span className="text-4xl mb-2 block">🔒</span>
                                     <p className="font-semibold text-rose-400">Security</p>
-                                    <p className="text-xs text-gray-400 mt-1">Auditd watchdog</p>
+                                    <p className="text-xs text-gray-400 mt-1">Fuentes de seguridad disponibles</p>
                                 </CardContent>
                             </Card>
                         </Link>
@@ -398,7 +388,7 @@ export default function DashboardPage() {
                                 <CardContent className="p-6 text-center">
                                     <span className="text-4xl mb-2 block">📈</span>
                                     <p className="font-semibold text-emerald-400">Analytics</p>
-                                    <p className="text-xs text-gray-400 mt-1">Historical data</p>
+                                    <p className="text-xs text-gray-400 mt-1">Historial temporal en memoria</p>
                                 </CardContent>
                             </Card>
                         </Link>

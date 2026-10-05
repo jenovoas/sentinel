@@ -17,8 +17,9 @@ export interface NetworkInfo {
   net_packets_sent?: number | null;
   net_packets_recv?: number | null;
   wifi?: {
-    ssid: string;
-    signal: number;
+    ssid?: string;
+    signal?: number;
+    signalStrength?: number;
     connected: boolean;
   };
 }
@@ -58,16 +59,26 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
     ? ((network!.net_bytes_sent! + network!.net_bytes_recv!) / (1024 * 1024 * 1024))
     : null;
 
-  // WiFi signal color psychology
+  const wifiSignal = effectiveWifi as
+    | { signal?: number; signalStrength?: number }
+    | undefined;
+  const signalPercent = typeof wifiSignal?.signal === "number" && Number.isFinite(wifiSignal.signal)
+    ? wifiSignal.signal
+    : null;
+  const signalDbm = typeof wifiSignal?.signalStrength === "number" && Number.isFinite(wifiSignal.signalStrength)
+    ? wifiSignal.signalStrength
+    : null;
+
   const getWiFiSignalColor = () => {
     if (!effectiveWifi?.connected)
       return { color: "text-gray-500", bg: "bg-gray-500/10", label: "Desconectado" };
-    const signal = (effectiveWifi as any)?.signal ?? (effectiveWifi as any)?.signalStrength;
-    if (typeof signal !== "number" || !Number.isFinite(signal))
+    if (signalPercent === null && signalDbm !== null)
+      return { color: "text-cyan-400", bg: "bg-cyan-400/10", label: "Potencia medida" };
+    if (signalPercent === null)
       return { color: "text-gray-500", bg: "bg-gray-500/10", label: "Señal no disponible" };
-    if (signal >= 75) return { color: "text-emerald-400", bg: "bg-emerald-400/10", label: "Excelente" };
-    if (signal >= 50) return { color: "text-cyan-400", bg: "bg-cyan-400/10", label: "Bueno" };
-    if (signal >= 25) return { color: "text-amber-400", bg: "bg-amber-400/10", label: "Moderado" };
+    if (signalPercent >= 75) return { color: "text-emerald-400", bg: "bg-emerald-400/10", label: "Excelente" };
+    if (signalPercent >= 50) return { color: "text-cyan-400", bg: "bg-cyan-400/10", label: "Bueno" };
+    if (signalPercent >= 25) return { color: "text-amber-400", bg: "bg-amber-400/10", label: "Moderado" };
     return { color: "text-rose-400", bg: "bg-rose-400/10", label: "Débil" };
   };
 
@@ -75,8 +86,7 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
 
   // Render WiFi signal bars
   const renderSignalBars = () => {
-    const signal = (effectiveWifi as any)?.signal ?? (effectiveWifi as any)?.signalStrength;
-    if (!effectiveWifi?.connected || typeof signal !== "number" || !Number.isFinite(signal)) {
+    if (!effectiveWifi?.connected || signalPercent === null) {
       return (
         <div className="flex items-center gap-1">
           {[1, 2, 3, 4].map((i) => (
@@ -89,7 +99,7 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
       );
     }
 
-    const bars = Math.ceil((Math.max(0, Math.min(signal, 100)) / 100) * 4);
+    const bars = Math.ceil((Math.max(0, Math.min(signalPercent, 100)) / 100) * 4);
     return (
       <div className="flex items-end gap-1">
         {[1, 2, 3, 4].map((i) => (
@@ -161,7 +171,7 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
                 <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z" />
               </svg>
               <span className="text-xs font-medium text-gray-300">
-                {effectiveWifi.connected ? effectiveWifi.ssid || "Conectado" : "Desconectado"}
+                {effectiveWifi.connected ? effectiveWifi.ssid || "SSID no disponible" : "Desconectado"}
               </span>
             </div>
             {renderSignalBars()}
@@ -171,9 +181,7 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
             <div className="flex items-center justify-between text-xs mb-2">
               <span className={`${wifiState.color} font-semibold`}>{wifiState.label}</span>
               <span className="text-gray-400">
-                {(effectiveWifi as any)?.signal ?? (effectiveWifi as any)?.signalStrength ?? "N/D"}{
-                  typeof ((effectiveWifi as any)?.signal ?? (effectiveWifi as any)?.signalStrength) === "number" ? "%" : ""
-                }
+                {signalPercent !== null ? `${signalPercent}%` : signalDbm !== null ? `${signalDbm} dBm` : "N/D"}
               </span>
             </div>
           )}
