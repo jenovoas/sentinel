@@ -2,143 +2,197 @@
 
 import { useEffect, useState } from "react";
 
-type StorageSummary = {
-  available: boolean;
-  storage_type: string;
-  persisted: boolean;
-  metrics_count: number;
-  anomalies_count: number | null;
-  latest_metric_at: string | null;
-  latest_anomaly_at: string | null;
+type DbStats = {
+  connections_total: number | null;
+  connections_active: number | null;
+  connections_idle: number | null;
   db_size_bytes: number | null;
-  retention_capacity: number;
-  status: string;
+  locks: number | null;
 };
 
-const API_PATH = "/api/v1/analytics/storage/summary";
+type ActiveQuery = {
+  pid: number;
+  user: string;
+  state: string;
+  wait_event: string;
+  duration_seconds: number;
+  query: string;
+};
+
+type DashboardData = {
+  available: boolean;
+  database: {
+    available: boolean;
+    status: string;
+    type: string | null;
+    host: string | null;
+  };
+  db_stats?: DbStats | null;
+  db_activity?: ActiveQuery[] | null;
+};
+
+const API_PATH = "/api/v1/dashboard/status";
 
 const formatBytes = (bytes: number) => {
   const units = ["B", "KB", "MB", "GB", "TB"];
   let i = 0;
-  let value = bytes;
-  while (value >= 1024 && i < units.length - 1) {
-    value /= 1024;
+  let v = bytes;
+  while (v > 1024 && i < units.length - 1) {
+    v /= 1024;
     i++;
   }
-  return `${value.toFixed(value >= 10 ? 0 : 1)} ${units[i]}`;
+  return `${v.toFixed(v >= 10 ? 0 : 1)} ${units[i]}`;
 };
 
 export default function DatabasesPage() {
-  const [data, setData] = useState<StorageSummary | null>(null);
+  const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | undefined>();
+  const [filterUser, setFilterUser] = useState<string>("");
+  const [sortByDuration, setSortByDuration] = useState<boolean>(true);
 
   useEffect(() => {
-    let active = true;
     const load = async () => {
       try {
-        const response = await fetch(API_PATH, { cache: "no-store" });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const summary = (await response.json()) as StorageSummary;
-        if (!active) return;
-        setData(summary);
-        setError(null);
-      } catch (err) {
-        if (!active) return;
-        setError(err instanceof Error ? err.message : "Error al consultar Cortex");
+        setLoading(true);
+        const res = await fetch(API_PATH, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = (await res.json()) as DashboardData;
+        setData(json);
+        setError(undefined);
+      } catch (e: any) {
+        setError(e?.message || "Error");
       } finally {
-        if (active) setLoading(false);
+        setLoading(false);
       }
     };
-
-    void load();
-    const intervalId = window.setInterval(() => void load(), 15_000);
-    return () => {
-      active = false;
-      window.clearInterval(intervalId);
-    };
+    load();
   }, []);
 
-  const storageStatus = data?.status === "healthy"
-    ? "Disponible"
-    : data?.status === "no_data"
-      ? "Sin muestras"
-      : data?.status === "unavailable"
-        ? "No disponible"
-        : "N/D";
+  const dbActivity = data?.db_activity ?? null;
+  const databaseStatus = data?.database.available ? data.database.status : "No disponible";
 
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold text-gray-200">Bases de Datos</h1>
-        <p className="mt-1 text-sm text-gray-400">
-          Cortex expone el resumen de su almacenamiento de métricas, pero no publica telemetría de instancias de base de datos.
-        </p>
+      <h1 className="text-xl font-semibold text-gray-200">Bases de Datos</h1>
+      <p className="text-sm text-gray-400">
+        El estado de DB se muestra solo cuando Cortex lo verifica; conexiones, tamaño y consultas no están disponibles en este contrato.
+      </p>
+      {/* Controles */}
+      <div className="flex flex-wrap items-center gap-3">
+        <input
+          value={filterUser}
+          onChange={(e) => setFilterUser(e.target.value)}
+          disabled={!dbActivity}
+          placeholder={dbActivity ? "Filtrar por usuario" : "Consultas no disponibles"}
+          className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-200 placeholder:text-gray-500"
+        />
+        <label className="flex items-center gap-2 text-sm text-gray-300">
+          <input type="checkbox" checked={sortByDuration} onChange={(e) => setSortByDuration(e.target.checked)} disabled={!dbActivity} />
+          Ordenar por duración
+        </label>
+        <button
+          disabled={!dbActivity || dbActivity.length === 0}
+          onClick={() => {
+            if (!data?.db_activity) return;
+            const rows = data.db_activity.map((q) => ({
+              pid: q.pid,
+              user: q.user,
+              state: q.state,
+              wait_event: q.wait_event,
+              duration_seconds: q.duration_seconds,
+              query: q.query.replace(/\n/g, " "),
+            }));
+            const header = Object.keys(rows[0] || { pid: "", user: "", state: "", wait_event: "", duration_seconds: 0, query: "" });
+            const csv = [header.join(","), ...rows.map((r) => header.map((h) => String((r as any)[h]).replace(/","/g, "\"\,\"" )).join(","))].join("\n");
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `db_activity_${Date.now()}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+          }}
+          className="px-3 py-2 rounded-lg bg-cyan-500/20 text-cyan-200 border border-cyan-400/30 text-sm hover:bg-cyan-500/30"
+        >
+          Exportar CSV
+        </button>
       </div>
-
-      {loading && !data && (
-        <div className="rounded-xl border border-white/5 bg-white/5 p-4 text-gray-300">Cargando resumen de Cortex…</div>
+      {loading && (
+        <div className="rounded-xl border border-white/5 bg-white/5 p-4">Cargando…</div>
       )}
       {error && (
-        <div role="status" className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-rose-300">
-          No se pudo actualizar Cortex ({error}).{data ? " Se conserva la última respuesta válida." : ""}
+        <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-rose-300">
+          {error}
         </div>
       )}
 
       {data && (
         <div className="grid gap-6 md:grid-cols-2">
-          <section className="rounded-xl border border-white/5 bg-white/5 p-4">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-sm font-medium text-gray-300">Almacenamiento de métricas Cortex</h2>
-              <span className={`rounded-full px-2 py-1 text-xs ${data.available ? "bg-cyan-500/15 text-cyan-300" : "bg-gray-500/15 text-gray-300"}`}>
-                {storageStatus}
+          {/* Estado e instancia actual */}
+          <div className="rounded-xl border border-white/5 bg-white/5 p-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-medium text-gray-300">Instancia</h2>
+              <span
+                className={`text-xs px-2 py-1 rounded-full ${data.database.available ? "bg-cyan-500/15 text-cyan-300" : "bg-gray-500/15 text-gray-300"}`}
+              >
+                {databaseStatus}
               </span>
             </div>
             <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
               <div className="rounded-lg bg-white/5 p-3">
-                <p className="text-gray-400">Tipo</p>
-                <p className="font-mono text-cyan-300">{data.storage_type || "N/D"}</p>
+                <p className="text-gray-400">Conexiones activas</p>
+                <p className="font-mono text-orange-300">{data.db_stats?.connections_active ?? "N/D"}</p>
               </div>
               <div className="rounded-lg bg-white/5 p-3">
-                <p className="text-gray-400">Persistencia</p>
-                <p className="font-mono text-cyan-300">{data.persisted ? "Persistente" : "Solo memoria"}</p>
+                <p className="text-gray-400">Conexiones totales</p>
+                <p className="font-mono text-orange-300">{data.db_stats?.connections_total ?? "N/D"}</p>
               </div>
               <div className="rounded-lg bg-white/5 p-3">
-                <p className="text-gray-400">Muestras actuales</p>
-                <p className="font-mono text-cyan-300">{data.metrics_count.toLocaleString()}</p>
+                <p className="text-gray-400">Locks</p>
+                <p className="font-mono text-orange-300">{data.db_stats?.locks ?? "N/D"}</p>
               </div>
               <div className="rounded-lg bg-white/5 p-3">
-                <p className="text-gray-400">Capacidad de retención</p>
-                <p className="font-mono text-cyan-300">{data.retention_capacity.toLocaleString()}</p>
-              </div>
-              <div className="rounded-lg bg-white/5 p-3">
-                <p className="text-gray-400">Última muestra</p>
-                <p className="font-mono text-cyan-300">{data.latest_metric_at ? new Date(data.latest_metric_at).toLocaleString() : "N/D"}</p>
-              </div>
-              <div className="rounded-lg bg-white/5 p-3">
-                <p className="text-gray-400">Tamaño de base de datos</p>
-                <p className="font-mono text-gray-400">{data.db_size_bytes == null ? "N/D" : formatBytes(data.db_size_bytes)}</p>
+                <p className="text-gray-400">Tamaño DB</p>
+                <p className="font-mono text-orange-300">
+                  {data.db_stats?.db_size_bytes == null ? "N/D" : formatBytes(data.db_stats.db_size_bytes)}
+                </p>
               </div>
             </div>
-          </section>
+          </div>
 
-          <section className="rounded-xl border border-white/5 bg-white/5 p-4">
+          {/* Consultas activas */}
+          <div className="rounded-xl border border-white/5 bg-white/5 p-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-medium text-gray-300">Telemetría de base de datos</h2>
-              <span className="rounded-full bg-gray-500/15 px-2 py-1 text-xs text-gray-300">No disponible</span>
+              <h2 className="text-sm font-medium text-gray-300">Consultas activas</h2>
+              <span className="text-xs text-gray-400">{dbActivity === null ? "N/D" : dbActivity.length}</span>
             </div>
-            <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
-              {["Conexiones activas", "Conexiones totales", "Locks", "Consultas activas"].map((label) => (
-                <div key={label} className="rounded-lg bg-white/5 p-3">
-                  <p className="text-gray-400">{label}</p>
-                  <p className="font-mono text-gray-400">N/D</p>
-                </div>
-              ))}
+            <div className="mt-3 space-y-3">
+              {dbActivity === null && (
+                <p className="text-sm text-gray-500">Cortex no expone el feed de consultas activas.</p>
+              )}
+              {dbActivity?.length === 0 && (
+                <p className="text-sm text-gray-500">Sin consultas activas</p>
+              )}
+              {dbActivity && dbActivity
+                .filter((q) => (filterUser ? q.user.toLowerCase().includes(filterUser.toLowerCase()) : true))
+                .sort((a, b) => (sortByDuration ? b.duration_seconds - a.duration_seconds : 0))
+                .map((q) => (
+                  <div key={q.pid} className="rounded-lg bg-white/5 p-3">
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs text-gray-300">
+                        <span className="font-mono">PID {q.pid}</span> · {q.user} · {q.state}
+                      </div>
+                      <div className="text-xs text-gray-400">{Math.round(q.duration_seconds)}s</div>
+                    </div>
+                    {q.wait_event && (
+                      <p className="mt-1 text-xs text-amber-300">{q.wait_event}</p>
+                    )}
+                    <pre className="mt-2 whitespace-pre-wrap break-words text-xs text-gray-400">{q.query}</pre>
+                  </div>
+                ))}
             </div>
-            <p className="mt-4 text-sm text-gray-500">
-              La API actual de Cortex no proporciona salud de la base de datos, conexiones ni un feed de consultas activas.
-            </p>
-          </section>
+          </div>
         </div>
       )}
     </div>

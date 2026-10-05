@@ -535,13 +535,19 @@ pub async fn ai_health_handler(State(state): State<Arc<AppState>>) -> Json<Value
 #[derive(Deserialize)]
 pub struct AiQueryPayload {
     pub query: String,
-    pub temperature: Option<f64>,
 }
 
 pub async fn ai_query_handler(
     State(state): State<Arc<AppState>>,
     Json(payload): Json<AiQueryPayload>,
 ) -> (axum::http::StatusCode, Json<Value>) {
+    if payload.query.trim().is_empty() {
+        return (
+            axum::http::StatusCode::BAD_REQUEST,
+            Json(json!({ "error": "La consulta no puede estar vacía" })),
+        );
+    }
+
     let query_lower = payload.query.to_lowercase();
     let is_attack = query_lower.contains("drop database")
         || query_lower.contains("rm -rf")
@@ -555,14 +561,25 @@ pub async fn ai_query_handler(
             "reason": "critical_pattern_detected",
             "recorded_at": Utc::now().to_rfc3339(),
         });
-        let _ = state.security_wal.write(&event.to_string());
+        if let Err(error) = state.security_wal.write(&event.to_string()) {
+            tracing::error!(error = %error, "No se pudo persistir el bloqueo de consulta");
+            return (
+                axum::http::StatusCode::SERVICE_UNAVAILABLE,
+                Json(json!({
+                    "error": "No se pudo registrar el evento de seguridad; consulta rechazada",
+                    "answer": null,
+                    "generation_available": false
+                })),
+            );
+        }
         return (
             axum::http::StatusCode::FORBIDDEN,
             Json(json!({
-                "error": "Consulta bloqueada por sanitizador de seguridad cognitivo",
+                "error": "Consulta bloqueada por patrón crítico",
                 "certified": false,
-                "trust_score": 0.0,
-                "answer": null
+                "trust_score_raw": 0,
+                "answer": null,
+                "generation_available": false
             })),
         );
     }
@@ -577,33 +594,63 @@ pub async fn ai_query_handler(
         .unwrap()
         .verify_text(&payload.query, total_energy);
 
-    let score_f64 = res.overall_trust_score.to_raw() as f64 / me60os_core::spa::SPA::SCALE_0 as f64;
-
     (
         axum::http::StatusCode::OK,
         Json(json!({
             "query": payload.query,
             "certified": res.is_certified,
-            "trust_score": score_f64,
+            "trust_score_raw": res.overall_trust_score.to_raw(),
+            "trust_score_scale": me60os_core::spa::SPA::SCALE_0,
             "verification_time_us": res.verification_time_us,
             "lattice_energy_raw": total_energy,
-            "answer": format!("Consulta verificada bajo energía física S60 ({} raw). Confianza: {:.2}%", total_energy, score_f64 * 100.0)
+            "generation_available": false,
+            "answer": null,
+            "message": "TruthSync verificó la consulta. Cortex no tiene un generador de respuestas IA conectado; no se generó texto."
         })),
     )
 }
 
-pub async fn backup_trigger_handler() -> Json<Value> {
-    tokio::spawn(async {
-        let _ = tokio::process::Command::new("/bin/sh")
-            .arg("/opt/sentinel/scripts/run-scheduled-backup.sh")
-            .output()
-            .await;
+pub async fn backup_trigger_handler() -> (axum::http::StatusCode, Json<Value>) {
+    let script = std::env::var_os("SENTINEL_BACKUP_SCRIPT")
+        .unwrap_or_else(|| "/opt/sentinel/scripts/run-scheduled-backup.sh".into());
+    let mut child = match tokio::process::Command::new("/bin/sh")
+        .arg(script)
+        .spawn()
+    {
+        Ok(child) => child,
+        Err(error) => {
+            tracing::error!(error = %error, "No se pudo iniciar el proceso de respaldo");
+            return (
+                axum::http::StatusCode::SERVICE_UNAVAILABLE,
+                Json(json!({
+                    "status": "failed",
+                    "message": "No se pudo iniciar el proceso de respaldo"
+                })),
+            );
+        }
+    };
+
+    tokio::spawn(async move {
+        match child.wait().await {
+            Ok(status) if status.success() => {
+                tracing::info!("El proceso de respaldo terminó correctamente");
+            }
+            Ok(status) => {
+                tracing::error!(status = %status, "El proceso de respaldo terminó con error");
+            }
+            Err(error) => {
+                tracing::error!(error = %error, "No se pudo obtener el resultado del proceso de respaldo");
+            }
+        }
     });
 
-    Json(json!({
-        "status": "success",
-        "message": "Respaldo programado iniciado en segundo plano"
-    }))
+    (
+        axum::http::StatusCode::ACCEPTED,
+        Json(json!({
+            "status": "started",
+            "message": "Proceso de respaldo iniciado; el resultado aún no está confirmado"
+        })),
+    )
 }
 
 pub async fn dashboard_status_handler(State(state): State<Arc<AppState>>) -> Json<Value> {
@@ -613,7 +660,8 @@ pub async fn dashboard_status_handler(State(state): State<Arc<AppState>>) -> Jso
     let lat_energy = state.lattice.lock().unwrap().total_energy_raw();
 
     Json(json!({
-        "status": "healthy",
+        "available": true,
+        "status": "runtime_available",
         "timestamp": Utc::now().to_rfc3339(),
         "system": {
             "cpu_percent": cpu,
@@ -622,14 +670,16 @@ pub async fn dashboard_status_handler(State(state): State<Arc<AppState>>) -> Jso
             "qhc_connected": qhc.connected
         },
         "database": {
-            "status": "connected",
-            "type": "PostgreSQL 16",
-            "host": "127.0.0.1"
+            "available": false,
+            "status": "not_available",
+            "type": Value::Null,
+            "host": Value::Null
         },
         "redis": {
-            "status": "connected",
-            "type": "Redis 7",
-            "host": "127.0.0.1"
+            "available": false,
+            "status": "not_available",
+            "type": Value::Null,
+            "host": Value::Null
         }
     }))
 }
