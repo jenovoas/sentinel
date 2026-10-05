@@ -1,0 +1,24 @@
+#!/sbin/openrc-run
+# ==============================================================================
+# Sentinel Backup Daemon — Servicio OpenRC para respaldos periódicos
+# ==============================================================================
+
+name="sentinel-backup"
+description="Sentinel Periodic Database and State Backup Daemon"
+
+command="/bin/sh"
+command_args="-c 'while true; do /opt/sentinel/scripts/run-scheduled-backup.sh >> /var/log/sentinel/backup.log 2>&1; sleep 86400; done'"
+command_background="yes"
+pidfile="/run/sentinel/${RC_SVCNAME}.pid"
+
+depend() {
+    need localmount
+    use docker
+    after sentinel-stack
+}
+
+start_pre() {
+    checkpath -d -m 0750 -o root:root /var/lib/sentinel/backups
+    checkpath -d -m 0750 -o root:root /var/log/sentinel
+    checkpath -d -m 0755 -o root:root /run/sentinel
+}

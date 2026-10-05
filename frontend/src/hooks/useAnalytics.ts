@@ -9,6 +9,7 @@ import {
   HistoryState, 
   StorageSummary,
   MetricHistory,
+  AnalyticsSample,
 } from "@/lib/types";
 import { AnalyticsAPI } from "@/lib/api";
 
@@ -30,7 +31,8 @@ export const useAnalytics = () => {
   const [storage, setStorage] = useState<StorageSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const normalizeNetworkPercent = useCallback((bytesSent: number, bytesRecv: number) => {
+  const normalizeNetworkPercent = useCallback((bytesSent: number | null, bytesRecv: number | null) => {
+    if (bytesSent === null || bytesRecv === null) return null;
     const total = bytesSent + bytesRecv;
     const gb = total / (1024 * 1024 * 1024);
     return Math.min(gb * 10, 100);
@@ -55,31 +57,41 @@ export const useAnalytics = () => {
       (a, b) => new Date(a.sampled_at).getTime() - new Date(b.sampled_at).getTime()
     );
 
-    const toHistory = (selector: (s: typeof samples[0]) => number): MetricHistory =>
+    const toHistory = (selector: (s: AnalyticsSample) => number | null): MetricHistory =>
       sorted
-        .map((s) => ({
-          timestamp: new Date(s.sampled_at).getTime(),
-          value: selector(s),
-        }))
+        .flatMap((sample) => {
+          const value = selector(sample);
+          const timestamp = new Date(sample.sampled_at).getTime();
+          return value !== null && Number.isFinite(value) && Number.isFinite(timestamp)
+            ? [{ timestamp, value }]
+            : [];
+        })
         .slice(-HISTORY_SIZE);
 
-    const hostToHistory = (selector: (s: any) => number): MetricHistory =>
+    const hostToHistory = (selector: (s: any) => number | null | undefined): MetricHistory =>
       hostData
-        .map((s) => ({
-          timestamp: new Date(s.timestamp).getTime(),
-          value: selector(s),
-        }))
+        .flatMap((sample) => {
+          const value = selector(sample);
+          const timestamp = new Date(sample.timestamp).getTime();
+          return value != null && Number.isFinite(value) && Number.isFinite(timestamp)
+            ? [{ timestamp, value }]
+            : [];
+        })
         .slice(-HISTORY_SIZE);
 
     setHistory({
       cpu: toHistory((s) => s.cpu_percent),
       memory: toHistory((s) => s.memory_percent),
-      gpu: toHistory((s) => s.gpu_percent ?? 0),
+      gpu: toHistory((s) => s.gpu_percent),
       network: toHistory((s) => normalizeNetworkPercent(s.network_bytes_sent, s.network_bytes_recv)),
       hostCpu: hostToHistory((s) => s.cpu_percent),
       hostMemory: hostToHistory((s) => s.mem_percent),
-      hostGpu: hostToHistory((s) => s.gpu_percent ?? 0),
-      hostNetwork: hostToHistory((s) => normalizeNetworkPercent(s.network?.net_bytes_sent ?? 0, s.network?.net_bytes_recv ?? 0)),
+      hostGpu: hostToHistory((s) => s.gpu_percent),
+      hostNetwork: hostToHistory((s) =>
+        s.network
+          ? normalizeNetworkPercent(s.network.net_bytes_sent ?? null, s.network.net_bytes_recv ?? null)
+          : null
+      ),
     });
   }, [normalizeNetworkPercent]);
 

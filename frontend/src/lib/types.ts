@@ -54,14 +54,14 @@ export type StorageSummary = {
 
 export type AnalyticsSample = {
   sampled_at: string;
-  cpu_percent: number;
-  memory_percent: number;
-  memory_used_mb: number;
+  cpu_percent: number | null;
+  memory_percent: number | null;
+  memory_used_mb: number | null;
   gpu_percent: number | null;
-  network_bytes_sent: number;
-  network_bytes_recv: number;
-  db_connections_active: number;
-  db_locks: number;
+  network_bytes_sent: number | null;
+  network_bytes_recv: number | null;
+  db_connections_active: number | null;
+  db_locks: number | null;
 };
 
 export type DetailModalType = "metrics" | "anomalies" | "database" | null;

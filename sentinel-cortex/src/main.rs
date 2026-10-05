@@ -23,7 +23,7 @@ use axum::{
 };
 use ebpf_cortex_bridge::{CortexEvent, EbpfBridge};
 use math::harmonic_logic::{HarmonicProcessor, HarmonicState};
-use metrics::{MetricsRepository, MetricsSnapshot, PrometheusRepository};
+use metrics::MetricsSnapshot;
 use security::bio_resonance::ResonanceEngine;
 use serde::Serialize;
 use std::sync::{Arc, Mutex};
@@ -84,7 +84,6 @@ fn append_synced_wal(path: &std::path::Path, entry: &str) -> std::io::Result<()>
 
 pub(crate) struct AppState {
     resonance: Arc<Mutex<ResonanceEngine>>,
-    metrics: Arc<dyn MetricsRepository>,
     security_wal: SecurityWal,
     bpf_stream: broadcast::Sender<CortexEvent>,
     lattice: Arc<Mutex<memory::resonant_lattice_bridge::ResonantLatticeBridge>>,
@@ -93,7 +92,6 @@ pub(crate) struct AppState {
     #[allow(dead_code)]
     pattern_detector: Arc<engine::patterns::PatternDetector>,
     neural_memory: Arc<Mutex<me60os_core::neural_memory::NeuralMemory>>,
-    #[allow(dead_code)]
     quantum_scheduler: Arc<Mutex<quantum::quantum_scheduler::QuantumScheduler>>,
     #[allow(dead_code)]
     bio_resonator: Arc<Mutex<quantum::bio_resonator::BioResonator>>,
@@ -132,7 +130,6 @@ async fn main() {
     // Initialize core components
     let resonance = Arc::new(Mutex::new(ResonanceEngine::new()));
     let processor = Arc::new(Mutex::new(HarmonicProcessor::new()));
-    let metrics = Arc::new(PrometheusRepository::new());
     // Calculate Dynamic Lattice Size based on System Available RAM (rings: N = 3r^2 + 3r + 1)
     let available_ram_mb: usize = std::fs::read_to_string("/proc/meminfo")
         .ok()
@@ -174,7 +171,6 @@ async fn main() {
     let qhc = Arc::new(parking_lot::Mutex::new(qhc_client::QhcStatus::unavailable()));
     let state = Arc::new(AppState {
         resonance: resonance.clone(),
-        metrics: metrics.clone() as Arc<dyn MetricsRepository>,
         security_wal: SecurityWal::production(),
         bpf_stream: tx_bpf.clone(),
         lattice: lattice.clone(),
@@ -187,6 +183,13 @@ async fn main() {
         qhc: qhc.clone(),
     });
     qhc_client::spawn(qhc);
+    tokio::spawn(async {
+        let mut interval = tokio::time::interval(Duration::from_secs(15));
+        loop {
+            interval.tick().await;
+            dashboard::record_analytics_sample();
+        }
+    });
 
     let resonance_task = resonance.clone();
     let processor_task = processor.clone();
@@ -443,6 +446,10 @@ async fn main() {
             get(dashboard::analytics_statistics_handler),
         )
         .route(
+            "/api/v1/analytics/metrics/recent",
+            get(dashboard::analytics_metrics_recent_handler),
+        )
+        .route(
             "/api/v1/analytics/anomalies",
             get(dashboard::analytics_anomalies_handler),
         )
@@ -516,13 +523,15 @@ async fn health_handler(
     axum::extract::State(state): axum::extract::State<Arc<AppState>>,
 ) -> Json<HealthStatus> {
     let bio_coherence = state.resonance.lock().unwrap().get_coherence_raw();
+    let scheduler_efficiency = state.quantum_scheduler.lock().unwrap().efficiency_percent();
     let qhc = state.qhc.lock().clone();
     Json(HealthStatus {
         status: "OK".to_string(),
         version: env!("CARGO_PKG_VERSION").to_string(),
         metrics: MetricsSnapshot {
             coherence: bio_coherence,
-            efficiency: state.metrics.get_scheduler_efficiency().to_base_units(),
+            efficiency: scheduler_efficiency.unwrap_or(0) as i64,
+            efficiency_available: scheduler_efficiency.is_some(),
             timestamp_s60: 0, // Placeholder
         },
         qhc,
@@ -1000,7 +1009,6 @@ mod tests {
         ));
         let truthsync = Arc::new(Mutex::new(truthsync_core::TruthSyncEngine::new()));
         let resonance = Arc::new(Mutex::new(security::bio_resonance::ResonanceEngine::new()));
-        let metrics = Arc::new(metrics::PrometheusRepository::new());
         let liquid_lattice = Arc::new(Mutex::new(memory::liquid_lattice::LiquidLattice::new()));
         let pattern_detector = Arc::new(engine::patterns::PatternDetector::new());
         let neural_memory = Arc::new(Mutex::new(me60os_core::neural_memory::NeuralMemory::new()));
@@ -1014,7 +1022,6 @@ mod tests {
         let (security_wal, wal_dir) = test_security_wal();
         let state = Arc::new(AppState {
             resonance,
-            metrics,
             security_wal,
             bpf_stream: tx_bpf,
             lattice,

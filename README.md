@@ -7,9 +7,8 @@
 [![eBPF](https://img.shields.io/badge/eBPF-kernel--level-orange)](./ebpf/)
 
 > [!NOTE]
-> **Runtime 100% Rust.** La migración Py→Rust terminó. Los `.py` restantes en `quantum/` son material de estudio o puentes legacy (`LEGACY BRIDGE / MIGRADO / YATRA-protected`) — no forman parte del runtime activo.
-> Producción real: servidor **Fan** (nodo único Fenix, Podman rootless).
-
+> Runtime 100% Rust. La migración Py→Rust terminó. Los `.py` restantes en `quantum/` son material de estudio histórico — no forman parte del runtime activo.
+> Servidor actual de desarrollo y pruebas: **fenix** (Alpine Linux v3.24, OpenRC, Docker Compose, Nginx).
 ---
 
 ## Fases del Proyecto
@@ -18,10 +17,10 @@
    * `backend/` + `docker-compose.yml` — Python (FastAPI/Celery/Nginx).
    * Prueba de concepto original. **No se usa en producción.**
 
-2. **Producción actual (Nodo Único Fenix):**
-   * `docker-compose.fenix.yml` + workspace Cargo descrito abajo.
-   * Stack: **Rust**, Podman, Traefik, eBPF Ring-0, systemd units por daemon.
-
+2. **Entorno actual de desarrollo (Nodo Único Fenix):**
+   * `docker-compose.fenix.yml` + workspace Cargo.
+   * Stack: **Rust**, Docker Compose, Nginx en host, eBPF Ring-0, servicios nativos **OpenRC** (`openrc/`).
+   * Rama exclusiva: `alpine_fenix`.
 3. **Visión Fase 2 (Cluster Multi-Nodo):**
    * Mesh S60 distribuido vía [MycNet](https://github.com/) (ver `docs/archive/` para el diseño histórico).
 

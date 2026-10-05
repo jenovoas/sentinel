@@ -228,6 +228,14 @@ impl QuantumScheduler {
         }
     }
 
+    pub fn efficiency_percent(&self) -> Option<u64> {
+        let total = self.tasks_in_portal.checked_add(self.tasks_forced)?;
+        if total == 0 {
+            return None;
+        }
+        Some((self.tasks_in_portal as u128 * 100 / total as u128) as u64)
+    }
+
     pub fn queue_len(&self) -> usize {
         self.task_queue.len()
     }
@@ -261,5 +269,16 @@ mod tests {
         let stats = scheduler.get_stats();
         assert_eq!(stats.tasks_in_portal, 0);
         assert_eq!(stats.efficiency, S60::zero());
+    }
+
+    #[test]
+    fn efficiency_percent_requires_samples_and_uses_live_counts() {
+        let bio = Arc::new(Mutex::new(BioResonator::new()));
+        let mut scheduler = QuantumScheduler::new(bio);
+        assert_eq!(scheduler.efficiency_percent(), None);
+
+        scheduler.tasks_in_portal = 3;
+        scheduler.tasks_forced = 1;
+        assert_eq!(scheduler.efficiency_percent(), Some(75));
     }
 }

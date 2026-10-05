@@ -9,10 +9,10 @@ import { BackupStatusCard } from "@/components/backup/BackupStatusCard";
 import { FailSafeSecurityCard } from "@/components/failsafe/FailSafeSecurityCard";
 
 interface SLOData {
-    availability: { value: number; target: number };
-    errorRate: { value: number; target: number };
-    latency: { value: number; target: number };
-    aiResponse: { value: number; target: number };
+    availability: { value: number | null; target: number };
+    errorRate: { value: number | null; target: number };
+    latency: { value: number | null; target: number };
+    aiResponse: { value: number | null; target: number };
 }
 
 interface AIInsight {
@@ -26,26 +26,32 @@ interface SecurityAlert {
     count: number;
 }
 
+interface SystemLog {
+    timestamp: string;
+    level: string;
+    unit: string;
+    message: string;
+}
+
+interface SystemLogsState {
+    available: boolean;
+    logs: SystemLog[];
+}
+
 export default function DashboardPage() {
-    const [sloData, setSloData] = useState<SLOData>({
-        availability: { value: 99.95, target: 99.9 },
-        errorRate: { value: 0.3, target: 1.0 },
-        latency: { value: 45, target: 100 },
-        aiResponse: { value: 1.2, target: 3.0 },
+    const [sloData] = useState<SLOData>({
+        availability: { value: null, target: 99.9 },
+        errorRate: { value: null, target: 1.0 },
+        latency: { value: null, target: 100 },
+        aiResponse: { value: null, target: 3.0 },
     });
 
-    const [aiInsights, setAiInsights] = useState<AIInsight[]>([
-        { type: "optimization", message: "CPU usage trending up 15% this week" },
-        { type: "warning", message: "Memory leak suspected in backend service" },
-        { type: "info", message: "GPU utilization could be optimized" },
-    ]);
+    const [aiInsights, setAiInsights] = useState<AIInsight[]>([]);
+    const [securityAlerts, setSecurityAlerts] = useState<SecurityAlert[]>([]);
+    const [anomaliesAvailable, setAnomaliesAvailable] = useState(false);
+    const [systemLogs, setSystemLogs] = useState<SystemLogsState>({ available: false, logs: [] });
 
-    const [securityAlerts, setSecurityAlerts] = useState<SecurityAlert[]>([
-        { severity: "low", message: "Failed login attempts", count: 5 },
-        { severity: "low", message: "Auditd events", count: 2 },
-    ]);
-
-    const [systemStatus, setSystemStatus] = useState<"healthy" | "warning" | "critical">("healthy");
+    const [systemStatus, setSystemStatus] = useState<"healthy" | "warning" | "critical" | "unknown">("unknown");
 
     // Fetch real data from backend
     useEffect(() => {
@@ -55,34 +61,20 @@ export default function DashboardPage() {
                 const statsRes = await fetch("/api/v1/analytics/statistics?hours=24");
                 const statsData = await statsRes.json();
 
-                // Update SLO data from real metrics
+                // SLOs remain unavailable until the backend provides measured history.
                 if (statsData) {
-                    setSloData({
-                        availability: {
-                            value: statsData.cpu?.avg < 90 ? 99.95 : 99.5,
-                            target: 99.9
-                        },
-                        errorRate: {
-                            value: statsData.anomalies_count > 10 ? 1.5 : 0.3,
-                            target: 1.0
-                        },
-                        latency: {
-                            value: statsData.latency?.mean || 45,
-                            target: 100
-                        },
-                        aiResponse: {
-                            value: 1.2, // TODO: Get from AI health
-                            target: 3.0
-                        },
-                    });
-
-                    // Determine system status
-                    if (statsData.cpu?.max > 90 || statsData.memory?.max > 90) {
-                        setSystemStatus("warning");
-                    } else if (statsData.cpu?.max > 95 || statsData.memory?.max > 95) {
-                        setSystemStatus("critical");
+                    const cpu = statsData.cpu?.current;
+                    const memory = statsData.memory?.current;
+                    if (typeof cpu === "number" && typeof memory === "number") {
+                        if (cpu > 95 || memory > 95) {
+                            setSystemStatus("critical");
+                        } else if (cpu > 90 || memory > 90) {
+                            setSystemStatus("warning");
+                        } else {
+                            setSystemStatus("healthy");
+                        }
                     } else {
-                        setSystemStatus("healthy");
+                        setSystemStatus("unknown");
                     }
                 }
 
@@ -90,47 +82,35 @@ export default function DashboardPage() {
                 const anomaliesRes = await fetch("/api/v1/analytics/anomalies?hours=24&limit=10");
                 const anomaliesData = await anomaliesRes.json();
 
-                if (anomaliesData?.anomalies) {
-                    // Convert anomalies to insights
-                    const insights: AIInsight[] = anomaliesData.anomalies
-                        .filter((a: any) => !a.is_resolved)
-                        .slice(0, 3)
-                        .map((a: any) => ({
-                            type: a.severity === "critical" ? "warning" : "optimization",
-                            message: a.title || a.description,
-                        }));
+                const anomalyRecords = anomaliesData?.anomalies;
+                const hasAnomalyData = anomaliesData?.available === true && Array.isArray(anomalyRecords);
+                setAnomaliesAvailable(hasAnomalyData);
 
-                    if (insights.length > 0) {
-                        setAiInsights(insights);
-                    }
-
-                    // Convert to security alerts
-                    const alerts: SecurityAlert[] = anomaliesData.anomalies
-                        .filter((a: any) => !a.is_resolved)
-                        .slice(0, 5)
-                        .map((a: any) => ({
-                            severity: a.severity === "critical" ? "high" : a.severity === "warning" ? "medium" : "low",
-                            message: a.title,
-                            count: 1,
-                        }));
-
-                    if (alerts.length > 0) {
-                        setSecurityAlerts(alerts);
-                    }
+                if (hasAnomalyData) {
+                    const unresolved = anomalyRecords.filter((a: any) => !a.is_resolved);
+                    setAiInsights(unresolved.slice(0, 3).map((a: any) => ({
+                        type: a.severity === "critical" ? "warning" : "optimization",
+                        message: a.title || a.description,
+                    })));
+                    setSecurityAlerts(unresolved.slice(0, 5).map((a: any) => ({
+                        severity: a.severity === "critical" ? "high" : a.severity === "warning" ? "medium" : "low",
+                        message: a.title,
+                        count: 1,
+                    })));
+                } else {
+                    setAiInsights([]);
+                    setSecurityAlerts([]);
                 }
 
-                // Fetch AI health
-                const aiHealthRes = await fetch("/api/v1/ai/health");
-                const aiHealthData = await aiHealthRes.json();
-
-                if (aiHealthData) {
-                    setSloData(prev => ({
-                        ...prev,
-                        aiResponse: {
-                            value: aiHealthData.enabled ? 1.2 : 0,
-                            target: 3.0,
-                        },
-                    }));
+                try {
+                    const logsRes = await fetch("/api/system-logs?limit=10", { cache: "no-store" });
+                    const logsData = await logsRes.json();
+                    setSystemLogs({
+                        available: logsRes.ok && logsData?.available === true,
+                        logs: logsRes.ok && Array.isArray(logsData?.logs) ? logsData.logs : [],
+                    });
+                } catch {
+                    setSystemLogs({ available: false, logs: [] });
                 }
             } catch (error) {
                 console.error("Error fetching dashboard data:", error);
@@ -152,6 +132,8 @@ export default function DashboardPage() {
                 return "text-amber-400 bg-amber-500/10 border-amber-500/20";
             case "critical":
                 return "text-rose-400 bg-rose-500/10 border-rose-500/20";
+            case "unknown":
+                return "text-gray-400 bg-gray-500/10 border-gray-500/20";
         }
     };
 
@@ -163,10 +145,13 @@ export default function DashboardPage() {
                 return "🟡";
             case "critical":
                 return "🔴";
+            case "unknown":
+                return "⚪";
         }
     };
 
-    const getSLOStatus = (value: number, target: number, inverse = false) => {
+    const getSLOStatus = (value: number | null, target: number, inverse = false) => {
+        if (value === null || !Number.isFinite(value)) return "unavailable" as const;
         const ratio = inverse ? target / value : value / target;
         if (ratio >= 1.0) return "good";
         if (ratio >= 0.9) return "warning";
@@ -199,9 +184,10 @@ export default function DashboardPage() {
                             <div className="flex items-center gap-3 mb-2">
                                 <span className="text-4xl">{getStatusIcon(systemStatus)}</span>
                                 <h2 className="text-2xl font-semibold">
-                                    {systemStatus === "healthy" && "All Systems Operational"}
-                                    {systemStatus === "warning" && "System Warning"}
-                                    {systemStatus === "critical" && "Critical Issues Detected"}
+                                    {systemStatus === "healthy" && "Resource Usage Normal"}
+                                    {systemStatus === "warning" && "High Resource Usage"}
+                                    {systemStatus === "critical" && "Critical Resource Usage"}
+                                    {systemStatus === "unknown" && "Resource Status Unavailable"}
                                 </h2>
                             </div>
                             <p className="text-sm opacity-80" suppressHydrationWarning>
@@ -209,7 +195,9 @@ export default function DashboardPage() {
                             </p>
                         </div>
                         <div className="text-right">
-                            <p className="text-3xl font-bold">{sloData.availability.value}%</p>
+                            <p className="text-3xl font-bold">
+                                {sloData.availability.value === null ? "N/A" : `${sloData.availability.value}%`}
+                            </p>
                             <p className="text-sm opacity-80">Uptime (Target: {sloData.availability.target}%)</p>
                         </div>
                     </div>
@@ -221,28 +209,28 @@ export default function DashboardPage() {
                     <div className="grid gap-4 md:grid-cols-4">
                         <SLOCard
                             title="Availability"
-                            value={`${sloData.availability.value}%`}
+                            value={sloData.availability.value === null ? "N/A" : `${sloData.availability.value}%`}
                             target={`${sloData.availability.target}%`}
                             status={getSLOStatus(sloData.availability.value, sloData.availability.target)}
                             description="System uptime"
                         />
                         <SLOCard
                             title="Error Rate"
-                            value={`${sloData.errorRate.value}%`}
+                            value={sloData.errorRate.value === null ? "N/A" : `${sloData.errorRate.value}%`}
                             target={`<${sloData.errorRate.target}%`}
                             status={getSLOStatus(sloData.errorRate.value, sloData.errorRate.target, true)}
                             description="Failed requests"
                         />
                         <SLOCard
                             title="Latency P95"
-                            value={`${sloData.latency.value}ms`}
+                            value={sloData.latency.value === null ? "N/A" : `${sloData.latency.value}ms`}
                             target={`<${sloData.latency.target}ms`}
                             status={getSLOStatus(sloData.latency.value, sloData.latency.target, true)}
                             description="Response time"
                         />
                         <SLOCard
                             title="AI Response"
-                            value={`${sloData.aiResponse.value}s`}
+                            value={sloData.aiResponse.value === null ? "N/A" : `${sloData.aiResponse.value}s`}
                             target={`<${sloData.aiResponse.target}s`}
                             status={getSLOStatus(sloData.aiResponse.value, sloData.aiResponse.target, true)}
                             description="AI inference time"
@@ -268,7 +256,11 @@ export default function DashboardPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-3">
-                                {aiInsights.map((insight, i) => (
+                                {aiInsights.length === 0 ? (
+                                    <p className="text-sm text-gray-400">
+                                        {anomaliesAvailable ? "No active insights" : "Live insight data unavailable"}
+                                    </p>
+                                ) : aiInsights.map((insight, i) => (
                                     <div
                                         key={i}
                                         className={`rounded-lg p-3 border ${insight.type === "optimization"
@@ -300,14 +292,30 @@ export default function DashboardPage() {
                                     <span className="text-rose-400">🔒</span>
                                     Security Alerts
                                 </CardTitle>
-                                <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
-                                    Secure
+                                <Badge
+                                    variant="outline"
+                                    className={anomaliesAvailable
+                                        ? securityAlerts.length === 0
+                                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                            : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                        : "bg-gray-500/10 text-gray-400 border-gray-500/20"}
+                                >
+                                    {!anomaliesAvailable
+                                        ? "Unavailable"
+                                        : securityAlerts.length === 0
+                                            ? "No active alerts"
+                                            : "Alerts active"}
                                 </Badge>
                             </div>
                             <CardDescription>Last 24 hours</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-3">
+                                {securityAlerts.length === 0 && (
+                                    <p className="text-sm text-gray-400">
+                                        {anomaliesAvailable ? "No active alerts" : "Live alert data unavailable"}
+                                    </p>
+                                )}
                                 {securityAlerts.map((alert, i) => (
                                     <div
                                         key={i}
@@ -402,28 +410,38 @@ export default function DashboardPage() {
                     <h2 className="text-2xl font-semibold text-white mb-4">Recent Activity</h2>
                     <Card className="bg-white/5 backdrop-blur-xl border-white/10">
                         <CardContent className="p-6">
-                            <div className="space-y-3">
-                                <ActivityItem
-                                    time="10:30 AM"
-                                    message="AI analyzed CPU spike (resolved)"
-                                    type="success"
-                                />
-                                <ActivityItem
-                                    time="09:15 AM"
-                                    message="Backup completed successfully"
-                                    type="success"
-                                />
-                                <ActivityItem
-                                    time="08:00 AM"
-                                    message="Daily SLO report generated"
-                                    type="info"
-                                />
-                                <ActivityItem
-                                    time="07:45 AM"
-                                    message="Security scan completed - no threats"
-                                    type="success"
-                                />
-                            </div>
+                            {systemLogs.logs.length === 0 ? (
+                                <p className="text-sm text-gray-400">
+                                    {systemLogs.available ? "No recent system events" : "System log feed unavailable"}
+                                </p>
+                            ) : (
+                                <div className="space-y-3">
+                                    {systemLogs.logs.map((log, index) => {
+                                        const level = log.level.toUpperCase();
+                                        const isCritical = level === "CRITICAL" || level === "ERROR";
+                                        const isWarning = level === "WARNING";
+                                        return (
+                                            <div
+                                                key={`${log.timestamp}-${log.unit}-${index}`}
+                                                className={`rounded-lg border p-3 ${isCritical
+                                                    ? "bg-rose-500/10 border-rose-500/20"
+                                                    : isWarning
+                                                        ? "bg-amber-500/10 border-amber-500/20"
+                                                        : "bg-slate-500/10 border-slate-500/20"
+                                                    }`}
+                                            >
+                                                <div className="flex items-start justify-between gap-4">
+                                                    <p className="text-sm text-gray-200">{log.message}</p>
+                                                    <Badge variant="outline">{level}</Badge>
+                                                </div>
+                                                <p className="mt-1 text-xs text-gray-500">
+                                                    {log.timestamp} · {log.unit}
+                                                </p>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </section>
@@ -443,19 +461,21 @@ function SLOCard({
     title: string;
     value: string;
     target: string;
-    status: "good" | "warning" | "critical";
+    status: "good" | "warning" | "critical" | "unavailable";
     description: string;
 }) {
     const statusColors = {
         good: "border-emerald-500/20 bg-emerald-500/10",
         warning: "border-amber-500/20 bg-amber-500/10",
         critical: "border-rose-500/20 bg-rose-500/10",
+        unavailable: "border-gray-500/20 bg-gray-500/10",
     };
 
     const statusTextColors = {
         good: "text-emerald-400",
         warning: "text-amber-400",
         critical: "text-rose-400",
+        unavailable: "text-gray-400",
     };
 
     return (
@@ -469,32 +489,5 @@ function SLOCard({
                 </div>
             </CardContent>
         </Card>
-    );
-}
-
-// Activity Item Component
-function ActivityItem({
-    time,
-    message,
-    type,
-}: {
-    time: string;
-    message: string;
-    type: "success" | "warning" | "info";
-}) {
-    const icons = {
-        success: "✅",
-        warning: "⚠️",
-        info: "ℹ️",
-    };
-
-    return (
-        <div className="flex items-start gap-3 pb-3 border-b border-white/5 last:border-0 last:pb-0">
-            <span className="text-lg">{icons[type]}</span>
-            <div className="flex-1">
-                <p className="text-sm text-gray-300">{message}</p>
-                <p className="text-xs text-gray-500 mt-1">{time}</p>
-            </div>
-        </div>
     );
 }

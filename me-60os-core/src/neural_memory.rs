@@ -113,6 +113,77 @@ impl NeuralMemory {
             );
         }
     }
+
+    pub fn save_to_crystal(&self, path: &std::path::Path) -> std::io::Result<()> {
+        use std::io::Write;
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+        let mut file = std::fs::File::create(path)?;
+        // Magic header: 16 bytes
+        file.write_all(b"CRYSTAL_SNN_V1\0\0")?;
+        file.write_all(&(self.processed as u64).to_le_bytes())?;
+        file.write_all(&self.total_spikes.to_le_bytes())?;
+        file.write_all(&(self.neurons.len() as u32).to_le_bytes())?;
+
+        for n in &self.neurons {
+            file.write_all(&n.v_membrane.to_raw().to_le_bytes())?;
+            file.write_all(&n.v_threshold.to_raw().to_le_bytes())?;
+            file.write_all(&n.decay_factor.to_raw().to_le_bytes())?;
+            file.write_all(&n.spike_count.to_le_bytes())?;
+        }
+        file.sync_all()
+    }
+
+    pub fn load_from_crystal(path: &std::path::Path) -> std::io::Result<Self> {
+        use std::io::Read;
+        let mut file = std::fs::File::open(path)?;
+        let mut magic = [0u8; 16];
+        file.read_exact(&mut magic)?;
+        if &magic != b"CRYSTAL_SNN_V1\0\0" {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                "Cabecera mágica de archivo .crystal inválida",
+            ));
+        }
+
+        let mut u64_buf = [0u8; 8];
+        let mut u32_buf = [0u8; 4];
+
+        file.read_exact(&mut u64_buf)?;
+        let processed = u64::from_le_bytes(u64_buf) as usize;
+
+        file.read_exact(&mut u64_buf)?;
+        let total_spikes = u64::from_le_bytes(u64_buf);
+
+        file.read_exact(&mut u32_buf)?;
+        let count = u32::from_le_bytes(u32_buf) as usize;
+
+        let mut neurons = Vec::with_capacity(count);
+        for _ in 0..count {
+            file.read_exact(&mut u64_buf)?;
+            let v_mem = i64::from_le_bytes(u64_buf);
+            file.read_exact(&mut u64_buf)?;
+            let v_thresh = i64::from_le_bytes(u64_buf);
+            file.read_exact(&mut u64_buf)?;
+            let decay = i64::from_le_bytes(u64_buf);
+            file.read_exact(&mut u64_buf)?;
+            let spikes = u64::from_le_bytes(u64_buf);
+
+            neurons.push(LIFNeuron {
+                v_membrane: SPA::from_raw(v_mem),
+                v_threshold: SPA::from_raw(v_thresh),
+                decay_factor: SPA::from_raw(decay),
+                spike_count: spikes,
+            });
+        }
+
+        Ok(Self {
+            processed,
+            total_spikes,
+            neurons,
+        })
+    }
 }
 
 // C. Python Bindings (PyO3)
@@ -134,5 +205,34 @@ impl NeuralMemory {
     #[getter]
     pub fn get_total_spikes(&self) -> u64 {
         self.total_spikes
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_neural_memory_crystal_persistence_roundtrip() {
+        let mut nm = NeuralMemory::new();
+        let ev = CortexEvent::new(1000, 1, 42, 500_000, 1);
+        nm.ingest_event(ev, SPA::from_raw(SPA::SCALE_0 / 10)); // Force integrate
+        assert!(nm.processed == 1);
+
+        let temp_dir = std::env::temp_dir();
+        let test_path = temp_dir.join("test_snn_memory.crystal");
+
+        nm.save_to_crystal(&test_path).expect("guardado exitoso");
+        let loaded = NeuralMemory::load_from_crystal(&test_path).expect("carga exitosa");
+
+        assert_eq!(loaded.processed, nm.processed);
+        assert_eq!(loaded.total_spikes, nm.total_spikes);
+        assert_eq!(loaded.neurons.len(), 64);
+        assert_eq!(
+            loaded.neurons[42].v_membrane.to_raw(),
+            nm.neurons[42].v_membrane.to_raw()
+        );
+
+        let _ = std::fs::remove_file(test_path);
     }
 }
