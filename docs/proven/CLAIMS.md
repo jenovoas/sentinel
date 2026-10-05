@@ -2,14 +2,16 @@
 
 Consolidated master document.
 
+> **Revisión de vigencia — 2026-10-05:** Git muestra que este consolidado se generó/modificó por última vez el 2026-08-18 (`0ca3b8f7`), y mezcla afirmaciones fechadas en 2024–2026. No acredita estado legal, patentabilidad, presentación ni valoración actuales. Las estimaciones monetarias y afirmaciones de novedad son históricas y no están verificadas aquí. El plazo del 2026-02-15 ya venció; la situación de presentación no se ha comprobado. Las rutas de evidencia deben verificarse contra el código del checkout antes de citarlas como vigentes.
+
 
 <!-- SOURCE: IP_CONSOLIDATION_6_CLAIMS.md -->
 
 #  Consolidación IP Strategy - 6 Claims Patentables Completos
 
-**Fecha**: 20 Diciembre 2024  
-**Deadline Crítico**: 15 Febrero 2026 (57 días)  
-**Status**: ✅ CONSOLIDADO - Listo para Patent Attorney
+**Fecha del documento original**: 20 Diciembre 2024
+**Deadline indicado en el original (vencido)**: 15 Febrero 2026; situación de presentación no verificada
+**Estado indicado en el original**: consolidado; no acredita preparación ni estado legal actual
 
 ---
 
@@ -56,7 +58,7 @@ de seguridad vs operacionales"
 **Licensing Potential**: $25-40M  
 **Prior Art**: Ninguno encontrado combinando dual-lane + differential policies
 
-**Evidencia**: `backend/benchmark_dual_lane.py`
+**Evidencia citada en el documento original**: `backend/benchmark_dual_lane.py` (no existe en el checkout inspeccionado sobre `HEAD 32928f80`; no respalda la implementación actual)
 
 ---
 
@@ -84,7 +86,7 @@ inyecciones cognitivas en telemetría destinada a sistemas AIOps
 **Licensing Potential**: $30-50M  
 **Prior Art**: US12130917B1 (HiddenLayer) - pero post-fact, no pre-ingestion
 
-**Evidencia**: `backend/fuzzer_aiopsdoom.py` (40 attack payloads)
+**Evidencia citada en el documento original**: `backend/fuzzer_aiopsdoom.py` (40 attack payloads; la ruta no existe en el checkout inspeccionado sobre `HEAD 32928f80`, por lo que no valida resultados actuales)
 
 ---
 
@@ -137,7 +139,7 @@ nonce monotónico y timestamps de kernel para prevención de replay attacks"
 **Licensing Potential**: $20-30M  
 **Prior Art**: Ninguno con HMAC + dual-lane + replay detection combinados
 
-**Evidencia**: `backend/app/core/wal.py`
+**Evidencia citada en el documento original**: `backend/app/core/wal.py` (ruta ausente del checkout inspeccionado sobre `HEAD 32928f80`; el WAL vigente debe verificarse en Rust)
 
 ---
 
@@ -192,11 +194,11 @@ de seguridad externos"
 **Licensing Potential**: $100-200M  
 **Prior Art**: **ZERO** (primer OS kernel con semantic verification at Ring 0)
 
-**Evidencia**: `COGNITIVE_KERNEL_VISION.md`, benchmarks completos
+**Referencia histórica**: `COGNITIVE_KERNEL_VISION.md` solo se encontró en `docs/archive/2025-12-21/`; no se encontró una versión vigente ni benchmarks reproducibles para este claim.
 
 ---
 
-## 💰 VALORACIÓN IP ACTUALIZADA
+## 💰 VALORACIÓN HISTÓRICA NO VERIFICADA
 
 ### Valoración por Claim
 
@@ -434,8 +436,8 @@ IP PROTEGIDA:
 ├─ Licensing Potential: $100M+ (SOAR/AIOps vendors)
 └─ M&A Premium: +150% (strategic acquirer)
 
-TIMELINE CRÍTICO:
-└─ Provisional Patent: 15 Febrero 2026 (90 días)
+TIMELINE REGISTRADO EN EL DOCUMENTO ORIGINAL:
+└─ Plazo provisional: 15 Febrero 2026 (vencido; estado de presentación no verificado)
 ```
 
 ---

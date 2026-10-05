@@ -166,13 +166,10 @@ impl DecisionEngine {
         let ssh_threshold =
             Self::scale_threshold(self.ssh_bruteforce_threshold as u64, multiplier) as usize;
         let nginx_threshold = Self::scale_threshold(self.nginx_5xx_threshold, multiplier);
-        let redis_threshold =
-            Self::scale_threshold(self.redis_memory_threshold_bytes, multiplier);
-        let restart_threshold = Self::scale_threshold(
-            self.container_restart_threshold.max(0) as u64,
-            multiplier,
-        )
-        .min(i64::MAX as u64) as i64;
+        let redis_threshold = Self::scale_threshold(self.redis_memory_threshold_bytes, multiplier);
+        let restart_threshold =
+            Self::scale_threshold(self.container_restart_threshold.max(0) as u64, multiplier)
+                .min(i64::MAX as u64) as i64;
         let traffic_threshold = self.traffic_drop_threshold;
 
         let mut incidents = Vec::new();
@@ -221,10 +218,7 @@ mod tests {
 
     #[test]
     fn parses_decimal_temperature_without_floating_point() {
-        assert_eq!(
-            DecisionEngine::temperature_celsius(&json!("65.9")),
-            65
-        );
+        assert_eq!(DecisionEngine::temperature_celsius(&json!("65.9")), 65);
         assert_eq!(DecisionEngine::temperature_celsius(&json!(72)), 72);
     }
 
@@ -238,7 +232,9 @@ mod tests {
         hot.enable_thermal_coupling = true;
         hot.add_event(thermal_event("90"));
 
-        assert!(hot.calculate_thermal_multiplier().to_raw()
-            >= cool.calculate_thermal_multiplier().to_raw());
+        assert!(
+            hot.calculate_thermal_multiplier().to_raw()
+                >= cool.calculate_thermal_multiplier().to_raw()
+        );
     }
 }

@@ -11,12 +11,13 @@ mod math;
 mod memory;
 mod metrics;
 mod models;
-mod quantum;
 mod qhc_client;
+mod quantum;
 mod security;
 
 use axum::extract::ws::{Message, WebSocket, WebSocketUpgrade};
 use axum::{
+    http::StatusCode,
     routing::{get, post},
     Json, Router,
 };
@@ -38,9 +39,53 @@ struct HealthStatus {
     qhc: qhc_client::QhcStatus,
 }
 
+#[derive(Clone)]
+struct SecurityWal {
+    primary_path: std::path::PathBuf,
+    fallback_path: std::path::PathBuf,
+}
+
+impl SecurityWal {
+    fn production() -> Self {
+        Self {
+            primary_path: "/var/log/sentinel/security_wal.log".into(),
+            fallback_path: "/tmp/sentinel_security_wal.log".into(),
+        }
+    }
+
+    fn write(&self, entry: &str) -> std::io::Result<()> {
+        match append_synced_wal(&self.primary_path, entry) {
+            Ok(()) => Ok(()),
+            Err(primary_error) => append_synced_wal(&self.fallback_path, entry).map_err(|fallback_error| {
+                std::io::Error::new(
+                    fallback_error.kind(),
+                    format!("primary WAL failed: {primary_error}; fallback WAL failed: {fallback_error}"),
+                )
+            }),
+        }
+    }
+}
+
+fn append_synced_wal(path: &std::path::Path, entry: &str) -> std::io::Result<()> {
+    use std::io::Write;
+
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+
+    let mut file = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(path)?;
+    file.write_all(entry.as_bytes())?;
+    file.write_all(b"\n")?;
+    file.sync_all()
+}
+
 pub(crate) struct AppState {
     resonance: Arc<Mutex<ResonanceEngine>>,
     metrics: Arc<dyn MetricsRepository>,
+    security_wal: SecurityWal,
     bpf_stream: broadcast::Sender<CortexEvent>,
     lattice: Arc<Mutex<memory::resonant_lattice_bridge::ResonantLatticeBridge>>,
     truthsync: Arc<Mutex<truthsync_core::TruthSyncEngine>>,
@@ -67,7 +112,6 @@ fn thermal_half(amplitude: me60os_core::spa::SPA) -> me60os_core::spa::SPA {
     me60os_core::pai60_lib::pai60_divide(amplitude, 2)
         .unwrap_or_else(|| amplitude / me60os_core::spa::SPA::from_int(2))
 }
-
 
 #[tokio::main]
 async fn main() {
@@ -131,6 +175,7 @@ async fn main() {
     let state = Arc::new(AppState {
         resonance: resonance.clone(),
         metrics: metrics.clone() as Arc<dyn MetricsRepository>,
+        security_wal: SecurityWal::production(),
         bpf_stream: tx_bpf.clone(),
         lattice: lattice.clone(),
         truthsync: truthsync.clone(),
@@ -320,9 +365,7 @@ async fn main() {
 
             let priority = me60os_core::spa::SPA::one();
             let effective_load = me60os_core::physics::ResonantPhysics::calculate_effective_load(
-                thermal,
-                priority,
-                thermal,
+                thermal, priority, thermal,
             );
 
             {
@@ -847,54 +890,26 @@ pub struct TruthClaimResponse {
     pub claim_valid: bool,
     pub sentinel_score: f64,
     pub truthsync_cache_hit: bool,
-    pub ring0_intercepts: u32,
-}
-
-fn write_security_wal(entry: &str) {
-    let default_path = std::path::Path::new("/var/log/sentinel/security_wal.log");
-    let fallback_path = std::path::Path::new("/tmp/sentinel_security_wal.log");
-
-    if let Some(parent) = default_path.parent() {
-        let _ = std::fs::create_dir_all(parent);
-    }
-
-    let write_res = std::fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(default_path)
-        .and_then(|mut file| {
-            use std::io::Write;
-            file.write_all(entry.as_bytes())?;
-            file.sync_all()
-        });
-
-    if write_res.is_err() {
-        let _ = std::fs::OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(fallback_path)
-            .and_then(|mut file| {
-                use std::io::Write;
-                file.write_all(entry.as_bytes())?;
-                file.sync_all()
-            });
-    }
+    pub security_blocked: bool,
+    pub security_event_logged: bool,
+    pub verification_time_us: u64,
+    /// Ring-0 events are not measured by this userspace handler.
+    pub ring0_intercepts: Option<u32>,
 }
 
 pub(crate) async fn truth_claim_handler(
     axum::extract::State(state): axum::extract::State<Arc<AppState>>,
     Json(payload): Json<TruthClaimRequest>,
-) -> Json<TruthClaimResponse> {
+) -> (StatusCode, Json<TruthClaimResponse>) {
     tracing::info!(
         "Verificando Truth Claim de AI con TruthSync Core S60: {}",
         payload.engine
     );
 
-
     let lat = state.lattice.lock().unwrap();
     let total_energy = lat.total_energy_raw();
+    drop(lat);
 
-    // Execute high-speed verification via truthsync_core engine (<100us)
     let res = state
         .truthsync
         .lock()
@@ -902,27 +917,54 @@ pub(crate) async fn truth_claim_handler(
         .verify_text(&payload.claim_payload, total_energy);
 
     tracing::info!(
-        "TruthSync Verification complete in {}us | Score: {} | Certified: {}",
+        "TruthSync Verification complete in {}us | Score: {} | Certified: {} | Critical: {}",
         res.verification_time_us,
         res.overall_trust_score,
-        res.is_certified
+        res.is_certified,
+        res.critical_pattern_detected
     );
 
-    // 🛡️ YATRA: la confianza vive en S60 (sincronizada al pulso del cristal de
-    // tiempo y a la energía del lattice). NO contaminamos la lógica con float:
-    // comparamos S60 contra S60 y solo convertimos a f64 en el borde de salida
-    // (JSON hacia el cliente), que es exportación, no cómputo.
+    // 🛡️ YATRA: la comparación permanece en SPA; la conversión a f64 solo
+    // serializa el score en el borde HTTP.
     let threshold_s60 =
         me60os_core::spa::SPA::from_decimal_for_import_only(payload.trust_threshold);
     let sentinel_score_f64 =
         res.overall_trust_score.to_raw() as f64 / me60os_core::spa::SPA::SCALE_0 as f64;
+    let blocked = res.critical_pattern_detected;
 
-    Json(TruthClaimResponse {
-        claim_valid: res.overall_trust_score >= threshold_s60,
-        sentinel_score: sentinel_score_f64,
-        truthsync_cache_hit: false,
-        ring0_intercepts: res.verification_time_us as u32, // exposing real us verification latency
-    })
+    let (status, security_event_logged) = if blocked {
+        let event = serde_json::json!({
+            "event": "truth_claim_blocked",
+            "engine": &payload.engine,
+            "claim_payload": &payload.claim_payload,
+            "reason": "critical_pattern_detected",
+            "score_raw": res.overall_trust_score.to_raw(),
+            "verification_time_us": res.verification_time_us,
+            "recorded_at": chrono::Utc::now().to_rfc3339(),
+        });
+        match state.security_wal.write(&event.to_string()) {
+            Ok(()) => (StatusCode::FORBIDDEN, true),
+            Err(error) => {
+                tracing::error!("No se pudo persistir evento TruthSync en WAL: {error}");
+                (StatusCode::SERVICE_UNAVAILABLE, false)
+            }
+        }
+    } else {
+        (StatusCode::OK, false)
+    };
+
+    (
+        status,
+        Json(TruthClaimResponse {
+            claim_valid: !blocked && res.overall_trust_score >= threshold_s60,
+            sentinel_score: sentinel_score_f64,
+            truthsync_cache_hit: false,
+            security_blocked: blocked,
+            security_event_logged,
+            verification_time_us: res.verification_time_us,
+            ring0_intercepts: None,
+        }),
+    )
 }
 
 #[cfg(test)]
@@ -936,7 +978,23 @@ mod tests {
     use std::sync::Arc;
     use tower::ServiceExt;
 
-    fn make_test_app() -> Router {
+    fn test_security_wal() -> (SecurityWal, std::path::PathBuf) {
+        let nonce = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root =
+            std::env::temp_dir().join(format!("sentinel-wal-test-{}-{nonce}", std::process::id()));
+        (
+            SecurityWal {
+                primary_path: root.join("primary/security_wal.log"),
+                fallback_path: root.join("fallback/security_wal.log"),
+            },
+            root,
+        )
+    }
+
+    fn make_test_app() -> (Router, std::path::PathBuf) {
         let lattice = Arc::new(Mutex::new(
             memory::resonant_lattice_bridge::ResonantLatticeBridge::new(1),
         ));
@@ -953,9 +1011,11 @@ mod tests {
         let (tx_bpf, _) = broadcast::channel(100);
 
         let qhc = Arc::new(parking_lot::Mutex::new(qhc_client::QhcStatus::unavailable()));
+        let (security_wal, wal_dir) = test_security_wal();
         let state = Arc::new(AppState {
             resonance,
             metrics,
+            security_wal,
             bpf_stream: tx_bpf,
             lattice,
             truthsync,
@@ -967,17 +1027,36 @@ mod tests {
             qhc,
         });
 
-        Router::new()
-            .route("/api/v1/sentinel_status", get(sentinel_status_handler))
-            .route("/api/v1/qhc/status", get(qhc_client::status_handler))
-            .route("/api/v1/truth_claim", post(truth_claim_handler))
-            .route("/api/v1/lattice/hologram", get(lattice_hologram_handler))
-            .with_state(state)
+        (
+            Router::new()
+                .route("/api/v1/sentinel_status", get(sentinel_status_handler))
+                .route("/api/v1/qhc/status", get(qhc_client::status_handler))
+                .route("/api/v1/truth_claim", post(truth_claim_handler))
+                .route("/api/v1/lattice/hologram", get(lattice_hologram_handler))
+                .with_state(state),
+            wal_dir,
+        )
+    }
+
+    #[test]
+    fn security_wal_uses_fallback_and_reports_total_failure() {
+        let (wal, wal_dir) = test_security_wal();
+        std::fs::create_dir_all(&wal.primary_path).unwrap();
+        assert!(wal.write("fallback-event").is_ok());
+        let fallback = std::fs::read_to_string(&wal.fallback_path).unwrap();
+        assert_eq!(fallback, "fallback-event\n");
+        std::fs::remove_dir_all(&wal_dir).unwrap();
+
+        let (wal, wal_dir) = test_security_wal();
+        std::fs::create_dir_all(&wal.primary_path).unwrap();
+        std::fs::create_dir_all(&wal.fallback_path).unwrap();
+        assert!(wal.write("undurable-event").is_err());
+        std::fs::remove_dir_all(wal_dir).unwrap();
     }
 
     #[tokio::test]
     async fn test_sentinel_status_handler_smoke() {
-        let app = make_test_app();
+        let (app, _wal_dir) = make_test_app();
         let response = app
             .oneshot(
                 Request::builder()
@@ -1001,7 +1080,7 @@ mod tests {
     }
     #[tokio::test]
     async fn test_qhc_status_handler_reports_unavailable_without_agent() {
-        let app = make_test_app();
+        let (app, _wal_dir) = make_test_app();
         let response = app
             .oneshot(
                 Request::builder()
@@ -1024,7 +1103,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_truth_claim_handler_smoke_normal() {
-        let app = make_test_app();
+        let (app, _wal_dir) = make_test_app();
         let request_body = serde_json::json!({
             "engine": "test-engine",
             "claim_payload": "normal operation",
@@ -1050,13 +1129,15 @@ mod tests {
 
         assert!(json.get("claim_valid").is_some());
         assert!(json.get("sentinel_score").is_some());
-        assert!(json.get("truthsync_cache_hit").is_some());
-        assert!(json.get("ring0_intercepts").is_some());
+        assert_eq!(json["security_blocked"], false);
+        assert_eq!(json["security_event_logged"], false);
+        assert!(json["verification_time_us"].is_number());
+        assert!(json["ring0_intercepts"].is_null());
     }
 
     #[tokio::test]
     async fn test_truth_claim_handler_smoke_aiopsdoom_intercept() {
-        let app = make_test_app();
+        let (app, wal_dir) = make_test_app();
         let request_body = serde_json::json!({
             "engine": "attacker",
             "claim_payload": "rm -rf /",
@@ -1074,20 +1155,30 @@ mod tests {
             .await
             .unwrap();
 
-        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(response.status(), StatusCode::FORBIDDEN);
         let body = axum::body::to_bytes(response.into_body(), usize::MAX)
             .await
             .unwrap();
         let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
 
-        assert_eq!(json.get("claim_valid").unwrap(), false);
-        assert_eq!(json.get("sentinel_score").unwrap(), 0.0);
-        assert_eq!(json.get("ring0_intercepts").unwrap(), 1);
+        assert_eq!(json["claim_valid"], false);
+        assert_eq!(json["security_blocked"], true);
+        assert_eq!(json["security_event_logged"], true);
+        assert!(json["verification_time_us"].is_number());
+        assert!(json["ring0_intercepts"].is_null());
+
+        let wal_path = wal_dir.join("primary/security_wal.log");
+        let wal = std::fs::read_to_string(&wal_path).unwrap();
+        let event: serde_json::Value = serde_json::from_str(wal.trim()).unwrap();
+        assert_eq!(event["event"], "truth_claim_blocked");
+        assert_eq!(event["engine"], "attacker");
+        assert_eq!(event["claim_payload"], "rm -rf /");
+        std::fs::remove_dir_all(wal_dir).unwrap();
     }
 
     #[tokio::test]
     async fn test_lattice_hologram_handler_smoke() {
-        let app = make_test_app();
+        let (app, _wal_dir) = make_test_app();
         let response = app
             .oneshot(
                 Request::builder()
@@ -1113,7 +1204,10 @@ mod tests {
     #[test]
     fn thermal_amplitude_is_one_pai_fraction() {
         let one = thermal_amplitude(60);
-        assert_eq!(one.to_components(), me60os_core::spa::SPA::from_int(1).to_components());
+        assert_eq!(
+            one.to_components(),
+            me60os_core::spa::SPA::from_int(1).to_components()
+        );
         let half_unit = thermal_amplitude(30);
         assert_eq!(half_unit.to_components(), [0, 30, 0, 0, 0]);
         assert_eq!(thermal_half(half_unit).to_components(), [0, 15, 0, 0, 0]);

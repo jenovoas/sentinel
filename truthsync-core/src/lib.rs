@@ -31,6 +31,20 @@ const RAYON_MIN_SENTENCES: usize = 4;
 /// LRU cache capacity for SHA3-512 digests
 const DIGEST_CACHE_SIZE: usize = 64;
 
+const DISINFORMATION_PATTERNS: [&str; 9] = [
+    "inyección maliciosa",
+    "fake_data",
+    "mock_override",
+    "simulación no real",
+    "desbloqueo no autorizado",
+    "drop database",
+    "rm -rf",
+    "shutdown",
+    "systemctl stop",
+];
+
+const CRITICAL_PATTERNS: [&str; 4] = ["drop database", "rm -rf", "shutdown", "systemctl stop"];
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Claim<'a> {
     /// MEJORA #5: Cow<str> con lifetime — zero-allocation cuando el texto vive lo suficiente
@@ -47,6 +61,7 @@ pub struct VerificationResult<'a> {
     pub overall_trust_score: SPA,
     pub verification_time_us: u64,
     pub is_certified: bool,
+    pub critical_pattern_detected: bool,
 }
 
 #[derive(Default)]
@@ -110,20 +125,9 @@ pub struct TruthSyncEngine {
 impl TruthSyncEngine {
     pub fn new() -> Self {
         // MEJORA #2: MatchKind::LeftmostFirst para early-exit en AhoCorasick
-        let patterns = &[
-            "inyección maliciosa",
-            "fake_data",
-            "mock_override",
-            "simulación no real",
-            "desbloqueo no autorizado",
-            "drop database",
-            "rm -rf",
-            "shutdown",
-            "systemctl stop",
-        ];
         let ac = AhoCorasick::builder()
             .match_kind(MatchKind::LeftmostFirst)
-            .build(patterns)
+            .build(DISINFORMATION_PATTERNS)
             .unwrap();
 
         Self {
@@ -144,6 +148,9 @@ impl TruthSyncEngine {
         // El patrón se busca en minúsculas. El digest sigue sobre el texto original,
         // ligado a la energía del lattice.
         let scan = text.to_lowercase();
+        let critical_pattern_detected = CRITICAL_PATTERNS
+            .iter()
+            .any(|pattern| scan.contains(pattern));
         let mut malic_count = 0i64;
         for _ in self.disinformation_patterns.find_iter(&scan) {
             malic_count += 1;
@@ -193,6 +200,7 @@ impl TruthSyncEngine {
             verification_time_us: elapsed_us,
             // YATRA: certified if score >= 0.50
             is_certified: overall_score >= SPA::from_raw(SPA::SCALE_0 / 2),
+            critical_pattern_detected,
         }
     }
 }
@@ -305,6 +313,18 @@ mod tests {
                 hit.overall_trust_score.to_raw()
             );
         }
+    }
+
+    #[test]
+    fn test_critical_pattern_detection_is_independent_of_score() {
+        let mut engine = TruthSyncEngine::new();
+        for pattern in CRITICAL_PATTERNS {
+            let result = engine.verify_text(pattern, 42);
+            assert!(result.critical_pattern_detected, "{pattern}");
+        }
+
+        let clean = engine.verify_text("El sistema está en operación normal.", 42);
+        assert!(!clean.critical_pattern_detected);
     }
 
     #[test]

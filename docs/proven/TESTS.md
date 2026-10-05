@@ -2,6 +2,8 @@
 
 Consolidated master document.
 
+> **Vigencia revisada — 2026-10-05:** Git muestra que este consolidado se generó/modificó por última vez el 2026-08-18 (`0ca3b8f7`). Las conclusiones siguientes son históricas, no resultados de una ejecución actual. En el checkout sobre `HEAD 32928f80`, `quantum/test_all.py` coordina cinco módulos y no toda la suite; existen al menos 17 archivos `quantum/test*.py` y el orquestador no incluye `test_yatra_hook.py`. El `5/5` documentado corresponde a una auditoría antigua que cita `backend/poc/test_integration.py`, ruta que no existe en el checkout. La suite Python no se ejecutó durante esta actualización; su estado actual queda pendiente.
+
 
 <!-- SOURCE: TEST_AUDIT_REPORT.md -->
 
@@ -11,7 +13,7 @@ Consolidated master document.
 
 He auditado todos los archivos de test en el repositorio Sentinel.
 
-## Tests en `/quantum` - TODOS LEGÍTIMOS ✅
+## Evaluación histórica de tests en `/quantum` (no representa estado actual)
 
 ### Tests Validados y Aprobados:
 
@@ -44,19 +46,19 @@ He auditado todos los archivos de test en el repositorio Sentinel.
    - Demuestra funcionamiento del pre-commit hook
    - **LEGÍTIMO** - Test de integración
 
-7. **`test_all.py`** ✅
-   - Suite que ejecuta todos los tests
-   - **LEGÍTIMO** - Orquestador
+7. **`test_all.py`**
+   - El informe original lo describió como suite completa.
+   - En el checkout revisado el 2026-10-05, `quantum/test_all.py` coordina cinco módulos; no ejecuta todos los tests presentes ni incluye `test_yatra_hook.py`.
 
 ## Tests Eliminados:
 
 - ❌ `test_simulators.py` → `.obsolete` (usa numpy/scipy)
 
-## Conclusión
+## Conclusión de la auditoría original (histórica)
 
-**NO HAY TESTS FALSEADOS EN `/quantum`**
+La auditoría fuente declaró que no encontró tests falsificados entre los casos que revisó en ese momento. Esa conclusión no valida todos los tests del checkout actual.
 
-Todos los tests actuales:
+Los casos descritos a continuación:
 - Hacen validaciones reales
 - Comparan contra valores conocidos o esperados
 - Usan assertions legítimas
@@ -66,7 +68,7 @@ Los tests están limpios y son confiables. ✅
 
 ## Recomendación
 
-**MANTENER todos los tests actuales** - Son legítimos y útiles para validación continua.
+**Recomendación vigente:** conservar los tests y experimentos legacy; antes de atribuir cobertura a la suite, comprobar el inventario y ejecutar cada grupo pertinente. No borrar ni migrar archivos legacy sin autorización.
 
 Si encontraste tests falseados, probablemente estén en:
 - Otros directorios fuera de `/quantum`

@@ -34,8 +34,13 @@ try:
     S60.SCALE_4 = 1         # 60^0
 
     # Alias para compatibilidad legacy si fuera necesario
-    S60.from_decimal_degrees = S60.from_decimal_degrees_FOR_IMPORT_ONLY
-
+    if not hasattr(S60, "from_decimal_degrees"):
+        if hasattr(S60, "from_decimal_degrees_FOR_IMPORT_ONLY"):
+            S60.from_decimal_degrees = S60.from_decimal_degrees_FOR_IMPORT_ONLY
+        elif hasattr(S60, "from_decimal_for_import_only"):
+            S60.from_decimal_degrees = S60.from_decimal_for_import_only
+        else:
+            S60.from_decimal_degrees = staticmethod(lambda deg: S60._from_raw(int(round(float(deg) * 12960000))))
 except ImportError as e:
     raise ImportError(f"No se pudo importar la librería nativa Rust me60os_core.so: {e}") from e
 

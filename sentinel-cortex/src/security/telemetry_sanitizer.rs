@@ -156,7 +156,12 @@ mod tests {
     #[test]
     fn test_sanitizer_blocks_live_truth_claim_patterns() {
         let sanitizer = TelemetrySanitizer::new(true);
-        for sample in ["drop database", "rm -rf /", "shutdown now", "systemctl stop nginx"] {
+        for sample in [
+            "drop database",
+            "rm -rf /",
+            "shutdown now",
+            "systemctl stop nginx",
+        ] {
             let res = sanitizer.sanitize_prompt(sample);
             assert!(!res.is_safe, "{sample}");
         }

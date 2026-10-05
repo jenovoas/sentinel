@@ -324,4 +324,16 @@ impl SPA {
     pub fn py_to_raw(&self) -> i64 {
         self.to_raw()
     }
+
+    #[staticmethod]
+    #[pyo3(name = "from_decimal_for_import_only")]
+    pub fn py_from_decimal_for_import_only(decimal: f64) -> Self {
+        Self::from_decimal_for_import_only(decimal)
+    }
+
+    #[staticmethod]
+    #[pyo3(name = "from_decimal_degrees_FOR_IMPORT_ONLY")]
+    pub fn py_from_decimal_degrees_for_import_only(degrees: f64) -> Self {
+        Self::from_decimal_for_import_only(degrees)
+    }
 }

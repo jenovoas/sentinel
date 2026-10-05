@@ -2,6 +2,11 @@
 
 Consolidated master document.
 
+> **⚠️ Estado de Infraestructura y Topología — 2026-10-05:**
+> Este documento consolida especificaciones históricas y visiones de diseño distribuido (enjambre multi-nodo, Batman-adv, Kingu/Centurión).
+> **Estado Operativo Real en Producción:** Conforme a la especificación canónica en `pinguinoseguro_web/openspec/specs/sentinel/infra-docs/spec.md`, el despliegue actual opera en **modo de NODO ÚNICO en el servidor Fenix (Alpine Linux, OpenRC, IP 172.233.24.102)**.
+> Kingu y Centurión están dados de baja o pertenecen a exploración futura; no representan infraestructura activa vigente.
+
 
 <!-- SOURCE: CLUSTER_ARCHITECTURE.md -->
 
@@ -2783,8 +2788,12 @@ impl QuanticKeyManager {
 ---
 
 ## 🛡️ 3. Security WAL & TruthSync Engine
-- **Carril 1 Security WAL**: Append-only fsync log directo a `/var/log/sentinel/security_wal.log` con AIOpsShield.
-- **Plimpton 322 Fila 17**: Integración exacta de la constante sexagesimal $\psi = 4.7962963$ en `truthsync-core`.
+
+**Estado revisado 2026-10-05** (documento base actualizado por última vez en Git el 2026-08-18, commit `0ca3b8f7`):
+- `POST /api/v1/truth_claim` bloquea patrones críticos detectados por `truthsync-core` con HTTP 403 y registra un evento JSONL mediante append + `sync_all()` en `/var/log/sentinel/security_wal.log`; usa `/tmp/sentinel_security_wal.log` como fallback. Si ambos destinos fallan, responde HTTP 503 y `security_event_logged: false`.
+- La respuesta separa `verification_time_us` de `ring0_intercepts`; este handler de Cortex no mide intercepciones del kernel, por lo que el campo es `null`.
+- Esta ruta describe el código del checkout local `alpine_fenix` sobre `HEAD 32928f80` y las pruebas focalizadas que pasaron el 2026-10-05; no demuestra el estado desplegado en Fenix.
+- **Plimpton 322 Fila 17**: El documento original afirmaba integración de la constante sexagesimal $\psi = 4.7962963$ en `truthsync-core`; esta afirmación histórica no se verifica con la prueba de seguridad descrita arriba.
 
 ---
 

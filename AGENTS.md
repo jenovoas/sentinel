@@ -8,8 +8,7 @@
 > Sin segundo servidor y sin datacenter hasta terminar Fenix. OpenRC, Docker Compose, Nginx.
 
 > **LECTURA OBLIGATORIA ANTES DE EMITIR JUICIOS SOBRE EL PROYECTO:**
-> [`sentinel-scientific-foundation.md`](file:///home/jnovoas/.config/Code/User/workspaceStorage/7c63ffead990815376933d02c94d88c9/GitHub.copilot-chat/memory-tool/memories/repo/sentinel-scientific-foundation.md)
->
+> Ver [`docs/archive/legacy/base60_mathematics.md`](docs/archive/legacy/base60_mathematics.md) y nota en vault `personalvault/Matemáticas/mathematical_model.md`.
 > Sentinel **NO es misticismo ni maquetas**. Es **ciencia exacta**.
 >
 > La base decimal no es defectuosa — es solo **una décima parte de la expresión

@@ -6,8 +6,15 @@ use axum::{extract::State, Json};
 use me60os_core::qhc_ipc::{socket_path, QhcSnapshot};
 use parking_lot::Mutex;
 use serde::Serialize;
-use std::{sync::Arc, time::{Duration, SystemTime, UNIX_EPOCH}};
-use tokio::{io::{AsyncReadExt, AsyncWriteExt}, net::UnixStream, time::{sleep, timeout}};
+use std::{
+    sync::Arc,
+    time::{Duration, SystemTime, UNIX_EPOCH},
+};
+use tokio::{
+    io::{AsyncReadExt, AsyncWriteExt},
+    net::UnixStream,
+    time::{sleep, timeout},
+};
 
 const QHC_REQUEST_TIMEOUT: Duration = Duration::from_millis(500);
 const QHC_STALE_AFTER_MS: u64 = 3_000;
@@ -92,7 +99,9 @@ async fn fetch_snapshot(path: &std::path::Path) -> Result<QhcSnapshot, String> {
 fn snapshot_age_ms(updated_unix_ms: u64) -> u64 {
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .map_or(0, |duration| duration.as_millis().min(u128::from(u64::MAX)) as u64);
+        .map_or(0, |duration| {
+            duration.as_millis().min(u128::from(u64::MAX)) as u64
+        });
     now.saturating_sub(updated_unix_ms)
 }
 

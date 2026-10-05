@@ -164,8 +164,7 @@ impl LokiCollector {
 
         // Acceso a archivos sensibles vía auditd
         // alpine_fenix: Alpine usa syslog (Promtail) en lugar de systemd-journal
-        let sensitive_query =
-            r#"{job="syslog"} |= "type=PATH" |~ "/etc/passwd|/etc/shadow|/.ssh""#;
+        let sensitive_query = r#"{job="syslog"} |= "type=PATH" |~ "/etc/passwd|/etc/shadow|/.ssh""#;
         let json = self
             .http
             .query("/loki/api/v1/query_range", sensitive_query)

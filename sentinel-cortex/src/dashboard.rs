@@ -2,11 +2,19 @@
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 
-use axum::{extract::{Query, State}, Json};
+use axum::{
+    extract::{Query, State},
+    Json,
+};
 use chrono::{DateTime, Utc};
 use serde::Deserialize;
 use serde_json::{json, Value};
-use std::{fs, path::Path, sync::Arc, time::{Duration, SystemTime}};
+use std::{
+    fs,
+    path::Path,
+    sync::Arc,
+    time::SystemTime,
+};
 
 use crate::AppState;
 
@@ -55,12 +63,30 @@ fn cpu_utilization(start: Option<(u64, u64)>, end: Option<(u64, u64)>) -> Option
     if total_delta == 0 {
         return None;
     }
-    Some(
-        total_delta
-            .saturating_sub(idle_delta)
-            .saturating_mul(100)
-            / total_delta,
-    )
+    Some(total_delta.saturating_sub(idle_delta).saturating_mul(100) / total_delta)
+}
+
+static CPU_SNAPSHOT: std::sync::Mutex<Option<((u64, u64), SystemTime, Option<u64>)>> =
+    std::sync::Mutex::new(None);
+
+fn sample_cpu_utilization() -> Option<u64> {
+    let now = SystemTime::now();
+    let current_counters = cpu_counters()?;
+    let mut guard = CPU_SNAPSHOT.lock().ok()?;
+
+    if let Some((prev_counters, prev_time, prev_pct)) = *guard {
+        if let Ok(elapsed) = now.duration_since(prev_time) {
+            if elapsed < std::time::Duration::from_millis(500) && prev_pct.is_some() {
+                return prev_pct;
+            }
+        }
+        let pct = cpu_utilization(Some(prev_counters), Some(current_counters));
+        *guard = Some((current_counters, now, pct));
+        pct
+    } else {
+        *guard = Some((current_counters, now, None));
+        None
+    }
 }
 
 fn memory_utilization() -> Option<u64> {
@@ -71,9 +97,7 @@ fn memory_utilization() -> Option<u64> {
         let mut fields = line.split_whitespace();
         match fields.next()? {
             "MemTotal:" => total_kib = fields.next().and_then(|value| value.parse().ok()),
-            "MemAvailable:" => {
-                available_kib = fields.next().and_then(|value| value.parse().ok())
-            }
+            "MemAvailable:" => available_kib = fields.next().and_then(|value| value.parse().ok()),
             _ => {}
         }
     }
@@ -95,14 +119,19 @@ fn backup_status() -> Value {
 
     if let Ok(entries) = fs::read_dir(path) {
         for entry in entries.flatten() {
-            let Ok(metadata) = entry.metadata() else { continue };
+            let Ok(metadata) = entry.metadata() else {
+                continue;
+            };
             if !metadata.is_file() {
                 continue;
             }
             total_backups = total_backups.saturating_add(1);
             total_size_bytes = total_size_bytes.saturating_add(metadata.len());
             if let Ok(modified) = metadata.modified() {
-                if latest.as_ref().is_none_or(|(current, _)| modified > *current) {
+                if latest
+                    .as_ref()
+                    .is_none_or(|(current, _)| modified > *current)
+                {
                     latest = Some((modified, metadata.len()));
                 }
             }
@@ -111,11 +140,21 @@ fn backup_status() -> Value {
 
     let (last_backup, health) = match latest {
         Some((modified, _)) => {
-            let age_hours = now_unix_secs()
-                .saturating_sub(modified.duration_since(SystemTime::UNIX_EPOCH).map_or(0, |d| d.as_secs()))
-                / 3600;
-            let status = if age_hours <= 24 { "completed" } else { "stale" };
-            let health = if age_hours <= 24 { "healthy" } else { "warning" };
+            let age_hours = now_unix_secs().saturating_sub(
+                modified
+                    .duration_since(SystemTime::UNIX_EPOCH)
+                    .map_or(0, |d| d.as_secs()),
+            ) / 3600;
+            let status = if age_hours <= 24 {
+                "completed"
+            } else {
+                "stale"
+            };
+            let health = if age_hours <= 24 {
+                "healthy"
+            } else {
+                "warning"
+            };
             let last_backup = json!({
                 "age_hours": age_hours,
                 "status": status,
@@ -176,9 +215,7 @@ pub async fn analytics_statistics_handler(
     Query(query): Query<AnalyticsQuery>,
 ) -> Json<Value> {
     let hours = query.hours.unwrap_or(24).clamp(1, 168);
-    let cpu_start = cpu_counters();
-    tokio::time::sleep(Duration::from_millis(100)).await;
-    let cpu = cpu_utilization(cpu_start, cpu_counters());
+    let cpu = sample_cpu_utilization();
     let memory = memory_utilization();
     let coherence = state.resonance.lock().unwrap().get_coherence_raw();
     let efficiency = state.metrics.get_scheduler_efficiency().to_base_units();
