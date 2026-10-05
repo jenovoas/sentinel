@@ -1,68 +1,68 @@
 {
-  "dashboard": {
-    "id": null,
-    "uid": "sentinel-lattice-core",
-    "title": "Sentinel Lattice Core",
-    "tags": ["sentinel","lattice","core"],
-    "timezone": "browser",
-    "schemaVersion": 29,
-    "version": 0,
-    "panels": [
-      {
-        "type": "timeseries",
-        "title": "Lattice Total Energy",
-        "datasource": "Prometheus",
-        "targets": [
-          { "expr": "sentinel_lattice_total_energy", "legendFormat": "total_energy", "refId": "A" }
-        ],
-        "gridPos": { "x": 0, "y": 0, "w": 24, "h": 9 }
-      },
-      {
-        "type": "timeseries",
-        "title": "Lattice Entropy (S60)",
-        "datasource": "Prometheus",
-        "targets": [
-          { "expr": "sentinel_lattice_entropy_s60", "legendFormat": "entropy", "refId": "B" }
-        ],
-        "gridPos": { "x": 0, "y": 9, "w": 24, "h": 9 }
-      },
-      {
-        "type": "timeseries",
-        "title": "Coherencia Lattice",
-        "datasource": "Prometheus",
-        "targets": [
-          { "expr": "sentinel_lattice_coherence", "legendFormat": "coherence", "refId": "C" }
-        ],
-        "gridPos": { "x": 0, "y": 18, "w": 24, "h": 9 }
-      },
-      {
-        "type": "timeseries",
-        "title": "Calor / Lattice Heat",
-        "datasource": "Prometheus",
-        "targets": [
-          { "expr": "sentinel_lattice_heat", "legendFormat": "heat", "refId": "D" }
-        ],
-        "gridPos": { "x": 24, "y": 0, "w": 24, "h": 9 }
-      },
-      {
-        "type": "timeseries",
-        "title": "Dual Channel Amplitud",
-        "datasource": "Prometheus",
-        "targets": [
-          { "expr": "sentinel_dual_channel_amplitude", "legendFormat": "amplitude", "refId": "E" }
-        ],
-        "gridPos": { "x": 24, "y": 9, "w": 24, "h": 9 }
-      },
-      {
-        "type": "timeseries",
-        "title": "Dual Channel Fase",
-        "datasource": "Prometheus",
-        "targets": [
-          { "expr": "sentinel_dual_channel_phase", "legendFormat": "phase", "refId": "F" }
-        ],
-        "gridPos": { "x": 24, "y": 18, "w": 24, "h": 9 }
-      }
-    ]
+  "id": null,
+  "uid": "sentinel-lattice-core",
+  "title": "Sentinel Lattice Core",
+  "tags": ["sentinel", "lattice", "core"],
+  "timezone": "browser",
+  "schemaVersion": 29,
+  "version": 1,
+  "refresh": "10s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
   },
-  "overwrite": true
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Lattice Total Energy",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        { "expr": "sentinel_lattice_total_energy", "legendFormat": "total_energy", "refId": "A" }
+      ],
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Temperatura de CPU (Ruido Térmico S60)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        { "expr": "sentinel_cpu_temperature_celsius", "legendFormat": "celsius", "refId": "B" }
+      ],
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Nodos Activos en Lattice",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        { "expr": "sentinel_lattice_active_node_count", "legendFormat": "nodos_activos", "refId": "C" }
+      ],
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Intercepciones de Seguridad (AIOpsShield / WAL)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        { "expr": "sentinel_aiops_shield_interceptions_total", "legendFormat": "intercepciones", "refId": "D" }
+      ],
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 }
+    }
+  ]
 }

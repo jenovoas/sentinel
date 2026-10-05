@@ -10,7 +10,7 @@ receivers:
   email_configs:
   - to: 'jaime@pinguinoseguro.cl, jnovoas@pinguinoseguro.cl'
     from: 'monitoreo@pinguinoseguro.cl'
-    smarthost: 'localhost:25'
+    smarthost: '172.17.0.1:25'
     send_resolved: true
     headers:
       Subject: '[SENTINEL] {{ .GroupLabels.alertname }}'
