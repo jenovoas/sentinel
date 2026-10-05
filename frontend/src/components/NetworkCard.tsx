@@ -20,7 +20,7 @@ export interface NetworkInfo {
     ssid?: string;
     signal?: number;
     signalStrength?: number;
-    connected: boolean;
+    connected: boolean | null;
   };
 }
 
@@ -40,7 +40,9 @@ const formatBytes = (bytes: number | null | undefined): string => {
 
 export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork, history }) => {
   // Prefer client WiFi info (browser API) over server info (Docker container)
-  const effectiveWifi = clientNetwork?.wifi?.connected ? clientNetwork.wifi : network?.wifi;
+  const effectiveWifi = clientNetwork?.wifi?.connected === true
+    ? clientNetwork.wifi
+    : network?.wifi ?? clientNetwork?.wifi;
 
   if (!network && !clientNetwork) {
     return (
@@ -70,8 +72,10 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
     : null;
 
   const getWiFiSignalColor = () => {
-    if (!effectiveWifi?.connected)
+    if (effectiveWifi?.connected === false)
       return { color: "text-gray-500", bg: "bg-gray-500/10", label: "Desconectado" };
+    if (effectiveWifi?.connected !== true)
+      return { color: "text-gray-500", bg: "bg-gray-500/10", label: "Estado de conexión no disponible" };
     if (signalPercent === null && signalDbm !== null)
       return { color: "text-cyan-400", bg: "bg-cyan-400/10", label: "Potencia medida" };
     if (signalPercent === null)
@@ -171,7 +175,11 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({ network, clientNetwork
                 <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z" />
               </svg>
               <span className="text-xs font-medium text-gray-300">
-                {effectiveWifi.connected ? effectiveWifi.ssid || "SSID no disponible" : "Desconectado"}
+                {effectiveWifi.connected === true
+                  ? effectiveWifi.ssid || "SSID no disponible"
+                  : effectiveWifi.connected === false
+                    ? "Desconectado"
+                    : "Estado de conexión no disponible"}
               </span>
             </div>
             {renderSignalBars()}

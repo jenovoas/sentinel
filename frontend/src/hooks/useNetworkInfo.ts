@@ -39,7 +39,9 @@ export const useNetworkInfo = () => {
             downlink: connection.downlink,
             rtt: connection.rtt,
             saveData: connection.saveData,
-            wifi: { connected: connection.type === "wifi" },
+            wifi: {
+              connected: connection.type === "wifi" ? true : connection.type ? false : null,
+            },
           };
 
           // Try to get WiFi details from experimental API
