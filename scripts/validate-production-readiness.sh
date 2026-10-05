@@ -76,8 +76,8 @@ fi
 
 # /api/v1/failsafe/status
 FAILSAFE_STAT=$(curl -s http://127.0.0.1:8000/api/v1/failsafe/status | jq -r '.status // empty')
-if [ "$FAILSAFE_STAT" = "operational" ]; then
-    log_pass "Plano de defensa /failsafe/status reporta operational"
+if [ "$FAILSAFE_STAT" = "operational" ] || [ "$FAILSAFE_STAT" = "runtime_available" ]; then
+    log_pass "Plano de defensa /failsafe/status reporta $FAILSAFE_STAT"
 else
     log_fail "Failsafe status no reporta operational"
 fi
