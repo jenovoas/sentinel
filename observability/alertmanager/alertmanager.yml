@@ -11,6 +11,9 @@ receivers:
   - to: 'jaime@pinguinoseguro.cl, jnovoas@pinguinoseguro.cl'
     from: 'monitoreo@pinguinoseguro.cl'
     smarthost: '172.17.0.1:25'
+    require_tls: false
+    tls_config:
+      insecure_skip_verify: true
     send_resolved: true
     headers:
       Subject: '[SENTINEL] {{ .GroupLabels.alertname }}'
