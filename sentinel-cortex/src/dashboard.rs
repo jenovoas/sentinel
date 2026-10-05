@@ -9,12 +9,7 @@ use axum::{
 use chrono::{DateTime, Utc};
 use serde::Deserialize;
 use serde_json::{json, Value};
-use std::{
-    fs,
-    path::Path,
-    sync::Arc,
-    time::SystemTime,
-};
+use std::{fs, path::Path, sync::Arc, time::SystemTime};
 
 use crate::AppState;
 
@@ -109,6 +104,28 @@ fn memory_utilization() -> Option<u64> {
     Some(total.saturating_sub(available).saturating_mul(100) / total)
 }
 
+fn is_backup_artifact(path: &Path) -> bool {
+    let Some(file_name) = path.file_name().and_then(|name| name.to_str()) else {
+        return false;
+    };
+    let Some(stamped_name) = file_name.strip_prefix("sentinel_backup_") else {
+        return false;
+    };
+    let Some(timestamp) = stamped_name
+        .strip_suffix(".sql.gz.enc")
+        .or_else(|| stamped_name.strip_suffix(".sql.gz"))
+    else {
+        return false;
+    };
+
+    timestamp.len() == 15
+        && timestamp.as_bytes()[8] == b'_'
+        && timestamp
+            .bytes()
+            .enumerate()
+            .all(|(index, byte)| index == 8 || byte.is_ascii_digit())
+}
+
 fn backup_status() -> Value {
     let backup_dir = std::env::var("SENTINEL_BACKUP_DIR")
         .unwrap_or_else(|_| "/var/lib/sentinel/backups".to_string());
@@ -122,7 +139,7 @@ fn backup_status() -> Value {
             let Ok(metadata) = entry.metadata() else {
                 continue;
             };
-            if !metadata.is_file() {
+            if !metadata.is_file() || !is_backup_artifact(&entry.path()) {
                 continue;
             }
             total_backups = total_backups.saturating_add(1);
@@ -146,9 +163,9 @@ fn backup_status() -> Value {
                     .map_or(0, |d| d.as_secs()),
             ) / 3600;
             let status = if age_hours <= 24 {
-                "completed"
+                "recent_file_detected"
             } else {
-                "stale"
+                "stale_file_detected"
             };
             let health = if age_hours <= 24 {
                 "healthy"
@@ -273,6 +290,23 @@ mod tests {
     fn cpu_percentage_uses_counter_delta() {
         assert_eq!(cpu_utilization(Some((100, 40)), Some((200, 80))), Some(60));
         assert_eq!(cpu_utilization(Some((100, 40)), Some((200, 60))), Some(80));
+    }
+
+    #[test]
+    fn backup_artifact_detection_excludes_sidecars_and_unrelated_files() {
+        assert!(is_backup_artifact(Path::new(
+            "sentinel_backup_20261005_163000.sql.gz"
+        )));
+        assert!(is_backup_artifact(Path::new(
+            "sentinel_backup_20261005_163000.sql.gz.enc"
+        )));
+        assert!(!is_backup_artifact(Path::new(
+            "sentinel_backup_20261005_163000.sql.gz.sha256"
+        )));
+        assert!(!is_backup_artifact(Path::new("README.txt")));
+        assert!(!is_backup_artifact(Path::new(
+            "sentinel_backup_invalid.sql.gz"
+        )));
     }
 
     #[test]

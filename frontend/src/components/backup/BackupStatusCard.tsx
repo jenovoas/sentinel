@@ -17,6 +17,19 @@ import { useBackupStatus } from "@/hooks/useBackupStatus";
 export function BackupStatusCard() {
     const { status, config, refresh } = useBackupStatus();
     const [triggeringBackup, setTriggeringBackup] = useState(false);
+    const backupStatusDisplay: Record<string, { label: string; className: string }> = {
+        success: { label: 'Success', className: 'text-emerald-400' },
+        failed: { label: 'Failed', className: 'text-rose-400' },
+        completed: { label: 'Recent file detected', className: 'text-amber-400' },
+        stale: { label: 'Stale file detected', className: 'text-rose-400' },
+        recent_file_detected: { label: 'Recent file detected', className: 'text-amber-400' },
+        stale_file_detected: { label: 'Stale file detected', className: 'text-rose-400' },
+        not_available: { label: 'No file detected', className: 'text-amber-400' },
+    };
+    const lastBackupStatus = backupStatusDisplay[status.lastBackupStatus] ?? {
+        label: 'Unknown',
+        className: 'text-gray-400',
+    };
 
     const handleTriggerBackup = async () => {
         setTriggeringBackup(true);
@@ -116,7 +129,9 @@ export function BackupStatusCard() {
                         <div>
                             <p className="text-sm text-gray-400">Last Backup</p>
                             <p className="text-lg font-semibold text-white">
-                                {formatAge(status.lastBackupAge)}
+                                {status.lastBackupAge === null
+                                    ? 'No backup recorded'
+                                    : formatAge(status.lastBackupAge)}
                             </p>
                             {status.lastBackupTime && (
                                 <p className="text-xs text-gray-500 mt-1">
@@ -126,13 +141,8 @@ export function BackupStatusCard() {
                         </div>
                         <div className="text-right">
                             <p className="text-sm text-gray-400">Status</p>
-                            <p
-                                className={`text-lg font-semibold ${status.lastBackupStatus === 'success'
-                                        ? 'text-emerald-400'
-                                        : 'text-rose-400'
-                                    }`}
-                            >
-                                {status.lastBackupStatus === 'success' ? '✓ Success' : '✗ Failed'}
+                            <p className={`text-lg font-semibold ${lastBackupStatus.className}`}>
+                                {lastBackupStatus.label}
                             </p>
                         </div>
                     </div>

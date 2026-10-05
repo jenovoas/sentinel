@@ -19,19 +19,18 @@
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "moduleResolution": "bundler",
-    "baseUrl": ".",
     "paths": {
       "@/*": [
-        "src/*"
+        "./src/*"
       ],
       "@/components/*": [
-        "src/components/*"
+        "./src/components/*"
       ],
       "@/pages/*": [
-        "src/pages/*"
+        "./src/pages/*"
       ],
       "@/lib/*": [
-        "src/lib/*"
+        "./src/lib/*"
       ]
     },
     "allowJs": true,

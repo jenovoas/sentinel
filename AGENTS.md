@@ -1,5 +1,7 @@
 # ARQUITECTURA Y DIRECTIVAS PARA AGENTES E IA (REGLAS DE ORO DEL PROYECTO SENTINEL)
 
+> **IDIOMA OBLIGATORIO (PENSAMIENTO Y SALIDA).** Está TERMINANTEMENTE PROHIBIDO el uso del inglés en el razonamiento interno (`thinking`) y en las respuestas visibles. El usuario audita directamente los bloques de pensamiento. Todo agente o IA DEBE pensar, razonar y responder 100% en español. Solo se permiten en inglés identificadores de sintaxis o nombres exactos de librerías cuando no haya traducción.
+>
 > **RAMAS POR ENTORNO.** `main` corresponde al entorno systemd. `alpine_fenix` corresponde al entorno Alpine/OpenRC. Son ramas independientes y no se deben mezclar.
 > Los cambios de systemd se aplican únicamente en `main`; los cambios de Alpine se aplican únicamente en `alpine_fenix`. Se permite hacer checkout, commit y push en la rama del entorno correspondiente.
 > Prohibido hacer merge entre `main` y `alpine_fenix`, copiar configuraciones de una plataforma a la otra o usar `develop` u otra rama como sustituto de estos entornos.

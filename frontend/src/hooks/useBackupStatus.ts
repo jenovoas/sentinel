@@ -9,7 +9,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 export interface BackupStatus {
     health: 'healthy' | 'warning' | 'critical';
-    lastBackupAge: number;
+    lastBackupAge: number | null;
     lastBackupStatus: string;
     lastBackupTime: string | null;
     totalBackups: number;
@@ -53,7 +53,9 @@ export function useBackupStatus(refreshInterval = 30000) {
 
             setStatus({
                 health: data.health,
-                lastBackupAge: data.last_backup.age_hours || 0,
+                lastBackupAge: data.last_backup.status === 'not_available'
+                    ? null
+                    : data.last_backup.age_hours ?? null,
                 lastBackupStatus: data.last_backup.status,
                 lastBackupTime: data.last_backup.time,
                 totalBackups: data.metrics.total_backups,
