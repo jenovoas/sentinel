@@ -175,7 +175,7 @@ export default function AnalyticsPage() {
     datasets: [
       {
         label: 'Señal WiFi (%)',
-        data: hostHistory.map((s) => s.network?.wifi?.signal ?? 0),
+        data: hostHistory.map((s) => s.network?.wifi?.signal ?? null),
         borderColor: '#fb923c',
         backgroundColor: 'rgba(251, 146, 60, 0.1)',
         fill: true,
@@ -184,30 +184,26 @@ export default function AnalyticsPage() {
     ],
   };
 
+  const metricValues = (selector: (sample: any) => number | null | undefined): number[] =>
+    hostHistory
+      .map(selector)
+      .filter((value): value is number => typeof value === "number" && Number.isFinite(value));
+  const summarize = (values: number[]) => ({
+    current: values.at(-1) ?? null,
+    avg: values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null,
+    max: values.length ? Math.max(...values) : null,
+  });
   const stats = {
-    cpu: {
-      current: hostHistory[hostHistory.length - 1]?.cpu_percent ?? 0,
-      avg: hostHistory.reduce((sum, s) => sum + s.cpu_percent, 0) / (hostHistory.length || 1),
-      max: Math.max(...hostHistory.map((s) => s.cpu_percent), 0),
-      min: Math.min(...hostHistory.map((s) => s.cpu_percent), 100),
-    },
-    memory: {
-      current: hostHistory[hostHistory.length - 1]?.mem_percent ?? 0,
-      avg: hostHistory.reduce((sum, s) => sum + s.mem_percent, 0) / (hostHistory.length || 1),
-      max: Math.max(...hostHistory.map((s) => s.mem_percent), 0),
-      min: Math.min(...hostHistory.map((s) => s.mem_percent), 100),
-    },
-    gpu: {
-      current: hostHistory[hostHistory.length - 1]?.gpu_percent ?? 0,
-      avg: hostHistory.reduce((sum, s) => sum + s.gpu_percent, 0) / (hostHistory.length || 1),
-      max: Math.max(...hostHistory.map((s) => s.gpu_percent), 0),
-    },
+    cpu: summarize(metricValues((sample) => sample.cpu_percent)),
+    memory: summarize(metricValues((sample) => sample.mem_percent)),
+    gpu: summarize(metricValues((sample) => sample.gpu_percent)),
     wifi: {
-      current: hostHistory[hostHistory.length - 1]?.network?.wifi?.signal ?? 0,
-      avg: hostHistory.reduce((sum, s) => sum + (s.network?.wifi?.signal ?? 0), 0) / (hostHistory.length || 1),
-      ssid: hostHistory[hostHistory.length - 1]?.network?.wifi?.ssid ?? "N/A",
+      ...summarize(metricValues((sample) => sample.network?.wifi?.signal)),
+      ssid: hostHistory.at(-1)?.network?.wifi?.ssid || "No disponible",
     },
   };
+  const formatPercent = (value: number | null) =>
+    value === null ? "No disponible" : `${value.toFixed(1)}%`;
 
   if (loading && hostHistory.length === 0) {
     return (
@@ -246,36 +242,36 @@ export default function AnalyticsPage() {
         <section className="grid gap-4 md:grid-cols-4 mb-8">
           <StatCard
             label="CPU Actual"
-            value={`${stats.cpu.current.toFixed(1)}%`}
+            value={formatPercent(stats.cpu.current)}
             stats={[
-              { label: "Promedio", value: `${stats.cpu.avg.toFixed(1)}%` },
-              { label: "Máximo", value: `${stats.cpu.max.toFixed(1)}%` },
+              { label: "Promedio", value: formatPercent(stats.cpu.avg) },
+              { label: "Máximo", value: formatPercent(stats.cpu.max) },
             ]}
             color="cyan"
           />
           <StatCard
             label="Memoria Actual"
-            value={`${stats.memory.current.toFixed(1)}%`}
+            value={formatPercent(stats.memory.current)}
             stats={[
-              { label: "Promedio", value: `${stats.memory.avg.toFixed(1)}%` },
-              { label: "Máximo", value: `${stats.memory.max.toFixed(1)}%` },
+              { label: "Promedio", value: formatPercent(stats.memory.avg) },
+              { label: "Máximo", value: formatPercent(stats.memory.max) },
             ]}
             color="emerald"
           />
           <StatCard
             label="GPU Actual"
-            value={`${stats.gpu.current.toFixed(1)}%`}
+            value={formatPercent(stats.gpu.current)}
             stats={[
-              { label: "Promedio", value: `${stats.gpu.avg.toFixed(1)}%` },
-              { label: "Máximo", value: `${stats.gpu.max.toFixed(1)}%` },
+              { label: "Promedio", value: formatPercent(stats.gpu.avg) },
+              { label: "Máximo", value: formatPercent(stats.gpu.max) },
             ]}
             color="purple"
           />
           <StatCard
             label="WiFi"
-            value={`${stats.wifi.current}%`}
+            value={formatPercent(stats.wifi.current)}
             stats={[
-              { label: "Promedio", value: `${stats.wifi.avg.toFixed(1)}%` },
+              { label: "Promedio", value: formatPercent(stats.wifi.avg) },
               { label: "Red", value: stats.wifi.ssid },
             ]}
             color="orange"
@@ -380,29 +376,40 @@ export default function AnalyticsPage() {
             {storage ? (
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Métricas guardadas</span>
+                  <span className="text-gray-300">Muestras en memoria (no persistentes)</span>
                   <span className="text-2xl font-semibold text-cyan-400">{storage.metrics_count}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-300">Anomalías totales</span>
-                  <span className="text-2xl font-semibold text-rose-400">{storage.anomalies_count}</span>
+                  <span className="text-2xl font-semibold text-rose-400">
+                    {storage.anomalies_count ?? "No disponible"}
+                  </span>
                 </div>
-                {storage.latest_metric_at && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-300">Última métrica</span>
-                    <span className="text-sm text-gray-400">
-                      {new Date(storage.latest_metric_at).toLocaleString('es')}
-                    </span>
-                  </div>
-                )}
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Última muestra</span>
+                  <span className="text-sm text-gray-400">
+                    {storage.latest_metric_at
+                      ? new Date(storage.latest_metric_at).toLocaleString('es')
+                      : "Sin muestras"}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Retención en memoria</span>
+                  <span className="text-sm text-gray-400">
+                    {storage.metrics_count} / {storage.retention_capacity} muestras
+                  </span>
+                </div>
                 <div className="mt-4 pt-4 border-t border-white/10">
                   <p className="text-xs text-gray-400">
-                    {hostHistory.length} muestras del host cargadas
+                    Almacenamiento: {storage.storage_type}; persistencia: {storage.persisted ? "activa" : "no disponible"}.
+                    {storage.db_size_bytes == null ? " Tamaño de base de datos: no disponible." : ` Tamaño DB: ${storage.db_size_bytes} bytes.`}
                   </p>
                 </div>
               </div>
             ) : (
-              <p className="text-gray-400 text-sm">Cargando información de almacenamiento...</p>
+              <p className="text-gray-400 text-sm">
+                {loading ? "Cargando información de almacenamiento..." : "Resumen de almacenamiento no disponible"}
+              </p>
             )}
           </div>
         </section>

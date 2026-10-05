@@ -450,6 +450,10 @@ async fn main() {
             get(dashboard::analytics_metrics_recent_handler),
         )
         .route(
+            "/api/v1/analytics/storage/summary",
+            get(dashboard::analytics_storage_summary_handler),
+        )
+        .route(
             "/api/v1/analytics/anomalies",
             get(dashboard::analytics_anomalies_handler),
         )

@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
+const parseMetric = (value: string | undefined): number | null => {
+  if (value == null || value.trim() === "") return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -30,15 +36,15 @@ export async function GET(request: Request) {
 
       return {
         timestamp: row.timestamp,
-        cpu_percent: Number(row.cpu_percent || 0),
-        mem_percent: Number(row.mem_percent || 0),
-        gpu_percent: Number(row.gpu_percent || 0),
+        cpu_percent: parseMetric(row.cpu_percent),
+        mem_percent: parseMetric(row.mem_percent),
+        gpu_percent: parseMetric(row.gpu_percent),
         network: {
-          net_bytes_sent: Number(row.net_bytes_sent || 0),
-          net_bytes_recv: Number(row.net_bytes_recv || 0),
+          net_bytes_sent: parseMetric(row.net_bytes_sent),
+          net_bytes_recv: parseMetric(row.net_bytes_recv),
           wifi: {
             ssid: row.wifi_ssid || "",
-            signal: Number(row.wifi_signal || 0),
+            signal: parseMetric(row.wifi_signal),
             connected: !!row.wifi_ssid,
           },
         },

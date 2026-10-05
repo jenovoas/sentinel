@@ -44,12 +44,16 @@ export type AnomalyPoint = {
 };
 
 export type StorageSummary = {
+  available: boolean;
+  storage_type: "in_memory";
+  persisted: boolean;
   metrics_count: number;
-  anomalies_count: number;
+  anomalies_count: number | null;
   latest_metric_at: string | null;
   latest_anomaly_at: string | null;
-  db_size_bytes: number;
-  status: "healthy" | "no_data";
+  db_size_bytes: number | null;
+  retention_capacity: number;
+  status: "healthy" | "no_data" | "unavailable";
 };
 
 export type AnalyticsSample = {

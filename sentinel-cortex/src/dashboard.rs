@@ -217,21 +217,57 @@ pub(crate) fn record_analytics_sample() {
         history.previous_network_counters = Some(counters);
     }
 
-    history.samples.push_back(AnalyticsMetricSample {
-        sampled_at: sampled_at.to_rfc3339(),
-        timestamp_unix_s: sampled_at.timestamp().max(0) as u64,
-        cpu_percent: sample_cpu_utilization(),
-        memory_percent: memory.map(|(percent, _)| percent),
-        memory_used_mb: memory.map(|(_, used_mb)| used_mb),
-        gpu_percent: None,
-        network_bytes_sent,
-        network_bytes_recv,
-        db_connections_active: None,
-        db_locks: None,
-    });
-    while history.samples.len() > METRICS_HISTORY_CAPACITY {
-        history.samples.pop_front();
-    }
+    append_metric_sample(
+        &mut history,
+        AnalyticsMetricSample {
+            sampled_at: sampled_at.to_rfc3339(),
+            timestamp_unix_s: sampled_at.timestamp().max(0) as u64,
+            cpu_percent: sample_cpu_utilization(),
+            memory_percent: memory.map(|(percent, _)| percent),
+            memory_used_mb: memory.map(|(_, used_mb)| used_mb),
+            gpu_percent: None,
+            network_bytes_sent,
+            network_bytes_recv,
+            db_connections_active: None,
+            db_locks: None,
+        },
+    );
+}
+
+fn analytics_storage_summary(history: &AnalyticsMetricHistory) -> Value {
+    let latest_metric_at = history.samples.back().map(|sample| sample.sampled_at.clone());
+    json!({
+        "available": true,
+        "storage_type": "in_memory",
+        "persisted": false,
+        "metrics_count": history.samples.len(),
+        "anomalies_count": Value::Null,
+        "latest_metric_at": latest_metric_at,
+        "latest_anomaly_at": Value::Null,
+        "db_size_bytes": Value::Null,
+        "retention_capacity": METRICS_HISTORY_CAPACITY,
+        "status": if history.samples.is_empty() { "no_data" } else { "healthy" },
+    })
+}
+
+pub async fn analytics_storage_summary_handler() -> Json<Value> {
+    let summary = match analytics_metric_history().lock() {
+        Ok(history) => analytics_storage_summary(&history),
+        Err(_) => json!({
+            "available": false,
+            "storage_type": "in_memory",
+            "persisted": false,
+            "metrics_count": 0,
+            "anomalies_count": Value::Null,
+            "latest_metric_at": Value::Null,
+            "latest_anomaly_at": Value::Null,
+            "db_size_bytes": Value::Null,
+            "retention_capacity": METRICS_HISTORY_CAPACITY,
+            "status": "unavailable",
+        }),
+    };
+
+    Json(summary)
 }
 
 pub async fn analytics_metrics_recent_handler(Query(query): Query<AnalyticsQuery>) -> Json<Value> {
@@ -242,18 +278,7 @@ pub async fn analytics_metrics_recent_handler(Query(query): Query<AnalyticsQuery
         .clamp(1, METRICS_HISTORY_CAPACITY);
     let cutoff = now_unix_secs().saturating_sub(hours.saturating_mul(3600));
     let samples = match analytics_metric_history().lock() {
-        Ok(history) => {
-            let mut samples: Vec<_> = history
-                .samples
-                .iter()
-                .filter(|sample| sample.timestamp_unix_s >= cutoff)
-                .rev()
-                .take(limit)
-                .cloned()
-                .collect();
-            samples.reverse();
-            samples
-        }
+        Ok(history) => recent_metric_samples(&history, cutoff, limit),
         Err(_) => Vec::new(),
     };
 
@@ -547,6 +572,78 @@ pub async fn ai_health_handler(State(state): State<Arc<AppState>>) -> Json<Value
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn test_metric_sample(timestamp_unix_s: u64) -> AnalyticsMetricSample {
+        AnalyticsMetricSample {
+            sampled_at: format!("sample-{timestamp_unix_s}"),
+            timestamp_unix_s,
+            cpu_percent: Some(25),
+            memory_percent: Some(50),
+            memory_used_mb: Some(1024),
+            gpu_percent: None,
+            network_bytes_sent: None,
+            network_bytes_recv: None,
+            db_connections_active: None,
+            db_locks: None,
+        }
+    }
+
+    #[test]
+    fn analytics_history_is_empty_until_real_samples_are_recorded() {
+        assert!(recent_metric_samples(&AnalyticsMetricHistory::default(), 0, 10).is_empty());
+    }
+
+    #[test]
+    fn analytics_history_is_bounded_filtered_and_returned_in_time_order() {
+        let mut history = AnalyticsMetricHistory::default();
+        for timestamp in 0..(METRICS_HISTORY_CAPACITY as u64 + 5) {
+            append_metric_sample(&mut history, test_metric_sample(timestamp));
+        }
+
+        assert_eq!(history.samples.len(), METRICS_HISTORY_CAPACITY);
+        assert_eq!(history.samples.front().unwrap().timestamp_unix_s, 5);
+        let recent = recent_metric_samples(&history, METRICS_HISTORY_CAPACITY as u64, 3);
+        assert_eq!(
+            recent
+                .iter()
+                .map(|sample| sample.timestamp_unix_s)
+                .collect::<Vec<_>>(),
+            vec![
+                METRICS_HISTORY_CAPACITY as u64 + 2,
+                METRICS_HISTORY_CAPACITY as u64 + 3,
+                METRICS_HISTORY_CAPACITY as u64 + 4,
+            ]
+        );
+    }
+
+    #[test]
+    fn analytics_sample_serializes_unavailable_metrics_as_null() {
+        let serialized = serde_json::to_value(test_metric_sample(1)).unwrap();
+        assert_eq!(serialized["cpu_percent"], 25);
+        assert!(serialized["gpu_percent"].is_null());
+        assert!(serialized["network_bytes_sent"].is_null());
+        assert!(serialized["network_bytes_recv"].is_null());
+        assert!(serialized["db_connections_active"].is_null());
+        assert!(serialized["db_locks"].is_null());
+    }
+
+    #[test]
+    fn analytics_storage_summary_reports_memory_only_and_unknown_database_fields() {
+        let mut history = AnalyticsMetricHistory::default();
+        let empty = analytics_storage_summary(&history);
+        assert_eq!(empty["status"], "no_data");
+        assert_eq!(empty["metrics_count"], 0);
+        assert_eq!(empty["persisted"], false);
+        assert!(empty["anomalies_count"].is_null());
+        assert!(empty["db_size_bytes"].is_null());
+
+        append_metric_sample(&mut history, test_metric_sample(42));
+        let populated = analytics_storage_summary(&history);
+        assert_eq!(populated["status"], "healthy");
+        assert_eq!(populated["metrics_count"], 1);
+        assert_eq!(populated["latest_metric_at"], "sample-42");
+        assert_eq!(populated["retention_capacity"], METRICS_HISTORY_CAPACITY);
+    }
 
     #[test]
     fn cpu_percentage_uses_counter_delta() {
