@@ -1,0 +1,88 @@
+{
+  "id": null,
+  "uid": "sentinel-containers-and-logs",
+  "title": "Sentinel — Logs del Sistema y Auditoría (Loki)",
+  "tags": ["sentinel", "logs", "loki", "syslog", "security", "audit"],
+  "timezone": "browser",
+  "schemaVersion": 29,
+  "version": 1,
+  "refresh": "10s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Tasa de Ingesta de Logs por Archivo (Loki)",
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "sum by (filename) (rate({job=\"syslog\"}[1m]))",
+          "legendFormat": "{{filename}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "lines/s" } },
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 6 }
+    },
+    {
+      "id": 2,
+      "type": "logs",
+      "title": "Logs de Daemons Nativos de Sentinel (/var/log/sentinel/*.log)",
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "{job=\"syslog\", filename=~\"/var/log/sentinel/.*\"}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showLabels": true,
+        "wrapLogMessage": true,
+        "enableLogDetails": true,
+        "sortOrder": "Descending"
+      },
+      "gridPos": { "x": 0, "y": 6, "w": 24, "h": 10 }
+    },
+    {
+      "id": 3,
+      "type": "logs",
+      "title": "Auditoría de Seguridad, Intentos SSH y Comandos Sudo",
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "{job=\"syslog\"} |~ \"(?i)(sudo|sshd|failed|auth|forbidden|intercept|wal)\"",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showLabels": true,
+        "wrapLogMessage": true,
+        "enableLogDetails": true,
+        "sortOrder": "Descending"
+      },
+      "gridPos": { "x": 0, "y": 16, "w": 24, "h": 10 }
+    },
+    {
+      "id": 4,
+      "type": "logs",
+      "title": "Stream de Syslog del Sistema (/var/log/messages)",
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "{job=\"syslog\", filename=\"/var/log/messages\"}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showLabels": true,
+        "wrapLogMessage": true,
+        "enableLogDetails": true,
+        "sortOrder": "Descending"
+      },
+      "gridPos": { "x": 0, "y": 26, "w": 24, "h": 10 }
+    }
+  ]
+}
