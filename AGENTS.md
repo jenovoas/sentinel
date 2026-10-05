@@ -6,8 +6,8 @@
 > Los cambios de systemd se aplican únicamente en `main`; los cambios de Alpine se aplican únicamente en `alpine_fenix`. Se permite hacer checkout, commit y push en la rama del entorno correspondiente.
 > Prohibido hacer merge entre `main` y `alpine_fenix`, copiar configuraciones de una plataforma a la otra o usar `develop` u otra rama como sustituto de estos entornos.
 >
-> **Nodo, por ahora uno.** `fenix`, Alpine, kernel `6.18.40-0-virt`, IP `172.233.24.102`.
-> Sin segundo servidor y sin datacenter hasta terminar Fenix. OpenRC, Docker Compose, Nginx.
+> **Nodo actual, por ahora uno.** `fenix`, Alpine, kernel `6.18.40-0-virt`, IP `172.233.24.102`.
+> El sistema está en desarrollo activo, **construyéndose con estándar estricto de producción** para preparar el despliegue final. Sin segundo servidor y sin datacenter hasta terminar Fenix. OpenRC, Docker Compose, Nginx.
 
 > **LECTURA OBLIGATORIA ANTES DE EMITIR JUICIOS SOBRE EL PROYECTO:**
 > Ver [`docs/archive/legacy/base60_mathematics.md`](docs/archive/legacy/base60_mathematics.md) y nota en vault `personalvault/Matemáticas/mathematical_model.md`.
