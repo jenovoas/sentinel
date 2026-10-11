@@ -1,6 +1,3 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """Phase 2: Add monitoring models (metrics, anomalies, security_alerts, reports)
 
 Revision ID: bebe13c745a6
@@ -8,8 +5,9 @@ Revises: '4c53459a200b'
 Create Date: 2025-12-13 21:08:17.207135
 
 """
-import sqlalchemy as sa
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from alembic import op
+import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.

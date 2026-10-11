@@ -1,20 +1,18 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
 Async Database Configuration for Sentinel Application.
 
 SQLAlchemy 2.0 with async/await support using asyncpg driver (3-5x faster).
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from typing import AsyncGenerator
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
-    AsyncEngine,
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
+    AsyncEngine,
 )
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.pool import NullPool
@@ -136,14 +134,14 @@ async def init_db() -> None:
                 await session.commit()
             except Exception:
                 await session.rollback()
-
+        
         # Create all tables from models
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-
+        
         print("✅ Database initialized successfully")
-        print("   Driver: asyncpg")
-        print("   Pool: NullPool (Docker-ready)")
+        print(f"   Driver: asyncpg")
+        print(f"   Pool: NullPool (Docker-ready)")
     except Exception as e:
         print(f"❌ Database initialization failed: {e}")
         raise

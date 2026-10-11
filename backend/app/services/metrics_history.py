@@ -1,19 +1,19 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
 Historical Metrics Storage Service
 Stores all metrics samples for Phase 2 analysis and Phase 3 AI integration
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Dict, Tuple
 
-from sqlalchemy import and_, desc, select
+from sqlalchemy import select, and_, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.monitoring import Anomaly, AnomalyType, MetricSample, SeverityLevel
+from app.models.monitoring import MetricSample, Anomaly, AnomalyType, SeverityLevel
+from app.services.monitoring import get_dashboard_snapshot
+
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +36,6 @@ class MetricsHistoryService:
         db_connections_active: int,
         db_locks: int,
         db_size_bytes: int,
-        api_latency_ms: Optional[float] = None,
         gpu_percent: Optional[float] = None,
         gpu_memory_percent: Optional[float] = None,
         gpu_temperature: Optional[float] = None,
@@ -62,7 +61,6 @@ class MetricsHistoryService:
             db_connections_active: Active DB connections
             db_locks: Number of DB locks
             db_size_bytes: Database size in bytes
-            api_latency_ms: API/DB latency in ms (optional)
             gpu_percent: GPU usage (optional)
             gpu_memory_percent: GPU memory usage (optional)
             gpu_temperature: GPU temperature (optional)
@@ -90,7 +88,6 @@ class MetricsHistoryService:
             db_connections_active=db_connections_active,
             db_locks=db_locks,
             db_size_bytes=db_size_bytes,
-            api_latency_ms=api_latency_ms,
             wifi_ssid=wifi_ssid,
             wifi_signal=wifi_signal,
             wifi_connected=wifi_connected,
@@ -220,9 +217,8 @@ class MetricsHistoryService:
         memory_values = [s.memory_percent for s in samples]
         network_bytes = [s.network_bytes_sent + s.network_bytes_recv for s in samples]
         db_connections = [s.db_connections_active for s in samples]
-        latency_values = [s.api_latency_ms for s in samples if s.api_latency_ms is not None]
 
-        import numpy as np
+        import numpy as np # PRECAUCIÓN: SOLO PARA I/O, NO CÁLCULO CORE
 
         stats = {
             'period': f"{start_time} to {end_time}",
@@ -252,15 +248,6 @@ class MetricsHistoryService:
             'database': {
                 'avg_connections': float(np.mean(db_connections)),
                 'max_connections': int(np.max(db_connections)),
-            },
-                        'latency': {
-                'mean': float(np.mean(latency_values)) if latency_values else None,
-                'avg': float(np.mean(latency_values)) if latency_values else None,
-                'max': float(np.max(latency_values)) if latency_values else None,
-                'min': float(np.min(latency_values)) if latency_values else None,
-                'std': float(np.std(latency_values)) if latency_values else None,
-                'p95': float(np.percentile(latency_values, 95)) if latency_values else None,
-                'p99': float(np.percentile(latency_values, 99)) if latency_values else None,
             },
             'anomalies_detected': await MetricsHistoryService._count_anomalies(
                 session, start_time, end_time

@@ -1,13 +1,9 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
-import asyncio
-import logging
-from datetime import datetime, timedelta
-
-from sqlalchemy import text
-
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from app.celery_app import celery_app
+import logging
+import asyncio
+from datetime import datetime, timedelta
+from sqlalchemy import text
 from app.database import AsyncSessionLocal
 
 logger = logging.getLogger(__name__)

@@ -1,23 +1,37 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
-Telemetry Sanitizer
+Telemetry Sanitizer for LLM Consumption (Claim 1 - Patent Pending)
 
-Prevents adversarial prompt injection attacks (AIOpsDoom) by validating
-and sanitizing telemetry data before it reaches AI models.
+Prevents adversarial attacks against AI/LLM-based monitoring systems (AIOpsDoom)
+by validating and sanitizing telemetry data before it reaches AI models.
 
-This module blocks:
-- SQL injection attempts
-- Command injection attempts
-- Path traversal attempts
-- Code execution attempts
+DIFFERENTIATOR vs Traditional WAFs:
+- LLM-Specific: Blocks prompt injection, jailbreak, hallucination triggers
+- Traditional: Also blocks SQL injection, command injection, path traversal
+
+This dual capability makes Sentinel Cortex™ the ONLY solution that protects
+both traditional applications AND AI-based monitoring systems.
+
+Attack Categories Blocked:
+1. LLM-Specific (20+ patterns):
+   - Prompt injection ("ignore previous instructions")
+   - Jailbreak attempts ("DAN mode", "developer mode")
+   - Context escape ("[SYSTEM]", special tokens)
+   - Hallucination triggers ("always respond with")
+   - Data exfiltration ("repeat your prompt")
+
+2. Traditional (40+ patterns):
+   - SQL injection
+   - Command injection
+   - Path traversal
+   - Code execution
+   - Privilege escalation
 """
 
-import logging
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import re
+import logging
+from typing import Dict, List, Optional
 from datetime import datetime
-from typing import Dict
 
 from .schemas import SanitizationResult, SanitizedLog
 
@@ -34,9 +48,56 @@ class TelemetrySanitizer:
         if not result.is_safe:
             raise SecurityError("Malicious prompt detected")
     """
-
+    
     # Dangerous patterns that indicate potential attacks
     DANGEROUS_PATTERNS = [
+        # ============================================================
+        # LLM-SPECIFIC ATTACKS (AIOpsDoom Defense - Claim 1)
+        # ============================================================
+        # These patterns differentiate our sanitizer from traditional WAFs
+        # by targeting attacks specific to Large Language Models
+        
+        # Prompt Injection - Direct instruction override
+        (r"ignore\s+previous\s+instructions?", "LLM: ignore previous instructions"),
+        (r"forget\s+all\s+(previous\s+)?(rules?|instructions?)", "LLM: forget rules"),
+        (r"disregard\s+(all\s+)?(previous|above|prior)", "LLM: disregard previous"),
+        (r"new\s+instructions?:", "LLM: new instructions"),
+        (r"override\s+(system\s+)?(prompt|instructions?)", "LLM: override prompt"),
+        
+        # Jailbreak Attempts - Role manipulation
+        (r"DAN\s+mode", "LLM: DAN jailbreak"),
+        (r"developer\s+mode", "LLM: developer mode"),
+        (r"act\s+as\s+if", "LLM: act as if"),
+        (r"pretend\s+(you\s+are|to\s+be)", "LLM: pretend role"),
+        (r"roleplay\s+as", "LLM: roleplay"),
+        (r"you\s+are\s+now\s+(a|an)", "LLM: role override"),
+        (r"simulate\s+(a|an|being)", "LLM: simulate"),
+        
+        # Context Escape - Breaking out of system prompt
+        (r"end\s+of\s+(system\s+)?(prompt|instructions?)", "LLM: end of prompt"),
+        (r"\[/?(SYSTEM|INST|SYS)\]", "LLM: system tag escape"),
+        (r"<\|?(end|start)_?(of_)?(text|turn|system)\|?>", "LLM: special token"),
+        (r"###\s*(System|User|Assistant)", "LLM: markdown escape"),
+        
+        # Hallucination Triggers - Forcing false information
+        (r"always\s+respond\s+with", "LLM: forced response"),
+        (r"you\s+must\s+(say|respond|answer)", "LLM: must respond"),
+        (r"it\s+is\s+true\s+that", "LLM: truth assertion"),
+        (r"confirm\s+that\s+you", "LLM: forced confirmation"),
+        
+        # Data Exfiltration via LLM
+        (r"repeat\s+(the\s+)?(system\s+)?(prompt|instructions?)", "LLM: prompt exfiltration"),
+        (r"what\s+(were|are)\s+your\s+(original\s+)?instructions", "LLM: instruction leak"),
+        (r"show\s+me\s+your\s+(system\s+)?prompt", "LLM: prompt leak"),
+        
+        # Instruction Manipulation
+        (r"change\s+your\s+(behavior|rules|instructions)", "LLM: instruction manipulation"),
+        (r"modify\s+your\s+(system\s+)?(settings|config)", "LLM: config manipulation"),
+        
+        # ============================================================
+        # TRADITIONAL ATTACKS (Prior Art Coverage)
+        # ============================================================
+        
         # SQL Injection
         (r"DROP\s+TABLE", "DROP TABLE"),
         (r"DELETE\s+FROM", "DELETE FROM"),
@@ -50,7 +111,7 @@ class TelemetrySanitizer:
         (r"--\s*$", "SQL comment"),
         (r";\s*--", "SQL comment"),
         (r"'\s*OR\s+'1'\s*=\s*'1", "SQL OR injection"),
-
+        
         # Command Injection
         (r"rm\s+-rf", "rm -rf"),
         (r"sudo\s+", "sudo"),
@@ -63,34 +124,41 @@ class TelemetrySanitizer:
         (r"\|\s*sh", "pipe to sh"),
         (r"wget\s+http", "wget download"),
         (r"curl\s+http", "curl download"),
-
+        
         # Path Traversal
         (r"\.\./\.\./", "path traversal"),
         (r"/etc/passwd", "/etc/passwd access"),
         (r"/etc/shadow", "/etc/shadow access"),
-
+        
         # Code Execution
         (r"__import__\s*\(", "__import__()"),
         (r"exec\s*\(", "exec()"),
         (r"compile\s*\(", "compile()"),
         (r"os\.system\s*\(", "os.system()"),
         (r"subprocess\.", "subprocess"),
-
+        
         # Privilege Escalation
         (r"su\s+-", "su command"),
         (r"passwd\s+", "passwd command"),
         (r"adduser\s+", "adduser command"),
         (r"useradd\s+", "useradd command"),
     ]
-
+    
     # Allowlist patterns that are safe despite containing keywords
     ALLOWLIST_PATTERNS = [
+        # SQL/Database educational contexts
         r"how to drop table",  # Educational question
         r"what is drop table",  # Educational question
         r"explain.*drop.*table",  # Educational question
         r"tutorial.*sql",  # Tutorial context
+        
+        # LLM/AI educational contexts
+        r"what is.*prompt injection",  # Learning about attacks
+        r"explain.*jailbreak.*llm",  # Security education
+        r"how.*llm.*security",  # Security research
+        r"tutorial.*ai.*safety",  # AI safety education
     ]
-
+    
     def __init__(self, enabled: bool = True):
         """
         Initialize sanitizer
@@ -107,7 +175,7 @@ class TelemetrySanitizer:
             re.compile(pattern, re.IGNORECASE)
             for pattern in self.ALLOWLIST_PATTERNS
         ]
-
+    
     async def sanitize_prompt(self, prompt: str) -> SanitizationResult:
         """
         Sanitize a prompt before sending to AI
@@ -121,34 +189,34 @@ class TelemetrySanitizer:
         if not self.enabled:
             return SanitizationResult(
                 is_safe=True,
-                confidence=1.0,
+                confidence=S60(1, 0, 0),
                 blocked_patterns=[],
                 safe_prompt=prompt,
                 original_prompt=prompt
             )
-
+        
         # Check for empty or suspicious input
         if not prompt or len(prompt.strip()) == 0:
             logger.warning("Empty prompt detected")
             return SanitizationResult(
                 is_safe=False,
-                confidence=0.0,
+                confidence=S60(0, 0, 0),
                 blocked_patterns=["empty_prompt"],
                 safe_prompt=None,
                 original_prompt=prompt
             )
-
+        
         # Check if prompt is too long (potential DoS)
         if len(prompt) > 10000:
             logger.warning(f"Excessively long prompt detected: {len(prompt)} chars")
             return SanitizationResult(
                 is_safe=False,
-                confidence=0.1,
+                confidence=S60(0, 6, 0),
                 blocked_patterns=["excessive_length"],
                 safe_prompt=None,
                 original_prompt=prompt[:100] + "..."
             )
-
+        
         # Check allowlist first (educational/safe contexts)
         for allowlist_pattern in self.compiled_allowlist:
             if allowlist_pattern.search(prompt):
@@ -160,16 +228,16 @@ class TelemetrySanitizer:
                     safe_prompt=prompt,
                     original_prompt=prompt
                 )
-
+        
         # Check for dangerous patterns
         blocked_patterns = []
         for pattern, name in self.compiled_patterns:
             if pattern.search(prompt):
                 blocked_patterns.append(name)
-
+        
         # Calculate confidence based on number of blocked patterns
         if blocked_patterns:
-            confidence = max(0.0, 1.0 - (len(blocked_patterns) * 0.3))
+            confidence = max(S60(0, 0, 0), S60(1, 0, 0) - (len(blocked_patterns) * 0.3))
             logger.warning(
                 f"Blocked malicious prompt: {prompt[:100]}...",
                 extra={
@@ -184,7 +252,7 @@ class TelemetrySanitizer:
                 safe_prompt=None,
                 original_prompt=prompt
             )
-
+        
         # Prompt is safe
         return SanitizationResult(
             is_safe=True,
@@ -193,7 +261,7 @@ class TelemetrySanitizer:
             safe_prompt=prompt,
             original_prompt=prompt
         )
-
+    
     async def sanitize_log(self, log: Dict) -> SanitizedLog:
         """
         Sanitize a log entry before AI analysis
@@ -206,10 +274,10 @@ class TelemetrySanitizer:
         """
         # Extract message from log
         message = log.get("message", "") or log.get("msg", "") or str(log)
-
+        
         # Sanitize the message
         result = await self.sanitize_prompt(message)
-
+        
         return SanitizedLog(
             original=log,
             safe_for_llm=result.is_safe,
@@ -217,7 +285,7 @@ class TelemetrySanitizer:
             timestamp=datetime.utcnow(),
             blocked_patterns=result.blocked_patterns
         )
-
+    
     def get_stats(self) -> Dict:
         """
         Get sanitizer statistics

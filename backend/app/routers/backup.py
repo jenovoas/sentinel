@@ -1,6 +1,3 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
 Backup System API Router
 
@@ -18,18 +15,17 @@ Author: Sentinel Team
 Created: 2025-12-15
 """
 
-import glob
-import os
-import subprocess
-import time
-from datetime import datetime, timedelta
-from functools import lru_cache
-from typing import Any, Dict, List, Optional
-
-from fastapi import APIRouter, Depends, HTTPException, Query
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
-
-from app.security import get_current_admin_user
+from datetime import datetime, timedelta
+from typing import List, Optional, Dict, Any
+import os
+import glob
+import subprocess
+import json
+from functools import lru_cache
+import time
 
 router = APIRouter(prefix="/api/v1/backup", tags=["backup"])
 
@@ -41,11 +37,9 @@ class BackupFile(BaseModel):
     """Model for a single backup file"""
     filename: str = Field(..., description="Backup filename")
     size_bytes: int = Field(..., description="File size in bytes")
-    size_kb: int = Field(..., description="File size in KB")
-    size_mb: float = Field(0.0, description="File size in MB")
+    size_mb: float = Field(..., description="File size in MB")
     created_at: str = Field(..., description="Creation timestamp (ISO format)")
-    age_seconds: int = Field(..., description="Age in seconds")
-    age_hours: float = Field(0.0, description="Age in hours")
+    age_hours: float = Field(..., description="Age in hours")
     has_checksum: bool = Field(..., description="Whether SHA256 checksum exists")
     is_encrypted: bool = Field(False, description="Whether backup is encrypted")
 
@@ -53,11 +47,11 @@ class BackupFile(BaseModel):
 class BackupMetrics(BaseModel):
     """Aggregated backup metrics"""
     total_backups: int = Field(..., description="Total number of backups")
-    total_size_kb: int = Field(..., description="Total size of all backups in KB")
-    oldest_backup_age_seconds: int = Field(..., description="Age of oldest backup in seconds")
-    newest_backup_age_seconds: int = Field(..., description="Age of newest backup in seconds")
-    average_size_kb: int = Field(..., description="Average backup size in KB")
-    success_rate_24h_scaled: int = Field(..., description="Success rate in last 24 hours (0-10000 where 10000 = 100%)")
+    total_size_mb: float = Field(..., description="Total size of all backups in MB")
+    oldest_backup_age_hours: float = Field(..., description="Age of oldest backup in hours")
+    newest_backup_age_hours: float = Field(..., description="Age of newest backup in hours")
+    average_size_mb: float = Field(..., description="Average backup size in MB")
+    success_rate_24h: float = Field(..., description="Success rate in last 24 hours (0-100)")
 
 
 class BackupConfig(BaseModel):
@@ -74,7 +68,7 @@ class LastBackup(BaseModel):
     """Information about the last backup"""
     status: str = Field(..., description="Status: success, failed, or unknown")
     time: Optional[str] = Field(None, description="Timestamp of last backup")
-    age_seconds: Optional[int] = Field(None, description="Age in seconds")
+    age_hours: Optional[float] = Field(None, description="Age in hours")
     duration_seconds: Optional[int] = Field(None, description="Duration in seconds")
 
 
@@ -104,16 +98,6 @@ class BackupLogs(BaseModel):
 # ============================================================================
 # HELPER FUNCTIONS
 # ============================================================================
-
-def _parse_int_env(key: str, default: int) -> int:
-    val = os.getenv(key, "").strip()
-    return int(val) if val.isdigit() else default
-
-
-def _parse_bool_env(key: str, default: bool = False) -> bool:
-    val = os.getenv(key, "").strip().lower()
-    return val in ("true", "1", "yes") if val else default
-
 
 def get_backup_dir() -> str:
     """Get backup directory from environment or use default"""
@@ -148,20 +132,20 @@ def parse_backup_filename(filename: str) -> Optional[datetime]:
     return None
 
 
-@lru_cache(maxsize=16)
-def get_cached_status(cache_key: int, backup_dir: str) -> Dict[str, Any]:
+@lru_cache(maxsize=1)
+def get_cached_status(cache_key: int) -> Dict[str, Any]:
     """
-    Get cached backup status (cached for 30 seconds per backup_dir)
+    Get cached backup status (cached for 30 seconds)
     
     Args:
         cache_key: Current time // 30 (changes every 30 seconds)
-        backup_dir: Path to the backup directory
         
     Returns:
         Dictionary with backup status data
     """
+    backup_dir = get_backup_dir()
     log_file = get_log_file()
-
+    
     # Get list of backups
     backups = []
     if os.path.exists(backup_dir):
@@ -170,53 +154,50 @@ def get_cached_status(cache_key: int, backup_dir: str) -> Dict[str, Any]:
             key=os.path.getmtime,
             reverse=True
         )
-
+        
         for backup_file in backup_files[:20]:  # Last 20 backups
             # Skip checksum files
             if backup_file.endswith(".sha256"):
                 continue
-
+                
             try:
                 stat = os.stat(backup_file)
                 filename = os.path.basename(backup_file)
-                age_secs = int(time.time() - stat.st_mtime)
-
+                
                 backups.append({
                     "filename": filename,
                     "size_bytes": stat.st_size,
-                    "size_kb": stat.st_size // 1024,
-                    "size_mb": round(stat.st_size / (1024 * 1024), 2),
+                    "size_mb": round(stat.st_size / 1024 / 1024, 2),
                     "created_at": datetime.fromtimestamp(stat.st_mtime).isoformat(),
-                    "age_seconds": age_secs,
-                    "age_hours": round(age_secs / 3600, 2),
+                    "age_hours": round((time.time() - stat.st_mtime) / 3600, 1),
                     "has_checksum": os.path.exists(f"{backup_file}.sha256"),
                     "is_encrypted": filename.endswith(".enc")
                 })
             except Exception as e:
                 print(f"Error processing backup file {backup_file}: {e}")
                 continue
-
+    
     # Parse last backup from log
     last_backup_status = "unknown"
     last_backup_time = None
     last_backup_duration = None
     success_count_24h = 0
     total_count_24h = 0
-
+    
     if os.path.exists(log_file):
         try:
             cutoff_time = datetime.now() - timedelta(hours=24)
-
-            with open(log_file) as f:
+            
+            with open(log_file, 'r') as f:
                 lines = f.readlines()
-
+                
                 for line in reversed(lines[-500:]):  # Last 500 lines
                     # Extract timestamp
                     if line.startswith("["):
                         try:
                             timestamp_str = line[1:20]
                             log_time = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
-
+                            
                             # Count successes and failures in last 24h
                             if log_time >= cutoff_time:
                                 if "Backup process completed successfully" in line:
@@ -224,7 +205,7 @@ def get_cached_status(cache_key: int, backup_dir: str) -> Dict[str, Any]:
                                     total_count_24h += 1
                                 elif "Backup failed" in line or "ERROR" in line and "Backup" in line:
                                     total_count_24h += 1
-
+                            
                             # Get last backup info
                             if last_backup_status == "unknown":
                                 if "Backup process completed successfully" in line:
@@ -237,48 +218,47 @@ def get_cached_status(cache_key: int, backup_dir: str) -> Dict[str, Any]:
                             continue
         except Exception as e:
             print(f"Error reading log file: {e}")
-
+    
     # Calculate metrics
     total_backups = len(backups)
-    total_size_kb = sum(b["size_kb"] for b in backups)
-    oldest_backup_age_s = max([b["age_seconds"] for b in backups]) if backups else 0
-    newest_backup_age_s = min([b["age_seconds"] for b in backups]) if backups else 0
-    # Success rate scaled by 100 for 10000 = 100%
-    success_rate_24h_scaled = (success_count_24h * 10000 // total_count_24h) if total_count_24h > 0 else 10000
-
+    total_size_mb = sum(b["size_mb"] for b in backups)
+    oldest_backup_age = max([b["age_hours"] for b in backups]) if backups else 0
+    newest_backup_age = min([b["age_hours"] for b in backups]) if backups else 0
+    success_rate_24h = (success_count_24h / total_count_24h * 100) if total_count_24h > 0 else 100.0
+    
     # Determine health status
     health = "healthy"
-    if newest_backup_age_s > 86400: # 24 hours
-        health = "warning"
-    if newest_backup_age_s > 172800: # 48 hours
-        health = "critical"
+    if newest_backup_age > 24:
+        health = "warning"  # No backup in 24 hours
+    if newest_backup_age > 48:
+        health = "critical"  # No backup in 48 hours
     if last_backup_status == "failed":
         health = "critical"
-
+    
     return {
         "health": health,
         "last_backup": {
             "status": last_backup_status,
             "time": last_backup_time,
-            "age_seconds": newest_backup_age_s if backups else None,
+            "age_hours": newest_backup_age if backups else None,
             "duration_seconds": last_backup_duration
         },
         "metrics": {
             "total_backups": total_backups,
-            "total_size_kb": total_size_kb,
-            "oldest_backup_age_seconds": oldest_backup_age_s,
-            "newest_backup_age_seconds": newest_backup_age_s,
-            "average_size_kb": total_size_kb // total_backups if total_backups > 0 else 0,
-            "success_rate_24h_scaled": success_rate_24h_scaled
+            "total_size_mb": round(total_size_mb, 2),
+            "oldest_backup_age_hours": round(oldest_backup_age, 1),
+            "newest_backup_age_hours": round(newest_backup_age, 1),
+            "average_size_mb": round(total_size_mb / total_backups, 2) if total_backups > 0 else 0,
+            "success_rate_24h": round(success_rate_24h, 1)
         },
         "backups": backups,
         "config": {
             "backup_dir": backup_dir,
-            "retention_days": _parse_int_env("BACKUP_RETENTION_DAYS", 7),
-            "s3_enabled": _parse_bool_env("S3_ENABLED", False),
-            "minio_enabled": _parse_bool_env("MINIO_ENABLED", False),
-            "encryption_enabled": _parse_bool_env("ENCRYPT_ENABLED", False),
-            "webhook_enabled": _parse_bool_env("WEBHOOK_ENABLED", False)
+            "retention_days": int(os.getenv("BACKUP_RETENTION_DAYS", "7")),
+            "s3_enabled": os.getenv("S3_ENABLED", "false").lower() == "true",
+            "minio_enabled": os.getenv("MINIO_ENABLED", "false").lower() == "true",
+            "encryption_enabled": os.getenv("ENCRYPT_ENABLED", "false").lower() == "true",
+            "webhook_enabled": os.getenv("WEBHOOK_ENABLED", "false").lower() == "true"
         }
     }
 
@@ -304,8 +284,7 @@ async def get_backup_status():
     try:
         # Cache key changes every 30 seconds
         cache_key = int(time.time() // 30)
-        backup_dir = get_backup_dir()
-        status_data = get_cached_status(cache_key, backup_dir)
+        status_data = get_cached_status(cache_key)
         return BackupStatus(**status_data)
     except Exception as e:
         raise HTTPException(
@@ -331,42 +310,39 @@ async def get_backup_history(
     """
     try:
         backup_dir = get_backup_dir()
-
+        
         if not os.path.exists(backup_dir):
             return []
-
+        
         backup_files = sorted(
             glob.glob(f"{backup_dir}/sentinel_backup_*.sql.gz*"),
             key=os.path.getmtime,
             reverse=True
         )
-
+        
         backups = []
         for backup_file in backup_files[offset:offset+limit]:
             # Skip checksum files
             if backup_file.endswith(".sha256"):
                 continue
-
+                
             try:
                 stat = os.stat(backup_file)
                 filename = os.path.basename(backup_file)
-                age_secs = int(time.time() - stat.st_mtime)
-
+                
                 backups.append(BackupFile(
                     filename=filename,
                     size_bytes=stat.st_size,
-                    size_kb=stat.st_size // 1024,
-                    size_mb=round(stat.st_size / (1024 * 1024), 2),
+                    size_mb=round(stat.st_size / 1024 / 1024, 2),
                     created_at=datetime.fromtimestamp(stat.st_mtime).isoformat(),
-                    age_seconds=age_secs,
-                    age_hours=round(age_secs / 3600, 2),
+                    age_hours=round((time.time() - stat.st_mtime) / 3600, 1),
                     has_checksum=os.path.exists(f"{backup_file}.sha256"),
                     is_encrypted=filename.endswith(".enc")
                 ))
             except Exception as e:
                 print(f"Error processing backup file {backup_file}: {e}")
                 continue
-
+        
         return backups
     except Exception as e:
         raise HTTPException(
@@ -376,7 +352,7 @@ async def get_backup_history(
 
 
 @router.post("/trigger", response_model=BackupTriggerResponse)
-async def trigger_backup(current_user = Depends(get_current_admin_user)):
+async def trigger_backup():
     """
     Manually trigger a backup
     
@@ -388,68 +364,40 @@ async def trigger_backup(current_user = Depends(get_current_admin_user)):
     """
     try:
         # Get project root (assuming backend is in backend/ directory)
-        # backend/app/routers/backup.py -> backend/app/routers -> backend/app -> backend -> repository_root
-        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-        backup_script_rel = os.path.join("scripts", "backup", "backup.sh")
-        backup_script = os.path.join(project_root, backup_script_rel)
-
-        # Security: Resolve absolute paths and validate
-        abs_script_path = os.path.abspath(backup_script)
-        abs_project_root = os.path.abspath(project_root)
-        expected_path = os.path.join(abs_project_root, "scripts", "backup", "backup.sh")
-
-        if abs_script_path != expected_path:
-            raise HTTPException(
-                status_code=403,
-                detail="Unauthorized script path: security validation failed"
-            )
-
-        if not os.path.exists(abs_script_path):
+        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        backup_script = os.path.join(project_root, "scripts", "backup", "backup.sh")
+        
+        if not os.path.exists(backup_script):
             raise HTTPException(
                 status_code=404,
-                detail="Backup script not found"
+                detail=f"Backup script not found: {backup_script}"
             )
-
-        # Ensure the script is executable
-        if not os.access(abs_script_path, os.X_OK):
-            raise HTTPException(
-                status_code=403,
-                detail="Backup script is not executable"
-            )
-
-        # Security: Check if the script is world-writable
-        if os.stat(abs_script_path).st_mode & 0o002:
-            raise HTTPException(
-                status_code=403,
-                detail="Security error: Backup script is world-writable"
-            )
-
+        
         # Execute backup script
         result = subprocess.run(
-            [abs_script_path],
+            [backup_script],
             capture_output=True,
             text=True,
             timeout=300,  # 5 minute timeout
             cwd=project_root
         )
+        
         status = "success" if result.returncode == 0 else "failed"
         message = "Backup completed successfully" if result.returncode == 0 else "Backup failed"
-
+        
         # Clear cache to force refresh
         get_cached_status.cache_clear()
-
+        
         return BackupTriggerResponse(
             status=status,
             exit_code=result.returncode,
             message=message,
             output=result.stdout[-500:] if result.stdout else result.stderr[-500:]
         )
-    except HTTPException:
-        raise
     except subprocess.TimeoutExpired:
         raise HTTPException(
             status_code=408,
-            detail="Backup operation timed out: timeout exceeded (5 minutes)"
+            detail="Backup operation timed out (exceeded 5 minutes)"
         )
     except Exception as e:
         raise HTTPException(
@@ -473,14 +421,14 @@ async def get_backup_logs(
     """
     try:
         log_file = get_log_file()
-
+        
         if not os.path.exists(log_file):
             return BackupLogs(logs=[], total_lines=0)
-
-        with open(log_file) as f:
+        
+        with open(log_file, 'r') as f:
             all_lines = f.readlines()
             recent_lines = all_lines[-lines:]
-
+            
         return BackupLogs(
             logs=[line.strip() for line in recent_lines],
             total_lines=len(all_lines)
@@ -503,11 +451,11 @@ async def get_backup_config():
     try:
         return BackupConfig(
             backup_dir=get_backup_dir(),
-            retention_days=_parse_int_env("BACKUP_RETENTION_DAYS", 7),
-            s3_enabled=_parse_bool_env("S3_ENABLED", False),
-            minio_enabled=_parse_bool_env("MINIO_ENABLED", False),
-            encryption_enabled=_parse_bool_env("ENCRYPT_ENABLED", False),
-            webhook_enabled=_parse_bool_env("WEBHOOK_ENABLED", False)
+            retention_days=int(os.getenv("BACKUP_RETENTION_DAYS", "7")),
+            s3_enabled=os.getenv("S3_ENABLED", "false").lower() == "true",
+            minio_enabled=os.getenv("MINIO_ENABLED", "false").lower() == "true",
+            encryption_enabled=os.getenv("ENCRYPT_ENABLED", "false").lower() == "true",
+            webhook_enabled=os.getenv("WEBHOOK_ENABLED", "false").lower() == "true"
         )
     except Exception as e:
         raise HTTPException(

@@ -1,12 +1,7 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
-import logging
-
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from celery import Celery
-
 from app.config import get_settings
-from app.quantum_scheduler import T_BIO, T_CYCLE
+import logging
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
@@ -19,9 +14,6 @@ celery_app = Celery(
 )
 
 # Configure Celery
-# worker_prefetch_multiplier=1: no acumular tareas en el worker — el quantum
-# scheduler decide cuándo ejecutar, no el prefetch del broker.
-# worker_concurrency=2: alineado a los 2 vCPUs disponibles en sentinel.
 celery_app.conf.update(
     task_serializer="json",
     accept_content=["json"],
@@ -29,33 +21,30 @@ celery_app.conf.update(
     timezone="UTC",
     enable_utc=True,
     task_track_started=True,
-    task_time_limit=30 * 60,
-    worker_prefetch_multiplier=1,   # quantum-aware: no acumular
+    task_time_limit=30 * 60,  # 30 minutes
+    worker_prefetch_multiplier=4,
     worker_max_tasks_per_child=1000,
-    worker_concurrency=2,           # alineado a vCPUs sentinel
 )
 
-# Celery Beat Schedule — alineado a ciclos S60
-# T_BIO = 17s (pulso humano) — intervalo base de métricas
-# T_CYCLE = 68s (4 × T_BIO) — ciclo completo para health-check
+# Celery Beat Schedule
 from celery.schedules import crontab
 
 celery_app.conf.beat_schedule = {
     "collect-metrics": {
         "task": "app.tasks.monitoring.collect_metrics",
-        "schedule": T_BIO,           # 17s — alineado al pulso humano (era 15s)
+        "schedule": 15,  # Every 15 seconds (align with dashboard refresh)
     },
     "cleanup-old-metrics": {
         "task": "app.tasks.monitoring.cleanup_old_data",
-        "schedule": crontab(hour=0, minute=0),
+        "schedule": crontab(hour=0, minute=0),  # Daily at midnight
     },
     "cleanup-old-audit-logs": {
         "task": "app.tasks.cleanup.cleanup_old_audit_logs",
-        "schedule": crontab(hour=2, minute=0),
+        "schedule": crontab(hour=2, minute=0),  # Daily at 2 AM
     },
     "health-check": {
         "task": "app.tasks.health.health_check",
-        "schedule": T_CYCLE,         # 68s — ciclo completo S60 (era 60s)
+        "schedule": 60,  # Every 60 seconds
     },
 }
 

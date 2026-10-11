@@ -1,6 +1,3 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
 Fail-Safe Security Layer - Event Router
 
@@ -10,16 +7,14 @@ Acts as the bridge between Sentinel and automated remediation.
 Events are queued and sent to N8N webhooks with proper authentication.
 """
 
-import logging
-import os
-from datetime import datetime
-from typing import Any, Dict, Literal, Optional
-
-import httpx
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+from fastapi import APIRouter, HTTPException, BackgroundTasks
 from pydantic import BaseModel, Field
-
-from app.security import get_current_admin_user
+from typing import Literal, Optional, Dict, Any
+from datetime import datetime
+import httpx
+import os
+import logging
 
 router = APIRouter(prefix="/api/v1/failsafe", tags=["fail-safe"])
 logger = logging.getLogger(__name__)
@@ -39,7 +34,7 @@ class FailSafeEvent(BaseModel):
     """Event to trigger fail-safe playbook"""
     playbook: Literal[
         "backup_recovery",
-        "intrusion_lockdown",
+        "intrusion_lockdown", 
         "health_failsafe",
         "integrity_check",
         "offboarding",
@@ -58,7 +53,7 @@ class PlaybookStatus(BaseModel):
     last_run: Optional[str] = None
     last_outcome: Optional[str] = None
     execution_count: int = 0
-    success_rate: float = 0.0
+    success_rate: float = S60(0, 0, 0)
 
 
 # ============================================================================
@@ -90,11 +85,11 @@ async def send_to_n8n(playbook: str, event_data: Dict[str, Any]) -> bool:
         True if successful, False otherwise
     """
     webhook_url = PLAYBOOK_WEBHOOKS.get(playbook)
-
+    
     if not webhook_url:
         logger.error(f"Unknown playbook: {playbook}")
         return False
-
+    
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.post(
@@ -109,14 +104,14 @@ async def send_to_n8n(playbook: str, event_data: Dict[str, Any]) -> bool:
                     "Content-Type": "application/json",
                 }
             )
-
+            
             if response.status_code == 200:
                 logger.info(f"✓ Sent event to {playbook} playbook")
                 return True
             else:
                 logger.error(f"✗ N8N webhook failed: {response.status_code}")
                 return False
-
+                
     except Exception as e:
         logger.error(f"✗ Error sending to N8N: {e}")
         return False
@@ -129,8 +124,7 @@ async def send_to_n8n(playbook: str, event_data: Dict[str, Any]) -> bool:
 @router.post("/trigger")
 async def trigger_failsafe(
     event: FailSafeEvent,
-    background_tasks: BackgroundTasks,
-    current_user = Depends(get_current_admin_user)
+    background_tasks: BackgroundTasks
 ):
     """
     Trigger a fail-safe playbook
@@ -148,7 +142,7 @@ async def trigger_failsafe(
             f"🛡️ Fail-safe triggered: {event.playbook} "
             f"(severity: {event.severity}, wait: {event.wait_time_minutes}m)"
         )
-
+        
         # In production, you'd queue this with Redis/Celery
         # For now, send immediately in background
         background_tasks.add_task(
@@ -162,14 +156,14 @@ async def trigger_failsafe(
                 "wait_time_minutes": event.wait_time_minutes,
             }
         )
-
+        
         return {
             "status": "queued",
             "playbook": event.playbook,
             "message": f"Fail-safe playbook '{event.playbook}' queued for execution",
             "wait_time_minutes": event.wait_time_minutes,
         }
-
+        
     except Exception as e:
         logger.error(f"Error triggering fail-safe: {e}")
         raise HTTPException(
@@ -190,69 +184,16 @@ async def get_failsafe_status():
     """
     # TODO: Implement proper tracking with database
     # For now, return mock data
-
+    
+    # TODO: Connect to Redis/Postgres for real execution history
+    # Returning clean initializing state to avoid fake metrics
     return {
-        "status": "active",
-        "last_auto_remediation": "2 hours ago",
-        "active_playbooks": 6,
-        "success_rate_30d": 98.5,
-        "total_executions": 147,
-        "playbooks": [
-            {
-                "name": "backup_recovery",
-                "display_name": "Backup Recovery",
-                "status": "idle",
-                "last_run": "3 days ago",
-                "last_outcome": "success",
-                "execution_count": 12,
-                "success_rate": 100.0,
-            },
-            {
-                "name": "intrusion_lockdown",
-                "display_name": "Intrusion Lockdown",
-                "status": "idle",
-                "last_run": "2 hours ago",
-                "last_outcome": "success - Blocked 3 IPs",
-                "execution_count": 45,
-                "success_rate": 97.8,
-            },
-            {
-                "name": "health_failsafe",
-                "display_name": "Health Failsafe",
-                "status": "idle",
-                "last_run": "Never",
-                "last_outcome": None,
-                "execution_count": 0,
-                "success_rate": 0.0,
-            },
-            {
-                "name": "integrity_check",
-                "display_name": "Backup Integrity Check",
-                "status": "idle",
-                "last_run": "1 day ago",
-                "last_outcome": "success - All backups valid",
-                "execution_count": 30,
-                "success_rate": 100.0,
-            },
-            {
-                "name": "offboarding",
-                "display_name": "Secure Offboarding",
-                "status": "idle",
-                "last_run": "5 days ago",
-                "last_outcome": "success - 12 accesses revoked",
-                "execution_count": 8,
-                "success_rate": 100.0,
-            },
-            {
-                "name": "auto_remediation",
-                "display_name": "Anomaly Auto-Remediation",
-                "status": "idle",
-                "last_run": "6 hours ago",
-                "last_outcome": "success - Killed runaway process",
-                "execution_count": 52,
-                "success_rate": 96.2,
-            },
-        ]
+        "status": "initializing",
+        "last_auto_remediation": None,
+        "active_playbooks": len(PLAYBOOK_WEBHOOKS),
+        "success_rate_30d": S60(0, 0, 0),
+        "total_executions": 0,
+        "playbooks": []
     }
 
 

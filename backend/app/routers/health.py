@@ -1,6 +1,3 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
 Health Check Endpoints for High Availability
 
@@ -17,17 +14,17 @@ Health Check Consumers:
 - Custom watchdog scripts
 """
 
-import asyncio
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+from fastapi import APIRouter, Response, status
 from datetime import datetime
-from typing import Any, Dict
-
+from typing import Dict, Any
+import asyncio
 import asyncpg
-from fastapi import APIRouter, Depends, Response, status
+import redis.asyncio as redis
+import httpx
+from time import time
 
-from app.models.user import User
-from app.security import get_current_admin_user, get_current_user
-
-router = APIRouter()
+router = APIRouter(prefix="/api/v1")
 
 # Global state for role management
 app_role = "standby"  # "primary" or "standby"
@@ -35,6 +32,63 @@ accept_requests = False  # Whether to serve client requests
 
 # Startup time for uptime calculation
 startup_time = datetime.now()
+
+
+# ============================================================================
+# BIOLOGICAL STATE - QUANTUM HEARTBEAT
+# ============================================================================
+
+# Global biological state updated by Redis pulse
+biological_state = {
+    "pulse": 60,      # Default 60 BPM
+    "synapse": 0.98,  # Default 98% coherence
+    "last_pulse": 0,
+    "axiones": 0,
+    "disonancia": S60(0, 0, 0)
+}
+
+async def quantum_pulse_listener():
+    """
+    Escucha el 'Latido Cuántico' en Redis y actualiza el estado biológico.
+    Este proceso corre en background sincronizando la coherencia del sistema.
+    """
+    import os
+    import json
+    import redis.asyncio as redis
+    
+    redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+    channel = "sentinel:quantum:pulse"
+    
+    while True:
+        try:
+            r = redis.from_url(redis_url, decode_responses=True)
+            pubsub = r.pubsub()
+            await pubsub.subscribe(channel)
+            
+            async for message in pubsub.listen():
+                if message["type"] == "message":
+                    try:
+                        data = json.loads(message["data"])
+                        # Actualizar estado biológico
+                        biological_state["disonancia"] = data.get("disonancia", S60(0, 0, 0))
+                        biological_state["axiones"] = data.get("axiones_count", 0)
+                        biological_state["clock_coherence"] = data.get("clock_coherence", S60(1, 0, 0)) # Nueva Métrica
+                        biological_state["last_pulse"] = time()
+                        
+                        # Cálculo Biológico (Metáfora de Salud Cuántica)
+                        # Pulse = 60 + (disonancia / 10) -> El sistema se acelera con el ruido
+                        biological_state["pulse"] = round(60 + (biological_state["disonancia"] / 10), 1)
+                        
+                        # Synapse = (S60(1, 0, 0) - Axiones) * Reloj -> La coherencia temporal multiplica la capacidad cognitiva
+                        base_coherence = S60(1, 0, 0) - (biological_state["axiones"] / 200)
+                        final_synapse = base_coherence * biological_state["clock_coherence"]
+                        
+                        biological_state["synapse"] = max(0.42, round(final_synapse, 4)) # Nunca baja del límite de base60 (42)
+                        
+                    except Exception as e:
+                        pass
+        except Exception as e:
+            await asyncio.sleep(5) # Reintentar tras fallo de Redis
 
 
 async def check_database() -> Dict[str, Any]:
@@ -51,45 +105,58 @@ async def check_database() -> Dict[str, Any]:
     try:
         import os
         from time import time
-
-        # Get DB config from environment (consistent with docker-compose.yml)
-        db_host = os.getenv("DATABASE_HOST", os.getenv("POSTGRES_HOST", "localhost"))
-        db_port = os.getenv("DATABASE_PORT", os.getenv("POSTGRES_PORT", "5432"))
-        db_user = os.getenv("DATABASE_USER", os.getenv("POSTGRES_USER", "postgres"))
-        db_pass = os.getenv("DATABASE_PASSWORD", os.getenv("POSTGRES_PASSWORD", "postgres"))
-        db_name = os.getenv("DATABASE_NAME", os.getenv("POSTGRES_DB", "sentinel"))
-
+        from urllib.parse import urlparse
+        
+        # Parse DATABASE_URL to get connection parameters
+        database_url = os.getenv(
+            "DATABASE_URL",
+            "postgresql+asyncpg://sentinel_user:sentinel_password@postgres:5432/sentinel_db"
+        )
+        
+        # Remove the asyncpg driver prefix if present
+        if database_url.startswith("postgresql+asyncpg://"):
+            database_url = database_url.replace("postgresql+asyncpg://", "postgresql://")
+        
+        # Parse URL
+        parsed = urlparse(database_url)
+        
+        db_user = parsed.username or "sentinel_user"
+        db_password = parsed.password or "sentinel_password"
+        db_host = parsed.hostname or "postgres"
+        db_port = parsed.port or 5432
+        db_name = parsed.path.lstrip("/") or "sentinel_db"
+        
         start = time()
-
-        # Connection using asyncpg
+        
+        # Create connection
         conn = await asyncpg.connect(
-            user=db_user,
-            password=db_pass,
             host=db_host,
             port=db_port,
+            user=db_user,
+            password=db_password,
             database=db_name,
             timeout=5.0  # 5 second timeout
         )
-
+        
         # Simple query to verify database is responsive
         result = await conn.fetchval("SELECT 1")
-
+        
         # Check if we're connected to primary or replica
         is_primary = await conn.fetchval(
             "SELECT NOT pg_is_in_recovery()"
         )
-
+        
         await conn.close()
-
+        
         latency = (time() - start) * 1000  # Convert to ms
-
+        
         return {
             "status": "healthy",
             "latency_ms": round(latency, 2),
             "is_primary": is_primary,
             "host": db_host
         }
-
+        
     except Exception as e:
         return {
             "status": "unhealthy",
@@ -113,73 +180,112 @@ async def check_redis() -> Dict[str, Any]:
     """
     try:
         from time import time
-
+        
         # Try to use Sentinel client if available
         try:
-            from app.redis_client import check_redis_health, get_redis_master
-
+            from app.redis_client import get_redis_master, check_redis_health
+            
             start = time()
-
+            
             # Get master connection via Sentinel
             master = await get_redis_master()
-
+            
             # Ping Redis
             await master.ping()
-
+            
             # Test set/get
             test_key = "health_check_test"
             await master.set(test_key, "ok", ex=10)
             value = await master.get(test_key)
-
+            
             latency = (time() - start) * 1000
-
+            
             if value != "ok":
                 raise Exception("Redis set/get test failed")
-
-            # Get cluster info
+            
+            # Get cluster info from Sentinel
             cluster_info = await check_redis_health()
-
+            
             return {
-                "status": cluster_info.get("status", "healthy"),
+                "status": "healthy",
                 "latency_ms": round(latency, 2),
-                "mode": cluster_info.get("mode", "sentinel"),
+                "mode": "sentinel",
                 "cluster": cluster_info
             }
-
-        except Exception:
+            
+        except ImportError:
             # Fallback to simple Redis if Sentinel not configured
             import os
-
             import redis.asyncio as redis
-
+            
             redis_url = os.getenv("REDIS_URL", "redis://redis:6379")
-
+            
             start = time()
-
+            
             r = redis.from_url(redis_url, decode_responses=True)
             await r.ping()
-
+            
             test_key = "health_check_test"
             await r.set(test_key, "ok", ex=10)
             value = await r.get(test_key)
-
+            
             await r.close()
-
+            
             latency = (time() - start) * 1000
-
+            
             if value != "ok":
                 raise Exception("Redis set/get test failed")
-
+            
             return {
                 "status": "healthy",
                 "latency_ms": round(latency, 2),
                 "mode": "standalone"
             }
-
+        
     except Exception as e:
         return {
             "status": "unhealthy",
             "error": str(e)
+        }
+
+
+async def check_ollama() -> Dict[str, Any]:
+    """
+    Check Ollama AI service
+    
+    Returns:
+        dict: {
+            "status": "healthy" | "unhealthy" | "disabled",
+            "latency_ms": float,
+            "error": str (if unhealthy)
+        }
+    """
+    try:
+        import os
+        from time import time
+        
+        ollama_url = os.getenv("OLLAMA_URL", "http://ollama:11434")
+        
+        start = time()
+        
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            response = await client.get(f"{ollama_url}/api/tags")
+            response.raise_for_status()
+            
+        latency = (time() - start) * 1000
+        
+        return {
+            "status": "healthy",
+            "latency_ms": round(latency, 2),
+            "enabled": True
+        }
+        
+    except Exception as e:
+        # Ollama is optional, so we don't fail health check if it's down
+        return {
+            "status": "disabled",
+            "error": str(e),
+            "enabled": False
         }
 
 
@@ -201,41 +307,87 @@ async def health_check(response: Response):
     - Role (primary/standby)
     - Uptime
     """
+    import psutil
+    
     # Check all dependencies in parallel
-    db_check, redis_check = await asyncio.gather(
+    db_check, redis_check, ollama_check = await asyncio.gather(
         check_database(),
         check_redis(),
+        check_ollama(),
+        return_exceptions=True
     )
-
+    
+    # System Metrics
+    cpu_usage = psutil.cpu_percent(interval=None)
+    memory = psutil.virtual_memory()
+    memory_usage = memory.percent
+    
     # Determine overall health
     # Critical: Database and Redis must be healthy
+    # Optional: Ollama can be disabled
+    
     critical_healthy = (
-        isinstance(db_check, dict) and db_check.get("status") == "healthy" and
-        isinstance(redis_check, dict) and redis_check.get("status") == "healthy"
+        db_check.get("status") == "healthy" and
+        redis_check.get("status") == "healthy"
     )
-
+    
     overall_status = "healthy" if critical_healthy else "unhealthy"
-
+    
     # Calculate uptime
     uptime_seconds = (datetime.now() - startup_time).total_seconds()
+    
+    # Add TruthSync check
+    from app.services.truthsync import truthsync_client
+    truthsync_status = await truthsync_client.health_check()
+    
+    # Add Guardian/Security check (Real Process Verification)
+    guardian_active = False
+    try:
+         for proc in psutil.process_iter(['cmdline']):
+             try:
+                 cmd = proc.info.get('cmdline')
+                 if cmd and any('watchdog_service.py' in str(arg) for arg in cmd):
+                     guardian_active = True
+                     break
+             except (psutil.NoSuchProcess, psutil.AccessDenied):
+                 continue
+    except Exception as e:
+         logger.error(f"Error checking watchdog status: {e}")
+         guardian_active = False
 
     health_data = {
         "status": overall_status,
         "timestamp": datetime.now().isoformat(),
         "uptime_seconds": round(uptime_seconds, 2),
+        "cpu_usage": cpu_usage,
+        "memory_usage": memory_usage,
         "role": app_role,
+        "biological": {
+            "pulse": biological_state["pulse"],
+            "synapse": biological_state["synapse"],
+            "last_pulse_delta": round(time() - biological_state["last_pulse"], 2) if biological_state["last_pulse"] > 0 else -1
+        },
         "components": {
             "database": db_check,
             "redis": redis_check,
+            "ollama": ollama_check,
+            "truthsync": {
+                "status": truthsync_status.get("status", "unknown"),
+                "available": truthsync_status.get("status") == "healthy"
+            },
+            "guardian": {
+                "active": guardian_active,
+                "status": "protected" if guardian_active else "unprotected"
+            }
         }
     }
-
+    
     # Set HTTP status code
     if overall_status == "unhealthy":
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
     else:
         response.status_code = status.HTTP_200_OK
-
+    
     return health_data
 
 
@@ -262,20 +414,20 @@ async def readiness_check(response: Response):
         check_database(),
         check_redis()
     )
-
+    
     # Check if dependencies are healthy
     dependencies_healthy = (
         db_check.get("status") == "healthy" and
         redis_check.get("status") == "healthy"
     )
-
+    
     # Check if we should accept requests
     # Primary always accepts, standby only if explicitly enabled
     can_serve = (app_role == "primary") or accept_requests
-
+    
     # Overall readiness
     ready = dependencies_healthy and can_serve
-
+    
     readiness_data = {
         "ready": ready,
         "timestamp": datetime.now().isoformat(),
@@ -283,16 +435,16 @@ async def readiness_check(response: Response):
         "accept_requests": accept_requests,
         "dependencies": {
             "database": db_check.get("status"),
-            "redis": redis_check.get("status"),
+            "redis": redis_check.get("status")
         }
     }
-
+    
     # Set HTTP status code
     if ready:
         response.status_code = status.HTTP_200_OK
     else:
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
-
+    
     return readiness_data
 
 
@@ -321,22 +473,23 @@ async def liveness_check():
 
 
 @router.post("/promote")
-async def promote_to_primary(
-    response: Response,
-    current_user: User = Depends(get_current_admin_user)
-):
+async def promote_to_primary(response: Response):
     """
     Promote this instance to primary role
     
     Used during failover to switch standby to primary
     
-    This endpoint is protected (authentication and admin required)
+    This endpoint should be protected (authentication required)
     """
     global app_role, accept_requests
-
+    
+    # TODO: Add authentication check
+    # if not is_authorized(request):
+    #     raise HTTPException(status_code=401)
+    
     app_role = "primary"
     accept_requests = True
-
+    
     return {
         "status": "promoted",
         "role": app_role,
@@ -346,22 +499,21 @@ async def promote_to_primary(
 
 
 @router.post("/demote")
-async def demote_to_standby(
-    response: Response,
-    current_user: User = Depends(get_current_admin_user)
-):
+async def demote_to_standby(response: Response):
     """
     Demote this instance to standby role
     
     Used during failback to return to standby mode
     
-    This endpoint is protected (authentication and admin required)
+    This endpoint should be protected (authentication required)
     """
     global app_role, accept_requests
-
+    
+    # TODO: Add authentication check
+    
     app_role = "standby"
     accept_requests = False
-
+    
     return {
         "status": "demoted",
         "role": app_role,
@@ -371,42 +523,51 @@ async def demote_to_standby(
 
 
 @router.get("/metrics")
-async def prometheus_metrics(current_user = Depends(get_current_user)):
+async def prometheus_metrics():
     """
     Prometheus metrics endpoint
-
+    
     Exposes metrics in Prometheus format for scraping
+    
+    Metrics include:
+    - Health check results
+    - Dependency latencies
+    - Role status
+    - Uptime
     """
-    # Check components
-    db_check, redis_check = await asyncio.gather(
+    # Check all components
+    db_check, redis_check, ollama_check = await asyncio.gather(
         check_database(),
         check_redis(),
+        check_ollama(),
+        return_exceptions=True
     )
-
+    
     uptime = (datetime.now() - startup_time).total_seconds()
-
+    
     # Prometheus format
     metrics = []
-
+    
     # Health status (1 = healthy, 0 = unhealthy)
     metrics.append(f'sentinel_health{{component="database"}} {1 if db_check.get("status") == "healthy" else 0}')
     metrics.append(f'sentinel_health{{component="redis"}} {1 if redis_check.get("status") == "healthy" else 0}')
-
+    metrics.append(f'sentinel_health{{component="ollama"}} {1 if ollama_check.get("status") == "healthy" else 0}')
+    
     # Latencies
     if "latency_ms" in db_check:
         metrics.append(f'sentinel_dependency_latency_ms{{component="database"}} {db_check["latency_ms"]}')
     if "latency_ms" in redis_check:
         metrics.append(f'sentinel_dependency_latency_ms{{component="redis"}} {redis_check["latency_ms"]}')
-
+    
     # Role (1 = primary, 0 = standby)
     metrics.append(f'sentinel_role{{role="{app_role}"}} {1 if app_role == "primary" else 0}')
-
+    
     # Uptime
     metrics.append(f'sentinel_uptime_seconds {uptime}')
-
+    
     # Accept requests flag
     metrics.append(f'sentinel_accept_requests {1 if accept_requests else 0}')
-
+    
     return Response(
         content="\n".join(metrics) + "\n",
         media_type="text/plain"

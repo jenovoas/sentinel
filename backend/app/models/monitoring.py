@@ -1,19 +1,17 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
 Sentinel Monitoring Models - Historical data, anomalies, security alerts
 Phase 2: Data aggregation for AI analysis (Phase 3)
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import uuid
 from datetime import datetime
 from enum import Enum as PyEnum
 from typing import Optional
 
-from sqlalchemy import JSON, Boolean, DateTime, Enum, Float, Integer, String, func
+from sqlalchemy import String, Float, DateTime, Integer, ForeignKey, Enum, func, JSON, Boolean
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 
@@ -84,7 +82,6 @@ class MetricSample(Base):
     db_connections_active: Mapped[int] = mapped_column(Integer, nullable=False)
     db_locks: Mapped[int] = mapped_column(Integer, nullable=False)
     db_size_bytes: Mapped[int] = mapped_column(Integer, nullable=False)
-    api_latency_ms: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
 
     # Metadata for AI analysis
     context_metadata: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)

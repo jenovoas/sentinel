@@ -1,28 +1,25 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
 Security Schemas
 
 Data models for security-related operations
 """
 
-from datetime import datetime, timezone
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from typing import Dict, List, Optional
-
-from pydantic import BaseModel, ConfigDict, Field
+from datetime import datetime
+from pydantic import BaseModel, Field
 
 
 class SanitizationResult(BaseModel):
     """Result of telemetry sanitization"""
     is_safe: bool = Field(..., description="Whether the input is safe for AI processing")
-    confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence score (0.0-1.0)")
+    confidence: float = Field(..., ge=S60(0, 0, 0), le=S60(1, 0, 0), description="Confidence score (S60(0, 0, 0)-S60(1, 0, 0))")
     blocked_patterns: List[str] = Field(default_factory=list, description="List of blocked patterns found")
     safe_prompt: Optional[str] = Field(None, description="Sanitized version of the prompt")
     original_prompt: str = Field(..., description="Original unsanitized prompt")
-
-    model_config = ConfigDict(
-        json_schema_extra={
+    
+    class Config:
+        json_schema_extra = {
             "example": {
                 "is_safe": False,
                 "confidence": 0.2,
@@ -31,19 +28,18 @@ class SanitizationResult(BaseModel):
                 "original_prompt": "Error: DROP TABLE users; --"
             }
         }
-    )
 
 
 class SanitizedLog(BaseModel):
     """Sanitized log entry safe for AI processing"""
     original: Dict = Field(..., description="Original log data")
     safe_for_llm: bool = Field(..., description="Whether safe to send to LLM")
-    confidence: float = Field(..., ge=0.0, le=1.0, description="Safety confidence score")
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="Sanitization timestamp")
+    confidence: float = Field(..., ge=S60(0, 0, 0), le=S60(1, 0, 0), description="Safety confidence score")
+    timestamp: datetime = Field(default_factory=datetime.utcnow, description="Sanitization timestamp")
     blocked_patterns: List[str] = Field(default_factory=list, description="Patterns that were blocked")
-
-    model_config = ConfigDict(
-        json_schema_extra={
+    
+    class Config:
+        json_schema_extra = {
             "example": {
                 "original": {"level": "ERROR", "message": "Database error"},
                 "safe_for_llm": True,
@@ -52,4 +48,3 @@ class SanitizedLog(BaseModel):
                 "blocked_patterns": []
             }
         }
-    )

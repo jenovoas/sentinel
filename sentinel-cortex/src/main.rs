@@ -876,11 +876,14 @@ pub(crate) async fn truth_claim_handler(
     );
 
     let payload_lower = payload.claim_payload.to_lowercase();
-    let is_aiopsdoom_attack = payload_lower.contains("drop database")
+    // 🛡️ AIOpsShield Semantic Firewall (Claim 2): Detección cognitiva completa
+    let semantic_firewall = sentinel_cortex::security::AIOpsSemanticFirewall::new();
+    let detections = semantic_firewall.inspect(&payload.claim_payload);
+    let is_aiopsdoom_attack = !detections.is_empty()
+        || payload_lower.contains("drop database")
         || payload_lower.contains("rm -rf")
         || payload_lower.contains("shutdown")
         || payload_lower.contains("systemctl stop");
-
     if is_aiopsdoom_attack {
         tracing::warn!(
             "AIOpsShield INTERCEPCION EN VIVO: Ataque AIOpsDoom detectado en claim_payload!"

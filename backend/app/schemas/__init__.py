@@ -1,10 +1,7 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
-from datetime import datetime
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
-
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from datetime import datetime
 
 from .auth import Token, TokenData
 from .users import (
@@ -12,34 +9,10 @@ from .users import (
     OrganizationCreate,
     OrganizationUpdate,
     User,
-    UserWithOrganization,
-)
-from .users import (
     UserCreate as UserCreateNew,
-)
-from .users import (
     UserUpdate as UserUpdateNew,
+    UserWithOrganization
 )
-
-__all__ = [
-    "Token",
-    "TokenData",
-    "Organization",
-    "OrganizationCreate",
-    "OrganizationUpdate",
-    "User",
-    "UserWithOrganization",
-    "UserCreateNew",
-    "UserUpdateNew",
-    "TenantCreate",
-    "TenantUpdate",
-    "TenantResponse",
-    "UserCreate",
-    "UserUpdate",
-    "UserResponse",
-    "HealthResponse",
-]
-
 
 # Legacy Tenant Schemas (for backward compatibility)
 class TenantCreate(BaseModel):
@@ -61,7 +34,8 @@ class TenantResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        from_attributes = True
 
 # Legacy User Schemas (for backward compatibility)
 class UserCreate(BaseModel):
@@ -87,7 +61,8 @@ class UserResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        from_attributes = True
 
 # Health Check Schema
 class HealthResponse(BaseModel):

@@ -1,17 +1,17 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
 Monitoring Tasks - Phase 2
 Async tasks for metrics collection, anomaly detection, and historical storage
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import logging
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.celery_app import celery_app
 from app.database import AsyncSessionLocal
 from app.services.metrics_history import MetricsHistoryService
 from app.services.monitoring_orchestrator import MonitoringOrchestrator
+
 
 logger = logging.getLogger("monitoring.tasks")
 

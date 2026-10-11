@@ -1,0 +1,24 @@
+{
+  "parameters": {
+    "duration_ticks": 100,
+    "base_rate": 100,
+    "processing_rate": 120
+  },
+  "static": {
+    "total_dropped": 18292,
+    "avg_throughput": 97.99,
+    "avg_latency": 0.0,
+    "avg_utilization": 0.0
+  },
+  "ai": {
+    "total_dropped": 24432,
+    "avg_throughput": 36.59,
+    "avg_latency": 0.0,
+    "avg_utilization": 0.0
+  },
+  "improvement": {
+    "dropped_reduction": -33.56658648589548,
+    "throughput_speedup": 0.37340544953566696,
+    "latency_reduction": 0.0
+  }
+}

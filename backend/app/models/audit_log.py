@@ -1,25 +1,18 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
 Sentinel Audit Log Model - Activity tracking
 SQLAlchemy 2.0 + PostgreSQL UUID support
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, func
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import String, DateTime, ForeignKey, func, Text
+from sqlalchemy.dialects.postgresql import UUID, INET
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
-
-if TYPE_CHECKING:
-    from .organization import Organization
-    from .tenant import Tenant
-    from .user import User
 
 
 class AuditLog(Base):

@@ -1,7 +1,4 @@
 #!/usr/bin/env python3
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
 Sentinel Cortex™ - Cognitive OS Proof of Concept
 Integrates: eBPF Burst Sensor → LSTM Prediction → Buffer Adjustment
@@ -14,6 +11,7 @@ This is the COMPLETE proof of concept for the Cognitive OS Kernel:
 Copyright (c) 2025 Sentinel Cortex™ - All Rights Reserved
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import sys
 import time
 import asyncio
@@ -166,7 +164,7 @@ class CognitiveOSIntegrator:
         self.total_adjustments += 1
         
         # Report metrics for adaptive learning
-        latency_ms = 0.1  # Simulated latency
+        latency_ms = S60(0, 6, 0)  # Simulated latency
         throughput = pps
         report_metrics(DataFlowType.NETWORK_PACKET, latency_ms, throughput)
         

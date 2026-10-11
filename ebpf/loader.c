@@ -14,6 +14,7 @@ int main(int argc, char **argv) {
   struct bpf_program *prog;
   struct bpf_map *map;
   int err;
+  char pin_dir[PATH_MAX];
   char pin_path[PATH_MAX];
 
   if (argc < 3) {
@@ -50,11 +51,6 @@ int main(int argc, char **argv) {
   // Pin all maps
   bpf_object__for_each_map(map, obj) {
     const char *map_name = bpf_map__name(map);
-    
-    // Skip special maps
-    if (strstr(map_name, ".rodata") || strstr(map_name, ".bss") || strstr(map_name, ".data")) {
-      continue;
-    }
     snprintf(pin_path, sizeof(pin_path), "%s/%s", base_pin_dir, map_name);
 
     // Unpin if exists (to overwrite)
@@ -70,7 +66,7 @@ int main(int argc, char **argv) {
   }
 
   // Find the LSM program
-  prog = bpf_object__find_program_by_name(obj, "guardian_cognitive");
+  prog = bpf_object__find_program_by_name(obj, "guardian_execve");
   if (!prog) {
     fprintf(stderr, "ERROR: finding program failed\n");
     goto cleanup;

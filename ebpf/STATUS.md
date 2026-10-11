@@ -159,7 +159,7 @@ sudo ./load.sh
 **Justificación**:
 - Zero prior art (HOME RUN)
 - Único sistema eBPF LSM para AI safety
-- Imposible de replicar sin infringir patent
+- no factible de replicar sin infringir patent
 - Aplicable a toda infraestructura crítica
 
 ### Licensing Potential: $50-100M

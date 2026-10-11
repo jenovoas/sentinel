@@ -1,24 +1,19 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
 Sentinel User Model - Multi-tenant User with Organization relationship
 SQLAlchemy 2.0 + PostgreSQL UUID support
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import uuid
 from datetime import datetime
 from enum import Enum as PyEnum
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
-from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, String, func
+from sqlalchemy import String, Boolean, DateTime, ForeignKey, Enum, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
-
-if TYPE_CHECKING:
-    from .organization import Organization
 
 
 # Role enum for user permissions

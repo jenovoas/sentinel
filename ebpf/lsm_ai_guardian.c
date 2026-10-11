@@ -2,17 +2,11 @@
 // Sentinel AI Guardian - LSM Hook con Whitelist Dinámica
 // Bloquea syscalls destructivas ANTES de ejecución (Ring 0)
 
-#include "vmlinux.h"
-#include <bpf/bpf_core_read.h>
+#include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
 
-#ifndef EPERM
-#define EPERM 1
-#endif
-#ifndef PATH_MAX
 #define PATH_MAX 256
-#endif
 #define ALLOW_AI 1
 #define BLOCK_AI 0
 

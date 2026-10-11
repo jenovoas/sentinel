@@ -1,44 +1,46 @@
 #!/bin/bash
-# Sentinel eBPF - Descarga completa de todos los módulos
-BOLD='\033[1m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
-IFACE=eth0
+# Unload Guardian-Alpha LSM
 
-ok()   { echo -e "${GREEN}✅ $*${NC}"; }
-warn() { echo -e "${YELLOW}⚠️  $*${NC}"; }
+set -e
 
-echo -e "\n${BOLD}── Gamma (descargar PRIMERO para no disparar falsos PEER_VANISHED) ──${NC}"
-# Matar watchdog userspace antes que los pins del kernel
-if [ -f /var/run/sentinel/gamma.pid ]; then
-    PID=$(cat /var/run/sentinel/gamma.pid)
-    sudo kill -TERM "$PID" 2>/dev/null && ok "gamma_watchdog (pid=$PID) terminado"
-    sudo rm -f /var/run/sentinel/gamma.pid
-else
-    sudo pkill -f gamma_watchdog 2>/dev/null && ok "gamma_watchdog terminado (pkill)"
+BPF_DIR="/sys/fs/bpf/guardian_alpha"
+
+echo "🛑 Unloading Guardian-Alpha LSM..."
+
+# Check if Guardian is loaded
+if [ ! -d "$BPF_DIR" ]; then
+    echo "✅ Guardian-Alpha is not loaded"
+    exit 0
 fi
-if [ -d /sys/fs/bpf/sentinel/gamma ]; then
-    sudo rm -rf /sys/fs/bpf/sentinel/gamma && ok "gamma kernel pins eliminados"
+
+# Remove pinned link first (detach)
+if [ -f "$BPF_DIR/guardian_link" ]; then
+    echo "🔓 Detaching LSM link..."
+    sudo rm -f "$BPF_DIR/guardian_link"
+    echo "✅ LSM detached"
 fi
-# Limpiar maps pineados de Gamma (LIBBPF_PIN_BY_NAME → /sys/fs/bpf/<name>)
-sudo rm -f /sys/fs/bpf/known_peer_prog_ids \
-           /sys/fs/bpf/gamma_heartbeat \
-           /sys/fs/bpf/rate_limit \
-           /sys/fs/bpf/events 2>/dev/null || true
 
-echo -e "\n${BOLD}── LSM pins ──────────────────────────────────────────────${NC}"
-for prog in guardian_alpha_lsm lsm_ai_guardian ai_guardian guardian_cognitive float_detector; do
-    pin="/sys/fs/bpf/$prog"
-    if [ -f "$pin" ]; then
-        sudo rm -f "$pin" && ok "$prog pin eliminado"
-    fi
-done
-warn "LSM permanece en kernel hasta reboot (comportamiento normal)"
+# Remove all pinned objects
+echo "🧹 Removing pinned objects..."
+sudo rm -rf "$BPF_DIR"/*
 
-echo -e "\n${BOLD}── XDP ───────────────────────────────────────────────────${NC}"
-sudo ip link set dev $IFACE xdp off 2>/dev/null && ok "XDP desanclado de $IFACE" || warn "sin XDP activo"
+# Remove directory
+if [ -d "$BPF_DIR" ]; then
+    sudo rmdir "$BPF_DIR" 2>/dev/null || true
+fi
 
-echo -e "\n${BOLD}── TC ────────────────────────────────────────────────────${NC}"
-sudo tc qdisc del dev $IFACE clsact 2>/dev/null && ok "TC clsact eliminado" || warn "sin TC activo"
-
-echo -e "\n${BOLD}── Estado final ──────────────────────────────────────────${NC}"
-sudo bpftool prog list | grep -E "guardian|burst|firewall" | awk '{print "  " $0}' || ok "sin programas Sentinel activos"
 echo ""
+echo "✅ Guardian-Alpha LSM unloaded successfully"
+echo ""
+echo "⚠️  Note: The eBPF program may remain in kernel memory until:"
+echo "   1. All references are released"
+echo "   2. System reboot (if still attached)"
+echo ""
+
+# Verify
+if sudo bpftool prog show | grep -q "guardian"; then
+    echo "📊 Guardian programs still in kernel:"
+    sudo bpftool prog show | grep -A 3 "guardian"
+else
+    echo "✅ No Guardian programs found in kernel"
+fi

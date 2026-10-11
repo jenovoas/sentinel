@@ -1,0 +1,10 @@
+{
+  "test_duration_sec": 60.015695095062256,
+  "total_events_ingested": 2907759,
+  "total_events_blocked": 105241,
+  "avg_throughput": 48449.976216958516,
+  "avg_block_rate": 0.034928974444075674,
+  "latency_p50_ms": 0,
+  "latency_p95_ms": 0,
+  "latency_p99_ms": 0
+}

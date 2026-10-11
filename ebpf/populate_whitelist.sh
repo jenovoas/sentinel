@@ -1,329 +1,184 @@
 #!/bin/bash
-# populate_whitelist.sh — Pre-poblar Guardian-Alpha LSM whitelist_map
-#
-# Diseñado por: Claude (arquitecto)
-# Ejecutar en: nodo sentinel, ANTES de cargar guardian_alpha_lsm.o
-#
-# MECANISMO:
-#   1. Crea el mapa BPF pinned en /sys/fs/bpf/sentinel/whitelist_map
-#   2. Puebla con todos los binarios necesarios
-#   3. En Fase 4, bpftool prog load reutiliza este mapa pre-poblado
-#
-# TIPO DE MAPA: BPF_MAP_TYPE_HASH
-#   key:   char[256] — path en UTF-8, zero-padded a 256 bytes (hex)
-#   value: __u8      — 1 = allowed (hex: 01)
+# Poblar whitelist usando bpftool con flag correcto
 
-set -e
+echo "🔐 Poblando whitelist del eBPF LSM (v2)..."
+echo "======================================"
 
-BPF_SENTINEL_DIR="/sys/fs/bpf/sentinel"
-MAP_PIN="${BPF_SENTINEL_DIR}/whitelist_map"
-LOG_FILE="/tmp/populate_whitelist.log"
+# Comandos básicos permitidos (Paths completos requeridos por el nuevo eBPF)
+COMMANDS=(
+    "/usr/bin/bash"
+    "/usr/bin/sh"
+    "/usr/bin/zsh"
+    "/bin/zsh"
+    "/usr/bin/tmux"
+    "/usr/bin/bash"
+    "/bin/bash"
+    "/usr/bin/sh"
+    "/bin/sh"
+    "/usr/bin/cp"
+    "/bin/cp"
+    "/bin/ls"
+    "/usr/bin/ls"
+    "/usr/bin/cat"
+    "/usr/bin/nvim"
+    "/usr/bin/dmesg"
+    "/usr/local/bin/nvim"
+    "/usr/bin/vim"
+    "/usr/bin/nano"
+    "/usr/bin/pwd"
+    "/usr/bin/date"
+    "/usr/bin/sudo"
+    "/usr/bin/bpftool"
+    "/usr/sbin/bpftool"
+    "/usr/bin/rm"
+    "/usr/sbin/rm"
+    "/usr/bin/ps"
+    "/usr/bin/grep"
+    "/usr/bin/awk"
+    "/usr/bin/sed"
+    "/usr/bin/python3"
+    "/usr/bin/make"
+    "/usr/bin/clang"
+    "/usr/bin/llvm-strip"
+    "/usr/bin/git"
+    "/usr/bin/eza"
+    "/usr/bin/mkdir"
+    "/usr/bin/cp"
+    "/usr/bin/mv"
+    "/usr/bin/touch"
+    "/usr/bin/chmod"
+    "/usr/bin/chown"
+    "/usr/bin/clear"
+    "/usr/bin/tput"
+    "/usr/bin/sort"
+    "/usr/bin/uniq"
+    "/usr/bin/head"
+    "/usr/bin/tail"
+    "/usr/bin/xxd"
+    "/usr/sbin/ip"
+    "/usr/sbin/ss"
+    "/usr/local/bin/starship"  # Shell prompt
+    "/usr/sbin/unix_chkpwd"    # Required for sudo auth
+    "/usr/bin/id"
+    "/usr/bin/whoami"
+    "/usr/bin/dirname"
+    "/usr/bin/wc"
+    "/usr/bin/cut"
+    "/usr/bin/env"
+    "/usr/bin/sleep"
+    "/bin/true"               # Required for testing
+    "/usr/bin/true"           # Required for testing
+    "/usr/bin/find"           # Useful utility
+    "/usr/bin/xargs"          # Useful utility
+    "/usr/bin/nawk"           # Used by starship/shell plugins
+    "/tmp/malicious_attack_tool" # FOR POC: Whitelisted but Semantic Blocked
+    "/usr/lib/git-core/git-remote-https" # Required for git push
+    "/usr/lib/git-core/git"   # Internal git binary
+    "/usr/lib/git-core/git-credential-store" # Required to save password
+    "/usr/libexec/sudo/sudoers.so" # Sudo internal modules
+    # Shell & desktop utilities to prevent annoyance
+    "/usr/bin/mkfifo"
+    "/usr/bin/dircolors"
+    "/usr/bin/zoxide"
+    "/usr/bin/fzf"
+    "/usr/bin/mawk"
+    "/usr/bin/lesspipe"
+    "/usr/bin/basename"
+    "/usr/local/bin/ollama"
+    "/home/jnovoas/.cargo/bin/cargo"
+    "/usr/bin/cargo"
+    "/bin/cargo"
+    "/home/jnovoas/.cargo/bin/rustc"
+    "/usr/bin/rustc"
+    "/bin/rustc"
+    "/home/jnovoas/.cargo/bin/rustup"
+    "/usr/bin/rustup"
+    "/home/jnovoas/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/cargo"
+    "/home/jnovoas/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rustc"
+    "/usr/bin/make"
+    "/bin/make"
+    "/usr/bin/clang"
+    "/bin/clang"
+    "/usr/bin/llvm-strip-19"
+    "/bin/llvm-strip-19"
+    "/usr/bin/uname"
+    "/bin/uname"
+    "/usr/bin/cc"
+    "/bin/cc"
+    "/usr/bin/gcc"
+    "/bin/gcc"
+    "/usr/bin/ld"
+    "/bin/ld"
+    "/usr/bin/ar"
+    "/bin/ar"
+    "/usr/bin/as"
+    "/bin/as"
+    "/usr/bin/ld.lld"
+    "/usr/bin/objcopy"
+    "/bin/objcopy"
+    "/usr/bin/readlink"
+    "/bin/readlink"
+    # GCC Internals
+    "/usr/libexec/gcc/x86_64-linux-gnu/14/collect2"
+    "/usr/libexec/gcc/x86_64-linux-gnu/14/cc1"
+    "/usr/libexec/gcc/x86_64-linux-gnu/14/cc1plus"
+    "/usr/libexec/gcc/x86_64-linux-gnu/14/lto1"
+    "/usr/libexec/gcc/x86_64-linux-gnu/14/lto-wrapper"
+    # Rust internal switch/linker tools
+    "/home/jnovoas/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rust-lld"
+    "/home/jnovoas/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/bin/gcc-ld/ld.lld"
+    "/home/jnovoas/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/bin/rust-lld"
+    # El propio servicio de Forensics
+    "/home/jnovoas/sentinel/sentinel_core/forensics/target/release/forensics"
+    # Package Management (Essential for maintenance)
+    "/usr/bin/apt"
+    "/usr/bin/apt-get"
+    "/usr/bin/dpkg"
+    "/usr/bin/dpkg-query"
+    "/usr/bin/apt-config"
+    "/usr/lib/apt/methods/http"
+    "/usr/lib/apt/methods/https"
+    "/usr/lib/apt/methods/gpgv"
+    "/usr/bin/gpgv"
+)
 
-# --- Colores ---
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-NC='\033[0m'
+# Ruta del map pinned (establecida por load.sh)
+MAP_PATH="/sys/fs/bpf/guardian_alpha/whitelist_map"
 
-log()   { echo -e "${GREEN}[+]${NC} $1" | tee -a "$LOG_FILE"; }
-warn()  { echo -e "${YELLOW}[!]${NC} $1" | tee -a "$LOG_FILE"; }
-error() { echo -e "${RED}[ERROR]${NC} $1" | tee -a "$LOG_FILE"; exit 1; }
-
-# --- Verificaciones previas ---
-[[ $EUID -ne 0 ]] && error "Este script debe correr como root (sudo)"
-command -v bpftool >/dev/null 2>&1 || error "bpftool no encontrado"
-command -v python3 >/dev/null 2>&1 || error "python3 no encontrado"
-mount | grep -q "bpffs\|/sys/fs/bpf" || error "BPF filesystem no montado en /sys/fs/bpf"
-
-echo "=============================================="
-echo " Guardian-Alpha — Whitelist Pre-population"
-echo "=============================================="
-echo "" | tee "$LOG_FILE"
-
-# --- Crear directorio BPF de Sentinel ---
-log "Creando directorio ${BPF_SENTINEL_DIR}..."
-mkdir -p "${BPF_SENTINEL_DIR}"
-
-# --- Eliminar mapa anterior si existe ---
-if [ -e "${MAP_PIN}" ]; then
-    warn "whitelist_map ya existe en ${MAP_PIN}. Eliminando..."
-    rm -f "${MAP_PIN}"
+if [ ! -f "$MAP_PATH" ]; then
+    echo "❌ Error: No se encontró el map en $MAP_PATH"
+    echo "💡 ¿Has ejecutado 'sudo bash ebpf/load.sh' primero?"
+    exit 1
 fi
 
-# --- Crear el mapa pinned ---
-log "Creando whitelist_map (BPF_MAP_TYPE_HASH, key=256, value=1, entries=10000)..."
-bpftool map create "${MAP_PIN}" \
-    type hash \
-    key 256 \
-    value 1 \
-    entries 10000 \
-    name whitelist_map
+echo "✅ Map encontrado en: $MAP_PATH"
+echo ""
 
-log "Mapa creado en ${MAP_PIN}"
+# Poblar con comandos
+for cmd in "${COMMANDS[@]}"; do
+    # Generar key de 256 bytes (zero-padded) en formato hex con espacios
+    # Esto asegura compatibilidad con char[256] y bpftool parsing
+    key_hex=$(python3 -c "import sys; cmd=sys.argv[1].encode(); print(' '.join(f'{b:02x}' for b in cmd.ljust(256, b'\0')))" "$cmd")
 
-# --- Función para agregar un path al whitelist ---
-# Convierte path a 256 bytes hex (null-padded) y actualiza el mapa
-add_to_whitelist() {
-    local path="$1"
-    local description="${2:-}"
+    # Valor: 01 (allowed) - 1 byte para __u8
+    value_hex="01"
 
-    # Verificar que el path no es demasiado largo (max 255 chars + null)
-    if [ ${#path} -gt 255 ]; then
-        warn "Path demasiado largo (>${PATH_MAX}-1 chars), ignorado: $path"
-        return
-    fi
+    # Intentar agregar usando el path pinned
+    sudo bpftool map update pinned "$MAP_PATH" \
+        key hex $key_hex \
+        value hex $value_hex \
+        any
 
-    # Generar key hex de 256 bytes usando Python
-    local key_hex
-    key_hex=$(python3 -c "
-path = '$path'
-key_bytes = path.encode('utf-8') + b'\\x00' * (256 - len(path))
-print(' '.join(f'{b:02x}' for b in key_bytes))
-" 2>/dev/null)
-
-    if [ -z "$key_hex" ]; then
-        warn "No se pudo generar hex para: $path"
-        return
-    fi
-
-    # Actualizar mapa
-    if bpftool map update pinned "${MAP_PIN}" key hex $key_hex value hex 01 2>/dev/null; then
-        echo "  ADDED: $path" | tee -a "$LOG_FILE"
+    if [ $? -eq 0 ]; then
+        echo "✅ $cmd"
     else
-        warn "Fallo al agregar: $path"
+        echo "❌ Falló: $cmd"
     fi
-}
-
-# --- Agregar binario solo si existe en el sistema ---
-add_if_exists() {
-    local path="$1"
-    if [ -f "$path" ] && [ -x "$path" ]; then
-        add_to_whitelist "$path"
-    else
-        echo "  SKIP (no existe): $path" | tee -a "$LOG_FILE"
-    fi
-}
-
-# =============================================================================
-# BLOQUE 1: Sistema base — críticos para que el OS funcione
-# =============================================================================
-log "Poblando: Sistema base..."
-
-add_if_exists "/usr/bin/bash"
-add_if_exists "/usr/bin/sh"
-add_if_exists "/usr/bin/dash"
-add_if_exists "/bin/bash"          # symlink → /usr/bin/bash (ambas formas)
-add_if_exists "/bin/sh"
-add_if_exists "/bin/dash"
-add_if_exists "/usr/bin/sudo"
-add_if_exists "/usr/sbin/sudo"
-add_if_exists "/usr/bin/env"
-add_if_exists "/usr/bin/systemctl"
-add_if_exists "/usr/bin/journalctl"
-add_if_exists "/usr/bin/loginctl"
-add_if_exists "/usr/lib/systemd/systemd"
-add_if_exists "/usr/sbin/init"
-add_if_exists "/sbin/init"
-
-# =============================================================================
-# BLOQUE 2: SSH
-# =============================================================================
-log "Poblando: SSH..."
-
-add_if_exists "/usr/sbin/sshd"
-add_if_exists "/usr/bin/ssh"
-add_if_exists "/usr/bin/scp"
-add_if_exists "/usr/bin/sftp"
-add_if_exists "/usr/lib/openssh/sftp-server"
-
-# =============================================================================
-# BLOQUE 3: Samba AD DC
-# =============================================================================
-log "Poblando: Samba AD DC..."
-
-# Binarios principales
-for bin in samba smbd nmbd winbindd samba-gpupdate samba_dnsupdate \
-           samba_kcc samba_spnupdate samba_upgradedns samba-tool samba-gpupdate; do
-    add_if_exists "/usr/sbin/${bin}"
-    add_if_exists "/usr/bin/${bin}"
 done
 
-# Helpers en /usr/lib/samba/
-if [ -d "/usr/lib/samba/" ]; then
-    log "  Escaneando binarios en /usr/lib/samba/..."
-    while IFS= read -r -d '' bin; do
-        add_to_whitelist "$bin"
-    done < <(find /usr/lib/samba/ -maxdepth 3 -type f -executable -print0 2>/dev/null)
-fi
-
-# libexec de samba
-if [ -d "/usr/libexec/samba/" ]; then
-    while IFS= read -r -d '' bin; do
-        add_to_whitelist "$bin"
-    done < <(find /usr/libexec/samba/ -maxdepth 3 -type f -executable -print0 2>/dev/null)
-fi
-
-# =============================================================================
-# BLOQUE 4: PowerDNS
-# =============================================================================
-log "Poblando: PowerDNS..."
-
-add_if_exists "/usr/sbin/pdns_server"
-add_if_exists "/usr/sbin/pdns-recursor"
-add_if_exists "/usr/bin/pdns_control"
-add_if_exists "/usr/bin/pdns_client"
-add_if_exists "/usr/bin/rec_control"
-
-# =============================================================================
-# BLOQUE 5: Chrony / NTP
-# =============================================================================
-log "Poblando: Chrony NTP..."
-
-add_if_exists "/usr/sbin/chronyd"
-add_if_exists "/usr/bin/chronyc"
-
-# =============================================================================
-# BLOQUE 6: WireGuard VPN
-# =============================================================================
-log "Poblando: WireGuard..."
-
-add_if_exists "/usr/bin/wg"
-add_if_exists "/usr/sbin/wg-quick"
-add_if_exists "/usr/bin/wg-quick"
-
-# =============================================================================
-# BLOQUE 7: auditd
-# =============================================================================
-log "Poblando: auditd..."
-
-add_if_exists "/usr/sbin/auditd"
-add_if_exists "/sbin/auditd"
-add_if_exists "/usr/sbin/auditctl"
-add_if_exists "/sbin/auditctl"
-add_if_exists "/usr/sbin/aureport"
-add_if_exists "/usr/sbin/ausearch"
-add_if_exists "/usr/sbin/augenrules"
-add_if_exists "/usr/sbin/audispd"
-add_if_exists "/usr/sbin/audisp-af_unix"
-add_if_exists "/usr/sbin/audisp-remote"
-add_if_exists "/usr/lib/audisp/audispd"
-add_if_exists "/usr/libexec/audit/audispd"
-
-# =============================================================================
-# BLOQUE 8: Container runtime (Podman + compat Docker)
-# =============================================================================
-log "Poblando: Podman / Docker compat..."
-
-add_if_exists "/usr/bin/podman"
-add_if_exists "/usr/bin/podman-compose"
-add_if_exists "/usr/bin/docker"
-add_if_exists "/usr/bin/docker-compose"
-add_if_exists "/usr/bin/containerd"
-add_if_exists "/usr/sbin/containerd"
-add_if_exists "/usr/bin/containerd-shim"
-add_if_exists "/usr/bin/containerd-shim-runc-v2"
-add_if_exists "/usr/sbin/runc"
-add_if_exists "/usr/bin/runc"
-add_if_exists "/usr/libexec/podman/conmon"
-add_if_exists "/usr/bin/conmon"
-add_if_exists "/usr/libexec/cni/bridge"
-add_if_exists "/usr/lib/cni/bridge"
-add_if_exists "/usr/bin/slirp4netns"
-add_if_exists "/usr/bin/fuse-overlayfs"
-add_if_exists "/usr/bin/newuidmap"
-add_if_exists "/usr/bin/newgidmap"
-add_if_exists "/usr/sbin/newuidmap"
-add_if_exists "/usr/sbin/newgidmap"
-
-# =============================================================================
-# BLOQUE 9: Python (backend FastAPI + scripts)
-# =============================================================================
-log "Poblando: Python..."
-
-add_if_exists "/usr/bin/python3"
-add_if_exists "/usr/bin/python3.12"   # Debian 13 trixie default
-add_if_exists "/usr/bin/python3.11"   # Fallback
-add_if_exists "/usr/bin/python3.13"   # Futuro
-add_if_exists "/usr/bin/pip3"
-add_if_exists "/usr/bin/pip"
-
-# =============================================================================
-# BLOQUE 10: Node.js (frontend Next.js)
-# =============================================================================
-log "Poblando: Node.js..."
-
-add_if_exists "/usr/bin/node"
-add_if_exists "/usr/local/bin/node"
-add_if_exists "/usr/bin/npm"
-add_if_exists "/usr/bin/npx"
-add_if_exists "/usr/local/bin/npm"
-
-# =============================================================================
-# BLOQUE 11: Utilidades de red y sistema
-# =============================================================================
-log "Poblando: Utilidades de sistema y red..."
-
-for bin in curl wget rsync ip ss nft iptables ip6tables \
-           grep awk sed cut sort uniq tr head tail cat less \
-           ls cp mv rm mkdir rmdir ln chmod chown chgrp \
-           find xargs basename dirname readlink realpath \
-           tar gzip gunzip bzip2 xz zip unzip \
-           openssl gpg gpg2 \
-           ps top htop kill killall pkill \
-           id whoami groups getent \
-           mount umount df du lsblk \
-           ping ping6 traceroute \
-           hostname hostnamectl timedatectl \
-           apt apt-get apt-cache dpkg dpkg-query \
-           systemd-resolve resolvectl \
-           logger logrotate \
-           cron crond \
-           jq xmllint \
-           strace ltrace gdb \
-           make gcc g++ cc; do
-    add_if_exists "/usr/bin/${bin}"
-    add_if_exists "/bin/${bin}"
-    add_if_exists "/usr/sbin/${bin}"
-    add_if_exists "/sbin/${bin}"
-done
-
-# =============================================================================
-# BLOQUE 12: bpftool (Sentinel lo necesita)
-# =============================================================================
-log "Poblando: bpftool..."
-
-add_if_exists "/usr/sbin/bpftool"
-add_if_exists "/usr/bin/bpftool"
-# También puede estar en linux-tools path
-bpftool_path=$(which bpftool 2>/dev/null)
-[ -n "$bpftool_path" ] && add_to_whitelist "$bpftool_path"
-
-# =============================================================================
-# BLOQUE 13: Servicios systemd de Sentinel (watchdog scripts)
-# =============================================================================
-log "Poblando: Scripts Sentinel host..."
-
-# Si los watchdog scripts son shell scripts o binarios
-for script in /home/jnovoas/Dev/sentinel/host-metrics/audit-watchdog.sh \
-              /home/jnovoas/Dev/sentinel/host-metrics/scripts/*.sh; do
-    [ -f "$script" ] && [ -x "$script" ] && add_to_whitelist "$script"
-done
-
-# =============================================================================
-# RESUMEN
-# =============================================================================
 echo ""
-log "=============================================="
-TOTAL=$(bpftool map dump pinned "${MAP_PIN}" 2>/dev/null | grep -c '"key"' || echo "?")
-log "Whitelist poblado: ${TOTAL} entradas en ${MAP_PIN}"
-log "Log completo: ${LOG_FILE}"
+echo "======================================"
+echo "✅ Intentado poblar ${#COMMANDS[@]} comandos"
 echo ""
-warn "VERIFICAR antes de cargar el LSM:"
-warn "  sudo bpftool map dump pinned ${MAP_PIN} | python3 -c \\"
-warn "  \"import sys,json; data=json.load(sys.stdin); print(len(data), 'entries')\""
-echo ""
-log "Para cargar el LSM con este mapa pre-poblado, ejecutar Fase 4:"
-log "  sudo bpftool prog load ~/Dev/sentinel/ebpf/guardian_alpha_lsm.o \\"
-log "    /sys/fs/bpf/guardian_alpha_lsm type lsm \\"
-log "    map name whitelist_map pinned ${MAP_PIN}"
-echo "=============================================="
+echo "📊 Verificar contenido del map:"
+echo "   sudo bpftool map dump pinned $MAP_PATH"

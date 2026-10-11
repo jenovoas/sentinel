@@ -39,9 +39,9 @@ docker-compose up -d
 
 | Sistema | Guía | Script Automatizado |
 |---------|------|---------------------|
-| **Linux** | [INSTALLATION_GUIDE.md](../../00_fundamentos/INSTALLATION_GUIDE.md) | `install.sh` |
-| **Windows** | [INSTALLATION_GUIDE_WINDOWS.md](../INSTALLATION_GUIDE_WINDOWS.md) | `install-windows.ps1` |
-| **Quick Start** | [QUICKSTART.md](../QUICKSTART.md) | - |
+| **Linux** | [INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md) | `install.sh` |
+| **Windows** | [INSTALLATION_GUIDE_WINDOWS.md](INSTALLATION_GUIDE_WINDOWS.md) | `install-windows.ps1` |
+| **Quick Start** | [QUICKSTART.md](QUICKSTART.md) | - |
 
 ---
 
@@ -127,10 +127,10 @@ wsl bash -c 'cd ~/sentinel && docker-compose ps'
 ## 🆘 Solución de Problemas
 
 ### Linux
-Ver [INSTALLATION_GUIDE.md - Solución de Problemas](../../00_fundamentos/INSTALLATION_GUIDE.md#-solución-de-problemas)
+Ver [INSTALLATION_GUIDE.md - Solución de Problemas](INSTALLATION_GUIDE.md#-solución-de-problemas)
 
 ### Windows
-Ver [INSTALLATION_GUIDE_WINDOWS.md - Solución de Problemas](../INSTALLATION_GUIDE_WINDOWS.md#-solución-de-problemas)
+Ver [INSTALLATION_GUIDE_WINDOWS.md - Solución de Problemas](INSTALLATION_GUIDE_WINDOWS.md#-solución-de-problemas)
 
 ### Problemas Comunes
 
@@ -202,8 +202,8 @@ Sentinel despliega **18 servicios** en contenedores Docker:
 ## 📞 Soporte
 
 **Documentación**:
-- [README.md](../../07_prompts/README.md) - Descripción general
-- [ARCHITECTURE.md](../../00_fundamentos/ARCHITECTURE.md) - Arquitectura técnica
+- [README.md](README.md) - Descripción general
+- [ARCHITECTURE.md](ARCHITECTURE.md) - Arquitectura técnica
 - [docs/](docs/) - Documentación completa
 
 **Comunidad**:

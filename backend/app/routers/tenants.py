@@ -1,6 +1,3 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
 Tenants router for Sentinel application.
 
@@ -12,45 +9,36 @@ This router handles all tenant-related endpoints, including:
 - Tenant deletion
 """
 
-from typing import List
-
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-
+from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.user import User
-from app.schemas import TenantCreate, TenantResponse, TenantUpdate
-from app.security import get_current_admin_user, get_current_user
+from app.schemas import TenantCreate, TenantUpdate, TenantResponse
 from app.services.tenant_service import (
     create_tenant as create_tenant_service,
-)
-from app.services.tenant_service import (
+    get_tenants,
     get_tenant as get_tenant_service,
 )
-from app.services.tenant_service import (
-    get_tenants,
-)
+from app.auth_utils import get_current_user
+from typing import List
 
 router = APIRouter(prefix="/api/v1/tenants", tags=["tenants"])
 
 @router.post("/", response_model=TenantResponse, status_code=status.HTTP_201_CREATED)
-async def create_tenant(
-    tenant: TenantCreate,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_admin_user)
-):
+def create_tenant(tenant: TenantCreate, db: Session = Depends(get_db)):
     """
     Creates a new tenant.
 
-    Requires admin authentication.
+    This is a public endpoint that allows new tenants to be created.
     """
-    return await create_tenant_service(db=db, tenant=tenant)
+    return create_tenant_service(db=db, tenant=tenant)
 
 @router.get("/", response_model=List[TenantResponse])
-async def list_tenants(
+def list_tenants(
     skip: int = 0,
     limit: int = 10,
-    db: AsyncSession = Depends(get_db),
+    db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     """
@@ -60,13 +48,13 @@ async def list_tenants(
     It returns a list of all tenants. In a real-world application, this
     should be restricted to superusers.
     """
-    tenants = await get_tenants(db, skip=skip, limit=limit)
+    tenants = get_tenants(db, skip=skip, limit=limit)
     return tenants
 
 @router.get("/{tenant_id}", response_model=TenantResponse)
-async def get_tenant(
+def get_tenant(
     tenant_id: str,
-    db: AsyncSession = Depends(get_db),
+    db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     """
@@ -76,16 +64,16 @@ async def get_tenant(
     It returns the tenant with the specified ID. In a real-world application,
     this should be restricted to superusers or users of that tenant.
     """
-    tenant = await get_tenant_service(db, tenant_id=tenant_id)
+    tenant = get_tenant_service(db, tenant_id=tenant_id)
     if not tenant:
         raise HTTPException(status_code=404, detail="Tenant not found")
     return tenant
 
 @router.put("/{tenant_id}", response_model=TenantResponse)
-async def update_tenant(
+def update_tenant(
     tenant_id: str,
     tenant: TenantUpdate,
-    db: AsyncSession = Depends(get_db),
+    db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     """
@@ -95,23 +83,23 @@ async def update_tenant(
     It updates the tenant with the specified ID. In a real-world application,
     this should be restricted to superusers or users of that tenant.
     """
-    db_tenant = await get_tenant_service(db, tenant_id=tenant_id)
+    db_tenant = get_tenant_service(db, tenant_id=tenant_id)
     if not db_tenant:
         raise HTTPException(status_code=404, detail="Tenant not found")
-
-    update_data = tenant.model_dump(exclude_unset=True)
+    
+    update_data = tenant.dict(exclude_unset=True)
     for field, value in update_data.items():
         setattr(db_tenant, field, value)
-
+    
     db.add(db_tenant)
-    await db.commit()
-    await db.refresh(db_tenant)
+    db.commit()
+    db.refresh(db_tenant)
     return db_tenant
 
 @router.delete("/{tenant_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_tenant(
+def delete_tenant(
     tenant_id: str,
-    db: AsyncSession = Depends(get_db),
+    db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     """
@@ -121,10 +109,10 @@ async def delete_tenant(
     It deletes the tenant with the specified ID. In a real-world application,
     this should be restricted to superusers.
     """
-    db_tenant = await get_tenant_service(db, tenant_id=tenant_id)
+    db_tenant = get_tenant_service(db, tenant_id=tenant_id)
     if not db_tenant:
         raise HTTPException(status_code=404, detail="Tenant not found")
-
-    await db.delete(db_tenant)
-    await db.commit()
+    
+    db.delete(db_tenant)
+    db.commit()
     return None

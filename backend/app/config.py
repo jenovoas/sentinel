@@ -1,6 +1,3 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
 Configuration module for Sentinel application.
 
@@ -16,10 +13,10 @@ Environment Variables:
     - ALLOWED_ORIGINS: CORS allowed origins (comma-separated)
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
+from pydantic_settings import BaseSettings
 import os
 from typing import List
-
-from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -29,105 +26,126 @@ class Settings(BaseSettings):
     All settings have sensible defaults for development. In production,
     ensure critical values like SECRET_KEY are properly set via environment.
     """
-
+    
     # ============================================================================
     # DATABASE CONFIGURATION
     # ============================================================================
     database_url: str = os.getenv(
-        "DATABASE_URL",
-        "postgresql+asyncpg://sentinel_user:sentinel_password@localhost:5432/sentinel_db"
+        "DATABASE_URL", 
+        "postgresql+asyncpg://sentinel:sentinel_trust@localhost:5432/sentinel_core"
     )
     """PostgreSQL connection string for the application database."""
-
+    
     # ============================================================================
     # CACHE CONFIGURATION
     # ============================================================================
     redis_url: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
     """Redis connection string for caching and session management."""
-
+    
     # ============================================================================
     # APPLICATION METADATA
     # ============================================================================
     app_name: str = os.getenv("APP_NAME", "Sentinel")
     """Application name displayed in API documentation."""
-
-    app_version: str = os.getenv("APP_VERSION", "1.0.0")
+    
+    app_version: str = os.getenv("APP_VERSION", "1.S60(0, 0, 0)")
     """Application version for API versioning and documentation."""
-
+    
     environment: str = os.getenv("FASTAPI_ENV", "development")
     """Deployment environment (development/production)."""
-
+    
     debug: bool = environment == "development"
     """Enable debug mode in development environment."""
-
+    
     # ============================================================================
     # SECURITY CONFIGURATION
     # ============================================================================
+    # ============================================================================
+    # SECURITY CONFIGURATION
+    # ============================================================================
+    human_in_the_loop_required: bool = True
+    """
+    If True, destructive actions proposed by AI require manual confirmation.
+    Mitigation for 'Adversarial Reward-Hacking' where AI might be tricked 
+    into lowering security defenses.
+    """
+
     secret_key: str = os.getenv(
-        "SECRET_KEY",
+        "SECRET_KEY", 
         "your-secret-key-change-in-production-min-32-chars-xyz123"
     )
+    
+    def __init__(self, **data):
+        super().__init__(**data)
+        self._validate_security()
+
+    def _validate_security(self):
+        """Perform startup security checks."""
+        # Check for weak SECRET_KEY in production
+        default_key = "your-secret-key-change-in-production-min-32-chars-xyz123"
+        if self.environment == "production":
+            if self.secret_key == default_key:
+                raise ValueError(
+                    "❌ CRITICAL SECURITY ERROR: Default SECRET_KEY detected in production! "
+                    "You MUST set a secure SECRET_KEY environment variable."
+                )
+            if len(self.secret_key) < 32:
+                 raise ValueError("❌ SECURITY ERROR: SECRET_KEY is too short (min 32 chars).")
     """
     JWT signing key for token generation.
     
     WARNING: Change this in production to a secure random string!
     Use: openssl rand -hex 32
     """
-
+    
     algorithm: str = os.getenv("ALGORITHM", "HS256")
     """JWT algorithm for token signing."""
-
+    
     access_token_expire_minutes: int = int(
         os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
     )
     """JWT access token expiration time in minutes."""
-
+    
     refresh_token_expire_days: int = int(
         os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7")
     )
     """Refresh token expiration time in days."""
-
+    
     # ============================================================================
     # ASYNC TASK CONFIGURATION (CELERY)
     # ============================================================================
     celery_broker_url: str = os.getenv(
-        "CELERY_BROKER_URL",
+        "CELERY_BROKER_URL", 
         "redis://localhost:6379/0"
     )
     """Redis URL for Celery message broker."""
-
+    
     celery_result_backend: str = os.getenv(
-        "CELERY_RESULT_BACKEND",
+        "CELERY_RESULT_BACKEND", 
         "redis://localhost:6379/1"
     )
     """Redis URL for storing Celery task results."""
-
+    
     # ============================================================================
     # LOGGING CONFIGURATION
     # ============================================================================
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
     """Logging level (DEBUG/INFO/WARNING/ERROR/CRITICAL)."""
-
+    
     # ============================================================================
-    # VERTEX AI CONFIGURATION
+    # TELEMETRY CONFIGURATION
     # ============================================================================
-    vertex_ai_enabled: bool = os.getenv("VERTEX_AI_ENABLED", "False").lower() == "true"
-    """Master switch for Vertex AI integration. Default: False (Cost Protection)."""
-
-    google_cloud_project: str | None = os.getenv("GOOGLE_CLOUD_PROJECT")
-    """Google Cloud Project ID."""
-
-    google_cloud_location: str = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
-    """Google Cloud Region (e.g., us-central1)."""
-
-    vertex_model_name: str = os.getenv("VERTEX_MODEL_NAME", "gemini-2.5-flash-001")
-    """Vertex AI Model Name (e.g., gemini-2.5-flash-001, gemini-3.0-pro-001)."""
-
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        case_sensitive=False,
-        extra="ignore",
+    internal_telemetry_token: str = os.getenv(
+        "INTERNAL_TELEMETRY_TOKEN", 
+        "sentinel-internal-ebpf-key-2025"
     )
+    """Secret token for validating telemetry source (Guardian Alpha)."""
+    
+    class Config:
+        """Pydantic configuration for Settings."""
+        env_file = ".env"
+        case_sensitive = False
+        extra = "ignore"
 
 
 # Global settings instance (singleton pattern)

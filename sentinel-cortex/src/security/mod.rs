@@ -21,6 +21,22 @@ pub mod telemetry_sanitizer;
 // LFM PIPELINE: Ingress Sanitization & TruthSync Egress Certification (<100μs)
 pub mod lfm_security_pipeline;
 
+// AIOPS SHIELD SEMANTIC FIREWALL (Claim 2): Cognitive & Prompt Injection Defense
+pub mod semantic_firewall;
+
+// FORENSIC-GRADE WAL (Claim 4): Cryptographic Write-Ahead Log & Anti-Replay
+pub mod forensic_wal;
+
+// DUAL-GUARDIAN MUTUAL SURVEILLANCE (Claim 3): eBPF Alpha ↔ Cortex Beta
+pub mod mutual_surveillance;
+
+#[allow(unused_imports)]
+pub use semantic_firewall::{AIOpsSemanticFirewall, InjectionType, SemanticDetection};
+#[allow(unused_imports)]
+pub use forensic_wal::{DataLane, ForensicWal, WalRecord};
+#[allow(unused_imports)]
+pub use mutual_surveillance::{GuardianHealth, GuardianStatusReport, MutualSurveillance};
+
 // Re-export production version as default
 
 #[allow(unused_imports)]

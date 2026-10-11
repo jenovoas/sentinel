@@ -1,19 +1,19 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
 Monitoring Orchestration Service - Phase 2
 Integrates metrics collection, anomaly detection, and historical storage
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import logging
-from typing import Any, Dict
+from datetime import datetime
+from typing import Dict, Any, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.services.monitoring import get_dashboard_snapshot
 from app.services.anomaly_detector import get_anomaly_detector, save_anomalies
 from app.services.metrics_history import MetricsHistoryService
-from app.services.monitoring import get_dashboard_snapshot
+
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +55,7 @@ class MonitoringOrchestrator:
             net_stats = snapshot["network"]
             db_stats_info = snapshot["db_stats"]
             wifi_info = net_stats.get("wifi", {})
-
+            
             sample = await MetricsHistoryService.store_metric_sample(
                 session,
                 cpu=snapshot["system"]["cpu_percent"],
@@ -70,7 +70,6 @@ class MonitoringOrchestrator:
                 db_connections_active=db_stats_info.get("connections_active", 0),
                 db_locks=db_stats_info.get("locks", 0),
                 db_size_bytes=db_stats_info.get("db_size_bytes", 0),
-                api_latency_ms=snapshot.get("db_health", {}).get("latency_ms"),
                 gpu_percent=snapshot.get("gpu", {}).get("percent"),
                 gpu_memory_percent=snapshot.get("gpu", {}).get("memory_percent"),
                 gpu_temperature=snapshot.get("gpu", {}).get("temperature"),
@@ -78,7 +77,7 @@ class MonitoringOrchestrator:
                 wifi_signal=wifi_info.get("signal"),
                 wifi_connected=wifi_info.get("connected", False),
                 metadata={
-                    "version": "1.0",
+                    "version": "S60(1, 0, 0)",
                     "phase": "2-analytics",
                 },
             )

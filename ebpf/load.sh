@@ -1,80 +1,68 @@
 #!/bin/bash
-# Sentinel eBPF - Cargador completo de todos los módulos
+# Guardian-Alpha LSM Loader
+
 set -e
 
-BOLD='\033[1m'; GREEN='\033[0;32m'; RED='\033[0;31m'; YELLOW='\033[1;33m'; NC='\033[0m'
-IFACE=eth0
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROG="$SCRIPT_DIR/guardian_cognitive.o"
+BPF_DIR="/sys/fs/bpf/guardian_alpha"
+PIN="$BPF_DIR/guardian_prog"
+LINK_PIN="$BPF_DIR/guardian_link"
 
-ok()   { echo -e "${GREEN}✅ $*${NC}"; }
-warn() { echo -e "${YELLOW}⚠️  $*${NC}"; }
-err()  { echo -e "${RED}❌ $*${NC}"; }
+echo "🔒 Loading Guardian-Alpha LSM..."
 
-cd "$(dirname "$0")"
-
-# ─── LSM ──────────────────────────────────────────────────────────────────────
-echo -e "\n${BOLD}── LSM Programs ──────────────────────────────────────────${NC}"
-for prog in guardian_alpha_lsm lsm_ai_guardian ai_guardian guardian_cognitive float_detector; do
-    pin="/sys/fs/bpf/$prog"
-    obj="$prog.o"
-    if [ ! -f "$obj" ]; then
-        err "$obj no encontrado — ejecuta 'make' primero"; exit 1
-    fi
-    [ -f "$pin" ] && sudo rm -f "$pin"
-    sudo bpftool prog load "$obj" "$pin" type lsm && ok "$prog cargado" || err "fallo al cargar $prog"
-done
-
-# ─── XDP ──────────────────────────────────────────────────────────────────────
-echo -e "\n${BOLD}── XDP Programs ──────────────────────────────────────────${NC}"
-for obj in burst_sensor.o xdp_firewall.o; do
-    if [ ! -f "$obj" ]; then
-        warn "$obj no encontrado — saltando"; continue
-    fi
-    sudo ip link set dev $IFACE xdp obj "$obj" sec xdp && ok "$obj anclado en $IFACE" \
-        || err "fallo XDP $obj (¿otro XDP activo en $IFACE?)"
-done
-
-# ─── TC ───────────────────────────────────────────────────────────────────────
-echo -e "\n${BOLD}── TC Programs ───────────────────────────────────────────${NC}"
-if [ -f tc_firewall.o ]; then
-    sudo tc qdisc add dev $IFACE clsact 2>/dev/null || true
-    sudo tc filter add dev $IFACE ingress bpf da obj tc_firewall.o sec tc \
-        && ok "tc_firewall anclado en $IFACE" || err "fallo TC"
-else
-    warn "tc_firewall.o no encontrado — saltando"
+# Ensure attacher exists
+if [ ! -f "$SCRIPT_DIR/attacher" ]; then
+    echo "⚙️  Compiling attacher tool..."
+    clang -g -O2 -Wall -I/usr/include -o "$SCRIPT_DIR/attacher" "$SCRIPT_DIR/attacher.c" -lbpf
 fi
 
-# ─── Gamma (meta-vigilancia, cargar al final) ─────────────────────────────────
-echo -e "\n${BOLD}── Meta-Guardian (Gamma) ─────────────────────────────────${NC}"
-if [ -f guardian_gamma.o ]; then
-    sudo mkdir -p /sys/fs/bpf/sentinel
-    if sudo bpftool prog loadall guardian_gamma.o /sys/fs/bpf/sentinel/gamma \
-         autoattach pinmaps /sys/fs/bpf/sentinel 2>/dev/null; then
-        ok "guardian_gamma cargado (kprobes activos)"
-    else
-        err "fallo al cargar guardian_gamma"
-    fi
-
-    # Lanzar watchdog userspace
-    if [ -x ./gamma_watchdog ]; then
-        sudo mkdir -p /var/log/sentinel /var/run/sentinel
-        sudo pkill -f gamma_watchdog 2>/dev/null || true
-        sudo nohup ./gamma_watchdog \
-            >>/var/log/sentinel/gamma.ndjson 2>>/var/log/sentinel/gamma.err &
-        echo $! | sudo tee /var/run/sentinel/gamma.pid >/dev/null
-        sleep 0.5
-        if sudo kill -0 "$(cat /var/run/sentinel/gamma.pid)" 2>/dev/null; then
-            ok "gamma_watchdog activo (pid=$(cat /var/run/sentinel/gamma.pid))"
-        else
-            err "gamma_watchdog no arrancó — ver /var/log/sentinel/gamma.err"
-        fi
-    else
-        warn "gamma_watchdog binario no encontrado — ejecuta 'make'"
-    fi
-else
-    warn "guardian_gamma.o no encontrado — saltando"
+# Ensure BPF filesystem directory exists
+if [ ! -d "$BPF_DIR" ]; then
+    echo "📁 Creating BPF directory $BPF_DIR..."
+    sudo mkdir -p "$BPF_DIR"
 fi
 
-# ─── Estado final ─────────────────────────────────────────────────────────────
-echo -e "\n${BOLD}── Estado ────────────────────────────────────────────────${NC}"
-sudo bpftool prog list | grep -E "lsm|xdp|tc|kprobe" | awk '{print "  " $0}' || warn "sin programas eBPF activos"
+# Check if already loaded and clean up
+if [ -f "$PIN" ]; then
+    echo "⚠️  Guardian-Alpha already loaded. Unloading first..."
+    sudo rm -rf "$BPF_DIR"/*
+fi
+
+# Load eBPF program and pin maps (WITHOUT attaching yet)
+# We use bpftool here because it works fine for loading and pinning maps
+echo "📦 Loading eBPF program and pinning maps..."
+sudo bpftool prog load "$PROG" "$PIN" type lsm pinmaps "$BPF_DIR"
+
+# Populate whitelist BEFORE attaching to avoid lockout
+echo "📝 Populating whitelist..."
+if [ -f "$SCRIPT_DIR/populate_whitelist.sh" ]; then
+    bash "$SCRIPT_DIR/populate_whitelist.sh"
+else
+    echo "⚠️  Warning: populate_whitelist.sh not found! System might freeze if you proceed."
+    read -p "Press [Enter] to continue or Ctrl+C to abort..."
+fi
+
+# Attach the LSM program using custom attacher
+echo "⚓ Attaching Guardian-Alpha LSM..."
+sudo "$SCRIPT_DIR/attacher" "$PIN" "$LINK_PIN"
+
+# Verify
+if [ -f "$LINK_PIN" ]; then
+    echo "✅ Guardian-Alpha LSM loaded and ATTACHED successfully"
+    echo ""
+    echo "📊 Program Info:"
+    sudo bpftool prog show pinned "$PIN"
+    echo ""
+    echo "🗺️  Pinned Maps:"
+    ls -l "$BPF_DIR"
+else
+    echo "❌ Failed to attach Guardian-Alpha LSM"
+    exit 1
+fi
+
+# Whitelist populated above.
+
 echo ""
+echo "🎉 Guardian-Alpha LSM is now protecting your system!"
+echo "⚠️  All non-whitelisted commands will be BLOCKED at kernel level"

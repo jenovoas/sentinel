@@ -1,23 +1,18 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
 Sentinel Organization Model - Multi-tenant support
 SQLAlchemy 2.0 + PostgreSQL UUID support
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING, List, Optional
+from typing import Optional, List
 
-from sqlalchemy import Boolean, DateTime, String, func
+from sqlalchemy import String, Boolean, DateTime, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
-
-if TYPE_CHECKING:
-    from .user import User
 
 
 class Organization(Base):

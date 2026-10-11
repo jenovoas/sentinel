@@ -1,6 +1,3 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
 Sentinel API - Main FastAPI Application.
 
@@ -21,21 +18,34 @@ Performance:
     - Connection pooling: Docker-ready with NullPool
     - Health checks: Kubernetes-ready readiness probes
 
-Start with: uvicorn app.main:app --host 0.0.0.0 --port 8000
+Start with: uvicorn app.main:app --host S60(0, 0, 0).S60(0, 0, 0) --port 8000
 """
 
-import os
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from contextlib import asynccontextmanager
+import asyncio
+import logging
+import os
+import uuid
+import time
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
 
-from app.config import get_allowed_origins, get_settings
-from app.database import check_db_connection, close_db, init_db
+from app.config import get_settings, get_allowed_origins
 from app.logging_config import setup_logging
-from app.routers import ai, analytics, auth, backup, dashboard, failsafe, health, tenants, users
+from app.database import init_db, close_db, check_db_connection
+# Import only essential routers for TUI
+from app.routers import (
+    health, users, tenants, dashboard, analytics, ai, auth, 
+    backup, failsafe, incidents, gamma, cortex, metrics_summary, 
+    websocket, truthsync, ai_tools
+)
+# Commented out routers with missing dependencies:
+# from app.routers import quantum, terminal, infrastructure
+from app.api import workflows
 from app.shutdown import setup_signal_handlers  # Graceful shutdown
 
 settings = get_settings()
@@ -62,33 +72,46 @@ async def lifespan(app: FastAPI):
     # STARTUP - Runs once when the application starts
     # ========================================================================
     logger.info("🚀 Starting Sentinel API...")
-
+    
     # Create logs directory
     os.makedirs("logs", exist_ok=True)
-
+    
     # Initialize database (create tables, extensions)
     # This is async and uses asyncpg driver
-    await init_db()
-    logger.info("✅ Database initialized (using asyncpg driver)")
-
+    # Initialize database (create tables, extensions)
+    # This is async and uses asyncpg driver
+    try:
+        await init_db()
+        logger.info("✅ Database initialized (using asyncpg driver)")
+    except Exception as e:
+        logger.error(f"❌ Database Initialization Failed: {e}")
+    
+    # Verify database connectivity
     # Verify database connectivity
     db_status = await check_db_connection()
     if db_status.get("db_connection", False):
-        logger.info("✅ Database connection verified")
+        logger.info(f"✅ Database connection verified")
     else:
         logger.error(f"❌ Database connection failed: {db_status.get('error', 'Unknown error')}")
-
+    
     # Setup graceful shutdown handlers
     setup_signal_handlers(app)
     logger.info("✅ Graceful shutdown handlers configured")
-
+    
+    # --- QUANTUM HEARTBEAT START ---
+    # Start the biological pulse listener in background
+    from app.routers.health import quantum_pulse_listener
+    asyncio.create_task(quantum_pulse_listener())
+    logger.info("💓 Quantum Heartbeat Listener STARTED")
+    # -------------------------------
+    
     yield  # Application runs here
-
+    
     # ========================================================================
     # SHUTDOWN - Runs once when the application stops
     # ========================================================================
     logger.info("👋 Shutting down Sentinel API...")
-
+    
     # Close all database connections
     # Important for clean shutdown and preventing connection leaks
     await close_db()
@@ -135,13 +158,54 @@ app.add_middleware(
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     """
-    Middleware to log all HTTP requests.
-    
-    Logs HTTP method, path, and response status code.
-    Useful for debugging and monitoring API usage.
+    Middleware para loguear todas las peticiones HTTP con trazabilidad.
     """
-    logger.info(f"{request.method} {request.url.path}")
+    start_time = time.time()
+    
+    # Intentar obtener el ID (será 'unknown' si este middleware es el más externo en la fase de petición)
+    correlation_id = getattr(request.state, "correlation_id", "unknown")
+    
+    try:
+        response = await call_next(request)
+        process_time = (time.time() - start_time) * 1000
+        
+        # Refrescar el correlation_id después de que otros middlewares lo hayan podido establecer
+        correlation_id = getattr(request.state, "correlation_id", correlation_id)
+        extra = {"correlation_id": correlation_id}
+        
+        logger.info(
+            f"📥 {request.method} {request.url.path} - "
+            f"Status: {response.status_code} - "
+            f"Time: {process_time:.2f}ms",
+            extra=extra
+        )
+        return response
+    except Exception as e:
+        process_time = (time.time() - start_time) * 1000
+        correlation_id = getattr(request.state, "correlation_id", correlation_id)
+        extra = {"correlation_id": correlation_id}
+        
+        logger.error(
+            f"❌ Error: {request.method} {request.url.path} - "
+            f"Error: {str(e)} - "
+            f"Time: {process_time:.2f}ms",
+            extra=extra,
+            exc_info=True
+        )
+        raise
+
+
+@app.middleware("http")
+async def add_correlation_id(request: Request, call_next):
+    """
+    Middleware que añade un ID de correlación único a cada petición.
+    Al estar definido DESPUÉS de log_requests, será el MÁS EXTERNO en la fase de petición.
+    """
+    correlation_id = request.headers.get("X-Correlation-ID", str(uuid.uuid4()))
+    request.state.correlation_id = correlation_id
+    
     response = await call_next(request)
+    response.headers["X-Correlation-ID"] = correlation_id
     return response
 
 
@@ -180,17 +244,30 @@ Each router handles a specific domain of functionality.
 """
 
 # Health endpoints (no prefix - top level)
-app.include_router(health.router, prefix="/api/v1", tags=["health"])
+app.include_router(health.router, tags=["health"])
 
 # API endpoints
-app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["analytics"])
-app.include_router(ai.router, prefix="/api/v1/ai", tags=["ai"])
-app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
-app.include_router(users.router, prefix="/api/v1/users", tags=["users"])
-app.include_router(tenants.router, prefix="/api/v1/tenants", tags=["tenants"])
-app.include_router(dashboard.router, prefix="/api/v1/dashboard", tags=["dashboard"])
-app.include_router(backup.router)  # Backup API (prefix defined in router)
+app.include_router(analytics.router, tags=["analytics"])
+app.include_router(ai.router, tags=["ai"])
+app.include_router(auth.router, tags=["auth"])
+app.include_router(users.router, tags=["users"])
+app.include_router(tenants.router, tags=["tenants"])
+app.include_router(dashboard.router, tags=["dashboard"])
+app.include_router(cortex.router)  # Cortex Decision Engine
+app.include_router(incidents.router)  # Incident Management (ITIL)
+app.include_router(backup.router)  # Backup API
 app.include_router(failsafe.router)  # Fail-Safe Security Layer
+app.include_router(workflows.router)  # Workflow Recommendations
+app.include_router(gamma.router)  # Guardian Gamma (HITL)
+app.include_router(metrics_summary.router)  # Metrics Summary for GUI
+app.include_router(websocket.router)  # Real-time Battlefield UI
+app.include_router(truthsync.router)  # Truth verification service
+app.include_router(ai_tools.router)  # AI Autonomous Tools (File/Command access)
+# Commented out routers with missing dependencies:
+# app.include_router(quantum.router)  # Quantum membrane visualization
+# app.include_router(terminal.router)  # Secure Terminal Service
+# app.include_router(infrastructure.router)  # Sovereign Matrix (Docker, Network, Logs)
+
 
 
 # ============================================================================
@@ -225,12 +302,12 @@ if __name__ == "__main__":
     Entry point for running the application directly.
     
     Not recommended for production. Use:
-        uvicorn app.main:app --host 0.0.0.0 --port 8000
+        uvicorn app.main:app --host S60(0, 0, 0).S60(0, 0, 0) --port 8000
     """
     import uvicorn
     uvicorn.run(
         "main:app",
-        host="0.0.0.0",
+        host="S60(0, 0, 0).S60(0, 0, 0)",
         port=8000,
         reload=settings.debug,
         log_level=settings.log_level.lower(),

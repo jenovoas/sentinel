@@ -1,6 +1,3 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """initial schema
 
 Revision ID: 3e9bf6b94e22
@@ -8,8 +5,9 @@ Revises:
 Create Date: 2025-12-13 20:45:00.000000
 """
 
-import sqlalchemy as sa
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from alembic import op
+import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.

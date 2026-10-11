@@ -1,15 +1,13 @@
-# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
-# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
-# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 """
 Pydantic schemas for Organization and User models
 """
 
+from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
 from app.models.user import UserRole
 
@@ -32,7 +30,7 @@ class OrganizationUpdate(BaseModel):
 
 class OrganizationInDB(OrganizationBase):
     model_config = ConfigDict(from_attributes=True)
-
+    
     id: UUID
     created_at: datetime
     updated_at: Optional[datetime]
@@ -69,7 +67,7 @@ class UserUpdate(BaseModel):
 
 class UserInDB(UserBase):
     model_config = ConfigDict(from_attributes=True)
-
+    
     id: UUID
     organization_id: UUID
     is_active: bool
