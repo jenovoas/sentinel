@@ -979,8 +979,10 @@ pub(crate) async fn truth_claim_handler(
         me60os_core::spa::SPA::from_decimal_for_import_only(payload.trust_threshold);
     let sentinel_score_f64 =
         res.overall_trust_score.to_raw() as f64 / me60os_core::spa::SPA::SCALE_0 as f64;
-    let blocked = res.critical_pattern_detected;
-
+    // 🛡️ AIOpsShield Semantic Firewall (Claim 2): Inspección cognitiva de AIOpsDoom
+    let semantic_firewall = sentinel_cortex::security::AIOpsSemanticFirewall::new();
+    let detections = semantic_firewall.inspect(&payload.claim_payload);
+    let blocked = res.critical_pattern_detected || !detections.is_empty();
     let (status, security_event_logged) = if blocked {
         let event = serde_json::json!({
             "event": "truth_claim_blocked",
