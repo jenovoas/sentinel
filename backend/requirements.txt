@@ -42,7 +42,7 @@ redis==4.6.0
 # AUTHENTICATION & SECURITY
 # ============================================================================
 # JWT token generation and validation
-PyJWT==2.10.1
+PyJWT==2.15.0
 # Password hashing with bcrypt
 bcrypt==4.1.1
 # Python-Jose library for JWT handling (alternative to PyJWT)
