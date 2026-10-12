@@ -13,7 +13,6 @@ mod metrics;
 mod models;
 mod qhc_client;
 mod quantum;
-mod security;
 
 use axum::extract::ws::{Message, WebSocket, WebSocketUpgrade};
 use axum::{
@@ -23,7 +22,6 @@ use axum::{
 };
 use ebpf_cortex_bridge::{CortexEvent, EbpfBridge};
 use math::harmonic_logic::{HarmonicProcessor, HarmonicState};
-use metrics::MetricsSnapshot;
 use security::bio_resonance::ResonanceEngine;
 use serde::Serialize;
 use std::sync::{Arc, Mutex};
