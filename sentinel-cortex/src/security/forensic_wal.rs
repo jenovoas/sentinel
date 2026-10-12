@@ -41,7 +41,6 @@ pub struct ForensicWal {
     secret_key: Vec<u8>,
     seen_nonces: Mutex<HashSet<String>>,
     last_hash: Mutex<String>,
-    max_drift_sec: u64,
 }
 
 impl ForensicWal {
@@ -73,7 +72,6 @@ impl ForensicWal {
             secret_key: secret_key.to_vec(),
             seen_nonces: Mutex::new(seen_nonces),
             last_hash: Mutex::new(last_hash),
-            max_drift_sec: 300, // 5 minutos
         })
     }
 

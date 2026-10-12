@@ -11,7 +11,6 @@ mod memory;
 mod metrics;
 mod models;
 mod quantum;
-mod security;
 
 use axum::extract::ws::{Message, WebSocket, WebSocketUpgrade};
 use axum::{
@@ -21,7 +20,7 @@ use axum::{
 use ebpf_cortex_bridge::{CortexEvent, EbpfBridge};
 use math::harmonic_logic::{HarmonicProcessor, HarmonicState};
 use metrics::{MetricsRepository, MetricsSnapshot, PrometheusRepository};
-use security::bio_resonance::ResonanceEngine;
+use sentinel_cortex::security::bio_resonance::ResonanceEngine;
 use serde::Serialize;
 use std::sync::{Arc, Mutex};
 use std::{net::SocketAddr, time::Duration};
@@ -955,7 +954,7 @@ mod tests {
             memory::resonant_lattice_bridge::ResonantLatticeBridge::new(1),
         ));
         let truthsync = Arc::new(Mutex::new(truthsync_core::TruthSyncEngine::new()));
-        let resonance = Arc::new(Mutex::new(security::bio_resonance::ResonanceEngine::new()));
+        let resonance = Arc::new(Mutex::new(ResonanceEngine::new()));
         let metrics = Arc::new(metrics::PrometheusRepository::new());
         let liquid_lattice = Arc::new(Mutex::new(memory::liquid_lattice::LiquidLattice::new()));
         let pattern_detector = Arc::new(engine::patterns::PatternDetector::new());
