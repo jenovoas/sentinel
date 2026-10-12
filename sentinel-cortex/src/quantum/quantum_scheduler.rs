@@ -96,6 +96,10 @@ impl QuantumScheduler {
 
     /// Main tick - called by TimeCrystal @ 41.77 Hz
     pub fn tick(&mut self, current_time: S60) {
+        if self.is_emergency_shutdown {
+            return;
+        }
+
         self.current_time = current_time;
 
         // 1. Decay bio-resonance entropy
@@ -280,5 +284,38 @@ mod tests {
         scheduler.tasks_in_portal = 3;
         scheduler.tasks_forced = 1;
         assert_eq!(scheduler.efficiency_percent(), Some(75));
+    }
+
+    #[test]
+    fn emergency_shutdown_stays_latched_on_later_ticks() {
+        use std::sync::atomic::{AtomicUsize, Ordering};
+
+        static CALLBACK_CALLS: AtomicUsize = AtomicUsize::new(0);
+        extern "C" fn counted_callback() {
+            CALLBACK_CALLS.fetch_add(1, Ordering::SeqCst);
+        }
+
+        let bio = Arc::new(Mutex::new(BioResonator::new()));
+        bio.lock().unwrap().set_dead_man_threshold(0);
+        let mut scheduler = QuantumScheduler::new(bio.clone());
+        scheduler.tick(S60::zero());
+        assert!(scheduler.is_emergency_shutdown());
+
+        bio.lock().unwrap().inject_bio_pulse();
+        let calls_before = CALLBACK_CALLS.load(Ordering::SeqCst);
+        for id in 0..=scheduler.overflow_limit as u64 {
+            scheduler.enqueue(Task {
+                id,
+                task_type: TaskType::ZPETune,
+                cost: 1,
+                callback: counted_callback,
+            });
+        }
+
+        scheduler.tick(S60::zero());
+
+        assert!(scheduler.is_emergency_shutdown());
+        assert_eq!(scheduler.queue_len(), scheduler.overflow_limit + 1);
+        assert_eq!(CALLBACK_CALLS.load(Ordering::SeqCst), calls_before);
     }
 }

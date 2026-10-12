@@ -203,6 +203,7 @@ async fn main() {
     let resonance_task = resonance.clone();
     let processor_task = processor.clone();
     let scheduler_task = quantum_scheduler.clone();
+    let bio_resonator_task = bio_resonator.clone();
     let qhc_task = state.qhc.clone();
     tokio::spawn(async move {
         tracing::info!("Resonance Engine active. Syncing to QHC pulse...");
@@ -217,6 +218,9 @@ async fn main() {
             last_second = elapsed_secs;
             let local_tick = elapsed_secs;
             let qhc_tick = qhc_client::live_tick(&qhc_task.lock());
+            if qhc_tick.is_some() {
+                bio_resonator_task.lock().unwrap().record_pilot_heartbeat();
+            }
             let tick = qhc_tick.unwrap_or(local_tick);
 
             {
@@ -856,6 +860,46 @@ async fn metrics_prometheus_handler(
     let _ = writeln!(out, "# TYPE sentinel_xdp_firewall_status gauge");
     let _ = writeln!(out, "sentinel_xdp_firewall_status {}", xdp_active);
 
+
+    // Métricas mínimas de servicios entregados a clientes
+    let check_port = |port: u16| -> u8 {
+        use std::net::{SocketAddr, TcpStream};
+        let addr = SocketAddr::from(([127, 0, 0, 1], port));
+        if TcpStream::connect_timeout(&addr, std::time::Duration::from_millis(20)).is_ok() {
+            1
+        } else {
+            0
+        }
+    };
+
+    let dns_up = check_port(53);
+    let smtp_up = check_port(25);
+    let imaps_up = check_port(993);
+    let web_up = check_port(3100);
+    let vpn_up = if std::path::Path::new("/sys/class/net/wg0").exists() { 1 } else { 0 };
+
+    let _ = writeln!(out, "# HELP sentinel_client_service_up Estado de disponibilidad de cada servicio entregado a clientes (1=UP, 0=DOWN)");
+    let _ = writeln!(out, "# TYPE sentinel_client_service_up gauge");
+    let _ = writeln!(out, "sentinel_client_service_up{{service=\"cortex\"}} 1");
+    let _ = writeln!(out, "sentinel_client_service_up{{service=\"dns\"}} {}", dns_up);
+    let _ = writeln!(out, "sentinel_client_service_up{{service=\"smtp\"}} {}", smtp_up);
+    let _ = writeln!(out, "sentinel_client_service_up{{service=\"imaps\"}} {}", imaps_up);
+    let _ = writeln!(out, "sentinel_client_service_up{{service=\"web\"}} {}", web_up);
+    let _ = writeln!(out, "sentinel_client_service_up{{service=\"vpn\"}} {}", vpn_up);
+
+    let _ = writeln!(out, "# HELP sentinel_tenant_active_total Total de tenants y clientes activos en la plataforma");
+    let _ = writeln!(out, "# TYPE sentinel_tenant_active_total gauge");
+    let _ = writeln!(out, "sentinel_tenant_active_total 1");
+
+    let backup_healthy = if std::fs::read_dir("/var/lib/sentinel/backups").map(|mut it| it.next().is_some()).unwrap_or(false) {
+        1
+    } else {
+        0
+    };
+
+    let _ = writeln!(out, "# HELP sentinel_tenant_backup_healthy Estado de salud de respaldos por tenant (1=Healthy, 0=Degraded)");
+    let _ = writeln!(out, "# TYPE sentinel_tenant_backup_healthy gauge");
+    let _ = writeln!(out, "sentinel_tenant_backup_healthy{{tenant=\"default\"}} {}", backup_healthy);
     out
 }
 
