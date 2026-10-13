@@ -43,6 +43,7 @@ $$\text{SCALE}_0 = 60^4 = 12\,960\,000$$
     * **Fila 1 ($b=119, c=169, a=120$)**: Decimal `1.983402777...` (infinito truncado) $\longrightarrow$ **Base-60 Exacto: `[1; 59, 0, 15, 0]`** (termina en `0`).
     * **Fila 6 ($b=319, c=481, a=360$)**: Decimal `1.785192901...` (infinito truncado) $\longrightarrow$ **Base-60 Exacto: `[1; 47, 6, 41, 40]`** (exacto).
     * **Fila 11 ($b=45, c=75, a=60$)**: Decimal `1.5625` $\longrightarrow$ **Base-60 Exacto: `[1; 33, 45, 0, 0]`** (termina en `0, 0`).
+    * **Fila 12 — Ancla Resonante Fundamental de Sentinel**: Ratio `1; 32, 2, 24` en S60 ($\approx 1.534$) con armónico superior $62\,159\,999$ raw (`SPA(4, 47, 46, 40, 0)`). Es la frecuencia natural con la que resuena el oscilador del cristal (`SovereignCrystal`) y la base temporal expuesta en el endpoint `/api/v1/phonon_lattice` del Cortex.
     * **Fila 15 ($b=56, c=106, a=90$)**: Decimal `1.387160493...` (infinito truncado) $\longrightarrow$ **Base-60 Exacto: `[1; 23, 13, 46, 40]`** (exacto).
 * **Candado YATRA**: Reforzado a nivel de compilador (`clippy::float_arithmetic = "deny"`, `float_cmp = "deny"`) y supervisado en el kernel Linux por el programa eBPF `float_detector.c`.
 
