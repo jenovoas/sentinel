@@ -2,8 +2,8 @@
 
 > **IDIOMA OBLIGATORIO (PENSAMIENTO Y SALIDA).** Está TERMINANTEMENTE PROHIBIDO el uso del inglés en el razonamiento interno (`thinking`) y en las respuestas visibles. El usuario audita directamente los bloques de pensamiento. Todo agente o IA DEBE pensar, razonar y responder 100% en español. Solo se permiten en inglés identificadores de sintaxis o nombres exactos de librerías cuando no haya traducción.
 >
-> **RAMAS POR ENTORNO.** `main` corresponde al entorno systemd. `alpine_fenix` corresponde al entorno Alpine/OpenRC. Son ramas independientes y no se deben mezclar.
-> Los cambios de systemd se aplican únicamente en `main`; los cambios de Alpine se aplican únicamente en `alpine_fenix`. Se permite hacer checkout, commit y push en la rama del entorno correspondiente.
+> **RAMAS POR ENTORNO Y RAMA PREDETERMINADA.** `alpine_fenix` corresponde al entorno Alpine/OpenRC y es la rama activa de desarrollo y la rama predeterminada del repositorio GitHub mientras Fénix sea el único nodo operativo. `main` corresponde al entorno systemd y se mantiene independiente para ese entorno; no representa el estado actual de Alpine.
+> Los cambios de Alpine se aplican únicamente en `alpine_fenix`; los cambios de systemd, únicamente en `main`. Se permite hacer checkout, commit y push en la rama del entorno correspondiente.
 > Prohibido hacer merge entre `main` y `alpine_fenix`, copiar configuraciones de una plataforma a la otra o usar `develop` u otra rama como sustituto de estos entornos.
 >
 > **Nodo actual, por ahora uno.** `fenix`, Alpine, kernel `6.18.40-0-virt`, IP `172.233.24.102`.
