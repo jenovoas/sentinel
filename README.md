@@ -51,7 +51,9 @@ $$\text{SCALE}_0 = 60^4 = 12\,960\,000$$
 
 ## 2. Arquitectura Encadenada del Sistema
 
-Sentinel no es una colección de herramientas aisladas; es un **sistema nervioso continuo** donde cada capa resuelve y alimenta a la siguiente de forma determinista:
+Sentinel posee una **dualidad arquitectónica deliberada**:
+* **Por dentro (Núcleo Físico-Matemático)**: Es disruptivo y bio-inspirado (aritmética sexagesimal Base-60⁴ en ALU, osciladores acoplados en doble malla, compresión fractal micelial y redes neuronales LIF).
+* **Por fuera (Ingeniería de Sistemas Críticos y HA)**: Cumple rigurosamente con las normativas y estándares de diseño de software para **Alta Disponibilidad (HA), sistemas de misión crítica, aislamiento Multi-Tenant, auditoría forense inmutable (ISO 27001 / SOC2 / ITIL) y defensa activa automatizada (SOAR)**.
 
 ```mermaid
 flowchart TD
@@ -71,17 +73,19 @@ flowchart TD
         I -->|Liquid Persistence| J[(snn_weights.crystal)]
     end
 
-    subgraph Defense ["3. Defensa Cognitiva y Verificación"]
+    subgraph Defense ["3. Sanitización IA Local y Defensa Activa"]
         G -->|Energía Física Viva| K[TruthSync Core: SHA3-512 + Plimpton 322]
-        L[AIOpsSemanticFirewall: 7 Categorías] --> K
+        L[LLM Local + LfmSecurityPipeline & AIOpsSemanticFirewall] <--> K
         K -->|Bloqueo Sub-ms| M[(Forensic WAL: HMAC-SHA256)]
+        K -->|Respuesta Autónoma| R[Rotación de Frecuencias de Encriptación & Honeypots Dinámicos]
     end
 
-    subgraph Obs ["4. Correlación Autónoma y Clientes"]
-        G & I & K --> N[Prometheus /metrics & Loki Logs]
+    subgraph Obs ["4. Observabilidad HA, SOAR (n8n) y Consola Tauri"]
+        G & I & K <-->|Retroalimentación Continua| N[Prometheus, Mimir, Loki & Grafana]
         N --> O[Neural Guard: Dos Nervios + Acoplamiento Térmico]
-        O -->|Debounce 5m| P[n8n Playbooks & Alertmanager SMTP]
-        K & N --> Q[Dashboard Multi-Tenant & Servicios a Clientes]
+        O -->|Flujos Pre-procesados| P[n8n SOAR: Aislamiento de Atacante + Alertmanager SMTP]
+        P --> R
+        K & N --> Q[Panel Nativo Tauri / TUI & Portal Multi-Tenant para SysAdmin]
     end
 ```
 
@@ -122,19 +126,22 @@ A diferencia de un reloj binario rígido de frecuencia fija (`TIC-TAC`), que en 
 * Integra en tiempo real los pulsos de entropía provenientes del kernel eBPF y del acoplamiento térmico del CPU.
 * **Persistencia Líquida (`.crystal`)**: Serialización binaria directa a disco (`CRYSTAL_SNN_V1`) que preserva los potenciales de membrana y el conteo de disparos (*spikes*) a través de reinicios.
 
-### 🔥 3.5. AIOpsShield, Firewall Semántico y TruthSync Core
-* **Defensa AIOpsDoom (`semantic_firewall.rs`)**: Inspección pre-ingestión en 7 categorías cognitivas (inyección de comandos, evasión de rol, exfiltración, manipulación de pesos, SQLi, XSS y sabotaje de infraestructura).
-* **TruthSync Core (`truthsync-core/`)**: Motor de verificación de afirmaciones con latencia $< 100\,\mu\text{s}$ en compilación release, utilizando `AhoCorasick` de salida temprana y resumen criptográfico **SHA3-512** atado físicamente a la energía instantánea del lattice.
-* **WAL Forense (`forensic_wal.rs` & `SecurityWal`)**: Registro de auditoría de doble carril (*Dual-Lane*) con firmas encadenadas HMAC-SHA256, nonces monótonos anti-replay y volcado síncrono `fsync` a disco.
+### 🔥 3.5. Sanitización de IA Local (LFM), AIOpsShield y TruthSync Core
+* **Asistencia y Sanitización de LLM Local (`lfm_bridge.rs` & `lfm_security_pipeline.rs`)**: El modelo de lenguaje local opera estrechamente acoplado al Cortex en un pipeline bidireccional:
+  * *Ingress*: Sanitiza prompts y telemetría entrante detectando patrones adversariales (AIOpsDoom, inyección SQL, escapes de shell, path traversal y evasión de rol) antes de que toquen el motor de inferencia.
+  * *Proyección PAI-60*: Proyecta los tokens y estados latentes del modelo hacia el retículo cristalino mediante `token_to_amplitude` sin contaminación flotante.
+  * *Egress*: Audita y certifica cada salida del modelo mediante **TruthSync Core** ($< 100\,\mu\text{s}$) atando el hash **SHA3-512** a la energía física instantánea del lattice.
+* **WAL Forense de Doble Carril (`forensic_wal.rs` & `dual_lane.rs`)**: Segregación física entre el *Security Lane* (0 buffering, `fsync` inmediato, firmas encadenadas HMAC-SHA256 y nonces anti-replay) y el *Observability Lane* (buffering adaptativo con reordenamiento temporal y control de *backpressure*).
 
-### 👁️ 3.6. Neural Guard: Correlación de Dos Nervios y Monitoreo Multi-Tenant
-* **Dos Nervios (`services/neural-guard/`)**: Cruza de manera independiente el **Nervio A** (intrusión, syscalls, SSH, auditd) con el **Nervio B** (integridad de respaldos, certificados, almacenamiento), escalando la severidad cuando ambos nervios confirman un incidente.
-* **Acoplamiento Térmico Entero**: Escala dinámicamente los umbrales de detección según la temperatura real del procesador usando física resonante S60 sin conversiones flotantes.
-* **Observabilidad Completa y SLA de Clientes**:
-  * Monitoreo continuo de servicios entregados a clientes: **DNS Autoritativo (`pdns`), Correo (`postfix`/`dovecot`), Portal Web, Cortex Gateway y VPN (`wg0`)**.
-  * Dashboards aprovisionados en **Grafana** (Infraestructura de Host, Bases de Datos Postgres/Redis, Logs en Loki, Lattice Core y SLA Multi-Tenant).
-  * Notificaciones de alerta por correo electrónico vía **Alertmanager + Postfix** y ejecución de playbooks en **n8n**.
+### ⚔️ 3.6. Defensa Activa, Cifrado por Salto de Frecuencia y Honeypots Dinámicos
+Sentinel no es un sistema de monitoreo pasivo que se limita a emitir alertas mientras el servidor es comprometido; ejecuta **contramedidas activas automatizadas**:
+* **Flujos de Ejecución Pre-procesados en n8n (SOAR)**: Cuando **Neural Guard** (correlación cruzada de *Nervio A: Intrusión* y *Nervio B: Integridad* con acoplamiento térmico S60) y el Cortex detectan un ataque coordinado, disparan playbooks pre-compilados en **n8n** con *debounce* inteligente.
+* **Cambio Dinámico en las Frecuencias de Encriptación (Cifrado de Pulso)**: Ante una intrusión o anomalía de coherencia, el motor temporal altera y rota las frecuencias de cifrado en sincronía con los saltos del cristal (`Salto-17` y ventana $T=68\text{s}$), invalidando instantáneamente cualquier clave, token o sesión que el atacante intente interceptar o reproducir.
+* **Aislamiento y Honeypots Dinámicos**: El sistema aísla en caliente el proceso o dirección origen desde Ring-0 (`isolate_pid` en LSM / bloqueo XDP) y redirige silenciosamente al atacante hacia **Honeypots Dinámicos** (entornos señuelo instrumentados), permitiendo capturar sus técnicas, herramientas y vectores de ataque en el WAL forense sin exponer los activos reales de producción.
 
+### 🖥️ 3.7. Retroalimentación de Observabilidad (Grafana, Mimir, Prometheus, Loki) y Consola Tauri
+* **Cortex Alimentado por Telemetría Histórica y en Vivo**: El Cortex mantiene un lazo cerrado donde no solo exporta métricas, sino que se retroalimenta de **Prometheus** (tiempo real), **Mimir** (almacenamiento de series temporales de largo plazo y multi-tenancy), **Loki** (agregación de flujos de logs de kernel, syslog y auditd) y **Grafana**.
+* **Panel en Tauri y Consola de Administración (`gui/src-tauri/`, `sentinel_tui` y Portal Web)**: Proyecta toda la telemetría, el holograma 3D del lattice, el estado de los guardianes eBPF y los controles de respuesta en una **interfaz nativa en Tauri** (además de TUI en terminal y Dashboard Web), brindando al **SysAdmin** comando directo, visual e interactivo sobre cada capa de la infraestructura y de los servicios Multi-Tenant entregados a clientes (DNS, SMTP, IMAPS, Web, Cortex y VPN).
 ---
 
 ## 4. Estructura del Workspace y Módulos
