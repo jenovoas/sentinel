@@ -36,7 +36,14 @@ $$\text{SCALE}_0 = 60^4 = 12\,960\,000$$
   * **Evidencia medida en vivo (`100,000` iteraciones armónicas)**:
     * **Régimen FPU (`Float64` / IEEE-754)**: `235.57 µs` — **85,719 iteraciones sufrieron truncamiento y error de redondeo**.
     * **Régimen PAI-60 (`ALU Entera S60`)**: **`66.95 µs` (3.52x menor latencia)** — **0 truncamientos, 0 uso de FPU, exactitud absoluta (`1.000000` = `12,960,000` raw)**.
-* **Ancla Matemática Inmutable**: Las frecuencias naturales de los osciladores se derivan de la **Tabla Babilónica Plimpton 322** (~1800 a.C., Fila 12: ratio exacto $62\,159\,999$ en escala S60, triplete pitagórico $1679, 2400, 2929$).
+* **Lo que nos enseña la Tablilla Plimpton 322 (`verify_plimpton.rs` — Trigonometría Exacta sin Irracionales)**:
+  * La trigonometría clásica (griega/moderna) depende de ángulos ($\theta$), $\pi$ y funciones trascendentales (`sin`, `cos`) que producen números irracionales infinitos y obligan a truncar desde el primer paso.
+  * **Plimpton 322** (~1800 a.C., demostrada formalmente por Mansfield & Wildberger, 2017) enseña el método opuesto: construir toda la geometría y el cálculo de ondas sobre **razones exactas de lados $(c/a)^2$ de tripletes pitagóricos $(a, b, c)$ donde el lado adyacente $a$ es siempre un número regular sexagesimal ($a \in \{120, 3456, 4800, 72, 360, 2700, 960, 600, 6480, 60, 240, 90\}$)**.
+  * Al dividir por $a^2$ en Base-60, las expansiones **terminan exactamente en cero** sin perder ni un bit de información, mientras que en decimal/binario son periódicas infinitas (verificado en vivo con `cargo run --release -p me60os --bin verify_plimpton`):
+    * **Fila 1 ($b=119, c=169, a=120$)**: Decimal `1.983402777...` (infinito truncado) $\longrightarrow$ **Base-60 Exacto: `[1; 59, 0, 15, 0]`** (termina en `0`).
+    * **Fila 6 ($b=319, c=481, a=360$)**: Decimal `1.785192901...` (infinito truncado) $\longrightarrow$ **Base-60 Exacto: `[1; 47, 6, 41, 40]`** (exacto).
+    * **Fila 11 ($b=45, c=75, a=60$)**: Decimal `1.5625` $\longrightarrow$ **Base-60 Exacto: `[1; 33, 45, 0, 0]`** (termina en `0, 0`).
+    * **Fila 15 ($b=56, c=106, a=90$)**: Decimal `1.387160493...` (infinito truncado) $\longrightarrow$ **Base-60 Exacto: `[1; 23, 13, 46, 40]`** (exacto).
 * **Candado YATRA**: Reforzado a nivel de compilador (`clippy::float_arithmetic = "deny"`, `float_cmp = "deny"`) y supervisado en el kernel Linux por el programa eBPF `float_detector.c`.
 
 ---
