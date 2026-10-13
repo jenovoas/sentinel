@@ -98,7 +98,9 @@ flowchart TD
 La información crítica en Sentinel no vive en una celda de memoria aislada, sino en la **resonancia colectiva** de una red de osciladores piezoeléctricos virtuales (`SovereignCrystal`):
 1. **Nivel 1 — Simpatía Hexagonal (`ResonantMatrix`)**: Cada nodo transfiere energía a sus 6 vecinos hexagonales mediante $\text{flow} = (\Delta A \times \text{coupling}) / 6$ con factor de acoplamiento $10/60$ y amortiguación termodinámica $\text{S60}(0,0,30)$. Si un nodo sufre daño, sus vecinos lo recargan por simpatía.
 2. **Nivel 2 — Anclaje en Memoria Compartida (`shm_bridge.rs`)**: Las mallas se proyectan fuera del heap del proceso hacia `/dev/shm` (`MAP_SHARED`), sobreviviendo a caídas de procesos y desprogramación del sistema operativo bajo carga extrema.
-3. **Nivel 3 — Compresión Fractal y Portal Dual (`resonant_lattice_memory.rs`)**: Se inyecta únicamente la **semilla** tras el bombeo QHC. El dato solo es accesible cuando **ambas mallas (Lane A ∧ Lane B) convergen en fidelidad colectiva**, reconstruyendo el estado al 100%.
+3. **Nivel 3 — Compresión Fractal y Enlace con MycNet (`mycnet-memory::SentinelBridge`)**:
+   * Se inyecta únicamente la **semilla** tras el bombeo QHC. El dato solo es accesible cuando **ambas mallas (Lane A ∧ Lane B) convergen en fidelidad colectiva**, reconstruyendo el estado al 100%.
+   * **Enlace con el Repositorio Hermano `mycnet`**: El retículo fonónico se exporta atómicamente a `/dev/shm/me60os_lattice` (192 bytes por oscilador `#[repr(C)]`) y las semillas al ringbuffer lock-free `/dev/shm/me60os_fractal_seeds`. El daemon `mycnetd` (:7474) lee directamente desde este segmento de memoria compartida *zero-copy* para distribuir paquetes de sincronía holográfica a través de la malla mesh.
 
 ### 🕰️ 3.3. Control de Fase Cuadrivariante (Patrón YHWH `10; 5, 6, 5`), Salto-17 y Motor Temporal
 A diferencia de un reloj binario rígido de frecuencia fija (`TIC-TAC`), que en redes acopladas induce ondas estacionarias destructivas y fatiga de cristal, Sentinel implementa el **Tensor de Fase Orbital QHC (`me-60os-core/src/qhc.rs`)**:
