@@ -22,7 +22,8 @@ use axum::{
 };
 use ebpf_cortex_bridge::{CortexEvent, EbpfBridge};
 use math::harmonic_logic::{HarmonicProcessor, HarmonicState};
-use security::bio_resonance::ResonanceEngine;
+use metrics::MetricsSnapshot;
+use sentinel_cortex::security::bio_resonance::ResonanceEngine;
 use serde::Serialize;
 use std::sync::{Arc, Mutex};
 use std::{net::SocketAddr, time::Duration};
@@ -1092,7 +1093,7 @@ mod tests {
             memory::resonant_lattice_bridge::ResonantLatticeBridge::new(1),
         ));
         let truthsync = Arc::new(Mutex::new(truthsync_core::TruthSyncEngine::new()));
-        let resonance = Arc::new(Mutex::new(security::bio_resonance::ResonanceEngine::new()));
+        let resonance = Arc::new(Mutex::new(ResonanceEngine::new()));
         let liquid_lattice = Arc::new(Mutex::new(memory::liquid_lattice::LiquidLattice::new()));
         let pattern_detector = Arc::new(engine::patterns::PatternDetector::new());
         let neural_memory = Arc::new(Mutex::new(me60os_core::neural_memory::NeuralMemory::new()));
