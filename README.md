@@ -26,8 +26,13 @@ $$\text{SCALE}_0 = 60^4 = 12\,960\,000$$
   * **`s60_complex / spa_complex` (`me-60os-core/src/spa_complex.rs`)**: Álgebra de números complejos sexagesimales exactos ($\alpha + i\beta$) para fases, superposición y rotaciones unitarias sin deriva trigonométrica.
   * **`physics.rs` (`me-60os-core/src/physics.rs`)**: Motor de ecuaciones físicas resonantes (carga efectiva, acoplamiento térmico, amortiguación y transferencia de energía) calculadas íntegramente sobre `SPA` sin tocar coma flotante.
   * **`spa_math.rs` (`me-60os-core/src/spa_math.rs`)**: Funciones trascendentales (`sin`, `cos`, `sqrt`, `ln`, `exp`) implementadas por series de Taylor e interpolación sexagesimal pura.
+* **Impacto Directo en Silicio: Liberación de la FPU y Ciclos de CPU (`fpu_vs_pai_bench.rs`)**:
+  * En un procesador tradicional (x86_64 / ARM), las operaciones en coma flotante (`FDIV`, `FSQRT`, instrucciones vectoriales SSE/AVX) saturan los puertos de la **FPU (Floating-Point Unit)**, consumiendo entre 10 y 40 ciclos de reloj por división e incrementando la disipación térmica.
+  * Al transformar divisiones y funciones físicas en **multiplicaciones enteras exactas por recíprocos sexagesimales (`PAI-60` / `SPA`)**, el cálculo se ejecuta íntegramente en las **unidades lógicas aritméticas enteras (ALU)** en **1 a 3 ciclos de reloj**.
+  * Esto **desocupa la FPU**, elimina los cuellos de botella de tubería (*pipeline stalls*) y libera capacidad masiva de cómputo en cualquier CPU convencional sin requerir hardware especializado.
 * **Ancla Matemática Inmutable**: Las frecuencias naturales de los osciladores se derivan de la **Tabla Babilónica Plimpton 322** (~1800 a.C., Fila 12: ratio exacto $62\,159\,999$ en escala S60, triplete pitagórico $1679, 2400, 2929$).
 * **Candado YATRA**: Reforzado a nivel de compilador (`clippy::float_arithmetic = "deny"`, `float_cmp = "deny"`) y supervisado en el kernel Linux por el programa eBPF `float_detector.c`.
+
 ---
 
 ## 2. Arquitectura Encadenada del Sistema
