@@ -7,6 +7,7 @@
 ---
 
 ## 🔬 1. Capa eBPF Ring-0 & LSM Hardening
+
 - **LSM Progs (3/3)**: `guardian_execve`, `guardian_cognitive`, `me60os_ai_guardian_open`.
 - **BPF Map Type Refactor**: `god_mode_uids` en `BPF_MAP_TYPE_ARRAY` (2048 entradas).
 - **XDP Pre-Stack Dual-Lane**:
@@ -17,6 +18,7 @@
 ---
 
 ## 💎 2. Cristal de Tiempo & Rejilla Resonante ($S60$)
+
 - **Dual-Lane Lattice**: Instanciación de **128 Nodos Dual-Lane** (`ResonantLatticeBridge::new(128)`).
 - **LiquidLattice 3x3 (EXP-009)**: Difusión superfluida continua Von Neumann en el loop principal de `sentinel-cortex`.
 - **PAI-Neural SNN**: Red neuronal de picos **Leaky Integrate-and-Fire (LIF)** en 64 canales ([`me-60os-core/src/neural_memory.rs`](file:///home/jnovoas/Proyectos/sentinel/me-60os-core/src/neural_memory.rs)).
@@ -24,12 +26,14 @@
 ---
 
 ## 🛡️ 3. Security WAL & TruthSync Engine
+
 - **Carril 1 Security WAL**: Append-only fsync log directo a `/var/log/sentinel/security_wal.log` con AIOpsShield.
 - **Plimpton 322 Fila 17**: Integración exacta de la constante sexagesimal $\psi = 4.7962963$ en `truthsync-core`.
 
 ---
 
 ## 📈 4. Telemetría y Verificador Inmutable
+
 - **`sentinel-verifier`**: Binario en Rust ejecutando 10 comprobaciones de invariantes cada 15s (`User=root`).
 - **Logs Persistentes**: `/var/log/sentinel/sentinel_verifier.log` e ingesta continua por Promtail/Loki hacia Grafana Master v7.
 
