@@ -185,9 +185,27 @@ Toda la investigación teórica, pruebas empíricas y especificaciones de operac
   * [`ops/CABLEADO_Y_TOPOLOGIA_CANONICA.md`](./docs/ops/CABLEADO_Y_TOPOLOGIA_CANONICA.md) — Mapa exacto de conexión encadenada de los 11 subsistemas en Fénix.
   * [`SPEC_AIOPS_SHIELD_RUST.md`](./docs/SPEC_AIOPS_SHIELD_RUST.md) — Especificación formal de los Claims de defensa cognitiva en Rust.
 
+
 ---
 
-## 6. Resultados y Métricas Verificadas en Hardware Real
+## 6. Biomímesis (Redes de Micelio) y Convergencia Científica Independiente
+
+La arquitectura de Sentinel nació de la **observación directa de los sistemas naturales y de las redes biológicas de micelio**:
+* **Malla Descentralizada y Transferencia por Simpatía**: En un bosque, el micelio no almacena nutrientes ni información en un único nodo central vulnerable; los distribuye a través de una red hexagonal resiliente. Si una sección del micelio es destruida, los nodos vecinos transfieren energía por gradiente y reconstruyen el tejido a partir de la semilla genética y la regla fractal de crecimiento. Ese principio biológico dio origen directo a `ResonantMatrix`, a la compresión fractal por semilla y al protocolo de malla `MycNet`.
+* **Respiración Armónica frente a Relojes Rígidos**: Ningún organismo vivo ni sistema orbital estable en el universo opera bajo un pulso rígido e invariable ni truncando sus ciclos; la naturaleza oscila en fases acopladas y corrige periódicamente su deriva.
+
+Posteriormente al desarrollo empírico de estos mecanismos en código, se comprobó la **convergencia independiente** con **78 artículos científicos de frontera** (ver índice completo mapeado a cada módulo de Rust en [`docs/02_ciencia_y_quantum/PAPERS_INDEX.md`](./docs/02_ciencia_y_quantum/PAPERS_INDEX.md)):
+
+| Investigadores / Publicación | Ciencia Estudiada | Implementación Equivalente en Sentinel |
+| :--- | :--- | :--- |
+| **Mansfield & Wildberger** (*Historia Mathematica*, 2017 / UNSW, 2021) | Trigonometría sexagesimal exacta en Plimpton 322 mediante razones de lados $(c/a)^2$ sobre números regulares $2^a 3^b 5^c$ sin irracionales. | `me-60os-core/src/pai60_lib.rs` y `verify_plimpton.rs` (`RECIPROCAL_TABLE` y sintonía de Fila 12). |
+| **Giuseppe Vitiello** (*Univ. Salerno*, QFT Disipativa del Cerebro) | Necesidad de **duplicar los grados de libertad (oscilador dual Bateman)** para que un sistema cuántico abierto y disipativo conserve memoria estable sin colapsar. | `resonant_lattice_memory.rs` (**Regla de Doble Malla: Lane A ∧ Lane B**; sin convergencia dual no se abre el portal de lectura). |
+| **Partha Nandi & G. Vitiello** (*arXiv:2606.30890*, 2025–2026) | Dinámica de **cristales de tiempo fractales** inducida por espín y memoria no-Markoviana en osciladores duales acoplados. | `isochronous_oscillator.rs`, `qhc.rs` (bombeo `10;5,6,5`) y reseteo periódico de fase cada 68 ticks ($17 \times 4$). |
+| **Z. Zhang & K. W. Wang** (*arXiv:2511.13543* / *arXiv:2305.19354*) | **Aprendizaje fonónico en memoria** (*in-memory phononic learning*) e inteligencia mecánica cognitiva en redes de osciladores acoplados. | `neural_memory.rs` (SNN LIF de 64 canales alimentada por ondas de presión/entropía del lattice) y `opto_cooling_bench.rs`. |
+| **Zong-Quan Zhou, C.-F. Li & G.-C. Guo** (*USTC, arXiv:2511.12537*, 2025) | Memoria cuántica fotónica en cristales a escala de minutos mediante secuencias de pulsos de re-enfocado de fase. | Bombeo periódico de fase QHC + precalentamiento con amortiguación física controlada y anclaje en `/dev/shm`. |
+---
+
+## 7. Resultados y Métricas Verificadas en Hardware Real
 
 | Prueba / Benchmark | Binario / Script | Resultado Medido |
 | :--- | :--- | :--- |
@@ -202,7 +220,7 @@ Toda la investigación teórica, pruebas empíricas y especificaciones de operac
 
 ---
 
-## 7. Compilación, Despliegue y Verificación Zero-Trust
+## 8. Compilación, Despliegue y Verificación Zero-Trust
 
 ### 7.1. Compilar y Ejecutar toda la Suite de Pruebas en Rust
 ```bash
@@ -236,7 +254,7 @@ sudo sh scripts/bootstrap-production-node.sh
 
 ---
 
-## 8. Licencia y Propiedad Intelectual
+## 9. Licencia y Propiedad Intelectual
 
 **Autor:** Jaime Novoa Sepúlveda — Todos los derechos reservados.  
 Distribuido bajo **Licencia Apache 2.0 con Cláusula de Restricción Comercial** (ver [`LICENSE`](./LICENSE)).  
