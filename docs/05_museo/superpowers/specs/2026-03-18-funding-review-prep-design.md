@@ -1,4 +1,5 @@
 # Design Spec: Sentinel Repo Preparation for Funding Review
+
 **Date:** 2026-03-18 | **Version:** 2.0 (post spec-review)
 **Author:** Jaime Novoa / Claude Code | **Status:** Ready for implementation
 
@@ -21,6 +22,7 @@ S60/eBPF/Rust benchmarks that ARE the funding case.
 ## Phase 1 — Clean Root (Complete list)
 
 ### AI session artifacts → internal/ + .gitignore
+
 - SYSTEM_PROMPT
 - GEMINI_TASK_*.md (5 files)
 - GEMINI_REPORT.md, GEMINI_TASK.md, GEMINI_TASK_MONITORING.md
@@ -34,6 +36,7 @@ S60/eBPF/Rust benchmarks that ARE the funding case.
 - Analiza_mi_visión_del_sistema_research.md
 
 ### Internal ops docs → internal/
+
 - FENIX_DEPLOY_PLAN.md
 - SERVICIOS_ACTIVOS.md
 - DASHBOARD-MIGRATION.md, DASHBOARD_MAINTENANCE.md, Dashboard.md
@@ -42,11 +45,13 @@ S60/eBPF/Rust benchmarks that ARE the funding case.
 - cortex_state.s60
 
 ### IDE/framework state → .gitignore (untrack from git)
+
 - .claude/settings.json
 - .sisyphus/ (entire directory)
 - .soma/ (entire directory — keep SOMA architecture docs only)
 
 ### CLAUDE.md → rewrite as contributor guide
+
 Current version exposes: internal server paths, personal name, outdated FastAPI stack.
 New version: brief contributor orientation (how to build, test, contribute).
 
@@ -58,6 +63,7 @@ These files coexist in quantum/ alongside the legitimate S60 benchmarks and will
 a technical reviewer from Google/Anthropic to lose confidence in EXP-015/021/022:
 
 ### quantum/ files to move
+
 - vimana_drone_sim.py, vimana_mission_sim.py, vimana_orbital_ascent_sim.py
 - vimana_shield_validation.py, vimana_yatra_driver.py
 - zpe_phase1_lab.py, zpe_simulation.py, zpe_power_circuit_sim.py
@@ -71,12 +77,14 @@ a technical reviewer from Google/Anthropic to lose confidence in EXP-015/021/022
 - EXP_028_PENTA_RESONANCE.md/.py
 
 ### docs/ files to move
+
 - docs/PLANETARY_ENERGY_SHIELD.md
 - docs/quantum/VIMANA_*.md (all)
 - docs/quantum/ZPE_*.md (all)
 - docs/quantum/MHD_SHIELD_TECHNICAL_WHITE_PAPER.md
 
 ### tests/ files to move
+
 - tests/test_levitation.py
 
 Note: None of this is deleted. Lives in internal/exploratory/ — in git, accessible,

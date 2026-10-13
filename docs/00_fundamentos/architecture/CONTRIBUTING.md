@@ -7,6 +7,7 @@ Guía para el equipo de desarrollo que mantiene la calidad y la consistencia del
 ### Python (Backend)
 
 **Todo el código Python debe:**
+
 - Seguir la guía de estilo **PEP 8**
 - Incluir *type hints* en parámetros y valores de retorno
 - Tener *docstrings* exhaustivas (estilo Google)
@@ -14,6 +15,7 @@ Guía para el equipo de desarrollo que mantiene la calidad y la consistencia del
 - Pasar el *linting* sin advertencias
 
 **Formato de docstring:**
+
 ```python
 def crear_usuario(email: str, password: str, tenant_id: str) -> User:
     """
@@ -40,6 +42,7 @@ def crear_usuario(email: str, password: str, tenant_id: str) -> User:
 ```
 
 **Guía de comentarios:**
+
 ```python
 # ✅ Bueno: Explica el POR QUÉ
 # Usamos connection pooling con recycle para evitar errores "connection lost"
@@ -52,6 +55,7 @@ def crear_usuario(email: str, password: str, tenant_id: str) -> User:
 ### TypeScript/JavaScript (Frontend)
 
 **Todo el código frontend debe:**
+
 - Usar **TypeScript** (nada de JS plano)
 - Incluir definiciones de tipos
 - Tener comentarios JSDoc en componentes
@@ -59,6 +63,7 @@ def crear_usuario(email: str, password: str, tenant_id: str) -> User:
 - Seguir *best practices* de React
 
 **Formato de componente:**
+
 ```typescript
 /**
  * Componente UserCard.
@@ -89,6 +94,7 @@ export function UserCard({
 ### SQL y Base de Datos
 
 **Los cambios en BD deben:**
+
 - Incluir explicación de la migración
 - Ser retrocompatibles cuando sea posible
 - Comentar políticas RLS
@@ -97,6 +103,7 @@ export function UserCard({
 ## Flujo de Trabajo Git
 
 ### Ramas
+
 - `main` — Solo código listo para producción
 - `develop` — Rama de integración
 - *Feature branches*: `feature/descripcion`
@@ -104,6 +111,7 @@ export function UserCard({
 - *Hotfix branches*: `hotfix/issue-urgente`
 
 ### Commits
+
 ```bash
 # Buenos mensajes de commit
 git commit -m "feat: añadir autenticación de usuario con JWT"
@@ -117,12 +125,14 @@ git commit -m "docs: actualizar documentación de API para endpoint usuarios"
 ### Pull Requests
 
 **Antes de crear un PR:**
+
 1. Crear rama feature desde `develop`
 2. Hacer cambios con buenos commits
 3. Probar localmente con `podman-compose`
 4. Actualizar documentación si es necesario
 
 **Plantilla de PR:**
+
 ```markdown
 ## Descripción
 ¿Qué cambios hace este PR?
@@ -146,6 +156,7 @@ git commit -m "docs: actualizar documentación de API para endpoint usuarios"
 ## Requisitos de Pruebas
 
 ### Tests Backend
+
 ```python
 # Usar pytest para todos los tests
 # Ubicación: directorio tests/
@@ -165,6 +176,7 @@ def test_crear_usuario(db_session):
 ```
 
 ### Tests Frontend
+
 ```typescript
 // Usar vitest/jest para test de componentes
 // Ubicación: __tests__/ o adyacente al componente
@@ -184,18 +196,21 @@ describe('UserCard', () => {
 ## Documentación
 
 ### README.md
+
 - Mantener actualizado con cambios mayores
 - Incluir nuevos endpoints
 - Documentar nuevas funcionalidades
 - Actualizar ejemplos de comandos si cambian
 
 ### Comentarios en Código
+
 - Explicar lógica de negocio y decisiones
 - Documentar algoritmos no obvios
 - Anotar *workarounds* con razones
 - Enlazar a issues o docs relacionados
 
 ### Docstrings
+
 - Cada función/clase pública debe tener docstrings
 - Incluir parámetros, retornos, excepciones
 - Añadir ejemplos para uso complejo
@@ -203,6 +218,7 @@ describe('UserCard', () => {
 ## Consideraciones de Rendimiento
 
 ### Backend
+
 - Usar `pool_pre_ping=True` para conexiones
 - Implementar paginación en endpoints de lista
 - Cachear datos frecuentes en Redis
@@ -210,6 +226,7 @@ describe('UserCard', () => {
 - Monitorizar rendimiento de consultas con `echo=True` en dev
 
 ### Frontend
+
 - Usar `React.memo` para componentes costosos
 - Implementar *lazy loading* para rutas
 - Optimizar imágenes con next/image
@@ -219,6 +236,7 @@ describe('UserCard', () => {
 ## Lista de Verificación de Seguridad
 
 ### Antes de Cada Release
+
 - [ ] Sin secretos hardcodeados en código
 - [ ] Todas las entradas de usuario validadas
 - [ ] Protección contra inyección SQL vía ORM
@@ -257,6 +275,7 @@ podman-compose exec frontend npm run lint
 ## Depuración
 
 ### Backend
+
 ```bash
 # Ver logs
 podman-compose logs -f backend
@@ -272,6 +291,7 @@ podman-compose exec postgres psql -U sentinel_user -d sentinel_db
 ```
 
 ### Frontend
+
 ```bash
 # Ver logs
 podman-compose logs -f frontend
@@ -283,6 +303,7 @@ podman-compose exec frontend bash
 ```
 
 ### Base de Datos
+
 ```bash
 # Conectar a PostgreSQL
 podman-compose exec postgres psql -U sentinel_user -d sentinel_db
@@ -296,6 +317,7 @@ SELECT * FROM users;  # Consultar datos
 ## Tareas Comunes
 
 ### Añadir un Endpoint de API
+
 1. Crear schema en `backend/app/schemas/__init__.py`
 2. Crear router en `backend/app/routers/feature.py`
 3. Añadir ruta al router con docstrings adecuados
@@ -304,12 +326,14 @@ SELECT * FROM users;  # Consultar datos
 6. Escribir tests para el endpoint
 
 ### Añadir una Tabla a la BD
+
 1. Crear modelo en `backend/app/models/__init__.py`
 2. Añadir migración (Alembic cuando se implemente)
 3. Actualizar políticas RLS si es multi-tenant
 4. Documentar en README.md
 
 ### Añadir Componente Frontend
+
 1. Crear componente en `frontend/src/components/`
 2. Añadir tipos TypeScript
 3. Escribir tests
@@ -319,6 +343,7 @@ SELECT * FROM users;  # Consultar datos
 ## Guías de Code Review
 
 **Los revisores deben comprobar:**
+
 - [ ] El código sigue los estándares
 - [ ] La lógica es correcta
 - [ ] Los tests son adecuados
@@ -328,6 +353,7 @@ SELECT * FROM users;  # Consultar datos
 - [ ] Sin breaking changes sin discusión
 
 **Los comentarios deben ser:**
+
 - Constructivos y útiles
 - Específicos con ejemplos
 - Positivos y alentadores
@@ -365,6 +391,7 @@ podman-compose exec backend black app/ && mypy app/ && flake8 app/
 ## Recordatorios Finales
 
 ✅ **Hacer:**
+
 - Escribir código claro y auto-documentado
 - Comentar lógica de negocio, no código obvio
 - Probar tus cambios antes de pushear
@@ -373,6 +400,7 @@ podman-compose exec backend black app/ && mypy app/ && flake8 app/
 - Documentar mientras codificas
 
 ❌ **No hacer:**
+
 - Commit sin entender los cambios
 - Dejar código de debug o console.log
 - Ignorar advertencias de tipos
