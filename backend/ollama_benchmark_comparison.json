@@ -1,0 +1,15 @@
+{
+  "baseline": {
+    "modelo": "phi3:mini",
+    "requests": 5,
+    "ttfb_promedio_ms": 21470.33,
+    "ttfb_mediana_ms": 14907.88,
+    "ttfb_min_ms": 3627.24,
+    "ttfb_max_ms": 49874.0,
+    "requests_exitosos": 5,
+    "requests_fallidos": 0
+  },
+  "optimizado": {
+    "error": "No se obtuvieron m\u00e9tricas v\u00e1lidas"
+  }
+}
