@@ -14,7 +14,7 @@
 
 La computación convencional utiliza punto flotante binario (IEEE 754) y base decimal. En binario, fracciones elementales de la física y la simetría ($1/3$, $1/6$, $1/12$, $1/60$) son periódicas infinitas y acumulan errores sistemáticos de redondeo en cada ciclo de reloj. En un sistema de tiempo real, criptografía dinámica o resonancia acoplada, una sola operación en punto flotante contamina toda la cadena de cálculo, induciendo deriva de fase y degradación de memoria.
 
-**Sentinel erradica el punto flotante de su núcleo** e implementa el **Sistema de Percepción Aumentada (SPA)** en aritmética entera escalada sobre **Base-60⁴**:
+**Sentinel erradica el punto flotante de su núcleo** e implementa **Matemáticas Sexagesimales / Aritmética Posicional Sexagesimal (SPA)** en escala entera pura sobre **Base-60⁴**:
 
 $$\text{SCALE}_0 = 60^4 = 12\,960\,000$$
 
