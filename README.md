@@ -18,10 +18,16 @@ La computación convencional utiliza punto flotante binario (IEEE 754) y base de
 
 $$\text{SCALE}_0 = 60^4 = 12\,960\,000$$
 
-* **Divisibilidad Universal**: $60$ es el único número divisible simultáneamente por $1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30$. Las divisiones armónicas y rotaciones de fase son **100% exactas en números enteros**.
+* **Divisibilidad Universal (Cero Truncamiento)**: $60$ es el único número divisible simultáneamente por $1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30$. Las divisiones armónicas y rotaciones de fase son **100% exactas en números enteros, eliminando el truncamiento decimal**.
+* **Suite de Librerías Matemáticas Sexagesimales**:
+  * **`SPA` (`me-60os-core/src/spa.rs`)**: Tipo numérico fundamental en punto fijo Base-60⁴ ($60^4 = 12\,960\,000$) que sustituye a `f32`/`f64` para operar sin pérdida de precisión ni truncamiento.
+  * **`PAI / PAI-60` (`me-60os-core/src/pai60_lib.rs`)**: Librería de razones recíprocas babilónicas que convierte magnitudes binarias a amplitudes exactas (`pai60_divide`) mediante multiplicación por inversos regulares en base-60.
+  * **`S60` (`sentinel-cortex/src/math/s60.rs`)**: Aritmética sexagesimal escalada para métricas, relojes y controladores del Cortex.
+  * **`s60_complex / spa_complex` (`me-60os-core/src/spa_complex.rs`)**: Álgebra de números complejos sexagesimales exactos ($\alpha + i\beta$) para fases, superposición y rotaciones unitarias sin deriva trigonométrica.
+  * **`physics.rs` (`me-60os-core/src/physics.rs`)**: Motor de ecuaciones físicas resonantes (carga efectiva, acoplamiento térmico, amortiguación y transferencia de energía) calculadas íntegramente sobre `SPA` sin tocar coma flotante.
+  * **`spa_math.rs` (`me-60os-core/src/spa_math.rs`)**: Funciones trascendentales (`sin`, `cos`, `sqrt`, `ln`, `exp`) implementadas por series de Taylor e interpolación sexagesimal pura.
 * **Ancla Matemática Inmutable**: Las frecuencias naturales de los osciladores se derivan de la **Tabla Babilónica Plimpton 322** (~1800 a.C., Fila 12: ratio exacto $62\,159\,999$ en escala S60, triplete pitagórico $1679, 2400, 2929$).
 * **Candado YATRA**: Reforzado a nivel de compilador (`clippy::float_arithmetic = "deny"`, `float_cmp = "deny"`) y supervisado en el kernel Linux por el programa eBPF `float_detector.c`.
-
 ---
 
 ## 2. Arquitectura Encadenada del Sistema
