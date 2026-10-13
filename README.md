@@ -133,10 +133,15 @@ A diferencia de un reloj binario rígido de frecuencia fija (`TIC-TAC`), que en 
   * *Egress*: Audita y certifica cada salida del modelo mediante **TruthSync Core** ($< 100\,\mu\text{s}$) atando el hash **SHA3-512** a la energía física instantánea del lattice.
 * **WAL Forense de Doble Carril (`forensic_wal.rs` & `dual_lane.rs`)**: Segregación física entre el *Security Lane* (0 buffering, `fsync` inmediato, firmas encadenadas HMAC-SHA256 y nonces anti-replay) y el *Observability Lane* (buffering adaptativo con reordenamiento temporal y control de *backpressure*).
 
-### ⚔️ 3.6. Defensa Activa, Cifrado por Salto de Frecuencia y Honeypots Dinámicos
+### ⚔️ 3.6. Defensa Activa, `CrystalCipher` (Cifrado Efímero por Pulso del Cristal) y Honeypots Dinámicos
 Sentinel no es un sistema de monitoreo pasivo que se limita a emitir alertas mientras el servidor es comprometido; ejecuta **contramedidas activas automatizadas**:
+* **`CrystalCipher` — Clave Efímera Derivada de la Fase del Cristal (`me-60os-core/src/crystal_cipher.rs`)**:
+  * En lugar de usar claves estáticas almacenadas en disco o generadores pseudoaleatorios convencionales, **la fase física y la amplitud del `IsochronousOscillator` en Base-60 (`SPA`) son la semilla criptográfica viva**.
+  * En cada rotación, el motor construye la semilla binaria concatenando la fase sexagesimal, el contador de pulso y la amplitud instantánea del cristal para derivar una clave de 256 bits mediante **BLAKE3**:
+    $$\text{Key}_{256} = \text{BLAKE3}\big(\text{phase\_raw}_{64} \;\|\; \text{pulse}_{64} \;\|\; \text{amplitude\_raw}_{64}\big)$$
+  * Cifra los canales internos (`watchdog <-> cortex <-> Guardian-A <-> Guardian-B` y buffers de SHM) con **AES-256-GCM** (`aad: "sentinel-crystal-layer"`) y un *nonce* de 12 bytes acoplado al pulso y a los 32 bits inferiores de la fase S60 (`nonce_for_pulse`).
+  * **Rotación Automática en Ciclo Maestro ($4 \times 17\text{s} = 68\text{s}$) y Purga Forzada (`force_rotate`)**: Cada 4 respiraciones (`BREATH_CYCLE_S = 17s`), el ciclo maestro de $68\text{s}$ rota la clave automáticamente. Dos nodos que laten en la misma fase derivan la misma clave sin intercambiarla por red; si un atacante o proceso desincronizado intenta leer el canal, o si el Cortex invoca `force_rotate()` ante una intrusión, la clave cambia en el acto y el atacante queda aislado criptográficamente.
 * **Flujos de Ejecución Pre-procesados en n8n (SOAR)**: Cuando **Neural Guard** (correlación cruzada de *Nervio A: Intrusión* y *Nervio B: Integridad* con acoplamiento térmico S60) y el Cortex detectan un ataque coordinado, disparan playbooks pre-compilados en **n8n** con *debounce* inteligente.
-* **Cambio Dinámico en las Frecuencias de Encriptación (Cifrado de Pulso)**: Ante una intrusión o anomalía de coherencia, el motor temporal altera y rota las frecuencias de cifrado en sincronía con los saltos del cristal (`Salto-17` y ventana $T=68\text{s}$), invalidando instantáneamente cualquier clave, token o sesión que el atacante intente interceptar o reproducir.
 * **Aislamiento y Honeypots Dinámicos**: El sistema aísla en caliente el proceso o dirección origen desde Ring-0 (`isolate_pid` en LSM / bloqueo XDP) y redirige silenciosamente al atacante hacia **Honeypots Dinámicos** (entornos señuelo instrumentados), permitiendo capturar sus técnicas, herramientas y vectores de ataque en el WAL forense sin exponer los activos reales de producción.
 
 ### 🖥️ 3.7. Retroalimentación de Observabilidad (Grafana, Mimir, Prometheus, Loki) y Consola Tauri
@@ -153,6 +158,7 @@ sentinel/
 │   ├── src/pai60_lib.rs     # Tabla recíproca babilónica PAI-60 y división exacta
 │   ├── src/resonant_matrix.rs # Malla hexagonal 2D, transferencia por simpatía y warm-up
 │   ├── src/neural_memory.rs # Red neuronal SNN LIF de 64 canales + persistencia .crystal
+│   ├── src/crystal_cipher.rs # Cifrado efímero AES-256-GCM + BLAKE3 derivado de fase/amplitud S60
 │   ├── src/dual_lane.rs     # Segregación de telemetría Security Lane vs Observability Lane
 │   ├── src/qhc.rs & qhc_ipc.rs # Modulador de fase 10;5,6,5 y protocolo de socket Unix
 │   └── src/bin/             # Experimentos EXP-001..034, benchmarks y daemons nativos
