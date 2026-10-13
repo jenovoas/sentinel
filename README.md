@@ -18,7 +18,9 @@ La computación convencional utiliza punto flotante binario (IEEE 754) y base de
 
 $$\text{SCALE}_0 = 60^4 = 12\,960\,000$$
 
-* **Divisibilidad Universal (Cero Truncamiento)**: $60$ es el único número divisible simultáneamente por $1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30$. Las divisiones armónicas y rotaciones de fase son **100% exactas en números enteros, eliminando el truncamiento decimal**.
+* **Principio de Estabilidad Dinámica (Cero Truncamiento en Divisores Regulares + Autocorrección cada 68 Ticks)**:
+  * En divisores regulares ($1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 60$), las divisiones armónicas son **100% exactas en números enteros**.
+  * Ante primos irreducibles (como el $17$) o ruido térmico/relativista del hardware —donde ninguna matemática discreta es estáticamente exacta—, **Sentinel no ignora el residuo ni deja que se acumule al infinito como hace IEEE 754: lo acota dentro de Base-60⁴ y se autocorrige de forma determinista cada 68 ticks ($17 \times 4$)**, purgando la micro-deriva acumulada y re-anclando la fase a cero.
 * **Suite de Librerías Matemáticas Sexagesimales**:
   * **`SPA` (`me-60os-core/src/spa.rs`)**: Tipo numérico fundamental en punto fijo Base-60⁴ ($60^4 = 12\,960\,000$) que sustituye a `f32`/`f64` para operar sin pérdida de precisión ni truncamiento.
   * **`PAI / PAI-60` (`me-60os-core/src/pai60_lib.rs`)**: Librería de razones recíprocas babilónicas que convierte magnitudes binarias a amplitudes exactas (`pai60_divide`) mediante multiplicación por inversos regulares en base-60.
