@@ -4,7 +4,7 @@
 # ============================================================================
 
 # Web Framework
-fastapi==0.143.0
+fastapi==0.143.3
 uvicorn[standard]==0.54.0
 prometheus-fastapi-instrumentator==8.1.0
 watchdog==6.0.0
@@ -14,9 +14,9 @@ requests==2.34.2
 # DATABASE (SQLAlchemy 2.0 with Async Support)
 # ============================================================================
 # SQLAlchemy 2.0 - Modern ORM with async/await
-sqlalchemy==2.1.4
+sqlalchemy==2.1.5
 # Async extensions for SQLAlchemy
-sqlalchemy[asyncio]==2.1.4
+sqlalchemy[asyncio]==2.1.5
 # PostgreSQL async driver (asyncpg - 3-5x faster than psycopg2)
 asyncpg==0.32.0
 # Synchronous driver for migrations
@@ -28,9 +28,9 @@ alembic==1.20.0
 # DATA VALIDATION
 # ============================================================================
 # Pydantic 2.0 - Data validation with Python type hints
-pydantic==2.14.0
+pydantic==2.14.1
 # Settings management from environment variables
-pydantic-settings==2.15.0
+pydantic-settings==2.16.0
 
 # ============================================================================
 # ASYNC TASK QUEUE
@@ -79,6 +79,6 @@ pytest-cov==7.1.0
 # ============================================================================
 # VERTEX AI INTEGRATION
 # ============================================================================
-google-cloud-aiplatform==2.4.0
-google-auth==2.61.0
-google-genai==2.29.0
+google-cloud-aiplatform==2.5.0
+google-auth==2.62.0
+google-genai==2.31.0
