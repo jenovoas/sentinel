@@ -18,7 +18,7 @@
 - [x] **Migración Py→Rust N3**: `data_lanes.py` (DualLaneRouter) — CERRADO 2026-08-08: YA migrado en `me-60os-core/src/dual_lane.rs` (559 lin). Verificado 1:1 contra `git show aed3b377^`: DataLane/EventPriority/LaneEvent/classify_event (mismo algoritmo + keywords), should_bypass_buffer, SecurityLaneCollector (WAL fsync real), ObservabilityLaneCollector (buffer/flush/drop). Mejoras Rust: timestamps µs enteros, latencia u64. 8/8 tests OK.
 - [x] **Migración Py→Rust N4**: CERRADO 2026-10-21 — Corregido sector snapping exacto en base-60 sin truncamiento en `quantum_core.rs` y `exp012_phase_compression.rs`. Verificados los 4 benchmarks en Rust: `exp012_phase_compression` (fidelidad 100%), `exp021_dual_path` (Lyapunov y Shannon exactos en S60), `verify_plimpton` y `verify_meijer_scale` pasando al 100%. Endurecido en `e96725c4`: `retrieve_dual_channel` con bitcast `u64` y recupero fijo por nodo sin omitir ceros (cierra pérdida byte 176); validación estricta `rec_a == msg_a_padded` sin rama inconclusiva.
 - [x] **BufferCascade**: CERRADO 2026-10-21 — Acoplado `BufferCascade` (`me-60os-core/src/buffer.rs`) a `truthsync-core` como buffer en línea/cascada por nodo (`verify_node_text`, `node_cascades`, `NodeVerificationResult`), con aislamiento entre nodos y memoria no Markoviana evaluada por tests.
-- [ ] **Kani harness** (`MEJORAS_PLANIFICADAS` P1): `cargo-kani` + harness `verify_parse_event_no_panic` en `ebpf_cortex_bridge`. *Verificado:* no existe.
+- [x] **Kani harness** (`MEJORAS_PLANIFICADAS` P1): CERRADO 2026-10-21 — Extraída `CortexEvent::parse_event` pura sin pánico en `me-60os-core/src/ebpf_cortex_bridge.rs` (reusa en los 4 puntos de parseo) + harness `verify_parse_event_no_panic` bajo `#[cfg(kani)]` para `cargo kani`; equivalente ejecutable `test_parse_event_no_panic_on_arbitrary_bytes` + roundtrip + rechazo de cortos en verde (6/6 bridge, 99/99 lib). Pendiente solo ejecutar `cargo kani` donde esté instalado (aquí `cargo-kani` ausente, verificado con `which`).
 - [ ] **Decision tree eBPF** (`MEJORAS_PLANIFICADAS` P2): `dt_model`/`decision_tree.h` en `ai_guardian.c`. *Verificado:* no existe.
 - [x] **FFT + Q-factor detector** (`MEJORAS_PLANIFICADAS` P2): CERRADO 2026-10-21 — Creado e implementado `PeriodicDetector` en `sentinel-cortex/src/detectors/periodic.rs` usando `fft_s60`/`q_factor_s60` en S60 puro sin floats; expuesto en `lib.rs`/`main.rs` y verificado con tests unitarios de resonancia periódica y balizas sintéticas de alto Q.
 
@@ -28,7 +28,7 @@
 - [ ] **gamma_watchdog.c**: corregir `PEERS[]` (`guardian_alpha`/`ai_guardian`), compilar, confirmar 5/5 peers.
 - [ ] **Security hardening legacy**: ECDSA P-256, HMAC Nginx, nonce+replay (de `docs/archive/SECURITY_HARDENING_PLAN.md`).
 
-## C) DESPLIEGUE laptop / Fan
+## C) DESPLIEGUE laptop
 - [ ] **Cortex API en laptop**: arrancar `sentinel-cortex` (systemd NO instalado en `/etc/systemd`).
 - [ ] **systemd services laptop**: instalar `sentinel-*.service` (existen en `systemd/` pero no `enabled`).
 - [ ] **Daemons me-60os**: arrancar `qhc`/`adm`/`pai`/`vid_agent` (binarios existen, no en ejecución).
