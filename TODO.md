@@ -30,7 +30,7 @@
 
 ## C) DESPLIEGUE fénix local (OpenRC — verificado 2026-10-21 con `rc-status`)
 - En ejecución: `backup`, `ebpf-load`, `adm-agent`, `pai-neural`, `hex-daemon`, `deployment-executor`, `ebpf-forwarder`, `vid-agent` (procesos `adm_agent`/`hex_daemon`/`pai_neural_daemon`/`vid_agent` vivos).
-- [ ] **Cortex API**: `sentinel-cortex` DETENIDO. Arrancar y verificar `/api/v1/truth_claim` + `/api/v1/lattice/hologram`.
+- [x] **Cortex API**: LEVANTADO 2026-10-21 — `sentinel-cortex` `started`, escucha `:8000`. Medido en vivo: `ai/health` 200/3ms, `hologram` 200/52ms, `truth_claim` benigno 200/59ms, malicioso bloqueado+logueado en 59µs, WS `telemetry` 101. Latencia `truth_claim` n=15: p50 69ms, p90 88ms. `cargo test --workspace`: 246 passed, 0 failed.
 - [ ] **Verificador**: `sentinel-verifier` DETENIDO.
 - [ ] **QHC**: `sentinel-qhc-agent` DETENIDO.
 - [ ] **Memoria de procesos**: `sentinel-process-memory` DETENIDO.
@@ -38,7 +38,7 @@
 - [x] **Orquestador despliegue**: RECUPERADO 2026-10-21 — Causa doble: `docker` caído (`ip_forward=0`, sin `nft_masq` en kernel 6.18.57) + deriva de claves (volumen PG con password anterior; `sentinel_user` y `pinguino_orchestrator` fallaban auth). Fix: `ip_forward=1` persistido, reinicio a `6.18.58`, recreación de red compose huérfana (`down`/`up`, volúmenes y datos intactos), `ALTER USER` alineando claves con `/opt/sentinel/.env` y `conf.d`. Verificado: `sentinel-postgres` healthy, orchestrator `started` en `127.0.0.1:8010` (401 = auth activa), FATALs de auth cesados.
 - [x] **Docker**: RECUPERADO 2026-10-21 — `net.ipv4.ip_forward=1` en `/etc/sysctl.d/99-docker-forward.conf`; daemon `started` en kernel `6.18.58`.
 - [x] **Stack**: LEVANTADO 2026-10-21 — 12 contenedores `Up` (postgres healthy, redis, frontend, prometheus, grafana, loki, n8n, exporters).
-- [ ] **PoC WebSocket telemetría**: `wscat` a `/api/v1/telemetry` (bloqueado hasta arrancar Cortex).
+- [x] **PoC WebSocket telemetría**: VERIFICADO 2026-10-21 — `GET /api/v1/telemetry` con upgrade WS responde `101 Switching Protocols` contra cortex en vivo.
 - [ ] **scripts/sentinel-health.sh**: unificar health checks (`startup.sh` obsoleto; `sentinel-health.sh` no existe — crearlo agregando `rc-status` + endpoints).
 - [x] **Inercia CPU dinámica**: CERRADO 2026-08-23 — `unwrap_or(45000)` ya no existe en `sentinel-cortex/src/main.rs` (grep 0 hits); el drive lee `/proc/stat` en el bloque 3b (L227-241).
 - [x] **Security Lane WAL**: CERRADO 2026-10-21 (completado 2026-10-11 en `b1529ae2`) — `SecurityWal` con append-only a `/var/log/sentinel/security_wal.log` (fallback `/tmp`), integrado con `AIOpsSemanticFirewall` en `truth_claim_handler` (`POST /api/v1/truth_claim`) con tests de integración activos.
