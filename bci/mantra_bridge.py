@@ -4,7 +4,6 @@
 -----------------------------------------
 Translates Sacred Words (text) into System Resonance (Redis).
 Fallback for Physical Audio Input.
-
 Protocol:
 - 'OM'     -> 432 Hz  (Purge Entropy)
 - 'KA'     -> 963 Hz  (Boost Coherence)
