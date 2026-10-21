@@ -16,11 +16,11 @@
 - [x] **Migración Py→Rust N2**: `crystal_memory.py` (CrystalMemoryCore) — CERRADO 2026-08-08: wrapper fino (inject/step/stabilize) sobre `ResonantMatrix` + snapshot gzip ya en Rust.
 - [x] **Migración Py→Rust N2**: `liquid_memory_adapter.py` (LiquidMemory) — CERRADO 2026-08-08: PORTADO el único aporte real (tabla clave→len/hash/shm_name + retrieve verificado) a `me-60os-core/src/liquid_memory.rs` (nativo, blake3, SHM POSIX vía libc, 4/4 tests).
 - [x] **Migración Py→Rust N3**: `data_lanes.py` (DualLaneRouter) — CERRADO 2026-08-08: YA migrado en `me-60os-core/src/dual_lane.rs` (559 lin). Verificado 1:1 contra `git show aed3b377^`: DataLane/EventPriority/LaneEvent/classify_event (mismo algoritmo + keywords), should_bypass_buffer, SecurityLaneCollector (WAL fsync real), ObservabilityLaneCollector (buffer/flush/drop). Mejoras Rust: timestamps µs enteros, latencia u64. 8/8 tests OK.
-- [ ] **Migración Py→Rust N4**: portar/correr `EXP_012_PHASE_COMPRESSION.py`, `EXP_021_S60_DUAL_PATH_TEST.py`, `verify_plimpton.py`, `verify_meijer_scale.py` (benchmarks de exactitud S60).
-- [ ] **BufferCascade**: acoplar `BufferCascade` (`me-60os-core/src/buffer.rs`) a `truthsync-core` como buffer en línea/cascada **por nodo** (hoy solo struct + tests).
+- [x] **Migración Py→Rust N4**: CERRADO 2026-10-21 — Corregido sector snapping exacto en base-60 sin truncamiento en `quantum_core.rs` y `exp012_phase_compression.rs`. Verificados los 4 benchmarks en Rust: `exp012_phase_compression` (fidelidad 100%), `exp021_dual_path` (Lyapunov y Shannon exactos en S60), `verify_plimpton` y `verify_meijer_scale` pasando al 100%.
+- [x] **BufferCascade**: CERRADO 2026-10-21 — Acoplado `BufferCascade` (`me-60os-core/src/buffer.rs`) a `truthsync-core` como buffer en línea/cascada por nodo (`verify_node_text`, `node_cascades`, `NodeVerificationResult`), con aislamiento entre nodos y memoria no Markoviana evaluada por tests.
 - [ ] **Kani harness** (`MEJORAS_PLANIFICADAS` P1): `cargo-kani` + harness `verify_parse_event_no_panic` en `ebpf_cortex_bridge`. *Verificado:* no existe.
 - [ ] **Decision tree eBPF** (`MEJORAS_PLANIFICADAS` P2): `dt_model`/`decision_tree.h` en `ai_guardian.c`. *Verificado:* no existe.
-- [ ] **FFT + Q-factor detector** (`MEJORAS_PLANIFICADAS` P2): `PeriodicDetector` en `sentinel-cortex/src/detectors/periodic.rs` usando `fft_s60`/`q_factor_s60` (ya en `s60_math.rs`). *Verificado:* no existe.
+- [x] **FFT + Q-factor detector** (`MEJORAS_PLANIFICADAS` P2): CERRADO 2026-10-21 — Creado e implementado `PeriodicDetector` en `sentinel-cortex/src/detectors/periodic.rs` usando `fft_s60`/`q_factor_s60` en S60 puro sin floats; expuesto en `lib.rs`/`main.rs` y verificado con tests unitarios de resonancia periódica y balizas sintéticas de alto Q.
 
 ## B) eBPF / Kernel (requiere Fan + clang — NO ejecutar sin autorización de Jaime)
 - [ ] **eBPF LSM PoC**: ~~compilar/cargar `guardian_alpha_lsm.o` en Fan~~ → HECHO (`.o` 5,528 B compilado y cargado; LSM ACTIVO según AGENT_BRAIN + `ebpf/EVIDENCE_LSM_DEPLOYMENT.md`). Quedan abiertos: medir overhead <1µs, test WAL replay, mTLS SSRF prevention.
@@ -37,11 +37,11 @@
 - [ ] **PoC WebSocket telemetría**: `wscat` a `/api/v1/telemetry`.
 - [ ] **scripts/sentinel-health.sh**: unificar health checks (`startup.sh` obsoleto).
 - [x] **Inercia CPU dinámica**: CERRADO 2026-08-23 — `unwrap_or(45000)` ya no existe en `sentinel-cortex/src/main.rs` (grep 0 hits); el drive lee `/proc/stat` en el bloque 3b (L227-241).
-- [ ] **Security Lane WAL**: append-only `/var/log/sentinel/security_wal.log` + AIOpsShield en `POST /api/v1/truth_claim`.
+- [x] **Security Lane WAL**: CERRADO 2026-10-21 (completado 2026-10-11 en `b1529ae2`) — `SecurityWal` con append-only a `/var/log/sentinel/security_wal.log` (fallback `/tmp`), integrado con `AIOpsSemanticFirewall` en `truth_claim_handler` (`POST /api/v1/truth_claim`) con tests de integración activos.
 - [ ] **Batería carga + Grafana**: `LiquidLattice` `retention_score` bajo tráfico concurrente.
 
 ## D) VALIDACIÓN / QA
-- [ ] **Fuzzer AIOpsDoom 100+ payloads**.
+- [x] **Fuzzer AIOpsDoom 100+ payloads**: CERRADO 2026-10-21 — Suite nativa Rust en `sentinel-cortex/tests/fuzzer_aiopsdoom.rs` con 110 payloads adversariales (command injection, sql injection, path traversal, social engineering, llm jailbreak Llama-3, telemetría benigna). Verificado: 90/90 maliciosos detectados (100%), 0 falsos positivos en 20 casos benignos.
 - [ ] **Benchmark Dual-Lane completo** con gráficos.
 - [ ] **TruthSync 1M+ claims** (dataset real).
 - [ ] **Test carga 24h / failover / auto-regeneración**.

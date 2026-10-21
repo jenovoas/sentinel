@@ -6,16 +6,17 @@
 
 use aho_corasick::{AhoCorasick, MatchKind};
 use lru::LruCache;
+use me60os_core::buffer::BufferCascade;
 use me60os_core::spa::SPA;
 use rayon::prelude::*;
 use regex::RegexSet;
 use serde::{Deserialize, Serialize};
 use sha3::{Digest, Sha3_512};
+use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 use std::num::NonZeroUsize;
 use std::sync::LazyLock;
 use std::time::Instant;
-
 static FACTUAL_PATTERNS: LazyLock<RegexSet> = LazyLock::new(|| {
     RegexSet::new([
         r"\b(es|son|fue|fueron|ocurrió|demostró|afirma|reporta)\b",
@@ -64,6 +65,15 @@ pub struct VerificationResult<'a> {
     pub critical_pattern_detected: bool,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NodeVerificationResult<'a> {
+    #[serde(borrow)]
+    pub verification: VerificationResult<'a>,
+    pub node_id: String,
+    pub current_coherence: SPA,
+    pub future_coherence: SPA,
+    pub is_cascade_mitigated: bool,
+}
 #[derive(Default)]
 pub struct ClaimExtractor;
 
@@ -120,6 +130,8 @@ pub struct TruthSyncEngine {
     disinformation_patterns: AhoCorasick,
     /// MEJORA #3: LRU cache para digests SHA3-512 repetidos
     digest_cache: LruCache<(u64, i64), [u8; 64]>,
+    /// BufferCascade en línea por cada nodo conectado
+    node_cascades: HashMap<String, BufferCascade>,
 }
 
 impl TruthSyncEngine {
@@ -134,6 +146,7 @@ impl TruthSyncEngine {
             extractor: ClaimExtractor::new(),
             disinformation_patterns: ac,
             digest_cache: LruCache::new(NonZeroUsize::new(DIGEST_CACHE_SIZE).unwrap()),
+            node_cascades: HashMap::new(),
         }
     }
 
@@ -201,6 +214,42 @@ impl TruthSyncEngine {
             // YATRA: certified if score >= 0.50
             is_certified: overall_score >= SPA::from_raw(SPA::SCALE_0 / 2),
             critical_pattern_detected,
+        }
+    }
+
+    pub fn get_or_create_node_cascade(&mut self, node_id: &str) -> &mut BufferCascade {
+        self.node_cascades
+            .entry(node_id.to_string())
+            .or_insert_with(BufferCascade::with_default_hex)
+    }
+
+    pub fn node_cascade(&self, node_id: &str) -> Option<&BufferCascade> {
+        self.node_cascades.get(node_id)
+    }
+
+    pub fn node_cascades_len(&self) -> usize {
+        self.node_cascades.len()
+    }
+
+    pub fn verify_node_text<'a>(
+        &mut self,
+        node_id: &str,
+        text: &'a str,
+        lattice_energy: i64,
+        timestamp: SPA,
+    ) -> NodeVerificationResult<'a> {
+        let verification = self.verify_text(text, lattice_energy);
+        let cascade = self.get_or_create_node_cascade(node_id);
+        cascade.record(timestamp, verification.overall_trust_score);
+        let (current_coherence, future_coherence, is_cascade_mitigated) =
+            cascade.cascade(timestamp, 10);
+
+        NodeVerificationResult {
+            verification,
+            node_id: node_id.to_string(),
+            current_coherence,
+            future_coherence,
+            is_cascade_mitigated,
         }
     }
 }
@@ -400,5 +449,64 @@ mod tests {
         let extractor = ClaimExtractor::new();
         let claims = extractor.extract("A. B. C. D. E.");
         assert_eq!(claims.len(), 5);
+    }
+
+    #[test]
+    fn test_node_verification_cascade_isolation() {
+        let mut engine = TruthSyncEngine::new();
+        let t1 = SPA::new(10, 0, 0, 0, 0);
+        let res_a = engine.verify_node_text(
+            "node-alpha",
+            "El kernel fue actualizado con éxito.",
+            42,
+            t1,
+        );
+        assert_eq!(res_a.node_id, "node-alpha");
+        assert!(!res_a.verification.claims.is_empty());
+        assert!(res_a.is_cascade_mitigated);
+        assert!(res_a.current_coherence >= SPA::new(42, 30, 0, 0, 0));
+        assert_eq!(engine.node_cascades_len(), 1);
+
+        let res_b = engine.verify_node_text(
+            "node-beta",
+            "La temperatura es de 36 grados.",
+            42,
+            t1,
+        );
+        assert_eq!(res_b.node_id, "node-beta");
+        assert_eq!(engine.node_cascades_len(), 2);
+
+        let cascade_a = engine.node_cascade("node-alpha").unwrap();
+        assert_eq!(cascade_a.len(), 1);
+    }
+
+    #[test]
+    fn test_node_verification_history_boost() {
+        let mut engine = TruthSyncEngine::new();
+        let node = "node-stream";
+        // Enviar múltiples eventos limpios a través del tiempo
+        for i in 1..=5 {
+            let ts = SPA::new(100 + i, 0, 0, 0, 0);
+            let res = engine.verify_node_text(
+                node,
+                "El proceso eBPF reporta latencia de 2ms.",
+                42,
+                ts,
+            );
+            assert!(!res.verification.claims.is_empty());
+            assert!(res.is_cascade_mitigated);
+        }
+
+        let cascade = engine.node_cascade(node).unwrap();
+        assert_eq!(cascade.len(), 5);
+        // Siguiente verificación se beneficia del kernel OU en cascada
+        let next_ts = SPA::new(106, 0, 0, 0, 0);
+        let next_res = engine.verify_node_text(
+            node,
+            "El kernel reporta estabilidad total.",
+            42,
+            next_ts,
+        );
+        assert!(next_res.current_coherence >= SPA::new(42, 30, 0, 0, 0));
     }
 }

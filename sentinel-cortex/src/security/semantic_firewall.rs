@@ -116,7 +116,7 @@ impl AIOpsSemanticFirewall {
         let social = compile_all(&[
             r"(?i)(urgent|critical|immediate).*contact",
             r"(?i)(admin|administrator|support).*password",
-            r"(?i)(verify|confirm).*account",
+            r"(?i)(verify|confirm).*(account|password|credentials)",
             r"(?i)(locked|expired|suspended).*\d+\s+(minutes|hours)",
             r"(?i)send.*credentials",
             r"(?i)enter.*(password|credentials)",
@@ -155,7 +155,8 @@ impl AIOpsSemanticFirewall {
             r"(?i)act\s+as\s+if",
             r"(?i)roleplay\s+as",
             r"(?i)\[/?(SYSTEM|INST|SYS)\]",
-            r"(?i)<\|?(end|start)_?(of_)?(text|turn|system)\|?>",
+            r"(?i)<\|?(end|start)_?(of_)?(text|turn|system|header_id)\|?>",
+            r"(?i)<\|?eot_id\|?>",
             r"(?i)###\s*(System|User|Assistant)",
             r"(?i)always\s+respond\s+with",
             r"(?i)repeat\s+(the\s+)?(system\s+)?(prompt|instructions?)",

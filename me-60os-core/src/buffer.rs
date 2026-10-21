@@ -35,6 +35,7 @@ pub struct CoherenceRecord {
 }
 
 /// Buffer de cascada: mantiene historial de coherencia y proyecta el futuro.
+#[derive(Clone, Debug)]
 pub struct BufferCascade {
     hex: HexagonalController,
     /// Historial: timestamp (S60) -> registro. BTreeMap da orden temporal.
@@ -54,6 +55,26 @@ impl BufferCascade {
         }
     }
 
+    /// Crea una cascada de buffer con topología hexagonal de tamaño 7 por defecto.
+    pub fn with_default_hex() -> Self {
+        Self::new(
+            HexagonalController::new(7),
+            SPA::new(1, 0, 0, 0, 0),
+            SPA::new(58, 0, 0, 0, 0),
+        )
+    }
+
+    pub fn history(&self) -> &BTreeMap<SPA, CoherenceRecord> {
+        &self.history
+    }
+
+    pub fn len(&self) -> usize {
+        self.history.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.history.is_empty()
+    }
     /// Registra el estado de coherencia actual.
     pub fn record(&mut self, t: SPA, coherence: SPA) {
         self.history.insert(t, CoherenceRecord { coherence });

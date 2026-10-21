@@ -18,6 +18,7 @@ pub struct HexNode {
     pub r: i64,
 }
 
+#[derive(Clone, Debug)]
 #[cfg_attr(feature = "extension-module", pyclass(module = "me60os_core"))]
 pub struct HexagonalController {
     pub size: i64,

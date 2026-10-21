@@ -5,6 +5,7 @@ mod actions;
 mod buffer_system;
 mod collectors;
 mod dashboard;
+mod detectors;
 mod ebpf_cortex_bridge;
 mod engine;
 mod math;

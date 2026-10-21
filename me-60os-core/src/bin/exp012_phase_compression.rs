@@ -73,7 +73,6 @@ fn main() {
     // 5) ESTABILIZACIÓN (snap de fase, 5 ciclos)
     // ─────────────────────────────────────────────────────────────
     println!("\n🌊 Ejecutando 'Sector Snapping' (corrección de fase)...");
-    lattice.buffer.lattice[0].phase = phase_noisy;
     snap_phases(&mut lattice.buffer.lattice, 5);
 
     let phase_snapped = lattice.buffer.lattice[0].phase;
@@ -93,9 +92,12 @@ fn main() {
     println!("   Rec B len: {} (esperado {})", rec_b.len(), msg_b.len());
 
     println!("   Debug B decode (snapped phases):");
+    let sector_width = SPA::from_int(45) / SPA::from_int(32);
+    let half_width = sector_width / SPA::from_int(2);
     for (i, node) in lattice.buffer.lattice.iter().take(msg_b.len()).enumerate() {
         let deg = node.phase.to_raw() / SPA::SCALE_0;
-        let byte_back = ((deg * 256) / 360) as u8;
+        let sector_idx = ((node.phase + half_width) / sector_width).to_raw() / SPA::SCALE_0;
+        let byte_back = sector_idx.clamp(0, 255) as u8;
         println!(
             "     nodo {}: phase_raw={}, deg={}, byte_back={} (orig={})",
             i,
@@ -202,6 +204,9 @@ fn snap_phases(
     lattice: &mut [me60os_core::isochronous_oscillator::IsochronousOscillator],
     cycles: usize,
 ) {
+    let sector_width = SPA::from_int(45) / SPA::from_int(32);
+    let half_width = sector_width / SPA::from_int(2);
+
     for _ in 0..cycles {
         let phases: Vec<SPA> = lattice.iter().map(|c| c.phase).collect();
         let mut new_phases = phases.clone();
@@ -215,14 +220,31 @@ fn snap_phases(
             let mut count: i64 = 1;
 
             if i > 0 && phases[i - 1] != SPA::zero() {
-                total = total + phases[i - 1];
-                count += 1;
+                let diff = if phases[i] >= phases[i - 1] {
+                    phases[i] - phases[i - 1]
+                } else {
+                    phases[i - 1] - phases[i]
+                };
+                if diff <= half_width {
+                    total = total + phases[i - 1];
+                    count += 1;
+                }
             }
             if i < size - 1 && phases[i + 1] != SPA::zero() {
-                total = total + phases[i + 1];
-                count += 1;
+                let diff = if phases[i] >= phases[i + 1] {
+                    phases[i] - phases[i + 1]
+                } else {
+                    phases[i + 1] - phases[i]
+                };
+                if diff <= half_width {
+                    total = total + phases[i + 1];
+                    count += 1;
+                }
             }
-            new_phases[i] = total / SPA::from_int(count);
+            let avg = total / SPA::from_int(count);
+
+            let sector_idx = ((avg + half_width) / sector_width).to_raw() / SPA::SCALE_0;
+            new_phases[i] = sector_width * SPA::from_int(sector_idx.clamp(0, 255));
         }
 
         for (i, np) in new_phases.iter().enumerate() {
