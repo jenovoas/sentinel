@@ -36,7 +36,7 @@
 - [ ] **Memoria de procesos**: `sentinel-process-memory` DETENIDO.
 - [ ] **Auditoría**: `sentinel-audit-watchdog` DETENIDO.
 - [ ] **Orquestador despliegue**: `sentinel-deployment-orchestrator` CRASHEADO. Diagnosticar causa antes de reiniciar.
-- [ ] **Docker**: servicio `docker` en `failed` (verificado 2026-10-21). Revisar causa y si arrastra al orchestrator crasheado.
+- [ ] **Docker**: servicio `docker` en `failed` — causa raíz verificada 2026-10-21: `net.ipv4.ip_forward=0` y el daemon no puede crear la red bridge (`Error initializing network controller ... IPv4 forwarding is disabled`, `/var/log/docker.log` 2026-10-20). Cadena: docker caído → `sentinel-postgres` (compose) nunca levanta → `sentinel-deployment-orchestrator` muere con `pool timed out` a `127.0.0.1:5432` (`deployment-orchestrator.err`). Remediación propuesta (no aplicada): `sysctl -w net.ipv4.ip_forward=1` + persistir, arrancar `docker` → `sentinel-stack` → orchestrator.
 - [ ] **Stack**: `sentinel-stack` DETENIDO (probablemente agregador; verificar dependencia con los anteriores).
 - [ ] **PoC WebSocket telemetría**: `wscat` a `/api/v1/telemetry` (bloqueado hasta arrancar Cortex).
 - [ ] **scripts/sentinel-health.sh**: unificar health checks (`startup.sh` obsoleto; `sentinel-health.sh` no existe — crearlo agregando `rc-status` + endpoints).
