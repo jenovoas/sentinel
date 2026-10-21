@@ -23,9 +23,10 @@
 - [x] **FFT + Q-factor detector** (`MEJORAS_PLANIFICADAS` P2): CERRADO 2026-10-21 — Creado e implementado `PeriodicDetector` en `sentinel-cortex/src/detectors/periodic.rs` usando `fft_s60`/`q_factor_s60` en S60 puro sin floats; expuesto en `lib.rs` y verificado con tests unitarios de resonancia periódica y balizas sintéticas de alto Q. Cableado 2026-10-21: tarea tokio en `main.rs` que muestrea `total_energy_raw` del lattice cada 1s (ventana 64) y emite `tracing::warn!` ante Q alto. `cargo check -p sentinel-cortex` en verde.
 
 ## B) eBPF / Kernel (fénix local; cargar en kernel productivo SOLO con autorización de Jaime)
-- [ ] **eBPF LSM**: `sentinel-ebpf-load` en ejecución; evidencia histórica en `ebpf/EVIDENCE_LSM_DEPLOYMENT.md`. Quedan abiertos: medir overhead <1µs, test WAL replay, mTLS SSRF prevention.
-- [ ] **xdp_firewall.c**: compilar con `clang` local (`/usr/bin/clang` presente) + cargar con autorización.
-- [ ] **gamma_watchdog.c**: corregir `PEERS[]` (`guardian_alpha`/`ai_guardian`), compilar, confirmar 5/5 peers.
+- [x] **Pipeline eBPF 10/10**: VERIFICADO 2026-10-21 — `sentinel-verifier` en verde total. Trabajo: compilados todos los `.o` con `clang -target bpf`; pineados mapas vivos (`cortex_events` ids 16+32, `ai_whitelist_map`→`sentinel/whitelist_map`); XDP+TC ya anclados desde el boot (`xdp_firewall_prog` en `eth0`, `tc_firewall` en clsact). Forwarder propio `ringbuf_forwarder` (`me-60os-core/src/bin/ringbuf_forwarder.rs`, reusa `parse_event` sin pánico) consume AMBOS ringbufs (el guardian también tiene `cortex_events` y sombreaba el match) y vuelca NDJSON a `ebpf_trace.log`; servicio `sentinel-ringbuf-forwarder` con `start_pre` que re-pinea mapas (bpffs efímero). Binario en `/usr/local/bin/ringbuf_forwarder`, init.d documentado aquí (config de host, no versionada).
+- [ ] **Overhead eBPF**: medir overhead <1µs, test WAL replay, mTLS SSRF prevention.
+- [ ] **xdp_firewall.c**: compilado OK; anclado en `eth0` desde el boot. Pendiente: probar caída/redundancia ante detach.
+- [ ] **gamma_watchdog.c**: `PEERS[]` ya incluye los 5 (verificado en fuente). Compilado OK.
 - [ ] **Security hardening legacy**: ECDSA P-256, HMAC Nginx, nonce+replay (de `docs/archive/SECURITY_HARDENING_PLAN.md`).
 
 ## C) DESPLIEGUE fénix local (OpenRC — verificado 2026-10-21 con `rc-status`)
