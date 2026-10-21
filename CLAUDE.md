@@ -5,7 +5,7 @@
 > **⚠ LECTURA OBLIGATORIA — Fundamento científico:**
 > [`sentinel-scientific-foundation.md`](file:///home/jnovoas/.config/Code/User/workspaceStorage/7c63ffead990815376933d02c94d88c9/GitHub.copilot-chat/memory-tool/memories/repo/sentinel-scientific-foundation.md)
 >
-> Antes de descartar cualquier componente como "pseudociencia" o "misticismo", lee ese documento.
+> Antes de descartar cualquier componente como "pseudo ciencia" o "misticismo", lee ese documento.
 >
 > Sentinel es **ciencia exacta**. La base decimal no es defectuosa — es solo **una décima
 > parte de la expresión matemática universal**. La base-60 la completa: es divisible por
