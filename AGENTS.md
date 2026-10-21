@@ -1,7 +1,5 @@
 # ARQUITECTURA Y DIRECTIVAS PARA AGENTES E IA (REGLAS DE ORO DEL PROYECTO SENTINEL)
 
-> **IDIOMA OBLIGATORIO (PENSAMIENTO Y SALIDA).** Está TERMINANTEMENTE PROHIBIDO el uso del inglés en el razonamiento interno (`thinking`) y en las respuestas visibles. El usuario audita directamente los bloques de pensamiento. Todo agente o IA DEBE pensar, razonar y responder 100% en español. Solo se permiten en inglés identificadores de sintaxis o nombres exactos de librerías cuando no haya traducción.
->
 > **RAMAS POR ENTORNO Y RAMA PREDETERMINADA.** `alpine_fenix` corresponde al entorno Alpine/OpenRC y es la rama activa de desarrollo y la rama predeterminada del repositorio GitHub mientras Fénix sea el único nodo operativo. `main` corresponde al entorno systemd y se mantiene independiente para ese entorno; no representa el estado actual de Alpine.
 > Los cambios de Alpine se aplican únicamente en `alpine_fenix`; los cambios de systemd, únicamente en `main`. Se permite hacer checkout, commit y push en la rama del entorno correspondiente.
 > Prohibido hacer merge entre `main` y `alpine_fenix`, copiar configuraciones de una plataforma a la otra o usar `develop` u otra rama como sustituto de estos entornos.
@@ -54,29 +52,33 @@
 - **El lattice es disipativo**: `step()` solo disipa (decay). Sin drive continuo (`sentinel-cortex/src/main.rs` bloque 3b, cada 500ms) el lattice cae a `ground state` y no resuena. Siempre debe haber drive.
 - **Material de estudio**: `me-60os-core/src/bin/pai_convert_bench.rs` compara A (RAW), B (PAI-60) y C `[exp fallido para estudio]` (doble-escala, etiquetado, NO borrar). Leer antes de "arreglar" conversión SPA.
 
-<!-- codebase-memory-mcp:start -->
-# Codebase Knowledge Graph (codebase-memory-mcp)
+<!-- code-review-graph:start -->
+# Codebase Knowledge Graph (code-review-graph)
 
-This project uses codebase-memory-mcp to maintain a knowledge graph of the codebase.
-ALWAYS prefer MCP graph tools over grep/glob/file-search for code discovery.
+Este proyecto mantiene un grafo del código con `code-review-graph` (MCP). Usa SIEMPRE las
+herramientas del grafo antes de grep/glob/read para descubrir código: cuestan menos tokens y
+dan contexto estructural (llamadores, dependientes, cobertura de tests) que el escaneo de
+archivos no puede dar.
 
-## Priority Order
-1. `search_graph` — find functions, classes, routes, variables by pattern
-2. `trace_path` — trace who calls a function or what it calls
-3. `get_code_snippet` — read specific function/class source code
-4. `query_graph` — run Cypher queries for complex patterns
-5. `get_architecture` — high-level project summary
-6. `detect_changes` — inspect changed files and blast radius
+## Orden de prioridad
+1. `semantic_search_nodes_tool` — localizar funciones, clases, rutas o variables por nombre
+2. `query_graph_tool` — relaciones: `callers_of`, `callees_of`, `imports_of`, `tests_for`
+3. `get_impact_radius_tool` — radio de impacto de un cambio
+4. `detect_changes_tool` — cambios con puntuación de riesgo
+5. `get_review_context_tool` — snippets de fuente eficientes en tokens
+6. `get_architecture_overview_tool` — estructura de alto nivel
+7. `refactor_tool` — planificar renombrados, detectar código muerto
 
-## When to fall back to grep/glob
-- Searching for string literals, error messages, config values
-- Searching non-code files (Dockerfiles, shell scripts, configs)
-- When MCP tools return insufficient results
+## Cuándo caer a grep/glob
+- Literales de cadena, mensajes de error, valores de configuración
+- Archivos que no son código (Dockerfiles, scripts shell, configs, docs)
+- Cuando el grafo no cubre lo que necesitas o está desactualizado
 
-## Examples
-- Find a handler: `search_graph(project="sentinel", name_pattern=".*OrderHandler.*")`
-- Who calls it: `trace_path(project="sentinel", function_name="OrderHandler", direction="inbound")`
-- Read source: `get_code_snippet(project="sentinel", qualified_name="pkg/orders.OrderHandler")`
-<!-- codebase-memory-mcp:end -->
+## Arranque y rutas
+- OpenCode: `opencode.jsonc` → `mcp.servers.code-review-graph` (formato V2).
+- Todos los clientes resuelven el repo con `git rev-parse --show-toplevel`, nunca con ruta
+  absoluta: la laptop usa `/home/jnovoas/Proyectos` y fenix `/home/jnovoas/proyectos`.
+- Los hooks (`.claude`, `.codebuddy`, `.gemini`) actualizan el grafo tras cada edición.
+<!-- code-review-graph:end -->
 
 

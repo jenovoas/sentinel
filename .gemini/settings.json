@@ -1,12 +1,11 @@
 {
   "mcpServers": {
     "code-review-graph": {
-      "command": "uvx",
+      "command": "sh",
       "args": [
-        "code-review-graph",
-        "serve"
-      ],
-      "cwd": "/home/jnovoas/proyectos/sentinel"
+        "-c",
+        "rep=$(git rev-parse --show-toplevel 2>/dev/null || pwd); if command -v code-review-graph >/dev/null 2>&1; then exec code-review-graph serve --repo \"$rep\"; else exec uvx code-review-graph serve --repo \"$rep\"; fi"
+      ]
     }
   },
   "hooks": {
@@ -16,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .gemini/hooks/crg-session-start.sh",
+            "command": "bash \"$(git rev-parse --show-toplevel)/.gemini/hooks/crg-session-start.sh\"",
             "name": "code-review-graph status",
             "timeout": 10000
           }
@@ -29,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .gemini/hooks/crg-update.sh",
+            "command": "bash \"$(git rev-parse --show-toplevel)/.gemini/hooks/crg-update.sh\"",
             "name": "code-review-graph update",
             "timeout": 30000
           }

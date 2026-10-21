@@ -1,15 +1,18 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  // MCP code-review-graph (grafo del repositorio para Sentinel).
+  // El repo se resuelve con `git rev-parse --show-toplevel`, no con ruta
+  // absoluta: la laptop usa /home/jnovoas/Proyectos y fenix /home/jnovoas/proyectos.
   "mcp": {
-    "code-review-graph": {
-      "type": "local",
-      "command": [
-        "uvx",
-        "code-review-graph",
-        "serve",
-        "--repo",
-        "/home/jnovoas/proyectos/sentinel"
-      ]
-    }
-  }
+    "servers": {
+      "code-review-graph": {
+        "type": "local",
+        "command": [
+          "sh",
+          "-c",
+          "rep=$(git rev-parse --show-toplevel 2>/dev/null || pwd); if command -v code-review-graph >/dev/null 2>&1; then exec code-review-graph serve --repo \"$rep\"; else exec uvx code-review-graph serve --repo \"$rep\"; fi",
+        ],
+      },
+    },
+  },
 }

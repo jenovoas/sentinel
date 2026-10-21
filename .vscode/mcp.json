@@ -1,8 +1,11 @@
 {
   "servers": {
-    "codebase-memory-mcp": {
-      "command": "/home/jnovoas/.local/bin/codebase-memory-mcp",
-      "args": []
+    "code-review-graph": {
+      "command": "sh",
+      "args": [
+        "-c",
+        "rep=$(git rev-parse --show-toplevel 2>/dev/null || pwd); if command -v code-review-graph >/dev/null 2>&1; then exec code-review-graph serve --repo \"$rep\"; else exec uvx code-review-graph serve --repo \"$rep\"; fi"
+      ]
     }
   }
 }

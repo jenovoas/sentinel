@@ -5,6 +5,14 @@ set -euo pipefail
 
 cat > /dev/null || true
 
-code-review-graph update --skip-flows --repo "/home/jnovoas/proyectos/sentinel" >/dev/null 2>&1 || true
+# Sin el binario no hay nada que actualizar (laptop sin entorno completo).
+if ! command -v code-review-graph >/dev/null 2>&1; then
+  echo '{"suppressOutput": true}'
+  exit 0
+fi
+
+# El repo se resuelve con git: la ruta cambia entre laptop (Proyectos) y fenix.
+repo="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+code-review-graph update --skip-flows --repo "$repo" >/dev/null 2>&1 || true
 echo '{"suppressOutput": true}'
 exit 0
