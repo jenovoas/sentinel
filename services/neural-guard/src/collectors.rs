@@ -41,17 +41,28 @@ impl HttpCollector {
         }
     }
 
-    /// Realiza una consulta GET a un endpoint específico.
+    /// Realiza una consulta GET a un endpoint específico, acotada por defecto
+    /// a los últimos 5 minutos: el colector es un poller periódico y no debe
+    /// re-escanear horas de historial en cada tick (tormenta de queries).
     async fn query(
         &self,
         endpoint: &str,
         query: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
+        let end_ns = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_nanos() as i64)
+            .unwrap_or(0);
+        let start_ns = end_ns - 300_000_000_000; // 5 min en nanosegundos
         let url = format!("{}{}", self.base_url, endpoint);
         let response = self
             .client
             .get(&url)
-            .query(&[("query", query)])
+            .query(&[
+                ("query", query),
+                ("start", &start_ns.to_string()),
+                ("end", &end_ns.to_string()),
+            ])
             .send()
             .await?;
         response.json().await

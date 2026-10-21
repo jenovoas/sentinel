@@ -81,8 +81,13 @@ async fn main() {
 
     tracing::info!("🧠 Neural Guard Cortex iniciado. Esperando señales...");
 
-    // 3. Bucle principal de orquestación
-    let mut interval = tokio::time::interval(Duration::from_secs(10)); // Shorter interval for stream reading
+    // 3. Bucle principal de orquestación (cada 60s por defecto; el tick de 10s
+    // generaba una tormenta de queries Loki de horas de historial por tick).
+    let interval_secs: u64 = std::env::var("COLLECT_INTERVAL_SECS")
+        .ok()
+        .and_then(|v| v.parse().ok())
+        .unwrap_or(60);
+    let mut interval = tokio::time::interval(Duration::from_secs(interval_secs));
     loop {
         interval.tick().await;
         tracing::info!("Recolectando eventos...");
