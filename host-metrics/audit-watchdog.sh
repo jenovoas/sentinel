@@ -3,6 +3,9 @@ set -euo pipefail
 
 echo "🔍 Watchdog activo - Detectando exploits..."
 
+# Heartbeat para sentinel-verifier (busca "alive" en audit-watchdog.log).
+(while true; do echo "alive: pipeline de auditoría ok $(date -u +%FT%TZ)"; sleep 60; done &)
+
 if [[ $EUID -ne 0 ]]; then
   echo "[WARN] Se recomienda ejecutar como root para leer /var/log/audit/audit.log"
 fi
