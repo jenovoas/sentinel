@@ -121,7 +121,7 @@ static __always_inline void send_cortex_event(
     bpf_ringbuf_submit(e, 0);
 }
 
-SEC("lsm/bprm_check_security")
+SEC("lsm.s/bprm_check_security")
 int BPF_PROG(guardian_execve, struct linux_binprm *bprm)
 {
     __u32 pid = bpf_get_current_pid_tgid() >> 32;

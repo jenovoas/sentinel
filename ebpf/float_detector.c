@@ -104,7 +104,7 @@ emit_math_diversion(__u32 pid, __u64 payload_signal, __u8 severity)
     bpf_ringbuf_submit(e, 0);
 }
 
-SEC("lsm/bprm_check_security")
+SEC("lsm.s/bprm_check_security")
 int BPF_PROG(float_detector, struct linux_binprm *bprm, int ret)
 {
     if (ret != 0)

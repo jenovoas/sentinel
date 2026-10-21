@@ -32,6 +32,18 @@ for prog in guardian_alpha_lsm lsm_ai_guardian ai_guardian guardian_cognitive fl
     sudo bpftool prog load "$obj" "$pin" type lsm && ok "$prog cargado" || err "fallo al cargar $prog"
 done
 
+# ─── LSM attach (hooks inactivos sin este paso; sleepable requiere kernel con FUNCTION_TRACER) ──
+echo -e "\n${BOLD}── LSM Attach ────────────────────────────────────────────${NC}"
+for prog in guardian_alpha_lsm lsm_ai_guardian ai_guardian guardian_cognitive float_detector; do
+    pin="/sys/fs/bpf/$prog"
+    link="/sys/fs/bpf/${prog}_link"
+    if [ ! -x ./attacher ]; then
+        err "attacher no encontrado — ejecuta 'make' primero"; break
+    fi
+    sudo rm -f "$link"
+    sudo ./attacher "$pin" "$link" && ok "$prog anexado" || err "fallo al anexar $prog"
+done
+
 # ─── XDP ──────────────────────────────────────────────────────────────────────
 echo -e "\n${BOLD}── XDP Programs ──────────────────────────────────────────${NC}"
 for obj in xdp_firewall.o; do

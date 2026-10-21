@@ -100,7 +100,7 @@ static __always_inline int str_contains(const char *haystack,
  * argv parsing is deferred to a future real implementation.
  */
 
-SEC("lsm/bprm_check_security")
+SEC("lsm.s/bprm_check_security")
 int BPF_PROG(guardian_cognitive, struct linux_binprm *bprm, int ret) {
   if (ret != 0)
     return ret;
