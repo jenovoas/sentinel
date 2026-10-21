@@ -68,6 +68,12 @@ impl BufferCascade {
         &self.history
     }
 
+    /// Límite soberano de coherencia. Define la escala nativa del dominio
+    /// (p. ej. 58): los scores externos 0–1 deben mapearse a `score × límite`
+    /// antes de registrarse (ver `TruthSyncEngine::verify_node_text`).
+    pub fn limit(&self) -> SPA {
+        self.limit
+    }
     pub fn len(&self) -> usize {
         self.history.len()
     }
@@ -139,9 +145,11 @@ impl BufferCascade {
             SPA::new(60, 0, 0, 0, 0)
         };
 
-        // Guardar estado presente para el futuro (backflow de información).
+        // Backflow: conserva la medición si el timestamp ya tiene registro
+        // (no reemplaza el score de TruthSync con la proyección).
         self.history
-            .insert(now, CoherenceRecord { coherence: current });
+            .entry(now)
+            .or_insert(CoherenceRecord { coherence: current });
 
         (current, future, mitigated)
     }
@@ -209,6 +217,38 @@ mod tests {
             cur <= SPA::new(58, 0, 0, 0, 0),
             "coherencia no debe superar el límite soberano (cur={})",
             cur
+        );
+    }
+
+    #[test]
+    fn test_cascade_projection_reflects_recorded_trust() {
+        // Misma cadencia temporal, distinta confianza (mapeo de borde:
+        // `trust × límite`, igual que `verify_node_text`). Mayor confianza
+        // debe proyectar mayor coherencia.
+        let limit = SPA::new(58, 0, 0, 0, 0);
+        let hi = SPA::from_raw(SPA::SCALE_0 * 9 / 10) * limit;
+        let lo = SPA::from_raw(SPA::SCALE_0 * 2 / 10) * limit;
+        let mut bc_hi =
+            BufferCascade::new(HexagonalController::new(7), SPA::new(1, 0, 0, 0, 0), limit);
+        let mut bc_lo =
+            BufferCascade::new(HexagonalController::new(7), SPA::new(1, 0, 0, 0, 0), limit);
+        for i in 0..5 {
+            let t = ts(200, 0) - (SPA::new(0, 6, 0, 0, 0) * SPA::from_int(5 - i));
+            bc_hi.record(t, hi);
+            bc_lo.record(t, lo);
+        }
+        let (cur_hi, _, _) = bc_hi.cascade(ts(200, 0), 10);
+        let (cur_lo, _, _) = bc_lo.cascade(ts(200, 0), 10);
+        assert!(
+            cur_hi > cur_lo,
+            "mayor confianza debe proyectar mayor coherencia (hi={}, lo={})",
+            cur_hi,
+            cur_lo
+        );
+        assert!(
+            cur_lo >= SPA::new(42, 30, 0, 0, 0),
+            "incluso con poca confianza no se baja de la base (lo={})",
+            cur_lo
         );
     }
 }

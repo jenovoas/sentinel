@@ -65,3 +65,6 @@ extension-module = ["dep:pyo3"]
 float_cmp = "deny"
 cast_possible_truncation = "allow"
 cast_precision_loss = "allow"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(kani)"] }

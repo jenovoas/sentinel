@@ -240,7 +240,10 @@ impl TruthSyncEngine {
     ) -> NodeVerificationResult<'a> {
         let verification = self.verify_text(text, lattice_energy);
         let cascade = self.get_or_create_node_cascade(node_id);
-        cascade.record(timestamp, verification.overall_trust_score);
+        // El trust 0–1 vive en otra escala que el dominio nativo de la cascada
+        // (base 42;30, límite 58): se mapea a `trust × límite` antes de registrar.
+        let trust_native = verification.overall_trust_score * cascade.limit();
+        cascade.record(timestamp, trust_native);
         let (current_coherence, future_coherence, is_cascade_mitigated) =
             cascade.cascade(timestamp, 10);
 
@@ -508,5 +511,27 @@ mod tests {
             next_ts,
         );
         assert!(next_res.current_coherence >= SPA::new(42, 30, 0, 0, 0));
+    }
+
+    #[test]
+    fn test_cascade_preserves_scaled_trust_record() {
+        // La ingesta mapea `trust × límite` y la proyección no debe
+        // reemplazar la medición en el mismo timestamp.
+        let mut engine = TruthSyncEngine::new();
+        let t = SPA::new(50, 0, 0, 0, 0);
+        let res = engine.verify_node_text(
+            "node-trust",
+            "El kernel fue actualizado con éxito.",
+            42,
+            t,
+        );
+        let cascade = engine.node_cascade("node-trust").unwrap();
+        let expected = res.verification.overall_trust_score * cascade.limit();
+        let stored = cascade.history().get(&t).expect("registro conservado");
+        assert_eq!(
+            stored.coherence, expected,
+            "el historial conserva trust × límite, no la proyección"
+        );
+        assert_eq!(cascade.len(), 1);
     }
 }
