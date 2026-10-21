@@ -128,7 +128,7 @@ static __always_inline void send_cortex_event(
  * 3. Check path against dynamic whitelist.
  * 4. Return -EPERM if not allowed.
  */
-SEC("lsm/file_open")
+SEC("lsm.s/file_open")
 int BPF_PROG(me60os_ai_guardian_open, struct file *file)
 {
     __u32 pid = bpf_get_current_pid_tgid() >> 32;
@@ -199,7 +199,7 @@ int BPF_PROG(me60os_ai_guardian_open, struct file *file)
  * 
  * Executed BEFORE the kernel executes a binary.
  */
-SEC("lsm/bprm_check_security")
+SEC("lsm.s/bprm_check_security")
 int BPF_PROG(me60os_ai_guardian_exec, struct linux_binprm *bprm)
 {
     __u32 pid = bpf_get_current_pid_tgid() >> 32;
