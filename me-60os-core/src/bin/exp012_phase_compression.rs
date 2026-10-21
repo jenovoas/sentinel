@@ -122,11 +122,22 @@ fn main() {
         ok = false;
     }
 
-    // Canal A: integridad total
-    if rec_a.len() >= msg_a_padded.len() / 2 {
-        println!("✅ SUCCESS: Energy Data (amplitud) inyectada correctamente.");
+    // Canal A: integridad total estricta (100% bytes exactos)
+    if rec_a == msg_a_padded {
+        println!("✅ SUCCESS: Energy Data (amplitud) recuperada con 100% integridad.");
     } else {
-        println!("⚠️  Energy Data integrity check inconclusive.");
+        println!(
+            "❌ FAILURE: Energy Data Corrupted (recuperados {}/{} bytes).",
+            rec_a.len(),
+            msg_a_padded.len()
+        );
+        for (idx, (got, exp)) in rec_a.iter().zip(msg_a_padded.iter()).enumerate() {
+            if got != exp {
+                println!("   primer diff en byte {}: got 0x{:02x}, exp 0x{:02x}", idx, got, exp);
+                break;
+            }
+        }
+        ok = false;
     }
 
     // ─────────────────────────────────────────────────────────────

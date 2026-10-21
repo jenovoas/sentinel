@@ -450,13 +450,15 @@ impl LiquidLattice {
         let sector_width = SPA::from_int(45) / SPA::from_int(32);
         let half_width = sector_width / SPA::from_int(2);
         for i in 0..self.buffer.size {
-            let amp = self.buffer.lattice[i].amplitude;
-            if amp.to_raw() > 0 {
-                let raw_amp = amp.to_raw().unsigned_abs();
+            if rec_a.len() < count_a {
+                let amp = self.buffer.lattice[i].amplitude;
+                let raw_amp = amp.to_raw() as u64;
                 let bytes = raw_amp.to_be_bytes();
-                let non_zero: Vec<u8> = bytes.iter().copied().skip_while(|&b| b == 0).collect();
-                if rec_a.len() < count_a {
-                    rec_a.extend_from_slice(&non_zero);
+                let remaining = count_a - rec_a.len();
+                if remaining >= 8 {
+                    rec_a.extend_from_slice(&bytes);
+                } else {
+                    rec_a.extend_from_slice(&bytes[8 - remaining..]);
                 }
             }
             if rec_b.len() < count_b {
