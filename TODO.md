@@ -35,9 +35,9 @@
 - [ ] **QHC**: `sentinel-qhc-agent` DETENIDO.
 - [ ] **Memoria de procesos**: `sentinel-process-memory` DETENIDO.
 - [ ] **Auditoría**: `sentinel-audit-watchdog` DETENIDO.
-- [ ] **Orquestador despliegue**: `sentinel-deployment-orchestrator` CRASHEADO. Diagnosticar causa antes de reiniciar.
-- [ ] **Docker**: servicio `docker` en `failed` — causa raíz verificada 2026-10-21: `net.ipv4.ip_forward=0` y el daemon no puede crear la red bridge (`Error initializing network controller ... IPv4 forwarding is disabled`, `/var/log/docker.log` 2026-10-20). Cadena: docker caído → `sentinel-postgres` (compose) nunca levanta → `sentinel-deployment-orchestrator` muere con `pool timed out` a `127.0.0.1:5432` (`deployment-orchestrator.err`). Remediación propuesta (no aplicada): `sysctl -w net.ipv4.ip_forward=1` + persistir, arrancar `docker` → `sentinel-stack` → orchestrator.
-- [ ] **Stack**: `sentinel-stack` DETENIDO (probablemente agregador; verificar dependencia con los anteriores).
+- [x] **Orquestador despliegue**: RECUPERADO 2026-10-21 — Causa doble: `docker` caído (`ip_forward=0`, sin `nft_masq` en kernel 6.18.57) + deriva de claves (volumen PG con password anterior; `sentinel_user` y `pinguino_orchestrator` fallaban auth). Fix: `ip_forward=1` persistido, reinicio a `6.18.58`, recreación de red compose huérfana (`down`/`up`, volúmenes y datos intactos), `ALTER USER` alineando claves con `/opt/sentinel/.env` y `conf.d`. Verificado: `sentinel-postgres` healthy, orchestrator `started` en `127.0.0.1:8010` (401 = auth activa), FATALs de auth cesados.
+- [x] **Docker**: RECUPERADO 2026-10-21 — `net.ipv4.ip_forward=1` en `/etc/sysctl.d/99-docker-forward.conf`; daemon `started` en kernel `6.18.58`.
+- [x] **Stack**: LEVANTADO 2026-10-21 — 12 contenedores `Up` (postgres healthy, redis, frontend, prometheus, grafana, loki, n8n, exporters).
 - [ ] **PoC WebSocket telemetría**: `wscat` a `/api/v1/telemetry` (bloqueado hasta arrancar Cortex).
 - [ ] **scripts/sentinel-health.sh**: unificar health checks (`startup.sh` obsoleto; `sentinel-health.sh` no existe — crearlo agregando `rc-status` + endpoints).
 - [x] **Inercia CPU dinámica**: CERRADO 2026-08-23 — `unwrap_or(45000)` ya no existe en `sentinel-cortex/src/main.rs` (grep 0 hits); el drive lee `/proc/stat` en el bloque 3b (L227-241).
