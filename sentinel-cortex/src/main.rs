@@ -501,6 +501,27 @@ async fn main() {
         }
     });
 
+    // 8b. Detector de resonancia periódica (FFT + Q-factor en S60 puro).
+    // Muestrea la energía total del lattice cada segundo; ante una baliza
+    // sintética de Q alto emite alerta por tracing para el SOC.
+    let lattice_periodic = lattice.clone();
+    tokio::spawn(async move {
+        let mut detector = detectors::PeriodicDetector::with_defaults(64);
+        let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(1));
+        loop {
+            interval.tick().await;
+            let energy = lattice_periodic.lock().unwrap().total_energy_raw();
+            if let Some(alert) = detector.push_raw(energy) {
+                tracing::warn!(
+                    q_factor = %alert.q_factor,
+                    peak_hz = %alert.peak_frequency_hz,
+                    samples = alert.sample_count,
+                    "PeriodicDetector: {}", alert.description
+                );
+            }
+        }
+    });
+
     // 4. Start Server
     // 7. Periodically export phononic data as CSV for scientific study
     let lattice_csv = lattice.clone();

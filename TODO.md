@@ -2,7 +2,7 @@
 
 > **Fuente:** Auditoría completa de todas las planificaciones del repo desde el commit inicial (2025-12-13, `d6ef7c02`) hasta 2026-08-07.
 > **Método:** Cada ítem fue verificado contra código/git real (no especulación). Ver detalle línea por línea en `docs/_AUDIT_PENDIENTES.md`.
-> **Regla:** Solo lo confirmado como PENDIENTE. La era Gemini (patentes, funding, Google/ANID, Gemini/Phi/Llama legacy, planeta energético/Neuralink) está FUERA DE ALCANCE por directiva de Jaime (alucinación).
+> **Realidad 2026-10-21: MONONODO FÉNIX.** El servidor `fan` ya no existe; esta máquina Alpine/OpenRC **ES fénix** (verificado: `hostname`=fenix, OpenRC, servicios `sentinel-*` en `/etc/init.d`). Toda referencia a `fan`/`fan.local`/`10.88.0.1`, `laptop` o `systemd` en este archivo es histórica y queda reemplazada por fénix local. La era Gemini (patentes, funding, Google/ANID, Gemini/Phi/Llama legacy, planeta energético/Neuralink) está FUERA DE ALCANCE por directiva de Jaime (alucinación).
 > **Este archivo es la fuente única de pendientes para agentes y procesos automáticos.**
 
 ---
@@ -17,25 +17,28 @@
 - [x] **Migración Py→Rust N2**: `liquid_memory_adapter.py` (LiquidMemory) — CERRADO 2026-08-08: PORTADO el único aporte real (tabla clave→len/hash/shm_name + retrieve verificado) a `me-60os-core/src/liquid_memory.rs` (nativo, blake3, SHM POSIX vía libc, 4/4 tests).
 - [x] **Migración Py→Rust N3**: `data_lanes.py` (DualLaneRouter) — CERRADO 2026-08-08: YA migrado en `me-60os-core/src/dual_lane.rs` (559 lin). Verificado 1:1 contra `git show aed3b377^`: DataLane/EventPriority/LaneEvent/classify_event (mismo algoritmo + keywords), should_bypass_buffer, SecurityLaneCollector (WAL fsync real), ObservabilityLaneCollector (buffer/flush/drop). Mejoras Rust: timestamps µs enteros, latencia u64. 8/8 tests OK.
 - [x] **Migración Py→Rust N4**: CERRADO 2026-10-21 — Corregido sector snapping exacto en base-60 sin truncamiento en `quantum_core.rs` y `exp012_phase_compression.rs`. Verificados los 4 benchmarks en Rust: `exp012_phase_compression` (fidelidad 100%), `exp021_dual_path` (Lyapunov y Shannon exactos en S60), `verify_plimpton` y `verify_meijer_scale` pasando al 100%. Endurecido en `e96725c4`: `retrieve_dual_channel` con bitcast `u64` y recupero fijo por nodo sin omitir ceros (cierra pérdida byte 176); validación estricta `rec_a == msg_a_padded` sin rama inconclusiva.
-- [x] **BufferCascade**: CERRADO 2026-10-21 — Acoplado `BufferCascade` (`me-60os-core/src/buffer.rs`) a `truthsync-core` como buffer en línea/cascada por nodo (`verify_node_text`, `node_cascades`, `NodeVerificationResult`), con aislamiento entre nodos y memoria no Markoviana evaluada por tests.
+- [x] **BufferCascade**: CERRADO 2026-10-21 — Acoplado `BufferCascade` (`me-60os-core/src/buffer.rs`) a `truthsync-core` como buffer en línea/cascada por nodo (`verify_node_text`, `node_cascades`, `NodeVerificationResult`), con aislamiento entre nodos y memoria no Markoviana evaluada por tests. Endurecido 2026-10-21: `memory_effect` pondera el kernel OU por coherencia registrada normalizada (`coherencia/límite`, guardia ante límite cero) y `cascade` retorna mitigación real (`matches!(control_rift_propagation, Ok((1,_,_)))`, ya no incondicional). Verificado: 99/99 lib + 19/19 truthsync.
 - [x] **Kani harness** (`MEJORAS_PLANIFICADAS` P1): CERRADO 2026-10-21 — Extraída `CortexEvent::parse_event` pura sin pánico en `me-60os-core/src/ebpf_cortex_bridge.rs` (reusa en los 4 puntos de parseo) + harness `verify_parse_event_no_panic` bajo `#[cfg(kani)]` para `cargo kani`; equivalente ejecutable `test_parse_event_no_panic_on_arbitrary_bytes` + roundtrip + rechazo de cortos en verde (6/6 bridge, 99/99 lib). Pendiente solo ejecutar `cargo kani` donde esté instalado (aquí `cargo-kani` ausente, verificado con `which`).
 - [ ] **Decision tree eBPF** (`MEJORAS_PLANIFICADAS` P2): `dt_model`/`decision_tree.h` en `ai_guardian.c`. *Verificado:* no existe.
-- [x] **FFT + Q-factor detector** (`MEJORAS_PLANIFICADAS` P2): CERRADO 2026-10-21 — Creado e implementado `PeriodicDetector` en `sentinel-cortex/src/detectors/periodic.rs` usando `fft_s60`/`q_factor_s60` en S60 puro sin floats; expuesto en `lib.rs`/`main.rs` y verificado con tests unitarios de resonancia periódica y balizas sintéticas de alto Q.
+- [x] **FFT + Q-factor detector** (`MEJORAS_PLANIFICADAS` P2): CERRADO 2026-10-21 — Creado e implementado `PeriodicDetector` en `sentinel-cortex/src/detectors/periodic.rs` usando `fft_s60`/`q_factor_s60` en S60 puro sin floats; expuesto en `lib.rs` y verificado con tests unitarios de resonancia periódica y balizas sintéticas de alto Q. Cableado 2026-10-21: tarea tokio en `main.rs` que muestrea `total_energy_raw` del lattice cada 1s (ventana 64) y emite `tracing::warn!` ante Q alto. `cargo check -p sentinel-cortex` en verde.
 
-## B) eBPF / Kernel (requiere Fan + clang — NO ejecutar sin autorización de Jaime)
-- [ ] **eBPF LSM PoC**: ~~compilar/cargar `guardian_alpha_lsm.o` en Fan~~ → HECHO (`.o` 5,528 B compilado y cargado; LSM ACTIVO según AGENT_BRAIN + `ebpf/EVIDENCE_LSM_DEPLOYMENT.md`). Quedan abiertos: medir overhead <1µs, test WAL replay, mTLS SSRF prevention.
-- [ ] **xdp_firewall.c**: compilar `-target bpf` + cargar en `eth0` de Fan.
+## B) eBPF / Kernel (fénix local; cargar en kernel productivo SOLO con autorización de Jaime)
+- [ ] **eBPF LSM**: `sentinel-ebpf-load` en ejecución; evidencia histórica en `ebpf/EVIDENCE_LSM_DEPLOYMENT.md`. Quedan abiertos: medir overhead <1µs, test WAL replay, mTLS SSRF prevention.
+- [ ] **xdp_firewall.c**: compilar con `clang` local (`/usr/bin/clang` presente) + cargar con autorización.
 - [ ] **gamma_watchdog.c**: corregir `PEERS[]` (`guardian_alpha`/`ai_guardian`), compilar, confirmar 5/5 peers.
 - [ ] **Security hardening legacy**: ECDSA P-256, HMAC Nginx, nonce+replay (de `docs/archive/SECURITY_HARDENING_PLAN.md`).
 
-## C) DESPLIEGUE laptop
-- [ ] **Cortex API en laptop**: arrancar `sentinel-cortex` (systemd NO instalado en `/etc/systemd`).
-- [ ] **systemd services laptop**: instalar `sentinel-*.service` (existen en `systemd/` pero no `enabled`).
-- [ ] **Daemons me-60os**: arrancar `qhc`/`adm`/`pai`/`vid_agent` (binarios existen, no en ejecución).
-- [ ] **Conectividad Fan**: `ssh fan.local` / `wg show` / `ping 10.88.0.1` CAÍDO. *Verificado:* no responde.
-- [ ] **eBPF forwarder Fan**: copiar `sentinel-ebpf-forwarder.service` a Fan.
-- [ ] **PoC WebSocket telemetría**: `wscat` a `/api/v1/telemetry`.
-- [ ] **scripts/sentinel-health.sh**: unificar health checks (`startup.sh` obsoleto).
+## C) DESPLIEGUE fénix local (OpenRC — verificado 2026-10-21 con `rc-status`)
+- En ejecución: `backup`, `ebpf-load`, `adm-agent`, `pai-neural`, `hex-daemon`, `deployment-executor`, `ebpf-forwarder`, `vid-agent` (procesos `adm_agent`/`hex_daemon`/`pai_neural_daemon`/`vid_agent` vivos).
+- [ ] **Cortex API**: `sentinel-cortex` DETENIDO. Arrancar y verificar `/api/v1/truth_claim` + `/api/v1/lattice/hologram`.
+- [ ] **Verificador**: `sentinel-verifier` DETENIDO.
+- [ ] **QHC**: `sentinel-qhc-agent` DETENIDO.
+- [ ] **Memoria de procesos**: `sentinel-process-memory` DETENIDO.
+- [ ] **Auditoría**: `sentinel-audit-watchdog` DETENIDO.
+- [ ] **Orquestador despliegue**: `sentinel-deployment-orchestrator` CRASHEADO. Diagnosticar causa antes de reiniciar.
+- [ ] **Stack**: `sentinel-stack` DETENIDO (probablemente agregador; verificar dependencia con los anteriores).
+- [ ] **PoC WebSocket telemetría**: `wscat` a `/api/v1/telemetry` (bloqueado hasta arrancar Cortex).
+- [ ] **scripts/sentinel-health.sh**: unificar health checks (`startup.sh` obsoleto; `sentinel-health.sh` no existe — crearlo agregando `rc-status` + endpoints).
 - [x] **Inercia CPU dinámica**: CERRADO 2026-08-23 — `unwrap_or(45000)` ya no existe en `sentinel-cortex/src/main.rs` (grep 0 hits); el drive lee `/proc/stat` en el bloque 3b (L227-241).
 - [x] **Security Lane WAL**: CERRADO 2026-10-21 (completado 2026-10-11 en `b1529ae2`) — `SecurityWal` con append-only a `/var/log/sentinel/security_wal.log` (fallback `/tmp`), integrado con `AIOpsSemanticFirewall` en `truth_claim_handler` (`POST /api/v1/truth_claim`) con tests de integración activos.
 - [ ] **Batería carga + Grafana**: `LiquidLattice` `retention_score` bajo tráfico concurrente.

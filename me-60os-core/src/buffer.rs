@@ -80,26 +80,46 @@ impl BufferCascade {
         self.history.insert(t, CoherenceRecord { coherence });
     }
 
-    /// Efecto de memoria: suma ponderada del kernel sobre los últimos `window` timestamps.
+    /// Efecto de memoria: suma ponderada del kernel OU sobre los últimos `window`
+    /// registros, pesada por la coherencia registrada normalizada (`coherencia/límite`).
+    /// Sin historial la memoria es cero; con coherencia cercana al límite el peso ≈ 1.
     pub fn memory_effect(&self, now: SPA, window: usize) -> SPA {
-        let recent: Vec<SPA> = self.history.keys().cloned().rev().take(window).collect();
+        let recent: Vec<(SPA, SPA)> = self
+            .history
+            .iter()
+            .rev()
+            .take(window)
+            .map(|(t, r)| (*t, r.coherence))
+            .collect();
+        let unit = SPA::from_int(1);
         let mut acc = SPA::zero();
-        for ts in recent {
+        for (ts, coherence) in recent {
             let k = ou_kernel(now, ts, self.tau_c);
+            let weight = if self.limit == SPA::zero() {
+                unit
+            } else {
+                coherence / self.limit
+            };
             // multiplicador 0.5 (S60 0;30,0) como en el original
-            acc = acc + (k * SPA::new(0, 30, 0, 0, 0));
+            acc = acc + (k * weight * SPA::new(0, 30, 0, 0, 0));
         }
         acc
     }
 
     /// Predice la coherencia futura integrando la memoria ambiental.
     /// Devuelve (coherencia_actual, objetivo_futuro, mitigado).
+    /// `mitigado` es verdadero solo si el control geométrico del rift (Pilar 2)
+    /// retorna estado 1 (`SEXAGESIMAL_STABILITY_LOCKED`); colapso de vacío (-1)
+    /// o índice inválido (Err) dan falso.
     pub fn cascade(&mut self, now: SPA, window: usize) -> (SPA, SPA, bool) {
         let memory = self.memory_effect(now, window);
 
         // Estabilizar geometría (Pilar 2): frenar propagación de rift en el centro.
         let center = self.hex.n_nodes / 2;
-        let _ = self.hex.control_rift_propagation(center);
+        let mitigated = matches!(
+            self.hex.control_rift_propagation(center),
+            Ok((1, _, _))
+        );
 
         // Coherencia actual = min(base + memory*22, limit)
         let base = SPA::new(42, 30, 0, 0, 0); // 42;30
@@ -123,7 +143,7 @@ impl BufferCascade {
         self.history
             .insert(now, CoherenceRecord { coherence: current });
 
-        (current, future, true)
+        (current, future, mitigated)
     }
 }
 
