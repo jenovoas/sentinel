@@ -1,4 +1,4 @@
-name: eBPF CI
+name: eBPF Build CI
 
 on:
   pull_request:
@@ -18,8 +18,4 @@ jobs:
 
       - name: Build eBPF programs
         run: make -C ebpf
-        continue-on-error: true
-
-      - name: Basic LSM test
-        run: bash ebpf/test_lsm_basic.sh
-        continue-on-error: true
+      # Runtime loading requires privileged kernel mutation; run test_lsm_basic.sh on a target host after load.sh.
