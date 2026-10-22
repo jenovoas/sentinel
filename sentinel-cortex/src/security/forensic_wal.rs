@@ -57,12 +57,10 @@ impl ForensicWal {
         if file_path.exists() {
             let file = File::open(&file_path)?;
             let reader = BufReader::new(file);
-            for line in reader.lines() {
-                if let Ok(l) = line {
-                    if let Ok(rec) = serde_json::from_str::<WalRecord>(&l) {
-                        seen_nonces.insert(rec.nonce.clone());
-                        last_hash = rec.signature.clone();
-                    }
+            for l in reader.lines().map_while(Result::ok) {
+                if let Ok(rec) = serde_json::from_str::<WalRecord>(&l) {
+                    seen_nonces.insert(rec.nonce.clone());
+                    last_hash = rec.signature.clone();
                 }
             }
         }

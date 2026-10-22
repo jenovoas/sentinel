@@ -58,6 +58,13 @@
 - [x] **EXP-030** validación `PortalDetector` Rust (`sin_s60`) — CERRADO 2026-08-25 (verificado en suite de tests Rust).
 - [x] **EXP-031 / 033 / 034 / EXT-001 / 035** — CERRADO 2026-08-25 (`QuantumScheduler` integrado en `AppState`, shutdown coordinado, Liquid Lattice y tests unitarios en verde).
 - [x] **CI / Estabilidad Python y Rust** — CERRADO 2026-08-25 (`pyproject.toml`, Ruff 0 errores, normalización `bcrypt`, pytest 69/69 tests pasando).
+
+- [x] **CI Rust (verificación local)** — 2026-10-22: `CARGO_PROFILE_RELEASE_PANIC=unwind cargo test --all --release` (246 tests/54 suites); strict Clippy, `cargo fmt --all -- --check`, `cargo audit --deny warnings --ignore RUSTSEC-2023-0071` y `cargo deny check` pasaron. La excepción RustSec cubre `sqlx-mysql` opcional, inactivo y sin parche; Cargo Deny aún advierte versiones duplicadas de dependencias.
+- [x] **Python legacy en CI** — retirado `.github/workflows/python.yml`; no hay cambios Python netos. Las fuentes `.py` quedan preservadas como museo.
+- [x] **Alertas GitHub** — Dependabot abiertas: 0; secret scanning abiertas: 0. `npm audit --omit=dev`: 0 vulnerabilidades.
+- [ ] **GHSA-vfj7-8cjw-p6xm (`braces`)** — high en dependencia dev transitiva de ESLint; upstream no publica versión corregida. No se altera la cadena de Next.js sin parche compatible.
+- [ ] **Duplicados transitivos Cargo** — `cargo deny check` informa múltiples versiones (p. ej. `bitflags`, `crossterm`, `core-foundation`) según `deny.toml`; no se ocultaron ni actualizaron a ciegas.
+- [ ] **Code scanning** — GitHub API no ofrece análisis para este repo (404); no hay resultado verificable.
 - [x] **Frente del Lattice (Holograma)** — CERRADO 2026-08-25 (`GET /api/v1/lattice/hologram` expone nodos con precisión SPA e interfaz u16 para frontend).
 
 ## E) FRONTEND / DOCS (legítimo, no bloqueante)

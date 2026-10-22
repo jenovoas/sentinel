@@ -235,7 +235,7 @@ async fn main() {
                 sched.tick(math::s60::S60::from_int(tick as i32));
             }
 
-            if tick > 0 && tick % 17 == 0 {
+            if tick > 0 && tick.is_multiple_of(17) {
                 let mut res = resonance_task.lock().unwrap();
                 let (valid, coherence) = res.verify_pulse(tick);
                 tracing::info!(
@@ -495,7 +495,7 @@ async fn main() {
             let nm = nm_periodic.lock().unwrap();
             let primary = std::path::Path::new("/var/lib/sentinel/snn_weights.crystal");
             let fallback = std::path::Path::new("/tmp/snn_weights.crystal");
-            if let Err(_) = nm.save_to_crystal(primary) {
+            if nm.save_to_crystal(primary).is_err() {
                 let _ = nm.save_to_crystal(fallback);
             }
         }
@@ -656,7 +656,7 @@ async fn lattice_hologram_handler(
     for i in 0..node_count {
         let a = amps[i];
         let p = phases[i];
-        let a_u16 = ((a.abs() as u128 * 65535) / SCALE_0 as u128).min(65535) as u16;
+        let a_u16 = (u128::from(a.unsigned_abs()) * 65535 / SCALE_0 as u128).min(65535) as u16;
         let p_u16 = ((p.rem_euclid(SCALE_0) as u128 * 65535) / SCALE_0 as u128) as u16;
 
         nodes.push(HologramNodeSnapshot {

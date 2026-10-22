@@ -125,8 +125,8 @@ fn cpu_utilization(start: Option<(u64, u64)>, end: Option<(u64, u64)>) -> Option
     Some(total_delta.saturating_sub(idle_delta).saturating_mul(100) / total_delta)
 }
 
-static CPU_SNAPSHOT: parking_lot::Mutex<Option<((u64, u64), SystemTime, Option<u64>)>> =
-    parking_lot::Mutex::new(None);
+type CpuSnapshot = ((u64, u64), SystemTime, Option<u64>);
+static CPU_SNAPSHOT: parking_lot::Mutex<Option<CpuSnapshot>> = parking_lot::Mutex::new(None);
 
 fn sample_cpu_utilization() -> Option<u64> {
     let now = SystemTime::now();

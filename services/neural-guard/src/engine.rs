@@ -112,10 +112,7 @@ impl DecisionEngine {
     fn scale_threshold(value: u64, multiplier: SPA) -> u64 {
         let scale = SPA::SCALE_0 as u128;
         let multiplier_raw = multiplier.to_raw().max(SPA::SCALE_0) as u128;
-        let scaled = u128::from(value)
-            .checked_mul(multiplier_raw)
-            .unwrap_or(u128::MAX)
-            / scale;
+        let scaled = u128::from(value).saturating_mul(multiplier_raw) / scale;
 
         scaled.min(u128::from(u64::MAX)) as u64
     }

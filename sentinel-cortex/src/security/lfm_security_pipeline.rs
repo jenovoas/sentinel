@@ -136,10 +136,7 @@ mod tests {
         // Latencia en estado estacionario: la primera verificación paga la
         // compilación del RegexSet (LazyLock) y el primer SHA3-512; en producción
         // (TUI) el motor ya está caliente. Medir la segunda llamada.
-        let warmed = pipeline.verify_egress(
-            "El watchdog reporta latencia estable de 3ms en el hexágono 12.",
-            lattice_energy,
-        );
+        let warmed = pipeline.verify_egress(factual_output, lattice_energy);
         if cfg!(not(debug_assertions)) {
             // Claim de arquitectura: verificación TruthSync < 100μs (release).
             assert!(
