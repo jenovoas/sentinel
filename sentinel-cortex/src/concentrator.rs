@@ -51,10 +51,8 @@ pub enum Intent {
 
 pub async fn classify_intent(prompt: &str, api_key: &str) -> Result<Intent> {
     let client = Client::new();
-    let url = format!(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={}",
-        api_key
-    );
+    let url =
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
     let system_msg = r#"
     You are the Semantic Router for the Sentinel Swarm Control Room.
@@ -86,7 +84,12 @@ pub async fn classify_intent(prompt: &str, api_key: &str) -> Result<Intent> {
         }),
     };
 
-    let res = client.post(url).json(&req).send().await?;
+    let res = client
+        .post(url)
+        .header("x-goog-api-key", api_key)
+        .json(&req)
+        .send()
+        .await?;
 
     if !res.status().is_success() {
         let err = res.text().await?;
@@ -139,10 +142,8 @@ pub async fn synthesize_vertex(
     user_msg: &str,
 ) -> Result<String> {
     if let Some(ref api_key) = config.gemini_api_key {
-        let url = format!(
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={}",
-            api_key
-        );
+        let url =
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
         let body = json!({
             "contents": [
@@ -151,7 +152,12 @@ pub async fn synthesize_vertex(
             "systemInstruction": { "role": "system", "parts": [{ "text": system_msg }] }
         });
 
-        let res = client.post(&url).json(&body).send().await?;
+        let res = client
+            .post(url)
+            .header("x-goog-api-key", api_key)
+            .json(&body)
+            .send()
+            .await?;
 
         if res.status().is_success() {
             let json: VertexResponse = res.json().await?;

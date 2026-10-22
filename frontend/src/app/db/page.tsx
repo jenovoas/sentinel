@@ -104,7 +104,11 @@ export default function DatabasesPage() {
               query: q.query.replace(/\n/g, " "),
             }));
             const header = Object.keys(rows[0] || { pid: "", user: "", state: "", wait_event: "", duration_seconds: 0, query: "" });
-            const csv = [header.join(","), ...rows.map((r) => header.map((h) => String((r as any)[h]).replace(/","/g, "\"\,\"" )).join(","))].join("\n");
+            const escapeCsv = (value: string) => `"${value.replace(/"/g, '""')}"`;
+            const csv = [
+              header.map(escapeCsv).join(","),
+              ...rows.map((row) => Object.values(row).map((value) => escapeCsv(String(value))).join(",")),
+            ].join("\n");
             const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
