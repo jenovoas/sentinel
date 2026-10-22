@@ -42,3 +42,23 @@ jobs:
         # Full reference: https://www.react.doctor/ci
         with:
           blocking: error
+  frontend-build:
+    name: Frontend audit, type-check, and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm audit --audit-level=low
+      - run: npm run type-check
+      - run: npm run build

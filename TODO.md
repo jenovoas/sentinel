@@ -61,10 +61,10 @@
 
 - [x] **CI Rust (verificación local)** — 2026-10-22: `CARGO_PROFILE_RELEASE_PANIC=unwind cargo test --all --release` (246 tests/54 suites); strict Clippy, `cargo fmt --all -- --check`, `cargo audit --deny warnings --ignore RUSTSEC-2023-0071` y `cargo deny check` pasaron. La excepción RustSec cubre `sqlx-mysql` opcional, inactivo y sin parche; Cargo Deny aún advierte versiones duplicadas de dependencias.
 - [x] **Python legacy en CI** — retirado `.github/workflows/python.yml`; no hay cambios Python netos. Las fuentes `.py` quedan preservadas como museo.
-- [x] **Alertas GitHub** — Dependabot abiertas: 0; secret scanning abiertas: 0. `npm audit --omit=dev`: 0 vulnerabilidades.
-- [ ] **GHSA-vfj7-8cjw-p6xm (`braces`)** — high en dependencia dev transitiva de ESLint; upstream no publica versión corregida. No se altera la cadena de Next.js sin parche compatible.
-- [ ] **Duplicados transitivos Cargo** — `cargo deny check` informa múltiples versiones (p. ej. `bitflags`, `crossterm`, `core-foundation`) según `deny.toml`; no se ocultaron ni actualizaron a ciegas.
-- [ ] **Code scanning** — GitHub API no ofrece análisis para este repo (404); no hay resultado verificable.
+- [x] **Alertas GitHub / npm** — Dependabot abiertas: 0; secret scanning abiertas: 0; `npm audit --audit-level=low`: 0 vulnerabilidades en todo el árbol.
+- [x] **GHSA-vfj7-8cjw-p6xm (`braces`) y warnings Next 16** — resuelto al retirar ESLint/`eslint-config-next` sin uso: `npm run lint` fallaba con `Invalid project directory .../lint`. Eliminados los flags que omitían TypeScript y ESLint; `turbopack.root` corrige raíz detectada. Build y type-check pasan sin warnings.
+- [ ] **Duplicados transitivos Cargo** — `cargo deny check` sigue avisando múltiples versiones (p. ej. `bitflags`, `core-foundation`, `windows-targets`). Se unificaron `crossterm` 0.29, `redis` 0.32 y `tower-http` 0.6; quedan avisos transitivos, sin ocultarlos.
+- [ ] **Code scanning** — añadido workflow CodeQL para Rust y JavaScript/TypeScript; pendiente primera ejecución para confirmar análisis y revisar hallazgos.
 - [x] **Frente del Lattice (Holograma)** — CERRADO 2026-08-25 (`GET /api/v1/lattice/hologram` expone nodos con precisión SPA e interfaz u16 para frontend).
 
 ## E) FRONTEND / DOCS (legítimo, no bloqueante)
