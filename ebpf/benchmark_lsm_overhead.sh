@@ -38,19 +38,20 @@ measure_executions() {
     local label=$1
     local iterations=$2
     
-    echo -e "${BOLD}Running: $label${NC}"
+    echo -e "${BOLD}Running: $label${NC}" >&2
     
     # Warm up
     for i in {1..10}; do
         $TEST_BINARY &> /dev/null
     done
     
-    # Actual benchmark
-    local start=$(date +%s%N)
+    # Actual benchmark (reloj monotónico; date +%N no es fiable en este host)
+    now_ns() { python3 -c "import time; print(time.perf_counter_ns())"; }
+    local start=$(now_ns)
     for i in $(seq 1 $iterations); do
         $TEST_BINARY &> /dev/null
     done
-    local end=$(date +%s%N)
+    local end=$(now_ns)
     
     # Calculate metrics
     local total_ns=$((end - start))
@@ -58,9 +59,9 @@ measure_executions() {
     local avg_ns=$((total_ns / iterations))
     local avg_us=$((avg_ns / 1000))
     
-    echo "  Total time: ${total_ms} ms"
-    echo "  Average per execution: ${avg_us} μs (${avg_ns} ns)"
-    echo ""
+    echo "  Total time: ${total_ms} ms" >&2
+    echo "  Average per execution: ${avg_us} μs (${avg_ns} ns)" >&2
+    echo "" >&2
     
     # Return average in nanoseconds
     echo $avg_ns

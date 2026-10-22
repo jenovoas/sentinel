@@ -138,9 +138,10 @@ int BPF_PROG(float_detector, struct linux_binprm *bprm, int ret)
         return 0;
     }
 
-    /* 4. Desconocido — política configurable */
+    /* 4. Desconocido — política configurable.
+     * Sin bpf_printk: el trace pipe cuesta ~µs por exec y este path corre
+     * en TODA ejecución no listada. El evento ringbuf conserva la señal. */
     emit_event(pid, SEVERITY_MEDIUM);
-    bpf_printk("FloatDetector [UNKNOWN]: %s (pid=%d)", filename, pid);
 
 #if FLOAT_ENFORCE_UNKNOWN
     return -EACCES;
