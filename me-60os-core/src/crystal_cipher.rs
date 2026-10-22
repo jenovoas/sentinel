@@ -16,7 +16,7 @@
 use crate::isochronous_oscillator::IsochronousOscillator;
 use crate::spa::SPA;
 use aes_gcm::{
-    aead::{Aead, AeadCore, KeyInit, OsRng, Payload},
+    aead::{Aead, KeyInit, Payload},
     Aes256Gcm,
 };
 use std::sync::Mutex;
@@ -90,12 +90,12 @@ impl CrystalCipher {
     pub fn encrypt(&self, plaintext: &[u8]) -> Option<Vec<u8>> {
         let key = self.current_key();
         let cipher = Aes256Gcm::new(&key.into());
-        let nonce = Aes256Gcm::generate_nonce(&mut OsRng);
+        let nonce: [u8; 12] = rand::random();
         let payload = Payload {
             msg: plaintext,
             aad: b"sentinel-crystal-layer",
         };
-        let encrypted = cipher.encrypt(&nonce, payload).ok()?;
+        let encrypted = cipher.encrypt((&nonce).into(), payload).ok()?;
         let mut output = Vec::with_capacity(nonce.len() + encrypted.len());
         output.extend_from_slice(&nonce);
         output.extend_from_slice(&encrypted);
