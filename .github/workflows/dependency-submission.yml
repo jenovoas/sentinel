@@ -1,0 +1,29 @@
+# Keep GitHub's npm dependency graph aligned with the lockfile; native graph
+# data remained stale after the patched Next.js lockfile was pushed.
+name: Dependency graph submission
+
+on:
+  push:
+    branches: [main, alpine_fenix]
+    paths:
+      - "frontend/package.json"
+      - "frontend/package-lock.json"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: dependency-submission-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  submit-npm-dependencies:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: advanced-security/component-detection-dependency-submission-action@a02aeda7a175ad4dd38a13c4d3ff2df9da8f2cf0
+        with:
+          filePath: frontend
+          detectorsCategories: Npm

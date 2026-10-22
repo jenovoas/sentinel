@@ -338,11 +338,13 @@ impl RedisStreamCollector {
                     if let redis::Value::Array(messages) = stream_data.pop().unwrap() {
                         for message in messages {
                             if let redis::Value::Array(msg_data) = message {
-                                let msg_id: String = redis::from_redis_value(&msg_data[0])?;
+                                let mut msg_data = msg_data.into_iter();
+                                let msg_id: String =
+                                    redis::from_redis_value(msg_data.next().unwrap())?;
                                 self.last_id = msg_id;
 
                                 let fields: std::collections::HashMap<String, String> =
-                                    redis::from_redis_value(&msg_data[1])?;
+                                    redis::from_redis_value(msg_data.next().unwrap())?;
 
                                 if fields.get("event_type")
                                     == Some(&"CONTAINER_RESTART".to_string())

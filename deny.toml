@@ -27,3 +27,71 @@ allow = [
 [bans]
 # Disallow multiple versions of the same crate
 multiple-versions = "warn"
+
+# These exact transitive duplicates are required by incompatible upstream
+# version ranges. Keep multiple-versions="warn" active for all new duplicates;
+# cargo-deny reports an unused skip if the pinned duplicate disappears.
+[[bans.skip]]
+name = "base64"
+version = "=0.22.1"
+reason = "Axum's hyper-util requires 0.22 while reqwest 0.13 requires 0.23"
+
+[[bans.skip]]
+name = "block-buffer"
+version = "=0.10.4"
+reason = "sha1 0.10 requires digest 0.10; AES-GCM 0.11 uses digest 0.11"
+
+[[bans.skip]]
+name = "core-foundation"
+version = "=0.9.4"
+reason = "system-configuration and security-framework require incompatible macOS bindings"
+
+[[bans.skip]]
+name = "cpufeatures"
+version = "=0.2.17"
+reason = "sha1 0.10 requires 0.2; blake3 and the current crypto stack use 0.3"
+
+[[bans.skip]]
+name = "crypto-common"
+version = "=0.1.7"
+reason = "sha1 0.10 uses crypto-common 0.1; AES-GCM 0.11 and SHA3 0.12 use 0.2"
+
+[[bans.skip]]
+name = "digest"
+version = "=0.10.7"
+reason = "sha1 0.10 requires digest 0.10 while SHA3 0.12 requires 0.11"
+
+[[bans.skip]]
+name = "getrandom"
+version = "=0.3.4"
+reason = "rand 0.9 and native-tls require 0.3; UUID and current crypto dependencies require 0.4"
+
+[[bans.skip]]
+name = "hashbrown"
+version = "=0.16.1"
+reason = "Ratatui's kasuari dependency requires 0.16 while the HTTP stack requires 0.17"
+
+[[bans.skip]]
+name = "r-efi"
+version = "=5.3.0"
+reason = "getrandom 0.3 requires r-efi 5; getrandom 0.4 requires r-efi 6"
+
+[[bans.skip]]
+name = "rand_core"
+version = "=0.9.5"
+reason = "rand 0.9 requires rand_core 0.9; AES-GCM 0.11's crypto stack requires 0.10"
+
+[[bans.skip]]
+name = "syn"
+version = "=2.0.119"
+reason = "Upstream proc-macro dependencies require both syn 2 and syn 3 APIs"
+
+[[bans.skip]]
+name = "tower-http"
+version = "=0.6.11"
+reason = "reqwest 0.13 requires 0.6 while sentinel-cortex uses 0.7"
+
+[[bans.skip]]
+name = "windows-sys"
+version = "=0.52.0"
+reason = "native-tls's tempfile dependency needs 0.52; the workspace uses 0.61"
