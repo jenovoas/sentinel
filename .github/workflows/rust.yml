@@ -38,9 +38,7 @@ jobs:
         run: cargo install cargo-audit --locked
 
       - name: Audit
-        # sqlx-mysql is only an optional lockfile entry; sentinel-cortex enables postgres only.
-        # RUSTSEC-2023-0071 has no patched release, and `cargo tree -e features -i sqlx-mysql` is empty.
-        run: cargo audit --deny warnings --ignore RUSTSEC-2023-0071
+        run: cargo audit --deny warnings
 
       - name: Install cargo-deny
         run: cargo install cargo-deny --locked

@@ -59,11 +59,11 @@
 - [x] **EXP-031 / 033 / 034 / EXT-001 / 035** — CERRADO 2026-08-25 (`QuantumScheduler` integrado en `AppState`, shutdown coordinado, Liquid Lattice y tests unitarios en verde).
 - [x] **CI / Estabilidad Python y Rust** — CERRADO 2026-08-25 (`pyproject.toml`, Ruff 0 errores, normalización `bcrypt`, pytest 69/69 tests pasando).
 
-- [x] **CI Rust (verificación local y GitHub)** — 2026-10-22: 247 tests/54 suites; strict Clippy, `cargo fmt --all -- --check`, `cargo deny check` y CI pasan. `cargo audit` conserva la excepción `RUSTSEC-2023-0071` para `sqlx-mysql`, opcional e inactivo, sin versión corregida; Cargo Deny aún avisa duplicados transitivos.
+- [x] **CI Rust (verificación local y GitHub)** — 2026-10-22: 247 tests/54 suites; strict Clippy, `cargo fmt --all -- --check`, `cargo audit --deny warnings` sin excepciones y CI pasan. Se eliminó SQLx sin usos Rust, junto con la entrada vulnerable opcional `sqlx-mysql`.
 - [x] **Python legacy en CI** — retirado `.github/workflows/python.yml`; fuentes `.py` preservadas sin cambios netos.
 - [x] **Alertas GitHub/npm** — Dependabot abiertas: 0; CodeQL abiertas: 0 tras corregir las cinco detectadas; secret scanning abiertas: 0; `npm audit --audit-level=low`: 0 vulnerabilidades.
 - [x] **GHSA-vfj7-8cjw-p6xm (`braces`) y warnings Next 16** — resuelto al retirar ESLint/`eslint-config-next` sin uso: `npm run lint` fallaba con `Invalid project directory .../lint`. Quitados los flags que omitían TypeScript/ESLint; `turbopack.root` corrige raíz detectada. Build y type-check pasan sin warnings.
-- [ ] **Duplicados transitivos Cargo** — `cargo deny check` aún informa múltiples versiones (p. ej. `bitflags`, `core-foundation`, `windows-targets`). No se silencian mediante excepciones.
+- [ ] **Duplicados transitivos Cargo** — `cargo deny check` pasa, pero avisa 11 grupos (`core-foundation`, `cpufeatures`, `getrandom`, `hashbrown`, `syn`, `thiserror`/`thiserror-impl` y Windows APIs). No se silencian mediante excepciones.
 - [x] **Code scanning** — workflow CodeQL para Rust y JavaScript/TypeScript; ambos análisis pasan. Corregidas: nonce AES-GCM fijo, claves Gemini en query string y escape CSV identidad. Alertas abiertas actuales: 0.
 - [x] **CI eBPF** — `make -C ebpf` pasa en CI sin `continue-on-error`; el smoke LSM requiere cargar programas con privilegios y queda para ejecutarse en host objetivo, no en runner efímero.
 - [x] **Frente del Lattice (Holograma)** — CERRADO 2026-08-25 (`GET /api/v1/lattice/hologram` expone nodos con precisión SPA e interfaz u16 para frontend).
