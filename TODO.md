@@ -59,12 +59,13 @@
 - [x] **EXP-031 / 033 / 034 / EXT-001 / 035** — CERRADO 2026-08-25 (`QuantumScheduler` integrado en `AppState`, shutdown coordinado, Liquid Lattice y tests unitarios en verde).
 - [x] **CI / Estabilidad Python y Rust** — CERRADO 2026-08-25 (`pyproject.toml`, Ruff 0 errores, normalización `bcrypt`, pytest 69/69 tests pasando).
 
-- [x] **CI Rust (verificación local)** — 2026-10-22: `CARGO_PROFILE_RELEASE_PANIC=unwind cargo test --all --release` (246 tests/54 suites); strict Clippy, `cargo fmt --all -- --check`, `cargo audit --deny warnings --ignore RUSTSEC-2023-0071` y `cargo deny check` pasaron. La excepción RustSec cubre `sqlx-mysql` opcional, inactivo y sin parche; Cargo Deny aún advierte versiones duplicadas de dependencias.
-- [x] **Python legacy en CI** — retirado `.github/workflows/python.yml`; no hay cambios Python netos. Las fuentes `.py` quedan preservadas como museo.
-- [x] **Alertas GitHub / npm** — Dependabot abiertas: 0; secret scanning abiertas: 0; `npm audit --audit-level=low`: 0 vulnerabilidades en todo el árbol.
-- [x] **GHSA-vfj7-8cjw-p6xm (`braces`) y warnings Next 16** — resuelto al retirar ESLint/`eslint-config-next` sin uso: `npm run lint` fallaba con `Invalid project directory .../lint`. Eliminados los flags que omitían TypeScript y ESLint; `turbopack.root` corrige raíz detectada. Build y type-check pasan sin warnings.
-- [ ] **Duplicados transitivos Cargo** — `cargo deny check` sigue avisando múltiples versiones (p. ej. `bitflags`, `core-foundation`, `windows-targets`). Se unificaron `crossterm` 0.29, `redis` 0.32 y `tower-http` 0.6; quedan avisos transitivos, sin ocultarlos.
-- [ ] **Code scanning** — añadido workflow CodeQL para Rust y JavaScript/TypeScript; pendiente primera ejecución para confirmar análisis y revisar hallazgos.
+- [x] **CI Rust (verificación local y GitHub)** — 2026-10-22: 247 tests/54 suites; strict Clippy, `cargo fmt --all -- --check`, `cargo deny check` y CI pasan. `cargo audit` conserva la excepción `RUSTSEC-2023-0071` para `sqlx-mysql`, opcional e inactivo, sin versión corregida; Cargo Deny aún avisa duplicados transitivos.
+- [x] **Python legacy en CI** — retirado `.github/workflows/python.yml`; fuentes `.py` preservadas sin cambios netos.
+- [x] **Alertas GitHub/npm** — Dependabot abiertas: 0; CodeQL abiertas: 0 tras corregir las cinco detectadas; secret scanning abiertas: 0; `npm audit --audit-level=low`: 0 vulnerabilidades.
+- [x] **GHSA-vfj7-8cjw-p6xm (`braces`) y warnings Next 16** — resuelto al retirar ESLint/`eslint-config-next` sin uso: `npm run lint` fallaba con `Invalid project directory .../lint`. Quitados los flags que omitían TypeScript/ESLint; `turbopack.root` corrige raíz detectada. Build y type-check pasan sin warnings.
+- [ ] **Duplicados transitivos Cargo** — `cargo deny check` aún informa múltiples versiones (p. ej. `bitflags`, `core-foundation`, `windows-targets`). No se silencian mediante excepciones.
+- [x] **Code scanning** — workflow CodeQL para Rust y JavaScript/TypeScript; ambos análisis pasan. Corregidas: nonce AES-GCM fijo, claves Gemini en query string y escape CSV identidad. Alertas abiertas actuales: 0.
+- [x] **CI eBPF** — `make -C ebpf` pasa en CI sin `continue-on-error`; el smoke LSM requiere cargar programas con privilegios y queda para ejecutarse en host objetivo, no en runner efímero.
 - [x] **Frente del Lattice (Holograma)** — CERRADO 2026-08-25 (`GET /api/v1/lattice/hologram` expone nodos con precisión SPA e interfaz u16 para frontend).
 
 ## E) FRONTEND / DOCS (legítimo, no bloqueante)
