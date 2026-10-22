@@ -75,7 +75,7 @@ services:
       - "host.docker.internal:host-gateway"
     ports:
       - target: 3000
-        published: "3100"
+        published: "3101"
         host_ip: 127.0.0.1
         mode: host
 
@@ -194,6 +194,11 @@ services:
     networks:
       - sentinel_internal
     command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - target: 3100
+        published: "3100"
+        host_ip: 127.0.0.1
+        mode: host
     deploy:
       resources:
         limits:

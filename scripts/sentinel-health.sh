@@ -34,8 +34,8 @@ probe "http://127.0.0.1:8000/api/v1/ai/health" "cortex /ai/health"
 probe "http://127.0.0.1:8000/api/v1/lattice/hologram" "cortex /hologram"
 probe "http://127.0.0.1:8010/health" "orchestrator /health" 401
 probe "http://127.0.0.1:3000/api/health" "grafana /api/health"
-# Loki comparte :3100 del host con el frontend; se sondea dentro del contenedor.
-if sudo docker exec sentinel-loki wget -q -O - "http://127.0.0.1:3100/loki/api/v1/query?query=%7Bjob%3D%22syslog%22%7D&limit=1" 2>/dev/null | grep -q '"status":"success"'; then
+# Loki tiene su puerto canónico :3100 en el host (frontend movido a :3101).
+if curl -s --max-time 8 "http://127.0.0.1:3100/loki/api/v1/query?query=%7Bjob%3D%22syslog%22%7D&limit=1" 2>/dev/null | grep -q '"status":"success"'; then
     pass "loki query instantánea"
 else
     miss "loki query instantánea"
