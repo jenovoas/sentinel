@@ -16,10 +16,9 @@
 use crate::isochronous_oscillator::IsochronousOscillator;
 use crate::spa::SPA;
 use aes_gcm::{
-    aead::{Aead, KeyInit, Payload},
+    aead::{Aead, AeadCore, KeyInit, OsRng, Payload},
     Aes256Gcm,
 };
-use rand::{rngs::OsRng, RngCore};
 use std::sync::Mutex;
 
 /// Ciclo maestro en segundos (igual que quantum_heartbeat.py: 4 x 17s breath).
@@ -91,13 +90,12 @@ impl CrystalCipher {
     pub fn encrypt(&self, plaintext: &[u8]) -> Option<Vec<u8>> {
         let key = self.current_key();
         let cipher = Aes256Gcm::new(&key.into());
-        let mut nonce = [0u8; 12];
-        OsRng.try_fill_bytes(&mut nonce).ok()?;
+        let nonce = Aes256Gcm::generate_nonce(&mut OsRng);
         let payload = Payload {
             msg: plaintext,
             aad: b"sentinel-crystal-layer",
         };
-        let encrypted = cipher.encrypt((&nonce).into(), payload).ok()?;
+        let encrypted = cipher.encrypt(&nonce, payload).ok()?;
         let mut output = Vec::with_capacity(nonce.len() + encrypted.len());
         output.extend_from_slice(&nonce);
         output.extend_from_slice(&encrypted);
