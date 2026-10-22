@@ -984,7 +984,11 @@ async fn handle_socket(mut socket: WebSocket, state: Arc<AppState>) {
             }
         };
 
-        if socket.send(Message::Text(payload.as_str().into())).await.is_err() {
+        if socket
+            .send(Message::Text(payload.as_str().into()))
+            .await
+            .is_err()
+        {
             tracing::info!("🔌 Connection Dropped (Investor UI Disconnected)");
             break;
         }
