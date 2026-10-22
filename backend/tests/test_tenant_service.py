@@ -14,6 +14,7 @@ from app.services.tenant_service import create_tenant, get_tenant, get_tenant_by
 @pytest.mark.asyncio
 async def test_create_tenant():
     db = AsyncMock()
+    db.add = MagicMock()
     tenant_data = TenantCreate(name="Test Tenant", slug="test-tenant")
 
     # We don't need to mock return value of add, but we need to ensure refresh works if we use it

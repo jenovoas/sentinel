@@ -244,10 +244,17 @@ fn check_cortex_no_segv() -> CheckResult {
         }
     };
     let lines: Vec<&str> = content.lines().collect();
-    let tail = if lines.len() > 500 { &lines[lines.len() - 500..] } else { &lines[..] };
+    let tail = if lines.len() > 500 {
+        &lines[lines.len() - 500..]
+    } else {
+        &lines[..]
+    };
     let tail_str = tail.join("\n");
     let coredump_count = tail_str.matches("core-dump").count();
-    let segv_only = tail_str.matches("SEGV").count().saturating_sub(coredump_count);
+    let segv_only = tail_str
+        .matches("SEGV")
+        .count()
+        .saturating_sub(coredump_count);
     let segv_count = coredump_count + segv_only;
     if segv_count == 0 {
         CheckResult::ok(
@@ -287,7 +294,10 @@ fn check_watchdog_alive() -> CheckResult {
         return CheckResult::fail(
             "watchdog_alive",
             "gamma-watchdog heartbeats",
-            format!("log sin actividad hace {}s (>90s)", now.saturating_sub(mtime)),
+            format!(
+                "log sin actividad hace {}s (>90s)",
+                now.saturating_sub(mtime)
+            ),
             None,
         );
     }
@@ -296,7 +306,11 @@ fn check_watchdog_alive() -> CheckResult {
         Err(e) => return CheckResult::skip("watchdog_alive", "gamma-watchdog", e.to_string()),
     };
     let lines: Vec<&str> = content.lines().collect();
-    let tail = if lines.len() > 200 { &lines[lines.len() - 200..] } else { &lines[..] };
+    let tail = if lines.len() > 200 {
+        &lines[lines.len() - 200..]
+    } else {
+        &lines[..]
+    };
     let tail_str = tail.join("\n");
     let beats = tail_str.matches("\"alive\"").count() + tail_str.matches("BIO_PULSE").count();
     if beats >= 3 {

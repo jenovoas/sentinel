@@ -37,8 +37,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             std::process::exit(1);
         }
         maps.push(
-            MapHandle::from_pinned_path(p)
-                .map_err(|e| format!("no se pudo abrir {}: {}", p, e))?,
+            MapHandle::from_pinned_path(p).map_err(|e| format!("no se pudo abrir {}: {}", p, e))?,
         );
     }
     let mut out = OpenOptions::new()
@@ -98,9 +97,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "{{\"source\":\"ringbuf_forwarder\",\"event\":\"heartbeat\",\"maps\":{:?}}}\n",
                 map_paths
             );
-            if let Ok(mut f) =
-                OpenOptions::new().create(true).append(true).open(&log_path)
-            {
+            if let Ok(mut f) = OpenOptions::new().create(true).append(true).open(&log_path) {
                 let _ = f.write_all(line.as_bytes());
             }
         }

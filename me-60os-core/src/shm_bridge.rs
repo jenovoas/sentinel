@@ -112,13 +112,17 @@ impl PySharedBuffer {
 impl PySharedBuffer {
     #[new]
     fn py_new(name: String, size: usize, create: bool) -> PyResult<Self> {
-        Self::new(name, size, create)
-            .map_err(pyo3::exceptions::PyOSError::new_err)
+        Self::new(name, size, create).map_err(pyo3::exceptions::PyOSError::new_err)
     }
 
     pub fn write(&self, offset: usize, data: &[u8]) -> PyResult<usize> {
-        if offset.checked_add(data.len()).is_none_or(|end| end > self.size) {
-            return Err(pyo3::exceptions::PyIndexError::new_err("Write out of bounds"));
+        if offset
+            .checked_add(data.len())
+            .is_none_or(|end| end > self.size)
+        {
+            return Err(pyo3::exceptions::PyIndexError::new_err(
+                "Write out of bounds",
+            ));
         }
         // SAFETY: bounds are checked above and source/destination do not overlap.
         unsafe {
@@ -129,7 +133,9 @@ impl PySharedBuffer {
 
     pub fn read<'py>(&self, py: Python<'py>, offset: usize, length: usize) -> PyResult<Py<PyAny>> {
         if offset.checked_add(length).is_none_or(|end| end > self.size) {
-            return Err(pyo3::exceptions::PyIndexError::new_err("Read out of bounds"));
+            return Err(pyo3::exceptions::PyIndexError::new_err(
+                "Read out of bounds",
+            ));
         }
         // SAFETY: bounds are checked above and the mapping is valid.
         unsafe {

@@ -441,7 +441,10 @@ fn verify_parse_event_no_panic() {
     }
     let parsed = CortexEvent::parse_event(&data);
     // Sin pánico ante cualquier entrada; el resultado solo depende de la longitud.
-    assert_eq!(parsed.is_some(), len >= std::mem::size_of::<RawCortexEvent>());
+    assert_eq!(
+        parsed.is_some(),
+        len >= std::mem::size_of::<RawCortexEvent>()
+    );
 }
 
 #[cfg(test)]

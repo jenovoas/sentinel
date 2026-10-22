@@ -75,10 +75,7 @@ impl Default for AIOpsSemanticFirewall {
 impl AIOpsSemanticFirewall {
     pub fn new() -> Self {
         let compile_all = |patterns: &[&str]| -> Vec<Regex> {
-            patterns
-                .iter()
-                .filter_map(|p| Regex::new(p).ok())
-                .collect()
+            patterns.iter().filter_map(|p| Regex::new(p).ok()).collect()
         };
 
         // 1. Lenguaje Prescriptivo
@@ -213,13 +210,29 @@ impl AIOpsSemanticFirewall {
             }
         };
 
-        scan_category(&self.prescriptive_regexes, InjectionType::PrescriptiveLanguage, 9000);
-        scan_category(&self.command_regexes, InjectionType::CommandSuggestion, 9500);
-        scan_category(&self.instruction_regexes, InjectionType::HumanInstruction, 8500);
+        scan_category(
+            &self.prescriptive_regexes,
+            InjectionType::PrescriptiveLanguage,
+            9000,
+        );
+        scan_category(
+            &self.command_regexes,
+            InjectionType::CommandSuggestion,
+            9500,
+        );
+        scan_category(
+            &self.instruction_regexes,
+            InjectionType::HumanInstruction,
+            8500,
+        );
         scan_category(&self.social_regexes, InjectionType::SocialEngineering, 8000);
         scan_category(&self.sql_regexes, InjectionType::SqlInjection, 9500);
         scan_category(&self.path_regexes, InjectionType::PathTraversal, 9000);
-        scan_category(&self.llm_jailbreak_regexes, InjectionType::LlmJailbreak, 9900);
+        scan_category(
+            &self.llm_jailbreak_regexes,
+            InjectionType::LlmJailbreak,
+            9900,
+        );
 
         detections
     }

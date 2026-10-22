@@ -86,14 +86,14 @@ async def test_routing():
     print("\n✅ TEST 1 PASSED")
 
 
-async def test_wal():
+async def test_wal(tmp_path):
     """Test 2: Write-Ahead Log"""
     print("\n" + "="*60)
     print("TEST 2: Write-Ahead Log")
     print("="*60)
     
-    # WAL en /tmp para testing
-    wal = WAL(base_path=Path("/tmp/sentinel-wal-test"))
+    # WAL aislado en el directorio temporal de esta prueba
+    wal = WAL(base_path=tmp_path / "sentinel-wal-test")
     
     # Crear eventos
     events = []

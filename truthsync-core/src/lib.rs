@@ -458,24 +458,15 @@ mod tests {
     fn test_node_verification_cascade_isolation() {
         let mut engine = TruthSyncEngine::new();
         let t1 = SPA::new(10, 0, 0, 0, 0);
-        let res_a = engine.verify_node_text(
-            "node-alpha",
-            "El kernel fue actualizado con éxito.",
-            42,
-            t1,
-        );
+        let res_a =
+            engine.verify_node_text("node-alpha", "El kernel fue actualizado con éxito.", 42, t1);
         assert_eq!(res_a.node_id, "node-alpha");
         assert!(!res_a.verification.claims.is_empty());
         assert!(res_a.is_cascade_mitigated);
         assert!(res_a.current_coherence >= SPA::new(42, 30, 0, 0, 0));
         assert_eq!(engine.node_cascades_len(), 1);
 
-        let res_b = engine.verify_node_text(
-            "node-beta",
-            "La temperatura es de 36 grados.",
-            42,
-            t1,
-        );
+        let res_b = engine.verify_node_text("node-beta", "La temperatura es de 36 grados.", 42, t1);
         assert_eq!(res_b.node_id, "node-beta");
         assert_eq!(engine.node_cascades_len(), 2);
 
@@ -490,12 +481,8 @@ mod tests {
         // Enviar múltiples eventos limpios a través del tiempo
         for i in 1..=5 {
             let ts = SPA::new(100 + i, 0, 0, 0, 0);
-            let res = engine.verify_node_text(
-                node,
-                "El proceso eBPF reporta latencia de 2ms.",
-                42,
-                ts,
-            );
+            let res =
+                engine.verify_node_text(node, "El proceso eBPF reporta latencia de 2ms.", 42, ts);
             assert!(!res.verification.claims.is_empty());
             assert!(res.is_cascade_mitigated);
         }
@@ -504,12 +491,8 @@ mod tests {
         assert_eq!(cascade.len(), 5);
         // Siguiente verificación se beneficia del kernel OU en cascada
         let next_ts = SPA::new(106, 0, 0, 0, 0);
-        let next_res = engine.verify_node_text(
-            node,
-            "El kernel reporta estabilidad total.",
-            42,
-            next_ts,
-        );
+        let next_res =
+            engine.verify_node_text(node, "El kernel reporta estabilidad total.", 42, next_ts);
         assert!(next_res.current_coherence >= SPA::new(42, 30, 0, 0, 0));
     }
 
@@ -519,12 +502,8 @@ mod tests {
         // reemplazar la medición en el mismo timestamp.
         let mut engine = TruthSyncEngine::new();
         let t = SPA::new(50, 0, 0, 0, 0);
-        let res = engine.verify_node_text(
-            "node-trust",
-            "El kernel fue actualizado con éxito.",
-            42,
-            t,
-        );
+        let res =
+            engine.verify_node_text("node-trust", "El kernel fue actualizado con éxito.", 42, t);
         let cascade = engine.node_cascade("node-trust").unwrap();
         let expected = res.verification.overall_trust_score * cascade.limit();
         let stored = cascade.history().get(&t).expect("registro conservado");

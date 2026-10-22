@@ -46,8 +46,16 @@ fn encode_url_component(value: &str) -> String {
             encoded.push(byte as char);
         } else {
             encoded.push('%');
-            encoded.push(char::from_digit((byte >> 4) as u32, 16).unwrap().to_ascii_uppercase());
-            encoded.push(char::from_digit((byte & 0x0f) as u32, 16).unwrap().to_ascii_uppercase());
+            encoded.push(
+                char::from_digit((byte >> 4) as u32, 16)
+                    .unwrap()
+                    .to_ascii_uppercase(),
+            );
+            encoded.push(
+                char::from_digit((byte & 0x0f) as u32, 16)
+                    .unwrap()
+                    .to_ascii_uppercase(),
+            );
         }
     }
     encoded

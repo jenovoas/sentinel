@@ -46,11 +46,7 @@ impl PeriodicDetector {
 
     /// Crea un detector periódico con umbrales estándar (100 Hz, Q >= 50).
     pub fn with_defaults(capacity: usize) -> Self {
-        Self::new(
-            capacity,
-            S60::from_int(100),
-            S60::from_int(50),
-        )
+        Self::new(capacity, S60::from_int(100), S60::from_int(50))
     }
 
     /// Ingresa una muestra S60 al detector.

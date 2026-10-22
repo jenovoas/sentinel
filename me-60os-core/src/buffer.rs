@@ -122,10 +122,7 @@ impl BufferCascade {
 
         // Estabilizar geometría (Pilar 2): frenar propagación de rift en el centro.
         let center = self.hex.n_nodes / 2;
-        let mitigated = matches!(
-            self.hex.control_rift_propagation(center),
-            Ok((1, _, _))
-        );
+        let mitigated = matches!(self.hex.control_rift_propagation(center), Ok((1, _, _)));
 
         // Coherencia actual = min(base + memory*22, limit)
         let base = SPA::new(42, 30, 0, 0, 0); // 42;30

@@ -445,8 +445,7 @@ impl ResonantMatrix {
         use std::fs::File;
         use std::io::Write;
 
-        let file = File::create(&path)
-            .map_err(pyo3::exceptions::PyIOError::new_err)?;
+        let file = File::create(&path).map_err(pyo3::exceptions::PyIOError::new_err)?;
         let mut encoder = GzEncoder::new(file, Compression::default());
         let encoded = serde_json::to_vec(self)
             .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
@@ -462,8 +461,7 @@ impl ResonantMatrix {
         use std::fs::File;
         use std::io::Read;
 
-        let file = File::open(&path)
-            .map_err(pyo3::exceptions::PyIOError::new_err)?;
+        let file = File::open(&path).map_err(pyo3::exceptions::PyIOError::new_err)?;
         let mut decoder = GzDecoder::new(file);
         let mut buffer = Vec::new();
         decoder

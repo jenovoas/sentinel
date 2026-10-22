@@ -10,12 +10,12 @@
 //! 3. Protección anti-replay con nonces únicos y expiración temporal.
 //! 4. Separación estricta de DataLanes: Security (síncrono/sin buffer) vs Observability.
 
+use parking_lot::Mutex;
 use sha3::{Digest, Sha3_256};
 use std::collections::HashSet;
 use std::fs::{File, OpenOptions};
 use std::io::{BufRead, BufReader, Write};
 use std::path::{Path, PathBuf};
-use parking_lot::Mutex;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -75,7 +75,14 @@ impl ForensicWal {
         })
     }
 
-    fn compute_signature(&self, event_id: &str, timestamp: u64, nonce: &str, payload: &str, prev_hash: &str) -> String {
+    fn compute_signature(
+        &self,
+        event_id: &str,
+        timestamp: u64,
+        nonce: &str,
+        payload: &str,
+        prev_hash: &str,
+    ) -> String {
         let mut hasher = Sha3_256::new();
         hasher.update(&self.secret_key);
         hasher.update(event_id.as_bytes());
@@ -162,10 +169,14 @@ mod tests {
         let key = b"secret-sovereign-key-1234567890123456";
 
         let wal = ForensicWal::new(&wal_path, key).unwrap();
-        let rec1 = wal.append("evt-1", "shield", "DROP TABLE blocked", DataLane::Security).unwrap();
+        let rec1 = wal
+            .append("evt-1", "shield", "DROP TABLE blocked", DataLane::Security)
+            .unwrap();
         assert_eq!(rec1.prev_hash, "0".repeat(64));
 
-        let rec2 = wal.append("evt-2", "shield", "rm -rf blocked", DataLane::Security).unwrap();
+        let rec2 = wal
+            .append("evt-2", "shield", "rm -rf blocked", DataLane::Security)
+            .unwrap();
         assert_eq!(rec2.prev_hash, rec1.signature);
         assert_eq!(wal.count_records(), 2);
 

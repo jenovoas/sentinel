@@ -100,7 +100,10 @@ fn serve_socket(path: PathBuf, snapshot: Arc<Mutex<QhcSnapshot>>) -> std::io::Re
     Ok(())
 }
 
-fn handle_client(mut stream: UnixStream, snapshot: &Arc<Mutex<QhcSnapshot>>) -> std::io::Result<()> {
+fn handle_client(
+    mut stream: UnixStream,
+    snapshot: &Arc<Mutex<QhcSnapshot>>,
+) -> std::io::Result<()> {
     let mut request = String::new();
     BufReader::new(stream.try_clone()?).read_line(&mut request)?;
     let response = match request.trim() {

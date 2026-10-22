@@ -3,24 +3,22 @@ name: Rust CI
 on:
   pull_request:
   push:
-    branches: ["main"]
+    branches: ["main", "alpine_fenix"]
 
 jobs:
   rust:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7.0.1
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: actions-rust-lang/setup-rust-toolchain@v2
         with:
           components: rustfmt, clippy
+          build-warnings: warn
 
-      - name: Cache cargo registry
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install native build dependencies
+        run: sudo apt-get update && sudo apt-get install -y libelf-dev zlib1g-dev
 
       - name: Build
         run: cargo build --all --release
@@ -35,13 +33,15 @@ jobs:
         run: cargo fmt --all -- --check
 
       - name: Install cargo-audit
-        run: cargo install cargo-audit --locked || true
+        run: cargo install cargo-audit --locked
 
       - name: Audit
-        run: cargo audit --deny warnings || true
+        # sqlx-mysql is only an optional lockfile entry; sentinel-cortex enables postgres only.
+        # RUSTSEC-2023-0071 has no patched release, and `cargo tree -e features -i sqlx-mysql` is empty.
+        run: cargo audit --deny warnings --ignore RUSTSEC-2023-0071
 
       - name: Install cargo-deny
-        run: cargo install cargo-deny --locked || true
+        run: cargo install cargo-deny --locked
 
       - name: Deny check
         run: cargo deny check

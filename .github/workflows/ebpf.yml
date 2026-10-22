@@ -3,13 +3,13 @@ name: eBPF CI
 on:
   pull_request:
   push:
-    branches: ["main"]
+    branches: ["main", "alpine_fenix"]
 
 jobs:
   ebpf:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7.0.1
 
       - name: Install build dependencies
         run: |

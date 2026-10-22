@@ -136,14 +136,16 @@ impl EbpfBridge {
 
             loop {
                 // 1. Intentar abrir el mapa pineado
-                let map_res = std::panic::catch_unwind(|| {
-                    MapHandle::from_pinned_path(&map_path)
-                });
+                let map_res = std::panic::catch_unwind(|| MapHandle::from_pinned_path(&map_path));
 
                 let map = match map_res {
                     Ok(Ok(map)) => map,
                     Ok(Err(e)) => {
-                        tracing::debug!("eBPF pinned map no disponible en {}: {}. Reintentando en 2s...", map_path, e);
+                        tracing::debug!(
+                            "eBPF pinned map no disponible en {}: {}. Reintentando en 2s...",
+                            map_path,
+                            e
+                        );
                         std::thread::sleep(Duration::from_secs(2));
                         continue;
                     }
@@ -169,7 +171,10 @@ impl EbpfBridge {
                     }
                     0
                 }) {
-                    tracing::warn!("Fallo al añadir mapa a RingBufferBuilder: {}. Reintentando en 2s...", e);
+                    tracing::warn!(
+                        "Fallo al añadir mapa a RingBufferBuilder: {}. Reintentando en 2s...",
+                        e
+                    );
                     std::thread::sleep(Duration::from_secs(2));
                     continue;
                 }
@@ -177,7 +182,10 @@ impl EbpfBridge {
                 // 3. Polling continuo con reconexión ante error
                 match builder.build() {
                     Ok(ringbuf) => {
-                        tracing::info!("🔗 eBPF Cortex Bridge conectado con éxito al ringbuffer en {}", map_path);
+                        tracing::info!(
+                            "🔗 eBPF Cortex Bridge conectado con éxito al ringbuffer en {}",
+                            map_path
+                        );
                         loop {
                             if let Err(e) = ringbuf.poll(Duration::from_millis(100)) {
                                 tracing::warn!("RingBuf poll status: {:?}. Reconectando...", e);

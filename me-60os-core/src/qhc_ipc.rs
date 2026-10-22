@@ -3,7 +3,10 @@
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 
 use serde::{Deserialize, Serialize};
-use std::{path::PathBuf, time::{SystemTime, UNIX_EPOCH}};
+use std::{
+    path::PathBuf,
+    time::{SystemTime, UNIX_EPOCH},
+};
 
 pub const DEFAULT_QHC_SOCKET_PATH: &str = "/run/soma/qhc.sock";
 
@@ -46,7 +49,9 @@ pub fn socket_path() -> PathBuf {
 fn now_unix_ms() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .map_or(0, |duration| duration.as_millis().min(u128::from(u64::MAX)) as u64)
+        .map_or(0, |duration| {
+            duration.as_millis().min(u128::from(u64::MAX)) as u64
+        })
 }
 
 #[cfg(test)]

@@ -176,7 +176,10 @@ fn test_aiopsdoom_fuzzer_100_plus_payloads() {
                         "Caso #{}: esperado tipo {:?}, pero se detectó {:?}",
                         idx + 1,
                         expected_type,
-                        detections.iter().map(|d| d.injection_type).collect::<Vec<_>>()
+                        detections
+                            .iter()
+                            .map(|d| d.injection_type)
+                            .collect::<Vec<_>>()
                     );
                 }
             } else {
@@ -195,7 +198,10 @@ fn test_aiopsdoom_fuzzer_100_plus_payloads() {
                 idx + 1,
                 tc.category,
                 tc.payload,
-                detections.iter().map(|d| d.injection_type).collect::<Vec<_>>()
+                detections
+                    .iter()
+                    .map(|d| d.injection_type)
+                    .collect::<Vec<_>>()
             );
         } else {
             true_negatives += 1;
@@ -205,13 +211,37 @@ fn test_aiopsdoom_fuzzer_100_plus_payloads() {
     let avg_latency_us = (total_latency_ns as f64) / (total as f64) / 1000.0;
     println!("\n📊 RESULTADOS DE LA AUDITORÍA AIOPSDOOM:");
     println!("  Total casos evaluados: {}", total);
-    println!("  True Positives  (Maliciosos interceptados): {}", true_positives);
-    println!("  True Negatives  (Benignos autorizados)    : {}", true_negatives);
-    println!("  False Positives (Benignos bloqueados)     : {}", false_positives);
-    println!("  False Negatives (Ataques no detectados)   : {}", false_negatives);
-    println!("  Latencia media por payload: {:.2} µs (< 1000µs debug / < 100µs release)", avg_latency_us);
+    println!(
+        "  True Positives  (Maliciosos interceptados): {}",
+        true_positives
+    );
+    println!(
+        "  True Negatives  (Benignos autorizados)    : {}",
+        true_negatives
+    );
+    println!(
+        "  False Positives (Benignos bloqueados)     : {}",
+        false_positives
+    );
+    println!(
+        "  False Negatives (Ataques no detectados)   : {}",
+        false_negatives
+    );
+    println!(
+        "  Latencia media por payload: {:.2} µs (< 1000µs debug / < 100µs release)",
+        avg_latency_us
+    );
 
-    assert_eq!(false_negatives, 0, "AIOpsDoom exige CERO falsos negativos (100% detección)");
-    assert_eq!(false_positives, 0, "AIOpsDoom exige CERO falsos positivos en telemetría");
-    assert!(avg_latency_us < 1000.0, "Latencia promedio en modo debug debe ser inferior a 1ms");
+    assert_eq!(
+        false_negatives, 0,
+        "AIOpsDoom exige CERO falsos negativos (100% detección)"
+    );
+    assert_eq!(
+        false_positives, 0,
+        "AIOpsDoom exige CERO falsos positivos en telemetría"
+    );
+    assert!(
+        avg_latency_us < 1000.0,
+        "Latencia promedio en modo debug debe ser inferior a 1ms"
+    );
 }

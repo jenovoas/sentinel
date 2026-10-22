@@ -133,7 +133,10 @@ fn main() {
         );
         for (idx, (got, exp)) in rec_a.iter().zip(msg_a_padded.iter()).enumerate() {
             if got != exp {
-                println!("   primer diff en byte {}: got 0x{:02x}, exp 0x{:02x}", idx, got, exp);
+                println!(
+                    "   primer diff en byte {}: got 0x{:02x}, exp 0x{:02x}",
+                    idx, got, exp
+                );
                 break;
             }
         }
