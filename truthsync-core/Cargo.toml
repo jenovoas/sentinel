@@ -14,12 +14,12 @@ regex = "1.10"
 rayon = "1.10"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-sha3 = "0.10"
+sha3 = "0.12"
 me60os_core = { path = "../me-60os-core", package = "me60os" }
-lru = "0.18"
+lru = "0.19"
 
 [dev-dependencies]
-criterion = "0.5"
+criterion = "0.8"
 
 [[bench]]
 name = "truthsync_bench"
