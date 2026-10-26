@@ -262,7 +262,16 @@ impl ResonantMatrix {
 
     /// Stabilizes the lattice using linear diffusion (fluid dynamics).
     /// Used to smooth out phase differences (Liquid State).
+    ///
+    /// P1.8: la media local se hace con diffs envueltos módulo 360°, para que
+    /// un cruce 0°/360° no promedie linealmente (mal cruce). Para fases dentro
+    /// de un rango < 180° el comportamiento es idéntico al anterior.
     pub fn stabilize_py(&mut self, cycles: usize) {
+        const PHASE_WRAP_RAW: i64 = 360 * 12_960_000; // una vuelta completa en raw S60
+        let wrap_signed = |raw: i64| -> i64 {
+            let m = raw.rem_euclid(PHASE_WRAP_RAW);
+            if m >= PHASE_WRAP_RAW / 2 { m - PHASE_WRAP_RAW } else { m }
+        };
         // Simplified Linear Diffusion in Rust
         for _ in 0..cycles {
             let phases: Vec<SPA> = self.crystals.iter().map(|c| c.phase).collect();
@@ -274,20 +283,26 @@ impl ResonantMatrix {
                     continue;
                 }
 
-                let mut total = phases[i];
-                let mut count = SPA::new(1, 0, 0, 0, 0);
+                let mut diff_sum: i64 = 0;
+                let mut count: i64 = 0;
 
                 if i > 0 && phases[i - 1] != SPA::zero() {
-                    total = total + phases[i - 1];
-                    count = count + SPA::new(1, 0, 0, 0, 0);
+                    diff_sum += wrap_signed(phases[i - 1].to_raw() - phases[i].to_raw());
+                    count += 1;
                 }
 
                 if i < size - 1 && phases[i + 1] != SPA::zero() {
-                    total = total + phases[i + 1];
-                    count = count + SPA::new(1, 0, 0, 0, 0);
+                    diff_sum += wrap_signed(phases[i + 1].to_raw() - phases[i].to_raw());
+                    count += 1;
                 }
 
-                new_phases[i] = total / count;
+                if count == 0 {
+                    continue;
+                }
+
+                // Signo floor coherente para diffs negativos (división entera).
+                let mean_diff_raw = (diff_sum as i128 / count as i128) as i64;
+                new_phases[i] = phases[i] + SPA::from_raw(mean_diff_raw);
             }
 
             for (i, new_phase) in new_phases.iter().enumerate().take(size) {
@@ -371,7 +386,16 @@ impl ResonantMatrix {
     }
 
     /// S60 phase coherence metric (used by bench and Python bindings)
+    ///
+    /// P1.8: las desviaciones se miden con envolvimiento módulo 360° para que
+    /// un cruce 0°/360° no decoye artificialmente la métrica. La fase cruda del
+    /// oscilador NO se toca (EXP-018 lee fases crudas; SPAMath::sin normaliza).
     pub fn measure_coherence_py(&mut self) -> i64 {
+        const PHASE_WRAP_RAW: i64 = 360 * 12_960_000; // una vuelta completa en raw S60
+        let wrap_signed = |raw: i64| -> i64 {
+            let m = raw.rem_euclid(PHASE_WRAP_RAW);
+            if m >= PHASE_WRAP_RAW / 2 { m - PHASE_WRAP_RAW } else { m }
+        };
         let n_nodes = self.crystals.len();
         if n_nodes == 0 {
             return SPA::new(1, 0, 0, 0, 0).to_raw();
@@ -380,11 +404,29 @@ impl ResonantMatrix {
         for c in &self.crystals {
             total_phase_val += c.get_phase().to_raw() as i128;
         }
-        let mean_phase_val = (total_phase_val / n_nodes as i128) as i64;
+        let mut mean_phase_val = (total_phase_val / n_nodes as i128) as i64;
+
+        // Media circular iterativa (solo enteros, sin float): partimos de la
+        // media lineal y entramos el ángulo promediando desvíos envueltos hasta
+        // converger (1-2 iteraciones). Evita el mal cruce 0°/360°.
+        for _ in 0..4 {
+            let mut dev_sum: i128 = 0;
+            for c in &self.crystals {
+                dev_sum += wrap_signed(c.get_phase().to_raw() - mean_phase_val) as i128;
+            }
+            let adjust = (dev_sum / n_nodes as i128) as i64;
+            if adjust == 0 {
+                break;
+            }
+            mean_phase_val += adjust;
+        }
 
         let mut total_dev_val: i128 = 0;
         for c in &self.crystals {
-            total_dev_val += (c.get_phase().to_raw() - mean_phase_val).unsigned_abs() as i128;
+            // Devolución con envolvimiento: la distancia angular real siempre
+            // es <= 180° (cruce 0°/360° cuenta como ~0° de desvío).
+            total_dev_val += wrap_signed(c.get_phase().to_raw() - mean_phase_val)
+                .unsigned_abs() as i128;
         }
         let mut mean_dev_val = (total_dev_val / n_nodes as i128) as i64;
         let max_dev: i64 = 180 * 12_960_000;
@@ -573,6 +615,46 @@ mod tests {
         assert!(
             total < SPA::SCALE_0,
             "dissipativo: energía total debe decaer tras step()"
+        );
+    }
+
+    #[test]
+    fn test_measure_coherence_wraps_phase_crossing() {
+        // P1.8: un cruce 0°/360° NO debe decoy la métrica.
+        let mut lattice = ResonantMatrix::new(3);
+        // 0°, 0°, y 359° (casi una vuelta): desvío angular real ~1°, no ~180°.
+        lattice.crystals[0].phase = SPA::zero();
+        lattice.crystals[1].phase = SPA::zero();
+        lattice.crystals[2].phase = SPA::from_raw(359 * 12_960_000);
+
+        let coherence = lattice.measure_coherence_py();
+        let max_coh = SPA::new(1, 0, 0, 0, 0).to_raw();
+        assert!(
+            coherence > max_coh * 90 / 100,
+            "cruce 0/360 debe dar coherencia alta; obtuvo {} de {}",
+            coherence,
+            max_coh
+        );
+    }
+
+    #[test]
+    fn test_stabilize_wraps_neighbor_mean() {
+        // P1.8: la media de vecinos debe ir por el camino corto alrededor del cruce.
+        let mut lattice = ResonantMatrix::new(3);
+        lattice.crystals[0].phase = SPA::from_raw(359 * 12_960_000);
+        lattice.crystals[1].phase = SPA::zero();
+        lattice.crystals[2].phase = SPA::from_raw(1 * 12_960_000);
+
+        lattice.stabilize_py(1);
+
+        // Vecino central (fase 0): vecinos a +1° y -1° (envuelto) => media 0°; NO
+        // debe arrastrarse a media de ((359+0)/2)=179.5° como el promedio lineal.
+        let c = lattice.crystals[1].phase.to_raw();
+        assert!(
+            c.abs() < 2i64.wrapping_mul(12_960_000),
+            "media de vecinos debe cruzar por 0°, obtuvo {} raw (~{}°)",
+            c,
+            c / 12_960_000
         );
     }
 
