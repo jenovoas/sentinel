@@ -49,7 +49,7 @@ thiserror = "2.0"
 # Lazy static initialization
 lazy_static = "1.4"
 regex = "1.10"
-parking_lot = "0.12"
+parking_lot = "0.13"
 
 # Terminal UI
 ratatui = "0.30.2"
