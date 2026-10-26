@@ -129,7 +129,7 @@ const StatCard = ({
 
 const Pill = ({ status }: { status: string }) => {
   const isHealthy = status === "healthy";
-  const label = isHealthy ? "Operativo" : status === "degraded" ? "Degradado" : "No disponible";
+  const label = isHealthy ? "QHC conectado" : status === "degraded" ? "QHC desconectado" : "No disponible";
   return (
     <span
       className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
@@ -283,9 +283,9 @@ export default function DashboardPage() {
             accent="bg-gradient-to-r from-orange-400 to-amber-400"
           />
           <StatCard
-            label="Estado del runtime"
+            label="Conectividad QHC"
             value={runtime?.available ? runtime.status : "No disponible"}
-            hint={data ? `Última muestra: ${new Date(data.sampled_at).toLocaleTimeString()}` : "Esperando primera muestra"}
+            hint="Estado basado en la conexión QHC reportada por Cortex"
             accent="bg-gradient-to-r from-cyan-400 to-emerald-400"
           />
         </section>
@@ -360,7 +360,8 @@ export default function DashboardPage() {
 
         <section className="mt-6 grid gap-6 lg:grid-cols-2">
           <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Estado del runtime</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">Estado reportado por Cortex</h3>
+            <p className="text-xs text-gray-400 mb-4">Los subsistemas marcados como declarados no tienen comprobación de salud individual.</p>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between gap-4">
                 <span className="text-gray-400">Última muestra</span>
@@ -377,7 +378,7 @@ export default function DashboardPage() {
               {runtime?.subsystems && Object.entries(runtime.subsystems).map(([name, status]) => (
                 <div className="flex justify-between gap-4" key={name}>
                   <span className="text-gray-400">{name}</span>
-                  <span className="text-gray-200">{status}</span>
+                  <span className="text-gray-200">{status === "active" ? "Declarado (sin verificación)" : status}</span>
                 </div>
               ))}
             </div>

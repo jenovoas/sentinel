@@ -5,12 +5,11 @@ import { useLatticeHologram } from "../../../hooks/useLatticeHologram";
 import { HexagonalLatticeViewer } from "../../../components/lattice/HexagonalLatticeViewer";
 import { HologramNode } from "../../../lib/types";
 import { 
-  Activity, 
-  Flame, 
-  RefreshCw, 
-  Zap, 
-  ShieldCheck, 
-  Cpu, 
+  Activity,
+  Flame,
+  RefreshCw,
+  Zap,
+  Cpu,
   Layers,
   Sparkles
 } from "lucide-react";
@@ -227,10 +226,6 @@ export default function LatticeDashboardPage() {
             <div className="flex items-center justify-between">
               <span>Última sincronía:</span>
               <span className="text-gray-400">{lastUpdated ? lastUpdated.toLocaleTimeString() : "--:--:--"}</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-emerald-400/80">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Candado YATRA Activo</span>
             </div>
           </div>
         </div>

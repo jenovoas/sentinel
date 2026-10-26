@@ -43,7 +43,8 @@ services:
       retries: 5
     restart: unless-stopped
 
-  # FastAPI Backend
+  # Perfil FastAPI alternativo: publica el puerto host 8000. No ejecutar en
+  # paralelo con el daemon Cortex nativo; Fénix usa docker-compose.fenix.yml.
   backend:
     build:
       context: .
