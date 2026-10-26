@@ -40,6 +40,17 @@ impl ResonantLatticeBridge {
         self.lattice.step();
     }
 
+    /// Modo superconductor (P1.6): damping = 0 en todos los cristales.
+    /// Ver `ResonantLattice::set_superconductor`.
+    pub fn set_superconductor(&mut self) {
+        self.lattice.set_superconductor();
+    }
+
+    /// Indica si el lattice está en modo superconductor.
+    pub fn is_superconductor(&self) -> bool {
+        self.lattice.is_superconductor()
+    }
+
     /// Inject pressure at node index.
     pub fn inject(&mut self, index: usize, pressure: i64) {
         self.lattice.inject(index, pressure);

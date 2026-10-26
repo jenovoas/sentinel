@@ -156,6 +156,15 @@ async fn main() {
     let lattice = Arc::new(Mutex::new(
         memory::resonant_lattice_bridge::ResonantLatticeBridge::new(calculated_nodes),
     ));
+    // P1.6 (auditoría 2026-08-23): modo superconductor opt-in para las lanes de
+    // memoria del bridge. Sin flag, el lattice permanece disipativo (regla brain #4).
+    if std::env::var("SENTINEL_SUPERCONDUCTOR").as_deref() == Ok("1") {
+        lattice.lock().unwrap().set_superconductor();
+        tracing::info!(
+            "🧊 Modo SUPERCONDUCTOR activo (SENTINEL_SUPERCONDUCTOR=1): damping=0 en {} cristales; amplitud sostenida tras step()",
+            calculated_nodes
+        );
+    }
     // Broadcast channel para Múltiples Inversores (WebSockets) viendo el eBPF
     let (tx_bpf, _) = broadcast::channel(100);
 
@@ -1184,6 +1193,10 @@ mod tests {
                 .route("/api/v1/qhc/status", get(qhc_client::status_handler))
                 .route("/api/v1/truth_claim", post(truth_claim_handler))
                 .route("/api/v1/lattice/hologram", get(lattice_hologram_handler))
+                .route(
+                    "/api/v1/backup/trigger",
+                    post(dashboard::backup_trigger_handler),
+                )
                 .with_state(state),
             wal_dir,
         )
@@ -1203,6 +1216,32 @@ mod tests {
         std::fs::create_dir_all(&wal.fallback_path).unwrap();
         assert!(wal.write("undurable-event").is_err());
         std::fs::remove_dir_all(wal_dir).unwrap();
+    }
+
+    #[tokio::test]
+    async fn backup_trigger_is_temporarily_disabled() {
+        let (app, _wal_dir) = make_test_app();
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/api/v1/backup/trigger")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::SERVICE_UNAVAILABLE);
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(json["status"], "disabled");
+        assert!(json["message"]
+            .as_str()
+            .unwrap()
+            .contains("sesión administrativa existente"));
     }
 
     #[tokio::test]

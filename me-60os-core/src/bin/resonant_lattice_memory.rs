@@ -86,16 +86,25 @@ fn main() {
     // con la pérdida física configurada y la difusión de vecinos.
     let data = "Yo Soy";
 
-    // BOMBEO QHC: aplica el mismo desplazamiento de fase a ambas mallas.
+    // BOMBEO QHC (P1.7): acopla la modulación al lattice en AMPLITUD, no solo fase.
+    // - apply_phase_shift: sincroniza fase (Salto-17) en ambas mallas.
+    // - inject_spa: el pulso QHC entra como amplitud al cristal rotando el nodo
+    //   de bombeo, contrarrestando el damping configurado (~0;0;30 por paso).
+    // La base resonante se captura DESPUÉS del bombeo (L102-103), así que el
+    // decoder resta el residuo del bombeo y no contamina la lectura dual.
     let warmup_cycles = 60u64;
     for step in 0..warmup_cycles {
         let phase_shift = qhc.apply_modulation(SPA::zero(), step);
         lane_a.apply_phase_shift(phase_shift);
         lane_b.apply_phase_shift(phase_shift);
+        // Bombeo en amplitud: rotando el nodo de inyección por la malla.
+        let pump_node = (step as usize) % lane_a.size();
+        lane_a.inject_spa(pump_node, phase_shift);
+        lane_b.inject_spa(pump_node, phase_shift);
         lane_a.step();
         lane_b.step();
     }
-    println!("🔮 Resonando el lattice (bombeo QHC + difusión fractal)...");
+    println!("🔮 Resonando el lattice (bombeo QHC fase+amplitud + difusión fractal)...");
 
     // Capturar el estado resonante de cada lane antes de sumar la semilla.
     // El decoder resta esta base y lee únicamente la amplitud inyectada.

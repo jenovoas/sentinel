@@ -74,6 +74,22 @@ impl ResonantMatrix {
         self.crystals.len()
     }
 
+    /// Modo superconductor (P1.6, auditoría 2026-08-23): pone `damping_factor`
+    /// en cero en todos los cristales para que las lanes de MEMORIA no sangren
+    /// amplitud por cada `step()` (~33%/día a cadencia 500ms con registro 0;0;30).
+    /// Opt-in via env `SENTINEL_SUPERCONDUCTOR=1`; el lattice ambiente del bin
+    /// standalone permanece disipativo (regla brain #4).
+    pub fn set_superconductor(&mut self) {
+        for c in self.crystals.iter_mut() {
+            c.damping_factor = SPA::zero();
+        }
+    }
+
+    /// Indica si el lattice está en modo superconductor (damping = 0 global).
+    pub fn is_superconductor(&self) -> bool {
+        self.crystals.iter().all(|c| c.damping_factor.to_raw() == 0)
+    }
+
     /// Executes one time step on the entire network.
     /// Calculates energy transfer between adjacent nodes.
     pub fn step(&mut self) {
@@ -526,6 +542,39 @@ impl ResonantMatrix {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_superconductor_sustains_amplitude_after_step() {
+        // P1.6: con damping=0, la amplitud se sostiene tras step() (sin sangrado).
+        let mut lattice = ResonantMatrix::new(8);
+        lattice.inject_spa(0, SPA::from_raw(SPA::SCALE_0)); // amplitud = 1;0
+        lattice.set_superconductor();
+        assert!(lattice.is_superconductor());
+        for _ in 0..12 {
+            lattice.step();
+        }
+        // Con damping=0, la energía total se conserva (solo se difunde entre nodos).
+        let total: i64 = lattice.get_amplitudes().iter().map(|a| a.to_raw()).sum();
+        assert_eq!(
+            total, SPA::SCALE_0,
+            "superconductor: energía total debe conservarse tras 12 step()"
+        );
+    }
+
+    #[test]
+    fn test_default_mode_dissipates() {
+        // Regla brain #4: por defecto el lattice es disipativo (0;0;30 por paso).
+        let mut lattice = ResonantMatrix::new(8);
+        lattice.inject_spa(0, SPA::from_raw(SPA::SCALE_0));
+        lattice.step();
+        assert!(!lattice.is_superconductor());
+        // Disipativo: la energía total debe decaer (sangrado ~0;0;30 por paso).
+        let total: i64 = lattice.get_amplitudes().iter().map(|a| a.to_raw()).sum();
+        assert!(
+            total < SPA::SCALE_0,
+            "dissipativo: energía total debe decaer tras step()"
+        );
+    }
 
     #[test]
     fn test_inject_pai_derives_exact_reciprocal() {
