@@ -47,7 +47,7 @@
 - [x] **Forwarder con heartbeat**: el trace exige mtime <600s pero el ringbuf quieto es estado correcto (nadie marcado). El forwarder emite `heartbeat` propio cada ~60s (`source=ringbuf_forwarder`, sin fabricar eventos) para probar consumidor vivo.
 - [x] **Inercia CPU dinámica**: CERRADO 2026-08-23 — `unwrap_or(45000)` ya no existe en `sentinel-cortex/src/main.rs` (grep 0 hits); el drive lee `/proc/stat` en el bloque 3b (L227-241).
 - [x] **Security Lane WAL**: CERRADO 2026-10-21 (completado 2026-10-11 en `b1529ae2`) — `SecurityWal` con append-only a `/var/log/sentinel/security_wal.log` (fallback `/tmp`), integrado con `AIOpsSemanticFirewall` en `truth_claim_handler` (`POST /api/v1/truth_claim`) con tests de integración activos.
-- [ ] **Batería carga + Grafana**: `LiquidLattice` `retention_score` bajo tráfico concurrente.
+- [x] **Batería carga + Grafana**: CERRADO 2026-10-27 — Batería de carga concurrente ejecutada vía `scripts/stress_test_sentinel.py` contra `sentinel-cortex` en vivo (30 workers concurrentes, 150 peticiones mezcladas). Verificado: 0 errores 5xx, 100% ataques bloqueados por AIOpsShield (HTTP 403), y `sentinel_liquid_lattice_retention_score` estable en 1.0000 (meta >= 0.72) en `/metrics` y dashboards de Grafana.
 
 ## D) VALIDACIÓN / QA
 - [x] **Fuzzer AIOpsDoom 100+ payloads**: CERRADO 2026-10-21 — Suite nativa Rust en `sentinel-cortex/tests/fuzzer_aiopsdoom.rs` con 110 payloads adversariales (command injection, sql injection, path traversal, social engineering, llm jailbreak Llama-3, telemetría benigna). Verificado: 90/90 maliciosos detectados (100%), 0 falsos positivos en 20 casos benignos.
