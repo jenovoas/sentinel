@@ -54,7 +54,7 @@
 - [x] **Benchmark Dual-Lane completo** con gráficos: CERRADO 2026-10-27 — `me-60os-core/src/bin/dual_lane_bench.rs` implementado y ampliado a 10.000 eventos de router y 200 escrituras fsync a Security WAL con métricas de percentiles (p50, p90, p95, p99), throughput (86k+ ev/s), tasa de pérdida 0.0% e histogramas ASCII de distribución de latencia.
 - [ ] **TruthSync 1M+ claims** (dataset real).
 - [ ] **Test carga 24h / failover / auto-regeneración**.
-- [ ] **eBPF funcional PoC** (<1ms overhead, logs).
+- [x] **eBPF funcional PoC** (<1ms overhead, logs): CERRADO 2026-10-21 — Cerrado en sección B (Overhead eBPF ~620ns <1µs medido en microbench diferencial C con 50k opens ×3, y logs volcados a `ebpf_trace.log` por forwarder).
 - [x] **EXP-030** validación `PortalDetector` Rust (`sin_s60`) — CERRADO 2026-08-25 (verificado en suite de tests Rust).
 - [x] **EXP-031 / 033 / 034 / EXT-001 / 035** — CERRADO 2026-08-25 (`QuantumScheduler` integrado en `AppState`, shutdown coordinado, Liquid Lattice y tests unitarios en verde).
 - [x] **CI / Estabilidad Python y Rust** — CERRADO 2026-08-25 (`pyproject.toml`, Ruff 0 errores, normalización `bcrypt`, pytest 69/69 tests pasando).
@@ -71,7 +71,7 @@
 
 ## E) FRONTEND / DOCS (legítimo, no bloqueante)
 - [ ] **Frontend V2**: dashboard SLO, AI playground, security routes, auditd table (`docs/FRONTEND_PLAN_V2.md`).
-- [ ] **Backup dashboard**: type hints, tests, TS strict (`docs/BACKUP_DASHBOARD_INTEGRATION_PLAN.md`).
+- [x] **Backup dashboard**: CERRADO 2026-10-27 — `BackupStatusCard` implementado con TypeScript estricto, badges de salud (healthy/warning/critical), manejo de errores y reintentos, validado por `tsc --noEmit` y suite de tests de backend `test_backup_api.py` (18 tests) y `test_backup_security.py` pasando al 100% (`docs/01_produccion_actual_fenix/BACKUP_DASHBOARD_INTEGRATION_PLAN.md`).
 - [ ] **Consolidación docs**: reducir 1.288 `.md` a ~20 maestros (`docs/PLAN_CONSOLIDACION_DOCS.md`).
 - [ ] **Reestructurar `docs/` + `README` + `ARCHITECTURE`** (`docs/PLAN_DE_TRABAJO_Q1_2026.md`).
 
