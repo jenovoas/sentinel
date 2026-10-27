@@ -15,12 +15,14 @@ This router handles all tenant-related endpoints, including:
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
+from app.models.tenant import Tenant
 from app.models.user import User
 from app.schemas import TenantCreate, TenantResponse, TenantUpdate
-from app.security import get_current_admin_user, get_current_user
+from app.security import get_current_admin_user, get_current_superuser, get_current_user
 from app.services.tenant_service import (
     create_tenant as create_tenant_service,
 )
@@ -37,7 +39,7 @@ router = APIRouter(prefix="/api/v1/tenants", tags=["tenants"])
 async def create_tenant(
     tenant: TenantCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_superuser),
 ):
     """
     Creates a new tenant.
@@ -60,8 +62,15 @@ async def list_tenants(
     It returns a list of all tenants. In a real-world application, this
     should be restricted to superusers.
     """
-    tenants = await get_tenants(db, skip=skip, limit=limit)
-    return tenants
+    if current_user.is_superuser:
+        return await get_tenants(db, skip=skip, limit=limit)
+    result = await db.execute(
+        select(Tenant)
+        .where(Tenant.id == current_user.organization_id)
+        .offset(skip)
+        .limit(limit)
+    )
+    return result.scalars().all()
 
 @router.get("/{tenant_id}", response_model=TenantResponse)
 async def get_tenant(
@@ -77,7 +86,7 @@ async def get_tenant(
     this should be restricted to superusers or users of that tenant.
     """
     tenant = await get_tenant_service(db, tenant_id=tenant_id)
-    if not tenant:
+    if not tenant or (not current_user.is_superuser and tenant.id != current_user.organization_id):
         raise HTTPException(status_code=404, detail="Tenant not found")
     return tenant
 
@@ -86,7 +95,7 @@ async def update_tenant(
     tenant_id: str,
     tenant: TenantUpdate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_admin_user),
 ):
     """
     Updates a tenant.
@@ -96,7 +105,7 @@ async def update_tenant(
     this should be restricted to superusers or users of that tenant.
     """
     db_tenant = await get_tenant_service(db, tenant_id=tenant_id)
-    if not db_tenant:
+    if not db_tenant or (not current_user.is_superuser and db_tenant.id != current_user.organization_id):
         raise HTTPException(status_code=404, detail="Tenant not found")
 
     update_data = tenant.model_dump(exclude_unset=True)
@@ -112,7 +121,7 @@ async def update_tenant(
 async def delete_tenant(
     tenant_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_superuser),
 ):
     """
     Deletes a tenant.
@@ -122,7 +131,7 @@ async def delete_tenant(
     this should be restricted to superusers.
     """
     db_tenant = await get_tenant_service(db, tenant_id=tenant_id)
-    if not db_tenant:
+    if not db_tenant or (not current_user.is_superuser and db_tenant.id != current_user.organization_id):
         raise HTTPException(status_code=404, detail="Tenant not found")
 
     await db.delete(db_tenant)

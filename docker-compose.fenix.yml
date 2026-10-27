@@ -58,8 +58,73 @@ services:
           memory: 256M
     restart: unless-stopped
 
-  # Cortex runs as the native Alpine/OpenRC daemon. The container is intentionally omitted
-  # to avoid binding a second process to :8000 and to preserve direct eBPF/SHM access.
+  # Cortex runs as the native Alpine/OpenRC daemon on host :8000. The identity API
+  # is isolated inside Compose and does not publish a host port.
+  sentinel-auth:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: sentinel-auth
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-sentinel_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-sentinel_db}
+      FASTAPI_ENV: production
+      SECRET_KEY: ${SECRET_KEY:?Configura una SECRET_KEY aleatoria en .env}
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: "10"
+      JWT_ISSUER: sentinel-auth
+      JWT_AUDIENCE: sentinel-cortex
+    entrypoint:
+      - python
+      - -m
+      - uvicorn
+      - app.auth_main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+    expose:
+      - "8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - sentinel_internal
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/auth/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    restart: unless-stopped
+
+  # Ejecutar explícitamente antes de habilitar identidad; nunca se lanza en `up`.
+  sentinel-auth-migrate:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: sentinel-auth-migrate
+    profiles: ["db-migrate"]
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-sentinel_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-sentinel_db}
+      FASTAPI_ENV: production
+      SECRET_KEY: ${SECRET_KEY:?Configura una SECRET_KEY aleatoria en .env}
+      ALGORITHM: HS256
+    entrypoint: ["python", "-m", "alembic"]
+    command: ["upgrade", "head"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - sentinel_internal
+    restart: "no"
 
   frontend:
     build:
@@ -67,19 +132,23 @@ services:
       dockerfile: Dockerfile
     container_name: sentinel-frontend
     environment:
-      - NEXT_PUBLIC_API_URL=https://cortex.pinguinoseguro.cl/api
+      - NODE_ENV=production
       - CORTEX_INTERNAL_URL=http://host.docker.internal:8000
+      - AUTH_INTERNAL_URL=http://sentinel-auth:8000
     networks:
       - sentinel_internal
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    depends_on:
+      sentinel-auth:
+        condition: service_healthy
     ports:
       - target: 3000
         published: "3101"
         host_ip: 127.0.0.1
         mode: host
 
-    # Nginx del host publica cortex.pinguinoseguro.cl.
+    # Nginx del host publica el frontend en sentinel.pinguinoseguro.cl y la API directa en cortex.pinguinoseguro.cl.
     deploy:
       resources:
         limits:

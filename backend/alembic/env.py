@@ -2,9 +2,14 @@
 # Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 from logging.config import fileConfig
+from pathlib import Path
+import sys
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
+
+sys.path.insert(0, str(Path(__file__).parent))
+from identity_adoption import adopt_legacy_identity_schema
 
 from app import models  # noqa: F401 ensures models are imported for metadata
 from app.config import get_settings
@@ -73,12 +78,13 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
-
-        with context.begin_transaction():
-            context.run_migrations()
+        with connection.begin():
+            adopt_legacy_identity_schema(connection)
+            context.configure(
+                connection=connection, target_metadata=target_metadata
+            )
+            with context.begin_transaction():
+                context.run_migrations()
 
 
 if context.is_offline_mode():

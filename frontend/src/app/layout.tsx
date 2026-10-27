@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Navigation } from "@/components/Navigation";
-import { WipModal } from "@/components/WipModal";
+import { SessionGuard } from "@/components/SessionGuard";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,9 +18,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
-        <WipModal />
-        <Navigation />
-        <main style={{ paddingTop: "72px" }}>{children}</main>
+        <SessionGuard>{children}</SessionGuard>
       </body>
     </html>
   );

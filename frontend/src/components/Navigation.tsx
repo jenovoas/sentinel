@@ -8,8 +8,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import { csrfTokenFromCookie } from "@/lib/session-client";
 
 interface NavItem {
     label: string;
@@ -29,6 +30,7 @@ const NAV_ITEMS: NavItem[] = [
 
 export function Navigation() {
     const pathname = usePathname();
+    const router = useRouter();
     const [menuOpen, setMenuOpen] = useState(false);
     const [cortexResponding, setCortexResponding] = useState<boolean | null>(null);
 
@@ -57,6 +59,15 @@ export function Navigation() {
             window.clearInterval(interval);
         };
     }, []);
+
+    const handleLogout = async () => {
+        const response = await fetch("/api/auth/logout", {
+            method: "POST",
+            headers: { "x-csrf-token": csrfTokenFromCookie() },
+            cache: "no-store",
+        });
+        if (response.ok) router.replace("/login");
+    };
 
     const isActive = (href: string) =>
         href === "/dashboard"
@@ -189,6 +200,22 @@ export function Navigation() {
                         >
                             PinguinoSeguro
                         </Link>
+                        <button
+                            type="button"
+                            onClick={handleLogout}
+                            style={{
+                                marginLeft: "0.5rem",
+                                padding: "0.4rem 0.75rem",
+                                color: "#cbd5e1",
+                                background: "transparent",
+                                border: "1px solid rgba(255,255,255,0.15)",
+                                borderRadius: "8px",
+                                cursor: "pointer",
+                                fontSize: "0.85rem",
+                            }}
+                        >
+                            Cerrar sesión
+                        </button>
                     </div>
 
                     {/* Hamburger — mobile */}

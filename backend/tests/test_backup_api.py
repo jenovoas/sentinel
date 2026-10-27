@@ -20,7 +20,7 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.models.user import User, UserRole
-from app.security import get_current_admin_user
+from app.security import get_current_user
 
 client = TestClient(app)
 
@@ -33,10 +33,11 @@ def override_admin_user():
     """Garantiza que los endpoints que requieren autenticación de administrador pasen en las pruebas unitarias."""
     mock_admin = MagicMock(spec=User)
     mock_admin.is_admin = True
+    mock_admin.is_superuser = True
     mock_admin.role = UserRole.ADMIN
-    app.dependency_overrides[get_current_admin_user] = lambda: mock_admin
+    app.dependency_overrides[get_current_user] = lambda: mock_admin
     yield
-    app.dependency_overrides.pop(get_current_admin_user, None)
+    app.dependency_overrides.pop(get_current_user, None)
 
 @pytest.fixture
 def mock_backup_dir(tmp_path):
@@ -189,55 +190,25 @@ def test_backup_history_invalid_params():
 # PRUEBAS: /api/v1/backup/trigger
 # ============================================================================
 
-@patch('subprocess.run')
-def test_backup_trigger_success(mock_run):
-    """Comprueba el inicio correcto de una copia de seguridad."""
-    # Simula una ejecución correcta de la copia de seguridad.
-    mock_run.return_value = MagicMock(
-        returncode=0,
-        stdout="Backup completed successfully",
-        stderr=""
-    )
+@patch("subprocess.run")
+def test_backup_trigger_disabled_for_superuser(mock_run):
+    response = client.post("/api/v1/backup/trigger")
+    assert response.status_code == 503
+    mock_run.assert_not_called()
+
+
+@patch("subprocess.run")
+def test_backup_trigger_rejects_organization_admin(mock_run):
+    organization_admin = MagicMock(spec=User)
+    organization_admin.is_admin = True
+    organization_admin.is_superuser = False
+    organization_admin.role = UserRole.ADMIN
+    app.dependency_overrides[get_current_user] = lambda: organization_admin
 
     response = client.post("/api/v1/backup/trigger")
 
-    assert response.status_code == 200
-    data = response.json()
-
-    assert data["status"] == "success"
-    assert data["exit_code"] == 0
-    assert "successfully" in data["message"].lower()
-
-
-@patch('subprocess.run')
-def test_backup_trigger_failure(mock_run):
-    """Comprueba el inicio fallido de una copia de seguridad."""
-    # Simula una ejecución fallida de la copia de seguridad.
-    mock_run.return_value = MagicMock(
-        returncode=1,
-        stdout="",
-        stderr="Backup failed: permission denied"
-    )
-
-    response = client.post("/api/v1/backup/trigger")
-
-    assert response.status_code == 200
-    data = response.json()
-
-    assert data["status"] == "failed"
-    assert data["exit_code"] == 1
-
-
-@patch('subprocess.run')
-def test_backup_trigger_timeout(mock_run):
-    """Comprueba el tiempo de espera agotado al iniciar una copia de seguridad."""
-    import subprocess
-    mock_run.side_effect = subprocess.TimeoutExpired(cmd="backup.sh", timeout=300)
-
-    response = client.post("/api/v1/backup/trigger")
-
-    assert response.status_code == 408  # Tiempo de espera agotado.
-    assert "timeout" in response.json()["detail"].lower()
+    assert response.status_code == 403
+    mock_run.assert_not_called()
 
 
 # ============================================================================

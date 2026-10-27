@@ -3,8 +3,9 @@
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 from datetime import datetime
 from typing import Optional
+from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 from .auth import Token, TokenData
 from .users import (
@@ -20,6 +21,7 @@ from .users import (
 from .users import (
     UserUpdate as UserUpdateNew,
 )
+from .users import _validate_password_length
 
 __all__ = [
     "Token",
@@ -67,8 +69,13 @@ class TenantResponse(BaseModel):
 class UserCreate(BaseModel):
     email: EmailStr
     username: str = Field(..., min_length=3, max_length=100)
-    password: str = Field(..., min_length=8)
+    password: str = Field(..., min_length=8, max_length=128)
     tenant_id: Optional[str] = None
+
+    @field_validator("password")
+    @classmethod
+    def password_byte_limit(cls, value: str) -> str:
+        return _validate_password_length(value)
 
 
 class UserUpdate(BaseModel):
@@ -78,12 +85,12 @@ class UserUpdate(BaseModel):
 
 
 class UserResponse(BaseModel):
-    id: str
+    id: UUID
     email: str
     username: str
     is_active: bool
     is_superuser: bool
-    tenant_id: str
+    tenant_id: UUID
     created_at: datetime
     updated_at: datetime
 

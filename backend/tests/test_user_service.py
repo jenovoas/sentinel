@@ -7,7 +7,8 @@ from uuid import uuid4
 import pytest
 
 from app.models.user import User
-from app.services.user_service import get_user, get_user_by_email
+from app.schemas import UserCreate
+from app.services.user_service import create_user, get_user, get_user_by_email
 
 
 @pytest.mark.asyncio
@@ -39,3 +40,23 @@ async def test_get_user_by_email():
 
     assert result == mock_user
     db.execute.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_create_user_persists_both_tenant_and_organization_ids():
+    organization_id = uuid4()
+    db = AsyncMock()
+    db.add = MagicMock()
+    data = UserCreate(
+        email="member@example.com",
+        username="member",
+        password="secure-password",
+        tenant_id=str(organization_id),
+    )
+
+    created = await create_user(db, data)
+
+    assert created.organization_id == organization_id
+    assert created.tenant_id == organization_id
+    db.add.assert_called_once_with(created)
+    db.commit.assert_awaited_once()

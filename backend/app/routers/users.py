@@ -15,15 +15,15 @@ This router handles all user-related endpoints, including:
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.models.user import User
 from app.schemas import UserCreate, UserResponse, UserUpdate
-from app.security import get_current_user
+from app.security import get_current_admin_user, get_current_user
 from app.services.user_service import create_user as create_user_service
 from app.services.user_service import get_user as get_user_service
-from app.services.user_service import get_users
 
 router = APIRouter(prefix="/api/v1/users", tags=["users"])
 
@@ -31,7 +31,7 @@ router = APIRouter(prefix="/api/v1/users", tags=["users"])
 async def create_user(
     user: UserCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_admin_user),
 ):
     """
     Creates a new user.
@@ -39,6 +39,11 @@ async def create_user(
     Requires authentication.
     If a tenant_id is not provided, the user is assigned to the 'default' tenant.
     """
+    organization_id = str(current_user.organization_id)
+    if user.tenant_id is None:
+        user.tenant_id = organization_id
+    elif not current_user.is_superuser and user.tenant_id != organization_id:
+        raise HTTPException(status_code=403, detail="Cannot create users outside your organization")
     return await create_user_service(db=db, user=user)
 
 @router.get("/", response_model=List[UserResponse])
@@ -55,8 +60,11 @@ async def list_users(
     It returns a list of all users that belong to the same tenant as the
     currently authenticated user.
     """
-    users = await get_users(db, skip=skip, limit=limit)
-    return users
+    query = select(User)
+    if not current_user.is_superuser:
+        query = query.where(User.organization_id == current_user.organization_id)
+    result = await db.execute(query.offset(skip).limit(limit))
+    return result.scalars().all()
 
 @router.get("/{user_id}", response_model=UserResponse)
 async def get_user(
@@ -72,7 +80,7 @@ async def get_user(
     to the same tenant as the currently authenticated user.
     """
     user = await get_user_service(db, user_id=user_id)
-    if not user:
+    if not user or (not current_user.is_superuser and user.organization_id != current_user.organization_id):
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
@@ -91,10 +99,12 @@ async def update_user(
     to the same tenant as the currently authenticated user.
     """
     db_user = await get_user_service(db, user_id=user_id)
-    if not db_user:
+    if not db_user or (not current_user.is_superuser and db_user.organization_id != current_user.organization_id):
         raise HTTPException(status_code=404, detail="User not found")
 
     update_data = user.model_dump(exclude_unset=True)
+    if "is_active" in update_data and not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Admin role required to change user privileges")
     for field, value in update_data.items():
         setattr(db_user, field, value)
 
@@ -107,7 +117,7 @@ async def update_user(
 async def delete_user(
     user_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_admin_user),
 ):
     """
     Deletes a user.
@@ -117,7 +127,7 @@ async def delete_user(
     to the same tenant as the currently authenticated user.
     """
     db_user = await get_user_service(db, user_id=user_id)
-    if not db_user:
+    if not db_user or (not current_user.is_superuser and db_user.organization_id != current_user.organization_id):
         raise HTTPException(status_code=404, detail="User not found")
 
     await db.delete(db_user)

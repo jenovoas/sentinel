@@ -5,6 +5,8 @@
 User service - Business logic for user operations
 Supports both legacy (tenant_id) and new (organization_id) schemas
 """
+from uuid import UUID
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -42,6 +44,7 @@ async def create_user(db: AsyncSession, user: UserCreate):
         if not default_tenant:
             raise Exception("Default tenant/organization not found")
         org_id = default_tenant.id
+    org_id = UUID(str(org_id))
 
     # Create user with new model structure
     db_user = User(
@@ -49,6 +52,7 @@ async def create_user(db: AsyncSession, user: UserCreate):
         username=user.username,
         password_hash=hashed_password,
         organization_id=org_id,
+        tenant_id=org_id,
         first_name=getattr(user, 'first_name', 'User'),
         last_name=getattr(user, 'last_name', 'Account'),
     )

@@ -637,5 +637,7 @@
 | 632 | `temporal/SUPERPODERES_CAJA_SEGURA.md` | **?** |
 | 633 | `tests/agents.md` | **?** |
 | 634 | `tools/README.md` | **Inglés** |
+| 635 | `config/openrc/README.md` | **Español** |
+| 636 | `docs/ops/CABLEADO_Y_TOPOLOGIA_CANONICA.md` | **Español** |
 
-Total: 634 archivos
+Total: 636 archivos

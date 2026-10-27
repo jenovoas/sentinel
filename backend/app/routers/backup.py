@@ -20,7 +20,6 @@ Created: 2025-12-15
 
 import glob
 import os
-import subprocess
 import time
 from datetime import datetime, timedelta
 from functools import lru_cache
@@ -29,7 +28,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from app.security import get_current_admin_user
+from app.security import get_current_superuser
 
 router = APIRouter(prefix="/api/v1/backup", tags=["backup"])
 
@@ -376,86 +375,9 @@ async def get_backup_history(
 
 
 @router.post("/trigger", response_model=BackupTriggerResponse)
-async def trigger_backup(current_user = Depends(get_current_admin_user)):
-    """
-    Manually trigger a backup
-    
-    Executes the backup script and returns the result.
-    This operation may take several seconds to complete.
-    
-    Returns:
-        Backup trigger response with status and output
-    """
-    try:
-        # Get project root (assuming backend is in backend/ directory)
-        # backend/app/routers/backup.py -> backend/app/routers -> backend/app -> backend -> repository_root
-        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-        backup_script_rel = os.path.join("scripts", "backup", "backup.sh")
-        backup_script = os.path.join(project_root, backup_script_rel)
-
-        # Security: Resolve absolute paths and validate
-        abs_script_path = os.path.abspath(backup_script)
-        abs_project_root = os.path.abspath(project_root)
-        expected_path = os.path.join(abs_project_root, "scripts", "backup", "backup.sh")
-
-        if abs_script_path != expected_path:
-            raise HTTPException(
-                status_code=403,
-                detail="Unauthorized script path: security validation failed"
-            )
-
-        if not os.path.exists(abs_script_path):
-            raise HTTPException(
-                status_code=404,
-                detail="Backup script not found"
-            )
-
-        # Ensure the script is executable
-        if not os.access(abs_script_path, os.X_OK):
-            raise HTTPException(
-                status_code=403,
-                detail="Backup script is not executable"
-            )
-
-        # Security: Check if the script is world-writable
-        if os.stat(abs_script_path).st_mode & 0o002:
-            raise HTTPException(
-                status_code=403,
-                detail="Security error: Backup script is world-writable"
-            )
-
-        # Execute backup script
-        result = subprocess.run(
-            [abs_script_path],
-            capture_output=True,
-            text=True,
-            timeout=300,  # 5 minute timeout
-            cwd=project_root
-        )
-        status = "success" if result.returncode == 0 else "failed"
-        message = "Backup completed successfully" if result.returncode == 0 else "Backup failed"
-
-        # Clear cache to force refresh
-        get_cached_status.cache_clear()
-
-        return BackupTriggerResponse(
-            status=status,
-            exit_code=result.returncode,
-            message=message,
-            output=result.stdout[-500:] if result.stdout else result.stderr[-500:]
-        )
-    except HTTPException:
-        raise
-    except subprocess.TimeoutExpired:
-        raise HTTPException(
-            status_code=408,
-            detail="Backup operation timed out: timeout exceeded (5 minutes)"
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to trigger backup: {str(e)}"
-        )
+async def trigger_backup(current_user=Depends(get_current_superuser)):
+    """Backup execution remains disabled in this release."""
+    raise HTTPException(status_code=503, detail="Backup triggering is disabled")
 
 
 @router.get("/logs", response_model=BackupLogs)

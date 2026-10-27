@@ -11,7 +11,7 @@ from datetime import datetime
 from enum import Enum as PyEnum
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, String, func
+from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, String, event, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -46,6 +46,12 @@ class User(Base):
         ForeignKey("organizations.id", ondelete="CASCADE"),
         nullable=False,
         index=True
+    )
+    tenant_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("tenants.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
 
     # Authentication fields
@@ -151,3 +157,17 @@ class User(Base):
     def deactivate(self) -> None:
         """Deactivate user account"""
         self.is_active = False
+
+
+def sync_tenant_id(mapper, connection, user: User) -> None:
+    """Keep legacy RLS tenant_id aligned with the canonical organization ID."""
+    if user.organization_id is None:
+        raise ValueError("organization_id is required to set tenant_id")
+    organization_id = uuid.UUID(str(user.organization_id))
+    if user.tenant_id is not None and uuid.UUID(str(user.tenant_id)) != organization_id:
+        raise ValueError("tenant_id and organization_id must match")
+    user.tenant_id = organization_id
+
+
+event.listen(User, "before_insert", sync_tenant_id)
+event.listen(User, "before_update", sync_tenant_id)

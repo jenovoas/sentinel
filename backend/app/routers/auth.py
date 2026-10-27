@@ -1,40 +1,56 @@
 # Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
 # Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
-from datetime import timedelta
-
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, Form, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
+from app.models.organization import Organization
+from app.models.user import User
 from app.schemas.auth import Token
-from app.security import create_access_token
-from app.services.user_service import authenticate_user
+from app.security.auth import (
+    create_access_token,
+    ensure_schema_current,
+    set_tenant_context,
+    verify_password,
+)
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
+
 
 @router.post("/login", response_model=Token)
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
-    db: AsyncSession = Depends(get_db)
+    organization_slug: str = Form(..., min_length=1, max_length=100),
+    db: AsyncSession = Depends(get_db),
 ):
-    """
-    Logs in a user and returns an access token.
-    """
-    user = await authenticate_user(db, email=form_data.username, password=form_data.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    access_token_expires = timedelta(minutes=30)
-    access_token = create_access_token(
-        data={
-            "user_id": str(user.id),
-            "tenant_id": str(user.organization_id),  # Use organization_id (backward compatible key)
-        },
-        expires_delta=access_token_expires,
+    await ensure_schema_current(db)
+    org_result = await db.execute(
+        select(Organization).where(Organization.slug == organization_slug)
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    organization = org_result.scalars().first()
+    if organization is None or not organization.is_active:
+        raise _login_failed()
+
+    await set_tenant_context(db, organization.id)
+    user_result = await db.execute(
+        select(User).where(
+            User.email == form_data.username,
+            User.organization_id == organization.id,
+        )
+    )
+    user = user_result.scalars().first()
+    if user is None or not user.is_active or not verify_password(form_data.password, user.password_hash):
+        raise _login_failed()
+
+    return {"access_token": create_access_token(user), "token_type": "bearer"}
+
+
+def _login_failed() -> HTTPException:
+    return HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Incorrect organization, email, or password",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
