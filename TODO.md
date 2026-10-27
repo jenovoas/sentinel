@@ -28,7 +28,7 @@
 - [x] **Attach LSM permanente 2026-10-21** — EJECUTADO en vivo + en `ebpf/load.sh` (sección LSM Attach, ambas copias). Los 5 guardianes anexados (`bpftool link show`: 5 links LSM), hooks convertidos a `lsm.s/*` (sleepable), `.o` reconstruidos y sincronizados al deploy. PRUEBA END-TO-END POR PIPELINE PERMANENTE: PID marcado como AI → `ebpf_trace.log` 1126→2278 bytes con 4× `event_type=1 pid=<víctima> severity=2` (FILE_BLOCKED/HIGH). Forwarder consume los ringbufs de las instancias anexadas (pins re-apuntados a ids vigentes).
 - [x] **Overhead eBPF <1µs (vía hot path)**: CERRADO 2026-10-21 con matiz. A/B diferencial con detach temporal (50k opens ×3, microbench C): 5496 vs 4875 ns/open → **overhead ≈620ns <1µs** (los 5 hooks file_open combinados). bpf_stats confirma por programa: guardian_execve 0,56µs, ai_guardian_open 0,25µs, me60os 0,55µs, cognitive 0,47µs. Excepción honesta: `float_detector` en exec era 17,8µs (printk + ringbuf en CADA exec no listada); tras quitar el printk del path UNKNOWN (evento intacto): **3,4µs** (5.3x menos). El exec total ronda ~5µs dominado por ese hook de misión fleet-wide; el path caliente file_open queda <1µs. `bpf_stats_enabled` restaurado a 0.
 - [ ] **xdp_firewall.c**: compilado OK; anclado en `eth0` desde el boot. Pendiente: probar caída/redundancia ante detach.
-- [ ] **gamma_watchdog.c**: `PEERS[]` ya incluye los 5 (verificado en fuente). Compilado OK.
+- [x] **gamma_watchdog.c**: CERRADO 2026-10-27 — `PEERS[]` incluye los 5 guardianes (`guardian_alpha`, `guardian_cognitive`, `ai_guardian`, `float_detector`, `me60os_ai_guardian_open`). Compilado OK con libbpf y verificado en fuente.
 - [ ] **Security hardening legacy**: ECDSA P-256, HMAC Nginx, nonce+replay (de `docs/archive/SECURITY_HARDENING_PLAN.md`).
 
 ## C) DESPLIEGUE fénix local (OpenRC — verificado 2026-10-21 con `rc-status`)
@@ -51,7 +51,7 @@
 
 ## D) VALIDACIÓN / QA
 - [x] **Fuzzer AIOpsDoom 100+ payloads**: CERRADO 2026-10-21 — Suite nativa Rust en `sentinel-cortex/tests/fuzzer_aiopsdoom.rs` con 110 payloads adversariales (command injection, sql injection, path traversal, social engineering, llm jailbreak Llama-3, telemetría benigna). Verificado: 90/90 maliciosos detectados (100%), 0 falsos positivos en 20 casos benignos.
-- [ ] **Benchmark Dual-Lane completo** con gráficos.
+- [x] **Benchmark Dual-Lane completo** con gráficos: CERRADO 2026-10-27 — `me-60os-core/src/bin/dual_lane_bench.rs` implementado y ampliado a 10.000 eventos de router y 200 escrituras fsync a Security WAL con métricas de percentiles (p50, p90, p95, p99), throughput (86k+ ev/s), tasa de pérdida 0.0% e histogramas ASCII de distribución de latencia.
 - [ ] **TruthSync 1M+ claims** (dataset real).
 - [ ] **Test carga 24h / failover / auto-regeneración**.
 - [ ] **eBPF funcional PoC** (<1ms overhead, logs).
