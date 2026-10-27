@@ -30,7 +30,7 @@ chrono = { version = "0.4.38", features = ["serde"] }
 
 # UUID
 uuid = { version = "1.6", features = ["v4", "serde"] }
-jsonwebtoken = "9"
+jsonwebtoken = "10"
 
 # Crypto
 sha3 = "0.12"
