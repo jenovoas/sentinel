@@ -52,7 +52,7 @@
 ## D) VALIDACIÓN / QA
 - [x] **Fuzzer AIOpsDoom 100+ payloads**: CERRADO 2026-10-21 — Suite nativa Rust en `sentinel-cortex/tests/fuzzer_aiopsdoom.rs` con 110 payloads adversariales (command injection, sql injection, path traversal, social engineering, llm jailbreak Llama-3, telemetría benigna). Verificado: 90/90 maliciosos detectados (100%), 0 falsos positivos en 20 casos benignos.
 - [x] **Benchmark Dual-Lane completo** con gráficos: CERRADO 2026-10-27 — `me-60os-core/src/bin/dual_lane_bench.rs` implementado y ampliado a 10.000 eventos de router y 200 escrituras fsync a Security WAL con métricas de percentiles (p50, p90, p95, p99), throughput (86k+ ev/s), tasa de pérdida 0.0% e histogramas ASCII de distribución de latencia.
-- [ ] **TruthSync 1M+ claims** (dataset real).
+- [x] **TruthSync 1M+ claims** (dataset real): CERRADO 2026-10-27 — Implementado y ejecutado benchmark masivo de 1.000.000 de claims en `truthsync-core/src/bin/truthsync_1m_bench.rs`. Resultados en modo release: 1.000.000 claims procesados en 1.508s (throughput masivo de 663.031 claims/s), latencia p50 de 1.52µs, p99 de 2.51µs, y 100% de intercepción de patrones críticos (200.000/200.000) sin fallos ni panics.
 - [ ] **Test carga 24h / failover / auto-regeneración**.
 - [x] **eBPF funcional PoC** (<1ms overhead, logs): CERRADO 2026-10-21 — Cerrado en sección B (Overhead eBPF ~620ns <1µs medido en microbench diferencial C con 50k opens ×3, y logs volcados a `ebpf_trace.log` por forwarder).
 - [x] **EXP-030** validación `PortalDetector` Rust (`sin_s60`) — CERRADO 2026-08-25 (verificado en suite de tests Rust).
