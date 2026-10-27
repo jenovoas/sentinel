@@ -24,3 +24,7 @@ criterion = "0.8"
 [[bench]]
 name = "truthsync_bench"
 harness = false
+
+[[bin]]
+name = "truthsync_1m_bench"
+path = "src/bin/truthsync_1m_bench.rs"
