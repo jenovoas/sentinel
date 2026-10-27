@@ -40,6 +40,7 @@ pub mod buffer_system;
 pub mod celestial; // Celestial navigation: SVector3 + Kepler orbital mechanics (S60)
 pub mod cortex;
 pub mod crystal_cipher; // Clave efímera por pulso del cristal (capa de cifrado ring0-adjacent)
+pub mod decision_tree; // eBPF embedded decision tree classifier (P2)
 pub mod dsp; // S60 DSP multiplier: 128-bit accumulator + overflow traps (hardware model)
 pub mod dual_lane; // Dual-lane router: Security (WAL fsync) + Observability (buffer/backpressure)
 pub mod ebpf_cortex_bridge;
