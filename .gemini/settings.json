@@ -35,6 +35,17 @@
           }
         ]
       }
+    ],
+    "BeforeTool": [
+      {
+        "matcher": "read_file|list_directory",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/jnovoas/.local/bin/graphify hook-guard gemini"
+          }
+        ]
+      }
     ]
   }
 }
