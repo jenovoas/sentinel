@@ -183,12 +183,12 @@ Each router handles a specific domain of functionality.
 app.include_router(health.router, prefix="/api/v1", tags=["health"])
 
 # API endpoints
-app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["analytics"])
-app.include_router(ai.router, prefix="/api/v1/ai", tags=["ai"])
-app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
-app.include_router(users.router, prefix="/api/v1/users", tags=["users"])
-app.include_router(tenants.router, prefix="/api/v1/tenants", tags=["tenants"])
-app.include_router(dashboard.router, prefix="/api/v1/dashboard", tags=["dashboard"])
+app.include_router(analytics.router, tags=["analytics"])
+app.include_router(ai.router, tags=["ai"])
+app.include_router(auth.router, tags=["auth"])
+app.include_router(users.router, tags=["users"])
+app.include_router(tenants.router, tags=["tenants"])
+app.include_router(dashboard.router, tags=["dashboard"])
 app.include_router(backup.router)  # Backup API (prefix defined in router)
 app.include_router(failsafe.router)  # Fail-Safe Security Layer
 

@@ -17,6 +17,7 @@ from .auth import (
     get_current_admin_user,
     get_current_user,
     get_current_user_model,
+    get_current_superuser,
     get_password_hash,
     oauth2_scheme,
     pwd_context,
@@ -37,6 +38,7 @@ __all__ = [
     "get_current_active_user",
     "get_current_user_model",
     "get_current_admin_user",
+    "get_current_superuser",
     "oauth2_scheme",
     "pwd_context",
 ]

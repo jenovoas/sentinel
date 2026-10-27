@@ -617,41 +617,11 @@ pub async fn ai_query_handler(
 }
 
 pub async fn backup_trigger_handler() -> (axum::http::StatusCode, Json<Value>) {
-    let script = std::env::var_os("SENTINEL_BACKUP_SCRIPT")
-        .unwrap_or_else(|| "/opt/sentinel/scripts/run-scheduled-backup.sh".into());
-    let mut child = match tokio::process::Command::new("/bin/sh").arg(script).spawn() {
-        Ok(child) => child,
-        Err(error) => {
-            tracing::error!(error = %error, "No se pudo iniciar el proceso de respaldo");
-            return (
-                axum::http::StatusCode::SERVICE_UNAVAILABLE,
-                Json(json!({
-                    "status": "failed",
-                    "message": "No se pudo iniciar el proceso de respaldo"
-                })),
-            );
-        }
-    };
-
-    tokio::spawn(async move {
-        match child.wait().await {
-            Ok(status) if status.success() => {
-                tracing::info!("El proceso de respaldo terminó correctamente");
-            }
-            Ok(status) => {
-                tracing::error!(status = %status, "El proceso de respaldo terminó con error");
-            }
-            Err(error) => {
-                tracing::error!(error = %error, "No se pudo obtener el resultado del proceso de respaldo");
-            }
-        }
-    });
-
     (
-        axum::http::StatusCode::ACCEPTED,
+        axum::http::StatusCode::SERVICE_UNAVAILABLE,
         Json(json!({
-            "status": "started",
-            "message": "Proceso de respaldo iniciado; el resultado aún no está confirmado"
+            "status": "disabled",
+            "message": "El disparo está deshabilitado hasta integrar y verificar la sesión administrativa existente"
         })),
     )
 }

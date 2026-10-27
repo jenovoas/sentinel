@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { csrfTokenFromCookie } from "@/lib/session-client";
 
 export default function AIPlaygroundPage() {
     const [prompt, setPrompt] = useState("");
@@ -34,7 +35,10 @@ export default function AIPlaygroundPage() {
         try {
             const res = await fetch("/api/v1/ai/query", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-csrf-token": csrfTokenFromCookie(),
+                },
                 body: JSON.stringify({ query: prompt }),
             });
 

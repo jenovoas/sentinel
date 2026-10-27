@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 
 type ReportItem = {
+  id: string;
   name: string;
-  path: string;
   type: "html" | "md" | "csv" | "other";
 };
 
@@ -37,16 +37,16 @@ export default function ReportsPage() {
           <div className="rounded-xl border border-white/5 bg-white/5 p-4 text-sm text-gray-400">Sin informes</div>
         )}
         {items.map((it) => (
-          <div key={it.path} className="rounded-xl border border-white/5 bg-white/5 p-4 flex items-center justify-between">
+          <div key={it.id} className="rounded-xl border border-white/5 bg-white/5 p-4 flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-200">{it.name}</p>
               <p className="text-xs text-gray-500">{it.type.toUpperCase()}</p>
             </div>
             <div className="flex items-center gap-2">
               {it.type === "html" ? (
-                <a className="px-3 py-2 rounded-lg bg-cyan-500/20 text-cyan-200 border border-cyan-400/30 text-sm hover:bg-cyan-500/30" href={`/api/reports/view?path=${encodeURIComponent(it.path)}`} target="_blank" rel="noopener noreferrer">Ver</a>
+                <a className="px-3 py-2 rounded-lg bg-cyan-500/20 text-cyan-200 border border-cyan-400/30 text-sm hover:bg-cyan-500/30" href={`/api/reports/view?id=${encodeURIComponent(it.id)}`} target="_blank" rel="noopener noreferrer">Ver</a>
               ) : null}
-              <a className="px-3 py-2 rounded-lg bg-white/10 text-gray-200 border border-white/20 text-sm hover:bg-white/20" href={`/api/reports/download?path=${encodeURIComponent(it.path)}`}>Descargar</a>
+              <a className="px-3 py-2 rounded-lg bg-white/10 text-gray-200 border border-white/20 text-sm hover:bg-white/20" href={`/api/reports/download?id=${encodeURIComponent(it.id)}`}>Descargar</a>
             </div>
           </div>
         ))}

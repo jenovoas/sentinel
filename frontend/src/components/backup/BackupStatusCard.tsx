@@ -7,7 +7,6 @@
 
 "use client";
 
-import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +14,6 @@ import { useBackupStatus } from "@/hooks/useBackupStatus";
 
 export function BackupStatusCard() {
     const { status, config, refresh } = useBackupStatus();
-    const [triggeringBackup, setTriggeringBackup] = useState(false);
     const backupStatusDisplay: Record<string, { label: string; className: string }> = {
         success: { label: 'Success', className: 'text-emerald-400' },
         failed: { label: 'Failed', className: 'text-rose-400' },
@@ -29,26 +27,6 @@ export function BackupStatusCard() {
     const lastBackupStatus = backupStatusDisplay[status.lastBackupStatus] ?? {
         label: 'Unknown',
         className: 'text-gray-400',
-    };
-
-    const handleTriggerBackup = async () => {
-        setTriggeringBackup(true);
-        try {
-            const res = await fetch('/api/v1/backup/trigger', { method: 'POST' });
-            const data = await res.json();
-
-            if (res.ok && data.status === 'started') {
-                alert(data.message || 'El proceso de respaldo se inició; el resultado aún no está confirmado.');
-                refresh();
-            } else {
-                alert(data.message || `No se pudo iniciar el respaldo (HTTP ${res.status}).`);
-            }
-        } catch (error) {
-            alert('❌ Error triggering backup');
-            console.error(error);
-        } finally {
-            setTriggeringBackup(false);
-        }
     };
 
     const getHealthBadge = () => {
@@ -190,23 +168,14 @@ export function BackupStatusCard() {
                     )}
 
                     {/* Actions */}
-                    <div className="flex gap-2">
-                        <Button
-                            variant="outline"
-                            className="flex-1"
-                            onClick={handleTriggerBackup}
-                            disabled={triggeringBackup}
-                        >
-                            {triggeringBackup ? (
-                                <>
-                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                                    Running...
-                                </>
-                            ) : (
-                                'Trigger Backup'
-                            )}
+                    <div className="flex flex-col gap-2">
+                        <Button variant="outline" className="w-full" disabled>
+                            Disparar respaldo (deshabilitado)
                         </Button>
-                        <Button variant="outline" className="flex-1" disabled>
+                        <p className="text-xs text-gray-400">
+                            El disparo permanece en 503 hasta implementar y verificar el ejecutor seguro de respaldos.
+                        </p>
+                        <Button variant="outline" className="w-full" disabled>
                             Detalles no disponibles
                         </Button>
                     </div>

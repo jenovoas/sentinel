@@ -16,6 +16,7 @@
 * **Entre contenedores Docker (red `sentinel_internal`)**: La comunicación se realiza **exclusivamente por nombres de servicio DNS de Docker Compose**:
   * `postgres` (puerto 5432)
   * `redis` (puerto 6379)
+  * `sentinel-auth` (puerto interno 8000, solo identidad; sin puerto publicado en host)
   * `prometheus` (puerto 9090)
   * `loki` (puerto 3100)
   * `alertmanager` (puerto 9093)
@@ -24,12 +25,13 @@
   * `postgres-exporter` (puerto 9187)
   * `redis-exporter` (puerto 9121)
   * `neural-guard` (procesamiento continuo)
-  * `frontend` (puerto 3000 interno, 3100 publicado en host)
-* **Entre el host y Cortex**: Cortex corre como proceso nativo en el host y escucha en `0.0.0.0:8000`. Los proxies y servicios locales lo acceden en `127.0.0.1:8000`.
+  * `frontend` (puerto 3000 interno, 3101 publicado en loopback del host)
+* **Entre el host y Cortex**: Cortex corre como proceso nativo en el host y escucha en `0.0.0.0:8000`. Los proxies y servicios locales lo acceden por el host gateway o `127.0.0.1:8000`; las rutas privadas requieren JWT válido incluso si se omite el BFF.
 * **Perímetro público TLS (Nginx del Host)**:
-  * `cortex.pinguinoseguro.cl` ➔ Proxy a `http://127.0.0.1:8000`
-  * `sentinel.pinguinoseguro.cl/api/v1/` ➔ Proxy a `http://127.0.0.1:8000`
-  * `sentinel.pinguinoseguro.cl/` ➔ Proxy a `http://127.0.0.1:3100` (Frontend)
+  * `cortex.pinguinoseguro.cl` ➔ API Cortex en `http://127.0.0.1:8000` (requiere Bearer en rutas privadas)
+  * `sentinel.pinguinoseguro.cl/api/v1/telemetry` ➔ WebSocket Cortex en `http://127.0.0.1:8000` (cookie de sesión validada por Cortex)
+  * `sentinel.pinguinoseguro.cl/api/v1/` y `/api/auth/` ➔ Next.js BFF en `http://127.0.0.1:3101`
+  * `sentinel.pinguinoseguro.cl/` ➔ Frontend Next.js en `http://127.0.0.1:3101`
   * `grafana.pinguinoseguro.cl` ➔ Proxy a `http://127.0.0.1:3001` (Grafana)
   * `prometheus.pinguinoseguro.cl` ➔ Proxy a `http://127.0.0.1:9090` (Prometheus con Basic Auth)
   * `n8n.pinguinoseguro.cl` ➔ Proxy a `http://127.0.0.1:5678` (n8n)

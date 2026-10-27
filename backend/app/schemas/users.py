@@ -9,9 +9,15 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 from app.models.user import UserRole
+
+
+def _validate_password_length(password: str | None) -> str | None:
+    if password is not None and len(password.encode("utf-8")) > 72:
+        raise ValueError("password must not exceed 72 UTF-8 bytes")
+    return password
 
 
 # ===== Organization Schemas =====
@@ -56,6 +62,11 @@ class UserCreate(UserBase):
     password: str = Field(..., min_length=8, max_length=128)
     organization_id: UUID
 
+    @field_validator("password")
+    @classmethod
+    def password_byte_limit(cls, value: str) -> str:
+        return _validate_password_length(value)
+
 
 class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
@@ -65,6 +76,11 @@ class UserUpdate(BaseModel):
     role: Optional[UserRole] = None
     is_active: Optional[bool] = None
     password: Optional[str] = Field(None, min_length=8, max_length=128)
+
+    @field_validator("password")
+    @classmethod
+    def password_byte_limit(cls, value: str | None) -> str | None:
+        return _validate_password_length(value)
 
 
 class UserInDB(UserBase):

@@ -2,6 +2,7 @@
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 mod actions;
+mod auth;
 mod buffer_system;
 mod collectors;
 mod dashboard;
@@ -126,6 +127,10 @@ async fn main() {
         }
         return;
     }
+
+    let jwt_config = Arc::new(auth::AuthConfig::from_env().unwrap_or_else(|error| {
+        panic!("Configuración JWT inválida: {error}");
+    }));
 
     // Initialize core components
     let resonance = Arc::new(Mutex::new(ResonanceEngine::new()));
@@ -447,13 +452,10 @@ async fn main() {
         }
     });
 
-    // 3. Setup Axum Router
-    let app = Router::new()
-        .route("/health", get(health_handler))
-        .route("/metrics", get(metrics_prometheus_handler))
+    // 3. Setup Axum Router: only health and metrics remain public.
+    let api_routes = Router::new()
         .route("/api/v1/lattice", get(lattice_status_handler))
         .route("/api/v1/lattice/hologram", get(lattice_hologram_handler))
-        .route("/api/v1/telemetry", get(telemetry_ws_handler))
         .route("/api/v1/sentinel_status", get(sentinel_status_handler))
         .route("/api/v1/qhc/status", get(qhc_client::status_handler))
         .route("/api/v1/truth_claim", post(truth_claim_handler))
@@ -461,10 +463,6 @@ async fn main() {
         .route(
             "/api/v1/backup/status",
             get(dashboard::backup_status_handler),
-        )
-        .route(
-            "/api/v1/backup/trigger",
-            post(dashboard::backup_trigger_handler),
         )
         .route("/api/v1/ai/query", post(dashboard::ai_query_handler))
         .route(
@@ -492,6 +490,32 @@ async fn main() {
             get(dashboard::analytics_anomalies_handler),
         )
         .route("/api/v1/ai/health", get(dashboard::ai_health_handler))
+        .route_layer(axum::middleware::from_fn_with_state(
+            jwt_config.clone(),
+            auth::require_session,
+        ));
+    let telemetry_route = Router::new()
+        .route("/api/v1/telemetry", get(telemetry_ws_handler))
+        .route_layer(axum::middleware::from_fn_with_state(
+            jwt_config.clone(),
+            auth::require_ws_session,
+        ));
+    let backup_trigger_route = Router::new()
+        .route(
+            "/api/v1/backup/trigger",
+            post(dashboard::backup_trigger_handler),
+        )
+        .route_layer(axum::middleware::from_fn(auth::require_superuser))
+        .route_layer(axum::middleware::from_fn_with_state(
+            jwt_config.clone(),
+            auth::require_session,
+        ));
+    let app = Router::new()
+        .route("/health", get(health_handler))
+        .route("/metrics", get(metrics_prometheus_handler))
+        .merge(api_routes)
+        .merge(telemetry_route)
+        .merge(backup_trigger_route)
         .layer(tower_http::trace::TraceLayer::new_for_http())
         .with_state(state);
 
@@ -969,20 +993,31 @@ async fn metrics_prometheus_handler(
 async fn telemetry_ws_handler(
     ws: WebSocketUpgrade,
     axum::extract::State(state): axum::extract::State<Arc<AppState>>,
+    axum::extract::Extension(session): axum::extract::Extension<auth::SessionClaims>,
 ) -> impl axum::response::IntoResponse {
-    ws.on_upgrade(|socket| handle_socket(socket, state))
+    ws.on_upgrade(move |socket| handle_socket(socket, state, session.exp))
 }
 
-async fn handle_socket(mut socket: WebSocket, state: Arc<AppState>) {
+async fn handle_socket(mut socket: WebSocket, state: Arc<AppState>, exp: u64) {
     tracing::info!("🔗 Client/Inversor connected to EBPF Ring-0 Stream");
 
     let mut rx = state.bpf_stream.subscribe();
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|duration| duration.as_secs())
+        .unwrap_or(exp);
+    let expiration = tokio::time::Instant::now() + Duration::from_secs(exp.saturating_sub(now));
 
     loop {
-        // En lugar de fabricar, chupa directamente de la telemetría viva eBPF de Cortex
-        let event: CortexEvent = match rx.recv().await {
-            Ok(e) => e,
-            Err(_) => break, // Broadcast channel cerraría si todo explota
+        let event = tokio::select! {
+            _ = tokio::time::sleep_until(expiration) => {
+                let _ = socket.send(Message::Close(None)).await;
+                break;
+            }
+            event = rx.recv() => match event {
+                Ok(event) => event,
+                Err(_) => break, // Broadcast channel cerraría si todo explota
+            }
         };
 
         let payload = match serde_json::to_string(&event) {
@@ -993,13 +1028,17 @@ async fn handle_socket(mut socket: WebSocket, state: Arc<AppState>) {
             }
         };
 
-        if socket
-            .send(Message::Text(payload.as_str().into()))
-            .await
-            .is_err()
-        {
-            tracing::info!("🔌 Connection Dropped (Investor UI Disconnected)");
-            break;
+        tokio::select! {
+            _ = tokio::time::sleep_until(expiration) => {
+                let _ = socket.send(Message::Close(None)).await;
+                break;
+            }
+            result = socket.send(Message::Text(payload.as_str().into())) => {
+                if result.is_err() {
+                    tracing::info!("🔌 Connection Dropped (Investor UI Disconnected)");
+                    break;
+                }
+            }
         }
     }
 }
@@ -1140,6 +1179,43 @@ mod tests {
     use std::sync::Arc;
     use tower::ServiceExt;
 
+    const TEST_JWT_SECRET: &[u8] = b"test-secret-for-sentinel-cortex-only";
+
+    fn test_token(role: &str, is_superuser: bool, exp: i64, audience: &str) -> String {
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs() as i64;
+        let claims = serde_json::json!({
+            "iss": "sentinel-auth",
+            "aud": audience,
+            "sub": uuid::Uuid::from_u128(1).to_string(),
+            "tenant_id": uuid::Uuid::from_u128(2).to_string(),
+            "role": role,
+            "is_superuser": is_superuser,
+            "iat": now,
+            "exp": exp
+        });
+        jsonwebtoken::encode(
+            &jsonwebtoken::Header::new(jsonwebtoken::Algorithm::HS256),
+            &claims,
+            &jsonwebtoken::EncodingKey::from_secret(TEST_JWT_SECRET),
+        )
+        .unwrap()
+    }
+
+    fn future_exp() -> i64 {
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs() as i64
+            + 60
+    }
+
+    fn member_token() -> String {
+        test_token("member", false, future_exp(), "sentinel-cortex")
+    }
+
     fn test_security_wal() -> (SecurityWal, std::path::PathBuf) {
         let nonce = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -1154,6 +1230,18 @@ mod tests {
             },
             root,
         )
+    }
+
+    async fn status_request(token: Option<String>) -> StatusCode {
+        let (app, _wal_dir) = make_test_app();
+        let mut request = Request::builder().uri("/api/v1/sentinel_status");
+        if let Some(token) = token {
+            request = request.header(axum::http::header::AUTHORIZATION, format!("Bearer {token}"));
+        }
+        app.oneshot(request.body(Body::empty()).unwrap())
+            .await
+            .unwrap()
+            .status()
     }
 
     fn make_test_app() -> (Router, std::path::PathBuf) {
@@ -1187,16 +1275,39 @@ mod tests {
             qhc,
         });
 
+        let auth_config = Arc::new(
+            auth::AuthConfig::new(
+                TEST_JWT_SECRET,
+                "sentinel-auth".into(),
+                "sentinel-cortex".into(),
+            )
+            .unwrap(),
+        );
+        let api_routes = Router::new()
+            .route("/api/v1/sentinel_status", get(sentinel_status_handler))
+            .route("/api/v1/qhc/status", get(qhc_client::status_handler))
+            .route("/api/v1/truth_claim", post(truth_claim_handler))
+            .route("/api/v1/lattice/hologram", get(lattice_hologram_handler))
+            .route_layer(axum::middleware::from_fn_with_state(
+                auth_config.clone(),
+                auth::require_session,
+            ));
+        let backup_trigger_route = Router::new()
+            .route(
+                "/api/v1/backup/trigger",
+                post(dashboard::backup_trigger_handler),
+            )
+            .route_layer(axum::middleware::from_fn(auth::require_superuser))
+            .route_layer(axum::middleware::from_fn_with_state(
+                auth_config,
+                auth::require_session,
+            ));
         (
             Router::new()
-                .route("/api/v1/sentinel_status", get(sentinel_status_handler))
-                .route("/api/v1/qhc/status", get(qhc_client::status_handler))
-                .route("/api/v1/truth_claim", post(truth_claim_handler))
-                .route("/api/v1/lattice/hologram", get(lattice_hologram_handler))
-                .route(
-                    "/api/v1/backup/trigger",
-                    post(dashboard::backup_trigger_handler),
-                )
+                .route("/health", get(health_handler))
+                .route("/metrics", get(metrics_prometheus_handler))
+                .merge(api_routes)
+                .merge(backup_trigger_route)
                 .with_state(state),
             wal_dir,
         )
@@ -1219,6 +1330,80 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn health_and_metrics_remain_public() {
+        let (app, _wal_dir) = make_test_app();
+        let health = app
+            .oneshot(
+                Request::builder()
+                    .uri("/health")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(health.status(), StatusCode::OK);
+
+        let (app, _wal_dir) = make_test_app();
+        let metrics = app
+            .oneshot(
+                Request::builder()
+                    .uri("/metrics")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(metrics.status(), StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn protected_api_rejects_missing_or_invalid_bearer() {
+        assert_eq!(status_request(None).await, StatusCode::UNAUTHORIZED);
+        assert_eq!(
+            status_request(Some("not-a-jwt".into())).await,
+            StatusCode::UNAUTHORIZED
+        );
+    }
+
+    #[tokio::test]
+    async fn protected_api_rejects_expired_or_wrong_audience_tokens() {
+        let expired = test_token("member", false, 0, "sentinel-cortex");
+        let wrong_audience = test_token("member", false, future_exp(), "another-service");
+        assert_eq!(
+            status_request(Some(expired)).await,
+            StatusCode::UNAUTHORIZED
+        );
+        assert_eq!(
+            status_request(Some(wrong_audience)).await,
+            StatusCode::UNAUTHORIZED
+        );
+    }
+
+    #[tokio::test]
+    async fn protected_api_rejects_unknown_roles() {
+        let token = test_token("owner", false, future_exp(), "sentinel-cortex");
+        assert_eq!(status_request(Some(token)).await, StatusCode::FORBIDDEN);
+    }
+
+    #[tokio::test]
+    async fn backup_trigger_requires_superuser() {
+        let (app, _wal_dir) = make_test_app();
+        let token = member_token();
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/api/v1/backup/trigger")
+                    .header(axum::http::header::AUTHORIZATION, format!("Bearer {token}"))
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::FORBIDDEN);
+    }
+
+    #[tokio::test]
     async fn backup_trigger_is_temporarily_disabled() {
         let (app, _wal_dir) = make_test_app();
         let response = app
@@ -1226,6 +1411,13 @@ mod tests {
                 Request::builder()
                     .method("POST")
                     .uri("/api/v1/backup/trigger")
+                    .header(
+                        axum::http::header::AUTHORIZATION,
+                        format!(
+                            "Bearer {}",
+                            test_token("admin", true, future_exp(), "sentinel-cortex")
+                        ),
+                    )
                     .body(Body::empty())
                     .unwrap(),
             )
@@ -1251,6 +1443,10 @@ mod tests {
             .oneshot(
                 Request::builder()
                     .uri("/api/v1/sentinel_status")
+                    .header(
+                        axum::http::header::AUTHORIZATION,
+                        format!("Bearer {}", member_token()),
+                    )
                     .body(Body::empty())
                     .unwrap(),
             )
@@ -1275,6 +1471,10 @@ mod tests {
             .oneshot(
                 Request::builder()
                     .uri("/api/v1/qhc/status")
+                    .header(
+                        axum::http::header::AUTHORIZATION,
+                        format!("Bearer {}", member_token()),
+                    )
                     .body(Body::empty())
                     .unwrap(),
             )
@@ -1305,6 +1505,10 @@ mod tests {
                     .method("POST")
                     .uri("/api/v1/truth_claim")
                     .header("content-type", "application/json")
+                    .header(
+                        axum::http::header::AUTHORIZATION,
+                        format!("Bearer {}", member_token()),
+                    )
                     .body(Body::from(request_body.to_string()))
                     .unwrap(),
             )
@@ -1339,6 +1543,10 @@ mod tests {
                     .method("POST")
                     .uri("/api/v1/truth_claim")
                     .header("content-type", "application/json")
+                    .header(
+                        axum::http::header::AUTHORIZATION,
+                        format!("Bearer {}", member_token()),
+                    )
                     .body(Body::from(request_body.to_string()))
                     .unwrap(),
             )
@@ -1373,6 +1581,10 @@ mod tests {
             .oneshot(
                 Request::builder()
                     .uri("/api/v1/lattice/hologram")
+                    .header(
+                        axum::http::header::AUTHORIZATION,
+                        format!("Bearer {}", member_token()),
+                    )
                     .body(Body::empty())
                     .unwrap(),
             )

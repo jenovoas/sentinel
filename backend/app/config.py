@@ -19,6 +19,7 @@ Environment Variables:
 import os
 from typing import List
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -80,7 +81,19 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = int(
         os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
     )
-    """JWT access token expiration time in minutes."""
+    """JWT access token expiration time in minutes (legacy)."""
+
+    jwt_issuer: str = os.getenv("JWT_ISSUER", "sentinel-auth")
+    jwt_audience: str = os.getenv("JWT_AUDIENCE", "sentinel-cortex")
+
+    @model_validator(mode="after")
+    def require_deployed_secret(self):
+        if self.environment.lower() in {"production", "prod"} and (
+            len(self.secret_key) < 32
+            or self.secret_key == "your-secret-key-change-in-production-min-32-chars-xyz123"
+        ):
+            raise ValueError("SECRET_KEY must be a strong, explicitly configured value in production")
+        return self
 
     refresh_token_expire_days: int = int(
         os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7")
