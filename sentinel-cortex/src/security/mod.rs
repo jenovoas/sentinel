@@ -31,7 +31,7 @@ pub mod forensic_wal;
 pub mod mutual_surveillance;
 
 #[allow(unused_imports)]
-pub use forensic_wal::{DataLane, ForensicWal, WalRecord};
+pub use forensic_wal::{DataLane, ForensicWal, WalAuditReport, WalRecord, WalVerificationError};
 #[allow(unused_imports)]
 pub use mutual_surveillance::{GuardianHealth, GuardianStatusReport, MutualSurveillance};
 #[allow(unused_imports)]
