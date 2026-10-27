@@ -270,7 +270,11 @@ impl ResonantMatrix {
         const PHASE_WRAP_RAW: i64 = 360 * 12_960_000; // una vuelta completa en raw S60
         let wrap_signed = |raw: i64| -> i64 {
             let m = raw.rem_euclid(PHASE_WRAP_RAW);
-            if m >= PHASE_WRAP_RAW / 2 { m - PHASE_WRAP_RAW } else { m }
+            if m >= PHASE_WRAP_RAW / 2 {
+                m - PHASE_WRAP_RAW
+            } else {
+                m
+            }
         };
         // Simplified Linear Diffusion in Rust
         for _ in 0..cycles {
@@ -394,7 +398,11 @@ impl ResonantMatrix {
         const PHASE_WRAP_RAW: i64 = 360 * 12_960_000; // una vuelta completa en raw S60
         let wrap_signed = |raw: i64| -> i64 {
             let m = raw.rem_euclid(PHASE_WRAP_RAW);
-            if m >= PHASE_WRAP_RAW / 2 { m - PHASE_WRAP_RAW } else { m }
+            if m >= PHASE_WRAP_RAW / 2 {
+                m - PHASE_WRAP_RAW
+            } else {
+                m
+            }
         };
         let n_nodes = self.crystals.len();
         if n_nodes == 0 {
@@ -425,8 +433,8 @@ impl ResonantMatrix {
         for c in &self.crystals {
             // Devolución con envolvimiento: la distancia angular real siempre
             // es <= 180° (cruce 0°/360° cuenta como ~0° de desvío).
-            total_dev_val += wrap_signed(c.get_phase().to_raw() - mean_phase_val)
-                .unsigned_abs() as i128;
+            total_dev_val +=
+                wrap_signed(c.get_phase().to_raw() - mean_phase_val).unsigned_abs() as i128;
         }
         let mut mean_dev_val = (total_dev_val / n_nodes as i128) as i64;
         let max_dev: i64 = 180 * 12_960_000;
@@ -598,7 +606,8 @@ mod tests {
         // Con damping=0, la energía total se conserva (solo se difunde entre nodos).
         let total: i64 = lattice.get_amplitudes().iter().map(|a| a.to_raw()).sum();
         assert_eq!(
-            total, SPA::SCALE_0,
+            total,
+            SPA::SCALE_0,
             "superconductor: energía total debe conservarse tras 12 step()"
         );
     }
@@ -643,7 +652,7 @@ mod tests {
         let mut lattice = ResonantMatrix::new(3);
         lattice.crystals[0].phase = SPA::from_raw(359 * 12_960_000);
         lattice.crystals[1].phase = SPA::zero();
-        lattice.crystals[2].phase = SPA::from_raw(1 * 12_960_000);
+        lattice.crystals[2].phase = SPA::from_raw(12_960_000);
 
         lattice.stabilize_py(1);
 
