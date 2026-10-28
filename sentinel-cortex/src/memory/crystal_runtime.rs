@@ -3,6 +3,7 @@
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 
 use me60os_core::isochronous_oscillator::IsochronousOscillator;
+use me60os_core::liquid_memory::LiquidMemory;
 use me60os_core::qhc::QhcTensor;
 use me60os_core::quantum_core::IsochronousClock;
 use me60os_core::quantum_core::S60PID;
@@ -46,6 +47,10 @@ pub struct CrystalRuntimeStatus {
     pub non_markovian_kernel_active: bool,
     pub non_markovian_history_capacity_ticks: usize,
     pub checkpoint_active: bool,
+    pub liquid_memory_active: bool,
+    pub liquid_memory_shm_key: &'static str,
+    pub liquid_memory_checkpoint_bytes: usize,
+    pub liquid_memory_sync_count: u64,
     pub fractal_seed_shm_active: bool,
     pub fractal_seed_capacity: usize,
     pub fractal_seeds_published: u64,
@@ -97,6 +102,9 @@ pub struct CrystalRuntime {
     pid_a: S60PID,
     pid_b: S60PID,
     qhc: QhcTensor,
+    liquid_memory: LiquidMemory,
+    liquid_memory_checkpoint_bytes: usize,
+    liquid_memory_sync_count: u64,
     dtc_clock: IsochronousClock,
     qhc_tick: u64,
     last_phase_modulation: u8,
@@ -169,6 +177,9 @@ impl CrystalRuntime {
             pid_a,
             pid_b,
             qhc: QhcTensor::new(),
+            liquid_memory: LiquidMemory::new(1024),
+            liquid_memory_checkpoint_bytes: 0,
+            liquid_memory_sync_count: 0,
             dtc_clock: IsochronousClock::new_internal(),
             qhc_tick,
             last_phase_modulation: 0,
@@ -349,7 +360,7 @@ impl CrystalRuntime {
         Ok(())
     }
 
-    pub fn persist(&self) -> Result<(), String> {
+    pub fn persist(&mut self) -> Result<(), String> {
         let snapshot = CrystalSnapshot {
             version: SNAPSHOT_VERSION,
             node_count: self.node_count(),
@@ -368,6 +379,17 @@ impl CrystalRuntime {
         let compressed = encoder
             .finish()
             .map_err(|e| format!("finish crystal checkpoint: {e}"))?;
+        self.liquid_memory
+            .store("crystal-runtime-checkpoint", &compressed)?;
+        let cached = self
+            .liquid_memory
+            .retrieve("crystal-runtime-checkpoint")?
+            .ok_or_else(|| "liquid memory did not retain the crystal checkpoint".to_string())?;
+        if cached != compressed {
+            return Err("liquid memory checkpoint integrity mismatch".into());
+        }
+        self.liquid_memory_checkpoint_bytes = compressed.len();
+        self.liquid_memory_sync_count = self.liquid_memory_sync_count.saturating_add(1);
         let next_path = self.snapshot_path.with_extension("gz.next");
         fs::write(&next_path, compressed).map_err(|e| format!("write crystal checkpoint: {e}"))?;
         fs::rename(&next_path, &self.snapshot_path)
@@ -394,6 +416,10 @@ impl CrystalRuntime {
             non_markovian_kernel_active: true,
             non_markovian_history_capacity_ticks: PID_HISTORY_TICKS,
             checkpoint_active: true,
+            liquid_memory_active: true,
+            liquid_memory_shm_key: "crystal-runtime-checkpoint",
+            liquid_memory_checkpoint_bytes: self.liquid_memory_checkpoint_bytes,
+            liquid_memory_sync_count: self.liquid_memory_sync_count,
             fractal_seed_shm_active: self.fractal_seeds_shm.is_some(),
             fractal_seed_capacity: FRACTAL_SEEDS_CAPACITY,
             fractal_seeds_published: self.fractal_seeds_published,

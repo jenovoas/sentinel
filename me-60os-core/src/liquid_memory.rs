@@ -58,6 +58,10 @@ struct NativeShm {
     name: String,
 }
 
+// SAFETY: the mapping is only accessed through `&mut LiquidMemory` methods and
+// the service owns each mapping behind a mutex in the async Cortex runtime.
+unsafe impl Send for NativeShm {}
+
 impl NativeShm {
     fn create(name: &str, size: usize) -> Result<Self, String> {
         let c_name = CString::new(name).map_err(|e| format!("nombre inválido: {e}"))?;
@@ -174,7 +178,7 @@ pub struct LiquidMemory {
     /// Tabla clave → metadata (el único aporte real del legacy Py).
     file_table: HashMap<String, LiquidEntry>,
     /// Buffers SHM vivos que posee este proceso (se liberan en Drop).
-    owned_buffers: Vec<NativeShm>,
+    owned_buffers: HashMap<String, NativeShm>,
 }
 
 impl LiquidMemory {
@@ -184,7 +188,7 @@ impl LiquidMemory {
         Self {
             lattice: LiquidLattice::new(slots),
             file_table: HashMap::new(),
-            owned_buffers: Vec::new(),
+            owned_buffers: HashMap::new(),
         }
     }
 
@@ -206,8 +210,22 @@ impl LiquidMemory {
 
         // 1. SHM backing store
         let shm_name = Self::shm_name_for(key);
-        let shm = NativeShm::create(&shm_name, padded.len())?;
-        shm.write(0, &padded)?;
+        if self
+            .owned_buffers
+            .get(key)
+            .is_some_and(|buffer| buffer.size >= padded.len())
+        {
+            self.owned_buffers
+                .get(key)
+                .expect("buffer existence checked")
+                .write(0, &padded)?;
+        } else {
+            // Drop the old mapping before resizing its named POSIX segment.
+            self.owned_buffers.remove(key);
+            let shm = NativeShm::create(&shm_name, padded.len())?;
+            shm.write(0, &padded)?;
+            self.owned_buffers.insert(key.to_string(), shm);
+        }
 
         // 2. Inyección resonante dual: A = datos, B = hash de la clave (fase)
         let key_hash = blake3::hash(key.as_bytes());
@@ -223,7 +241,6 @@ impl LiquidMemory {
                 shm_name,
             },
         );
-        self.owned_buffers.push(shm);
         Ok(())
     }
 
@@ -256,7 +273,7 @@ impl LiquidMemory {
 impl Drop for LiquidMemory {
     fn drop(&mut self) {
         // Deslinkear los segmentos SHM que este servicio creó.
-        for buf in &self.owned_buffers {
+        for buf in self.owned_buffers.values() {
             if let Ok(c_name) = CString::new(buf.name.clone()) {
                 // SAFETY: shm_unlink is idempotent; owned_buffers list is internal and exclusive
                 unsafe {
