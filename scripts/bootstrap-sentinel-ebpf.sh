@@ -31,14 +31,19 @@ fi
 [[ -e $MAP_PIN ]] || { echo "whitelist map was not pinned" >&2; exit 1; }
 
 whitelist_path() {
-    local path=$1 padding key_hex
+    local path=$1 padding line
+    local -a key_lines key_bytes line_bytes
     [[ -x $path ]] || return 0
     padding=$((256 - ${#path}))
     (( padding >= 0 )) || { echo "whitelist path exceeds map key size: $path" >&2; return 1; }
-    key_hex=$( { printf '%s' "$path"; head -c "$padding" /dev/zero; } | od -An -v -tx1 | xargs )
-    # bpftool accepts the fixed char[256] key as 256 space-separated bytes.
-    # shellcheck disable=SC2086
-    bpftool map update pinned "$MAP_PIN" key hex $key_hex value hex 01 any
+    mapfile -t key_lines < <( { printf '%s' "$path"; head -c "$padding" /dev/zero; } | od -An -v -tx1 )
+    key_bytes=()
+    for line in "${key_lines[@]}"; do
+        read -r -a line_bytes <<< "$line"
+        key_bytes+=("${line_bytes[@]}")
+    done
+    [[ ${#key_bytes[@]} -eq 256 ]] || { echo "invalid whitelist key size for $path" >&2; return 1; }
+    bpftool map update pinned "$MAP_PIN" key hex "${key_bytes[@]}" value hex 01 any
 }
 
 # Minimal operational allowlist is populated before attaching the fail-closed LSM.
@@ -50,7 +55,7 @@ for path in \
     /usr/bin/ssh /usr/bin/scp \
     /usr/bin/cp /usr/bin/mv /usr/bin/rm /usr/bin/mkdir /usr/bin/install /usr/bin/chmod /usr/bin/chown \
     /usr/bin/ls /usr/bin/cat /usr/bin/grep /usr/bin/sed /usr/bin/awk /usr/bin/head /usr/bin/tail \
-    /usr/bin/env /usr/bin/od /usr/bin/xargs /usr/bin/readlink /usr/bin/sha256sum \
+    /usr/bin/env /usr/bin/od /usr/bin/readlink /usr/bin/sha256sum /usr/bin/echo /bin/echo \
     /usr/bin/true /bin/true /usr/bin/id /usr/bin/whoami \
     /usr/bin/apt /usr/bin/apt-get /usr/bin/dpkg /usr/bin/dpkg-query \
     /usr/sbin/bpftool /usr/bin/bpftool /usr/local/bin/sentinel-cortex \
