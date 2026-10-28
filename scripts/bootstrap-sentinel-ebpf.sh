@@ -10,6 +10,8 @@ readonly SCRIPT_DIR=/usr/local/lib/sentinel/ebpf
 readonly OBJECT="$SCRIPT_DIR/guardian_cognitive.o"
 readonly ATTACHER="$SCRIPT_DIR/attacher"
 readonly BATCH_FILE="/run/sentinel-ebpf-allowlist.${BASHPID}.batch"
+ZERO_HEX=()
+for ((zero_index = 0; zero_index < 256; zero_index++)); do ZERO_HEX+=(00); done
 
 if [[ $EUID -ne 0 ]]; then
     echo "run as root" >&2
@@ -35,17 +37,13 @@ fi
 trap 'rm -f "$BATCH_FILE"' EXIT
 
 whitelist_path() {
-    local path=$1 padding byte i
+    local path=$1 padding
     local -a key_bytes
     [[ -x $path ]] || return 0
-    padding=$((256 - ${#path}))
+    read -r -a key_bytes <<< "$(printf '%s' "$path" | od -An -v -tx1)"
+    padding=$((256 - ${#key_bytes[@]}))
     (( padding >= 0 )) || { echo "whitelist path exceeds map key size: $path" >&2; return 1; }
-    key_bytes=()
-    for ((i = 0; i < ${#path}; i++)); do
-        printf -v byte '%02x' "'${path:i:1}"
-        key_bytes+=("$byte")
-    done
-    for ((i = 0; i < padding; i++)); do key_bytes+=(00); done
+    key_bytes+=("${ZERO_HEX[@]:0:padding}")
     [[ ${#key_bytes[@]} -eq 256 ]] || { echo "invalid whitelist key size for $path" >&2; return 1; }
     printf 'map update pinned %s key hex' "$MAP_PIN" >> "$BATCH_FILE"
     printf ' %s' "${key_bytes[@]}" >> "$BATCH_FILE"
