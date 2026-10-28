@@ -50,7 +50,10 @@ whitelist_path() {
 # Minimal operational allowlist is populated before attaching the fail-closed LSM.
 for path in \
     /bin/bash /usr/bin/bash /bin/sh /usr/bin/sh /usr/bin/dash \
-    /usr/bin/sudo /usr/bin/systemctl /usr/sbin/sshd /usr/bin/ssh /usr/bin/scp \
+    /usr/bin/sudo /usr/bin/systemctl /usr/sbin/sshd \
+    /usr/sbin/unix_chkpwd /usr/lib/openssh/sshd-session \
+    /usr/lib/openssh/sshd-auth /usr/lib/openssh/sftp-server \
+    /usr/bin/ssh /usr/bin/scp \
     /usr/bin/cp /usr/bin/mv /usr/bin/rm /usr/bin/mkdir /usr/bin/chmod /usr/bin/chown \
     /usr/bin/ls /usr/bin/cat /usr/bin/grep /usr/bin/sed /usr/bin/awk /usr/bin/head /usr/bin/tail \
     /usr/bin/env /usr/bin/od /usr/bin/xargs /usr/bin/readlink /usr/bin/sha256sum \
