@@ -69,8 +69,19 @@ for path in \
     /usr/sbin/batctl /usr/bin/batctl /usr/sbin/modprobe /usr/bin/modprobe \
     /usr/bin/bridge /usr/sbin/bridge /usr/bin/wg /usr/bin/journalctl \
     /usr/bin/mountpoint /bin/mountpoint /usr/bin/mount /bin/mount \
-    /usr/bin/timeout /usr/bin/sleep; do
+    /usr/bin/timeout /usr/bin/sleep /usr/bin/find /bin/find; do
     whitelist_path "$path"
+done
+
+# This LSM is fail-closed for every execve, not just Sentinel agents. Seed the
+# map with the executable inventory of the fresh host before attaching it, so
+# baseline tools and installed services remain runnable. Include symlink names
+# as well as regular files because bprm->filename can retain the invoked path.
+for root in /bin /sbin /usr/bin /usr/sbin /lib /usr/lib /usr/local /home/jnovoas/.local/bin /home/jnovoas/.cargo/bin; do
+    [[ -d $root ]] || continue
+    while IFS= read -r -d '' candidate; do
+        whitelist_path "$candidate"
+    done < <(find -H "$root" \( -type f -o -type l \) -perm /111 -print0 2>/dev/null)
 done
 
 # Keep each configured login shell executable available after the LSM attaches.
