@@ -53,7 +53,7 @@ for path in \
     /usr/bin/sudo /usr/bin/systemctl /usr/sbin/sshd \
     /usr/sbin/unix_chkpwd /usr/lib/openssh/sshd-session \
     /usr/lib/openssh/sshd-auth /usr/lib/openssh/sftp-server \
-    /usr/bin/ssh /usr/bin/scp \
+    /usr/bin/ssh /usr/bin/scp /usr/bin/curl /usr/bin/wget \
     /usr/bin/cp /usr/bin/mv /usr/bin/rm /usr/bin/mkdir /usr/bin/install /usr/bin/chmod /usr/bin/chown \
     /usr/bin/ls /usr/bin/cat /usr/bin/grep /usr/bin/sed /usr/bin/awk /usr/bin/head /usr/bin/tail \
     /usr/bin/env /usr/bin/od /usr/bin/readlink /usr/bin/sha256sum /usr/bin/echo /bin/echo \
