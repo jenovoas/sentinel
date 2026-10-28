@@ -1,7 +1,7 @@
 [Unit]
 Description=Sentinel Cortex API
-Wants=network-online.target mycnet-batmesh.service
-After=network-online.target mycnet-batmesh.service redis.service
+Wants=network-online.target mycnet-batmesh.service sentinel-ebpf.service
+After=network-online.target mycnet-batmesh.service sentinel-ebpf.service redis.service
 
 [Service]
 Type=simple

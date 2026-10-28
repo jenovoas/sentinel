@@ -1,0 +1,14 @@
+[Unit]
+Description=Sentinel Guardian Cognitive eBPF LSM
+After=local-fs.target
+Before=sentinel-cortex.service mycnetd.service mycnet-batmesh.service
+RequiresMountsFor=/sys/fs/bpf
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/sentinel-ebpf-bootstrap
+RemainAfterExit=yes
+TimeoutStartSec=60
+
+[Install]
+WantedBy=multi-user.target
