@@ -81,7 +81,11 @@ done
 # map with the executable inventory of the fresh host before attaching it, so
 # baseline tools and installed services remain runnable. Include symlink names
 # as well as regular files because bprm->filename can retain the invoked path.
-for root in /bin /sbin /usr/bin /usr/sbin /lib /usr/lib /usr/local /home/jnovoas/.local/bin /home/jnovoas/.cargo/bin; do
+for root in \
+    /bin /sbin /usr/bin /usr/sbin \
+    /usr/lib/openssh /usr/lib/systemd /usr/libexec \
+    /usr/local/bin /usr/local/sbin \
+    /home/jnovoas/.local/bin /home/jnovoas/.cargo/bin; do
     [[ -d $root ]] || continue
     while IFS= read -r -d '' candidate; do
         whitelist_path "$candidate"
