@@ -1,6 +1,7 @@
 [Unit]
 Description=Sentinel Cortex API
-After=network.target redis.service
+Wants=network-online.target mycnet-batmesh.service
+After=network-online.target mycnet-batmesh.service redis.service
 
 [Service]
 Type=simple
@@ -9,7 +10,11 @@ ExecStart=/home/jnovoas/.local/bin/sentinel-cortex
 Restart=always
 RestartSec=3
 Environment=REDIS_URL=redis://localhost:6379
-Environment=EBPF_MONITOR_PATH=/sys/fs/bpf
+Environment=EBPF_MONITOR_PATH=/sys/fs/bpf/guardian_alpha/events
+Environment=SENTINEL_PORT=8000
+Environment=SENTINEL_BIND=0.0.0.0:8000
+Environment=SENTINEL_PAI_CONVERT=1
+Environment=SENTINEL_CRYSTAL_STATE_DIR=/home/jnovoas/.local/state/sentinel
 
 [Install]
 WantedBy=multi-user.target

@@ -38,7 +38,7 @@ pub(crate) struct AppState {
     resonance: Arc<Mutex<ResonanceEngine>>,
     metrics: Arc<dyn MetricsRepository>,
     bpf_stream: broadcast::Sender<CortexEvent>,
-    lattice: Arc<Mutex<memory::resonant_lattice_bridge::ResonantLatticeBridge>>,
+    lattice: Arc<Mutex<memory::crystal_runtime::CrystalRuntime>>,
     truthsync: Arc<Mutex<truthsync_core::TruthSyncEngine>>,
     liquid_lattice: Arc<Mutex<memory::liquid_lattice::LiquidLattice>>,
     #[allow(dead_code)]
@@ -91,10 +91,16 @@ async fn main() {
         rings += 1;
     }
     let calculated_nodes = std::cmp::max(128, 3 * rings * (rings + 1) + 1);
-    tracing::info!("💎 Dynamic RAM Lattice Allocator: Allocated {} nodes across {} rings (Available RAM: {} MB)", calculated_nodes, rings, available_ram_mb);
+    let crystal_nodes = std::env::var("SENTINEL_CRYSTAL_NODES")
+        .ok()
+        .and_then(|value| value.parse::<usize>().ok())
+        .filter(|&nodes| nodes >= 128)
+        .unwrap_or(calculated_nodes);
+    tracing::info!("💎 Dynamic RAM Lattice Allocator: Allocated {} nodes across {} rings (Available RAM: {} MB)", crystal_nodes, rings, available_ram_mb);
 
     let lattice = Arc::new(Mutex::new(
-        memory::resonant_lattice_bridge::ResonantLatticeBridge::new(calculated_nodes),
+        memory::crystal_runtime::CrystalRuntime::new(crystal_nodes)
+            .expect("initialize dual crystal runtime and shared memory"),
     ));
     // Broadcast channel para Múltiples Inversores (WebSockets) viendo el eBPF
     let (tx_bpf, _) = broadcast::channel(100);
@@ -119,6 +125,50 @@ async fn main() {
         neural_memory: neural_memory.clone(),
         quantum_scheduler: quantum_scheduler.clone(),
         bio_resonator: bio_resonator.clone(),
+    });
+
+    // Dual crystal meshes, QHC phase synchronization, non-Markovian kernel,
+    // and SHM publication share the same 500 ms runtime tick.
+    let crystal_runtime_task = lattice.clone();
+    tokio::spawn(async move {
+        let mut interval = tokio::time::interval(Duration::from_millis(500));
+        let mut ticks = 0_u64;
+        loop {
+            interval.tick().await;
+            let mut runtime = crystal_runtime_task.lock().unwrap();
+            if let Err(error) = runtime.step() {
+                tracing::error!(%error, "Dual crystal runtime tick failed");
+            }
+            ticks = ticks.saturating_add(1);
+            if ticks % 60 == 0 {
+                if let Err(error) = runtime.persist() {
+                    tracing::error!(%error, "Dual crystal checkpoint failed");
+                }
+            }
+        }
+    });
+
+    let dtc_runtime = lattice.clone();
+    tokio::spawn(async move {
+        let mut deadline = tokio::time::Instant::now();
+        loop {
+            let next_interval_ns = match dtc_runtime.lock().unwrap().tick_dtc() {
+                Ok(interval_ns) => interval_ns,
+                Err(error) => {
+                    tracing::error!(%error, "DTC/QHC synchronization tick failed");
+                    23_939_835
+                }
+            };
+            deadline += Duration::from_nanos(next_interval_ns);
+            let now = tokio::time::Instant::now();
+            if deadline <= now {
+                // A missed deadline is drift/noise, not permission to emit a
+                // burst of synthetic DTC ticks. Resume from now; QHC's
+                // independent 68-tick correction boundary remains in force.
+                deadline = now + Duration::from_nanos(next_interval_ns);
+            }
+            tokio::time::sleep_until(deadline).await;
+        }
     });
 
     let resonance_task = resonance.clone();
@@ -177,7 +227,7 @@ async fn main() {
         // hook bprm_check_security vivo). El ringbuf 'events' es el que llena guardian_execve.
         // Sin LLM local (laptop no da): el cortex corre como motor determinista de eventos+lattice.
         let monitor_path = std::env::var("EBPF_MONITOR_PATH")
-            .unwrap_or_else(|_| "/sys/fs/bpf/sentinel/events".to_string());
+            .unwrap_or_else(|_| "/sys/fs/bpf/guardian_alpha/events".to_string());
         let bridge = EbpfBridge::new().with_ringbuf_path(monitor_path);
 
         tokio::spawn(async move {
@@ -201,12 +251,11 @@ async fn main() {
         while let Ok(event) = rx_lattice.recv().await {
             let mut lat = lattice_task.lock().unwrap();
             let pressure = event.entropy_s60_raw as i64;
-            let node = (event.pid as usize) % 64;
+            let node = (event.pid as usize) % lat.node_count();
             // FIX (auditoría 2026-08-23, P0.4-A1): pressure es S60 RAW del
             // kernel (cortex_events.h:117); inject() lo re-escalaria por
             // SCALE_0 (doble escala). inject_spa preserva la escala SPA.
-            lat.inject_spa(node, me60os_core::spa::SPA::from_raw(pressure));
-            lat.step();
+            lat.inject_security_spa(node, me60os_core::spa::SPA::from_raw(pressure));
 
             // Connect EXP-009 LiquidLattice 3x3 grid diffusion
             let mut ll = liquid_lattice_task.lock().unwrap();
@@ -280,7 +329,7 @@ async fn main() {
             // AUDIT-360: scope mutex to critical section (inject + step), release before oscillate writes
             {
                 let mut lat = lattice_thermal.lock().unwrap();
-                let node_count = lat.amplitudes_raw().len();
+                let node_count = lat.node_count();
                 // Inject multi-point harmonic thermal pulses across central hexagonal rings (Node 0, ring centers)
                 // PRUEBA PAI-60: si SENTINEL_PAI_CONVERT=1, la amplitud se deriva via pai60_divide
                 // (razon recíproca exacta base-60) en vez de meter i64 crudo como presion.
@@ -290,23 +339,22 @@ async fn main() {
                 if pai_convert {
                     // denominador 60 = escala base-60 (S60). value en [0,60).
                     let v = entropy_pressure.rem_euclid(60);
-                    lat.inject_pai(0, v, 60);
+                    lat.inject_observability_pai(0, v, 60);
                     if node_count > 100 {
                         let step_ring = node_count / 7;
                         for ring_idx in 1..7 {
-                            lat.inject_pai(ring_idx * step_ring, v / 2, 60);
+                            lat.inject_observability_pai(ring_idx * step_ring, v / 2, 60);
                         }
                     }
                 } else {
-                    lat.inject(0, entropy_pressure);
+                    lat.inject_observability(0, entropy_pressure);
                     if node_count > 100 {
                         let step_ring = node_count / 7;
                         for ring_idx in 1..7 {
-                            lat.inject(ring_idx * step_ring, entropy_pressure / 2);
+                            lat.inject_observability(ring_idx * step_ring, entropy_pressure / 2);
                         }
                     }
                 }
-                lat.step();
             } // drop lat lock here
 
             // Calculate Resonant Physics Inertial Damping & Effective Load Reduction (outside lock)
@@ -381,6 +429,10 @@ async fn main() {
         .route("/health", get(health_handler))
         .route("/metrics", get(metrics_prometheus_handler))
         .route("/api/v1/lattice", get(lattice_status_handler))
+        .route(
+            "/api/v1/crystal/runtime",
+            get(crystal_runtime_status_handler),
+        )
         .route("/api/v1/lattice/hologram", get(lattice_hologram_handler))
         .route("/api/v1/telemetry", get(telemetry_ws_handler))
         .route("/api/v1/sentinel_status", get(sentinel_status_handler))
@@ -445,7 +497,10 @@ async fn main() {
         .ok()
         .and_then(|p| p.parse().ok())
         .unwrap_or(8000);
-    let addr = SocketAddr::from(([0, 0, 0, 0], port));
+    let addr: SocketAddr = std::env::var("SENTINEL_BIND")
+        .ok()
+        .and_then(|value| value.parse().ok())
+        .unwrap_or_else(|| SocketAddr::from(([0, 0, 0, 0], port)));
     tracing::info!(
         "Listening on {} (PAI_CONVERT={})",
         addr,
@@ -484,10 +539,16 @@ async fn lattice_status_handler(
     let lat = state.lattice.lock().unwrap();
     Json(LatticeStatusResponse {
         total_energy: lat.total_energy_raw(),
-        node_count: 64,
+        node_count: lat.node_count(),
         amplitudes: lat.amplitudes_raw(),
         phases: lat.phases_raw(),
     })
+}
+
+async fn crystal_runtime_status_handler(
+    axum::extract::State(state): axum::extract::State<Arc<AppState>>,
+) -> Json<memory::crystal_runtime::CrystalRuntimeStatus> {
+    Json(state.lattice.lock().unwrap().status())
 }
 
 #[derive(Serialize)]
@@ -951,7 +1012,7 @@ mod tests {
 
     fn make_test_app() -> Router {
         let lattice = Arc::new(Mutex::new(
-            memory::resonant_lattice_bridge::ResonantLatticeBridge::new(1),
+            memory::crystal_runtime::CrystalRuntime::in_memory(1),
         ));
         let truthsync = Arc::new(Mutex::new(truthsync_core::TruthSyncEngine::new()));
         let resonance = Arc::new(Mutex::new(ResonanceEngine::new()));

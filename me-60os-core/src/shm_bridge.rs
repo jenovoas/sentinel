@@ -150,3 +150,25 @@ impl Drop for PySharedBuffer {
         self.close();
     }
 }
+
+impl PySharedBuffer {
+    /// Publish an aligned u64 to a shared-memory consumer with release ordering.
+    pub fn store_u64_release(&self, offset: usize, value: u64) -> Result<(), String> {
+        if offset
+            .checked_add(std::mem::size_of::<u64>())
+            .map_or(true, |end| end > self.size)
+        {
+            return Err("atomic SHM write out of bounds".into());
+        }
+        if offset % std::mem::align_of::<std::sync::atomic::AtomicU64>() != 0 {
+            return Err("atomic SHM write is not aligned".into());
+        }
+        // SAFETY: bounds and alignment are validated; the mapping is shared and
+        // remains alive for the duration of this call.
+        unsafe {
+            let ptr = self.ptr.add(offset) as *const std::sync::atomic::AtomicU64;
+            (*ptr).store(value, std::sync::atomic::Ordering::Release);
+        }
+        Ok(())
+    }
+}
