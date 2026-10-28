@@ -49,6 +49,7 @@ whitelist_path() {
 # Minimal operational allowlist is populated before attaching the fail-closed LSM.
 for path in \
     /bin/bash /usr/bin/bash /bin/sh /usr/bin/sh /usr/bin/dash \
+    /bin/zsh /usr/bin/zsh /bin/fish /usr/bin/fish \
     /usr/bin/sudo /usr/bin/systemctl /usr/sbin/sshd \
     /usr/sbin/unix_chkpwd /usr/lib/openssh/sshd-session \
     /usr/lib/openssh/sshd-auth /usr/lib/openssh/sftp-server \
@@ -71,6 +72,13 @@ for path in \
     /usr/bin/timeout /usr/bin/sleep; do
     whitelist_path "$path"
 done
+
+# Keep each configured login shell executable available after the LSM attaches.
+while IFS=: read -r account _ _ _ _ _ login_shell; do
+    if [[ $account == jnovoas || $account == root ]]; then
+        whitelist_path "$login_shell"
+    fi
+done < /etc/passwd
 
 # Never detach or delete an existing BPF program from a running host.
 if [[ -e $LINK_PIN ]]; then
