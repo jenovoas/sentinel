@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+export LC_ALL=C
 
 readonly BPF_DIR=/sys/fs/bpf/guardian_alpha
 readonly PROGRAM_PIN="$BPF_DIR/guardian_prog"
@@ -34,17 +35,17 @@ fi
 trap 'rm -f "$BATCH_FILE"' EXIT
 
 whitelist_path() {
-    local path=$1 padding line
-    local -a key_lines key_bytes line_bytes
+    local path=$1 padding byte i
+    local -a key_bytes
     [[ -x $path ]] || return 0
     padding=$((256 - ${#path}))
     (( padding >= 0 )) || { echo "whitelist path exceeds map key size: $path" >&2; return 1; }
-    mapfile -t key_lines < <( { printf '%s' "$path"; head -c "$padding" /dev/zero; } | od -An -v -tx1 )
     key_bytes=()
-    for line in "${key_lines[@]}"; do
-        read -r -a line_bytes <<< "$line"
-        key_bytes+=("${line_bytes[@]}")
+    for ((i = 0; i < ${#path}; i++)); do
+        printf -v byte '%02x' "'${path:i:1}"
+        key_bytes+=("$byte")
     done
+    for ((i = 0; i < padding; i++)); do key_bytes+=(00); done
     [[ ${#key_bytes[@]} -eq 256 ]] || { echo "invalid whitelist key size for $path" >&2; return 1; }
     printf 'map update pinned %s key hex' "$MAP_PIN" >> "$BATCH_FILE"
     printf ' %s' "${key_bytes[@]}" >> "$BATCH_FILE"
