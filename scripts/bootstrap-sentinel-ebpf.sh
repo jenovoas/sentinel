@@ -20,7 +20,7 @@ command -v bpftool >/dev/null || { echo "bpftool is not installed" >&2; exit 1; 
 grep -qw bpf /sys/kernel/security/lsm || { echo "BPF LSM is not enabled" >&2; exit 1; }
 
 mkdir -p /sys/fs/bpf
-if ! mountpoint -q /sys/fs/bpf; then
+if ! grep -Eq '^[^ ]+ /sys/fs/bpf bpf ' /proc/mounts; then
     mount -t bpf bpf /sys/fs/bpf
 fi
 mkdir -p "$BPF_DIR"
