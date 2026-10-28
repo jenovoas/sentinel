@@ -62,6 +62,7 @@ for path in \
     /usr/sbin/ss /usr/sbin/ip /usr/bin/ip \
     /usr/sbin/batctl /usr/bin/batctl /usr/sbin/modprobe /usr/bin/modprobe \
     /usr/bin/bridge /usr/sbin/bridge /usr/bin/wg /usr/bin/journalctl \
+    /usr/bin/mountpoint /bin/mountpoint /usr/bin/mount /bin/mount \
     /usr/bin/timeout /usr/bin/sleep; do
     whitelist_path "$path"
 done
