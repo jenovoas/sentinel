@@ -8,6 +8,7 @@ readonly MAP_PIN="$BPF_DIR/whitelist_map"
 readonly SCRIPT_DIR=/usr/local/lib/sentinel/ebpf
 readonly OBJECT="$SCRIPT_DIR/guardian_cognitive.o"
 readonly ATTACHER="$SCRIPT_DIR/attacher"
+readonly BATCH_FILE="/run/sentinel-ebpf-allowlist.${BASHPID}.batch"
 
 if [[ $EUID -ne 0 ]]; then
     echo "run as root" >&2
@@ -29,6 +30,8 @@ if [[ ! -e $PROGRAM_PIN ]]; then
     bpftool prog load "$OBJECT" "$PROGRAM_PIN" type lsm pinmaps "$BPF_DIR"
 fi
 [[ -e $MAP_PIN ]] || { echo "whitelist map was not pinned" >&2; exit 1; }
+: > "$BATCH_FILE"
+trap 'rm -f "$BATCH_FILE"' EXIT
 
 whitelist_path() {
     local path=$1 padding line
@@ -43,7 +46,9 @@ whitelist_path() {
         key_bytes+=("${line_bytes[@]}")
     done
     [[ ${#key_bytes[@]} -eq 256 ]] || { echo "invalid whitelist key size for $path" >&2; return 1; }
-    bpftool map update pinned "$MAP_PIN" key hex "${key_bytes[@]}" value hex 01 any
+    printf 'map update pinned %s key hex' "$MAP_PIN" >> "$BATCH_FILE"
+    printf ' %s' "${key_bytes[@]}" >> "$BATCH_FILE"
+    printf ' value hex 01 any\n' >> "$BATCH_FILE"
 }
 
 # Minimal operational allowlist is populated before attaching the fail-closed LSM.
@@ -90,6 +95,10 @@ while IFS=: read -r account _ _ _ _ _ login_shell; do
         whitelist_path "$login_shell"
     fi
 done < /etc/passwd
+
+# Submit the inventory in one bpftool process. A process per binary made fresh
+# hosts exceed systemd's bootstrap timeout before the LSM could attach.
+bpftool batch file "$BATCH_FILE"
 
 # Never detach or delete an existing BPF program from a running host.
 if [[ -e $LINK_PIN ]]; then
