@@ -25,12 +25,6 @@ if ! mountpoint -q /sys/fs/bpf; then
 fi
 mkdir -p "$BPF_DIR"
 
-# Never detach or delete an existing BPF program from a running host.
-if [[ -e $LINK_PIN ]]; then
-    bpftool prog show pinned "$PROGRAM_PIN"
-    exit 0
-fi
-
 if [[ ! -e $PROGRAM_PIN ]]; then
     bpftool prog load "$OBJECT" "$PROGRAM_PIN" type lsm pinmaps "$BPF_DIR"
 fi
@@ -57,6 +51,7 @@ for path in \
     /usr/bin/cp /usr/bin/mv /usr/bin/rm /usr/bin/mkdir /usr/bin/chmod /usr/bin/chown \
     /usr/bin/ls /usr/bin/cat /usr/bin/grep /usr/bin/sed /usr/bin/awk /usr/bin/head /usr/bin/tail \
     /usr/bin/env /usr/bin/od /usr/bin/xargs /usr/bin/readlink /usr/bin/sha256sum \
+    /usr/bin/true /bin/true /usr/bin/id /usr/bin/whoami \
     /usr/bin/apt /usr/bin/apt-get /usr/bin/dpkg /usr/bin/dpkg-query \
     /usr/sbin/bpftool /usr/bin/bpftool /usr/local/bin/sentinel-cortex \
     /usr/local/libexec/sentinel-ebpf-bootstrap \
@@ -70,6 +65,12 @@ for path in \
     /usr/bin/timeout /usr/bin/sleep; do
     whitelist_path "$path"
 done
+
+# Never detach or delete an existing BPF program from a running host.
+if [[ -e $LINK_PIN ]]; then
+    bpftool prog show pinned "$PROGRAM_PIN"
+    exit 0
+fi
 
 "$ATTACHER" "$PROGRAM_PIN" "$LINK_PIN"
 bpftool prog show pinned "$PROGRAM_PIN"
