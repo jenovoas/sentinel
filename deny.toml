@@ -11,6 +11,8 @@ allow = [
     # Root LICENSE: Apache-2.0 text with the Commons Clause restriction.
     "LicenseRef-Sentinel-NonCommercial",
     "MIT",
+    "MIT-0",
+    "ISC",
     "Apache-2.0",
     "Apache-2.0 WITH LLVM-exception",
     "BSD-2-Clause",
@@ -90,7 +92,3 @@ name = "tower-http"
 version = "=0.6.11"
 reason = "reqwest 0.13 requires 0.6 while sentinel-cortex uses 0.7"
 
-[[bans.skip]]
-name = "windows-sys"
-version = "=0.52.0"
-reason = "native-tls's tempfile dependency needs 0.52; the workspace uses 0.61"
