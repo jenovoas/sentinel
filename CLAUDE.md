@@ -48,19 +48,21 @@ en Ring-0, y el puente PyO3 hacia `quantum/*.py` es **legacy** (estudio/puente d
     observability/      Dashboards Prometheus + Grafana
     constraints/        YATRA_SPEC.md — el contrato aritmético inmutable
 
-## Stack Tecnológico (FENIX — Alpine Linux, nodo único, solo CPU)
+## Stack Tecnológico (entorno actual Debian, despliegue Kingu/Fenix)
 
 | Capa | Tecnología |
 |------|-----------|
-| Sistema operativo | Alpine Linux, kernel `6.18.40-0-virt` |
-| Rama | `alpine_fenix` únicamente. Prohibido crear ramas. Prohibido usar `main`. |
-| Daemons nativos | OpenRC (`/etc/init.d/sentinel-*`) |
-| Contenedores | Docker Compose (`docker-compose.fenix.yml`) |
+| Sistema operativo host | Debian 13 |
+| Rama | `main` para el entorno Debian/systemd; `alpine_fenix` corresponde a otro entorno. No mezclar configuraciones entre ambos. |
+| Daemons nativos | systemd |
+| Contenedores | Docker Compose; solo los contenedores que lo requieran deben usar imágenes Alpine. |
 | Proxy TLS | Nginx + Let's Encrypt |
 | Tipos base | Rust: SPA `[i64;5]` escala 60⁴=12,960,000; S60 `i64` |
-| Refuerzo kernel | eBPF / hooks LSM + XDP/TC |
+| Refuerzo kernel | eBPF / hooks LSM + XDP/TC, solo con aprobación y preflight de recuperación |
 | IPC | Memoria compartida POSIX en `/dev/shm` |
 | Observabilidad | Prometheus + Grafana + Loki + Promtail |
+
+Para la operación actual, el alcance autorizado es Kingu; no modificar Fenix salvo solicitud explícita.
 
 El workspace incluye `soma_orchestrator` y `soma_worker` como WIP; no forman
 parte del arranque operativo. `neural-guard` se ejecuta en Compose con el motor
@@ -74,6 +76,8 @@ La capa eBPF detecta y bloquea patrones de syscalls float en tiempo de ejecució
 
 Si necesitas logaritmos o funciones trascendentales: usa las implementaciones S60 por serie de Taylor
 en sentinel‑cortex/src/math/. Si aún no existe la que necesitas, abre un issue — no uses floats.
+
+Antes de adjuntar Guardian/eBPF en Kingu, poblar y verificar la whitelist de ejecutables y rutas críticas de recuperación. El bootstrap actual valida la whitelist antes de adjuntar en modo auditoría y no ofrece modo solo-poblar. Confirmar consola de proveedor/recuperación fuera de banda antes de ejecutarlo; enforcement requiere autorización explícita separada.
 
 ## Compilación
 

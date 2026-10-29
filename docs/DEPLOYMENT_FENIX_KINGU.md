@@ -76,3 +76,12 @@ El entrypoint aborta si `alembic upgrade head` falla. La adopción del esquema l
 ## Regla de producción
 
 La preparación y compilación se hacen en Fenix. Los únicos nodos de despliegue de esta guía son Fenix y Kingu. Todo cambio público en Kingu se aplica después de los chequeos privados y con rollback preparado.
+
+## Registro de preflight Kingu-only — 2026-10-29
+
+- Se publicaron `cdb4e8c7` (Sentinel) y `fc2bb06` (personalvault) en `main`. El frontend y su empaquetador no cambiaron desde el bundle preexistente `sentinel-frontend-96043b54.tar.gz` en `/tmp` de Kingu; `sha256sum -c` y la lectura íntegra del tarball pasaron.
+- Preflight de solo lectura por SSH: Kingu es Debian 13, `wg0` tiene `10.88.0.2/24`, Nginx está activo y el filesystem raíz dispone de 122 GB libres. `sudo -n nginx -t` pasa. No hay cuenta/unidad/release Sentinel frontend ni `/etc/sentinel/frontend.env`.
+- Desde Kingu, `http://10.88.0.1:8000/api/v1/health` y `http://10.88.0.1:8001/health` agotaron el timeout; backend y Cortex no son alcanzables en esta comprobación.
+- `sentinel-ebpf.service` está inactivo y enmascarado; bpffs está montado y no hay mapas Sentinel fijados bajo `/sys/fs/bpf/sentinel` ni Guardian bajo `/sys/fs/bpf/guardian_alpha`.
+- `scripts/bootstrap-sentinel-ebpf.sh` inventaría ejecutables, llena y verifica la whitelist y los comandos de recuperación antes de adjuntar Guardian en modo auditoría. No tiene modo solo-poblar. No se ejecutó: no está confirmada una consola de proveedor/recuperación fuera de banda. No se habilitó Guardian ni enforcement.
+- No se instaló ni inició el frontend, no se creó `/opt/sentinel` ni `/etc/sentinel`, y no se modificó Nginx, DNS, TLS, firewall, Fenix ni los servicios de Kingu. Próximo bloqueo: confirmar la recuperación fuera de banda y decidir si se autoriza el attach audit-only que incluye el bootstrap; los endpoints privados siguen sin responder.

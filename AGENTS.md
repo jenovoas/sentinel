@@ -68,3 +68,4 @@ Este proyecto cuenta con soporte de grafo de conocimiento local mediante **graph
 - Antes de trabajar, consulta el contexto pertinente del proyecto y la memoria persistente de `~/proyectos/personalvault`.
 - Cada implementación o despliegue debe quedar documentado tanto en el proyecto como en la vault, con evidencia verificable, validaciones y estado operativo real, para permitir auditoría y coordinación entre agentes/sesiones.
 - Distingue preparación local de despliegue realizado; no registres hechos sin evidencia.
+- Antes de adjuntar Guardian/eBPF en Kingu, poblar y verificar la whitelist de ejecutables y rutas críticas. El bootstrap actual la valida y luego adjunta en modo auditoría; requiere recuperación fuera de banda verificada. Enforcement requiere autorización explícita separada.
