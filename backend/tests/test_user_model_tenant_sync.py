@@ -6,6 +6,10 @@ from sqlalchemy import event
 from app.models.user import User, sync_tenant_id
 
 
+def test_user_role_enum_uses_persisted_database_labels():
+    assert User.__table__.c.role.type.enums == ["admin", "member", "viewer"]
+
+
 def test_insert_and_update_hooks_sync_matching_tenant_id():
     organization_id = uuid4()
     user = User(organization_id=organization_id, tenant_id=None)

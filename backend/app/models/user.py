@@ -77,7 +77,11 @@ class User(Base):
 
     # Permissions
     role: Mapped[UserRole] = mapped_column(
-        Enum(UserRole, name="user_role_enum"),
+        Enum(
+            UserRole,
+            name="user_role_enum",
+            values_callable=lambda enum_cls: [role.value for role in enum_cls],
+        ),
         default=UserRole.MEMBER,
         nullable=False,
         index=True
