@@ -7,8 +7,9 @@ RequiresMountsFor=/sys/fs/bpf
 [Service]
 Type=oneshot
 ExecStart=/usr/local/libexec/sentinel-ebpf-bootstrap
+ExecStop=/usr/local/libexec/sentinel-guardian-rollback --detach
 RemainAfterExit=yes
-TimeoutStartSec=60
+TimeoutStartSec=300
 
 [Install]
 WantedBy=multi-user.target

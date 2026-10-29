@@ -24,6 +24,18 @@ struct {
   __type(value, __u8);
 } whitelist_map SEC(".maps");
 
+/*
+ * Enforcement is deliberately opt-in. Array maps start zeroed, so a newly
+ * attached Guardian audits unknown executables without denying them. This
+ * prevents an incomplete bootstrap whitelist from locking out the host.
+ */
+struct {
+  __uint(type, BPF_MAP_TYPE_ARRAY);
+  __uint(max_entries, 1);
+  __type(key, __u32);
+  __type(value, __u32);
+} guardian_mode_map SEC(".maps");
+
 /* Events map (same as before) */
 struct {
   __uint(type, BPF_MAP_TYPE_RINGBUF);
@@ -128,6 +140,16 @@ int BPF_PROG(guardian_cognitive, struct linux_binprm *bprm, int ret) {
   bpf_probe_read_kernel_str(key, sizeof(key), filename);
 
   __u8 *allowed = bpf_map_lookup_elem(&whitelist_map, key);
+
+  /* Mode 0 (the default) is audit-only; unknown paths are logged and allowed. */
+  __u32 mode_key = 0;
+  __u32 *mode = bpf_map_lookup_elem(&guardian_mode_map, &mode_key);
+  if (!mode || *mode == 0) {
+    if (!allowed)
+      bpf_printk("Guardian [AUDIT]: Unknown binary %s", filename);
+    return 0;
+  }
+
   if (!allowed) {
     // Log generic block
     bpf_printk("Guardian [BLOCK]: Unknown binary %s", filename);
