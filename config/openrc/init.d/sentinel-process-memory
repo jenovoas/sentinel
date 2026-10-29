@@ -1,0 +1,19 @@
+#!/sbin/openrc-run
+
+name="sentinel-process-memory"
+description="Sentinel process memory metrics collector"
+command="/opt/sentinel/observability/node-exporter/process-memory-daemon.sh"
+command_user="root"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/var/log/sentinel/process-memory.log"
+error_log="/var/log/sentinel/process-memory.err"
+
+start_pre() {
+    checkpath --directory --owner root:root --mode 0755 /var/log/sentinel
+}
+
+depend() {
+    need net
+    after sentinel-cortex
+}

@@ -17,18 +17,46 @@ pub struct PatternContext<'a> {
 }
 
 /// **Pattern 6: Traffic Drop Detected**
-/// Detects a sudden drop in network traffic (e.g., service interruption).
+/// Detects a transition from traffic at or above the configured threshold to
+/// traffic below it, per network device.
 pub struct TrafficDropPattern;
 impl Pattern for TrafficDropPattern {
     fn check(&self, context: &PatternContext) -> Option<CorrelatedIncident> {
-        let _net_events: Vec<_> = context
+        let mut previous_by_device: HashMap<String, (u64, Event)> = HashMap::new();
+
+        for event in context
             .event_buffer
             .iter()
-            .filter(|e| e.event_type == "high_network_traffic")
-            .collect();
+            .filter(|event| event.event_type == "network_traffic_sample")
+        {
+            let device = event.metadata["device"]
+                .as_str()
+                .unwrap_or("unknown")
+                .to_string();
+            let Some(current) = event.metadata["value_bytes_per_sec"].as_u64() else {
+                continue;
+            };
 
-        // This is a simplified logic: if we don't see high traffic when we expect it, or if a metric is low
-        // For now, it mirrors other patterns until the user defines specific "low traffic" events.
+            if let Some((previous_value, previous_event)) = previous_by_device.get(&device) {
+                if *previous_value >= context.traffic_drop_threshold
+                    && current < context.traffic_drop_threshold
+                {
+                    return Some(CorrelatedIncident {
+                        name: format!("Network Traffic Drop: {}", device),
+                        confidence: 0.90,
+                        severity: Severity::High,
+                        events: vec![previous_event.clone(), event.clone()],
+                        recommended_action:
+                            "Inspect interface health, routing and upstream connectivity."
+                                .to_string(),
+                        n8n_playbook: "network_degradation".to_string(),
+                    });
+                }
+            }
+
+            previous_by_device.insert(device, (current, event.clone()));
+        }
+
         None
     }
 }
@@ -332,5 +360,60 @@ impl Pattern for CrossNervioPattern {
         } else {
             None
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{Pattern, PatternContext, TrafficDropPattern};
+    use crate::models::{Event, EventSource, Severity};
+    use chrono::Utc;
+    use serde_json::json;
+    use std::collections::VecDeque;
+    use uuid::Uuid;
+
+    fn traffic_event(device: &str, bytes_per_sec: u64) -> Event {
+        Event {
+            id: Uuid::new_v4(),
+            source: EventSource::Prometheus,
+            timestamp: Utc::now(),
+            severity: Severity::Info,
+            event_type: "network_traffic_sample".to_string(),
+            metadata: json!({
+                "device": device,
+                "value_bytes_per_sec": bytes_per_sec,
+            }),
+        }
+    }
+
+    fn context(events: &VecDeque<Event>) -> PatternContext<'_> {
+        PatternContext {
+            event_buffer: events,
+            ssh_bruteforce_threshold: 5,
+            nginx_5xx_threshold: 10,
+            redis_memory_threshold_bytes: 100,
+            container_restart_threshold: 3,
+            traffic_drop_threshold: 100,
+        }
+    }
+
+    #[test]
+    fn traffic_drop_requires_transition_below_threshold() {
+        let mut events = VecDeque::from([traffic_event("eth0", 100), traffic_event("eth0", 99)]);
+
+        let incident = TrafficDropPattern.check(&context(&events));
+
+        assert!(incident.is_some());
+        assert_eq!(incident.unwrap().events.len(), 2);
+
+        events.pop_front();
+        assert!(TrafficDropPattern.check(&context(&events)).is_none());
+    }
+
+    #[test]
+    fn traffic_drop_is_scoped_per_device() {
+        let events = VecDeque::from([traffic_event("eth0", 100), traffic_event("eth1", 99)]);
+
+        assert!(TrafficDropPattern.check(&context(&events)).is_none());
     }
 }

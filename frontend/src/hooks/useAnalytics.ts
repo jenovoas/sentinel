@@ -9,6 +9,7 @@ import {
   HistoryState, 
   StorageSummary,
   MetricHistory,
+  AnalyticsSample,
 } from "@/lib/types";
 import { AnalyticsAPI } from "@/lib/api";
 
@@ -25,67 +26,48 @@ export const useAnalytics = () => {
     hostMemory: [],
     hostGpu: [],
     hostNetwork: [],
-  } as any);
+  });
   const [anomalies, setAnomalies] = useState<AnomalyPoint[]>([]);
+  const [anomaliesAvailable, setAnomaliesAvailable] = useState(false);
+  const [metricsAvailable, setMetricsAvailable] = useState(false);
   const [storage, setStorage] = useState<StorageSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const normalizeNetworkPercent = useCallback((bytesSent: number, bytesRecv: number) => {
-    const total = bytesSent + bytesRecv;
-    const gb = total / (1024 * 1024 * 1024);
-    return Math.min(gb * 10, 100);
-  }, []);
-
   const hydrateHistory = useCallback(async () => {
-    const samples = await AnalyticsAPI.getRecentMetrics(200);
-    
-    // Cargar historial completo del host
-    let hostData: any[] = [];
-    try {
-      const res = await fetch("/api/host-metrics?limit=100", { cache: "no-store" });
-      const json = await res.json();
-      if (json?.ok && json.history) {
-        hostData = json.history;
-      }
-    } catch {}
+    const feed = await AnalyticsAPI.getRecentMetricsFeed(200);
+    setMetricsAvailable(feed.available);
 
-    if (samples.length === 0 && hostData.length === 0) return;
-
-    const sorted = [...samples].sort(
+    const sorted = [...feed.samples].sort(
       (a, b) => new Date(a.sampled_at).getTime() - new Date(b.sampled_at).getTime()
     );
 
-    const toHistory = (selector: (s: typeof samples[0]) => number): MetricHistory =>
+    const toHistory = (selector: (sample: AnalyticsSample) => number | null): MetricHistory =>
       sorted
-        .map((s) => ({
-          timestamp: new Date(s.sampled_at).getTime(),
-          value: selector(s),
-        }))
-        .slice(-HISTORY_SIZE);
-
-    const hostToHistory = (selector: (s: any) => number): MetricHistory =>
-      hostData
-        .map((s) => ({
-          timestamp: new Date(s.timestamp).getTime(),
-          value: selector(s),
-        }))
+        .flatMap((sample) => {
+          const value = selector(sample);
+          const timestamp = new Date(sample.sampled_at).getTime();
+          return value !== null && Number.isFinite(value) && Number.isFinite(timestamp)
+            ? [{ timestamp, value }]
+            : [];
+        })
         .slice(-HISTORY_SIZE);
 
     setHistory({
-      cpu: toHistory((s) => s.cpu_percent),
-      memory: toHistory((s) => s.memory_percent),
-      gpu: toHistory((s) => s.gpu_percent ?? 0),
-      network: toHistory((s) => normalizeNetworkPercent(s.network_bytes_sent, s.network_bytes_recv)),
-      hostCpu: hostToHistory((s) => s.cpu_percent),
-      hostMemory: hostToHistory((s) => s.mem_percent),
-      hostGpu: hostToHistory((s) => s.gpu_percent ?? 0),
-      hostNetwork: hostToHistory((s) => normalizeNetworkPercent(s.network?.net_bytes_sent ?? 0, s.network?.net_bytes_recv ?? 0)),
+      cpu: toHistory((sample) => sample.cpu_percent),
+      memory: toHistory((sample) => sample.memory_percent),
+      gpu: toHistory((sample) => sample.gpu_percent),
+      network: [],
+      hostCpu: [],
+      hostMemory: [],
+      hostGpu: [],
+      hostNetwork: [],
     });
-  }, [normalizeNetworkPercent]);
+  }, []);
 
   const loadAnomalies = useCallback(async () => {
-    const data = await AnalyticsAPI.getAnomalies(24, 200);
-    setAnomalies(data);
+    const feed = await AnalyticsAPI.getAnomalies(200);
+    setAnomalies(feed.anomalies);
+    setAnomaliesAvailable(feed.available);
   }, []);
 
   const loadStorage = useCallback(async () => {
@@ -125,11 +107,12 @@ export const useAnalytics = () => {
 
   return {
     history,
+    metricsAvailable,
     anomalies,
+    anomaliesAvailable,
     storage,
     loading,
     anomaliesByMetric,
-    normalizeNetworkPercent,
   };
 };
 

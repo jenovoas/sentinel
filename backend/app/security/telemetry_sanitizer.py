@@ -282,7 +282,7 @@ class TelemetrySanitizer:
             original=log,
             safe_for_llm=result.is_safe,
             confidence=result.confidence,
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             blocked_patterns=result.blocked_patterns
         )
     

@@ -40,7 +40,7 @@ struct {
 
 // LSM Hook: file_open
 // Se ejecuta ANTES de que kernel abra archivo
-SEC("lsm/file_open")
+SEC("lsm.s/file_open")
 int BPF_PROG(ai_guardian_open, struct file *file)
 {
     __u32 pid = bpf_get_current_pid_tgid() >> 32;
@@ -91,7 +91,7 @@ int BPF_PROG(ai_guardian_open, struct file *file)
 
 // LSM Hook: bprm_check_security
 // Se ejecuta ANTES de que kernel ejecute binario
-SEC("lsm/bprm_check_security")
+SEC("lsm.s/bprm_check_security")
 int BPF_PROG(ai_guardian_exec, struct linux_binprm *bprm)
 {
     __u32 pid = bpf_get_current_pid_tgid() >> 32;

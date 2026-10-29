@@ -13,6 +13,7 @@
 #include <bpf/bpf_tracing.h>
 #include <bpf/bpf_core_read.h>
 #include "cortex_events.h"
+#include "decision_tree.h"
 
 #define PATH_MAX 256
 #define ALLOW_AI 1
@@ -66,6 +67,14 @@ struct {
     __uint(max_entries, 256 * 1024); // 256KB buffer
 } cortex_events SEC(".maps");
 
+/* Decision Tree Model Map (Array of 32 nodes, max depth 4) */
+struct {
+    __uint(type, BPF_MAP_TYPE_ARRAY);
+    __uint(max_entries, DT_MAX_NODES);
+    __type(key, __u32);
+    __type(value, struct dt_node);
+} dt_model SEC(".maps");
+
 /*
  * Helper: Calculate S60 Entropy Signal from Path
  * 
@@ -117,6 +126,46 @@ static __always_inline void send_cortex_event(
     bpf_ringbuf_submit(e, 0);
 }
 
+/*
+ * Decision Tree Classifier in eBPF (Ring 0)
+ * Evaluates features against bounded decision tree (max depth 4).
+ * Returns DT_CLASS_BENIGN, DT_CLASS_SUSPECT, or DT_CLASS_MALICIOUS.
+ */
+static __always_inline __u8 dt_classify(
+    __u64 entropy,
+    __u8 severity,
+    __u32 evt_type,
+    __u32 pid)
+{
+    __u32 idx = 0;
+
+    #pragma unroll
+    for (int depth = 0; depth <= DT_MAX_DEPTH; depth++) {
+        struct dt_node *node = bpf_map_lookup_elem(&dt_model, &idx);
+        if (!node) {
+            return DT_CLASS_MALICIOUS;
+        }
+
+        // Uninitialized root (0) or explicit leaf index
+        if (node->left == DT_LEAF_INDEX || (node->left == 0 && node->right == 0)) {
+            return node->class;
+        }
+
+        __u64 val = (node->feature == DT_FEAT_ENTROPY)    ? entropy :
+                    (node->feature == DT_FEAT_SEVERITY)   ? (__u64)severity :
+                    (node->feature == DT_FEAT_EVENT_TYPE) ? (__u64)evt_type :
+                                                            (__u64)pid;
+
+        __u32 next_idx = (val <= node->threshold) ? (__u32)node->left : (__u32)node->right;
+        if (next_idx >= DT_MAX_NODES) {
+            return node->class;
+        }
+        idx = next_idx;
+    }
+
+    return DT_CLASS_MALICIOUS;
+}
+
 
 /*
  * LSM Hook: file_open
@@ -128,7 +177,7 @@ static __always_inline void send_cortex_event(
  * 3. Check path against dynamic whitelist.
  * 4. Return -EPERM if not allowed.
  */
-SEC("lsm/file_open")
+SEC("lsm.s/file_open")
 int BPF_PROG(me60os_ai_guardian_open, struct file *file)
 {
     __u32 pid = bpf_get_current_pid_tgid() >> 32;
@@ -165,7 +214,7 @@ int BPF_PROG(me60os_ai_guardian_open, struct file *file)
     count = bpf_map_lookup_elem(&stats_map, &key);
     if (count) __sync_fetch_and_add(count, 1);
     
-    // 5. Deterministic decision
+    // 5. Deterministic decision + Decision Tree verification
     if (!policy || *policy != ALLOW_AI) {
         // Path NOT in whitelist or explicitly blocked
         key = STAT_BLOCKS;
@@ -177,6 +226,8 @@ int BPF_PROG(me60os_ai_guardian_open, struct file *file)
         
         // Send to Cortex: High entropy (threat detected)
         __u64 entropy = calculate_entropy_s60(path, 1);
+        __u8 dt_res = dt_classify(entropy, SEVERITY_HIGH, EVENT_FILE_BLOCKED, pid);
+        (void)dt_res;
         send_cortex_event(EVENT_FILE_BLOCKED, pid, entropy, SEVERITY_HIGH);
         
         return -EPERM;  // Operation not permitted
@@ -189,7 +240,18 @@ int BPF_PROG(me60os_ai_guardian_open, struct file *file)
     
     // Send to Cortex: Low entropy (normal operation)
     __u64 entropy = calculate_entropy_s60(path, 0);
-    send_cortex_event(EVENT_FILE_ALLOWED, pid, entropy, SEVERITY_LOW);
+    __u8 dt_res = dt_classify(entropy, SEVERITY_LOW, EVENT_FILE_ALLOWED, pid);
+    if (dt_res == DT_CLASS_MALICIOUS) {
+        bpf_printk("ME-60OS AI_GUARDIAN: DT OVERRIDE BLOCKED file_open pid=%d path=%s", pid, path);
+        key = STAT_BLOCKS;
+        count = bpf_map_lookup_elem(&stats_map, &key);
+        if (count) __sync_fetch_and_add(count, 1);
+        send_cortex_event(EVENT_FILE_BLOCKED, pid, entropy, SEVERITY_HIGH);
+        return -EPERM;
+    }
+
+    __u8 sev = (dt_res == DT_CLASS_SUSPECT) ? SEVERITY_MEDIUM : SEVERITY_LOW;
+    send_cortex_event(EVENT_FILE_ALLOWED, pid, entropy, sev);
     
     return 0;
 }
@@ -199,7 +261,7 @@ int BPF_PROG(me60os_ai_guardian_open, struct file *file)
  * 
  * Executed BEFORE the kernel executes a binary.
  */
-SEC("lsm/bprm_check_security")
+SEC("lsm.s/bprm_check_security")
 int BPF_PROG(me60os_ai_guardian_exec, struct linux_binprm *bprm)
 {
     __u32 pid = bpf_get_current_pid_tgid() >> 32;
@@ -235,7 +297,7 @@ int BPF_PROG(me60os_ai_guardian_exec, struct linux_binprm *bprm)
     count = bpf_map_lookup_elem(&stats_map, &key);
     if (count) __sync_fetch_and_add(count, 1);
     
-    // 5. Deterministic decision
+    // 5. Deterministic decision + Decision Tree verification
     if (!policy || *policy != ALLOW_AI) {
         key = STAT_BLOCKS;
         count = bpf_map_lookup_elem(&stats_map, &key);
@@ -245,6 +307,8 @@ int BPF_PROG(me60os_ai_guardian_exec, struct linux_binprm *bprm)
         
         // Send to Cortex: Critical severity (exec blocked)
         __u64 entropy = calculate_entropy_s60(path, 1);
+        __u8 dt_res = dt_classify(entropy, SEVERITY_CRITICAL, EVENT_EXEC_BLOCKED, pid);
+        (void)dt_res;
         send_cortex_event(EVENT_EXEC_BLOCKED, pid, entropy, SEVERITY_CRITICAL);
         
         return -EPERM;
@@ -256,7 +320,18 @@ int BPF_PROG(me60os_ai_guardian_exec, struct linux_binprm *bprm)
     
     // Send to Cortex: Normal exec allowed
     __u64 entropy = calculate_entropy_s60(path, 0);
-    send_cortex_event(EVENT_EXEC_ALLOWED, pid, entropy, SEVERITY_LOW);
+    __u8 dt_res = dt_classify(entropy, SEVERITY_LOW, EVENT_EXEC_ALLOWED, pid);
+    if (dt_res == DT_CLASS_MALICIOUS) {
+        bpf_printk("ME-60OS AI_GUARDIAN: DT OVERRIDE BLOCKED exec pid=%d binary=%s", pid, path);
+        key = STAT_BLOCKS;
+        count = bpf_map_lookup_elem(&stats_map, &key);
+        if (count) __sync_fetch_and_add(count, 1);
+        send_cortex_event(EVENT_EXEC_BLOCKED, pid, entropy, SEVERITY_CRITICAL);
+        return -EPERM;
+    }
+
+    __u8 sev = (dt_res == DT_CLASS_SUSPECT) ? SEVERITY_MEDIUM : SEVERITY_LOW;
+    send_cortex_event(EVENT_EXEC_ALLOWED, pid, entropy, sev);
     
     return 0;
 }

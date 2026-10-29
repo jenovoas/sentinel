@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 
 type DbStats = {
-  connections_total: number;
-  connections_active: number;
-  connections_idle: number;
-  db_size_bytes: number;
-  locks: number;
+  connections_total: number | null;
+  connections_active: number | null;
+  connections_idle: number | null;
+  db_size_bytes: number | null;
+  locks: number | null;
 };
 
 type ActiveQuery = {
@@ -20,9 +20,15 @@ type ActiveQuery = {
 };
 
 type DashboardData = {
-  db_health: { status: "healthy" | "unhealthy" };
-  db_stats: DbStats;
-  db_activity: ActiveQuery[];
+  available: boolean;
+  database: {
+    available: boolean;
+    status: string;
+    type: string | null;
+    host: string | null;
+  };
+  db_stats?: DbStats | null;
+  db_activity?: ActiveQuery[] | null;
 };
 
 const API_PATH = "/api/v1/dashboard/status";
@@ -63,24 +69,32 @@ export default function DatabasesPage() {
     load();
   }, []);
 
+  const dbActivity = data?.db_activity ?? null;
+  const databaseStatus = data?.database.available ? data.database.status : "No disponible";
+
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-xl font-semibold text-gray-200">Bases de Datos</h1>
+      <p className="text-sm text-gray-400">
+        El estado de DB se muestra solo cuando Cortex lo verifica; conexiones, tamaño y consultas no están disponibles en este contrato.
+      </p>
       {/* Controles */}
       <div className="flex flex-wrap items-center gap-3">
         <input
           value={filterUser}
           onChange={(e) => setFilterUser(e.target.value)}
-          placeholder="Filtrar por usuario"
+          disabled={!dbActivity}
+          placeholder={dbActivity ? "Filtrar por usuario" : "Consultas no disponibles"}
           className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-200 placeholder:text-gray-500"
         />
         <label className="flex items-center gap-2 text-sm text-gray-300">
-          <input type="checkbox" checked={sortByDuration} onChange={(e) => setSortByDuration(e.target.checked)} />
+          <input type="checkbox" checked={sortByDuration} onChange={(e) => setSortByDuration(e.target.checked)} disabled={!dbActivity} />
           Ordenar por duración
         </label>
         <button
+          disabled={!dbActivity || dbActivity.length === 0}
           onClick={() => {
-            if (!data) return;
+            if (!data?.db_activity) return;
             const rows = data.db_activity.map((q) => ({
               pid: q.pid,
               user: q.user,
@@ -90,7 +104,11 @@ export default function DatabasesPage() {
               query: q.query.replace(/\n/g, " "),
             }));
             const header = Object.keys(rows[0] || { pid: "", user: "", state: "", wait_event: "", duration_seconds: 0, query: "" });
-            const csv = [header.join(","), ...rows.map((r) => header.map((h) => String((r as any)[h]).replace(/","/g, "\"\,\"" )).join(","))].join("\n");
+            const escapeCsv = (value: string) => `"${value.replace(/"/g, '""')}"`;
+            const csv = [
+              header.map(escapeCsv).join(","),
+              ...rows.map((row) => Object.values(row).map((value) => escapeCsv(String(value))).join(",")),
+            ].join("\n");
             const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
@@ -120,31 +138,29 @@ export default function DatabasesPage() {
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-medium text-gray-300">Instancia</h2>
               <span
-                className={`text-xs px-2 py-1 rounded-full ${
-                  data.db_health.status === "healthy"
-                    ? "bg-emerald-500/15 text-emerald-300"
-                    : "bg-rose-500/15 text-rose-300"
-                }`}
+                className={`text-xs px-2 py-1 rounded-full ${data.database.available ? "bg-cyan-500/15 text-cyan-300" : "bg-gray-500/15 text-gray-300"}`}
               >
-                {data.db_health.status}
+                {databaseStatus}
               </span>
             </div>
             <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
               <div className="rounded-lg bg-white/5 p-3">
                 <p className="text-gray-400">Conexiones activas</p>
-                <p className="font-mono text-orange-300">{data.db_stats.connections_active}</p>
+                <p className="font-mono text-orange-300">{data.db_stats?.connections_active ?? "N/D"}</p>
               </div>
               <div className="rounded-lg bg-white/5 p-3">
                 <p className="text-gray-400">Conexiones totales</p>
-                <p className="font-mono text-orange-300">{data.db_stats.connections_total}</p>
+                <p className="font-mono text-orange-300">{data.db_stats?.connections_total ?? "N/D"}</p>
               </div>
               <div className="rounded-lg bg-white/5 p-3">
                 <p className="text-gray-400">Locks</p>
-                <p className="font-mono text-orange-300">{data.db_stats.locks}</p>
+                <p className="font-mono text-orange-300">{data.db_stats?.locks ?? "N/D"}</p>
               </div>
               <div className="rounded-lg bg-white/5 p-3">
                 <p className="text-gray-400">Tamaño DB</p>
-                <p className="font-mono text-orange-300">{formatBytes(data.db_stats.db_size_bytes)}</p>
+                <p className="font-mono text-orange-300">
+                  {data.db_stats?.db_size_bytes == null ? "N/D" : formatBytes(data.db_stats.db_size_bytes)}
+                </p>
               </div>
             </div>
           </div>
@@ -153,31 +169,32 @@ export default function DatabasesPage() {
           <div className="rounded-xl border border-white/5 bg-white/5 p-4">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-medium text-gray-300">Consultas activas</h2>
-              <span className="text-xs text-gray-400">{data.db_activity.length}</span>
+              <span className="text-xs text-gray-400">{dbActivity === null ? "N/D" : dbActivity.length}</span>
             </div>
             <div className="mt-3 space-y-3">
-              {data.db_activity.length === 0 && (
+              {dbActivity === null && (
+                <p className="text-sm text-gray-500">Cortex no expone el feed de consultas activas.</p>
+              )}
+              {dbActivity?.length === 0 && (
                 <p className="text-sm text-gray-500">Sin consultas activas</p>
               )}
-              {data && (
-                (data.db_activity
-                  .filter((q) => (filterUser ? q.user.toLowerCase().includes(filterUser.toLowerCase()) : true))
-                  .sort((a, b) => (sortByDuration ? b.duration_seconds - a.duration_seconds : 0))
-                ).map((q) => (
-                <div key={q.pid} className="rounded-lg bg-white/5 p-3">
-                  <div className="flex items-center justify-between">
-                    <div className="text-xs text-gray-300">
-                      <span className="font-mono">PID {q.pid}</span> · {q.user} · {q.state}
+              {dbActivity && dbActivity
+                .filter((q) => (filterUser ? q.user.toLowerCase().includes(filterUser.toLowerCase()) : true))
+                .sort((a, b) => (sortByDuration ? b.duration_seconds - a.duration_seconds : 0))
+                .map((q) => (
+                  <div key={q.pid} className="rounded-lg bg-white/5 p-3">
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs text-gray-300">
+                        <span className="font-mono">PID {q.pid}</span> · {q.user} · {q.state}
+                      </div>
+                      <div className="text-xs text-gray-400">{Math.round(q.duration_seconds)}s</div>
                     </div>
-                    <div className="text-xs text-gray-400">{Math.round(q.duration_seconds)}s</div>
+                    {q.wait_event && (
+                      <p className="mt-1 text-xs text-amber-300">{q.wait_event}</p>
+                    )}
+                    <pre className="mt-2 whitespace-pre-wrap break-words text-xs text-gray-400">{q.query}</pre>
                   </div>
-                  {q.wait_event && (
-                    <p className="mt-1 text-xs text-amber-300">{q.wait_event}</p>
-                  )}
-                  <pre className="mt-2 whitespace-pre-wrap break-words text-xs text-gray-400">{q.query}</pre>
-                </div>
-              )))
-              }
+                ))}
             </div>
           </div>
         </div>

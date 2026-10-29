@@ -1,5 +1,8 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  // MCP code-review-graph (grafo del repositorio para Sentinel).
+  // El repo se resuelve con `git rev-parse --show-toplevel`, no con ruta
+  // absoluta: la laptop usa /home/jnovoas/Proyectos y fenix /home/jnovoas/proyectos.
   "mcp": {
     "graphify": {
       "type": "local",

@@ -8,79 +8,84 @@ import {
   AnomalyPoint, 
   StorageSummary,
   HistoryState,
+  AnalyticsAnomalyFeed,
 } from "./types";
 
 const API_BASE = "";
 
 export const AnalyticsAPI = {
   /**
-   * Fetch recent metric samples from the analytics endpoint
+   * Fetch recent metric samples and preserve the backend availability signal.
    */
-  async getRecentMetrics(limit = 200): Promise<AnalyticsSample[]> {
+  async getRecentMetricsFeed(limit = 200): Promise<{ available: boolean; samples: AnalyticsSample[] }> {
     try {
       const res = await fetch(`${API_BASE}/api/v1/analytics/metrics/recent?limit=${limit}`, {
         cache: "no-store",
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = (await res.json()) as { samples: AnalyticsSample[] };
-      return json.samples ?? [];
+      const json = (await res.json()) as { available: boolean; samples: AnalyticsSample[] };
+      return { available: json.available === true, samples: json.samples ?? [] };
     } catch (err) {
-      console.error("[AnalyticsAPI] getRecentMetrics error:", err);
-      return [];
+      console.error("[AnalyticsAPI] getRecentMetricsFeed error:", err);
+      return { available: false, samples: [] };
     }
   },
 
+  async getRecentMetrics(limit = 200): Promise<AnalyticsSample[]> {
+    const feed = await this.getRecentMetricsFeed(limit);
+    return feed.samples;
+  },
+
   /**
-   * Fetch detected anomalies for the last N hours
+   * Fetches the current CPU and memory pressure snapshot.
    */
-  async getAnomalies(hours = 24, limit = 200): Promise<AnomalyPoint[]> {
+  async getAnomalies(limit = 200): Promise<AnalyticsAnomalyFeed> {
     try {
       const res = await fetch(
-        `${API_BASE}/api/v1/analytics/anomalies?hours=${hours}&limit=${limit}`,
+        `${API_BASE}/api/v1/analytics/anomalies?limit=${limit}`,
         { cache: "no-store" }
       );
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = (await res.json()) as {
+        available: boolean;
+        scope: "current_snapshot";
         anomalies: Array<{
           id: string;
           detected_at: string;
           severity: AnomalyPoint["severity"];
           title: string;
-          type: string;
+          type: AnomalyPoint["type"];
           metric_value?: number;
         }>;
       };
 
-      const mapMetric = (type: string): keyof HistoryState => {
-        switch (type) {
-          case "cpu_spike":
-            return "cpu";
-          case "memory_spike":
-            return "memory";
-          case "gpu_overheat":
-            return "gpu";
-          case "network_spike":
-          case "conn_surge":
-          case "lock_detected":
-          case "query_slow":
-            return "network";
-          default:
-            return "cpu";
-        }
+      const metricForType: Partial<Record<AnomalyPoint["type"], keyof HistoryState>> = {
+        cpu_spike: "cpu",
+        memory_spike: "memory",
       };
+      const anomalies = (json.anomalies ?? []).flatMap((anomaly) => {
+        const timestamp = new Date(anomaly.detected_at).getTime();
+        const metric = metricForType[anomaly.type];
+        if (!metric || !Number.isFinite(timestamp)) return [];
+        return [{
+          id: anomaly.id,
+          timestamp,
+          severity: anomaly.severity,
+          title: anomaly.title,
+          type: anomaly.type,
+          metric,
+          metricValue: anomaly.metric_value,
+        }];
+      });
 
-      return (json.anomalies ?? []).map((a) => ({
-        id: a.id,
-        timestamp: new Date(a.detected_at).getTime(),
-        severity: a.severity,
-        title: a.title,
-        type: a.type as AnomalyPoint["type"],
-        metric: mapMetric(a.type),
-        metricValue: a.metric_value,
-      }));
+      return {
+        available: json.available === true,
+        scope: "current_snapshot",
+        anomalies,
+      };
     } catch (err) {
       console.error("[AnalyticsAPI] getAnomalies error:", err);
-      return [];
+      return { available: false, scope: "current_snapshot", anomalies: [] };
     }
   },
 

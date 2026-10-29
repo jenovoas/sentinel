@@ -11,8 +11,7 @@
 > Prohibido hacer merge entre `main` y `alpine_fenix`, copiar configuraciones de una plataforma a la otra o usar `develop` u otra rama como sustituto de estos entornos.
 
 > **LECTURA OBLIGATORIA ANTES DE EMITIR JUICIOS SOBRE EL PROYECTO:**
-> [`sentinel-scientific-foundation.md`](file:///home/jnovoas/.config/Code/User/workspaceStorage/7c63ffead990815376933d02c94d88c9/GitHub.copilot-chat/memory-tool/memories/repo/sentinel-scientific-foundation.md)
->
+> Ver [`docs/02_ciencia_y_quantum/research/base60_mathematics.md`](docs/02_ciencia_y_quantum/research/base60_mathematics.md), [`docs/02_ciencia_y_quantum/research/TesisResonancia.md`](docs/02_ciencia_y_quantum/research/TesisResonancia.md) y nota en vault `personalvault/Matemáticas/mathematical_model.md`.
 > Sentinel **NO es misticismo ni maquetas**. Es **ciencia exacta**.
 >
 > La base decimal no es defectuosa — es solo **una décima parte de la expresión
@@ -49,7 +48,7 @@
 
 - **Escala SPA**: `SPA` usa fixed-point base-60⁴ (`SCALE_0 = 12_960_000`). `SPA::from_int(n)` = número entero `n.0`; `SPA::from_raw(n)` = `n/SCALE_0` (unidades raw). NO confundir.
 - **Inyección al lattice**: `transduce_pulse(pressure: i64)` y `inject(index, pressure: i64)` esperan un **entero** que ellos mismos re-escalan por `SCALE_0`. **NUNCA** pasar `SPA::to_raw()` a esos métodos (doble-escala → dato irrecuperable).
-- **Conversor PAI-60**: para llevar dato binario → amplitud resonante, USAR `ResonantMatrix::inject_pai(index, value, denominator)` (llama `pai60_divide(SPA::from_int(value), denom)` y suma el `SPA` directo al oscilador). Esto está enchufado en el drive continuo de `sentinel-cortex` tras `SENTINEL_PAI_CONVERT=1`.
+- **Conversor PAI-60**: dato binario → amplitud con `pai60_divide(SPA::from_int(value), denom)` y el `SPA` se suma al oscilador (`inject_spa` / `inject_pai`). El drive térmico de Cortex usa siempre esa amplitud. No hay rama `inject(i64)` ni flag `SENTINEL_PAI_CONVERT`.
 - **El lattice es disipativo**: `step()` solo disipa (decay). Sin drive continuo (`sentinel-cortex/src/main.rs` bloque 3b, cada 500ms) el lattice cae a `ground state` y no resuena. Siempre debe haber drive.
 - **Material de estudio**: `me-60os-core/src/bin/pai_convert_bench.rs` compara A (RAW), B (PAI-60) y C `[exp fallido para estudio]` (doble-escala, etiquetado, NO borrar). Leer antes de "arreglar" conversión SPA.
 

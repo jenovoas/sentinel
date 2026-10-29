@@ -248,7 +248,7 @@ async def get_current_user_model(
 
 
 async def get_current_admin_user(
-    current_user: User = Depends(get_current_user_model)
+    current_user: User = Depends(get_current_user)
 ) -> User:
     """
     Restricts access to users with the ADMIN role.

@@ -14,6 +14,7 @@ from .users import (
     UserUpdate as UserUpdateNew,
     UserWithOrganization
 )
+from .users import _validate_password_length
 
 # Legacy Tenant Schemas (for backward compatibility)
 class TenantCreate(BaseModel):
@@ -42,7 +43,7 @@ class TenantResponse(BaseModel):
 class UserCreate(BaseModel):
     email: EmailStr
     username: str = Field(..., min_length=3, max_length=100)
-    password: str = Field(..., min_length=8)
+    password: str = Field(..., min_length=8, max_length=128)
     tenant_id: Optional[str] = None
 
     @validator("password")

@@ -104,7 +104,7 @@ emit_math_diversion(__u32 pid, __u64 payload_signal, __u8 severity)
     bpf_ringbuf_submit(e, 0);
 }
 
-SEC("lsm/bprm_check_security")
+SEC("lsm.s/bprm_check_security")
 int BPF_PROG(float_detector, struct linux_binprm *bprm, int ret)
 {
     if (ret != 0)
@@ -138,9 +138,10 @@ int BPF_PROG(float_detector, struct linux_binprm *bprm, int ret)
         return 0;
     }
 
-    /* 4. Desconocido — política configurable */
+    /* 4. Desconocido — política configurable.
+     * Sin bpf_printk: el trace pipe cuesta ~µs por exec y este path corre
+     * en TODA ejecución no listada. El evento ringbuf conserva la señal. */
     emit_event(pid, SEVERITY_MEDIUM);
-    bpf_printk("FloatDetector [UNKNOWN]: %s (pid=%d)", filename, pid);
 
 #if FLOAT_ENFORCE_UNKNOWN
     return -EACCES;

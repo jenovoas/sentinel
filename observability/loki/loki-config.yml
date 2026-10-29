@@ -55,9 +55,11 @@ limits_config:
   ingestion_rate_mb: 10
   ingestion_burst_size_mb: 20
   max_query_series: 100000
-  max_query_parallelism: 32
+  max_query_parallelism: 4
+  query_timeout: 1m
   max_streams_per_user: 0
-  max_entries_limit_per_query: 5000
+  max_entries_limit_per_query: 1000
+  split_queries_by_interval: 15m
   retention_period: 720h
   
   # 🛡️ CRITICAL FIX: Allow unordered writes to prevent log rejection

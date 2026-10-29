@@ -43,7 +43,8 @@ services:
       retries: 5
     restart: unless-stopped
 
-  # FastAPI Backend
+  # Perfil FastAPI alternativo: publica el puerto host 8000. No ejecutar en
+  # paralelo con el daemon Cortex nativo; Fénix usa docker-compose.fenix.yml.
   backend:
     build:
       context: .
@@ -55,7 +56,9 @@ services:
       FASTAPI_ENV: development
       SECRET_KEY: ${SECRET_KEY}
       ALGORITHM: HS256
-      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      JWT_ISSUER: ${JWT_ISSUER:-sentinel-auth}
+      JWT_AUDIENCE: ${JWT_AUDIENCE:-sentinel-cortex}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-10}
       REFRESH_TOKEN_EXPIRE_DAYS: 7
       ALLOWED_ORIGINS: http://localhost:3000,http://localhost:8000,http://frontend:3000
       CELERY_BROKER_URL: redis://redis:6379/0

@@ -1,9 +1,9 @@
-name: eBPF CI
+name: eBPF Build CI
 
 on:
   pull_request:
   push:
-    branches: ["main"]
+    branches: ["main", "alpine_fenix"]
 
 jobs:
   ebpf:

@@ -12,6 +12,12 @@ from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator
 from app.models.user import UserRole
 
 
+def _validate_password_length(password: str | None) -> str | None:
+    if password is not None and len(password.encode("utf-8")) > 72:
+        raise ValueError("password must not exceed 72 UTF-8 bytes")
+    return password
+
+
 # ===== Organization Schemas =====
 class OrganizationBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=255)

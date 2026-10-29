@@ -1,0 +1,45 @@
+#!/sbin/openrc-run
+
+name="sentinel-cortex"
+description="Sentinel Cortex API"
+command="/usr/local/bin/sentinel-cortex"
+command_user="jnovoas"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/var/log/sentinel/cortex.log"
+error_log="/var/log/sentinel/cortex.err"
+
+if [ -r /etc/conf.d/sentinel-cortex ]; then
+    . /etc/conf.d/sentinel-cortex
+fi
+export REDIS_URL
+export EBPF_MONITOR_PATH
+export SENTINEL_JWT_SECRET
+export SENTINEL_JWT_ISSUER
+export SENTINEL_JWT_AUDIENCE
+export SENTINEL_WS_ALLOWED_ORIGINS
+: "${REDIS_URL:=redis://127.0.0.1:6379}"
+: "${EBPF_MONITOR_PATH:=/sys/fs/bpf}"
+: "${SENTINEL_JWT_ISSUER:=sentinel-auth}"
+: "${SENTINEL_JWT_AUDIENCE:=sentinel-cortex}"
+
+start_pre() {
+    if [ -z "$SENTINEL_JWT_SECRET" ]; then
+        eerror "SENTINEL_JWT_SECRET must be set in /etc/conf.d/sentinel-cortex"
+        return 1
+    fi
+    if [ -z "$SENTINEL_WS_ALLOWED_ORIGINS" ]; then
+        eerror "SENTINEL_WS_ALLOWED_ORIGINS must be set in /etc/conf.d/sentinel-cortex"
+        return 1
+    fi
+    checkpath --directory --owner root:root --mode 0755 /var/log/sentinel
+    checkpath --file --owner jnovoas:jnovoas --mode 0640 "$output_log"
+    checkpath --file --owner jnovoas:jnovoas --mode 0640 "$error_log"
+}
+
+depend() {
+    need net
+    need sentinel-stack
+    need sentinel-ebpf-load
+    after firewall
+}

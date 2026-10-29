@@ -12,8 +12,8 @@ export interface ClientNetworkInfo {
     ssid?: string;
     frequency?: number; // MHz
     signalStrength?: number; // dBm
-    signal?: number; // Percentage 0-100
-    connected: boolean;
+    signal?: number; // Percentage 0-100 when supplied by a source
+    connected: boolean | null;
   };
   type?: string; // "4g", "5g", "wifi", etc.
   effectiveType?: "slow-2g" | "2g" | "3g" | "4g";
@@ -24,7 +24,7 @@ export interface ClientNetworkInfo {
 
 export const useNetworkInfo = () => {
   const [networkInfo, setNetworkInfo] = useState<ClientNetworkInfo>({
-    wifi: { connected: false },
+    wifi: { connected: null },
   });
 
   useEffect(() => {
@@ -39,7 +39,9 @@ export const useNetworkInfo = () => {
             downlink: connection.downlink,
             rtt: connection.rtt,
             saveData: connection.saveData,
-            wifi: { connected: connection.type === "wifi" },
+            wifi: {
+              connected: connection.type === "wifi" ? true : connection.type ? false : null,
+            },
           };
 
           // Try to get WiFi details from experimental API
@@ -52,14 +54,9 @@ export const useNetworkInfo = () => {
                 );
                 if (wifiNet) {
                   info.wifi = {
-                    ssid: wifiNet.name || "Connected WiFi",
+                    ssid: wifiNet.name || undefined,
                     frequency: wifiNet.frequency,
                     signalStrength: wifiNet.signalStrength, // dBm (-100 to 0)
-                    // Convert dBm to percentage
-                    signal: Math.max(
-                      0,
-                      Math.min(100, 2 * (wifiNet.signalStrength + 100))
-                    ),
                     connected: true,
                   };
                 }
@@ -74,7 +71,7 @@ export const useNetworkInfo = () => {
             info.wifi = {
               ...info.wifi,
               connected: true,
-              ssid: info.wifi?.ssid || "Connected WiFi",
+              ssid: info.wifi?.ssid,
             };
           }
 

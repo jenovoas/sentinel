@@ -19,8 +19,9 @@ import argparse
 import urllib.request
 import urllib.error
 import concurrent.futures
+import os
 
-TARGET_URL = "http://10.88.0.1:8000"
+TARGET_URL = os.environ.get("CORTEX_URL", "http://127.0.0.1:8000")
 
 def send_truth_claim_req(engine_id, payload):
     url = f"{TARGET_URL}/api/v1/truth_claim"

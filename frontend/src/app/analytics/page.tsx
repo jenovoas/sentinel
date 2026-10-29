@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { Line } from "react-chartjs-2";
 import {
@@ -27,41 +26,7 @@ ChartJS.register(
 );
 
 export default function AnalyticsPage() {
-  const { history, anomalies, storage, loading } = useAnalytics();
-  const [hostHistory, setHostHistory] = useState<any[]>([]);
-  const [systemLogs, setSystemLogs] = useState<any>({ logs: [], summary: null });
-
-  // Cargar historial completo del host
-  useEffect(() => {
-    const fetchHostHistory = async () => {
-      try {
-        const res = await fetch("/api/host-metrics?limit=100", { cache: "no-store" });
-        const json = await res.json();
-        if (json?.ok && json.history) {
-          setHostHistory(json.history);
-        }
-      } catch { }
-    };
-    fetchHostHistory();
-    const id = setInterval(fetchHostHistory, 60000);
-    return () => clearInterval(id);
-  }, []);
-
-  // Cargar logs del sistema
-  useEffect(() => {
-    const fetchSystemLogs = async () => {
-      try {
-        const res = await fetch("/api/system-logs?limit=50", { cache: "no-store" });
-        const json = await res.json();
-        if (json?.ok) {
-          setSystemLogs({ logs: json.logs, summary: json.summary });
-        }
-      } catch { }
-    };
-    fetchSystemLogs();
-    const id = setInterval(fetchSystemLogs, 60000);
-    return () => clearInterval(id);
-  }, []);
+  const { history, metricsAvailable, anomalies, anomaliesAvailable, storage, loading } = useAnalytics();
 
   // Preparar datos para gráficos
   const chartOptions = {
@@ -102,114 +67,62 @@ export default function AnalyticsPage() {
   };
 
   const cpuData = {
-    labels: hostHistory.map((s) => new Date(s.timestamp).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })),
+    labels: history.cpu.map((sample) => new Date(sample.timestamp).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })),
     datasets: [
       {
-        label: 'CPU Host',
-        data: hostHistory.map((s) => s.cpu_percent),
+        label: 'CPU Cortex',
+        data: history.cpu.map((sample) => sample.value),
         borderColor: '#22d3ee',
         backgroundColor: 'rgba(34, 211, 238, 0.1)',
         fill: true,
         tension: 0.4,
       },
-      {
-        label: 'CPU Docker',
-        data: history.cpu.map((s) => s.value),
-        borderColor: '#06b6d4',
-        backgroundColor: 'rgba(6, 182, 212, 0.1)',
-        fill: true,
-        tension: 0.4,
-        borderDash: [5, 5],
-      },
     ],
   };
 
   const memoryData = {
-    labels: hostHistory.map((s) => new Date(s.timestamp).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })),
+    labels: history.memory.map((sample) => new Date(sample.timestamp).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })),
     datasets: [
       {
-        label: 'Memoria Host',
-        data: hostHistory.map((s) => s.mem_percent),
+        label: 'Memoria Cortex',
+        data: history.memory.map((sample) => sample.value),
         borderColor: '#34d399',
         backgroundColor: 'rgba(52, 211, 153, 0.1)',
         fill: true,
         tension: 0.4,
       },
-      {
-        label: 'Memoria Docker',
-        data: history.memory.map((s) => s.value),
-        borderColor: '#10b981',
-        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-        fill: true,
-        tension: 0.4,
-        borderDash: [5, 5],
-      },
     ],
   };
 
   const gpuData = {
-    labels: hostHistory.map((s) => new Date(s.timestamp).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })),
+    labels: history.gpu.map((sample) => new Date(sample.timestamp).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })),
     datasets: [
       {
-        label: 'GPU Host',
-        data: hostHistory.map((s) => s.gpu_percent),
+        label: 'GPU Cortex',
+        data: history.gpu.map((sample) => sample.value),
         borderColor: '#a78bfa',
         backgroundColor: 'rgba(167, 139, 250, 0.1)',
         fill: true,
         tension: 0.4,
       },
-      {
-        label: 'GPU Docker',
-        data: history.gpu.map((s) => s.value),
-        borderColor: '#8b5cf6',
-        backgroundColor: 'rgba(139, 92, 246, 0.1)',
-        fill: true,
-        tension: 0.4,
-        borderDash: [5, 5],
-      },
     ],
   };
 
-  const wifiData = {
-    labels: hostHistory.map((s) => new Date(s.timestamp).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })),
-    datasets: [
-      {
-        label: 'Señal WiFi (%)',
-        data: hostHistory.map((s) => s.network?.wifi?.signal ?? 0),
-        borderColor: '#fb923c',
-        backgroundColor: 'rgba(251, 146, 60, 0.1)',
-        fill: true,
-        tension: 0.4,
-      },
-    ],
-  };
-
+  const summarize = (values: number[]) => ({
+    current: values.length ? values[values.length - 1] : null,
+    avg: values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null,
+    max: values.length ? Math.max(...values) : null,
+  });
   const stats = {
-    cpu: {
-      current: hostHistory[hostHistory.length - 1]?.cpu_percent ?? 0,
-      avg: hostHistory.reduce((sum, s) => sum + s.cpu_percent, 0) / (hostHistory.length || 1),
-      max: Math.max(...hostHistory.map((s) => s.cpu_percent), 0),
-      min: Math.min(...hostHistory.map((s) => s.cpu_percent), 100),
-    },
-    memory: {
-      current: hostHistory[hostHistory.length - 1]?.mem_percent ?? 0,
-      avg: hostHistory.reduce((sum, s) => sum + s.mem_percent, 0) / (hostHistory.length || 1),
-      max: Math.max(...hostHistory.map((s) => s.mem_percent), 0),
-      min: Math.min(...hostHistory.map((s) => s.mem_percent), 100),
-    },
-    gpu: {
-      current: hostHistory[hostHistory.length - 1]?.gpu_percent ?? 0,
-      avg: hostHistory.reduce((sum, s) => sum + s.gpu_percent, 0) / (hostHistory.length || 1),
-      max: Math.max(...hostHistory.map((s) => s.gpu_percent), 0),
-    },
-    wifi: {
-      current: hostHistory[hostHistory.length - 1]?.network?.wifi?.signal ?? 0,
-      avg: hostHistory.reduce((sum, s) => sum + (s.network?.wifi?.signal ?? 0), 0) / (hostHistory.length || 1),
-      ssid: hostHistory[hostHistory.length - 1]?.network?.wifi?.ssid ?? "N/A",
-    },
+    cpu: summarize(history.cpu.map((sample) => sample.value)),
+    memory: summarize(history.memory.map((sample) => sample.value)),
+    gpu: summarize(history.gpu.map((sample) => sample.value)),
+    wifi: { current: null, avg: null, max: null, ssid: "No disponible" },
   };
+  const formatPercent = (value: number | null) =>
+    value === null ? "No disponible" : `${value.toFixed(1)}%`;
 
-  if (loading && hostHistory.length === 0) {
+  if (loading) {
     return (
       <main className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-gray-100">
         <div className="relative mx-auto max-w-7xl px-6 py-10">
@@ -238,7 +151,7 @@ export default function AnalyticsPage() {
             Analytics Dashboard
           </h1>
           <p className="text-gray-300 mt-2 max-w-2xl">
-            Análisis comparativo de métricas del host vs contenedores Docker
+            Historial de CPU y RAM recolectado por Cortex; GPU, WiFi y logs externos no disponibles en este contrato.
           </p>
         </header>
 
@@ -246,36 +159,36 @@ export default function AnalyticsPage() {
         <section className="grid gap-4 md:grid-cols-4 mb-8">
           <StatCard
             label="CPU Actual"
-            value={`${stats.cpu.current.toFixed(1)}%`}
+            value={formatPercent(stats.cpu.current)}
             stats={[
-              { label: "Promedio", value: `${stats.cpu.avg.toFixed(1)}%` },
-              { label: "Máximo", value: `${stats.cpu.max.toFixed(1)}%` },
+              { label: "Promedio", value: formatPercent(stats.cpu.avg) },
+              { label: "Máximo", value: formatPercent(stats.cpu.max) },
             ]}
             color="cyan"
           />
           <StatCard
             label="Memoria Actual"
-            value={`${stats.memory.current.toFixed(1)}%`}
+            value={formatPercent(stats.memory.current)}
             stats={[
-              { label: "Promedio", value: `${stats.memory.avg.toFixed(1)}%` },
-              { label: "Máximo", value: `${stats.memory.max.toFixed(1)}%` },
+              { label: "Promedio", value: formatPercent(stats.memory.avg) },
+              { label: "Máximo", value: formatPercent(stats.memory.max) },
             ]}
             color="emerald"
           />
           <StatCard
             label="GPU Actual"
-            value={`${stats.gpu.current.toFixed(1)}%`}
+            value={formatPercent(stats.gpu.current)}
             stats={[
-              { label: "Promedio", value: `${stats.gpu.avg.toFixed(1)}%` },
-              { label: "Máximo", value: `${stats.gpu.max.toFixed(1)}%` },
+              { label: "Promedio", value: formatPercent(stats.gpu.avg) },
+              { label: "Máximo", value: formatPercent(stats.gpu.max) },
             ]}
             color="purple"
           />
           <StatCard
             label="WiFi"
-            value={`${stats.wifi.current}%`}
+            value={formatPercent(stats.wifi.current)}
             stats={[
-              { label: "Promedio", value: `${stats.wifi.avg.toFixed(1)}%` },
+              { label: "Promedio", value: formatPercent(stats.wifi.avg) },
               { label: "Red", value: stats.wifi.ssid },
             ]}
             color="orange"
@@ -284,17 +197,17 @@ export default function AnalyticsPage() {
 
         {/* Charts Grid */}
         <section className="grid gap-6 md:grid-cols-2">
-          <ChartCard title="CPU Usage" subtitle="Host vs Docker">
-            <Line data={cpuData} options={chartOptions} />
+          <ChartCard title="CPU" subtitle="Muestras del runtime Cortex">
+            {history.cpu.length ? <Line data={cpuData} options={chartOptions} /> : <p className="text-sm text-gray-400">{metricsAvailable ? "Sin muestras disponibles" : "Fuente Cortex no disponible"}</p>}
           </ChartCard>
-          <ChartCard title="Memory Usage" subtitle="Host vs Docker">
-            <Line data={memoryData} options={chartOptions} />
+          <ChartCard title="Memoria" subtitle="Muestras del runtime Cortex">
+            {history.memory.length ? <Line data={memoryData} options={chartOptions} /> : <p className="text-sm text-gray-400">{metricsAvailable ? "Sin muestras disponibles" : "Fuente Cortex no disponible"}</p>}
           </ChartCard>
-          <ChartCard title="GPU Usage" subtitle="Host vs Docker">
-            <Line data={gpuData} options={chartOptions} />
+          <ChartCard title="GPU" subtitle="No expuesta por Cortex">
+            {history.gpu.length ? <Line data={gpuData} options={chartOptions} /> : <p className="text-sm text-gray-400">No disponible en Cortex</p>}
           </ChartCard>
-          <ChartCard title="WiFi Signal" subtitle="Señal en tiempo real">
-            <Line data={wifiData} options={chartOptions} />
+          <ChartCard title="WiFi" subtitle="No expuesto por Cortex">
+            <p className="text-sm text-gray-400">No disponible</p>
           </ChartCard>
         </section>
 
@@ -302,8 +215,10 @@ export default function AnalyticsPage() {
         <section className="mt-8 grid gap-6 md:grid-cols-2">
           <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-6">
             <h3 className="text-xl font-semibold text-white mb-4">Anomalías Detectadas</h3>
-            {anomalies.length === 0 ? (
-              <p className="text-gray-400 text-sm">No se detectaron anomalías en las últimas 24h</p>
+            {!anomaliesAvailable ? (
+              <p className="text-gray-400 text-sm">La fuente de métricas para anomalías no está disponible</p>
+            ) : anomalies.length === 0 ? (
+              <p className="text-gray-400 text-sm">No hay anomalías activas en la lectura actual de CPU/RAM</p>
             ) : (
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {anomalies.slice(0, 5).map((a, i) => (
@@ -324,52 +239,11 @@ export default function AnalyticsPage() {
           </div>
 
           <div className="rounded-2xl border border-white/5 bg-white/5 backdrop-blur-xl p-6">
-            <h3 className="text-xl font-semibold text-white mb-4">System Logs</h3>
-            {systemLogs.summary && (
-              <div className="grid grid-cols-3 gap-2 mb-4">
-                <div className="bg-rose-500/10 border border-rose-500/20 rounded-lg p-2 text-center">
-                  <p className="text-2xl font-bold text-rose-400">{systemLogs.summary.critical_count}</p>
-                  <p className="text-xs text-gray-400">Critical</p>
-                </div>
-                <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-2 text-center">
-                  <p className="text-2xl font-bold text-amber-400">{systemLogs.summary.error_count}</p>
-                  <p className="text-xs text-gray-400">Errors</p>
-                </div>
-                <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-2 text-center">
-                  <p className="text-2xl font-bold text-orange-400">{systemLogs.summary.warning_count}</p>
-                  <p className="text-xs text-gray-400">Warnings</p>
-                </div>
-              </div>
-            )}
-            {systemLogs.logs.length === 0 ? (
-              <p className="text-gray-400 text-sm">Sin logs recientes</p>
-            ) : (
-              <div className="space-y-2 max-h-48 overflow-y-auto">
-                {systemLogs.logs.slice(0, 10).map((log: any, i: number) => (
-                  <div
-                    key={i}
-                    className={`bg-white/5 rounded-lg p-2 border text-xs ${log.level === 'CRITICAL' ? 'border-rose-500/30' :
-                        log.level === 'ERROR' ? 'border-amber-500/30' :
-                          'border-orange-500/20'
-                      }`}
-                  >
-                    <div className="flex items-start gap-2 mb-1">
-                      <span className={`font-semibold whitespace-nowrap ${log.level === 'CRITICAL' ? 'text-rose-400' :
-                          log.level === 'ERROR' ? 'text-amber-400' :
-                            'text-orange-400'
-                        }`}>
-                        {log.level}
-                      </span>
-                      <span className="text-gray-500 text-xs whitespace-nowrap">
-                        {new Date(log.timestamp).toLocaleTimeString('es')}
-                      </span>
-                      <span className="text-cyan-400 text-xs">{log.unit}</span>
-                    </div>
-                    <p className="text-gray-300 text-xs truncate">{log.message}</p>
-                  </div>
-                ))}
-              </div>
-            )}
+            <h3 className="text-xl font-semibold text-white mb-4">Logs del sistema</h3>
+            <p className="text-sm text-gray-400">
+              Cortex no expone un feed de logs del host para esta vista. Los logs permanecen como no disponibles;
+              la ausencia de feed no significa que no haya eventos.
+            </p>
           </div>
         </section>
 
@@ -380,29 +254,40 @@ export default function AnalyticsPage() {
             {storage ? (
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Métricas guardadas</span>
+                  <span className="text-gray-300">Muestras en memoria (no persistentes)</span>
                   <span className="text-2xl font-semibold text-cyan-400">{storage.metrics_count}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-300">Anomalías totales</span>
-                  <span className="text-2xl font-semibold text-rose-400">{storage.anomalies_count}</span>
+                  <span className="text-2xl font-semibold text-rose-400">
+                    {storage.anomalies_count ?? "No disponible"}
+                  </span>
                 </div>
-                {storage.latest_metric_at && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-300">Última métrica</span>
-                    <span className="text-sm text-gray-400">
-                      {new Date(storage.latest_metric_at).toLocaleString('es')}
-                    </span>
-                  </div>
-                )}
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Última muestra</span>
+                  <span className="text-sm text-gray-400">
+                    {storage.latest_metric_at
+                      ? new Date(storage.latest_metric_at).toLocaleString('es')
+                      : "Sin muestras"}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Retención en memoria</span>
+                  <span className="text-sm text-gray-400">
+                    {storage.metrics_count} / {storage.retention_capacity} muestras
+                  </span>
+                </div>
                 <div className="mt-4 pt-4 border-t border-white/10">
                   <p className="text-xs text-gray-400">
-                    {hostHistory.length} muestras del host cargadas
+                    Almacenamiento: {storage.storage_type}; persistencia: {storage.persisted ? "activa" : "no persistente"}.
+                    {storage.db_size_bytes == null ? " Tamaño de base de datos: no disponible." : ` Tamaño DB: ${storage.db_size_bytes} bytes.`}
                   </p>
                 </div>
               </div>
             ) : (
-              <p className="text-gray-400 text-sm">Cargando información de almacenamiento...</p>
+              <p className="text-gray-400 text-sm">
+                {loading ? "Cargando información de almacenamiento..." : "Resumen de almacenamiento no disponible"}
+              </p>
             )}
           </div>
         </section>

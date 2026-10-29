@@ -7,11 +7,9 @@
 
 "use client";
 
-import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
 import { useBackupStatus } from "@/hooks/useBackupStatus";
 
 export function BackupStatusCard() {
@@ -57,10 +55,14 @@ export function BackupStatusCard() {
         };
 
         const labels = {
-            healthy: "Operational",
-            warning: "Warning",
+            healthy: "Recent backup file",
+            warning: "Backup status warning",
             critical: "Critical",
         };
+
+        if (!status.available) {
+            return <Badge variant="outline" className="bg-gray-500/10 text-gray-400 border-gray-500/20">Not available</Badge>;
+        }
 
         return (
             <Badge variant="outline" className={colors[status.health]}>
@@ -114,11 +116,11 @@ export function BackupStatusCard() {
                 <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center gap-2">
                         <span className="text-blue-400">💾</span>
-                        Backup System
+                        Backup status
                     </CardTitle>
                     {getHealthBadge()}
                 </div>
-                <CardDescription>Enterprise backup monitoring</CardDescription>
+                <CardDescription>Estado calculado a partir de archivos detectados en el directorio configurado.</CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
@@ -127,7 +129,11 @@ export function BackupStatusCard() {
                         <div>
                             <p className="text-sm text-gray-400">Last Backup</p>
                             <p className="text-lg font-semibold text-white">
-                                {formatAge(status.lastBackupAge)}
+                                {!status.available
+                                    ? 'Directorio de respaldos no disponible'
+                                    : status.lastBackupAge === null
+                                        ? 'No se detectaron archivos de respaldo'
+                                        : formatAge(status.lastBackupAge)}
                             </p>
                             {status.lastBackupTime && (
                                 <p className="text-xs text-gray-500 mt-1">
@@ -137,13 +143,8 @@ export function BackupStatusCard() {
                         </div>
                         <div className="text-right">
                             <p className="text-sm text-gray-400">Status</p>
-                            <p
-                                className={`text-lg font-semibold ${status.lastBackupStatus === 'success'
-                                        ? 'text-emerald-400'
-                                        : 'text-rose-400'
-                                    }`}
-                            >
-                                {status.lastBackupStatus === 'success' ? '✓ Success' : '✗ Failed'}
+                            <p className={`text-lg font-semibold ${lastBackupStatus.className}`}>
+                                {status.available ? lastBackupStatus.label : 'Not available'}
                             </p>
                         </div>
                     </div>
@@ -151,18 +152,18 @@ export function BackupStatusCard() {
                     {/* Metrics Grid */}
                     <div className="grid grid-cols-3 gap-3">
                         <div className="text-center p-2 rounded bg-slate-800/30">
-                            <p className="text-2xl font-bold text-cyan-400">{status.totalBackups}</p>
+                            <p className="text-2xl font-bold text-cyan-400">{status.totalBackups ?? 'N/D'}</p>
                             <p className="text-xs text-gray-400">Total Backups</p>
                         </div>
                         <div className="text-center p-2 rounded bg-slate-800/30">
                             <p className="text-2xl font-bold text-purple-400">
-                                {status.totalSizeMB.toFixed(0)}MB
+                                {status.totalSizeMB === null ? 'N/D' : `${status.totalSizeMB}MB`}
                             </p>
                             <p className="text-xs text-gray-400">Total Size</p>
                         </div>
                         <div className="text-center p-2 rounded bg-slate-800/30">
                             <p className="text-2xl font-bold text-emerald-400">
-                                {config?.retentionDays || 7}d
+                                {config?.retentionDays == null ? 'N/D' : `${config.retentionDays}d`}
                             </p>
                             <p className="text-xs text-gray-400">Retention</p>
                         </div>
@@ -171,51 +172,30 @@ export function BackupStatusCard() {
                     {/* Configuration Badges */}
                     {config && (
                         <div className="flex flex-wrap gap-2">
-                            {config.s3Enabled && (
-                                <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/20 text-xs">
-                                    S3 Enabled
+                            {([
+                                ["S3", config.s3Enabled],
+                                ["MinIO", config.minioEnabled],
+                                ["Cifrado", config.encryptionEnabled],
+                                ["Notificaciones", config.webhookEnabled],
+                            ] as const).map(([label, enabled]) => (
+                                <Badge key={label} variant="outline" className="bg-slate-500/10 text-gray-300 border-white/10 text-xs">
+                                    {label}: {enabled === null ? "N/D" : enabled ? "Activo" : "Inactivo"}
                                 </Badge>
-                            )}
-                            {config.minioEnabled && (
-                                <Badge variant="outline" className="bg-purple-500/10 text-purple-400 border-purple-500/20 text-xs">
-                                    MinIO Enabled
-                                </Badge>
-                            )}
-                            {config.encryptionEnabled && (
-                                <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-xs">
-                                    Encrypted
-                                </Badge>
-                            )}
-                            {config.webhookEnabled && (
-                                <Badge variant="outline" className="bg-amber-500/10 text-amber-400 border-amber-500/20 text-xs">
-                                    Notifications
-                                </Badge>
-                            )}
+                            ))}
                         </div>
                     )}
 
                     {/* Actions */}
-                    <div className="flex gap-2">
-                        <Button
-                            variant="outline"
-                            className="flex-1"
-                            onClick={handleTriggerBackup}
-                            disabled={triggeringBackup}
-                        >
-                            {triggeringBackup ? (
-                                <>
-                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                                    Running...
-                                </>
-                            ) : (
-                                'Trigger Backup'
-                            )}
+                    <div className="flex flex-col gap-2">
+                        <Button variant="outline" className="w-full" disabled>
+                            Disparar respaldo (deshabilitado)
                         </Button>
-                        <Link href="/admin/backups" className="flex-1">
-                            <Button variant="outline" className="w-full">
-                                View Details
-                            </Button>
-                        </Link>
+                        <p className="text-xs text-gray-400">
+                            El disparo permanece en 503 hasta implementar y verificar el ejecutor seguro de respaldos.
+                        </p>
+                        <Button variant="outline" className="w-full" disabled>
+                            Detalles no disponibles
+                        </Button>
                     </div>
                 </div>
             </CardContent>

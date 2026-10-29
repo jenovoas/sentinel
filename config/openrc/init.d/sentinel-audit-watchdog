@@ -1,0 +1,20 @@
+#!/sbin/openrc-run
+
+name="sentinel-audit-watchdog"
+description="Sentinel audit watchdog"
+command="/opt/sentinel/host-metrics/audit-watchdog.sh"
+command_user="root"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/var/log/sentinel/audit-watchdog.log"
+error_log="/var/log/sentinel/audit-watchdog.err"
+
+start_pre() {
+    checkpath --directory --owner root:root --mode 0755 /var/log/sentinel
+}
+
+depend() {
+    need net
+    need auditd
+    after sentinel-cortex
+}

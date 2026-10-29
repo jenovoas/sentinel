@@ -22,25 +22,21 @@ export async function GET(request: Request) {
     }
 
     const header = lines[0].split(",");
-    const dataLines = lines.slice(1);
-    const recent = dataLines.slice(-limit);
-
-    const history = recent.map((line) => {
-      const cols = line.split(",");
+    const history = lines.slice(1).slice(-limit).map((line) => {
+      const columns = line.split(",");
       const row: Record<string, string> = {};
-      header.forEach((h, i) => (row[h] = cols[i] ?? ""));
-
+      header.forEach((key, index) => { row[key] = columns[index] ?? ""; });
       return {
         timestamp: row.timestamp,
-        cpu_percent: Number(row.cpu_percent || 0),
-        mem_percent: Number(row.mem_percent || 0),
-        gpu_percent: Number(row.gpu_percent || 0),
+        cpu_percent: parseMetric(row.cpu_percent),
+        mem_percent: parseMetric(row.mem_percent),
+        gpu_percent: parseMetric(row.gpu_percent),
         network: {
-          net_bytes_sent: Number(row.net_bytes_sent || 0),
-          net_bytes_recv: Number(row.net_bytes_recv || 0),
+          net_bytes_sent: parseMetric(row.net_bytes_sent),
+          net_bytes_recv: parseMetric(row.net_bytes_recv),
           wifi: {
             ssid: row.wifi_ssid || "",
-            signal: Number(row.wifi_signal || 0),
+            signal: parseMetric(row.wifi_signal),
             connected: !!row.wifi_ssid,
           },
         },

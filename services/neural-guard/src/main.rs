@@ -128,3 +128,32 @@ async fn main() {
         }
     }
 }
+#[cfg(test)]
+mod tests {
+    use super::should_send_alert;
+    use std::collections::HashMap;
+    use std::time::{Duration, Instant};
+
+    #[test]
+    fn alert_cooldown_suppresses_duplicates_and_expires() {
+        let start = Instant::now();
+        let cooldown = Duration::from_secs(300);
+        let mut sent = HashMap::new();
+
+        assert!(should_send_alert(&mut sent, "incident", start, cooldown));
+        sent.insert("incident".to_string(), start);
+        assert!(!should_send_alert(
+            &mut sent,
+            "incident",
+            start + Duration::from_secs(299),
+            cooldown
+        ));
+        assert!(should_send_alert(
+            &mut sent,
+            "incident",
+            start + cooldown,
+            cooldown
+        ));
+        assert!(sent.is_empty());
+    }
+}

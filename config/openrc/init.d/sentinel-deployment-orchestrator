@@ -1,0 +1,20 @@
+#!/sbin/openrc-run
+
+name="sentinel-deployment-orchestrator"
+description="Local tenant-scoped deployment control plane"
+command="/usr/local/bin/deployment-orchestrator"
+command_user="sentinel-orchestrator:sentinel-orchestrator"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/var/log/sentinel/deployment-orchestrator.log"
+error_log="/var/log/sentinel/deployment-orchestrator.err"
+
+
+start_pre() {
+    checkpath --directory --owner sentinel-orchestrator:sentinel-orchestrator --mode 0750 /run/sentinel /var/log/sentinel
+}
+
+depend() {
+    need net
+    after docker sentinel-stack sentinel-deployment-executor
+}

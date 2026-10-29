@@ -12,11 +12,11 @@ use rayon::prelude::*;
 use regex::RegexSet;
 use serde::{Deserialize, Serialize};
 use sha3::{Digest, Sha3_512};
+use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 use std::num::NonZeroUsize;
 use std::sync::LazyLock;
 use std::time::Instant;
-
 static FACTUAL_PATTERNS: LazyLock<RegexSet> = LazyLock::new(|| {
     RegexSet::new([
         r"\b(es|son|fue|fueron|ocurrió|demostró|afirma|reporta)\b",
@@ -75,6 +75,15 @@ pub struct NodeVerificationResult<'a> {
     pub is_cascade_mitigated: bool,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NodeVerificationResult<'a> {
+    #[serde(borrow)]
+    pub verification: VerificationResult<'a>,
+    pub node_id: String,
+    pub current_coherence: SPA,
+    pub future_coherence: SPA,
+    pub is_cascade_mitigated: bool,
+}
 #[derive(Default)]
 pub struct ClaimExtractor;
 
@@ -339,6 +348,35 @@ mod tests {
     }
 
     #[test]
+    fn test_live_attack_strings_apply_spa_penalty() {
+        let mut engine = TruthSyncEngine::new();
+        let stem = "El kernel fue actualizado.";
+        for extra in ["drop database", "rm -rf", "shutdown", "systemctl stop"] {
+            // The digest is content-dependent, so compare against the maximum
+            // possible score after two detected occurrences, not another digest.
+            let hit_text = format!("{stem} {extra} {extra}");
+            let hit = engine.verify_text(&hit_text, 42);
+            assert!(
+                hit.overall_trust_score <= SPA::from_raw(SPA::SCALE_0 * 2 / 5),
+                "{extra}: score={}",
+                hit.overall_trust_score.to_raw()
+            );
+        }
+    }
+
+    #[test]
+    fn test_critical_pattern_detection_is_independent_of_score() {
+        let mut engine = TruthSyncEngine::new();
+        for pattern in CRITICAL_PATTERNS {
+            let result = engine.verify_text(pattern, 42);
+            assert!(result.critical_pattern_detected, "{pattern}");
+        }
+
+        let clean = engine.verify_text("El sistema está en operación normal.", 42);
+        assert!(!clean.critical_pattern_detected);
+    }
+
+    #[test]
     fn test_verify_score_range() {
         let mut engine = TruthSyncEngine::new();
         let result = engine.verify_text("fake_data fake_data fake_data fake_data fake_data", 0);
@@ -411,5 +449,65 @@ mod tests {
         let extractor = ClaimExtractor::new();
         let claims = extractor.extract("A. B. C. D. E.");
         assert_eq!(claims.len(), 5);
+    }
+
+    #[test]
+    fn test_node_verification_cascade_isolation() {
+        let mut engine = TruthSyncEngine::new();
+        let t1 = SPA::new(10, 0, 0, 0, 0);
+        let res_a =
+            engine.verify_node_text("node-alpha", "El kernel fue actualizado con éxito.", 42, t1);
+        assert_eq!(res_a.node_id, "node-alpha");
+        assert!(!res_a.verification.claims.is_empty());
+        assert!(res_a.is_cascade_mitigated);
+        assert!(res_a.current_coherence >= SPA::new(42, 30, 0, 0, 0));
+        assert_eq!(engine.node_cascades_len(), 1);
+
+        let res_b = engine.verify_node_text("node-beta", "La temperatura es de 36 grados.", 42, t1);
+        assert_eq!(res_b.node_id, "node-beta");
+        assert_eq!(engine.node_cascades_len(), 2);
+
+        let cascade_a = engine.node_cascade("node-alpha").unwrap();
+        assert_eq!(cascade_a.len(), 1);
+    }
+
+    #[test]
+    fn test_node_verification_history_boost() {
+        let mut engine = TruthSyncEngine::new();
+        let node = "node-stream";
+        // Enviar múltiples eventos limpios a través del tiempo
+        for i in 1..=5 {
+            let ts = SPA::new(100 + i, 0, 0, 0, 0);
+            let res =
+                engine.verify_node_text(node, "El proceso eBPF reporta latencia de 2ms.", 42, ts);
+            assert!(!res.verification.claims.is_empty());
+            assert!(res.is_cascade_mitigated);
+        }
+
+        let cascade = engine.node_cascade(node).unwrap();
+        assert_eq!(cascade.len(), 5);
+        // Siguiente verificación se beneficia del kernel OU en cascada
+        let next_ts = SPA::new(106, 0, 0, 0, 0);
+        let next_res =
+            engine.verify_node_text(node, "El kernel reporta estabilidad total.", 42, next_ts);
+        assert!(next_res.current_coherence >= SPA::new(42, 30, 0, 0, 0));
+    }
+
+    #[test]
+    fn test_cascade_preserves_scaled_trust_record() {
+        // La ingesta mapea `trust × límite` y la proyección no debe
+        // reemplazar la medición en el mismo timestamp.
+        let mut engine = TruthSyncEngine::new();
+        let t = SPA::new(50, 0, 0, 0, 0);
+        let res =
+            engine.verify_node_text("node-trust", "El kernel fue actualizado con éxito.", 42, t);
+        let cascade = engine.node_cascade("node-trust").unwrap();
+        let expected = res.verification.overall_trust_score * cascade.limit();
+        let stored = cascade.history().get(&t).expect("registro conservado");
+        assert_eq!(
+            stored.coherence, expected,
+            "el historial conserva trust × límite, no la proyección"
+        );
+        assert_eq!(cascade.len(), 1);
     }
 }

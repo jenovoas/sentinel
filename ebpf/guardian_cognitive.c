@@ -124,7 +124,7 @@ static __always_inline int check_semantic_intent(struct linux_binprm *bprm) {
 // We verify if the binary name itself contains suspicious patterns if
 // masqueraded, OR we apply STRICTER policy for Critical Binaries.
 
-SEC("lsm/bprm_check_security")
+SEC("lsm.s/bprm_check_security")
 int BPF_PROG(guardian_cognitive, struct linux_binprm *bprm, int ret) {
   if (ret != 0)
     return ret;

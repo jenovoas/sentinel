@@ -13,51 +13,45 @@ interface DetailModalProps {
   type: "metrics" | "anomalies" | "database" | null;
   storage: StorageSummary | null;
   anomalies: AnomalyPoint[];
+  anomaliesAvailable: boolean;
 }
-
-const formatBytes = (bytes: number) => {
-  if (!Number.isFinite(bytes)) return "-";
-  const units = ["B", "KB", "MB", "GB", "TB"];
-  const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
-  const value = bytes / 1024 ** i;
-  return `${value.toFixed(value >= 10 ? 0 : 1)} ${units[i]}`;
-};
 
 const DetailContent: React.FC<{
   type: "metrics" | "anomalies" | "database";
   storage: StorageSummary | null;
   anomalies: AnomalyPoint[];
-}> = ({ type, storage, anomalies }) => {
+  anomaliesAvailable: boolean;
+}> = ({ type, storage, anomalies, anomaliesAvailable }) => {
   switch (type) {
     case "metrics":
       return (
         <>
           <div className="rounded-lg border border-white/5 bg-black/40 p-4">
             <div className="flex items-center justify-between">
-              <span className="text-gray-300">Total de muestras guardadas</span>
-              <span className="text-2xl font-bold text-cyan-400">{storage?.metrics_count ?? 0}</span>
+              <span className="text-gray-300">Muestras en memoria</span>
+              <span className="text-2xl font-bold text-cyan-400">{storage?.available ? storage.metrics_count : "N/D"}</span>
             </div>
           </div>
           <div className="rounded-lg border border-white/5 bg-black/40 p-4">
             <div className="flex items-center justify-between">
               <span className="text-gray-300">Última muestra</span>
               <span className="text-sm text-gray-200">
-                {storage?.latest_metric_at ? new Date(storage.latest_metric_at).toLocaleString() : "N/A"}
+                {storage?.available && storage.latest_metric_at ? new Date(storage.latest_metric_at).toLocaleString() : "N/D"}
               </span>
             </div>
           </div>
           <div className="rounded-lg border border-white/5 bg-black/40 p-4">
             <div className="flex items-center justify-between">
               <span className="text-gray-300">Estado</span>
-              <span className={`text-sm font-semibold ${storage?.status === "healthy" ? "text-emerald-400" : "text-rose-400"}`}>
-                {storage?.status === "healthy" ? "✓ Datos fluyendo" : "⚠ Sin datos"}
+              <span className={`text-sm font-semibold ${storage?.available ? "text-emerald-400" : "text-gray-400"}`}>
+                {!storage?.available ? "No disponible" : storage.status === "no_data" ? "Sin muestras" : "Disponible"}
               </span>
             </div>
           </div>
           <div className="rounded-lg border border-white/5 bg-black/40 p-4 text-xs text-gray-400 space-y-1">
-            <p>• Las métricas se recopilan cada 15 segundos</p>
-            <p>• Se mantienen 90 días de histórico</p>
-            <p>• Incluye CPU, Memoria, GPU, Red y DB stats</p>
+            <p>• El historial de Cortex es temporal y reside en memoria.</p>
+            <p>• Capacidad reportada: {storage?.available ? storage.retention_capacity.toLocaleString() : "N/D"} muestras.</p>
+            <p>• Este feed no proporciona métricas GPU ni estadísticas de base de datos.</p>
           </div>
         </>
       );
@@ -68,14 +62,16 @@ const DetailContent: React.FC<{
           <div className="rounded-lg border border-white/5 bg-black/40 p-4">
             <div className="flex items-center justify-between">
               <span className="text-gray-300">Total de anomalías detectadas</span>
-              <span className="text-2xl font-bold text-amber-400">{anomalies.length ?? 0}</span>
+              <span className="text-2xl font-bold text-amber-400">{anomaliesAvailable ? anomalies.length : "N/D"}</span>
             </div>
           </div>
           <div className="rounded-lg border border-white/5 bg-black/40 p-4">
-            <p className="text-gray-300 text-sm font-semibold mb-3">Últimas anomalías en este período:</p>
+            <p className="text-gray-300 text-sm font-semibold mb-3">Anomalías del snapshot actual:</p>
             <div className="space-y-2 max-h-48 overflow-y-auto">
-              {anomalies.length === 0 ? (
-                <p className="text-xs text-gray-500">Sin anomalías registradas en las últimas 24 horas</p>
+              {!anomaliesAvailable ? (
+                <p className="text-xs text-gray-500">Cortex no proporcionó un snapshot de anomalías.</p>
+              ) : anomalies.length === 0 ? (
+                <p className="text-xs text-gray-500">No se detectaron anomalías en el snapshot actual.</p>
               ) : (
                 anomalies.slice(0, 10).map((a) => (
                   <div key={a.id} className="text-xs border border-white/5 rounded p-2 flex items-center justify-between">
@@ -104,29 +100,24 @@ const DetailContent: React.FC<{
         <>
           <div className="rounded-lg border border-white/5 bg-black/40 p-4">
             <div className="flex items-center justify-between">
-              <span className="text-gray-300">Tamaño total de la BD</span>
-              <span className="text-2xl font-bold text-emerald-400">
-                {formatBytes(storage?.db_size_bytes ?? 0)}
-              </span>
+              <span className="text-gray-300">Tamaño de base de datos</span>
+              <span className="text-2xl font-bold text-gray-400">N/D</span>
             </div>
           </div>
           <div className="rounded-lg border border-white/5 bg-black/40 p-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-xs text-gray-400">Métricas en BD</p>
-                <p className="text-xl font-semibold text-cyan-400">{storage?.metrics_count ?? 0}</p>
+                <p className="text-xs text-gray-400">Conexiones</p>
+                <p className="text-xl font-semibold text-gray-400">N/D</p>
               </div>
               <div>
-                <p className="text-xs text-gray-400">Anomalías en BD</p>
-                <p className="text-xl font-semibold text-amber-400">{storage?.anomalies_count ?? 0}</p>
+                <p className="text-xs text-gray-400">Consultas activas</p>
+                <p className="text-xl font-semibold text-gray-400">N/D</p>
               </div>
             </div>
           </div>
-          <div className="rounded-lg border border-white/5 bg-black/40 p-4 text-xs text-gray-400 space-y-1">
-            <p>• PostgreSQL con tablas time-series optimizadas</p>
-            <p>• Índices en timestamps para queries rápidas</p>
-            <p>• Retención automática: 90 días</p>
-            <p>• Compresión automática de datos antiguos</p>
+          <div className="rounded-lg border border-white/5 bg-black/40 p-4 text-xs text-gray-400">
+            Cortex no expone estadísticas de una base de datos en el contrato actual. Los contadores de muestras en memoria no representan datos almacenados en una DB.
           </div>
         </>
       );
@@ -152,6 +143,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({
   type,
   storage,
   anomalies,
+  anomaliesAvailable,
 }) => {
   if (!isOpen || !type) return null;
 
@@ -182,7 +174,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({
         </div>
 
         <div className="space-y-4">
-          <DetailContent type={type} storage={storage} anomalies={anomalies} />
+          <DetailContent type={type} storage={storage} anomalies={anomalies} anomaliesAvailable={anomaliesAvailable} />
         </div>
       </div>
     </div>

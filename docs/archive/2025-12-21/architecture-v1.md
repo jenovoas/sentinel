@@ -2,7 +2,7 @@
 
 **Versión**: 2.0.0 (Mesh + eBPF Ring-0 / me-60os)
 **Última actualización**: 2026-07-28
-**Contacto**: Jaime Novoa jaime.novoase@gmail.com
+**Contacto**: Jaime Novoa <jaime.novoase@gmail.com>
 
 Este documento describe la arquitectura de software y despliegue del proyecto Sentinel. Cubre el despliegue actual (Laptop ↔ Fan en mesh, con eBPF Ring-0) y la visión a futuro.
 
@@ -82,7 +82,7 @@ graph TB
 ### 1.2. Capa 1 — Red Mesh (WireGuard + VXLAN + batman-adv)
 
 | Componente | Laptop | Fan |
-|-----------|--------|-----|
+| ----------- | -------- | ----- |
 | WireGuard (wg0) | 10.88.0.2/24 | 10.88.0.1/24 |
 | VXLAN (vxlan0) | VNI 42, MTU 1370 | VNI 42, MTU 1370 |
 | batman-adv (bat0) | 10.10.0.11/24 | 10.10.0.12/24 |
@@ -95,7 +95,7 @@ La mesh se configura mediante `mycnet/scripts/mesh_setup.sh`.
 Siete programas eBPF cargados en el kernel, pineados en `/sys/fs/bpf/`:
 
 | Programa | Hook | Propósito | Tamaño |
-|----------|------|-----------|--------|
+| ---------- | ------ | ----------- | -------- |
 | `guardian_alpha_lsm` | `bprm_check_security` | Whitelist path-based de AI agents | 13,488 B |
 | `ai_guardian` | `file_open` + `bprm_check_security` | AI agent exec blocking | 752 B |
 | `me60os_ai_guardian_open` | `file_open` | AI file access control | 1,696 B |
@@ -114,6 +114,7 @@ El daemon `mycnetd` (Rust, puerto 7474) gestiona la topología de la mesh, recol
 ### 1.5. Capa 4 — Cortex API + Daemons me-60os
 
 **Sentinel Cortex** (Rust/Axum, puerto 8000):
+
 - `GET /health` — Health check + métricas de resonancia
 - `GET /api/v1/telemetry` — WebSocket: stream de eventos eBPF
 - `GET /api/v1/sentinel_status` — Estado del ring
@@ -124,7 +125,7 @@ El daemon `mycnetd` (Rust, puerto 7474) gestiona la topología de la mesh, recol
 **Daemons me-60os** (Rust, binarios en `me-60os/target/release/`):
 
 | Daemon | Función |
-|--------|---------|
+| -------- | --------- |
 | `qhc_agent` | Phase Harmonic Driver: patrón YHWH 10-5-6-5 |
 | `adm_agent` | Axial Diffusion Model: lectura batctl, coherencia mesh |
 | `pai_neural_daemon` | Neural Memory: lee ring buffer de guardian |
@@ -139,7 +140,7 @@ El daemon `mycnetd` (Rust, puerto 7474) gestiona la topología de la mesh, recol
 ### 1.7. Capa 6 — Observabilidad (Fan)
 
 | Servicio | Puerto | Propósito |
-|----------|--------|-----------|
+| ---------- | -------- | ----------- |
 | node_exporter | 9100 | Métricas de sistema |
 | Loki | 3100 | Agregación de logs |
 | Mimir | 8080 | Almacenamiento métricas (Prometheus-compatible) |
@@ -151,7 +152,7 @@ Dashboard: "SecurePenguin — Monitoreo" (creado). Swarm dashboard JSON en `docs
 ### 1.8. Systemd Services
 
 | Servicio | Descripción | Archivo |
-|----------|-------------|---------|
+| ---------- | ------------- | --------- |
 | sentinel-cortex.service | API Cortex | `systemd/sentinel-cortex.service` |
 | sentinel-ebpf-forwarder.service | eBPF tracelog → Loki | `systemd/sentinel-ebpf-forwarder.service` |
 | sentinel-qhc-agent.service | QHC Agent | `systemd/sentinel-qhc-agent.service` |
@@ -168,10 +169,10 @@ La visión a futuro del proyecto es escalar más allá del par Laptop ↔ Fan ha
 
 ### 2.1. Conceptos Clave
 
-*   **Multi-Nodo:** Desplegar instancias de Sentinel en múltiples servidores (ej. Fan, Kingu, Centurion) para alta disponibilidad y balanceo de carga.
-*   **MycNet (Mesh Network):** Red de malla para comunicación descentralizada entre nodos, compartiendo estado y carga de trabajo.
-*   **Computación Distribuida S60:** Cálculos de aritmética sexagesimal distribuidos donde cada nodo aporta capacidad de cómputo.
-*   **Cortex Federado:** Múltiples instancias de Cortex compartiendo eventos eBPF a través del bus Redis.
+- **Multi-Nodo:** Desplegar instancias de Sentinel en múltiples servidores (ej. Fan, Kingu, Centurion) para alta disponibilidad y balanceo de carga.
+- **MycNet (Mesh Network):** Red de malla para comunicación descentralizada entre nodos, compartiendo estado y carga de trabajo.
+- **Computación Distribuida S60:** Cálculos de aritmética sexagesimal distribuidos donde cada nodo aporta capacidad de cómputo.
+- **Cortex Federado:** Múltiples instancias de Cortex compartiendo eventos eBPF a través del bus Redis.
 
 ---
 
@@ -182,12 +183,12 @@ Independientemente de la fase de despliegue, Sentinel se basa en los siguientes 
 ### 3.1. Aritmética Sexagesimal (Base-60)
 
 El núcleo del sistema evita el uso de punto flotante (IEEE 754) para cálculos críticos, utilizando en su lugar una implementación de aritmética de punto fijo en base-60.
-*   **Problema:** El punto flotante binario no puede representar exactamente fracciones como 1/3 o 1/10, acumulando errores.
-*   **Solución:** La Base-60 es divisible por 3 y 10, permitiendo cálculos exactos sin deriva.
-*   **Implementación:** El crate de Rust `me-60os` y las librerías de Python en `quantum/` contienen las implementaciones de los tipos `S60` y sus operaciones.
+- **Problema:** El punto flotante binario no puede representar exactamente fracciones como 1/3 o 1/10, acumulando errores.
+- **Solución:** La Base-60 es divisible por 3 y 10, permitiendo cálculos exactos sin deriva.
+- **Implementación:** El crate de Rust `me-60os` y las librerías de Python en `quantum/` contienen las implementaciones de los tipos `S60` y sus operaciones.
 
 ### 3.2. Acoplamiento Octomecánico y `neural-guard`
 
 La lógica de defensa del sistema (`neural-guard`, ahora integrada en `cortex`) es adaptable y sensible al estado físico del hardware.
-*   **Conciencia Térmica:** El sistema monitorea la temperatura de la CPU.
-*   **Umbrales Dinámicos:** La sensibilidad de las alertas de seguridad (ej. intentos de login fallidos) cambia con la temperatura. Un sistema más "caliente" (con más carga) se vuelve menos sensible para evitar falsos positivos, mientras que un sistema "frío" opera con máxima sensibilidad.
+- **Conciencia Térmica:** El sistema monitorea la temperatura de la CPU.
+- **Umbrales Dinámicos:** La sensibilidad de las alertas de seguridad (ej. intentos de login fallidos) cambia con la temperatura. Un sistema más "caliente" (con más carga) se vuelve menos sensible para evitar falsos positivos, mientras que un sistema "frío" opera con máxima sensibilidad.

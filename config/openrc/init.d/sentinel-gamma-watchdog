@@ -1,0 +1,18 @@
+#!/sbin/openrc-run
+# Sentinel gamma watchdog: vigila liveness de peers vía pins BPF.
+# Binario canónico: repo sentinel (glibc; el kernel invoca vía /lib64 al intérprete gcompat).
+# NO ejecutar el stub /lib64 directamente: se niega ("not meant to run directly").
+
+name="sentinel-gamma-watchdog"
+description="Sentinel gamma watchdog (peer liveness via BPF pins)"
+command="/home/jnovoas/proyectos/sentinel/ebpf/gamma_watchdog"
+command_user="root"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/var/log/sentinel/gamma.ndjson"
+error_log="/var/log/sentinel/gamma.err"
+
+depend() {
+    need net
+    after sentinel-ebpf-load
+}

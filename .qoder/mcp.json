@@ -1,12 +1,11 @@
 {
   "mcpServers": {
     "code-review-graph": {
-      "command": "uvx",
+      "command": "sh",
       "args": [
-        "code-review-graph",
-        "serve"
+        "-c",
+        "rep=$(git rev-parse --show-toplevel 2>/dev/null || pwd); if command -v code-review-graph >/dev/null 2>&1; then exec code-review-graph serve --repo \"$rep\"; else exec uvx code-review-graph serve --repo \"$rep\"; fi"
       ],
-      "cwd": "/home/jnovoas/proyectos/sentinel",
       "type": "stdio"
     }
   }
