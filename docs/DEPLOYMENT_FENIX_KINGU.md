@@ -110,3 +110,9 @@ La preparación y compilación se hacen en Fenix. Los únicos nodos de despliegu
 - Verificación contra la DB real antes del alta: `ensure_schema_current()` pasó; el flush de un superusuario sintético llegó a PostgreSQL con rol `admin` y ambos timestamps poblados. La transacción se revirtió explícitamente; conteo antes/después: 0 usuarios y 0 superusuarios.
 - El usuario ejecutó después `python -m app.bootstrap_admin` por TTY en Fenix; el comando informó `Superusuario creado para default`. Verificación SQL posterior: 1 usuario y 1 superusuario; la cuenta `jnovoas@pinguinoseguro.cl` tiene `role=admin`, `is_superuser=true`, `is_active=true`, `organization_id=tenant_id` y hash de contraseña presente. No se almacenó ni verificó la contraseña; login no probado.
 - No se modificaron Kingu/frontend, Nginx, DNS/TLS, firewall, Cortex, bases de datos aparte de la migración de defaults ni servicios de otros proyectos. Guardian/eBPF no se habilitó.
+
+## Recuperación de acceso de la cuenta administradora — 2026-10-29
+
+- Tras el rechazo de credenciales en el portal, el usuario autorizó el restablecimiento seguro de la contraseña. El procedimiento se indicó para ejecutarse en TTY con entrada oculta; no se solicitó ni registró la contraseña ni su hash en la conversación o esta bitácora.
+- El usuario confirmó después: «ahora si, conectó». Se registra como acceso exitoso reportado por el usuario tras el procedimiento de recuperación; no se hizo una verificación independiente de login contra el servidor en esta sesión.
+- No se cambió el rol, estado, organización/tenant ni ningún servicio. No se modificaron frontend/Kingu, DNS/TLS, Nginx, firewall, Cortex ni Guardian/eBPF.
