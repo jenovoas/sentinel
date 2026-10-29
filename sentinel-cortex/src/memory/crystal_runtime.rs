@@ -11,8 +11,9 @@ use me60os_core::resonant_matrix::ResonantMatrix;
 use me60os_core::shm_bridge::PySharedBuffer;
 use me60os_core::spa::SPA;
 use serde::{Deserialize, Serialize};
-use std::fs;
+use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
+use std::os::fd::AsRawFd;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -22,12 +23,16 @@ const PID_HISTORY_TICKS: usize = 68;
 const LANE_A_SHM: &str = "/me60os_lattice";
 const LANE_B_SHM: &str = "/me60os_lattice_b";
 const FRACTAL_SEEDS_SHM: &str = "/me60os_fractal_seeds";
+const DTC_CLOCK_SHM: &str = "/me60os_dtc_clock";
+const DTC_CLOCK_SHM_BYTES: usize = 24;
+const DTC_CLOCK_MAGIC: u32 = 0x4D45_3643;
+const DTC_CLOCK_VERSION: u32 = 1;
 const FRACTAL_SEEDS_CAPACITY: usize = 1024;
 const FRACTAL_HEADER_BYTES: usize = 64;
 const FRACTAL_SEED_BYTES: usize = 32;
-const DTC_TICK_INTERVAL_NS: u64 = 23_939_835;
+pub const DTC_TICK_INTERVAL_NS: u64 = 23_939_835;
 
-#[derive(Serialize)]
+#[derive(Clone, Serialize)]
 pub struct CrystalRuntimeStatus {
     pub active: bool,
     pub node_count_per_lane: usize,
@@ -116,6 +121,7 @@ pub struct CrystalRuntime {
     fractal_seeds_shm: Option<PySharedBuffer>,
     fractal_seed_head: u64,
     fractal_seeds_published: u64,
+    _shm_lock: Option<File>,
     shm_sync_count: u64,
     last_shm_sync_unix_ms: u64,
     snapshot_path: PathBuf,
@@ -136,6 +142,11 @@ impl CrystalRuntime {
         }
 
         let snapshot_path = snapshot_path(nodes)?;
+        let shm_lock = if create_shm {
+            Some(acquire_shm_writer_lock()?)
+        } else {
+            None
+        };
         let (lane_a, lane_b, pid_a, pid_b, qhc_tick) = load_snapshot(&snapshot_path, nodes)
             .unwrap_or_else(|| {
                 (
@@ -193,6 +204,7 @@ impl CrystalRuntime {
             fractal_seeds_shm,
             fractal_seed_head: 0,
             fractal_seeds_published: 0,
+            _shm_lock: shm_lock,
             shm_sync_count: 0,
             last_shm_sync_unix_ms: 0,
             snapshot_path,
@@ -614,4 +626,51 @@ fn now_unix_ms() -> u64 {
         .duration_since(UNIX_EPOCH)
         .map(|duration| duration.as_millis().min(u128::from(u64::MAX)) as u64)
         .unwrap_or(0)
+}
+
+fn acquire_shm_writer_lock() -> Result<File, String> {
+    let lock_path = Path::new("/dev/shm/me60os_crystal_runtime.lock");
+    let lock = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .open(&lock_path)
+        .map_err(|error| {
+            format!(
+                "open crystal SHM writer lock {}: {error}",
+                lock_path.display()
+            )
+        })?;
+    let result = unsafe { libc::flock(lock.as_raw_fd(), libc::LOCK_EX | libc::LOCK_NB) };
+    if result == -1 {
+        return Err(format!(
+            "another CrystalRuntime owns the shared memory: {}",
+            std::io::Error::last_os_error()
+        ));
+    }
+    Ok(lock)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn in_memory_runtime_advances_dtc_and_non_markovian_step() {
+        let mut runtime = CrystalRuntime::in_memory(3);
+        let interval_ns = runtime.tick_dtc().unwrap();
+        runtime.step().unwrap();
+
+        let status = runtime.status();
+        assert_eq!(status.dtc_ticks, 1);
+        assert_eq!(status.qhc_tick, 1);
+        assert!(interval_ns > 0);
+        assert!(status.non_markovian_kernel_active);
+        assert_eq!(
+            status.non_markovian_history_capacity_ticks,
+            PID_HISTORY_TICKS
+        );
+        assert!(!status.shm_active);
+    }
 }

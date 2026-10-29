@@ -84,6 +84,24 @@ fn append_synced_wal(path: &std::path::Path, entry: &str) -> std::io::Result<()>
     file.sync_all()
 }
 
+#[derive(Clone, Serialize)]
+struct CrystalRuntimeStatusResponse {
+    active: bool,
+    error: Option<String>,
+    runtime: Option<memory::crystal_runtime::CrystalRuntimeStatus>,
+}
+
+#[derive(Clone, Copy)]
+enum CrystalInput {
+    Security {
+        index: usize,
+        amplitude: me60os_core::spa::SPA,
+    },
+    Observability {
+        amplitude: me60os_core::spa::SPA,
+    },
+}
+
 pub(crate) struct AppState {
     resonance: Arc<Mutex<ResonanceEngine>>,
     security_wal: SecurityWal,
@@ -94,6 +112,7 @@ pub(crate) struct AppState {
     #[allow(dead_code)]
     pattern_detector: Arc<engine::patterns::PatternDetector>,
     neural_memory: Arc<Mutex<me60os_core::neural_memory::NeuralMemory>>,
+    crystal_runtime_status: Arc<Mutex<CrystalRuntimeStatusResponse>>,
     quantum_scheduler: Arc<Mutex<quantum::quantum_scheduler::QuantumScheduler>>,
     #[allow(dead_code)]
     bio_resonator: Arc<Mutex<quantum::bio_resonator::BioResonator>>,
@@ -111,6 +130,108 @@ pub(crate) fn thermal_amplitude(sample: i64) -> me60os_core::spa::SPA {
 fn thermal_half(amplitude: me60os_core::spa::SPA) -> me60os_core::spa::SPA {
     me60os_core::pai60_lib::pai60_divide(amplitude, 2)
         .unwrap_or_else(|| amplitude / me60os_core::spa::SPA::from_int(2))
+}
+
+fn start_crystal_runtime(
+    nodes: usize,
+    status: Arc<Mutex<CrystalRuntimeStatusResponse>>,
+) -> Option<std::sync::mpsc::SyncSender<CrystalInput>> {
+    if std::env::var("SENTINEL_CRYSTAL_RUNTIME").as_deref() != Ok("1") {
+        status.lock().unwrap().error = Some("disabled by SENTINEL_CRYSTAL_RUNTIME".to_string());
+        return None;
+    }
+
+    let (tx, rx) = std::sync::mpsc::sync_channel(1024);
+    let thread_status = status.clone();
+    let worker = std::thread::Builder::new()
+        .name("sentinel-crystal-runtime".to_string())
+        .spawn(move || {
+            let mut runtime = match memory::crystal_runtime::CrystalRuntime::new(nodes) {
+                Ok(runtime) => runtime,
+                Err(error) => {
+                    let mut current = thread_status.lock().unwrap();
+                    current.active = false;
+                    current.error = Some(error);
+                    return;
+                }
+            };
+
+            let mut current = thread_status.lock().unwrap();
+            current.active = true;
+            current.error = None;
+            current.runtime = Some(runtime.status());
+            drop(current);
+
+            let mut next_tick = std::time::Instant::now()
+                + Duration::from_nanos(memory::crystal_runtime::DTC_TICK_INTERVAL_NS);
+            let mut next_step = std::time::Instant::now() + Duration::from_millis(500);
+            let mut next_persist = std::time::Instant::now() + Duration::from_secs(60);
+
+            loop {
+                loop {
+                    match rx.try_recv() {
+                        Ok(CrystalInput::Security { index, amplitude }) => {
+                            runtime.inject_security_spa(index, amplitude);
+                        }
+                        Ok(CrystalInput::Observability { amplitude }) => {
+                            runtime.inject_observability_spa(0, amplitude);
+                        }
+                        Err(std::sync::mpsc::TryRecvError::Empty) => break,
+                        Err(std::sync::mpsc::TryRecvError::Disconnected) => return,
+                    }
+                }
+
+                let now = std::time::Instant::now();
+                if now >= next_tick {
+                    match runtime.tick_dtc() {
+                        Ok(interval_ns) => next_tick += Duration::from_nanos(interval_ns),
+                        Err(error) => {
+                            let mut current = thread_status.lock().unwrap();
+                            current.active = false;
+                            current.error = Some(error);
+                            current.runtime = Some(runtime.status());
+                            return;
+                        }
+                    }
+                }
+                if now >= next_step {
+                    if let Err(error) = runtime.step() {
+                        let mut current = thread_status.lock().unwrap();
+                        current.active = false;
+                        current.error = Some(error);
+                        current.runtime = Some(runtime.status());
+                        return;
+                    }
+                    next_step = now + Duration::from_millis(500);
+                }
+                if now >= next_persist {
+                    if let Err(error) = runtime.persist() {
+                        tracing::error!(%error, "CrystalRuntime checkpoint failed");
+                    }
+                    next_persist = now + Duration::from_secs(60);
+                }
+
+                let current = thread_status.lock().unwrap();
+                let mut current = current;
+                current.runtime = Some(runtime.status());
+                drop(current);
+
+                let next_deadline = next_tick.min(next_step).min(next_persist);
+                std::thread::sleep(
+                    next_deadline.saturating_duration_since(std::time::Instant::now()),
+                );
+            }
+        });
+
+    match worker {
+        Ok(_) => Some(tx),
+        Err(error) => {
+            let mut current = status.lock().unwrap();
+            current.active = false;
+            current.error = Some(format!("spawn CrystalRuntime thread: {error}"));
+            None
+        }
+    }
 }
 
 #[tokio::main]
@@ -175,6 +296,12 @@ async fn main() {
     let (tx_bpf, _) = broadcast::channel(100);
 
     let liquid_lattice = Arc::new(Mutex::new(memory::liquid_lattice::LiquidLattice::new()));
+    let crystal_runtime_status = Arc::new(Mutex::new(CrystalRuntimeStatusResponse {
+        active: false,
+        error: None,
+        runtime: None,
+    }));
+    let crystal_input_tx = start_crystal_runtime(calculated_nodes, crystal_runtime_status.clone());
     let pattern_detector = Arc::new(engine::patterns::PatternDetector::new());
     let truthsync = Arc::new(Mutex::new(truthsync_core::TruthSyncEngine::new()));
 
@@ -205,6 +332,7 @@ async fn main() {
         liquid_lattice: liquid_lattice.clone(),
         pattern_detector: pattern_detector.clone(),
         neural_memory: neural_memory.clone(),
+        crystal_runtime_status: crystal_runtime_status.clone(),
         quantum_scheduler: quantum_scheduler.clone(),
         bio_resonator: bio_resonator.clone(),
         qhc: qhc.clone(),
@@ -300,6 +428,7 @@ async fn main() {
     let lattice_task = lattice.clone();
     let liquid_lattice_task = liquid_lattice.clone();
     let neural_memory_task = neural_memory.clone();
+    let crystal_input_ebpf = crystal_input_tx.clone();
     let mut rx_lattice = tx_bpf.subscribe();
     tokio::spawn(async move {
         tracing::info!("💎 Lattice Processor active: Ring-0 Ingestion + LiquidLattice 3x3 Diffusivity (EXP-009)");
@@ -332,6 +461,13 @@ async fn main() {
                 event.severity,
             );
             nm.ingest_event(me60os_ev, entropy_spa);
+
+            if let Some(runtime) = &crystal_input_ebpf {
+                let _ = runtime.try_send(CrystalInput::Security {
+                    index: node,
+                    amplitude: entropy_spa,
+                });
+            }
         }
     });
 
@@ -339,6 +475,7 @@ async fn main() {
     let lattice_thermal = lattice.clone();
     let liquid_lattice_thermal = liquid_lattice.clone();
     let neural_memory_thermal = neural_memory.clone();
+    let crystal_input_thermal = crystal_input_tx.clone();
     tokio::spawn(async move {
         let mut interval = tokio::time::interval(tokio::time::Duration::from_millis(500));
         let maat = me60os_core::atlantean::MaatStabilizer::new();
@@ -420,6 +557,10 @@ async fn main() {
                 );
                 nm.ingest_event(thermal_ev, thermal);
             }
+
+            if let Some(runtime) = &crystal_input_thermal {
+                let _ = runtime.try_send(CrystalInput::Observability { amplitude: thermal });
+            }
         }
     });
 
@@ -459,6 +600,10 @@ async fn main() {
         .route("/api/v1/lattice/hologram", get(lattice_hologram_handler))
         .route("/api/v1/sentinel_status", get(sentinel_status_handler))
         .route("/api/v1/qhc/status", get(qhc_client::status_handler))
+        .route(
+            "/api/v1/crystal_runtime/status",
+            get(crystal_runtime_status_handler),
+        )
         .route("/api/v1/truth_claim", post(truth_claim_handler))
         .route("/api/v1/phonon_lattice", get(phonon_lattice_handler))
         .route(
@@ -635,6 +780,12 @@ async fn health_handler(
         },
         qhc,
     })
+}
+
+async fn crystal_runtime_status_handler(
+    axum::extract::State(state): axum::extract::State<Arc<AppState>>,
+) -> Json<CrystalRuntimeStatusResponse> {
+    Json(state.crystal_runtime_status.lock().unwrap().clone())
 }
 
 #[derive(Serialize)]
@@ -1270,6 +1421,11 @@ mod tests {
         let (tx_bpf, _) = broadcast::channel(100);
 
         let qhc = Arc::new(parking_lot::Mutex::new(qhc_client::QhcStatus::unavailable()));
+        let crystal_runtime_status = Arc::new(Mutex::new(CrystalRuntimeStatusResponse {
+            active: false,
+            error: Some("disabled in test".into()),
+            runtime: None,
+        }));
         let (security_wal, wal_dir) = test_security_wal();
         let state = Arc::new(AppState {
             resonance,
@@ -1280,6 +1436,7 @@ mod tests {
             liquid_lattice,
             pattern_detector,
             neural_memory,
+            crystal_runtime_status,
             quantum_scheduler,
             bio_resonator,
             qhc,
@@ -1296,6 +1453,10 @@ mod tests {
         let api_routes = Router::new()
             .route("/api/v1/sentinel_status", get(sentinel_status_handler))
             .route("/api/v1/qhc/status", get(qhc_client::status_handler))
+            .route(
+                "/api/v1/crystal_runtime/status",
+                get(crystal_runtime_status_handler),
+            )
             .route("/api/v1/truth_claim", post(truth_claim_handler))
             .route("/api/v1/lattice/hologram", get(lattice_hologram_handler))
             .route_layer(axum::middleware::from_fn_with_state(

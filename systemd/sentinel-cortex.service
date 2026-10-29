@@ -15,6 +15,7 @@ Environment=SENTINEL_PORT=8000
 Environment=SENTINEL_BIND=0.0.0.0:8000
 Environment=SENTINEL_PAI_CONVERT=1
 Environment=SENTINEL_CRYSTAL_STATE_DIR=/home/jnovoas/.local/state/sentinel
+Environment=SENTINEL_CRYSTAL_RUNTIME=0
 
 [Install]
 WantedBy=multi-user.target
