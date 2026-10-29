@@ -9,7 +9,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 import httpx
 
-import chromadb
 from app.security import TelemetrySanitizer, get_current_active_user
 from app.models.user import User
 
@@ -24,30 +23,13 @@ AI_ENABLED = os.getenv("AI_ENABLED", "true").lower() == "true"
 OLLAMA_TIMEOUT = int(os.getenv("OLLAMA_TIMEOUT", "60"))
 TELEMETRY_SANITIZATION_ENABLED = os.getenv("TELEMETRY_SANITIZATION_ENABLED", "true").lower() == "true"
 
-# Initialize memory systems (RAG & SubCortex)
-try:
-    chroma_client = chromadb.PersistentClient(path="/home/jnovoas/sentinel/db/chroma")
-    memory_collection = chroma_client.get_or_create_collection(name="sentinel_events")
-    logger.info("🧠 ChromaDB Memory Index connected (RAG Enabled)")
-except Exception as e:
-    logger.warning(f"⚠️ ChromaDB failed: {e}. RAG will be disabled.")
-    memory_collection = None
+# RAG remains disabled until a patched, tenant-isolated vector store is selected.
 
 # Initialize services
 sanitizer = TelemetrySanitizer(enabled=TELEMETRY_SANITIZATION_ENABLED)
 
 async def get_memory_context(query: str):
-    """Fetch relevant historical context from ChromaDB (RAG)"""
-    if memory_collection:
-        try:
-            results = memory_collection.query(
-                query_texts=[query],
-                n_results=3
-            )
-            if results['documents'][0]:
-                return "\nContexto de Memoria Histórica (RAG):\n" + "\n".join(results['documents'][0])
-        except Exception as e:
-            logger.warning(f"⚠️ RAG Query failed: {e}")
+    """Historical RAG is unavailable while no patched tenant-isolated store is configured."""
     return ""
 
 async def get_subcortex_context():

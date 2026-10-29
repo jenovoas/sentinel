@@ -37,7 +37,6 @@ fn main() {
 
     let mut engine = TruthSyncEngine::new();
 
-    let mut certified_count = 0usize;
     let mut critical_detected_count = 0usize;
     let mut sampled_latencies_ns = Vec::with_capacity(total_claims / 10);
 
@@ -63,9 +62,6 @@ fn main() {
                 sampled_latencies_ns.push(t0.unwrap().elapsed().as_nanos() as u64);
             }
 
-            if res.is_certified {
-                certified_count += 1;
-            }
             if res.critical_pattern_detected {
                 critical_detected_count += 1;
             }
@@ -125,11 +121,6 @@ fn main() {
         p99_ns
     );
     eprintln!("───────────────────────────────────────────────────────────────");
-    eprintln!(
-        "   Claims certificados (score>=0.50)  : {} ({:.1}%)",
-        certified_count,
-        certified_count as f64 / total_claims as f64 * 100.0
-    );
     eprintln!(
         "   Patrones críticos detectados       : {} ({:.1}%)",
         critical_detected_count,

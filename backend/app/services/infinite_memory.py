@@ -3,13 +3,8 @@ Infinite Memory System for Sentinel TUI
 Implements hierarchical memory compression to maintain unlimited conversation history.
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-import json
-from pathlib import Path
 from typing import List, Dict, Optional
 from datetime import datetime
-import chromadb
-from chromadb.config import Settings
 
 
 class InfiniteMemory:
@@ -19,29 +14,14 @@ class InfiniteMemory:
     Architecture:
     - Working Memory: Last 50 messages (full detail)
     - Short-term Memory: Last 500 messages (compressed summaries)
-    - Long-term Memory: All history (ChromaDB semantic search)
+    - Long-term Memory: Bounded process-local summaries; no external vector store
     """
     
     def __init__(self, user_id: str = "jnovoas"):
         self.user_id = user_id
         self.working_memory: List[Dict] = []
         self.short_term_memory: List[Dict] = []
-        
-        # Initialize ChromaDB for long-term memory
-        chroma_path = Path("/home/jnovoas/sentinel/.chroma_db")
-        self.chroma_client = chromadb.PersistentClient(
-            path=str(chroma_path),
-            settings=Settings(anonymized_telemetry=False)
-        )
-        
-        # Get or create conversation memory collection
-        try:
-            self.memory_collection = self.chroma_client.get_collection("conversation_memory")
-        except:
-            self.memory_collection = self.chroma_client.create_collection(
-                name="conversation_memory",
-                metadata={"description": "Long-term conversation memory"}
-            )
+        self.long_term_memory: List[Dict] = []
     
     def add_message(self, role: str, content: str, metadata: Optional[Dict] = None):
         """Add message to working memory with automatic compression"""
@@ -82,23 +62,10 @@ class InfiniteMemory:
         })
     
     def _archive_to_long_term(self):
-        """Archive short-term memory to ChromaDB"""
-        for item in self.short_term_memory[:100]:
-            doc_id = f"{self.user_id}::{item['timestamp_range'][0]}"
-            
-            self.memory_collection.add(
-                documents=[item["summary"]],
-                metadatas=[{
-                    "user_id": self.user_id,
-                    "message_count": item["messages_count"],
-                    "start_time": item["timestamp_range"][0],
-                    "end_time": item["timestamp_range"][1]
-                }],
-                ids=[doc_id]
-            )
-        
-        # Remove archived items
+        """Keep a bounded set of summaries in process memory."""
+        self.long_term_memory.extend(self.short_term_memory[:100])
         self.short_term_memory = self.short_term_memory[100:]
+        self.long_term_memory = self.long_term_memory[-500:]
     
     def _create_summary(self, messages: List[Dict]) -> str:
         """Create intelligent summary of message batch"""
@@ -135,7 +102,7 @@ class InfiniteMemory:
         Returns:
         - All working memory (last 50 messages)
         - Relevant short-term summaries
-        - Semantic search results from long-term memory (if query provided)
+        - Recent process-local summaries from long-term memory (if query provided)
         """
         context_parts = []
         
@@ -149,20 +116,12 @@ class InfiniteMemory:
             for summary in self.short_term_memory[-5:]:
                 context_parts.insert(1, summary["summary"])
         
-        # 3. Semantic search in long-term memory
+        # 3. Include recent archived summaries without querying an unpatched vector DB.
         if query and len(query) > 10:
-            try:
-                results = self.memory_collection.query(
-                    query_texts=[query],
-                    n_results=3
-                )
-                
-                if results["documents"] and results["documents"][0]:
-                    context_parts.insert(0, "\n[RELEVANT PAST CONVERSATIONS]")
-                    for doc in results["documents"][0]:
-                        context_parts.insert(1, doc)
-            except:
-                pass
+            relevant = self.long_term_memory[-3:]
+            if relevant:
+                context_parts.insert(0, "\n[RECENT ARCHIVED CONVERSATIONS]")
+                context_parts[1:1] = [item["summary"] for item in relevant]
         
         return "\n\n".join(context_parts)
     
@@ -171,7 +130,7 @@ class InfiniteMemory:
         return {
             "working_memory": len(self.working_memory),
             "short_term_memory": len(self.short_term_memory),
-            "long_term_entries": self.memory_collection.count(),
+            "long_term_entries": len(self.long_term_memory),
             "total_messages_tracked": (
                 len(self.working_memory) +
                 sum(item["messages_count"] for item in self.short_term_memory)
