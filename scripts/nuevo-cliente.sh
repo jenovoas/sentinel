@@ -36,7 +36,7 @@ if [[ $# -lt 3 ]]; then
   echo "  $0 laespiguita laespiguita.cl wordpress"
   echo ""
   echo "Tipos de stack disponibles:"
-  echo "  - nextjs      (Next.js 16 + Node 20)"
+  echo "  - nextjs      (Next.js 16 + Node 22)"
   echo "  - wordpress   (WordPress 6 + MariaDB)"
   echo "  - static      (HTML estático + Nginx)"
   exit 1

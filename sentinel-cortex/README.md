@@ -66,7 +66,7 @@ Correlates events across:
 
 ### Prerequisites
 
-- Rust 1.75+
+- Rust 1.99.1 (toolchain fijado por el workspace)
 - Prometheus running
 - N8N Security instance
 

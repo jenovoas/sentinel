@@ -1,10 +1,15 @@
 {
   "dependencies": {
-    "@remotion/cli": "^4.0.532",
-    "@remotion/player": "^4.0.532",
-    "remotion": "^4.0.532"
+    "@remotion/cli": "^4.0.539",
+    "@remotion/player": "^4.0.539",
+    "remotion": "^4.0.539"
   },
   "scripts": {
     "doctor": "npx react-doctor@latest"
+  },
+  "pnpm": {
+    "overrides": {
+      "zod": "^4.6.7"
+    }
   }
 }
