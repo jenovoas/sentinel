@@ -24,6 +24,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY backend/app/ ./app/
 COPY quantum/ ./quantum/
+COPY backend/me60os_core.so ./quantum/me60os_core.so
 
 # Copy Alembic migrations
 COPY backend/alembic.ini ./alembic.ini

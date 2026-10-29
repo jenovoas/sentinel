@@ -189,54 +189,6 @@ impl PySharedBuffer {
     }
 }
 
-#[cfg(feature = "extension-module")]
-#[pymethods]
-impl PySharedBuffer {
-    #[new]
-    fn py_new(name: String, size: usize, create: bool) -> PyResult<Self> {
-        Self::new(name, size, create).map_err(pyo3::exceptions::PyOSError::new_err)
-    }
-
-    pub fn write(&self, offset: usize, data: &[u8]) -> PyResult<usize> {
-        if offset
-            .checked_add(data.len())
-            .is_none_or(|end| end > self.size)
-        {
-            return Err(pyo3::exceptions::PyIndexError::new_err(
-                "Write out of bounds",
-            ));
-        }
-        // SAFETY: bounds are checked above and source/destination do not overlap.
-        unsafe {
-            ptr::copy_nonoverlapping(data.as_ptr(), self.ptr.add(offset), data.len());
-        }
-        Ok(data.len())
-    }
-
-    pub fn read<'py>(&self, py: Python<'py>, offset: usize, length: usize) -> PyResult<Py<PyAny>> {
-        if offset.checked_add(length).is_none_or(|end| end > self.size) {
-            return Err(pyo3::exceptions::PyIndexError::new_err(
-                "Read out of bounds",
-            ));
-        }
-        // SAFETY: bounds are checked above and the mapping is valid.
-        unsafe {
-            let slice = std::slice::from_raw_parts(self.ptr.add(offset), length);
-            Ok(PyBytes::new(py, slice).into_any().unbind())
-        }
-    }
-
-    #[pyo3(name = "close")]
-    fn close_py(&mut self) {
-        self.close();
-    }
-
-    #[pyo3(name = "unlink")]
-    fn unlink_py(&self) {
-        self.unlink();
-    }
-}
-
 impl Drop for PySharedBuffer {
     fn drop(&mut self) {
         self.close();
