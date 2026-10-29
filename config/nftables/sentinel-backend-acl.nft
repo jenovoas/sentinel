@@ -1,15 +1,21 @@
-# Include in Fenix's existing nftables ruleset.
-# FastAPI's published port is reachable only from Kingu over WireGuard.
+# Additional early guard for Fenix's Sentinel API listeners.
+# Fenix currently uses UFW with a default-drop input chain. These rules do not
+# grant access by themselves: add matching source-restricted UFW rules for
+# TCP/8000 and TCP/8001 from Kingu before starting the containers.
 table inet sentinel_backend_acl {
     chain input {
         type filter hook input priority -10; policy accept;
         ip daddr 10.88.0.1 ip saddr 10.88.0.2 tcp dport 8000 counter accept
         ip daddr 10.88.0.1 tcp dport 8000 counter drop
+        ip daddr 10.88.0.1 ip saddr 10.88.0.2 tcp dport 8001 counter accept
+        ip daddr 10.88.0.1 tcp dport 8001 counter drop
     }
 
     chain forward {
         type filter hook forward priority -10; policy accept;
         ct direction original ct original ip daddr 10.88.0.1 ct original proto-dst 8000 ip saddr 10.88.0.2 counter accept
         ct direction original ct original ip daddr 10.88.0.1 ct original proto-dst 8000 counter drop
+        ct direction original ct original ip daddr 10.88.0.1 ct original proto-dst 8001 ip saddr 10.88.0.2 counter accept
+        ct direction original ct original ip daddr 10.88.0.1 ct original proto-dst 8001 counter drop
     }
 }

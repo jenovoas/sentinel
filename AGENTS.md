@@ -63,3 +63,8 @@ Este proyecto cuenta con soporte de grafo de conocimiento local mediante **graph
 - Si existe `graphify-out/wiki/index.md` o `graphify-out/GRAPH_REPORT.md`, consúltalos para navegación arquitectónica global.
 - Tras realizar cambios importantes en el código, ejecuta `graphify update .` para mantener el grafo sincronizado (análisis AST local sin consumo de tokens de API).
 - Para construir o reconstruir el grafo completo, utiliza el comando `/graphify .`.
+
+## Trazabilidad persistente para agentes y sesiones
+- Antes de trabajar, consulta el contexto pertinente del proyecto y la memoria persistente de `~/proyectos/personalvault`.
+- Cada implementación o despliegue debe quedar documentado tanto en el proyecto como en la vault, con evidencia verificable, validaciones y estado operativo real, para permitir auditoría y coordinación entre agentes/sesiones.
+- Distingue preparación local de despliegue realizado; no registres hechos sin evidencia.
