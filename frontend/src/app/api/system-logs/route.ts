@@ -1,16 +1,18 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
-import path from "path";
+import { noStore, sessionError, validateSession } from "@/lib/server/session";
+import { hostMetricsFile } from "@/lib/server/host-metrics";
 
 export async function GET(request: Request) {
+  const session = await validateSession(request);
+  if (!session.ok) return sessionError(session.status);
   try {
     const { searchParams } = new URL(request.url);
     const limit = Math.min(Number(searchParams.get("limit") || 100), 500);
     const level = searchParams.get("level"); // CRITICAL, ERROR, WARNING, INFO
 
-    const base = process.cwd();
-    const csvPath = path.join(base, "host-metrics", "data", "system-logs.csv");
-    const summaryPath = path.join(base, "host-metrics", "data", "logs-summary.json");
+    const csvPath = hostMetricsFile("data", "system-logs.csv");
+    const summaryPath = hostMetricsFile("data", "logs-summary.json");
 
     // Leer resumen
     let summary = null;
@@ -21,18 +23,18 @@ export async function GET(request: Request) {
 
     // Leer logs CSV
     if (!fs.existsSync(csvPath)) {
-      return NextResponse.json({ 
+      return noStore(NextResponse.json({
         ok: true, 
         logs: [], 
         summary: summary || { critical_count: 0, error_count: 0, warning_count: 0, total_issues: 0 } 
-      });
+      }));
     }
 
     const content = fs.readFileSync(csvPath, "utf8");
     const lines = content.trim().split(/\r?\n/);
     
     if (lines.length <= 1) {
-      return NextResponse.json({ ok: true, logs: [], summary });
+      return noStore(NextResponse.json({ ok: true, logs: [], summary }));
     }
 
     const dataLines = lines.slice(1);
@@ -57,13 +59,13 @@ export async function GET(request: Request) {
     logs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
     logs = logs.slice(0, limit);
 
-    return NextResponse.json({ 
+    return noStore(NextResponse.json({
       ok: true, 
       logs,
       summary: summary || { critical_count: 0, error_count: 0, warning_count: 0, total_issues: 0 },
       total: logs.length 
-    });
+    }));
   } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message || "error" }, { status: 500 });
+    return noStore(NextResponse.json({ ok: false, error: e?.message || "error" }, { status: 500 }));
   }
 }

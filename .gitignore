@@ -43,6 +43,7 @@ logs/*.log
 # Archivos de contexto/config local (no versionar)
 MEMORY.md
 reasonix.toml
+graphify-out/
 # Added by code-review-graph
 .code-review-graph/
 .aider*

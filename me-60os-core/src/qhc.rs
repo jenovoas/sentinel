@@ -28,20 +28,19 @@ impl QhcTensor {
         self.pattern[(tick % 4) as usize]
     }
 
-    /// DTC respiratory cadence from EXP-027, represented as integer mHz.
-    /// The reciprocal is calculated with integer arithmetic in nanoseconds.
-    pub fn get_tick_interval_ns(&self, tick: u64) -> u64 {
-        const FREQUENCY_MILLI_HZ: [u64; 4] = [43_520, 41_020, 41_520, 41_020];
-        let frequency_milli_hz = FREQUENCY_MILLI_HZ[(tick % 4) as usize];
-        (1_000_000_000_000_u64 + frequency_milli_hz / 2) / frequency_milli_hz
-    }
-
     /// Calcula corrección de drift (Salto-17)
     pub fn calculate_drift_correction(&self, current_ticks: u64) -> u64 {
         if current_ticks > 0 && current_ticks.is_multiple_of(self.correction_interval) {
             return self.correction_ns;
         }
         0
+    }
+
+    /// DTC cadence from EXP-027, represented as integer mHz.
+    pub fn get_tick_interval_ns(&self, tick: u64) -> u64 {
+        const FREQUENCY_MILLI_HZ: [u64; 4] = [43_520, 41_020, 41_520, 41_020];
+        let frequency_milli_hz = FREQUENCY_MILLI_HZ[(tick % 4) as usize];
+        (1_000_000_000_000_u64 + frequency_milli_hz / 2) / frequency_milli_hz
     }
 
     /// Aplica la modulación a un SPA base

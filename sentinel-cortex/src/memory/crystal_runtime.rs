@@ -80,7 +80,8 @@ struct CrystalNodeState {
 #[derive(Deserialize)]
 struct LegacyCrystalSnapshot {
     version: u32,
-    node_count: usize,
+    #[serde(rename = "node_count")]
+    _node_count: usize,
     qhc_tick: u64,
     lane_a: ResonantMatrix,
     lane_b: ResonantMatrix,
@@ -158,14 +159,16 @@ impl CrystalRuntime {
             let seeds = PySharedBuffer::new(FRACTAL_SEEDS_SHM.to_string(), seed_bytes, true)
                 .map_err(|e| format!("create {FRACTAL_SEEDS_SHM}: {e}"))?;
             seeds
-                .write(0, &0x5346_5231_u32.to_le_bytes())
+                .write_native(0, &0x5346_5231_u32.to_le_bytes())
                 .map_err(|e| e.to_string())?;
             seeds
-                .write(4, &1_u32.to_le_bytes())
+                .write_native(4, &1_u32.to_le_bytes())
                 .map_err(|e| e.to_string())?;
             seeds.store_u64_release(8, 0)?;
             seeds.store_u64_release(16, 0)?;
-            seeds.write(24, &[0_u8; 40]).map_err(|e| e.to_string())?;
+            seeds
+                .write_native(24, &[0_u8; 40])
+                .map_err(|e| e.to_string())?;
             (Some(a), Some(b), Some(seeds))
         } else {
             (None, None, None)
@@ -291,7 +294,7 @@ impl CrystalRuntime {
         bytes[28..30].copy_from_slice(&crc.to_le_bytes());
         let slot = (self.fractal_seed_head as usize) % FRACTAL_SEEDS_CAPACITY;
         let offset = FRACTAL_HEADER_BYTES + slot * FRACTAL_SEED_BYTES;
-        if let Err(error) = buffer.write(offset, &bytes) {
+        if let Err(error) = buffer.write_native(offset, &bytes) {
             tracing::error!(%error, "Failed to publish MycNet fractal seed");
             return;
         }

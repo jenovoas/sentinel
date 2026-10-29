@@ -54,19 +54,56 @@ impl BufferCascade {
         }
     }
 
+    /// Crea la cascada compartida de red con la topología hexagonal por defecto.
+    pub fn with_default_hex() -> Self {
+        Self::new(
+            HexagonalController::new(7),
+            SPA::new(1, 0, 0, 0, 0),
+            SPA::new(58, 0, 0, 0, 0),
+        )
+    }
+
+    pub fn history(&self) -> &BTreeMap<SPA, CoherenceRecord> {
+        &self.history
+    }
+
+    /// Límite de coherencia usado para normalizar puntuaciones del verificador.
+    pub fn limit(&self) -> SPA {
+        self.limit
+    }
+
+    pub fn len(&self) -> usize {
+        self.history.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.history.is_empty()
+    }
+
     /// Registra el estado de coherencia actual.
     pub fn record(&mut self, t: SPA, coherence: SPA) {
         self.history.insert(t, CoherenceRecord { coherence });
     }
 
-    /// Efecto de memoria: suma ponderada del kernel sobre los últimos `window` timestamps.
+    /// Efecto de memoria ponderado por coherencia registrada normalizada.
     pub fn memory_effect(&self, now: SPA, window: usize) -> SPA {
-        let recent: Vec<SPA> = self.history.keys().cloned().rev().take(window).collect();
+        let recent: Vec<(SPA, SPA)> = self
+            .history
+            .iter()
+            .rev()
+            .take(window)
+            .map(|(timestamp, record)| (*timestamp, record.coherence))
+            .collect();
+        let unit = SPA::from_int(1);
         let mut acc = SPA::zero();
-        for ts in recent {
-            let k = ou_kernel(now, ts, self.tau_c);
-            // multiplicador 0.5 (S60 0;30,0) como en el original
-            acc = acc + (k * SPA::new(0, 30, 0, 0, 0));
+        for (timestamp, coherence) in recent {
+            let kernel = ou_kernel(now, timestamp, self.tau_c);
+            let weight = if self.limit == SPA::zero() {
+                unit
+            } else {
+                coherence / self.limit
+            };
+            acc = acc + (kernel * weight * SPA::new(0, 30, 0, 0, 0));
         }
         acc
     }
@@ -78,7 +115,7 @@ impl BufferCascade {
 
         // Estabilizar geometría (Pilar 2): frenar propagación de rift en el centro.
         let center = self.hex.n_nodes / 2;
-        let _ = self.hex.control_rift_propagation(center);
+        let mitigated = matches!(self.hex.control_rift_propagation(center), Ok((1, _, _)));
 
         // Coherencia actual = min(base + memory*22, limit)
         let base = SPA::new(42, 30, 0, 0, 0); // 42;30
@@ -100,9 +137,10 @@ impl BufferCascade {
 
         // Guardar estado presente para el futuro (backflow de información).
         self.history
-            .insert(now, CoherenceRecord { coherence: current });
+            .entry(now)
+            .or_insert(CoherenceRecord { coherence: current });
 
-        (current, future, true)
+        (current, future, mitigated)
     }
 }
 

@@ -95,7 +95,10 @@ impl MutualSurveillance {
         } else if elapsed <= self.max_heartbeat_timeout_sec * 2 {
             (GuardianHealth::Compromised, "RELOAD_EBPF_PROG".to_string())
         } else {
-            (GuardianHealth::Dead, "EMERGENCY_FAILSAFE_LOCKDOWN".to_string())
+            (
+                GuardianHealth::Dead,
+                "EMERGENCY_FAILSAFE_LOCKDOWN".to_string(),
+            )
         };
 
         GuardianStatusReport {

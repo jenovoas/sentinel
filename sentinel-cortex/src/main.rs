@@ -2,24 +2,30 @@
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 mod actions;
+mod auth;
 mod buffer_system;
 mod collectors;
+mod dashboard;
+mod detectors;
 mod ebpf_cortex_bridge;
 mod engine;
 mod math;
+#[allow(dead_code)]
 mod memory;
 mod metrics;
 mod models;
+mod qhc_client;
 mod quantum;
 
 use axum::extract::ws::{Message, WebSocket, WebSocketUpgrade};
 use axum::{
+    http::StatusCode,
     routing::{get, post},
     Json, Router,
 };
 use ebpf_cortex_bridge::{CortexEvent, EbpfBridge};
 use math::harmonic_logic::{HarmonicProcessor, HarmonicState};
-use metrics::{MetricsRepository, MetricsSnapshot, PrometheusRepository};
+use metrics::MetricsSnapshot;
 use sentinel_cortex::security::bio_resonance::ResonanceEngine;
 use serde::Serialize;
 use std::sync::{Arc, Mutex};
@@ -32,22 +38,79 @@ struct HealthStatus {
     status: String,
     version: String,
     metrics: MetricsSnapshot,
+    qhc: qhc_client::QhcStatus,
+}
+
+#[derive(Clone)]
+struct SecurityWal {
+    primary_path: std::path::PathBuf,
+    fallback_path: std::path::PathBuf,
+}
+
+impl SecurityWal {
+    fn production() -> Self {
+        Self {
+            primary_path: "/var/log/sentinel/security_wal.log".into(),
+            fallback_path: "/tmp/sentinel_security_wal.log".into(),
+        }
+    }
+
+    fn write(&self, entry: &str) -> std::io::Result<()> {
+        match append_synced_wal(&self.primary_path, entry) {
+            Ok(()) => Ok(()),
+            Err(primary_error) => append_synced_wal(&self.fallback_path, entry).map_err(|fallback_error| {
+                std::io::Error::new(
+                    fallback_error.kind(),
+                    format!("primary WAL failed: {primary_error}; fallback WAL failed: {fallback_error}"),
+                )
+            }),
+        }
+    }
+}
+
+fn append_synced_wal(path: &std::path::Path, entry: &str) -> std::io::Result<()> {
+    use std::io::Write;
+
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+
+    let mut file = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(path)?;
+    file.write_all(entry.as_bytes())?;
+    file.write_all(b"\n")?;
+    file.sync_all()
 }
 
 pub(crate) struct AppState {
     resonance: Arc<Mutex<ResonanceEngine>>,
-    metrics: Arc<dyn MetricsRepository>,
+    security_wal: SecurityWal,
     bpf_stream: broadcast::Sender<CortexEvent>,
-    lattice: Arc<Mutex<memory::crystal_runtime::CrystalRuntime>>,
+    lattice: Arc<Mutex<memory::resonant_lattice_bridge::ResonantLatticeBridge>>,
     truthsync: Arc<Mutex<truthsync_core::TruthSyncEngine>>,
     liquid_lattice: Arc<Mutex<memory::liquid_lattice::LiquidLattice>>,
     #[allow(dead_code)]
     pattern_detector: Arc<engine::patterns::PatternDetector>,
     neural_memory: Arc<Mutex<me60os_core::neural_memory::NeuralMemory>>,
-    #[allow(dead_code)]
     quantum_scheduler: Arc<Mutex<quantum::quantum_scheduler::QuantumScheduler>>,
     #[allow(dead_code)]
     bio_resonator: Arc<Mutex<quantum::bio_resonator::BioResonator>>,
+    qhc: Arc<parking_lot::Mutex<qhc_client::QhcStatus>>,
+}
+
+/// Numerador sexagesimal de borde (`(user+sys) mod 60 + 20`, o 35 si no hay `/proc/stat`)
+/// convertido una sola vez: `pai60_divide(from_int(sample), 60)`.
+/// Cristal, carga efectiva, memoria líquida y LIF reciben este SPA. No hay segunda escala.
+pub(crate) fn thermal_amplitude(sample: i64) -> me60os_core::spa::SPA {
+    me60os_core::pai60_lib::pai60_divide(me60os_core::spa::SPA::from_int(sample), 60)
+        .expect("60 es denominador regular de la tabla PAI-60")
+}
+
+fn thermal_half(amplitude: me60os_core::spa::SPA) -> me60os_core::spa::SPA {
+    me60os_core::pai60_lib::pai60_divide(amplitude, 2)
+        .unwrap_or_else(|| amplitude / me60os_core::spa::SPA::from_int(2))
 }
 
 #[tokio::main]
@@ -66,10 +129,13 @@ async fn main() {
         return;
     }
 
+    let jwt_config = Arc::new(auth::AuthConfig::from_env().unwrap_or_else(|error| {
+        panic!("Configuración JWT inválida: {error}");
+    }));
+
     // Initialize core components
     let resonance = Arc::new(Mutex::new(ResonanceEngine::new()));
     let processor = Arc::new(Mutex::new(HarmonicProcessor::new()));
-    let metrics = Arc::new(PrometheusRepository::new());
     // Calculate Dynamic Lattice Size based on System Available RAM (rings: N = 3r^2 + 3r + 1)
     let available_ram_mb: usize = std::fs::read_to_string("/proc/meminfo")
         .ok()
@@ -91,32 +157,48 @@ async fn main() {
         rings += 1;
     }
     let calculated_nodes = std::cmp::max(128, 3 * rings * (rings + 1) + 1);
-    let crystal_nodes = std::env::var("SENTINEL_CRYSTAL_NODES")
-        .ok()
-        .and_then(|value| value.parse::<usize>().ok())
-        .filter(|&nodes| nodes >= 128)
-        .unwrap_or(calculated_nodes);
-    tracing::info!("💎 Dynamic RAM Lattice Allocator: Allocated {} nodes across {} rings (Available RAM: {} MB)", crystal_nodes, rings, available_ram_mb);
+    tracing::info!("💎 Dynamic RAM Lattice Allocator: Allocated {} nodes across {} rings (Available RAM: {} MB)", calculated_nodes, rings, available_ram_mb);
 
     let lattice = Arc::new(Mutex::new(
-        memory::crystal_runtime::CrystalRuntime::new(crystal_nodes)
-            .expect("initialize dual crystal runtime and shared memory"),
+        memory::resonant_lattice_bridge::ResonantLatticeBridge::new(calculated_nodes),
     ));
+    // P1.6 (auditoría 2026-08-23): modo superconductor opt-in para las lanes de
+    // memoria del bridge. Sin flag, el lattice permanece disipativo (regla brain #4).
+    if std::env::var("SENTINEL_SUPERCONDUCTOR").as_deref() == Ok("1") {
+        lattice.lock().unwrap().set_superconductor();
+        tracing::info!(
+            "🧊 Modo SUPERCONDUCTOR activo (SENTINEL_SUPERCONDUCTOR=1): damping=0 en {} cristales; amplitud sostenida tras step()",
+            calculated_nodes
+        );
+    }
     // Broadcast channel para Múltiples Inversores (WebSockets) viendo el eBPF
     let (tx_bpf, _) = broadcast::channel(100);
 
     let liquid_lattice = Arc::new(Mutex::new(memory::liquid_lattice::LiquidLattice::new()));
     let pattern_detector = Arc::new(engine::patterns::PatternDetector::new());
     let truthsync = Arc::new(Mutex::new(truthsync_core::TruthSyncEngine::new()));
-    let neural_memory = Arc::new(Mutex::new(me60os_core::neural_memory::NeuralMemory::new()));
+
+    let crystal_path = std::path::Path::new("/var/lib/sentinel/snn_weights.crystal");
+    let fallback_path = std::path::Path::new("/tmp/snn_weights.crystal");
+    let initial_neural_memory =
+        me60os_core::neural_memory::NeuralMemory::load_from_crystal(crystal_path)
+            .or_else(|_| me60os_core::neural_memory::NeuralMemory::load_from_crystal(fallback_path))
+            .unwrap_or_else(|_| {
+                tracing::info!(
+                    "Inicializando nueva NeuralMemory SNN (sin checkpoint .crystal previo)"
+                );
+                me60os_core::neural_memory::NeuralMemory::new()
+            });
+    let neural_memory = Arc::new(Mutex::new(initial_neural_memory));
     let bio_resonator = Arc::new(Mutex::new(quantum::bio_resonator::BioResonator::new()));
     let quantum_scheduler = Arc::new(Mutex::new(
         quantum::quantum_scheduler::QuantumScheduler::new(bio_resonator.clone()),
     ));
 
+    let qhc = Arc::new(parking_lot::Mutex::new(qhc_client::QhcStatus::unavailable()));
     let state = Arc::new(AppState {
         resonance: resonance.clone(),
-        metrics: metrics.clone() as Arc<dyn MetricsRepository>,
+        security_wal: SecurityWal::production(),
         bpf_stream: tx_bpf.clone(),
         lattice: lattice.clone(),
         truthsync: truthsync.clone(),
@@ -125,57 +207,24 @@ async fn main() {
         neural_memory: neural_memory.clone(),
         quantum_scheduler: quantum_scheduler.clone(),
         bio_resonator: bio_resonator.clone(),
+        qhc: qhc.clone(),
     });
-
-    // Dual crystal meshes, QHC phase synchronization, non-Markovian kernel,
-    // and SHM publication share the same 500 ms runtime tick.
-    let crystal_runtime_task = lattice.clone();
-    tokio::spawn(async move {
-        let mut interval = tokio::time::interval(Duration::from_millis(500));
-        let mut ticks = 0_u64;
+    qhc_client::spawn(qhc);
+    tokio::spawn(async {
+        let mut interval = tokio::time::interval(Duration::from_secs(15));
         loop {
             interval.tick().await;
-            let mut runtime = crystal_runtime_task.lock().unwrap();
-            if let Err(error) = runtime.step() {
-                tracing::error!(%error, "Dual crystal runtime tick failed");
-            }
-            ticks = ticks.saturating_add(1);
-            if ticks % 60 == 0 {
-                if let Err(error) = runtime.persist() {
-                    tracing::error!(%error, "Dual crystal checkpoint failed");
-                }
-            }
-        }
-    });
-
-    let dtc_runtime = lattice.clone();
-    tokio::spawn(async move {
-        let mut deadline = tokio::time::Instant::now();
-        loop {
-            let next_interval_ns = match dtc_runtime.lock().unwrap().tick_dtc() {
-                Ok(interval_ns) => interval_ns,
-                Err(error) => {
-                    tracing::error!(%error, "DTC/QHC synchronization tick failed");
-                    23_939_835
-                }
-            };
-            deadline += Duration::from_nanos(next_interval_ns);
-            let now = tokio::time::Instant::now();
-            if deadline <= now {
-                // A missed deadline is drift/noise, not permission to emit a
-                // burst of synthetic DTC ticks. Resume from now; QHC's
-                // independent 68-tick correction boundary remains in force.
-                deadline = now + Duration::from_nanos(next_interval_ns);
-            }
-            tokio::time::sleep_until(deadline).await;
+            dashboard::record_analytics_sample();
         }
     });
 
     let resonance_task = resonance.clone();
     let processor_task = processor.clone();
     let scheduler_task = quantum_scheduler.clone();
+    let bio_resonator_task = bio_resonator.clone();
+    let qhc_task = state.qhc.clone();
     tokio::spawn(async move {
-        tracing::info!("Resonance Engine active. Syncing to 17s Pulse...");
+        tracing::info!("Resonance Engine active. Syncing to QHC pulse...");
         let start_time = std::time::Instant::now();
         let mut last_second: u64 = 0;
         loop {
@@ -185,7 +234,12 @@ async fn main() {
                 continue;
             }
             last_second = elapsed_secs;
-            let tick = elapsed_secs;
+            let local_tick = elapsed_secs;
+            let qhc_tick = qhc_client::live_tick(&qhc_task.lock());
+            if qhc_tick.is_some() {
+                bio_resonator_task.lock().unwrap().record_pilot_heartbeat();
+            }
+            let tick = qhc_tick.unwrap_or(local_tick);
 
             {
                 let mut res = resonance_task.lock().unwrap();
@@ -196,14 +250,15 @@ async fn main() {
                 sched.tick(math::s60::S60::from_int(tick as i32));
             }
 
-            if tick > 0 && tick % 17 == 0 {
+            if tick > 0 && tick.is_multiple_of(17) {
                 let mut res = resonance_task.lock().unwrap();
                 let (valid, coherence) = res.verify_pulse(tick);
                 tracing::info!(
-                    "PULSE CHECK (T={}): Valid={}, Coherence={:?}",
+                    "PULSE CHECK (T={}): Valid={}, Coherence={:?}, QHC={}",
                     tick,
                     valid,
-                    coherence
+                    coherence,
+                    qhc_tick.is_some()
                 );
 
                 if valid {
@@ -227,7 +282,7 @@ async fn main() {
         // hook bprm_check_security vivo). El ringbuf 'events' es el que llena guardian_execve.
         // Sin LLM local (laptop no da): el cortex corre como motor determinista de eventos+lattice.
         let monitor_path = std::env::var("EBPF_MONITOR_PATH")
-            .unwrap_or_else(|_| "/sys/fs/bpf/guardian_alpha/events".to_string());
+            .unwrap_or_else(|_| "/sys/fs/bpf/sentinel/events".to_string());
         let bridge = EbpfBridge::new().with_ringbuf_path(monitor_path);
 
         tokio::spawn(async move {
@@ -251,11 +306,12 @@ async fn main() {
         while let Ok(event) = rx_lattice.recv().await {
             let mut lat = lattice_task.lock().unwrap();
             let pressure = event.entropy_s60_raw as i64;
-            let node = (event.pid as usize) % lat.node_count();
+            let node = (event.pid as usize) % 64;
             // FIX (auditoría 2026-08-23, P0.4-A1): pressure es S60 RAW del
             // kernel (cortex_events.h:117); inject() lo re-escalaria por
             // SCALE_0 (doble escala). inject_spa preserva la escala SPA.
-            lat.inject_security_spa(node, me60os_core::spa::SPA::from_raw(pressure));
+            lat.inject_spa(node, me60os_core::spa::SPA::from_raw(pressure));
+            lat.step();
 
             // Connect EXP-009 LiquidLattice 3x3 grid diffusion
             let mut ll = liquid_lattice_task.lock().unwrap();
@@ -294,8 +350,8 @@ async fn main() {
             // Measure loop tick latency and adjust GPU batch size dynamically
             let latency_start = std::time::Instant::now();
 
-            // Extract dynamic CPU work deltatime entropy from /proc/stat
-            let entropy_pressure: i64 = std::fs::read_to_string("/proc/stat")
+            // Borde OS: jiffies decimales. Salen de la cadena en la línea siguiente.
+            let sample = std::fs::read_to_string("/proc/stat")
                 .ok()
                 .and_then(|s| {
                     s.lines().next().and_then(|line| {
@@ -303,20 +359,21 @@ async fn main() {
                         if parts.len() > 4 {
                             let user: i64 = parts[1].parse().ok()?;
                             let sys: i64 = parts[3].parse().ok()?;
-                            Some((user + sys) % 60 + 20) // Dynamic S60 noise range
+                            Some((user + sys).rem_euclid(60) + 20)
                         } else {
                             None
                         }
                     })
                 })
                 .unwrap_or(35);
+            let thermal = thermal_amplitude(sample);
 
             // Execute Maat Harmonic Regulation (Truth vs Speed)
-            let current_truth = me60os_core::spa::SPA::new(0, 58, 0, 0, 0); // 58/60 = 96.6% Verdad
+            let current_truth = me60os_core::spa::SPA::new(0, 58, 0, 0, 0); // 58/60
             let (regulated_speed, status) = maat.regulate(current_truth, current_speed);
             current_speed = regulated_speed;
 
-            // Latencia en milésimas de ms (entero, YATRA-LOCKED: sin float)
+            // Latencia en milésimas de ms (entero de borde, no entra al retículo)
             let elapsed_msx1000 = latency_start.elapsed().as_micros() as i64 / 1_000;
             let batch_size = gpu_ctrl.adjust_batch_size(elapsed_msx1000);
             tracing::trace!(
@@ -326,70 +383,42 @@ async fn main() {
                 batch_size
             );
 
-            // AUDIT-360: scope mutex to critical section (inject + step), release before oscillate writes
             {
                 let mut lat = lattice_thermal.lock().unwrap();
-                let node_count = lat.node_count();
-                // Inject multi-point harmonic thermal pulses across central hexagonal rings (Node 0, ring centers)
-                // PRUEBA PAI-60: si SENTINEL_PAI_CONVERT=1, la amplitud se deriva via pai60_divide
-                // (razon recíproca exacta base-60) en vez de meter i64 crudo como presion.
-                let pai_convert = std::env::var("SENTINEL_PAI_CONVERT")
-                    .map(|v| v == "1")
-                    .unwrap_or(false);
-                if pai_convert {
-                    // denominador 60 = escala base-60 (S60). value en [0,60).
-                    let v = entropy_pressure.rem_euclid(60);
-                    lat.inject_observability_pai(0, v, 60);
-                    if node_count > 100 {
-                        let step_ring = node_count / 7;
-                        for ring_idx in 1..7 {
-                            lat.inject_observability_pai(ring_idx * step_ring, v / 2, 60);
-                        }
-                    }
-                } else {
-                    lat.inject_observability(0, entropy_pressure);
-                    if node_count > 100 {
-                        let step_ring = node_count / 7;
-                        for ring_idx in 1..7 {
-                            lat.inject_observability(ring_idx * step_ring, entropy_pressure / 2);
-                        }
+                let node_count = lat.amplitudes_raw().len();
+                let half = thermal_half(thermal);
+                lat.inject_spa(0, thermal);
+                if node_count > 100 {
+                    let step_ring = node_count / 7;
+                    for ring_idx in 1..7 {
+                        lat.inject_spa(ring_idx * step_ring, half);
                     }
                 }
-            } // drop lat lock here
+                lat.step();
+            }
 
-            // Calculate Resonant Physics Inertial Damping & Effective Load Reduction (outside lock)
-            let static_load = me60os_core::spa::SPA::from_raw(entropy_pressure);
-            let priority = me60os_core::spa::SPA::new(1, 0, 0, 0, 0); // 1.0 Priority Unit
-            let stability = me60os_core::spa::SPA::from_raw(
-                (entropy_pressure % 60 + 1) * (me60os_core::spa::SPA::SCALE_0 / 60),
-            );
+            let priority = me60os_core::spa::SPA::one();
             let effective_load = me60os_core::physics::ResonantPhysics::calculate_effective_load(
-                static_load,
-                priority,
-                stability,
+                thermal, priority, thermal,
             );
 
-            // Inject entropy & diffuse in EXP-009 LiquidLattice 3x3 grid continuously using effective load
             {
                 let mut ll = liquid_lattice_thermal.lock().unwrap();
-                ll.inject_entropy(1, 1, effective_load.to_raw()); // Center cell (1,1)
+                ll.inject_entropy(1, 1, effective_load.to_raw());
                 ll.diffuse();
             }
 
-            // Continuous pulse of PAI-Neural SNN LIF memory with thermal CPU noise
             {
                 let mut nm = neural_memory_thermal.lock().unwrap();
+                let thermal_raw = thermal.to_raw().max(0) as u64;
                 let thermal_ev = me60os_core::ebpf_cortex_bridge::CortexEvent::new(
                     chrono::Utc::now().timestamp_nanos_opt().unwrap_or(0) as u64,
-                    18, // Watchdog/Resonance Event Type
+                    18,
                     std::process::id() as u32,
-                    entropy_pressure as u64,
+                    thermal_raw,
                     0,
                 );
-                nm.ingest_event(
-                    thermal_ev,
-                    me60os_core::spa::SPA::from_raw(entropy_pressure),
-                );
+                nm.ingest_event(thermal_ev, thermal);
             }
         }
     });
@@ -424,22 +453,108 @@ async fn main() {
         }
     });
 
-    // 3. Setup Axum Router
+    // 3. Setup Axum Router: only health and metrics remain public.
+    let api_routes = Router::new()
+        .route("/api/v1/lattice", get(lattice_status_handler))
+        .route("/api/v1/lattice/hologram", get(lattice_hologram_handler))
+        .route("/api/v1/sentinel_status", get(sentinel_status_handler))
+        .route("/api/v1/qhc/status", get(qhc_client::status_handler))
+        .route("/api/v1/truth_claim", post(truth_claim_handler))
+        .route("/api/v1/phonon_lattice", get(phonon_lattice_handler))
+        .route(
+            "/api/v1/backup/status",
+            get(dashboard::backup_status_handler),
+        )
+        .route("/api/v1/ai/query", post(dashboard::ai_query_handler))
+        .route(
+            "/api/v1/dashboard/status",
+            get(dashboard::dashboard_status_handler),
+        )
+        .route(
+            "/api/v1/failsafe/status",
+            get(dashboard::failsafe_status_handler),
+        )
+        .route(
+            "/api/v1/analytics/statistics",
+            get(dashboard::analytics_statistics_handler),
+        )
+        .route(
+            "/api/v1/analytics/metrics/recent",
+            get(dashboard::analytics_metrics_recent_handler),
+        )
+        .route(
+            "/api/v1/analytics/storage/summary",
+            get(dashboard::analytics_storage_summary_handler),
+        )
+        .route(
+            "/api/v1/analytics/anomalies",
+            get(dashboard::analytics_anomalies_handler),
+        )
+        .route("/api/v1/ai/health", get(dashboard::ai_health_handler))
+        .route_layer(axum::middleware::from_fn_with_state(
+            jwt_config.clone(),
+            auth::require_session,
+        ));
+    let telemetry_route = Router::new()
+        .route("/api/v1/telemetry", get(telemetry_ws_handler))
+        .route_layer(axum::middleware::from_fn_with_state(
+            jwt_config.clone(),
+            auth::require_ws_session,
+        ));
+    let backup_trigger_route = Router::new()
+        .route(
+            "/api/v1/backup/trigger",
+            post(dashboard::backup_trigger_handler),
+        )
+        .route_layer(axum::middleware::from_fn(auth::require_superuser))
+        .route_layer(axum::middleware::from_fn_with_state(
+            jwt_config.clone(),
+            auth::require_session,
+        ));
     let app = Router::new()
         .route("/health", get(health_handler))
         .route("/metrics", get(metrics_prometheus_handler))
-        .route("/api/v1/lattice", get(lattice_status_handler))
-        .route(
-            "/api/v1/crystal/runtime",
-            get(crystal_runtime_status_handler),
-        )
-        .route("/api/v1/lattice/hologram", get(lattice_hologram_handler))
-        .route("/api/v1/telemetry", get(telemetry_ws_handler))
-        .route("/api/v1/sentinel_status", get(sentinel_status_handler))
-        .route("/api/v1/truth_claim", post(truth_claim_handler))
-        .route("/api/v1/phonon_lattice", get(phonon_lattice_handler))
+        .merge(api_routes)
+        .merge(telemetry_route)
+        .merge(backup_trigger_route)
         .layer(tower_http::trace::TraceLayer::new_for_http())
         .with_state(state);
+
+    // 8. Tarea de persistencia periódica de NeuralMemory a formato binario .crystal (Liquid Persistence)
+    let nm_periodic = neural_memory.clone();
+    tokio::spawn(async move {
+        let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(60));
+        loop {
+            interval.tick().await;
+            let nm = nm_periodic.lock().unwrap();
+            let primary = std::path::Path::new("/var/lib/sentinel/snn_weights.crystal");
+            let fallback = std::path::Path::new("/tmp/snn_weights.crystal");
+            if nm.save_to_crystal(primary).is_err() {
+                let _ = nm.save_to_crystal(fallback);
+            }
+        }
+    });
+
+    // 8b. Detector de resonancia periódica (FFT + Q-factor en S60 puro).
+    // Muestrea la energía total del lattice cada segundo; ante una baliza
+    // sintética de Q alto emite alerta por tracing para el SOC.
+    let lattice_periodic = lattice.clone();
+    tokio::spawn(async move {
+        let mut detector = detectors::PeriodicDetector::with_defaults(64);
+        let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(1));
+        loop {
+            interval.tick().await;
+            let energy = lattice_periodic.lock().unwrap().total_energy_raw();
+            if let Some(alert) = detector.push_raw(energy) {
+                tracing::warn!(
+                    q_factor = %alert.q_factor,
+                    peak_hz = %alert.peak_frequency_hz,
+                    samples = alert.sample_count,
+                    "PeriodicDetector: {}", alert.description
+                );
+            }
+        }
+    });
 
     // 4. Start Server
     // 7. Periodically export phononic data as CSV for scientific study
@@ -497,15 +612,8 @@ async fn main() {
         .ok()
         .and_then(|p| p.parse().ok())
         .unwrap_or(8000);
-    let addr: SocketAddr = std::env::var("SENTINEL_BIND")
-        .ok()
-        .and_then(|value| value.parse().ok())
-        .unwrap_or_else(|| SocketAddr::from(([0, 0, 0, 0], port)));
-    tracing::info!(
-        "Listening on {} (PAI_CONVERT={})",
-        addr,
-        std::env::var("SENTINEL_PAI_CONVERT").unwrap_or_else(|_| "0".into())
-    );
+    let addr = SocketAddr::from(([0, 0, 0, 0], port));
+    tracing::info!("Listening on {}", addr);
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
@@ -514,14 +622,18 @@ async fn health_handler(
     axum::extract::State(state): axum::extract::State<Arc<AppState>>,
 ) -> Json<HealthStatus> {
     let bio_coherence = state.resonance.lock().unwrap().get_coherence_raw();
+    let scheduler_efficiency = state.quantum_scheduler.lock().unwrap().efficiency_percent();
+    let qhc = state.qhc.lock().clone();
     Json(HealthStatus {
         status: "OK".to_string(),
         version: env!("CARGO_PKG_VERSION").to_string(),
         metrics: MetricsSnapshot {
             coherence: bio_coherence,
-            efficiency: state.metrics.get_scheduler_efficiency().to_base_units(),
+            efficiency: scheduler_efficiency.unwrap_or(0) as i64,
+            efficiency_available: scheduler_efficiency.is_some(),
             timestamp_s60: 0, // Placeholder
         },
+        qhc,
     })
 }
 
@@ -539,16 +651,10 @@ async fn lattice_status_handler(
     let lat = state.lattice.lock().unwrap();
     Json(LatticeStatusResponse {
         total_energy: lat.total_energy_raw(),
-        node_count: lat.node_count(),
+        node_count: 64,
         amplitudes: lat.amplitudes_raw(),
         phases: lat.phases_raw(),
     })
-}
-
-async fn crystal_runtime_status_handler(
-    axum::extract::State(state): axum::extract::State<Arc<AppState>>,
-) -> Json<memory::crystal_runtime::CrystalRuntimeStatus> {
-    Json(state.lattice.lock().unwrap().status())
 }
 
 #[derive(Serialize)]
@@ -584,7 +690,7 @@ async fn lattice_hologram_handler(
     for i in 0..node_count {
         let a = amps[i];
         let p = phases[i];
-        let a_u16 = ((a.abs() as u128 * 65535) / SCALE_0 as u128).min(65535) as u16;
+        let a_u16 = (u128::from(a.unsigned_abs()) * 65535 / SCALE_0 as u128).min(65535) as u16;
         let p_u16 = ((p.rem_euclid(SCALE_0) as u128 * 65535) / SCALE_0 as u128) as u16;
 
         nodes.push(HologramNodeSnapshot {
@@ -809,26 +915,110 @@ async fn metrics_prometheus_handler(
     let _ = writeln!(out, "# TYPE sentinel_xdp_firewall_status gauge");
     let _ = writeln!(out, "sentinel_xdp_firewall_status {}", xdp_active);
 
+    // Métricas mínimas de servicios entregados a clientes
+    let check_port = |port: u16| -> u8 {
+        use std::net::{SocketAddr, TcpStream};
+        let addr = SocketAddr::from(([127, 0, 0, 1], port));
+        if TcpStream::connect_timeout(&addr, std::time::Duration::from_millis(20)).is_ok() {
+            1
+        } else {
+            0
+        }
+    };
+
+    let dns_up = check_port(53);
+    let smtp_up = check_port(25);
+    let imaps_up = check_port(993);
+    let web_up = check_port(3100);
+    let vpn_up = if std::path::Path::new("/sys/class/net/wg0").exists() {
+        1
+    } else {
+        0
+    };
+
+    let _ = writeln!(out, "# HELP sentinel_client_service_up Estado de disponibilidad de cada servicio entregado a clientes (1=UP, 0=DOWN)");
+    let _ = writeln!(out, "# TYPE sentinel_client_service_up gauge");
+    let _ = writeln!(out, "sentinel_client_service_up{{service=\"cortex\"}} 1");
+    let _ = writeln!(
+        out,
+        "sentinel_client_service_up{{service=\"dns\"}} {}",
+        dns_up
+    );
+    let _ = writeln!(
+        out,
+        "sentinel_client_service_up{{service=\"smtp\"}} {}",
+        smtp_up
+    );
+    let _ = writeln!(
+        out,
+        "sentinel_client_service_up{{service=\"imaps\"}} {}",
+        imaps_up
+    );
+    let _ = writeln!(
+        out,
+        "sentinel_client_service_up{{service=\"web\"}} {}",
+        web_up
+    );
+    let _ = writeln!(
+        out,
+        "sentinel_client_service_up{{service=\"vpn\"}} {}",
+        vpn_up
+    );
+
+    let _ = writeln!(
+        out,
+        "# HELP sentinel_tenant_active_total Total de tenants y clientes activos en la plataforma"
+    );
+    let _ = writeln!(out, "# TYPE sentinel_tenant_active_total gauge");
+    let _ = writeln!(out, "sentinel_tenant_active_total 1");
+
+    let backup_healthy = if std::fs::read_dir("/var/lib/sentinel/backups")
+        .map(|mut it| it.next().is_some())
+        .unwrap_or(false)
+    {
+        1
+    } else {
+        0
+    };
+
+    let _ = writeln!(out, "# HELP sentinel_tenant_backup_healthy Estado de salud de respaldos por tenant (1=Healthy, 0=Degraded)");
+    let _ = writeln!(out, "# TYPE sentinel_tenant_backup_healthy gauge");
+    let _ = writeln!(
+        out,
+        "sentinel_tenant_backup_healthy{{tenant=\"default\"}} {}",
+        backup_healthy
+    );
     out
 }
 
 async fn telemetry_ws_handler(
     ws: WebSocketUpgrade,
     axum::extract::State(state): axum::extract::State<Arc<AppState>>,
+    axum::extract::Extension(session): axum::extract::Extension<auth::SessionClaims>,
 ) -> impl axum::response::IntoResponse {
-    ws.on_upgrade(|socket| handle_socket(socket, state))
+    ws.on_upgrade(move |socket| handle_socket(socket, state, session.exp))
 }
 
-async fn handle_socket(mut socket: WebSocket, state: Arc<AppState>) {
+async fn handle_socket(mut socket: WebSocket, state: Arc<AppState>, exp: u64) {
     tracing::info!("🔗 Client/Inversor connected to EBPF Ring-0 Stream");
 
     let mut rx = state.bpf_stream.subscribe();
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|duration| duration.as_secs())
+        .unwrap_or(exp);
+    let expiration = tokio::time::Instant::now() + Duration::from_secs(exp.saturating_sub(now));
 
     loop {
-        // En lugar de fabricar, chupa directamente de la telemetría viva eBPF de Cortex
-        let event: CortexEvent = match rx.recv().await {
-            Ok(e) => e,
-            Err(_) => break, // Broadcast channel cerraría si todo explota
+        let event = tokio::select! {
+            _ = tokio::time::sleep_until(expiration) => {
+                let _ = socket.send(Message::Close(None)).await;
+                break;
+            }
+            event = rx.recv() => match event {
+                Ok(event) => event,
+                Err(_) => break, // Broadcast channel cerraría si todo explota
+            }
         };
 
         let payload = match serde_json::to_string(&event) {
@@ -839,9 +1029,17 @@ async fn handle_socket(mut socket: WebSocket, state: Arc<AppState>) {
             }
         };
 
-        if socket.send(Message::Text(payload)).await.is_err() {
-            tracing::info!("🔌 Connection Dropped (Investor UI Disconnected)");
-            break;
+        tokio::select! {
+            _ = tokio::time::sleep_until(expiration) => {
+                let _ = socket.send(Message::Close(None)).await;
+                break;
+            }
+            result = socket.send(Message::Text(payload.as_str().into())) => {
+                if result.is_err() {
+                    tracing::info!("🔌 Connection Dropped (Investor UI Disconnected)");
+                    break;
+                }
+            }
         }
     }
 }
@@ -892,111 +1090,92 @@ pub struct TruthClaimResponse {
     pub claim_valid: bool,
     pub sentinel_score: f64,
     pub truthsync_cache_hit: bool,
-    pub ring0_intercepts: u32,
-}
-
-fn write_security_wal(entry: &str) {
-    let default_path = std::path::Path::new("/var/log/sentinel/security_wal.log");
-    let fallback_path = std::path::Path::new("/tmp/sentinel_security_wal.log");
-
-    if let Some(parent) = default_path.parent() {
-        let _ = std::fs::create_dir_all(parent);
-    }
-
-    let write_res = std::fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(default_path)
-        .and_then(|mut file| {
-            use std::io::Write;
-            file.write_all(entry.as_bytes())?;
-            file.sync_all()
-        });
-
-    if write_res.is_err() {
-        let _ = std::fs::OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(fallback_path)
-            .and_then(|mut file| {
-                use std::io::Write;
-                file.write_all(entry.as_bytes())?;
-                file.sync_all()
-            });
-    }
+    pub security_blocked: bool,
+    pub security_event_logged: bool,
+    pub verification_time_us: u64,
+    pub current_coherence_raw: i64,
+    pub future_coherence_raw: i64,
+    pub cascade_mitigated: bool,
+    /// Ring-0 events are not measured by this userspace handler.
+    pub ring0_intercepts: Option<u32>,
 }
 
 pub(crate) async fn truth_claim_handler(
     axum::extract::State(state): axum::extract::State<Arc<AppState>>,
     Json(payload): Json<TruthClaimRequest>,
-) -> Json<TruthClaimResponse> {
+) -> (StatusCode, Json<TruthClaimResponse>) {
     tracing::info!(
         "Verificando Truth Claim de AI con TruthSync Core S60: {}",
         payload.engine
     );
 
-    let payload_lower = payload.claim_payload.to_lowercase();
-    // 🛡️ AIOpsShield Semantic Firewall (Claim 2): Detección cognitiva completa
-    let semantic_firewall = sentinel_cortex::security::AIOpsSemanticFirewall::new();
-    let detections = semantic_firewall.inspect(&payload.claim_payload);
-    let is_aiopsdoom_attack = !detections.is_empty()
-        || payload_lower.contains("drop database")
-        || payload_lower.contains("rm -rf")
-        || payload_lower.contains("shutdown")
-        || payload_lower.contains("systemctl stop");
-    if is_aiopsdoom_attack {
-        tracing::warn!(
-            "AIOpsShield INTERCEPCION EN VIVO: Ataque AIOpsDoom detectado en claim_payload!"
-        );
-
-        let wal_entry = format!(
-            "{{\"ts\":\"{}\",\"lane\":\"security\",\"event\":\"AIOPSDOOM_INTERCEPTION\",\"engine\":\"{}\",\"payload\":\"{}\"}}\n",
-            chrono::Utc::now().to_rfc3339(),
-            payload.engine,
-            payload.claim_payload.replace('"', "\\\"")
-        );
-        write_security_wal(&wal_entry);
-
-        return Json(TruthClaimResponse {
-            claim_valid: false,
-            sentinel_score: 0.0,
-            truthsync_cache_hit: false,
-            ring0_intercepts: 1,
-        });
-    }
-
     let lat = state.lattice.lock().unwrap();
     let total_energy = lat.total_energy_raw();
+    drop(lat);
 
-    // Execute high-speed verification via truthsync_core engine (<100us)
-    let res = state
-        .truthsync
-        .lock()
-        .unwrap()
-        .verify_text(&payload.claim_payload, total_energy);
+    let timestamp = me60os_core::spa::SPA::from_int(chrono::Utc::now().timestamp());
+    let res = state.truthsync.lock().unwrap().verify_node_text(
+        &payload.engine,
+        &payload.claim_payload,
+        total_energy,
+        timestamp,
+    );
+    let verification = res.verification;
 
     tracing::info!(
-        "TruthSync Verification complete in {}us | Score: {} | Certified: {}",
-        res.verification_time_us,
-        res.overall_trust_score,
-        res.is_certified
+        "TruthSync Verification complete in {}us | Score: {} | Certified: {} | Critical: {}",
+        verification.verification_time_us,
+        verification.overall_trust_score,
+        verification.is_certified,
+        verification.critical_pattern_detected
     );
 
-    // 🛡️ YATRA: la confianza vive en S60 (sincronizada al pulso del cristal de
-    // tiempo y a la energía del lattice). NO contaminamos la lógica con float:
-    // comparamos S60 contra S60 y solo convertimos a f64 en el borde de salida
-    // (JSON hacia el cliente), que es exportación, no cómputo.
+    // 🛡️ YATRA: la comparación permanece en SPA; la conversión a f64 solo
+    // serializa el score en el borde HTTP.
     let threshold_s60 =
         me60os_core::spa::SPA::from_decimal_for_import_only(payload.trust_threshold);
     let sentinel_score_f64 =
-        res.overall_trust_score.to_raw() as f64 / me60os_core::spa::SPA::SCALE_0 as f64;
+        verification.overall_trust_score.to_raw() as f64 / me60os_core::spa::SPA::SCALE_0 as f64;
+    // 🛡️ AIOpsShield Semantic Firewall (Claim 2): Inspección cognitiva de AIOpsDoom
+    let semantic_firewall = sentinel_cortex::security::AIOpsSemanticFirewall::new();
+    let detections = semantic_firewall.inspect(&payload.claim_payload);
+    let blocked = verification.critical_pattern_detected || !detections.is_empty();
+    let (status, security_event_logged) = if blocked {
+        let event = serde_json::json!({
+            "event": "truth_claim_blocked",
+            "engine": &payload.engine,
+            "claim_payload": &payload.claim_payload,
+            "reason": "critical_pattern_detected",
+            "score_raw": verification.overall_trust_score.to_raw(),
+            "verification_time_us": verification.verification_time_us,
+            "recorded_at": chrono::Utc::now().to_rfc3339(),
+        });
+        match state.security_wal.write(&event.to_string()) {
+            Ok(()) => (StatusCode::FORBIDDEN, true),
+            Err(error) => {
+                tracing::error!("No se pudo persistir evento TruthSync en WAL: {error}");
+                (StatusCode::SERVICE_UNAVAILABLE, false)
+            }
+        }
+    } else {
+        (StatusCode::OK, false)
+    };
 
-    Json(TruthClaimResponse {
-        claim_valid: res.overall_trust_score >= threshold_s60,
-        sentinel_score: sentinel_score_f64,
-        truthsync_cache_hit: false,
-        ring0_intercepts: res.verification_time_us as u32, // exposing real us verification latency
-    })
+    (
+        status,
+        Json(TruthClaimResponse {
+            claim_valid: !blocked && verification.overall_trust_score >= threshold_s60,
+            sentinel_score: sentinel_score_f64,
+            truthsync_cache_hit: false,
+            security_blocked: blocked,
+            security_event_logged,
+            verification_time_us: verification.verification_time_us,
+            current_coherence_raw: res.current_coherence.to_raw(),
+            future_coherence_raw: res.future_coherence.to_raw(),
+            cascade_mitigated: res.is_cascade_mitigated,
+            ring0_intercepts: None,
+        }),
+    )
 }
 
 #[cfg(test)]
@@ -1010,13 +1189,77 @@ mod tests {
     use std::sync::Arc;
     use tower::ServiceExt;
 
-    fn make_test_app() -> Router {
+    const TEST_JWT_SECRET: &[u8] = b"test-secret-for-sentinel-cortex-only";
+
+    fn test_token(role: &str, is_superuser: bool, exp: i64, audience: &str) -> String {
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs() as i64;
+        let claims = serde_json::json!({
+            "iss": "sentinel-auth",
+            "aud": audience,
+            "sub": uuid::Uuid::from_u128(1).to_string(),
+            "tenant_id": uuid::Uuid::from_u128(2).to_string(),
+            "role": role,
+            "is_superuser": is_superuser,
+            "iat": now,
+            "exp": exp
+        });
+        jsonwebtoken::encode(
+            &jsonwebtoken::Header::new(jsonwebtoken::Algorithm::HS256),
+            &claims,
+            &jsonwebtoken::EncodingKey::from_secret(TEST_JWT_SECRET),
+        )
+        .unwrap()
+    }
+
+    fn future_exp() -> i64 {
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs() as i64
+            + 60
+    }
+
+    fn member_token() -> String {
+        test_token("member", false, future_exp(), "sentinel-cortex")
+    }
+
+    fn test_security_wal() -> (SecurityWal, std::path::PathBuf) {
+        let nonce = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root =
+            std::env::temp_dir().join(format!("sentinel-wal-test-{}-{nonce}", std::process::id()));
+        (
+            SecurityWal {
+                primary_path: root.join("primary/security_wal.log"),
+                fallback_path: root.join("fallback/security_wal.log"),
+            },
+            root,
+        )
+    }
+
+    async fn status_request(token: Option<String>) -> StatusCode {
+        let (app, _wal_dir) = make_test_app();
+        let mut request = Request::builder().uri("/api/v1/sentinel_status");
+        if let Some(token) = token {
+            request = request.header(axum::http::header::AUTHORIZATION, format!("Bearer {token}"));
+        }
+        app.oneshot(request.body(Body::empty()).unwrap())
+            .await
+            .unwrap()
+            .status()
+    }
+
+    fn make_test_app() -> (Router, std::path::PathBuf) {
         let lattice = Arc::new(Mutex::new(
-            memory::crystal_runtime::CrystalRuntime::in_memory(1),
+            memory::resonant_lattice_bridge::ResonantLatticeBridge::new(1),
         ));
         let truthsync = Arc::new(Mutex::new(truthsync_core::TruthSyncEngine::new()));
         let resonance = Arc::new(Mutex::new(ResonanceEngine::new()));
-        let metrics = Arc::new(metrics::PrometheusRepository::new());
         let liquid_lattice = Arc::new(Mutex::new(memory::liquid_lattice::LiquidLattice::new()));
         let pattern_detector = Arc::new(engine::patterns::PatternDetector::new());
         let neural_memory = Arc::new(Mutex::new(me60os_core::neural_memory::NeuralMemory::new()));
@@ -1026,9 +1269,11 @@ mod tests {
         ));
         let (tx_bpf, _) = broadcast::channel(100);
 
+        let qhc = Arc::new(parking_lot::Mutex::new(qhc_client::QhcStatus::unavailable()));
+        let (security_wal, wal_dir) = test_security_wal();
         let state = Arc::new(AppState {
             resonance,
-            metrics,
+            security_wal,
             bpf_stream: tx_bpf,
             lattice,
             truthsync,
@@ -1037,22 +1282,181 @@ mod tests {
             neural_memory,
             quantum_scheduler,
             bio_resonator,
+            qhc,
         });
 
-        Router::new()
+        let auth_config = Arc::new(
+            auth::AuthConfig::new(
+                TEST_JWT_SECRET,
+                "sentinel-auth".into(),
+                "sentinel-cortex".into(),
+            )
+            .unwrap(),
+        );
+        let api_routes = Router::new()
             .route("/api/v1/sentinel_status", get(sentinel_status_handler))
+            .route("/api/v1/qhc/status", get(qhc_client::status_handler))
             .route("/api/v1/truth_claim", post(truth_claim_handler))
             .route("/api/v1/lattice/hologram", get(lattice_hologram_handler))
-            .with_state(state)
+            .route_layer(axum::middleware::from_fn_with_state(
+                auth_config.clone(),
+                auth::require_session,
+            ));
+        let backup_trigger_route = Router::new()
+            .route(
+                "/api/v1/backup/trigger",
+                post(dashboard::backup_trigger_handler),
+            )
+            .route_layer(axum::middleware::from_fn(auth::require_superuser))
+            .route_layer(axum::middleware::from_fn_with_state(
+                auth_config,
+                auth::require_session,
+            ));
+        (
+            Router::new()
+                .route("/health", get(health_handler))
+                .route("/metrics", get(metrics_prometheus_handler))
+                .merge(api_routes)
+                .merge(backup_trigger_route)
+                .with_state(state),
+            wal_dir,
+        )
+    }
+
+    #[test]
+    fn security_wal_uses_fallback_and_reports_total_failure() {
+        let (wal, wal_dir) = test_security_wal();
+        std::fs::create_dir_all(&wal.primary_path).unwrap();
+        assert!(wal.write("fallback-event").is_ok());
+        let fallback = std::fs::read_to_string(&wal.fallback_path).unwrap();
+        assert_eq!(fallback, "fallback-event\n");
+        std::fs::remove_dir_all(&wal_dir).unwrap();
+
+        let (wal, wal_dir) = test_security_wal();
+        std::fs::create_dir_all(&wal.primary_path).unwrap();
+        std::fs::create_dir_all(&wal.fallback_path).unwrap();
+        assert!(wal.write("undurable-event").is_err());
+        std::fs::remove_dir_all(wal_dir).unwrap();
+    }
+
+    #[tokio::test]
+    async fn health_and_metrics_remain_public() {
+        let (app, _wal_dir) = make_test_app();
+        let health = app
+            .oneshot(
+                Request::builder()
+                    .uri("/health")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(health.status(), StatusCode::OK);
+
+        let (app, _wal_dir) = make_test_app();
+        let metrics = app
+            .oneshot(
+                Request::builder()
+                    .uri("/metrics")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(metrics.status(), StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn protected_api_rejects_missing_or_invalid_bearer() {
+        assert_eq!(status_request(None).await, StatusCode::UNAUTHORIZED);
+        assert_eq!(
+            status_request(Some("not-a-jwt".into())).await,
+            StatusCode::UNAUTHORIZED
+        );
+    }
+
+    #[tokio::test]
+    async fn protected_api_rejects_expired_or_wrong_audience_tokens() {
+        let expired = test_token("member", false, 0, "sentinel-cortex");
+        let wrong_audience = test_token("member", false, future_exp(), "another-service");
+        assert_eq!(
+            status_request(Some(expired)).await,
+            StatusCode::UNAUTHORIZED
+        );
+        assert_eq!(
+            status_request(Some(wrong_audience)).await,
+            StatusCode::UNAUTHORIZED
+        );
+    }
+
+    #[tokio::test]
+    async fn protected_api_rejects_unknown_roles() {
+        let token = test_token("owner", false, future_exp(), "sentinel-cortex");
+        assert_eq!(status_request(Some(token)).await, StatusCode::FORBIDDEN);
+    }
+
+    #[tokio::test]
+    async fn backup_trigger_requires_superuser() {
+        let (app, _wal_dir) = make_test_app();
+        let token = member_token();
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/api/v1/backup/trigger")
+                    .header(axum::http::header::AUTHORIZATION, format!("Bearer {token}"))
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::FORBIDDEN);
+    }
+
+    #[tokio::test]
+    async fn backup_trigger_is_temporarily_disabled() {
+        let (app, _wal_dir) = make_test_app();
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/api/v1/backup/trigger")
+                    .header(
+                        axum::http::header::AUTHORIZATION,
+                        format!(
+                            "Bearer {}",
+                            test_token("admin", true, future_exp(), "sentinel-cortex")
+                        ),
+                    )
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::SERVICE_UNAVAILABLE);
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(json["status"], "disabled");
+        assert!(json["message"]
+            .as_str()
+            .unwrap()
+            .contains("sesión administrativa existente"));
     }
 
     #[tokio::test]
     async fn test_sentinel_status_handler_smoke() {
-        let app = make_test_app();
+        let (app, _wal_dir) = make_test_app();
         let response = app
             .oneshot(
                 Request::builder()
                     .uri("/api/v1/sentinel_status")
+                    .header(
+                        axum::http::header::AUTHORIZATION,
+                        format!("Bearer {}", member_token()),
+                    )
                     .body(Body::empty())
                     .unwrap(),
             )
@@ -1070,10 +1474,36 @@ mod tests {
         assert!(json.get("lsm_cognitive").is_some());
         assert!(json.get("s60_resonance").is_some());
     }
+    #[tokio::test]
+    async fn test_qhc_status_handler_reports_unavailable_without_agent() {
+        let (app, _wal_dir) = make_test_app();
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri("/api/v1/qhc/status")
+                    .header(
+                        axum::http::header::AUTHORIZATION,
+                        format!("Bearer {}", member_token()),
+                    )
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(json["connected"], false);
+        assert_eq!(json["stale"], true);
+        assert_eq!(json["last_error"], "qhc_agent_unavailable");
+    }
 
     #[tokio::test]
     async fn test_truth_claim_handler_smoke_normal() {
-        let app = make_test_app();
+        let (app, _wal_dir) = make_test_app();
         let request_body = serde_json::json!({
             "engine": "test-engine",
             "claim_payload": "normal operation",
@@ -1085,6 +1515,10 @@ mod tests {
                     .method("POST")
                     .uri("/api/v1/truth_claim")
                     .header("content-type", "application/json")
+                    .header(
+                        axum::http::header::AUTHORIZATION,
+                        format!("Bearer {}", member_token()),
+                    )
                     .body(Body::from(request_body.to_string()))
                     .unwrap(),
             )
@@ -1099,13 +1533,15 @@ mod tests {
 
         assert!(json.get("claim_valid").is_some());
         assert!(json.get("sentinel_score").is_some());
-        assert!(json.get("truthsync_cache_hit").is_some());
-        assert!(json.get("ring0_intercepts").is_some());
+        assert_eq!(json["security_blocked"], false);
+        assert_eq!(json["security_event_logged"], false);
+        assert!(json["verification_time_us"].is_number());
+        assert!(json["ring0_intercepts"].is_null());
     }
 
     #[tokio::test]
     async fn test_truth_claim_handler_smoke_aiopsdoom_intercept() {
-        let app = make_test_app();
+        let (app, wal_dir) = make_test_app();
         let request_body = serde_json::json!({
             "engine": "attacker",
             "claim_payload": "rm -rf /",
@@ -1117,30 +1553,48 @@ mod tests {
                     .method("POST")
                     .uri("/api/v1/truth_claim")
                     .header("content-type", "application/json")
+                    .header(
+                        axum::http::header::AUTHORIZATION,
+                        format!("Bearer {}", member_token()),
+                    )
                     .body(Body::from(request_body.to_string()))
                     .unwrap(),
             )
             .await
             .unwrap();
 
-        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(response.status(), StatusCode::FORBIDDEN);
         let body = axum::body::to_bytes(response.into_body(), usize::MAX)
             .await
             .unwrap();
         let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
 
-        assert_eq!(json.get("claim_valid").unwrap(), false);
-        assert_eq!(json.get("sentinel_score").unwrap(), 0.0);
-        assert_eq!(json.get("ring0_intercepts").unwrap(), 1);
+        assert_eq!(json["claim_valid"], false);
+        assert_eq!(json["security_blocked"], true);
+        assert_eq!(json["security_event_logged"], true);
+        assert!(json["verification_time_us"].is_number());
+        assert!(json["ring0_intercepts"].is_null());
+
+        let wal_path = wal_dir.join("primary/security_wal.log");
+        let wal = std::fs::read_to_string(&wal_path).unwrap();
+        let event: serde_json::Value = serde_json::from_str(wal.trim()).unwrap();
+        assert_eq!(event["event"], "truth_claim_blocked");
+        assert_eq!(event["engine"], "attacker");
+        assert_eq!(event["claim_payload"], "rm -rf /");
+        std::fs::remove_dir_all(wal_dir).unwrap();
     }
 
     #[tokio::test]
     async fn test_lattice_hologram_handler_smoke() {
-        let app = make_test_app();
+        let (app, _wal_dir) = make_test_app();
         let response = app
             .oneshot(
                 Request::builder()
                     .uri("/api/v1/lattice/hologram")
+                    .header(
+                        axum::http::header::AUTHORIZATION,
+                        format!("Bearer {}", member_token()),
+                    )
                     .body(Body::empty())
                     .unwrap(),
             )
@@ -1157,5 +1611,21 @@ mod tests {
         assert!(json.get("node_count").is_some());
         assert!(json.get("coherence_raw").is_some());
         assert!(json.get("nodes").is_some());
+    }
+
+    #[test]
+    fn thermal_amplitude_is_one_pai_fraction() {
+        let one = thermal_amplitude(60);
+        assert_eq!(
+            one.to_components(),
+            me60os_core::spa::SPA::from_int(1).to_components()
+        );
+        let half_unit = thermal_amplitude(30);
+        assert_eq!(half_unit.to_components(), [0, 30, 0, 0, 0]);
+        assert_eq!(thermal_half(half_unit).to_components(), [0, 15, 0, 0, 0]);
+        assert_ne!(
+            half_unit.to_raw(),
+            me60os_core::spa::SPA::from_int(30).to_raw()
+        );
     }
 }

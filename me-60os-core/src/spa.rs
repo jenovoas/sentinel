@@ -270,6 +270,38 @@ impl SPA {
     pub fn __repr__(&self) -> String {
         format!("{}", self)
     }
+
+    pub fn __richcmp__(&self, other: &SPA, op: pyo3::class::basic::CompareOp) -> bool {
+        use std::cmp::Ordering;
+
+        match (self.to_raw().cmp(&other.to_raw()), op) {
+            (
+                Ordering::Less,
+                pyo3::class::basic::CompareOp::Lt
+                | pyo3::class::basic::CompareOp::Le
+                | pyo3::class::basic::CompareOp::Ne,
+            ) => true,
+            (
+                Ordering::Equal,
+                pyo3::class::basic::CompareOp::Eq
+                | pyo3::class::basic::CompareOp::Le
+                | pyo3::class::basic::CompareOp::Ge,
+            ) => true,
+            (
+                Ordering::Greater,
+                pyo3::class::basic::CompareOp::Gt
+                | pyo3::class::basic::CompareOp::Ge
+                | pyo3::class::basic::CompareOp::Ne,
+            ) => true,
+            _ => false,
+        }
+    }
+
+    #[getter(_value)]
+    pub fn py_value(&self) -> i64 {
+        self.to_raw()
+    }
+
     pub fn __add__(&self, other: &SPA) -> Self {
         *self + *other
     }
@@ -323,5 +355,17 @@ impl SPA {
     #[pyo3(name = "to_raw")]
     pub fn py_to_raw(&self) -> i64 {
         self.to_raw()
+    }
+
+    #[staticmethod]
+    #[pyo3(name = "from_decimal_for_import_only")]
+    pub fn py_from_decimal_for_import_only(decimal: f64) -> Self {
+        Self::from_decimal_for_import_only(decimal)
+    }
+
+    #[staticmethod]
+    #[pyo3(name = "from_decimal_degrees_FOR_IMPORT_ONLY")]
+    pub fn py_from_decimal_degrees_for_import_only(degrees: f64) -> Self {
+        Self::from_decimal_for_import_only(degrees)
     }
 }

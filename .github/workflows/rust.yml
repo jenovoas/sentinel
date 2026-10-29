@@ -7,14 +7,18 @@ on:
 
 jobs:
   rust:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7.0.1
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: actions-rust-lang/setup-rust-toolchain@v2
         with:
           components: rustfmt, clippy
+          build-warnings: warn
+
+      - name: Install native build dependencies
+        run: sudo apt-get update && sudo apt-get install -y libelf-dev zlib1g-dev
 
       - name: Cache cargo registry
         uses: actions/cache@v4
@@ -27,6 +31,8 @@ jobs:
 
       - name: Test
         run: cargo test --all --release
+        env:
+          CARGO_PROFILE_RELEASE_PANIC: unwind
 
       - name: Clippy
         run: cargo clippy --all -- -D warnings
@@ -35,13 +41,13 @@ jobs:
         run: cargo fmt --all -- --check
 
       - name: Install cargo-audit
-        run: cargo install cargo-audit --locked || true
+        run: cargo install cargo-audit --locked
 
       - name: Audit
-        run: cargo audit --deny warnings || true
+        run: cargo audit --deny warnings
 
       - name: Install cargo-deny
-        run: cargo install cargo-deny --locked || true
+        run: cargo install cargo-deny --locked
 
       - name: Deny check
         run: cargo deny check

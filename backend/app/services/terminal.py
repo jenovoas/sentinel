@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class TerminalResponse(BaseModel):
     success: bool
     output: str
-    risk_score: float = S60(0, 0, 0)
+    risk_score: float = 0.0
     reasoning: str = ""
 
 class TerminalService:

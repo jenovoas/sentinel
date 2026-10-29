@@ -1,22 +1,24 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
-import path from "path";
+import { noStore, sessionError, validateSession } from "@/lib/server/session";
+import { hostMetricsFile } from "@/lib/server/host-metrics";
 
 export async function GET(request: Request) {
+  const session = await validateSession(request);
+  if (!session.ok) return sessionError(session.status);
   try {
     const { searchParams } = new URL(request.url);
     const limit = Math.min(Number(searchParams.get("limit") || 60), 200);
 
-    const base = process.cwd();
-    const csvPath = path.join(base, "host-metrics", "data", "metrics.csv");
+    const csvPath = hostMetricsFile("data", "metrics.csv");
     if (!fs.existsSync(csvPath)) {
-      return NextResponse.json({ ok: false, error: "metrics.csv not found" }, { status: 404 });
+      return noStore(NextResponse.json({ ok: false, error: "metrics.csv not found" }, { status: 404 }));
     }
 
     const content = fs.readFileSync(csvPath, "utf8");
     const lines = content.trim().split(/\r?\n/);
     if (lines.length <= 1) {
-      return NextResponse.json({ ok: true, history: [] });
+      return noStore(NextResponse.json({ ok: true, history: [] }));
     }
 
     const header = lines[0].split(",");
@@ -45,8 +47,8 @@ export async function GET(request: Request) {
       };
     });
 
-    return NextResponse.json({ ok: true, history });
+    return noStore(NextResponse.json({ ok: true, history }));
   } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message || "error" }, { status: 500 });
+    return noStore(NextResponse.json({ ok: false, error: e?.message || "error" }, { status: 500 }));
   }
 }

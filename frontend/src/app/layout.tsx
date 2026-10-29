@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Navigation } from "@/components/Navigation";
-import { WipModal } from "@/components/WipModal";
+import { SessionGuard } from "@/components/SessionGuard";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Sentinel - Control Tower",
-  description: "Enterprise observability and security platform with AI-powered insights",
+  title: "Sentinel — Panel de control",
+  description: "Interfaz de Sentinel Cortex para métricas, runtime y verificación TruthSync.",
 };
 
 export default function RootLayout({
@@ -17,11 +16,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body className={inter.className}>
-        <WipModal />
-        <Navigation />
-        <main style={{ paddingTop: "72px" }}>{children}</main>
+        <SessionGuard>{children}</SessionGuard>
       </body>
     </html>
   );

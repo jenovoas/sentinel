@@ -72,20 +72,20 @@ struct {
  * Simple hash-based entropy calculation.
  * Maps path characteristics to S60 raw value.
  * 
- * S60::SCALE_0 = 46656000000 (base unit)
- * High entropy (blocked) = 0.85 * SCALE_0 = 39657600000
- * Low entropy (allowed)  = 0.15 * SCALE_0 = 6998400000
+ * Keep the event scale aligned with cortex_events.h and SPA::SCALE_0.
+ * High entropy (blocked) = 0.85 * 12960000 = 11016000
+ * Low entropy (allowed)  = 0.15 * 12960000 = 1944000
  */
 static __always_inline __u64 calculate_entropy_s60(const char *path, int blocked)
 {
-    const __u64 SCALE_0 = 46656000000ULL;
+    const __u64 scale = S60_SCALE_0;
     
     if (blocked) {
         // High entropy: S60(0, 51, 0) = 0.85
-        return (SCALE_0 * 85) / 100;
+        return (scale * 85) / 100;
     } else {
         // Low entropy: S60(0, 9, 0) = 0.15
-        return (SCALE_0 * 15) / 100;
+        return (scale * 15) / 100;
     }
 }
 

@@ -100,6 +100,9 @@ class Settings(BaseSettings):
     
     algorithm: str = os.getenv("ALGORITHM", "HS256")
     """JWT algorithm for token signing."""
+
+    jwt_issuer: str = os.getenv("JWT_ISSUER", "sentinel-auth")
+    jwt_audience: str = os.getenv("JWT_AUDIENCE", "sentinel-cortex")
     
     access_token_expire_minutes: int = int(
         os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")

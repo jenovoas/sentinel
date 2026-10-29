@@ -2,7 +2,7 @@
 name = "sentinel-cortex"
 version = "0.1.0"
 edition = "2021"
-license = "Apache-2.0"
+license = "LicenseRef-Sentinel-NonCommercial"
 
 [lib]
 name = "sentinel_cortex"
@@ -10,31 +10,31 @@ crate-type = ["rlib"]
 
 [dependencies]
 # Web server
-axum = { version = "0.7", features = ["ws"] }
+axum = { version = "0.8", features = ["ws"] }
 tokio = { version = "1", features = ["full"] }
 tower = "0.5"
-tower-http = { version = "0.5", features = ["trace"] }
+tower-http = { version = "0.7", features = ["trace"] }
 
 # Database
-sqlx = { version = "0.8.6", default-features = false, features = ["postgres", "runtime-tokio-native-tls", "macros", "migrate"] }
-redis = { version = "0.32", features = ["tokio-comp"] }
+redis = { version = "1.6", features = ["tokio-comp"] }
 
 # HTTP client
-reqwest = { version = "0.12", features = ["json"] }
+reqwest = { version = "0.13", default-features = false, features = ["json", "native-tls", "http2", "charset", "system-proxy"] }
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-flate2 = "1.1.9"
 
 # Time
 chrono = { version = "0.4.38", features = ["serde"] }
 
 # UUID
 uuid = { version = "1.6", features = ["v4", "serde"] }
+jsonwebtoken = { version = "10.3", features = ["aws_lc_rs"] }
 
 # Crypto
-sha3 = "0.10"
+hmac = "0.13"
+sha3 = "0.12"
 hex = "0.4"
 
 # Logging
@@ -46,7 +46,7 @@ dotenvy = "0.15"
 
 # Error handling
 anyhow = "1.0"
-thiserror = "1.0"
+thiserror = "2.0"
 
 # Lazy static initialization
 lazy_static = "1.4"
@@ -55,12 +55,13 @@ parking_lot = "0.12"
 
 # Terminal UI
 ratatui = "0.30.2"
-crossterm = { version = "0.27", features = ["events"] }
-rustyline = "12.0"
-rustyline-derive = "0.10"
-libbpf-rs = "0.24"
+crossterm = { version = "0.29", features = ["events"] }
+rustyline = "19.0"
+rustyline-derive = "0.13"
+libbpf-rs = "0.27"
 libc = "0.2"
 futures-util = "0.3"
+flate2 = "1.0"
 me60os_core = { path = "../me-60os-core", package = "me60os" }
 truthsync_core = { path = "../truthsync-core", package = "truthsync-core" }
 

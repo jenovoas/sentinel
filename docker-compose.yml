@@ -73,7 +73,7 @@ services:
       GOOGLE_CLOUD_LOCATION: us-central1
       GOOGLE_MODEL: gemini-2.5-pro # Versión correcta confirmada por el operador.
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -140,8 +140,8 @@ services:
       dockerfile: Dockerfile.dev
     container_name: sentinel-frontend
     environment:
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
       NODE_ENV: ${NODE_ENV:-development}
+      SENTINEL_BACKEND_URL: http://backend:8000
     ports:
       - "3030:3000"
     depends_on:

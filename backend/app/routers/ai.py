@@ -3,22 +3,21 @@ AI Router - Local LLM Integration with Ollama
 Provides endpoints for querying local AI models
 """
 
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import logging
 import os
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 import httpx
 
 import chromadb
-from app.security import TelemetrySanitizer
-from app.services.terminal import TerminalService
+from app.security import TelemetrySanitizer, get_current_active_user
+from app.models.user import User
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/ai", tags=["AI"])
 
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.S60(0, 6, 0):11434")
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2:3b")
 CORTEX_URL = os.getenv("CORTEX_URL", "http://localhost:3005")
 AI_ENABLED = os.getenv("AI_ENABLED", "true").lower() == "true"
@@ -36,7 +35,6 @@ except Exception as e:
 
 # Initialize services
 sanitizer = TelemetrySanitizer(enabled=TELEMETRY_SANITIZATION_ENABLED)
-terminal_service = TerminalService()
 
 async def get_memory_context(query: str):
     """Fetch relevant historical context from ChromaDB (RAG)"""
@@ -101,7 +99,7 @@ class AIQuery(BaseModel):
     user_id: str = Field("unknown", description="Authenticated user ID")
     role: str = Field("Unauthorized", description="Biological Role (Sovereign, Monitored, etc.)")
     max_tokens: int = Field(100, description="Maximum tokens to generate", ge=10, le=500)
-    temperature: float = Field(0.3, description="Temperature for generation", ge=S60(0, 0, 0), le=S60(1, 0, 0))
+    temperature: float = Field(0.3, description="Temperature for generation", ge=0.0, le=1.0)
 
 
 class AIResponse(BaseModel):
@@ -121,7 +119,7 @@ class AIHealth(BaseModel):
 
 
 @router.post("/query", response_model=AIResponse)
-async def query_ai(query: AIQuery):
+async def query_ai(query: AIQuery, _current_user: User = Depends(get_current_active_user)):
     """
     Query local AI model for insights with Identity Awareness
     """

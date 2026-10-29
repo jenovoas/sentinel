@@ -1,0 +1,15 @@
+# Include in Fenix's existing nftables ruleset.
+# FastAPI's published port is reachable only from Kingu over WireGuard.
+table inet sentinel_backend_acl {
+    chain input {
+        type filter hook input priority -10; policy accept;
+        ip daddr 10.88.0.1 ip saddr 10.88.0.2 tcp dport 8000 counter accept
+        ip daddr 10.88.0.1 tcp dport 8000 counter drop
+    }
+
+    chain forward {
+        type filter hook forward priority -10; policy accept;
+        ct direction original ct original ip daddr 10.88.0.1 ct original proto-dst 8000 ip saddr 10.88.0.2 counter accept
+        ct direction original ct original ip daddr 10.88.0.1 ct original proto-dst 8000 counter drop
+    }
+}

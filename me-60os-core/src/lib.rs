@@ -26,6 +26,7 @@ pub mod time_crystal; // Wrapper // KV-store cognitivo: SHM POSIX nativo + inyec
 
 // SOMA Backend Modules
 pub mod soma;
+pub mod soma_runtime;
 
 // Optional Python Modules (Included for logic, but only exported as classes if verified)
 pub mod resonant_matrix;
@@ -39,6 +40,7 @@ pub mod buffer_system;
 pub mod celestial; // Celestial navigation: SVector3 + Kepler orbital mechanics (S60)
 pub mod cortex;
 pub mod crystal_cipher; // Clave efímera por pulso del cristal (capa de cifrado ring0-adjacent)
+pub mod decision_tree; // eBPF embedded decision tree classifier (P2)
 pub mod dsp; // S60 DSP multiplier: 128-bit accumulator + overflow traps (hardware model)
 pub mod dual_lane; // Dual-lane router: Security (WAL fsync) + Observability (buffer/backpressure)
 pub mod ebpf_cortex_bridge;
@@ -48,6 +50,7 @@ pub mod numerical_control; // SovereignDDA: interpolador DDA S60 (trayectoria de
 pub mod orbital_ascent; // Orbital ascent dynamics: drag/gravedad/thrust S60 (física real)
 pub mod physics;
 pub mod qhc;
+pub mod qhc_ipc;
 pub mod resonant_loop;
 pub mod scheduler;
 pub mod scv;

@@ -2,34 +2,35 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies
+# Install only the runtime tools required by the API container.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    postgresql-client \
-    netcat-traditional \
+    netcat-openbsd \
     curl \
-    git \
-    network-manager \
-    wireless-tools \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements
-COPY requirements.txt .
+RUN groupadd --system sentinel-api && useradd --system --gid sentinel-api \
+    --no-create-home --shell /usr/sbin/nologin sentinel-api
+
+# Build context is the repository root so the image includes the shared
+# quantum package imported by the FastAPI application.
+COPY backend/requirements.txt ./requirements.txt
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY app/ ./app/
+COPY backend/app/ ./app/
+COPY quantum/ ./quantum/
 
 # Copy Alembic migrations
-COPY alembic.ini ./alembic.ini
-COPY alembic ./alembic/
+COPY backend/alembic.ini ./alembic.ini
+COPY backend/alembic/ ./alembic/
 
-COPY entrypoint.sh /entrypoint.sh
+COPY backend/entrypoint.sh /entrypoint.sh
 RUN chmod 755 /entrypoint.sh
 
 # Create logs directory
-RUN mkdir -p logs
+RUN mkdir -p logs && chown sentinel-api:sentinel-api logs
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
@@ -39,4 +40,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 EXPOSE 8000
 
 # Run entrypoint script
+USER sentinel-api
 ENTRYPOINT ["/entrypoint.sh"]

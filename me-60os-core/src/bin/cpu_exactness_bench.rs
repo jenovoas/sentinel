@@ -20,7 +20,7 @@ fn main() {
     println!("N = {N} pasos\n");
 
     // --- FLOAT64 ---
-    let phi_f: f64 = 1.618_033_988_749_895;
+    let phi_f: f64 = std::f64::consts::GOLDEN_RATIO;
     let mut xf: f64 = 1.0;
     let t0 = std::time::Instant::now();
     for _ in 0..N {

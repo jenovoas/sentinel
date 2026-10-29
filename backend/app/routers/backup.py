@@ -16,7 +16,8 @@ Created: 2025-12-15
 """
 
 from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
+from app.security.auth import get_current_admin_user
 from pydantic import BaseModel, Field
 from datetime import datetime, timedelta
 from typing import List, Optional, Dict, Any
@@ -351,7 +352,11 @@ async def get_backup_history(
         )
 
 
-@router.post("/trigger", response_model=BackupTriggerResponse)
+@router.post(
+    "/trigger",
+    response_model=BackupTriggerResponse,
+    dependencies=[Depends(get_current_admin_user)],
+)
 async def trigger_backup():
     """
     Manually trigger a backup

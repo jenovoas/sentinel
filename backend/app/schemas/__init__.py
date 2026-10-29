@@ -1,7 +1,8 @@
 from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, validator
 from typing import Optional
 from datetime import datetime
+from uuid import UUID
 
 from .auth import Token, TokenData
 from .users import (
@@ -27,7 +28,7 @@ class TenantUpdate(BaseModel):
 
 
 class TenantResponse(BaseModel):
-    id: str
+    id: UUID
     name: str
     slug: str
     is_active: bool
@@ -44,6 +45,12 @@ class UserCreate(BaseModel):
     password: str = Field(..., min_length=8)
     tenant_id: Optional[str] = None
 
+    @validator("password")
+    def password_within_bcrypt_limit(cls, value: str) -> str:
+        if len(value.encode("utf-8")) > 72:
+            raise ValueError("password must not exceed 72 UTF-8 bytes")
+        return value
+
 
 class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
@@ -52,14 +59,14 @@ class UserUpdate(BaseModel):
 
 
 class UserResponse(BaseModel):
-    id: str
+    id: UUID
     email: str
     username: str
     is_active: bool
     is_superuser: bool
-    tenant_id: str
+    tenant_id: UUID
     created_at: datetime
-    updated_at: datetime
+    updated_at: Optional[datetime]
 
     class Config:
         from_attributes = True

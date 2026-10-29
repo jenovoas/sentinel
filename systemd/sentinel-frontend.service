@@ -1,0 +1,27 @@
+[Unit]
+Description=Sentinel Next.js frontend (Kingu)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=sentinel-frontend
+Group=sentinel-frontend
+WorkingDirectory=/opt/sentinel/frontend/current
+Environment=NODE_ENV=production
+Environment=HOME=/opt/sentinel/frontend/current
+Environment=HOSTNAME=127.0.0.1
+EnvironmentFile=/etc/sentinel/frontend.env
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/sentinel/frontend/current/.next/cache /var/lib/sentinel-frontend
+ExecStartPre=/usr/bin/mkdir -p /opt/sentinel/frontend/current/.next/cache
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target

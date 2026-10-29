@@ -45,6 +45,10 @@ impl BioResonator {
         if self.coherence > S60::one() {
             self.coherence = S60::one();
         }
+        self.record_pilot_heartbeat();
+    }
+
+    pub fn record_pilot_heartbeat(&mut self) {
         self.last_pulse = Instant::now();
     }
 
@@ -96,5 +100,16 @@ mod tests {
             bio.inject_bio_pulse();
         }
         assert!(bio.is_portal_open());
+    }
+
+    #[test]
+    fn pilot_heartbeat_does_not_change_coherence() {
+        let mut bio = BioResonator::new();
+        let coherence = bio.get_coherence_raw();
+
+        bio.record_pilot_heartbeat();
+
+        assert!(bio.is_pilot_present());
+        assert_eq!(bio.get_coherence_raw(), coherence);
     }
 }

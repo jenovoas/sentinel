@@ -1,20 +1,41 @@
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-from sqlalchemy.orm import Session
+# Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
+# Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
+# Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models.organization import Organization
 from app.models.tenant import Tenant
-from app.schemas import TenantCreate, TenantUpdate
+from app.schemas import TenantCreate
 
-def get_tenant(db: Session, tenant_id: int):
-    return db.query(Tenant).filter(Tenant.id == tenant_id).first()
 
-def get_tenant_by_slug(db: Session, slug: str):
-    return db.query(Tenant).filter(Tenant.slug == slug).first()
+async def get_tenant(db: AsyncSession, tenant_id: str):
+    result = await db.execute(select(Tenant).where(Tenant.id == tenant_id))
+    return result.scalars().first()
 
-def get_tenants(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(Tenant).offset(skip).limit(limit).all()
 
-def create_tenant(db: Session, tenant: TenantCreate):
-    db_tenant = Tenant(**tenant.dict())
+async def get_tenant_by_slug(db: AsyncSession, slug: str):
+    result = await db.execute(select(Tenant).where(Tenant.slug == slug))
+    return result.scalars().first()
+
+
+async def get_tenants(db: AsyncSession, skip: int = 0, limit: int = 100):
+    result = await db.execute(select(Tenant).offset(skip).limit(limit))
+    return result.scalars().all()
+
+
+async def create_tenant(db: AsyncSession, tenant: TenantCreate):
+    db_tenant = Tenant(**tenant.model_dump())
     db.add(db_tenant)
-    db.commit()
-    db.refresh(db_tenant)
+    await db.flush()
+    db.add(
+        Organization(
+            id=db_tenant.id,
+            name=db_tenant.name,
+            slug=db_tenant.slug,
+            is_active=db_tenant.is_active,
+        )
+    )
+    await db.commit()
+    await db.refresh(db_tenant)
     return db_tenant

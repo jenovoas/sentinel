@@ -9,20 +9,18 @@ Handles all security-related functionality including:
 """
 
 from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Optional
 
-from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import get_settings
-from app.database import get_db
-from app.schemas.auth import TokenData
-
-settings = get_settings()
+from app.models.user import User
+from app.security.auth import (
+    create_access_token as create_authenticated_access_token,
+    get_current_user as get_authenticated_user,
+)
 
 # ============================================================================
 # PASSWORD HASHING
@@ -42,6 +40,8 @@ def get_password_hash(password: str) -> str:
     Returns:
         str: Hashed password
     """
+    if len(password.encode("utf-8")) > 72:
+        raise ValueError("password must not exceed 72 UTF-8 bytes")
     return pwd_context.hash(password)
 
 
@@ -56,6 +56,8 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     Returns:
         bool: True if password matches, False otherwise
     """
+    if len(plain_password.encode("utf-8")) > 72:
+        return False
     return pwd_context.verify(plain_password, hashed_password)
 
 
@@ -66,61 +68,11 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    """
-    Create a JWT access token.
-    
-    Args:
-        data: Dictionary of claims to encode in the token
-        expires_delta: Optional custom expiration time. If not provided,
-                      uses ACCESS_TOKEN_EXPIRE_MINUTES from settings.
-        
-    Returns:
-        str: Encoded JWT token
-    """
-    to_encode = data.copy()
-    
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(
-            minutes=settings.access_token_expire_minutes
-        )
-    
-    to_encode.update({"exp": expire})
-    
-    encoded_jwt = jwt.encode(
-        to_encode,
-        settings.secret_key,
-        algorithm=settings.algorithm
-    )
-    
-    return encoded_jwt
-
-
-def create_refresh_token(data: dict) -> str:
-    """
-    Create a JWT refresh token with longer expiration.
-    
-    Args:
-        data: Dictionary of claims to encode in the token
-        
-    Returns:
-        str: Encoded JWT refresh token
-    """
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(
-        days=settings.refresh_token_expire_days
-    )
-    to_encode.update({"exp": expire, "type": "refresh"})
-    
-    encoded_jwt = jwt.encode(
-        to_encode,
-        settings.secret_key,
-        algorithm=settings.algorithm
-    )
-    
-    return encoded_jwt
+def create_access_token(user: User, expires_delta: Optional[timedelta] = None) -> str:
+    """Keep the legacy import path on the canonical short-lived JWT contract."""
+    if expires_delta is not None:
+        raise ValueError("custom access-token lifetimes are not supported")
+    return create_authenticated_access_token(user)
 
 
 # ============================================================================
@@ -128,52 +80,15 @@ def create_refresh_token(data: dict) -> str:
 # ============================================================================
 
 async def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    db: AsyncSession = Depends(get_db)
-):
-    """
-    Async dependency to get the current authenticated user from JWT token.
-    
-    Extracts user information from JWT token and validates it.
-    
-    Args:
-        token: JWT token from Authorization header
-        db: Async database session (injected by FastAPI)
-        
-    Returns:
-        dict: User information from token
-        
-    Raises:
-        HTTPException: If token is invalid or expired
-    """
-    credential_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    
-    try:
-        payload = jwt.decode(
-            token,
-            settings.secret_key,
-            algorithms=[settings.algorithm]
-        )
-        username: str = payload.get("sub")
-        
-        if username is None:
-            raise credential_exception
-            
-        token_data = TokenData(username=username)
-        
-    except JWTError:
-        raise credential_exception
-    
-    return token_data
+    current_user: User = Depends(get_authenticated_user),
+) -> User:
+    """Keep legacy imports on the canonical tenant- and role-checked verifier."""
+    return current_user
 
 
 async def get_current_active_user(
-    current_user: TokenData = Depends(get_current_user)
-) -> TokenData:
+    current_user: User = Depends(get_current_user)
+) -> User:
     """
     Dependency to ensure the current user is active.
     
@@ -186,8 +101,8 @@ async def get_current_active_user(
     Raises:
         HTTPException: If user is inactive
     """
-    if current_user is None:
-        raise HTTPException(status_code=400, detail="Inactive user")
+    if not current_user.is_active:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Inactive user")
     
     return current_user
 
@@ -196,7 +111,6 @@ __all__ = [
     "get_password_hash",
     "verify_password",
     "create_access_token",
-    "create_refresh_token",
     "get_current_user",
     "get_current_active_user",
     "oauth2_scheme",

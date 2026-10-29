@@ -21,7 +21,18 @@ export function BackupStatusCard() {
     const handleTriggerBackup = async () => {
         setTriggeringBackup(true);
         try {
-            const res = await fetch('/api/v1/backup/trigger', { method: 'POST' });
+            const csrfToken = document.cookie
+                .split('; ')
+                .find((cookie) => cookie.startsWith('sentinel_csrf='))
+                ?.slice('sentinel_csrf='.length);
+            const res = await fetch('/api/v1/backup/trigger', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(csrfToken ? { 'X-CSRF-Token': decodeURIComponent(csrfToken) } : {}),
+                },
+                body: '{}',
+            });
             const data = await res.json();
 
             if (data.status === 'success') {

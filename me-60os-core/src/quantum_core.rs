@@ -421,6 +421,7 @@ impl LiquidLattice {
         let chunks_a: Vec<Vec<u8>> = payload_a.chunks(chunk_a).map(|c| c.to_vec()).collect();
         let chunks_b: Vec<Vec<u8>> = payload_b.chunks(1).map(|c| c.to_vec()).collect();
 
+        let sector_width = SPA::from_int(45) / SPA::from_int(32);
         for i in 0..self.buffer.size {
             if i < chunks_a.len() {
                 let val = i64::from_be_bytes(pad_to_8(&chunks_a[i]));
@@ -429,9 +430,7 @@ impl LiquidLattice {
                 self.buffer.pids[i].setpoint = self.buffer.lattice[i].amplitude;
             }
             if i < chunks_b.len() {
-                let deg = ((chunks_b[i][0] as i64) * 360) / 256;
-                let deg_norm = deg.clamp(0, 359);
-                self.buffer.lattice[i].phase = SPA::new(deg_norm, 0, 0, 0, 0);
+                self.buffer.lattice[i].phase = sector_width * SPA::from_int(chunks_b[i][0] as i64);
             }
         }
     }
@@ -448,21 +447,24 @@ impl LiquidLattice {
     pub fn retrieve_dual_channel(&self, count_a: usize, count_b: usize) -> (Vec<u8>, Vec<u8>) {
         let mut rec_a = Vec::new();
         let mut rec_b = Vec::new();
+        let sector_width = SPA::from_int(45) / SPA::from_int(32);
+        let half_width = sector_width / SPA::from_int(2);
         for i in 0..self.buffer.size {
-            let amp = self.buffer.lattice[i].amplitude;
-            if amp.to_raw() > 0 {
-                let raw_amp = amp.to_raw().unsigned_abs();
+            if rec_a.len() < count_a {
+                let amp = self.buffer.lattice[i].amplitude;
+                let raw_amp = amp.to_raw() as u64;
                 let bytes = raw_amp.to_be_bytes();
-                let non_zero: Vec<u8> = bytes.iter().copied().skip_while(|&b| b == 0).collect();
-                if rec_a.len() < count_a {
-                    rec_a.extend_from_slice(&non_zero);
+                let remaining = count_a - rec_a.len();
+                if remaining >= 8 {
+                    rec_a.extend_from_slice(&bytes);
+                } else {
+                    rec_a.extend_from_slice(&bytes[8 - remaining..]);
                 }
             }
             if rec_b.len() < count_b {
                 let phase = self.buffer.lattice[i].phase;
-                let phase_deg = phase.to_raw() / SPA::SCALE_0;
-                let deg_normalized = phase_deg.clamp(0, 359);
-                let byte_val = ((deg_normalized * 256) / 360) as u8;
+                let sector_idx = ((phase + half_width) / sector_width).to_raw() / SPA::SCALE_0;
+                let byte_val = sector_idx.clamp(0, 255) as u8;
                 rec_b.push(byte_val);
             }
         }

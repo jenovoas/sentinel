@@ -11,23 +11,27 @@ Handles all security-related functionality including:
 - Async-compatible authentication flow with AsyncSession
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
+from uuid import UUID
 
 import bcrypt
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError as JWTError
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
 from app.database import get_db
-from app.models.user import User
-from app.schemas.auth import TokenData
+from app.models.organization import Organization
+from app.models.user import User, UserRole
 
 settings = get_settings()
+JWT_ALGORITHM = "HS256"
+ACCESS_TOKEN_TTL = timedelta(minutes=10)
+EXPECTED_ALEMBIC_HEADS = frozenset({"dd222c78d329"})
 
 # ============================================================================
 # PASSWORD HASHING
@@ -43,7 +47,9 @@ def get_password_hash(password: str) -> str:
     Returns:
         str: Hashed password
     """
-    pwd_bytes = password.encode("utf-8")[:72]
+    pwd_bytes = password.encode("utf-8")
+    if len(pwd_bytes) > 72:
+        raise ValueError("password must not exceed 72 UTF-8 bytes")
     salt = bcrypt.gensalt()
     return bcrypt.hashpw(pwd_bytes, salt).decode("utf-8")
 
@@ -60,7 +66,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         bool: True if password matches, False otherwise
     """
     try:
-        pwd_bytes = plain_password.encode("utf-8")[:72]
+        pwd_bytes = plain_password.encode("utf-8")
+        if len(pwd_bytes) > 72:
+            return False
         hash_bytes = hashed_password.encode("utf-8")
         return bcrypt.checkpw(pwd_bytes, hash_bytes)
     except Exception:
@@ -87,34 +95,21 @@ pwd_context = _PwdContextCompat()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    """
-    Create a JWT access token.
-    
-    Args:
-        data: Dictionary of claims to encode in the token
-        expires_delta: Optional custom expiration time. If not provided,
-                      uses ACCESS_TOKEN_EXPIRE_MINUTES from settings.
-        
-    Returns:
-        str: Encoded JWT token
-    """
-    to_encode = data.copy()
-
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(
-            minutes=settings.access_token_expire_minutes
-        )
-
-    to_encode.update({"exp": expire})
-
-    return jwt.encode(
-        to_encode,
-        settings.secret_key,
-        algorithm=settings.algorithm
-    )
+def create_access_token(user: User) -> str:
+    """Issue the fixed ten-minute JWT contract shared with Sentinel Cortex."""
+    now = datetime.now(timezone.utc)
+    role = user.role.value if isinstance(user.role, UserRole) else str(user.role)
+    claims = {
+        "sub": str(user.id),
+        "tenant_id": str(user.organization_id),
+        "role": role,
+        "is_superuser": user.is_superuser,
+        "iss": settings.jwt_issuer,
+        "aud": settings.jwt_audience,
+        "iat": now,
+        "exp": now + ACCESS_TOKEN_TTL,
+    }
+    return jwt.encode(claims, settings.secret_key, algorithm=JWT_ALGORITHM)
 
 
 def create_refresh_token(data: dict) -> str:
@@ -146,51 +141,87 @@ def create_refresh_token(data: dict) -> str:
 
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
-    db: AsyncSession = Depends(get_db)
-):
-    """
-    Async dependency to get the current authenticated user from JWT token.
-    
-    Extracts user information from JWT token and validates it.
-    
-    Args:
-        token: JWT token from Authorization header
-        db: Async database session (injected by FastAPI)
-        
-    Returns:
-        dict: User information from token
-        
-    Raises:
-        HTTPException: If token is invalid or expired
-    """
-    credential_exception = HTTPException(
+    db: AsyncSession = Depends(get_db),
+) -> User:
+    """Validate the JWT against the active user, tenant, and organization."""
+    try:
+        payload = jwt.decode(
+            token,
+            settings.secret_key,
+            algorithms=[JWT_ALGORITHM],
+            issuer=settings.jwt_issuer,
+            audience=settings.jwt_audience,
+            options={
+                "require": [
+                    "sub", "tenant_id", "role", "is_superuser", "iss", "aud", "iat", "exp"
+                ]
+            },
+        )
+        user_id = UUID(payload["sub"])
+        tenant_id = UUID(payload["tenant_id"])
+        token_role = UserRole(payload["role"])
+        is_superuser = payload["is_superuser"]
+        issued_at, expires_at = payload["iat"], payload["exp"]
+        if (
+            type(is_superuser) is not bool
+            or type(issued_at) is not int
+            or type(expires_at) is not int
+            or expires_at - issued_at != int(ACCESS_TOKEN_TTL.total_seconds())
+        ):
+            raise ValueError("invalid token claims")
+    except (JWTError, KeyError, TypeError, ValueError):
+        raise _invalid_credentials()
+
+    await ensure_schema_current(db)
+    await set_tenant_context(db, tenant_id)
+    result = await db.execute(
+        select(User).where(User.id == user_id, User.organization_id == tenant_id)
+    )
+    user = result.scalars().first()
+    if user is None or not user.is_active:
+        raise _invalid_credentials()
+
+    organization = await db.get(Organization, tenant_id)
+    if organization is None or not organization.is_active:
+        raise _invalid_credentials()
+
+    actual_role = user.role if isinstance(user.role, UserRole) else UserRole(user.role)
+    if actual_role != token_role or user.is_superuser is not is_superuser:
+        raise _invalid_credentials()
+    return user
+
+
+async def set_tenant_context(db: AsyncSession, tenant_id: UUID | str) -> None:
+    """Set transaction-local PostgreSQL RLS context before tenant queries."""
+    await db.execute(
+        text("SELECT set_config('app.current_tenant_id', :tenant_id, true)"),
+        {"tenant_id": str(tenant_id)},
+    )
+
+
+async def ensure_schema_current(db: AsyncSession) -> None:
+    """Fail closed unless the database matches this main branch's Alembic head."""
+    try:
+        result = await db.execute(text("SELECT version_num FROM alembic_version"))
+        if frozenset(result.scalars().all()) != EXPECTED_ALEMBIC_HEADS:
+            raise HTTPException(status_code=503, detail="Database schema is not current")
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail="Database schema is unavailable") from exc
+
+
+def _invalid_credentials() -> HTTPException:
+    return HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-    try:
-        payload = jwt.decode(
-            token,
-            settings.secret_key,
-            algorithms=[settings.algorithm]
-        )
-        username: str = payload.get("sub")
-
-        if username is None:
-            raise credential_exception
-
-        token_data = TokenData(username=username)
-
-    except JWTError:
-        raise credential_exception
-
-    return token_data
-
 
 async def get_current_active_user(
-    current_user: TokenData = Depends(get_current_user)
-) -> TokenData:
+    current_user: User = Depends(get_current_user)
+) -> User:
     """
     Dependency to ensure the current user is active.
     
@@ -203,28 +234,17 @@ async def get_current_active_user(
     Raises:
         HTTPException: If user is inactive
     """
-    if current_user is None:
-        raise HTTPException(status_code=400, detail="Inactive user")
+    if not current_user.is_active:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Inactive user")
 
     return current_user
 
 
 async def get_current_user_model(
-    token_data: TokenData = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    current_user: User = Depends(get_current_user),
 ) -> User:
-    """
-    Fetch the full user model from the database using the token data.
-    """
-    query = select(User).where(User.username == token_data.username)
-    result = await db.execute(query)
-    user = result.scalars().first()
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
-    return user
+    """Compatibility dependency; authentication already returns the User model."""
+    return current_user
 
 
 async def get_current_admin_user(
@@ -241,6 +261,17 @@ async def get_current_admin_user(
     return current_user
 
 
+async def get_current_superuser(
+    current_user: User = Depends(get_current_user),
+) -> User:
+    if not current_user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Superuser role required",
+        )
+    return current_user
+
+
 __all__ = [
     "get_password_hash",
     "verify_password",
@@ -250,6 +281,7 @@ __all__ = [
     "get_current_active_user",
     "get_current_user_model",
     "get_current_admin_user",
+    "get_current_superuser",
     "oauth2_scheme",
     "pwd_context",
 ]

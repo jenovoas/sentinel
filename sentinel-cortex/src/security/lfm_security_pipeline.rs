@@ -22,6 +22,9 @@ pub enum LfmSecurityError {
     #[error("Respuesta del modelo no certificada por TruthSync (TrustScore: {score_raw}, mínimo requerido: {min_required})")]
     OutputNotCertified { score_raw: i64, min_required: i64 },
 
+    #[error("Respuesta del modelo contiene un patrón crítico de riesgo: {pattern}")]
+    CriticalPattern { pattern: String },
+
     #[error("Prompt vacío o inválido")]
     EmptyPrompt,
 }
@@ -78,6 +81,17 @@ impl LfmSecurityPipeline {
         lattice_energy: i64,
     ) -> Result<VerificationResult<'a>, LfmSecurityError> {
         let verification = self.verify_egress(output, lattice_energy);
+        if verification.critical_pattern_detected {
+            let lower_output = output.to_lowercase();
+            let pattern = CRITICAL_EGRESS_PATTERNS
+                .iter()
+                .find(|pattern| lower_output.contains(**pattern))
+                .copied()
+                .unwrap_or("critical pattern");
+            return Err(LfmSecurityError::CriticalPattern {
+                pattern: pattern.to_string(),
+            });
+        }
         if !verification.is_certified {
             let min_required = me60os_core::spa::SPA::SCALE_0 / 2;
             return Err(LfmSecurityError::OutputNotCertified {
@@ -89,6 +103,9 @@ impl LfmSecurityPipeline {
         Ok(verification)
     }
 }
+
+const CRITICAL_EGRESS_PATTERNS: [&str; 4] =
+    ["drop database", "rm -rf", "shutdown", "systemctl stop"];
 
 #[cfg(test)]
 mod tests {

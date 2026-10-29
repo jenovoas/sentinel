@@ -1,22 +1,13 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { listReports } from "@/lib/server/reports";
+import { noStore, sessionError, validateSession } from "@/lib/server/session";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const session = await validateSession(request);
+  if (!session.ok) return sessionError(session.status);
   try {
-    const base = process.cwd();
-    const dir = path.join(base, "host-metrics", "reports");
-    if (!fs.existsSync(dir)) {
-      return NextResponse.json({ ok: true, items: [] });
-    }
-    const files = fs.readdirSync(dir);
-    const items = files.map((name) => {
-      const ext = name.split(".").pop()?.toLowerCase() || "";
-      const type = ext === "html" ? "html" : ext === "md" ? "md" : ext === "csv" ? "csv" : "other";
-      return { name, path: path.join(dir, name), type };
-    });
-    return NextResponse.json({ ok: true, items });
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message || "error" }, { status: 500 });
+    return noStore(NextResponse.json({ ok: true, items: await listReports() }));
+  } catch {
+    return noStore(NextResponse.json({ ok: false, error: "No se pudieron leer los informes" }, { status: 500 }));
   }
 }

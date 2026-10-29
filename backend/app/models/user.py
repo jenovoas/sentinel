@@ -9,7 +9,7 @@ from datetime import datetime
 from enum import Enum as PyEnum
 from typing import Optional
 
-from sqlalchemy import String, Boolean, DateTime, ForeignKey, Enum, func
+from sqlalchemy import String, Boolean, DateTime, ForeignKey, Enum, event, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -41,6 +41,14 @@ class User(Base):
         ForeignKey("organizations.id", ondelete="CASCADE"),
         nullable=False,
         index=True
+    )
+    # Legacy RLS policies still scope users by tenant_id. Keep it aligned with
+    # the canonical organization UUID until those policies are migrated.
+    tenant_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("tenants.id", ondelete="CASCADE"),
+        nullable=False,
+        index=False,
     )
 
     # Authentication fields
@@ -146,3 +154,17 @@ class User(Base):
     def deactivate(self) -> None:
         """Deactivate user account"""
         self.is_active = False
+
+
+def sync_tenant_id(mapper, connection, user: User) -> None:
+    """Keep the legacy RLS tenant key equal to the user's organization ID."""
+    if user.organization_id is None:
+        raise ValueError("organization_id is required to set tenant_id")
+    organization_id = uuid.UUID(str(user.organization_id))
+    if user.tenant_id is not None and uuid.UUID(str(user.tenant_id)) != organization_id:
+        raise ValueError("tenant_id and organization_id must match")
+    user.tenant_id = organization_id
+
+
+event.listen(User, "before_insert", sync_tenant_id)
+event.listen(User, "before_update", sync_tenant_id)

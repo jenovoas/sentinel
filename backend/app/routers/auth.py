@@ -1,37 +1,70 @@
-from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, Form, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.database import get_db
+from app.models.organization import Organization
+from app.models.user import User
 from app.schemas.auth import Token
-from app.services.user_service import authenticate_user
-from app.auth_utils import create_access_token
-from datetime import timedelta
+from app.security.auth import (
+    create_access_token,
+    ensure_schema_current,
+    get_current_user,
+    set_tenant_context,
+    verify_password,
+)
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
-@router.post("/login", response_model=Token)
-def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(), 
-    db: Session = Depends(get_db)
-):
-    """
-    Logs in a user and returns an access token.
-    """
-    user = authenticate_user(db, email=form_data.username, password=form_data.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    access_token_expires = timedelta(minutes=30)
-    access_token = create_access_token(
-        data={
-            "user_id": str(user.id), 
-            "tenant_id": str(user.organization_id),  # Use organization_id (backward compatible key)
-        },
-        expires_delta=access_token_expires,
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
 
+@router.post("/login", response_model=Token)
+async def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    organization_slug: str = Form(..., min_length=1, max_length=100),
+    db: AsyncSession = Depends(get_db),
+):
+    await ensure_schema_current(db)
+    organization_result = await db.execute(
+        select(Organization).where(Organization.slug == organization_slug)
+    )
+    organization = organization_result.scalars().first()
+    if organization is None or not organization.is_active:
+        raise _login_failed()
+
+    await set_tenant_context(db, organization.id)
+    user_result = await db.execute(
+        select(User).where(
+            User.email == form_data.username,
+            User.organization_id == organization.id,
+        )
+    )
+    user = user_result.scalars().first()
+    if (
+        user is None
+        or not user.is_active
+        or not verify_password(form_data.password, user.password_hash)
+    ):
+        raise _login_failed()
+
+    return {"access_token": create_access_token(user), "token_type": "bearer"}
+
+
+def _login_failed() -> HTTPException:
+    return HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Incorrect organization, email, or password",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+
+@router.get("/me")
+async def current_identity(current_user: User = Depends(get_current_user)):
+    return {
+        "id": str(current_user.id),
+        "email": current_user.email,
+        "username": current_user.username,
+        "organization_id": str(current_user.organization_id),
+        "role": current_user.role.value,
+        "is_superuser": current_user.is_superuser,
+    }

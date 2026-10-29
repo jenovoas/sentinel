@@ -19,11 +19,11 @@
 
 mod buffer_system;
 pub mod concentrator;
+pub mod detectors;
 pub mod math;
 pub mod memory;
 pub mod quantum;
 pub mod security;
-
 use lazy_static::lazy_static;
 use quantum::BioResonator;
 use std::sync::{Arc, Mutex};

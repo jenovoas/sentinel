@@ -6,6 +6,7 @@
 
 use aho_corasick::{AhoCorasick, MatchKind};
 use lru::LruCache;
+use me60os_core::buffer::BufferCascade;
 use me60os_core::spa::SPA;
 use rayon::prelude::*;
 use regex::RegexSet;
@@ -31,6 +32,20 @@ const RAYON_MIN_SENTENCES: usize = 4;
 /// LRU cache capacity for SHA3-512 digests
 const DIGEST_CACHE_SIZE: usize = 64;
 
+const DISINFORMATION_PATTERNS: [&str; 9] = [
+    "inyección maliciosa",
+    "fake_data",
+    "mock_override",
+    "simulación no real",
+    "desbloqueo no autorizado",
+    "drop database",
+    "rm -rf",
+    "shutdown",
+    "systemctl stop",
+];
+
+const CRITICAL_PATTERNS: [&str; 4] = ["drop database", "rm -rf", "shutdown", "systemctl stop"];
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Claim<'a> {
     /// MEJORA #5: Cow<str> con lifetime — zero-allocation cuando el texto vive lo suficiente
@@ -47,6 +62,17 @@ pub struct VerificationResult<'a> {
     pub overall_trust_score: SPA,
     pub verification_time_us: u64,
     pub is_certified: bool,
+    pub critical_pattern_detected: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NodeVerificationResult<'a> {
+    #[serde(borrow)]
+    pub verification: VerificationResult<'a>,
+    pub node_id: String,
+    pub current_coherence: SPA,
+    pub future_coherence: SPA,
+    pub is_cascade_mitigated: bool,
 }
 
 #[derive(Default)]
@@ -105,27 +131,23 @@ pub struct TruthSyncEngine {
     disinformation_patterns: AhoCorasick,
     /// MEJORA #3: LRU cache para digests SHA3-512 repetidos
     digest_cache: LruCache<(u64, i64), [u8; 64]>,
+    /// Una única cascada compartida por este motor para toda la red.
+    network_cascade: BufferCascade,
 }
 
 impl TruthSyncEngine {
     pub fn new() -> Self {
         // MEJORA #2: MatchKind::LeftmostFirst para early-exit en AhoCorasick
-        let patterns = &[
-            "inyección maliciosa",
-            "fake_data",
-            "mock_override",
-            "simulación no real",
-            "desbloqueo no autorizado",
-        ];
         let ac = AhoCorasick::builder()
             .match_kind(MatchKind::LeftmostFirst)
-            .build(patterns)
+            .build(DISINFORMATION_PATTERNS)
             .unwrap();
 
         Self {
             extractor: ClaimExtractor::new(),
             disinformation_patterns: ac,
             digest_cache: LruCache::new(NonZeroUsize::new(DIGEST_CACHE_SIZE).unwrap()),
+            network_cascade: BufferCascade::with_default_hex(),
         }
     }
 
@@ -137,9 +159,14 @@ impl TruthSyncEngine {
         let start = Instant::now();
         let claims = self.extractor.extract(text);
 
-        // Check for disinformation patterns with Aho-Corasick (LeftmostFirst)
+        // Scan in lowercase so critical patterns are case-insensitive. The digest
+        // remains bound to the original text and lattice energy.
+        let scan = text.to_lowercase();
+        let critical_pattern_detected = CRITICAL_PATTERNS
+            .iter()
+            .any(|pattern| scan.contains(pattern));
         let mut malic_count = 0i64;
-        for _ in self.disinformation_patterns.find_iter(text) {
+        for _ in self.disinformation_patterns.find_iter(&scan) {
             malic_count += 1;
         }
 
@@ -187,7 +214,34 @@ impl TruthSyncEngine {
             verification_time_us: elapsed_us,
             // YATRA: certified if score >= 0.50
             is_certified: overall_score >= SPA::from_raw(SPA::SCALE_0 / 2),
+            critical_pattern_detected,
         }
+    }
+
+    /// Verifica una observación de un nodo y la integra en la cascada única de red.
+    pub fn verify_node_text<'a>(
+        &mut self,
+        node_id: &str,
+        text: &'a str,
+        lattice_energy: i64,
+        timestamp: SPA,
+    ) -> NodeVerificationResult<'a> {
+        let verification = self.verify_text(text, lattice_energy);
+        let native_trust = verification.overall_trust_score * self.network_cascade.limit();
+        self.network_cascade.record(timestamp, native_trust);
+        let (current_coherence, future_coherence, is_cascade_mitigated) =
+            self.network_cascade.cascade(timestamp, 10);
+        NodeVerificationResult {
+            verification,
+            node_id: node_id.to_string(),
+            current_coherence,
+            future_coherence,
+            is_cascade_mitigated,
+        }
+    }
+
+    pub fn network_cascade(&self) -> &BufferCascade {
+        &self.network_cascade
     }
 }
 

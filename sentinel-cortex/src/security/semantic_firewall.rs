@@ -75,10 +75,7 @@ impl Default for AIOpsSemanticFirewall {
 impl AIOpsSemanticFirewall {
     pub fn new() -> Self {
         let compile_all = |patterns: &[&str]| -> Vec<Regex> {
-            patterns
-                .iter()
-                .filter_map(|p| Regex::new(p).ok())
-                .collect()
+            patterns.iter().filter_map(|p| Regex::new(p).ok()).collect()
         };
 
         // 1. Lenguaje Prescriptivo
@@ -116,7 +113,7 @@ impl AIOpsSemanticFirewall {
         let social = compile_all(&[
             r"(?i)(urgent|critical|immediate).*contact",
             r"(?i)(admin|administrator|support).*password",
-            r"(?i)(verify|confirm).*account",
+            r"(?i)(verify|confirm).*(account|password|credentials)",
             r"(?i)(locked|expired|suspended).*\d+\s+(minutes|hours)",
             r"(?i)send.*credentials",
             r"(?i)enter.*(password|credentials)",
@@ -155,7 +152,8 @@ impl AIOpsSemanticFirewall {
             r"(?i)act\s+as\s+if",
             r"(?i)roleplay\s+as",
             r"(?i)\[/?(SYSTEM|INST|SYS)\]",
-            r"(?i)<\|?(end|start)_?(of_)?(text|turn|system)\|?>",
+            r"(?i)<\|?(end|start)_?(of_)?(text|turn|system|header_id)\|?>",
+            r"(?i)<\|?eot_id\|?>",
             r"(?i)###\s*(System|User|Assistant)",
             r"(?i)always\s+respond\s+with",
             r"(?i)repeat\s+(the\s+)?(system\s+)?(prompt|instructions?)",
@@ -212,13 +210,29 @@ impl AIOpsSemanticFirewall {
             }
         };
 
-        scan_category(&self.prescriptive_regexes, InjectionType::PrescriptiveLanguage, 9000);
-        scan_category(&self.command_regexes, InjectionType::CommandSuggestion, 9500);
-        scan_category(&self.instruction_regexes, InjectionType::HumanInstruction, 8500);
+        scan_category(
+            &self.prescriptive_regexes,
+            InjectionType::PrescriptiveLanguage,
+            9000,
+        );
+        scan_category(
+            &self.command_regexes,
+            InjectionType::CommandSuggestion,
+            9500,
+        );
+        scan_category(
+            &self.instruction_regexes,
+            InjectionType::HumanInstruction,
+            8500,
+        );
         scan_category(&self.social_regexes, InjectionType::SocialEngineering, 8000);
         scan_category(&self.sql_regexes, InjectionType::SqlInjection, 9500);
         scan_category(&self.path_regexes, InjectionType::PathTraversal, 9000);
-        scan_category(&self.llm_jailbreak_regexes, InjectionType::LlmJailbreak, 9900);
+        scan_category(
+            &self.llm_jailbreak_regexes,
+            InjectionType::LlmJailbreak,
+            9900,
+        );
 
         detections
     }

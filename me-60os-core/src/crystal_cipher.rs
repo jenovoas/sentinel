@@ -19,8 +19,6 @@ use aes_gcm::{
     aead::{Aead, KeyInit, Payload},
     Aes256Gcm,
 };
-// APRENDIZAJE: aes-gcm quiere Nonce como GenericArray<u8,U12>. Pasar &[u8;12]
-// con `.into()` (ver encrypt/decrypt) evita el tipo y el warning de import unused.
 use std::sync::Mutex;
 
 /// Ciclo maestro en segundos (igual que quantum_heartbeat.py: 4 x 17s breath).
@@ -87,39 +85,34 @@ impl CrystalCipher {
         *self.key_cache.lock().unwrap()
     }
 
-    /// Cifra un payload de la capa con la clave de pulso actual.
-    /// Nonce 12 bytes derivado del pulso (determinista para el descifrador
-    /// sincronizado por el mismo cristal).
+    /// Cifra con un nonce aleatorio de 96 bits, antepuesto al ciphertext.
+    /// El nonce viaja con el mensaje para que el descifrador pueda recuperarlo.
     pub fn encrypt(&self, plaintext: &[u8]) -> Option<Vec<u8>> {
         let key = self.current_key();
         let cipher = Aes256Gcm::new(&key.into());
-        let nonce = self.nonce_for_pulse();
+        let nonce: [u8; 12] = rand::random();
         let payload = Payload {
             msg: plaintext,
             aad: b"sentinel-crystal-layer",
         };
-        cipher.encrypt((&nonce).into(), payload).ok()
+        let encrypted = cipher.encrypt((&nonce).into(), payload).ok()?;
+        let mut output = Vec::with_capacity(nonce.len() + encrypted.len());
+        output.extend_from_slice(&nonce);
+        output.extend_from_slice(&encrypted);
+        Some(output)
     }
 
-    /// Descifra un payload de la capa. Requiere el mismo pulso/cristal.
+    /// Descifra el nonce de 96 bits antepuesto al ciphertext.
     pub fn decrypt(&self, ciphertext: &[u8]) -> Option<Vec<u8>> {
+        let nonce: [u8; 12] = ciphertext.get(..12)?.try_into().ok()?;
+        let encrypted = ciphertext.get(12..)?;
         let key = self.current_key();
         let cipher = Aes256Gcm::new(&key.into());
-        let nonce = self.nonce_for_pulse();
         let payload = Payload {
-            msg: ciphertext,
+            msg: encrypted,
             aad: b"sentinel-crystal-layer",
         };
         cipher.decrypt((&nonce).into(), payload).ok()
-    }
-
-    fn nonce_for_pulse(&self) -> [u8; 12] {
-        let mut n = [0u8; 12];
-        let p = self.pulse.to_le_bytes();
-        n[..8].copy_from_slice(&p);
-        let phase_lo = (self.crystal.lock().unwrap().get_phase().to_raw() & 0xFFFF_FFFF) as u32;
-        n[8..].copy_from_slice(&phase_lo.to_le_bytes());
-        n
     }
 
     /// Fuerza una rotación manual (purga de entropía -> nueva clave).
@@ -147,6 +140,23 @@ mod tests {
         let ct = c.encrypt(pt).expect("encrypt fallo");
         let dt = c.decrypt(&ct).expect("decrypt fallo");
         assert_eq!(dt, pt);
+    }
+
+    #[test]
+    fn test_each_encryption_uses_a_fresh_nonce() {
+        let cipher = CrystalCipher::new("Nonce-Test");
+        let first = cipher.encrypt(b"same plaintext").expect("encrypt fallo");
+        let second = cipher.encrypt(b"same plaintext").expect("encrypt fallo");
+
+        assert_ne!(&first[..12], &second[..12]);
+        assert_eq!(
+            cipher.decrypt(&first).as_deref(),
+            Some(&b"same plaintext"[..])
+        );
+        assert_eq!(
+            cipher.decrypt(&second).as_deref(),
+            Some(&b"same plaintext"[..])
+        );
     }
 
     #[test]

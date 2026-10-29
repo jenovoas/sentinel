@@ -37,8 +37,9 @@ pub struct IsochronousOscillator {
     pub amplitude: SPA,
     /// Current oscillation phase
     pub phase: SPA,
-    /// Damping factor (Q-Factor): controlled loss per cycle
-    /// SPA(0, 0, 30) = 30/3600 ≈ 0.0083 loss per tick
+    /// Damping factor (fixed-point coefficient applied to each SPA time step).
+    /// With the default `dt = SPA(0, 0, 1)`, the configured
+    /// `SPA(0, 0, 30)` produces a loss of `1 / 432_000` per step.
     pub damping_factor: SPA,
 }
 
@@ -62,7 +63,8 @@ impl IsochronousOscillator {
             natural_frequency: SPAMath::RESONANCE_RATIO,
             amplitude: SPA::zero(),
             phase: SPA::zero(),
-            // Damping: SPA(0, 0, 30) = 30 seconds = 0.5 degrees loss
+            // Damping coefficient: SPA(0, 0, 30) = 1/120 in SPA units.
+            // The effective per-step loss also includes the configured dt.
             damping_factor: SPA::new(0, 0, 30, 0, 0),
         }
     }

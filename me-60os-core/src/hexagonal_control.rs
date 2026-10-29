@@ -18,7 +18,11 @@ pub struct HexNode {
     pub r: i64,
 }
 
-#[cfg_attr(feature = "extension-module", pyclass(module = "me60os_core"))]
+#[derive(Clone, Debug)]
+#[cfg_attr(
+    feature = "extension-module",
+    pyclass(module = "me60os_core", from_py_object)
+)]
 pub struct HexagonalController {
     pub size: i64,
     // (q, r) tuples

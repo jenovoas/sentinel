@@ -44,7 +44,48 @@ services:
           memory: 256M
     restart: unless-stopped
 
-  # ── CORTEX NATIVO (Axum/Rust) ──────────────────────────────────────────────────
+  # FastAPI backend: reachable by Kingu only over the Fenix WireGuard address.
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: sentinel-backend
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-sentinel_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-sentinel_db}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      FASTAPI_ENV: production
+      SECRET_KEY: ${SECRET_KEY:?Configura SECRET_KEY en el .env de Fenix}
+      JWT_ISSUER: ${JWT_ISSUER:-sentinel-auth}
+      JWT_AUDIENCE: ${JWT_AUDIENCE:-sentinel-cortex}
+      LOG_LEVEL: ${LOG_LEVEL:-WARNING}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - sentinel_internal
+      - backend_egress
+    ports:
+      - target: 8000
+        published: "${SENTINEL_BACKEND_PORT:-8000}"
+        host_ip: ${FENIX_WIREGUARD_IP:?Configura la IP WireGuard de Fenix en .env}
+        protocol: tcp
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://127.0.0.1:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+    restart: unless-stopped
+
+  # ── CORTEX (Axum/Rust), interno en Fenix ────────────────────────────────────────
 
   cortex:
     build:
@@ -63,46 +104,17 @@ services:
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
       RUST_LOG: info
       SECRET_KEY: ${SECRET_KEY}
+      SENTINEL_JWT_SECRET: ${SECRET_KEY:?Configura SECRET_KEY en el .env de Fenix}
+      SENTINEL_JWT_ISSUER: ${JWT_ISSUER:-sentinel-auth}
+      SENTINEL_JWT_AUDIENCE: ${JWT_AUDIENCE:-sentinel-cortex}
+      SENTINEL_WS_ALLOWED_ORIGINS: ${SENTINEL_WS_ALLOWED_ORIGINS:?Define el origen HTTPS de Kingu en el .env de Fenix}
     depends_on:
       postgres:
         condition: service_healthy
     networks:
       - sentinel_internal
-      - proxy
     volumes:
       - /sys/fs/bpf:/sys/fs/bpf:rw
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.cortex-api.rule=Host(`cortex.pinguinoseguro.cl`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.cortex-api.entrypoints=websecure"
-      - "traefik.http.routers.cortex-api.tls.certresolver=powerdns"
-      - "traefik.http.routers.cortex-api.middlewares=cortex-api-strip"
-      - "traefik.http.middlewares.cortex-api-strip.stripprefix.prefixes=/api"
-      - "traefik.http.services.cortex-api.loadbalancer.server.port=8000"
-      - "traefik.docker.network=proxy"
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-    restart: unless-stopped
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: sentinel-frontend
-    environment:
-      - NEXT_PUBLIC_API_URL=https://cortex.pinguinoseguro.cl/api
-    networks:
-      - sentinel_internal
-      - proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.cortex-ui.rule=Host(`cortex.pinguinoseguro.cl`)"
-      - "traefik.http.routers.cortex-ui.entrypoints=websecure"
-      - "traefik.http.routers.cortex-ui.tls.certresolver=powerdns"
-      - "traefik.http.services.cortex-ui.loadbalancer.server.port=3000"
-      - "traefik.docker.network=proxy"
     deploy:
       resources:
         limits:
@@ -342,5 +354,7 @@ networks:
   sentinel_internal:
     driver: bridge
     internal: true
+  backend_egress:
+    driver: bridge
   proxy:
     external: true

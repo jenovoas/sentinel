@@ -55,6 +55,7 @@ const SEVERITY_HIGH: u8 = 2;
 #[allow(dead_code)]
 const SEVERITY_CRITICAL: u8 = 3;
 
+#[cfg(feature = "extension-module")]
 use pyo3::prelude::*;
 
 /// Raw Cortex Event (Packed, matching C layout)
@@ -70,7 +71,8 @@ pub struct RawCortexEvent {
 }
 
 /// Cortex Event (Python-friendly, unpacked)
-#[pyclass(from_py_object)] // Exposed to Python
+#[cfg(feature = "extension-module")]
+#[pyclass(from_py_object)]
 #[derive(Debug, Clone, Default)]
 pub struct CortexEvent {
     #[pyo3(get, set)]
@@ -85,10 +87,22 @@ pub struct CortexEvent {
     pub severity: u8,
 }
 
+/// Cortex Event (plain, no Python bindings)
+#[cfg(not(feature = "extension-module"))]
+#[derive(Debug, Clone, Default)]
+pub struct CortexEvent {
+    pub timestamp_ns: u64,
+    pub event_type: u32,
+    pub pid: u32,
+    pub entropy_signal: u64,
+    pub severity: u8,
+}
+
+#[cfg(feature = "extension-module")]
 #[pymethods]
 impl CortexEvent {
     #[new]
-    pub fn new(
+    pub fn py_new(
         timestamp_ns: u64,
         event_type: u32,
         pid: u32,
@@ -107,6 +121,22 @@ impl CortexEvent {
 
 impl CortexEvent {
     // Constructor from RawCortexEvent (Internal Rust only)
+    pub fn new(
+        timestamp_ns: u64,
+        event_type: u32,
+        pid: u32,
+        entropy_signal: u64,
+        severity: u8,
+    ) -> Self {
+        Self {
+            timestamp_ns,
+            event_type,
+            pid,
+            entropy_signal,
+            severity,
+        }
+    }
+
     pub fn from_raw_event(raw_event: RawCortexEvent) -> Self {
         Self {
             timestamp_ns: raw_event.timestamp_ns,
@@ -115,6 +145,21 @@ impl CortexEvent {
             entropy_signal: raw_event.entropy_signal,
             severity: raw_event.severity,
         }
+    }
+
+    /// Parsea un evento crudo del ring buffer sin pánico ante bytes arbitrarios.
+    ///
+    /// Retorna `None` si `data` es más corto que `RawCortexEvent` (32 B);
+    /// en otro caso decodifica por copia no alineada y convierte a `CortexEvent`.
+    /// No usa `unwrap`/`expect`/indexación: apta para verificación con Kani.
+    pub fn parse_event(data: &[u8]) -> Option<CortexEvent> {
+        if data.len() < std::mem::size_of::<RawCortexEvent>() {
+            return None;
+        }
+        // SAFETY: longitud verificada arriba; el puntero es válido para lectura.
+        let raw: RawCortexEvent =
+            unsafe { std::ptr::read_unaligned(data.as_ptr() as *const RawCortexEvent) };
+        Some(CortexEvent::from_raw_event(raw))
     }
 }
 
@@ -199,31 +244,21 @@ impl EbpfCortexBridge {
 
         builder.add(&map, move |data: &[u8]| -> i32 {
             // Handle event in the callback
-            if data.len() < std::mem::size_of::<RawCortexEvent>() {
+            let Some(event) = CortexEvent::parse_event(data) else {
                 eprintln!("⚠️ Invalid event size: {}", data.len());
                 return 0;
-            }
-
-            // SAFETY: We've verified the size matches RawCortexEvent
-            let event: RawCortexEvent =
-                unsafe { std::ptr::read_unaligned(data.as_ptr() as *const RawCortexEvent) };
+            };
 
             // Push CortexEvent to resonant buffer
-            buffer.push(CortexEvent::from_raw_event(event));
-
-            // Copy fields to avoid unaligned references
-            let event_type = event.event_type;
-            let pid = event.pid;
-            let entropy_signal = event.entropy_signal;
-            let severity = event.severity;
+            buffer.push(event.clone());
 
             // Log event
             eprintln!(
                 "📡 eBPF Event: type={} pid={} entropy={} severity={}",
-                event_type,
-                pid,
-                SPA::from_raw(entropy_signal as i64),
-                severity
+                event.event_type,
+                event.pid,
+                SPA::from_raw(event.entropy_signal as i64),
+                event.severity
             );
 
             0 // Return 0 to continue polling
@@ -280,13 +315,10 @@ impl EbpfCortexBridge {
 
         builder
             .add(&map, move |data: &[u8]| -> i32 {
-                if data.len() < std::mem::size_of::<RawCortexEvent>() {
+                let Some(event) = CortexEvent::parse_event(data) else {
                     return 0;
-                }
-                // SAFETY: data.len() was checked >= size_of::<RawCortexEvent>() above; pointer is valid for read
-                let event: RawCortexEvent =
-                    unsafe { std::ptr::read_unaligned(data.as_ptr() as *const RawCortexEvent) };
-                buffer.push(CortexEvent::from_raw_event(event));
+                };
+                buffer.push(event);
 
                 count_clone.fetch_add(1, Ordering::Relaxed);
                 0
@@ -334,17 +366,14 @@ impl EbpfCortexBridge {
 
         builder
             .add(&map, move |data: &[u8]| -> i32 {
-                if data.len() < std::mem::size_of::<RawCortexEvent>() {
+                let Some(event) = CortexEvent::parse_event(data) else {
                     return 0;
-                }
-                // SAFETY: data.len() was checked >= size_of::<RawCortexEvent>() above; pointer is valid for read
-                let event: RawCortexEvent =
-                    unsafe { std::ptr::read_unaligned(data.as_ptr() as *const RawCortexEvent) };
+                };
 
-                buffer.push(CortexEvent::from_raw_event(event));
+                buffer.push(event.clone());
 
                 let mut events = events_clone.lock().unwrap();
-                events.push(CortexEvent::from_raw_event(event));
+                events.push(event);
                 0
             })
             .map_err(|e| format!("Failed to add map to ring buffer: {}", e))?;
@@ -362,31 +391,21 @@ impl EbpfCortexBridge {
     /// Handle incoming event from ring buffer
     #[allow(dead_code)]
     fn handle_event(&self, data: &[u8]) {
-        if data.len() < std::mem::size_of::<RawCortexEvent>() {
+        let Some(event) = CortexEvent::parse_event(data) else {
             eprintln!("⚠️ Invalid event size: {}", data.len());
             return;
-        }
-
-        // SAFETY: We've verified the size matches RawCortexEvent
-        let event: RawCortexEvent =
-            unsafe { std::ptr::read_unaligned(data.as_ptr() as *const RawCortexEvent) };
+        };
 
         // Push CortexEvent to resonant buffer
-        self.buffer.push(CortexEvent::from_raw_event(event));
-
-        // Copy fields to avoid unaligned references in packed struct
-        let event_type = event.event_type;
-        let pid = event.pid;
-        let entropy_signal = event.entropy_signal;
-        let severity = event.severity;
+        self.buffer.push(event.clone());
 
         // Log for debugging
         eprintln!(
             "📡 eBPF Event: type={} pid={} entropy={} severity={}",
-            event_type,
-            pid,
-            SPA::from_raw(entropy_signal as i64),
-            severity
+            event.event_type,
+            event.pid,
+            SPA::from_raw(event.entropy_signal as i64),
+            event.severity
         );
     }
 
@@ -403,6 +422,29 @@ impl EbpfCortexBridge {
             _ => 0, // Default to neuron 0
         }
     }
+}
+
+/// Harness de verificación formal con Kani (`MEJORAS_PLANIFICADAS` P1).
+///
+/// Se ejecuta con `cargo kani -p me60os --harness verify_parse_event_no_panic`
+/// (requiere `cargo-kani`; no verificado en esta máquina por no estar instalado).
+/// El test `test_parse_event_no_panic_on_arbitrary_bytes` es su equivalente
+/// ejecutable en `cargo test`.
+#[cfg(kani)]
+#[kani::proof]
+fn verify_parse_event_no_panic() {
+    let len: usize = kani::any();
+    kani::assume(len <= 64);
+    let mut data = vec![0u8; len];
+    for b in data.iter_mut() {
+        *b = kani::any();
+    }
+    let parsed = CortexEvent::parse_event(&data);
+    // Sin pánico ante cualquier entrada; el resultado solo depende de la longitud.
+    assert_eq!(
+        parsed.is_some(),
+        len >= std::mem::size_of::<RawCortexEvent>()
+    );
 }
 
 #[cfg(test)]
@@ -448,5 +490,55 @@ mod tests {
 
         // Verify buffer has data
         assert!(bridge.buffer.pop().is_some());
+    }
+
+    #[test]
+    fn test_parse_event_rejects_short_input() {
+        assert!(CortexEvent::parse_event(&[]).is_none());
+        assert!(CortexEvent::parse_event(&[0u8; 31]).is_none());
+    }
+
+    #[test]
+    fn test_parse_event_roundtrip() {
+        let mut data = [0u8; 32];
+        let event = RawCortexEvent {
+            timestamp_ns: 1234567890,
+            event_type: EVENT_FILE_BLOCKED,
+            pid: 1000,
+            entropy_signal: 39657600000,
+            severity: SEVERITY_HIGH,
+            _reserved: [0; 7],
+        };
+        // SAFETY: data buffer is 32 bytes; write to it with exact-size struct; only used in test
+        unsafe {
+            std::ptr::write_unaligned(data.as_mut_ptr() as *mut RawCortexEvent, event);
+        }
+        let parsed = CortexEvent::parse_event(&data).expect("32 B válidos deben parsear");
+        assert_eq!(parsed.timestamp_ns, 1234567890);
+        assert_eq!(parsed.event_type, EVENT_FILE_BLOCKED);
+        assert_eq!(parsed.pid, 1000);
+        assert_eq!(parsed.severity, SEVERITY_HIGH);
+    }
+
+    #[test]
+    fn test_parse_event_no_panic_on_arbitrary_bytes() {
+        // Barrido determinista: longitudes 0..64 con patrones adversariales.
+        // Equivalente ejecutable del harness Kani cuando `cargo-kani` no está instalado.
+        let mut seed: u64 = 0x9E3779B97F4A7C15;
+        let mut next_byte = || {
+            seed ^= seed << 13;
+            seed ^= seed >> 7;
+            seed ^= seed << 17;
+            (seed & 0xFF) as u8
+        };
+        for len in 0..64usize {
+            let data: Vec<u8> = (0..len).map(|_| next_byte()).collect();
+            let parsed = CortexEvent::parse_event(&data);
+            assert_eq!(parsed.is_some(), len >= 32);
+        }
+        // Bordes: todo ceros, todo 0xFF y basura larga.
+        assert!(CortexEvent::parse_event(&[0u8; 32]).is_some());
+        assert!(CortexEvent::parse_event(&[0xFFu8; 32]).is_some());
+        assert!(CortexEvent::parse_event(&[0xABu8; 64]).is_some());
     }
 }

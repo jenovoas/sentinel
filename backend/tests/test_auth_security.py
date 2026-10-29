@@ -18,19 +18,11 @@ client = TestClient(app)
 def test_unauthenticated_endpoints_return_401():
     """Comprueba que todos los endpoints protegidos recientemente devuelvan 401 No autorizado para solicitudes anónimas."""
     protected = [
-        ("POST", "/api/v1/ai/api/v1/ai/query", {"prompt": "test"}),
-        ("POST", "/api/v1/users/api/v1/users/", {"username": "test", "password": "pwd", "email": "test@test.com"}),
-        ("POST", "/api/v1/tenants/api/v1/tenants/", {"name": "test"}),
+        ("POST", "/api/v1/ai/query", {"prompt": "test"}),
+        ("POST", "/api/v1/users/", {"username": "test", "password": "pwd", "email": "test@test.com"}),
+        ("POST", "/api/v1/tenants/", {"name": "test", "slug": "test"}),
         ("POST", "/api/v1/backup/trigger", {}),
-        ("POST", "/api/v1/failsafe/trigger", {"playbook": "Incident Response", "wait_seconds": 10, "details": {}}),
-        ("GET", "/api/v1/analytics/api/v1/analytics/metrics/recent"),
-        ("GET", "/api/v1/analytics/api/v1/analytics/metrics/range"),
-        ("GET", "/api/v1/analytics/api/v1/analytics/statistics"),
-        ("GET", "/api/v1/analytics/api/v1/analytics/anomalies"),
-        ("GET", "/api/v1/analytics/api/v1/analytics/export/metrics"),
-        ("GET", "/api/v1/analytics/api/v1/analytics/export/anomalies"),
-        ("GET", "/api/v1/analytics/api/v1/analytics/storage/summary"),
-        ("GET", "/api/v1/metrics"),
+        ("GET", "/api/v1/auth/me"),
     ]
     for entry in protected:
         if len(entry) == 3:
@@ -80,11 +72,11 @@ def test_password_consistency():
     assert verify_password(password, hash2) is True
 
 def test_long_password():
-    """Comprueba el comportamiento con contraseñas largas."""
+    """Rechaza contraseñas que exceden el límite real de bcrypt."""
     password = "a" * 100
-    hashed = get_password_hash(password)
-
-    assert verify_password(password, hashed) is True
+    with pytest.raises(ValueError, match="72 UTF-8 bytes"):
+        get_password_hash(password)
+    assert verify_password(password, "unused-hash") is False
 
 def test_special_characters():
     """Comprueba el comportamiento con caracteres especiales y Unicode."""

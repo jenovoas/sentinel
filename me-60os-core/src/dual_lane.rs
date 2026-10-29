@@ -368,7 +368,7 @@ impl ObservabilityLaneCollector {
 
         let now = now_micros();
         let should_flush = self.buffer.len() >= self.max_batch_records
-            || ((now - self.last_flush_us) as u64) >= self.max_batch_ms;
+            || ((now - self.last_flush_us) as u64) >= (self.max_batch_ms * 1000);
         if should_flush {
             self.flush_buffer();
         }

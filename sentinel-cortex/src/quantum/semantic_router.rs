@@ -131,10 +131,8 @@ impl SemanticRouter {
 
         let prompt = format!("USER INPUT: {}", query);
 
-        let url = format!(
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key={}",
-            self.api_key
-        );
+        let url =
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent";
 
         let body = json!({
             "contents": [{
@@ -146,7 +144,14 @@ impl SemanticRouter {
             }
         });
 
-        match self.client.post(&url).json(&body).send().await {
+        match self
+            .client
+            .post(url)
+            .header("x-goog-api-key", &self.api_key)
+            .json(&body)
+            .send()
+            .await
+        {
             Ok(resp) => {
                 if let Ok(gemini_resp) = resp.json::<GeminiResponse>().await {
                     if let Some(candidates) = gemini_resp.candidates {

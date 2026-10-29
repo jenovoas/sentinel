@@ -6,10 +6,11 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import { csrfTokenFromCookie } from "@/lib/session-client";
 
 interface NavItem {
     label: string;
@@ -29,7 +30,39 @@ const NAV_ITEMS: NavItem[] = [
 
 export function Navigation() {
     const pathname = usePathname();
+    const router = useRouter();
     const [menuOpen, setMenuOpen] = useState(false);
+    const [cortexResponding, setCortexResponding] = useState<boolean | null>(null);
+
+    useEffect(() => {
+        let active = true;
+        const checkCortex = async () => {
+            try {
+                const response = await fetch("/api/v1/dashboard/status", { cache: "no-store" });
+                if (active) setCortexResponding(response.ok);
+            } catch {
+                if (active) setCortexResponding(false);
+            }
+        };
+        void checkCortex();
+        const interval = window.setInterval(checkCortex, 30_000);
+        return () => {
+            active = false;
+            window.clearInterval(interval);
+        };
+    }, []);
+
+    const handleLogout = async () => {
+        const response = await fetch("/api/auth/logout", {
+            method: "POST",
+            headers: { "x-csrf-token": csrfTokenFromCookie() },
+            cache: "no-store",
+        });
+        if (response.ok) {
+            router.replace("/login");
+            router.refresh();
+        }
+    };
 
     const isActive = (href: string) =>
         href === "/dashboard"
@@ -127,9 +160,10 @@ export function Navigation() {
 
                     {/* Status indicator — derecha */}
                     <div className="desktop-status" style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexShrink: 0 }}>
-                        <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#34d399", display: "inline-block", animation: "pulse 2s infinite" }} />
-                        <span style={{ color: "#94a3b8", fontSize: "0.85rem" }}>Online</span>
-                        <span style={{ color: "#475569", fontSize: "0.75rem", marginLeft: "0.5rem" }}>v2.0.0</span>
+                        <span aria-hidden="true" style={{ width: "8px", height: "8px", borderRadius: "50%", background: cortexResponding === true ? "#34d399" : cortexResponding === false ? "#fb7185" : "#94a3b8", display: "inline-block" }} />
+                        <span style={{ color: "#94a3b8", fontSize: "0.85rem" }}>
+                            {cortexResponding === true ? "Cortex responde" : cortexResponding === false ? "Cortex no disponible" : "Verificando Cortex…"}
+                        </span>
                         <Link
                             href="https://www.pinguinoseguro.cl"
                             style={{
@@ -152,6 +186,9 @@ export function Navigation() {
                         >
                             PinguinoSeguro
                         </Link>
+                        <button type="button" onClick={handleLogout} style={{ marginLeft: "0.5rem", padding: "0.4rem 0.75rem", color: "#cbd5e1", background: "transparent", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "8px", cursor: "pointer", fontSize: "0.85rem" }}>
+                            Cerrar sesión
+                        </button>
                     </div>
 
                     {/* Hamburger — mobile */}
@@ -219,6 +256,9 @@ export function Navigation() {
                             )}
                         </Link>
                     ))}
+                    <button type="button" onClick={() => void handleLogout()} style={{ marginTop: "0.5rem", padding: "0.75rem 1rem", color: "#cbd5e1", background: "transparent", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "8px", cursor: "pointer", textAlign: "left" }}>
+                        Cerrar sesión
+                    </button>
                 </div>
             )}
 
