@@ -312,39 +312,30 @@ services:
     restart: unless-stopped
 
   n8n:
-    image: docker.io/n8nio/n8n:1.41.0
+    image: n8nio/n8n@sha256:eedb51a7ef93aef188897447aa83e993e132106b9590c054ecec3440ba90ab67
     container_name: sentinel-n8n
     hostname: n8n
     env_file:
-      - /etc/sentinel/backend.env
+      - /etc/sentinel/n8n.env
     environment:
-      - N8N_HOST=n8n.pinguinoseguro.cl
-      - N8N_PROTOCOL=https
-      - WEBHOOK_URL=https://n8n.pinguinoseguro.cl/
-      - N8N_EDITOR_BASE_URL=https://n8n.pinguinoseguro.cl/
-      - N8N_SECURE_COOKIE=true
-      - GENERIC_TIMEZONE=America/Santiago
-      - TZ=America/Santiago
-      - N8N_EMAIL_MODE=smtp
-      - N8N_SMTP_HOST=host.docker.internal
-      - N8N_SMTP_PORT=25
-      - N8N_SMTP_SENDER=n8n@pinguinoseguro.cl
-      - N8N_SMTP_SSL=false
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
     volumes:
-      - ./docker/n8n/workflows:/tmp/workflows:ro,z
-      - ./docker/n8n/init-workflows.sh:/docker-entrypoint-init.d/init-workflows.sh:ro,z
       - n8n_data:/home/node/.n8n
     networks:
       - sentinel_internal
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - backend_egress
     ports:
       - target: 5678
         published: "5678"
-        host_ip: 127.0.0.1
-        mode: host
-
-    # Nginx del host publica n8n.
+        host_ip: ${FENIX_WIREGUARD_IP:?Set FENIX_WIREGUARD_IP in /etc/sentinel/backend.env}
+        protocol: tcp
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:5678/healthz', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
     deploy:
       resources:
         limits:
