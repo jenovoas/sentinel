@@ -129,6 +129,7 @@ services:
         condition: service_healthy
     networks:
       - sentinel_internal
+      - backend_egress
     ports:
       - target: 8000
         published: "${SENTINEL_CORTEX_PORT:-8001}"
