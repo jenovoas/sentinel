@@ -6,6 +6,9 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     netcat-openbsd \
     curl \
+    libelf1 \
+    zlib1g \
+    libzstd1 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd --system sentinel-api && useradd --system --gid sentinel-api \
