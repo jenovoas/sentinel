@@ -1,106 +1,128 @@
-# Sentinel — Sexagesimal Systems Framework
+# 🛡️ Sentinel — Sexagesimal Systems Framework & Cognitive Security Kernel
 
-**Framework de sistemas de bajo nivel que implementa aritmética base-60 exacta (S60) como fundamento matemático del runtime, eliminando los errores de redondeo IEEE 754 de la cadena de cálculo.**
+**Framework de sistemas de bajo nivel y kernel de seguridad determinista que implementa aritmética base-60 exacta ($S_{60}$) en Ring 0 eBPF y espacio de usuario, eliminando los errores de redondeo IEEE 754 de la cadena de cálculo crítico.**
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
-[![Rust](https://img.shields.io/badge/rust-%23000000.svg?logo=rust)](./sentinel-cortex/)
-[![eBPF](https://img.shields.io/badge/eBPF-kernel--level-orange)](./ebpf/)
-
-> [!NOTE]
-> **Runtime 100% Rust.** La migración Py→Rust terminó. Los `.py` restantes en `quantum/` son material de estudio o puentes legacy (`LEGACY BRIDGE / MIGRADO / YATRA-protected`) — no forman parte del runtime activo.
-> Producción real: servidor **Fan** (nodo único Fenix, Podman rootless).
+[![Rust 2021+](https://img.shields.io/badge/rust-2021%2B-black.svg?logo=rust)](./sentinel-cortex/)
+[![eBPF LSM](https://img.shields.io/badge/eBPF-Ring%200%20LSM-orange)](./ebpf/)
+[![Core S60](https://img.shields.io/badge/Core-S60%20Fixed%20Point-purple)](./me-60os-core/)
+[![WireGuard Mesh](https://img.shields.io/badge/Network-WireGuard%2010.88.0.0%2F24-emerald)](./)
 
 ---
 
-## Fases del Proyecto
+## 🏛️ Topología de Ejecución (Fenix + Kingu)
 
-1. **PoC Inicial (legacy):**
-   * `backend/` + `docker-compose.yml` — Python (FastAPI/Celery/Nginx).
-   * Prueba de concepto original. **No se usa en producción.**
+> **Nota de red física:** Fenix y Kingu operan en cuentas de Azure separadas (sin VPC compartida). Toda la interconexión, sincronización del cristal fonónico y telemetría transita exclusivamente por el túnel cifrado **WireGuard (`10.88.0.0/24`)**. Fan está completamente decomisionado.
 
-2. **Producción actual (Nodo Único Fenix):**
-   * `docker-compose.fenix.yml` + workspace Cargo descrito abajo.
-   * Stack: **Rust**, Podman, Traefik, eBPF Ring-0, systemd units por daemon.
-
-3. **Visión Fase 2 (Cluster Multi-Nodo):**
-   * Mesh S60 distribuido vía [MycNet](https://github.com/) (ver `docs/archive/` para el diseño histórico).
+```
+                  ┌────────────────────────────────────────┐
+                  │            INTERNET PÚBLICA            │
+                  └───────────┬────────────────┬───────────┘
+                              │                │
+                      (:53 DNS1 UDP/TCP)   (:80 / :443 HTTPS)
+                      (:51820 WG UDP)      (:4222 SSH / :53 DNS2)
+                              ▼                ▼
+     ┌──────────────────────────────────┐    ┌──────────────────────────────────┐
+     │      FENIX (Cuenta Azure A)      │    │      KINGU (Cuenta Azure B)      │
+     │      IP Pública: 20.226.112.222  │    │      IP Pública: 68.211.176.190  │
+     │      Túnel VPN: 10.88.0.1/24     │    │      Túnel VPN: 10.88.0.2/24     │
+     │      Rol: Dev + Sentinel Core    │    │      Rol: Prod + Sentinel Nodes  │
+     ├──────────────────────────────────┤    ├──────────────────────────────────┤
+     │ • Sentinel Cortex API (:8000)    │    │ • Traefik v3 Reverse Proxy       │
+     │ • Retículo SHM (67.951 Nodos)    │    │ • PowerDNS secundario (dns2)     │
+     │ • eBPF LSM (guardian_alpha_lsm)  │    │ • Sentinel Verifier (Invariantes)│
+     │ • float_detector (Anti-Drift)    │    │ • MycNet Daemon Mesh (:7474)     │
+     │ • BIND9 primario (dns1)          │    │ • Podman rootless (Contenedores) │
+     │ • Sentinel Verifier (Systemd)    │    │ • Backup diario cron → Fenix     │
+     └─────────────────┬────────────────┘    └────────────────┬─────────────────┘
+                       │                                      │
+                       └───────────► Túnel Cifrado ◄──────────┘
+                                  WireGuard (wg0)
+                                   10.88.0.0/24
+```
 
 ---
 
-## Workspace Cargo (5 crates)
+## 🧱 Arquitectura de 6 Capas y Orden de Arranque
+
+```
+1. eBPF Ring-0 (LSM / XDP / TC Hooks)
+      │ (Crea maps y hooks de seguridad en /sys/fs/bpf)
+      ▼
+2. sentinel-cortex (Rust :8000)
+      │ (Inicializa /dev/shm/me60os_lattice con 67.951 nodos y arranca el bombeo PAI)
+      ▼
+3. mycnetd (Rust :7474)
+      │ (Lee /me60os_lattice en Zero-Copy y proyecta a la malla mesh UDP)
+      ▼
+4. Daemons me-60os (qhc_agent, pai_neural_daemon, adm_agent, vid_agent, hex_daemon)
+      │ (Modulación armónica, marcapasos 17s/68s e inyección neural)
+      ▼
+5. Observabilidad & Invariantes (sentinel-verifier, Prometheus, Loki, Grafana)
+      ▼
+6. Aplicaciones & Servicios Soberanos (pinguinoseguro-web, portal, bases de datos)
+```
+
+---
+
+## 💎 Retículo del Cristal Fonónico y Osciladores Isocrónicos
+
+* **Dimensionamiento Dinámico:** $N = 3r^2 + 3r + 1$ ($r=150 \implies \mathbf{67.951\,\text{nodos}}$ para servidores de 16 GB RAM).
+* **Estructura por Oscilador (`IsochronousOscillator`):** `192 bytes` exactos con layout `#[repr(C)]`.
+  * `name[32]` + `natural_frequency[40]` + `amplitude[40]` + `phase[40]` + `damping_factor[40]`.
+* **Frecuencia Armónica:** $SPA(1, 32, 2, 24, 0)$ (Plimpton 322 Fila 12).
+* **Memoria Compartida Zero-Copy:** `/dev/shm/me60os_lattice` en memoria RAM del kernel, sin overhead de serialización ni copia de datos.
+
+---
+
+## 📦 Workspace Cargo (5 Crates Principales)
 
 ```
 sentinel/
-├── sentinel-cortex/     Crate principal: servidor Axum, drive continuo, ingesta eBPF,
-│                        LiquidLattice 3x3, TruthSync, API REST (/api/v1/*, /metrics)
-├── me-60os-core/        Núcleo numérico y físico: SPA/S60, PAI-60, ResonantMatrix,
-│                        IsochronousOscillator, QHC, Guardian LSM, Dual-Lane (32 bins:
-│                        experimentos EXP-XXX, benches, daemons nativos, TUI)
-├── truthsync-core/      Motor de verificación de claims sobre energía del lattice
-├── sentinel-verifier/   Verificador de invariantes runtime (systemd --watch 15 --json)
-├── services/neural-guard/  Correlación de eventos + disparo de playbooks n8n
-├── ebpf/                Programas kernel: guardian_alpha_lsm.c (ACTIVO),
-│                        guardian_cognitive, float_detector, gamma_watchdog;
-│                        ai_guardian.c DESACTIVADO — no usar file_open ni
-│                        /sys/fs/bpf/ai_guardian
-├── quantum/             LEGADO: .py con headers LEGACY BRIDGE / MIGRADO — estudio
-└── constraints/         YATRA_SPEC.md — contrato inmutable de la aritmética
+├── sentinel-cortex/       Servidor Axum (:8000), drive continuo, ingesta eBPF,
+│                          holograma fonónico (/api/v1/lattice/hologram), métricas Prometheus
+├── me-60os-core/          Núcleo numérico S60, PAI-60, ResonantMatrix, IsochronousOscillator,
+│                          QHC, daemons nativos (qhc_agent, pai_neural_daemon, adm_agent, vid_agent)
+├── truthsync-core/        Motor de verificación de afirmaciones y mitigación de drift
+├── sentinel-verifier/     Verificador continuo de invariantes runtime (--watch 15 --json)
+├── services/neural-guard/ Correlación de eventos eBPF + orquestación de respuesta
+└── ebpf/                  Módulos kernel: guardian_alpha_lsm.c, float_detector.c,
+                           guardian_cognitive.c, tc_firewall.c, burst_sensor.c
 ```
 
-## El Problema: La Deriva del Punto Flotante
+---
 
-IEEE 754 convierte fracciones comunes en sistemas binarios (`1/3`, `1/6`, `1/12`, `1/60`) en periódicos que acumulan error de redondeo. La base-60 (sexagesimal babilónica) es divisible por 1, 2, 3, 4, 5, 6, 10, 12, 15, 20 y 30 — esas fracciones son **exactas**.
+## 🔢 Reglas de Oro de la Aritmética Core S60
 
-## Reglas de Oro de la Aritmética
+1. **Escala Base:** `SCALE_0 = 60⁴ = 12,960,000`.
+2. **Prohibición de Floats:** Ni `f32` ni `f64` en lógica de cálculo de estado o facturación; vigilado en compilación por Clippy (`forbid(float_arithmetic)`) y en runtime por `float_detector` eBPF.
+3. **No Doble-Escalar:** Distinguir entre `SPA::from_int(n)` y `SPA::from_raw(n)`. Para valores raw usar `inject_spa(x, SPA::from_raw(v))`.
+4. **Drive Continuo:** El retículo es intrínsecamente disipativo; `sentinel-cortex` inyecta pulsos armónicos cada 500ms para sostener la resonancia.
 
-Ver `constraints/YATRA_SPEC.md` y `AGENTS.md`. Resumen operativo:
+---
 
-1. **`SCALE_0 = 60⁴ = 12,960,000`** (NO 60⁶). `SPA::from_int(n)` ≠ `SPA::from_raw(n)`.
-2. **Nunca doble-escalar**: `inject()`/`transduce_pulse()` esperan enteros-unidad y re-escalan internamente; pasarles un valor ya en raw (p.ej. `to_raw()` o `entropy_s60_raw` del kernel) corrompe el dato ×12,960,000. Para valores raw usar **`inject_spa(x, SPA::from_raw(v))`**.
-3. **El lattice es disipativo**: `step()` solo disipa; el drive continuo (`sentinel-cortex/src/main.rs`, bloque 3b cada 500ms) mantiene la resonancia.
-4. Reforzado por clippy: `float_arithmetic`, `float_cmp`, `cast_possible_truncation`, `cast_precision_loss` = **forbid** en los crates numéricos; e interceptado en kernel por `float_detector.c`.
-
-## Resultados Medidos
-
-| Métrica | Valor | Fuente |
-|---|---|---|
-| Memoria por nodo (EXP-015) | 16 B vs ~377 B Python (**23.6×**) | `me-60os-core/src/bin/fpu_vs_pai_bench.rs` |
-| Throughput | ~120M nodos/s (**~3000×**) | ídem |
-| Desviación PAI vs raw | 0.000 ppm | `bench_desvio_pai.rs` |
-| Tests core | 89/89 (incl. familia anti-doble-escala 4/4) | `cargo test -p me60os --lib` |
-| Recuperación memoria cristal P0.1 | 'Yo Soy' al 100% (doble malla convergida) | `bin/resonant_lattice_memory.rs` |
-
-*Auditoría física↔código↔papers completa (2026-08-23): `personalvault/Sistemas/Auditoria_Fisica_Sentinel_2026-08-23.md`.*
-
-## Quick Start
+## ⚡ Comandos Rápidos
 
 ```bash
-# Compilar todo el workspace
+# Compilar todo el workspace en modo release
 cargo build --release
 
-# Suite de tests del núcleo numérico
+# Ejecutar suite de pruebas unitarias numéricas
 cargo test -p me60os --lib
 
-# Servidor principal (Axum :8000, drive continuo 500ms, ingesta eBPF)
-cargo run -p sentinel-cortex --bin sentinel-cortex
+# Iniciar Sentinel Cortex
+cargo run --release -p sentinel-cortex
 
-# Experimentos destacados
-cargo run -p me60os --bin resonant_lattice_memory   # memoria doble malla + SHM
-cargo run -p me60os --bin exp028_penta              # portales emergentes (68s)
+# Iniciar Verificador de Invariantes
+cargo run --release -p sentinel-verifier -- --watch 15 --json
 
-# Benchmarks
-cargo run --release -p me60os --bin fpu_vs_pai_bench
-cargo run --release -p me60os --bin bench_desvio_pai
+# Cargar módulos de seguridad eBPF en el kernel (Root)
+cd ebpf && sudo bash load.sh
 ```
 
-Requisitos eBPF (kernel hooks): Linux ≥ 5.x con BTF, root o CAP_BPF+CAP_PERFMON. Ver `ebpf/` y sus loaders.
+---
 
-## Estado y Pendientes Conocidos
+## 📄 Licencia
 
-- ✅ Migración Py→Rust completa; TUI nativa en Rust; fix doble-escala ingesta eBPF (`bc3944ee`).
-- 🔴 Abiertos (decisión de diseño pendiente): convención de `entropy_pressure` en loop térmico (P0.5), modo superconductor en ruta viva (P1.6), acoplamiento real del bombeo QHC (P1.7), wrap de fase módulo 360° (P1.8).
-- Detalles: `Pendientes.md` del vault de investigación (`~/Proyectos/personalvault`).
-
-## Licencia
-
-Apache 2.0 — ver [LICENSE](./LICENSE).
+Apache 2.0 — Ver [LICENSE](./LICENSE).
+Desarrollado por **Jaime Novoa Sepúlveda** para **Sentinel / SecurePenguin**.
