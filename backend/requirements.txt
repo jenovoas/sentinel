@@ -6,7 +6,7 @@
 # Web Framework
 fastapi==0.162.0
 uvicorn[standard]==0.24.0
-prometheus-fastapi-instrumentator==5.11.2
+prometheus-fastapi-instrumentator==8.1.0
 watchdog==4.0.0
 starlette==1.10.0
 anyio==4.14.2
