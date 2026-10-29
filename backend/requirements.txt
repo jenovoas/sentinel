@@ -19,8 +19,9 @@ requests==2.33.0
 sqlalchemy==2.0.23
 # Async extensions for SQLAlchemy
 sqlalchemy[asyncio]==2.0.23
-# PostgreSQL async driver (asyncpg - 3-5x faster than psycopg2)
+# PostgreSQL drivers: async application queries and synchronous Alembic migrations
 asyncpg==0.29.0
+psycopg[binary]==3.2.3
 # Database migrations
 alembic==1.13.0
 
