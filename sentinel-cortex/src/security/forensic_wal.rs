@@ -305,11 +305,11 @@ mod tests {
     fn test_forensic_wal_append_and_verify() {
         let temp_dir = std::env::temp_dir();
         let wal_path = temp_dir.join(format!("test_wal_{}.log", uuid::Uuid::new_v4()));
-        let key_left = uuid::Uuid::new_v4();
-        let key_right = uuid::Uuid::new_v4();
-        let mut key = [0_u8; 32];
-        key[..16].copy_from_slice(key_left.as_bytes());
-        key[16..].copy_from_slice(key_right.as_bytes());
+        let key = [
+            *uuid::Uuid::new_v4().as_bytes(),
+            *uuid::Uuid::new_v4().as_bytes(),
+        ]
+        .concat();
 
         let wal = ForensicWal::new(&wal_path, &key).unwrap();
         let rec1 = wal
