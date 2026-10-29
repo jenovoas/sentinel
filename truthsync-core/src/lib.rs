@@ -12,7 +12,6 @@ use rayon::prelude::*;
 use regex::RegexSet;
 use serde::{Deserialize, Serialize};
 use sha3::{Digest, Sha3_512};
-use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 use std::num::NonZeroUsize;
 use std::sync::LazyLock;
@@ -75,15 +74,6 @@ pub struct NodeVerificationResult<'a> {
     pub is_cascade_mitigated: bool,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct NodeVerificationResult<'a> {
-    #[serde(borrow)]
-    pub verification: VerificationResult<'a>,
-    pub node_id: String,
-    pub current_coherence: SPA,
-    pub future_coherence: SPA,
-    pub is_cascade_mitigated: bool,
-}
 #[derive(Default)]
 pub struct ClaimExtractor;
 
@@ -452,7 +442,7 @@ mod tests {
     }
 
     #[test]
-    fn test_node_verification_cascade_isolation() {
+    fn test_node_verification_uses_shared_network_cascade() {
         let mut engine = TruthSyncEngine::new();
         let t1 = SPA::new(10, 0, 0, 0, 0);
         let res_a =
@@ -461,14 +451,12 @@ mod tests {
         assert!(!res_a.verification.claims.is_empty());
         assert!(res_a.is_cascade_mitigated);
         assert!(res_a.current_coherence >= SPA::new(42, 30, 0, 0, 0));
-        assert_eq!(engine.node_cascades_len(), 1);
+        assert_eq!(engine.network_cascade().len(), 1);
 
-        let res_b = engine.verify_node_text("node-beta", "La temperatura es de 36 grados.", 42, t1);
+        let t2 = SPA::new(11, 0, 0, 0, 0);
+        let res_b = engine.verify_node_text("node-beta", "La temperatura es de 36 grados.", 42, t2);
         assert_eq!(res_b.node_id, "node-beta");
-        assert_eq!(engine.node_cascades_len(), 2);
-
-        let cascade_a = engine.node_cascade("node-alpha").unwrap();
-        assert_eq!(cascade_a.len(), 1);
+        assert_eq!(engine.network_cascade().len(), 2);
     }
 
     #[test]
@@ -484,7 +472,7 @@ mod tests {
             assert!(res.is_cascade_mitigated);
         }
 
-        let cascade = engine.node_cascade(node).unwrap();
+        let cascade = engine.network_cascade();
         assert_eq!(cascade.len(), 5);
         // Siguiente verificación se beneficia del kernel OU en cascada
         let next_ts = SPA::new(106, 0, 0, 0, 0);
@@ -501,7 +489,7 @@ mod tests {
         let t = SPA::new(50, 0, 0, 0, 0);
         let res =
             engine.verify_node_text("node-trust", "El kernel fue actualizado con éxito.", 42, t);
-        let cascade = engine.node_cascade("node-trust").unwrap();
+        let cascade = engine.network_cascade();
         let expected = res.verification.overall_trust_score * cascade.limit();
         let stored = cascade.history().get(&t).expect("registro conservado");
         assert_eq!(

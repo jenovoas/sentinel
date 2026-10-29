@@ -3,6 +3,12 @@ import fs from "fs";
 import { noStore, sessionError, validateSession } from "@/lib/server/session";
 import { hostMetricsFile } from "@/lib/server/host-metrics";
 
+function parseMetric(value: string): number | null {
+  if (value.trim() === "") return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 export async function GET(request: Request) {
   const session = await validateSession(request);
   if (!session.ok) return sessionError(session.status);

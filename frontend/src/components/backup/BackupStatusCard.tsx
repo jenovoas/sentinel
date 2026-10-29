@@ -14,38 +14,11 @@ import { useBackupStatus } from "@/hooks/useBackupStatus";
 
 export function BackupStatusCard() {
     const { status, config, refresh } = useBackupStatus();
-    const [triggeringBackup, setTriggeringBackup] = useState(false);
-
-    const handleTriggerBackup = async () => {
-        setTriggeringBackup(true);
-        try {
-            const csrfToken = document.cookie
-                .split('; ')
-                .find((cookie) => cookie.startsWith('sentinel_csrf='))
-                ?.slice('sentinel_csrf='.length);
-            const res = await fetch('/api/v1/backup/trigger', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(csrfToken ? { 'X-CSRF-Token': decodeURIComponent(csrfToken) } : {}),
-                },
-                body: '{}',
-            });
-            const data = await res.json();
-
-            if (data.status === 'success') {
-                alert('✅ Backup completed successfully!');
-                refresh(); // Refresh status
-            } else {
-                alert(`❌ Backup failed: ${data.message}`);
-            }
-        } catch (error) {
-            alert('❌ Error triggering backup');
-            console.error(error);
-        } finally {
-            setTriggeringBackup(false);
-        }
-    };
+    const backupStatusClassName = status.health === 'healthy'
+        ? 'text-emerald-400'
+        : status.health === 'warning'
+            ? 'text-amber-400'
+            : 'text-rose-400';
 
     const getHealthBadge = () => {
         const colors = {
@@ -143,8 +116,8 @@ export function BackupStatusCard() {
                         </div>
                         <div className="text-right">
                             <p className="text-sm text-gray-400">Status</p>
-                            <p className={`text-lg font-semibold ${lastBackupStatus.className}`}>
-                                {status.available ? lastBackupStatus.label : 'Not available'}
+                            <p className={`text-lg font-semibold capitalize ${backupStatusClassName}`}>
+                                {status.available ? status.lastBackupStatus : 'Not available'}
                             </p>
                         </div>
                     </div>
