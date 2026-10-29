@@ -21,6 +21,10 @@ def version_result(heads=EXPECTED_ALEMBIC_HEADS):
     return scalars(list(heads))
 
 
+def test_expected_alembic_head_is_canonical_merge_revision():
+    assert EXPECTED_ALEMBIC_HEADS == frozenset({"20261029_merge_all_heads"})
+
+
 def bootstrap_inputs(**overrides):
     return {
         "organization_slug": "acme",
