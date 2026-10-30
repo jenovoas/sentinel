@@ -15,7 +15,13 @@
 
 ## T1. Grupos SP-* + OUs tenant + cuenta delegada — `agente:infra-ad`
 
-- [ ] Crear grupos: `SP-Portal-Admins`, `SP-Guacamole-Remote`, `SP-N8N-Flows`, `SP-Mail-Enterprise`, `SP-Monitoring-View`, `SP-AI-Node`, `SP-VPN-Access`, `SP-VM-Server`, `SP-VM-Desktop`.
+- [x] Crear grupos: `SP-Portal-Admins`, `SP-Guacamole-Remote`, `SP-N8N-Flows`, `SP-Mail-Enterprise`, `SP-Monitoring-View`, `SP-AI-Node`, `SP-VPN-Access`, `SP-VM-Server`, `SP-VM-Desktop`.
+
+### Ejecución parcial T1 — 2026-10-30
+
+- Creados en Fenix los nueve grupos indicados, vacíos y de seguridad/global, en `CN=Users,DC=pinguinoseguro,DC=cl` (el contenedor predeterminado de `samba-tool group add`).
+- Verificación en vivo con `sudo -n samba-tool group show <grupo>` para cada uno: `groupType: -2147483646` (seguridad + global); no aparece atributo `member`, por lo que no tienen miembros.
+- No se asignaron permisos. OUs de tenants, usuarios piloto, cuenta delegada y reordenamiento de cuentas siguen pendientes; T1 permanece abierto.
 - [ ] Estructura: `OU=<RUT>,OU=Tenants` por cliente piloto; mover humanos tenant a su OU.
 - [ ] Crear `svc-portal-provision` con delegación **solo** sobre `OU=Tenants` (nunca Domain Admin).
 - [ ] Reordenar: `n8n`, `monitoreo` → `OU=ServiceAccounts` como `svc-n8n`, `svc-monitoreo` (UAC servicio 66048), miembros solo de su grupo `SP-*`.

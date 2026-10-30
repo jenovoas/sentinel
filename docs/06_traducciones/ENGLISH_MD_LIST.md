@@ -640,5 +640,6 @@
 | 635 | `config/openrc/README.md` | **Español** |
 | 636 | `docs/ops/CABLEADO_Y_TOPOLOGIA_CANONICA.md` | **Español** |
 | 637 | `docs/DEPLOYMENT_FENIX_KINGU.md` | **Español** |
+| 638 | `docs/ops/fase0-tareas.md` | **Español** |
 
-Total: 637 archivos
+Total: 638 archivos
