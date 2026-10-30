@@ -7,7 +7,7 @@
 
 - Corrección 2026-10-30 (operador): commit `b22835c3` registra que a las 17:55 se activó en Fenix la base restaurada desde Hercules con los siete FSMO apuntando a FENIX (auditoría multínodo:399-404). No fue transferencia en vivo (`fsmo transfer`), pero Fenix y Kingu confirman roles en Fenix. **No repetir la transferencia.**
 - Las vistas locales antiguas de hercules/ocean que se declaran PDC son datos estancados, no split-brain operativo. No bloquear T1–T4 por ellas.
-- [ ] Subtask DNS: Samba DNS de Fenix en `:5353` resuelve `kingu.pinguinoseguro.cl` → `10.88.0.2`; BIND en `:53` (resolver local de Fenix) aún devuelve NXDOMAIN y su SRV LDAP anuncia solo Fenix. Revisar vista BIND (zona/split-horizon) sin tocar sistemas remotos.
+- [x] Subtask DNS EJECUTADO 2026-10-30: kingu A 10.88.0.2 + SRV _ldap/_kerberos prioridad 10 agregados a db.pinguinoseguro.cl.internal; backup .2026-10-30; named-checkzone OK; rndc reload; dig confirma A + ambos SRV. Fenix PDC prioridad 0, Kingu BDC prioridad 10.
 - [ ] Degradar hercules/ocean a solo DNS **solo después** de validar replicación fenix↔kingu y resolver qué hacer con sus vistas locales (demote o apagado samba, BIND/PowerDNS públicos intactos).
 - [ ] Evidencia: `drs showrepl` en kingu 0 fallos inbound desde fenix; conteo usuarios = 14 en ambos; `dns1/dns2.pinguinoseguro.cl` resuelven.
 - Hallazgo DRS 2026-10-30: replicación útil fenix→kingu SANA (0 fallos). Fallo inverso kingu→fenix (`WERR_FILE_NOT_FOUND`, 40+ fallos) irrelevante: kingu no origina objetos. Causa probable DNS, no AD.
