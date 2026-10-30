@@ -75,7 +75,7 @@
 
 ---
 
-## 📦 Workspace Cargo (5 Crates Principales)
+## 📦 Workspace Cargo (5 crates Rust del workspace)
 
 ```
 sentinel/

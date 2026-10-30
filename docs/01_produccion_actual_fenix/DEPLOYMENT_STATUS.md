@@ -212,4 +212,38 @@
 2. **Daemons me-60os compilados pero no activos** — qhc_agent, adm_agent, pai_neural_daemon, vid_agent necesitan systemd enable + start.
 3. **Observabilidad solo en Fan** — Loki, Mimir, Grafana, promtail no están en laptop.
 4. **eBPF forwarder no activo en laptop** — el servicio systemd existe pero no está instalado.
-5. **La laptop no puede alcanzar Fan** (`ssh fan.local` falla en este momento) — posiblemente WG cayó temporalmente.
+5. Esta sección refleja un inventario histórico de Laptop/Fan fechado en el encabezado; no describe el estado operativo actual de Fenix.
+
+---
+
+## 9. Incidente Firewalld / backend en Fenix — 2026-10-30
+
+### Causa
+
+Al iniciar Firewalld en Fenix, el backend de Sentinel dejó de alcanzar PostgreSQL por TCP en la red Docker interna. PostgreSQL y Redis estaban saludables; el backend respondía, pero `/api/v1/health` devolvía HTTP 503 porque fallaba el chequeo de PostgreSQL. La red `sentinel_internal` usaba el bridge `br-cbd16f207701`, que no tenía zona Firewalld asignada; la política de forwarding lo bloqueaba.
+
+### Cambio aplicado
+
+Se creó y persistió la zona dedicada `sentinel-bridge`, asociada únicamente a `br-cbd16f207701`, con `target=DROP`, `forward=yes` y sin servicios ni puertos. No se modificó Compose ni el código del backend, no se reiniciaron contenedores y no se tocaron las políticas nftables DMZ de Hercules/Ocean.
+
+### Verificación y estado
+
+- `firewall-cmd --check-config` pasó y Firewalld se recargó correctamente.
+- El backend volvió a conectar por TCP con PostgreSQL; `/api/v1/health` respondió HTTP 200, PostgreSQL y Redis reportaron healthy, y Redis devolvió `PONG`.
+- `sentinel-backend` quedó `running/healthy`; Docker permaneció activo con 12 contenedores.
+- Se abrió una nueva sesión SSH a Fenix por TCP 4222 tras la recarga.
+- El bridge observado es `br-cbd16f207701`; si Docker recrea la red con otro nombre de interfaz, habrá que revisar que la asignación de zona siga cubriendo el bridge real.
+
+### Nota sobre Marte
+
+Los errores `No route to host` observados en intentos del wrapper `clip-ssh` describen esos intentos, no el acceso del usuario. Jaime indicó que estaba conectado a Marte y que el nodo usa Firewalld. No se debe inferir falta de acceso del usuario a partir de los errores del wrapper; la configuración actual de Marte queda pendiente de verificación directa en una sesión válida.
+
+## Cierre de TCP 22 por nodo — 2026-10-30
+
+La instrucción operativa es cerrar TCP 22 únicamente en nodos cuyo SSH efectivo y listener hayan confirmado TCP 4222; la Laptop no debe bloquear cambios por nodo en otros equipos. Verificación en vivo desde esta sesión: Fenix, Kingu, Hercules y Ocean usan `sshd`/listener 4222 y no escuchan en 22. Fenix Firewalld y las políticas Firewalld de Hercules, además del nftables activo de Ocean, no permiten TCP 22; no se modificaron. En Kingu, `wg0` estaba en zona `trusted` con aceptación general, así que se añadió una regla Firewalld `drop` para TCP 22 en runtime y permanente; comprobado `RUNTIME=yes`, `PERMANENT=yes`, SSH 4222 sigue escuchando. No se reinició el nodo ni se cargó nftables manualmente.
+
+La Laptop `ifenix` inicialmente confirmó SSH efectivo y listener solo en 22, así que no se cambió entonces. Jaime informó después que migró los puertos; por `10.88.0.3:4222` se confirmó kernel 7.3, `sshd` y listener únicamente en 4222, Firewalld activo y `wg0` en zona `trusted`. Se agregó una regla Firewalld `drop` de TCP 22 en runtime y permanente; ambas consultas devolvieron `yes` y 4222 siguió escuchando. No hubo reinicio. Jaime confirma acceso a Marte y pidió usar sus IP WireGuard; los intentos de esta sesión a `10.88.0.6:4222` desde Fenix, Kingu, Hercules y Ocean no llegaron (`No route to host`). Ese resultado es límite de esos intentos, no evidencia de falta de acceso de Jaime. No se cambió Marte; el estado actual de sus puertos y firewall queda sin verificación directa en esta sesión.
+
+## Alias SSH VPN en los nodos — 2026-10-30
+
+Se verificó la resolución efectiva (`ssh -G`) de `marte` (`10.88.0.6:4222`) y `laptop`/`ifenix` (`10.88.0.3:4222`) en la configuración local de Laptop y remotamente en Fenix, Kingu, Hercules y Ocean. Fenix y Kingu ya tenían esos alias; se agregaron los bloques faltantes a `~/.ssh/config` de Hercules y Ocean. Se comprobó conexión real desde Fenix al alias `laptop`: respondió `ifenix`, kernel `7.3.0-ifenix`, listener en 4222 y ninguno en 22. Firewalld confirmó la regla TCP 22 `drop` tanto runtime como permanente. Una ejecución de `sshd -T` sin privilegios reportó que no había host keys disponibles; no se usa como evidencia de configuración efectiva. Marte no se pudo modificar ni verificar desde esta sesión: `10.88.0.6:4222` respondió `No route to host`. No se cambiaron firewalls ni se reinició ningún nodo.

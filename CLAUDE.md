@@ -31,7 +31,7 @@ en Ring-0, y el puente PyO3 hacia `quantum/*.py` es **legacy** (estudio/puente d
 
 ## Arquitectura
 
-    sentinel/                        (workspace Cargo — 5 miembros)
+    sentinel/                        (workspace Cargo — 5 crates Rust; el proyecto completo incluye backend Python, frontend Next.js, eBPF, host-metrics, bci, mycnet, etc.)
     sentinel-cortex/    Crate principal: servidor Axum (:8000), drive continuo 500ms,
                         ingesta eBPF, LiquidLattice 3x3, TruthSync, API /api/v1/*
       src/math/         Aritmética entera pura (tipo S60, suma/resta/mult/div/cmp)
@@ -81,7 +81,7 @@ Antes de adjuntar Guardian/eBPF en Kingu, poblar y verificar la whitelist de eje
 
 ## Compilación
 
-    # Compilar todo el workspace (5 crates)
+    # Compilar todo el workspace Rust (5 crates)
     cargo build --release
 
     # Suite de tests del núcleo numérico
