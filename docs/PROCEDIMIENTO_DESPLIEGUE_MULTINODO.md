@@ -6,13 +6,19 @@ Este procedimiento aplica a `main` y al entorno systemd:
 
 - **Fenix (`10.88.0.1`)**: build, Docker Compose, FastAPI, Cortex, PostgreSQL y Redis.
 - **Kingu (`10.88.0.2`)**: Next.js bajo systemd, Nginx y TLS público.
-- **Marte**: nodo de origen de la capa de seguridad y monitoreo; sus eventos deben llegar al backend privado de Fenix. Su IP/ruta VPN se confirma en el preflight, no se presupone.
+- **Marte (`10.88.0.6`)**: nodo de origen para la capa Sentinel de seguridad y monitoreo; sus eventos deben llegar al backend de Fenix (`10.88.0.1`) por WireGuard.
 - **WireGuard (`10.88.0.0/24`)**: transporte privado entre nodos. Los puertos FastAPI/Cortex/n8n se publican en la IP WireGuard de Fenix; `DOCKER-USER` debe limitar cada origen y puerto explícitamente autorizado.
 - **Hercules/DNS**: solo se modifica si el alcance incluye explícitamente un cambio DNS.
 
 No mezclar con `alpine_fenix`/OpenRC. No activar Guardian/eBPF ni enforcement como parte implícita del despliegue de la aplicación; su whitelist y recuperación fuera de banda tienen un preflight separado.
 
 SOMA (`soma_orchestrator`/`soma_worker`) queda fuera de este despliegue hasta autorización específica. `qhc-agent` es un servicio independiente requerido por Cortex; utiliza `/run/soma/qhc.sock` como ruta IPC, pero no inicia ni necesita la orquestación SOMA.
+
+### Perfil operativo conocido de Marte
+
+La memoria persistente registra para Marte Debian 13 amd64, kernel `7.3.0-ifenix` activo y administración SSH por TCP 4222 (sin listener SSH 22 en la verificación del 2026-10-30). También registra una intervención para instalar Firewalld 2.3.1; la configuración vigente de zonas/reglas de Marte no fue verificada directamente en esta auditoría Sentinel. Jaime confirmó que tiene acceso al nodo y que usa Firewalld. Un `No route to host` observado desde otra ruta/host describe ese intento, no demuestra indisponibilidad global de Marte.
+
+El rol previsto es ejecutar allí el sensor/monitor Sentinel en modo auditoría y transportar eventos hacia Fenix por `10.88.0.1:8000`; FastAPI ofrece `POST /api/v1/cortex/events` con contrato `event_type`, `source`, `data` y autenticación `X-Sentinel-Token`. Antes de declarar el flujo listo, confirmar desde Marte el transporte WireGuard, la recepción, persistencia/decisión del evento y las reglas efectivas de Firewalld en Marte y Fenix. El token se provisiona por canal seguro y no se incluye en logs, argumentos o bundles.
 
 ### Mapa funcional y criterio de aceptación
 
@@ -54,8 +60,8 @@ Antes de cambiar un nodo, registrar:
    ```
 
    Detenerse si la rama no es `main`, el árbol no está limpio o la versión objetivo no está publicada.
-2. Confirmar SSH por el puerto operativo 4222 a ambos nodos y que Fenix conserva una ruta de recuperación independiente antes de tocar firewall, SSH, WireGuard o entrada pública.
-3. Registrar en cada nodo (Fenix, Kingu y Marte si está en alcance): fecha UTC, hostname, OS/runtime, interfaces y rutas WireGuard, espacio libre, estado de Nginx/systemd/Firewalld y servicios Sentinel. Para Marte confirmar IP de origen y ruta privada real hacia Fenix.
+2. Confirmar SSH por el puerto operativo 4222 a Fenix y Marte, y que Fenix conserva una ruta de recuperación independiente antes de tocar firewall, SSH, WireGuard o entrada pública.
+3. Registrar en cada nodo (Fenix, Kingu y Marte): fecha UTC, hostname, OS/kernel/runtime, interfaces y rutas WireGuard, espacio libre, estado de Nginx/systemd/Firewalld y servicios Sentinel. En Marte confirmar que corresponde a `10.88.0.6`, que el peer de WireGuard está activo y que llega a `10.88.0.1`; los registros conocidos de Debian 13/kernel 7.3/SSH 4222 son contexto previo, no sustituyen esta lectura en vivo.
 4. En Fenix, registrar contenedores, etiquetas Compose, imágenes/digests, bindings y redes. Comparar el estado real con `docker-compose.fenix.yml`; no inferir propiedad por el nombre de un puerto. Identificar qué contenedor escucha en cada puerto.
 5. Guardar el head de Alembic y confirmar backup reciente/restore probado antes de cualquier migración o cambio de datos. No leer ni imprimir archivos de secretos.
 6. Verificar reglas efectivas `DOCKER-USER`/nftables y sus contadores. Las reglas `INPUT` o la zona Firewalld por sí solas no prueban aislamiento de puertos DNAT de Docker.

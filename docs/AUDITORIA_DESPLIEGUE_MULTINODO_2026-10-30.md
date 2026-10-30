@@ -65,9 +65,18 @@ Verificación directa por SSH a Fenix y Kingu entre 04:08 y 04:21 UTC:
 | Dual Lane | Hay implementación Python/Rust, WAL y pruebas/benchmarks. | No se comprobó una ruta de producción conectando eventos de Marte a ambas lanes con evidencia y observabilidad. |
 | eBPF/Guardian | El bridge está en el código Cortex; no se encontraron programas/mapas Sentinel activos en Fenix. | Capa local Marte pendiente. Preflight obligatorio de whitelist/rutas críticas y recuperación fuera de banda; enforcement requiere autorización separada. |
 | Frontend | Kingu sirve Next.js; handlers BFF en `frontend/src/lib/server/*` mantienen sesión/CSRF y reenvían a Fenix. El visualizador de lattice consume `/api/v1/lattice/hologram` por el BFF. | Frontend pequeño frente al backend; validar estado funcional autenticado y errores de upstream, sin exponer APIs al navegador. |
-| Marte → Fenix | No desplegado en esta sesión. | `ssh marte` resuelve `10.88.0.6:4222`, pero la conexión devolvió `No route to host`. Confirmar ruta/peer y el IP real antes de tocar firewall o instalar. |
+| Marte → Fenix | Rol previsto: sensor Sentinel en Marte (`10.88.0.6`) → backend Fenix (`10.88.0.1`) por WireGuard. No se verificó ni completó desde esta sesión. | Un intento SSH desde esta ruta devolvió `No route to host`; notas operativas previas registran que Jaime accedió a Marte por SSH 4222 y confirmó Firewalld. Ese fallo no significa que Marte esté globalmente inaccesible. Revalidar por la ruta administrativa de Jaime. |
 
-FastAPI incluye `POST /api/v1/cortex/events`, autenticado con `X-Sentinel-Token`, como candidato existente para eventos remotos. Aún no se verificó desde Marte ni se configuró su secreto allí. La unidad `sentinel-ebpf-forwarder.service` solo ejecuta `bpftool prog tracelog` a un log local; no prueba envío a Fenix. En Fenix, `SENTINEL-DOCKER-USER` observado permite API 8000/8001 solo desde Kingu; la política tendría que autorizar explícitamente la IP WireGuard de Marte y solo los puertos necesarios.
+### Perfil y estado de Marte
+
+- La memoria operativa registra Marte (`10.88.0.6`) con Debian 13 amd64, kernel `7.3.0-ifenix` activo y SSH administrativo en TCP 4222, sin listener en 22 en la verificación del 2026-10-30. También registra la instalación de Firewalld 2.3.1 como parte de una intervención en Fenix/Marte.
+- En la continuación de esa auditoría se dejó explícito que el estado de firewall/puertos de Marte no se pudo volver a verificar directamente desde esa ruta; Jaime confirmó que él estaba conectado a Marte y que el host usa Firewalld. Para esta tarea Sentinel no se inspeccionaron en vivo `firewalld`, `wg0`, whitelist, mapas/programas BPF ni servicios de seguridad en Marte.
+- Por ello, el estado de Sentinel Guardian/eBPF y del forwarder en Marte es **no verificado**; no se afirma que estén instalados, activos o ausentes. La capa Sentinel de Marte no se aplicó en esta sesión.
+- El alias local `marte` resuelve a `10.88.0.6:4222`, pero el SSH ejecutado desde esta sesión recibió `No route to host`. Es un límite de esta ruta de ejecución, no evidencia de que Jaime carezca de acceso ni de que el nodo esté apagado.
+- El backend Fenix ya incluye `POST /api/v1/cortex/events` con cuerpo `event_type`, `source`, `data`, y cabecera `X-Sentinel-Token`. Se propone como destino de eventos remotos, sujeto a probar compatibilidad del evento eBPF, autenticación, respuesta/persistencia y análisis en DB. El secreto no se distribuyó.
+- `sentinel-ebpf-forwarder.service` actual ejecuta `bpftool prog tracelog` y escribe localmente; por sí solo no reenvía eventos a Fenix. Hace falta configurar o implementar un forwarder remoto verificable. También se debe comprobar en vivo el firewall actual de Fenix: la política observada en la auditoría previa limitaba los puertos API a Kingu, pero luego hubo intervención de Firewalld; no agregar reglas hasta revisar su estado efectivo.
+
+La meta de arquitectura queda explícita: **Marte ejecuta la capa local de seguridad/monitoreo y envía los eventos al backend central de Fenix (`10.88.0.1`)**. Kingu continúa alojando el frontend; Fenix conserva FastAPI/Cortex, datos y QHC compartido. No distribuir el backend a Marte.
 
 ## Análisis funcional del frontend
 
@@ -87,7 +96,7 @@ La imagen previa sigue disponible. Si la nueva versión presenta una regresión,
 
 ## Pendientes antes de aceptar el despliegue integral
 
-1. Resolver conectividad SSH/WireGuard de Marte y confirmar identidad, sistema y ruta efectiva antes del preflight local.
+1. Usar la ruta administrativa confirmada por Jaime para inspeccionar Marte en vivo: identidad/hostname, Debian/kernel activo, SSH 4222, WireGuard hacia `10.88.0.1`, Firewalld/zona/interfaz/reglas, whitelist y servicios Sentinel. El error `No route to host` de esta sesión no es un diagnóstico global del nodo.
 2. Diseñar y probar el forwarder autenticado Marte→`POST /api/v1/cortex/events`, definir custodia del secreto y permitir solo la IP/puertos requeridos en firewall. Aceptar eventos con ID/confirmación y visibilidad en la lane/WAL correspondiente.
 3. Completar preflight de whitelist y rutas críticas y comprobar recuperación fuera de banda en Marte antes de ejecutar el bootstrap que adjunta Guardian en auditoría. Enforcement sigue requiriendo autorización separada.
 4. Verificar contrato MyCNet↔QHC desde el despliegue de MyCNet; no inferirlo de la salud de Sentinel.
@@ -95,4 +104,4 @@ La imagen previa sigue disponible. Si la nueva versión presenta una regresión,
 6. Definir y probar publicación del tick DTC por SHM; hoy las constantes están pero no el objeto compartido.
 7. Revisar headers TLS de Sentinel y backups/restauración antes de declarar cierre de producción. La advertencia TLS duplicada pertenece a otro vhost y requiere cambio separado.
 
-**Estado operativo actualizado:** frontend y APIs accesibles; contenedores core saludables; Cortex nuevo y persistente desplegado; QHC activo y visto por Cortex; autenticación humana pendiente; capa Marte no desplegada por falta de ruta de red. No se declara «despliegue integral Sentinel completado».
+**Estado operativo actualizado:** frontend y APIs accesibles; contenedores core saludables; Cortex nuevo y persistente desplegado; QHC activo y visto por Cortex; autenticación humana pendiente. La capa Sentinel en Marte no se instaló en esta sesión; la ruta desde este agente dio `No route to host`, mientras la memoria registra que Jaime accedió al nodo por SSH 4222. No se declara «despliegue integral Sentinel completado».
