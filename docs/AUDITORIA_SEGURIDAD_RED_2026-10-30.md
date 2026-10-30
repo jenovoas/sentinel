@@ -18,9 +18,9 @@ Lectura de Firewalld/nftables, interfaces y listeners en Hercules (`10.88.0.4`) 
 
 ## Corrección del diseño AD/DNS — 2026-10-30
 
-La captura anterior es evidencia del estado observado, no del diseño deseado. Jaime aclara que Hercules y Ocean deben prestar **solo DNS público/externo** desde la DMZ; no deben alojar Samba AD ni cumplir roles PDC/BDC. El dominio AD/Samba interno debe residir en Fenix y Kingu.
+La captura anterior es evidencia del estado observado, no del diseño deseado. El diseño objetivo es **Fenix como PDC de Samba AD** y **Kingu como DC secundario**; Hercules y Ocean deben prestar **solo DNS público/externo autoritativo** desde la DMZ, sin Samba AD ni roles PDC/BDC. El dominio AD/Samba interno reside en Fenix y Kingu.
 
-Verificación de solo lectura posterior por SSH: Fenix y Kingu tienen BIND activo y no muestran `samba-ad-dc`, `samba`, `smbd`, `nmbd` ni `winbind` activos; Hercules y Ocean sí tienen `samba-ad-dc` activo, con `server role=active directory domain controller`, `realm=PINGUINOSEGURO.CL`, `workgroup=PINGUINOSEGURO` y NetBIOS `HERCULES`/`OCEAN`. No se realizó cambio de runtime. Existe una brecha entre estado y diseño: planificar migración de AD y DNS interno a Fenix/Kingu, validar replicación, autenticación, resolución y contingencia, y retirar Samba AD de Hercules/Ocean solo después de aceptar la migración. No abrir servicios AD en la DMZ.
+Verificación de solo lectura posterior por SSH: Fenix y Kingu tienen BIND activo y no muestran `samba-ad-dc`, `samba`, `smbd`, `nmbd` ni `winbind` activos; Hercules y Ocean sí tienen `samba-ad-dc` activo, con `server role=active directory domain controller`, `realm=PINGUINOSEGURO.CL`, `workgroup=PINGUINOSEGURO` y NetBIOS `HERCULES`/`OCEAN`; `samba-tool fsmo show` sitúa el FSMO en Hercules. No se realizó cambio de runtime. Existe una brecha entre estado y diseño: migrar AD y DNS interno a Fenix (PDC) y Kingu (DC secundario), validar replicación, autenticación, resolución y contingencia, y retirar Samba AD de Hercules/Ocean solo después de aceptar la migración. No abrir servicios AD en la DMZ.
 
 ## Hallazgos complementarios del inventario conocido
 
@@ -62,7 +62,7 @@ El alcance observado son los seis nodos conocidos y una prueba de puertos desde 
 - La prueba de relay desde iFenix a `64.176.8.191:25` aceptó `MAIL FROM` y `RCPT TO` hacia un dominio externo sin autenticación. Causa: el proxy presenta `10.88.0.2` como cliente y Postfix lo considera confiable por `mynetworks = 127.0.0.0/8, 10.88.0.0/24`; `smtpd_relay_restrictions` incluye `permit_mynetworks`.
 - Se deshabilitó el stream (`/etc/nginx/stream.d/mail.conf.disabled-20261030`), se cerraron `25/465/587/993` en Kingu (Firewalld y Vultr) y se retiraron las reglas de Fenix `wgmesh` para Kingu. Verificado: puertos de Kingu cerrados desde iFenix; `64.176.28.233:25` sigue abierto; relay por Kingu bloqueado.
 - Conclusión: Nginx stream sin PROXY protocol no es apto para este Postfix. Alternativas seguras: gateway Postfix en Kingu, o Nginx stream con PROXY protocol más `smtpd_upstream_proxy_protocol=haproxy` y el equivalente en Dovecot.
-- Samba AD: los DC activos son Hercules y Ocean (`samba-ad-dc` activo, forest `pinguinoseguro.cl`); Kingu no tiene Samba instalado/activo, solo BIND en `53`.
+- Samba AD: diseño objetivo Fenix PDC y Kingu DC secundario; Hercules/Ocean solo DNS público en DMZ. Runtime 2026-10-30: FSMO en Hercules; `samba-ad-dc` activo en Hercules y Ocean; Fenix/Kingu sin Samba, solo BIND en `53`. Migración pendiente.
 
 ## Gateway de correo con PROXY protocol — 2026-10-30
 
