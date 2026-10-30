@@ -5,10 +5,12 @@
 
 ## T0. Degradar hercules/ocean a solo DNS — `agente:infra-ad`
 
+- [ ] Subtask previo: `kingu.pinguinoseguro.cl` NXDOMAIN desde fenix (resolv.conf 127.0.0.1 sin dominio). Arreglar resolución; no es bloqueante.
 - [ ] `samba-tool domain demote` en **ocean** primero; verificar nada se rompe (kingu replica con fenix, Guacamole contra fenix).
 - [ ] `samba-tool domain demote` en **hercules**; confirmar FSMO únicos en fenix (`samba-tool fsmo show`).
 - [ ] Dejar BIND/PowerDNS públicos; verificar `dns1/dns2.pinguinoseguro.cl` resuelven.
-- [ ] Evidencia: `drs showrepl` fenix↔kingu sano, conteo usuarios = 14 en ambos.
+- [ ] Evidencia: `drs showrepl` en kingu 0 fallos inbound desde fenix; conteo usuarios = 14 en ambos.
+- Hallazgo 2026-10-30: replicación útil fenix→kingu SANA (0 fallos, Last success 21:22 UTC). Fallo inverso kingu→fenix (`WERR_FILE_NOT_FOUND`, 40+ fallos, éxito nunca) irrelevante: kingu no origina objetos. Causa: DNS, no AD.
 - Entregable: nota en `docs/ops/` + entrada vault.
 
 ## T1. Grupos SP-* + OUs tenant + cuenta delegada — `agente:infra-ad`
