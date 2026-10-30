@@ -66,10 +66,22 @@ ssh fenix 'sudo -n samba-tool domain level show'   # PDC
 
 # 3.5 Firewall efectivo ANTES de agregar reglas
 ssh fenix 'sudo -n firewall-cmd --get-active-zones; sudo -n firewall-cmd --get-policies'
-# Zonas existentes: guac-internal (172.25.0.0/16, DROP+forward), guac-edge. No duplicar.
 ```
 
 Si cualquier preflight falla: **detener, diagnosticar, no desplegar encima.**
+
+## 3.6 Zonas firewalld Fenix — diseño final (verificado 2026-10-30)
+
+| Zona | Sources | Forward | Propósito |
+|---|---|---|---|
+| `guac-internal` | `172.25.0.0/16` | yes | Red interna Guacamole (DB). DROP por defecto, solo forwarding gestionado |
+| `guac-edge` | `172.26.0.0/16 172.27.0.0/16` | no | Sesiones guacd→destinos. DROP, egress por rich rules puntuales, no forward global |
+| `ad-ldap` | `172.21/16 172.23/16 172.24/16` | — | Contenedores que autentican LDAPS contra Fenix |
+| `sentinel-bridge` | `br-cbd16f207701` | — | Bridge contenedores Sentinel |
+| `wgmesh` | `wg0` | — | Mesh WireGuard 10.88.0.0/24 |
+| `public` | `enp1s0` (default) | — | Solo :80/:443 edge, resto DROP |
+
+No crear más zonas sin registrar aquí.
 
 ---
 
