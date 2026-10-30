@@ -274,6 +274,17 @@ El endpoint `/api/v1/health` confundía el proceso legacy local `watchdog_servic
 
 **Resultado:** se eliminó la afirmación falsa `unprotected` para un componente remoto que el endpoint de Fenix no consulta. El estado real de Guardian sigue acreditado por las verificaciones Marte→Fenix anteriores; este health no lo vuelve a sondear.
 
+## Truth Core Cortex: abstención hasta disponer de evidencia — 2026-10-30
+
+La inspección del código activo encontró una segunda ruta de score engañoso además del FastAPI TruthSync ya corregido:
+
+- `truthsync-core/src/lib.rs` extrae frases con patrones regex y asigna scores fijos 0.95/0.70; el score global proviene del primer byte de SHA3-512 (`digest[0]/255`) menos una penalización por frases de una lista. No consulta ni adjunta fuentes que respalden/refuten el claim, ni calibra la probabilidad. El bench de un millón de claims mide throughput/latencia, no validez factual.
+- Cortex exponía ese resultado en `/api/v1/ai/query` como `certified` y en `/api/v1/truth_claim` como `claim_valid`; también anunciaba `truthsync=active` en `/api/v1/ai/health`. Se corrigió en `ed5cfc8e`: las consultas normales devuelven HTTP 503 con verificación `unavailable`, score nulo y sin certificación. Los patrones críticos/semánticos siguen bloqueándose (403) y escribiéndose al WAL. El health Cortex ahora reporta TruthSync `unavailable`; el motor de score se quitó del estado del binario servidor. No se eliminó el código experimental ni el uso aislado en herramientas.
+- Build validado con `cargo fmt --check`, `cargo check --locked --package sentinel-cortex --bin sentinel-cortex` y empaquetado release en Fenix. Imagen desplegada `sentinel-cortex:ed5cfc8e`, digest `sha256:c72d25c48bd38c3db233937e26b37c18b630d83c95461032d4261729476ee78b`; contenedor `running/healthy`. Solo se recreó Cortex. Backend `sentinel-backend:cb9a4ba6`, PostgreSQL y Redis permanecieron healthy; `/etc/sentinel/backend.env` siguió `root:docker 0640`.
+- Logs posteriores muestran `QHC=true`, pero los ticks NPU siguen `Valid=false`, `Coherence=false`. La mejora de honestidad del Truth Core no restaura scoring ni NPU.
+
+**Límite de verificación:** no se probó una sesión humana aprobada contra las rutas Cortex protegidas; no se generó ni usó un token para ese fin. La imagen y health fueron comprobados en vivo; la respuesta de las rutas se verifica por código/compilación, pendiente de aceptación funcional con una sesión autorizada.
+
 ## Separación del QHC, el runtime de mallas y el reloj — 2026-10-30
 
 La revisión de `Experimentos/EXP_027_YHWH_PULSE_MONITOR.md`, la nota `Experimentos/qm_rev_EXP001_vs_timecrystal.md` de la vault y el código Rust distingue tres rutas que antes aparecían agrupadas como “cristal de tiempo”:
