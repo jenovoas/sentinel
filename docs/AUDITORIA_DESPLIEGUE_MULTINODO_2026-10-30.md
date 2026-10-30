@@ -324,3 +324,15 @@ Tras el restart, Alloy leyó y envió 105.449 entradas de journal; `loki_write_b
 Una captura nueva corrige la observación previa del preflight: `sentinel-frontend.service` sí está `active/running` en Kingu (`10.88.0.2`) desde el 29 de octubre 15:31 UTC. Su release activa es `/opt/sentinel/frontend/releases/96043b54`; Node sirve solo en `127.0.0.1:3001` y `GET /` respondió HTTP 200. No se alteró este servicio.
 
 La GUI nativa Tauri sigue pendiente: no apareció proceso Tauri ni paquete `.AppImage`, `.deb`, `.msi`, `.exe` o `.dmg` dentro de `/opt/sentinel`. Esto no inspecciona posibles instalaciones manuales por usuario fuera de esa ruta. La distribución Tauri queda asignada a Kingu como presentación que consume el BFF autenticado; el prototipo histórico mock no está listo para instalar y no se ejecutará como servicio headless.
+
+## Verificación del filtro integrado SCV/entropía — 2026-10-30
+
+La inspección del call graph corrige una ambigüedad del procedimiento: el código SCV no está conectado al servicio de seguridad desplegado.
+
+- `ScvEngine::analyze`/`verify` se invoca desde `me-60os-core/src/soma_orchestrator.rs`; `GuardianLsm` que contiene otro `ScvEngine` se construye desde ese orquestador. Esa ruta depende de SOMA, excluido del despliegue.
+- `EntropicFirewall::verify` se invoca desde `me-60os-core/src/bci.rs`, sin consumidor en el proceso Gateway/Cortex revisado. `LfmSecurityPipeline` se construye en `sentinel-cortex/src/bin/sentinel_cortex_tui.rs`; el TUI no es el servicio backend activo.
+- `sentinel-security-gateway` aplica `AIOpsSemanticFirewall` y `TelemetrySanitizer`, pero no importa SCV/`EntropicFirewall`. Por tanto la sanitización AIOps desplegada en Marte no equivale al filtro integrado de entropía que Jaime describió.
+- El instalador eBPF empaqueta `guardian_cognitive.o` a partir de `guardian_cognitive.c`; esa fuente fija `cortex.entropy_signal=0`. `ai_guardian.c` contiene otra función de cálculo, pero no es el objeto instalado. No alimentar el filtro con ese cero ni presentar el archivo antiguo como productor activo.
+- `EntropicFirewall::verify_text` en `scv.rs` usa un rango estricto de 2–6 bits, mientras `ScvEngine::analyze` exceptúa texto menor a 5 bytes. No se encontró en las notas de experimentos consultadas validación de ese umbral para los registros estructurados del Guardian.
+
+**Estado operativo:** capa integrada de seguridad/entropía pendiente de despliegue efectivo en Marte; AIOpsShield/TelemetrySanitizer sí están activos. Se debe establecer desde la investigación la fuente/semántica del valor de entropía y el contrato/umbral antes de conectarlo al gateway. El Truth Core/pod de scoring de contenido sigue siendo otra brecha separada. Esta revisión no cambió código ni runtime.
