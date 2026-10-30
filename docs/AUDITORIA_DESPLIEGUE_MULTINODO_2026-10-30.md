@@ -251,3 +251,15 @@ El inventario de `sentinel-cortex/` contiene 53 archivos `.rs` y 11.769 líneas 
 El código vivo sigue fijando `current_truth=58/60`; `GpuController` regula un batch usando latencia local, pero el resultado solo se escribe con nivel `trace` y no llega a carga GPU/inferencia identificada. No se fabricó una medida TruthSync ni se conectó un workload por esta continuación.
 
 **Siguiente bloque de implementación:** recuperar una fuente de pulso humano real y autorizada para NPU; definir un contrato de tiempo común sobre WireGuard; reconstruir el Truth Core con evidencia y abstención cuando no existan fuentes fiables. No se inspeccionó MyCNet ni se cambió su runtime.
+
+## Seguimiento de GUI Tauri para Kingu — 2026-10-30
+
+La GUI administrativa Tauri queda asignada a Kingu como componente de presentación, consumiendo el BFF/API autenticado de Fenix. No se instaló ni se desplegó una aplicación Tauri en Kingu durante esta auditoría.
+
+- El árbol actual no contiene `gui/src-tauri`; Git confirma que el prototipo fue retirado en `0c5780f7`. El manifest recuperado desde su padre usa Tauri 1.6, Svelte 4 y Vite 5, de modo que es una base histórica y sus dependencias/build no se deben asumir compatibles con el toolchain actual.
+- `gui/src/routes/+page.svelte` del prototipo asigna métricas iniciales constantes y luego genera `entropy`/`tte` con `Math.random()` cuando corre en navegador. La interfaz puede, por tanto, mostrar datos aparentes sin telemetría.
+- `gui/src-tauri/src/main.rs` documenta que `execute_semantic_command` está simulado y devuelve aprobación fija (`LSM`, `TTE: 3.23us`) sin ejecutar SemSH. No debe habilitarse como terminal de administración.
+- `get_system_vector` abre `/var/run/sentinel/truthsync_shm`, lee 32 bytes y decodifica tres `f64` little-endian. Ese layout/ruta no se ha cotejado con un productor SHM desplegado, y no coincide por sí mismo con la telemetría autenticada del BFF. El fallback a ceros tampoco separa “sin dato” de medición cero.
+- Próxima etapa para Kingu: recuperar el prototipo como trabajo aislado; reemplazar comandos mock por consultas permitidas al BFF y autenticadas mediante la sesión del usuario; definir un contrato de telemetría con timestamp/estado de frescura; retirar SHM local y cualquier credencial embebida; actualizar dependencias Tauri/Svelte; producir bundle reproducible y verificar firma/hash antes de instalar.
+
+**Estado:** destino arquitectónico confirmado (Kingu); artefacto no recuperado ni listo para instalación. No se modifica el runtime de Kingu con esta nota.
