@@ -20,7 +20,7 @@ SOMA (`soma_orchestrator`/`soma_worker`) queda fuera de este despliegue hasta au
 |---|---|---|
 | FastAPI, PostgreSQL, Redis | Backend de Sentinel en Fenix | Contenedores saludables; migración en head; APIs privadas alcanzables desde pares permitidos. |
 | Cortex Rust | Backend de Sentinel en Fenix | Imagen fijada por SHA, `/health`, logs y endpoints autenticados validados. |
-| QHC | Servicio compartido local en Fenix para Sentinel y MyCNet | `sentinel-qhc-agent` activo; socket legible como UID/GID 1000; snapshot reciente; Cortex reporta `QHC=true`. Verificar por separado el consumidor MyCNet en su propio despliegue. |
+| QHC | Servicio compartido local en Fenix para Sentinel y MyCNet | `sentinel-qhc-agent` activo; probar `SNAPSHOT` con la identidad de Cortex y la de MyCNet; snapshot reciente; Cortex reporta `QHC=true`. La conectividad del socket no sustituye verificar el consumidor de cada aplicación. |
 | Matriz/cristales, memorias SHM y dual lane A/B | Runtime Cortex en Fenix | `CrystalRuntime` activo, SHM de ambas lanes y semillas presentes, sincronizaciones crecientes y checkpoint persistente. |
 | Cristal isocrónico DTC | Runtime Cortex en Fenix | Tick DTC observable y contrato IPC probado. Las constantes actuales de SHM no bastan: el runtime debe crear/actualizar el objeto DTC compartido. |
 | PAI-60 | Biblioteca/camino de inyección Cortex | Confirmar conversión y amplitud desde el camino activo; mantener la escala acordada y no inferirla desde benchmarks. |
