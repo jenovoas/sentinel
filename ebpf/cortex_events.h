@@ -45,6 +45,9 @@
 #define EVENT_MATH_DIVERSION        19 /* Desvío de cálculo decimal hacia PAI-60 */
 
 #define EVENT_GODMODE_INSERT        20 /* UID añadido a god_mode_uids */
+#define EVENT_FILE_WOULD_BLOCK       21 /* AI Guardian auditó una denegación potencial */
+#define EVENT_EXEC_WOULD_BLOCK       22 /* AI Guardian auditó una denegación potencial */
+#define EVENT_FLOAT_WOULD_BLOCK      23 /* Float Detector auditó una denegación potencial */
 
 
 /* ─── Códigos de peer Guardian (reservado[0] del cortex_event) ─────────────── */

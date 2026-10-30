@@ -97,6 +97,11 @@ impl EbpfBridge {
             16 => "GAMMA_INCONSISTENCY".to_string(),
             17 => "GAMMA_PEER_UNLOADED".to_string(),
             18 => "GAMMA_HEARTBEAT".to_string(),
+            19 => "MATH_DIVERSION".to_string(),
+            20 => "GODMODE_INSERT".to_string(),
+            21 => "FILE_WOULD_BLOCK".to_string(),
+            22 => "EXEC_WOULD_BLOCK".to_string(),
+            23 => "FLOAT_WOULD_BLOCK".to_string(),
             _ => "UNKNOWN".to_string(),
         };
 

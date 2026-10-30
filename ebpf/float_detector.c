@@ -9,9 +9,7 @@
  *   - Binario en float_block_map (value=1) → block + evento
  *   - Binario desconocido                  → allow + evento (log-only)
  *
- * El modo log-only permite poblar la whitelist en producción sin
- * interrumpir el sistema. Una vez estabilizado, se puede endurecer
- * cambiando FLOAT_ENFORCE_UNKNOWN a 1.
+ * El modo de auditoría permite recopilar señales sin interrumpir el sistema.
  *
  * Emite cortex_event (32 bytes) compatible con ebpf_cortex_bridge.rs.
  * event_type = EVENT_FLOAT_CONTAMINATION (10).
@@ -29,10 +27,16 @@
 #define EACCES 13
 #endif
 
-/* Endurecer política: si está en 1, binarios desconocidos son bloqueados.
- * Por defecto 0 = log-only (recomendado hasta que la whitelist esté poblada).
- */
+/* Los bloqueos requieren activar explícitamente float_detector_mode. */
 #define FLOAT_ENFORCE_UNKNOWN 0
+
+/* 0 = auditoría (valor inicial seguro); 1 = aplicar blacklist explícita. */
+struct {
+    __uint(type, BPF_MAP_TYPE_ARRAY);
+    __uint(max_entries, 1);
+    __type(key, __u32);
+    __type(value, __u32);
+} float_detector_mode SEC(".maps");
 
 /* Whitelist de binarios S60-safe (auditados, sin uso de FPU problemático). */
 struct {
@@ -84,6 +88,13 @@ emit_event(__u32 pid, __u8 severity)
     bpf_ringbuf_submit(e, 0);
 }
 
+static __always_inline __u32 float_detector_enforcing(void)
+{
+    __u32 key = 0;
+    __u32 *mode = bpf_map_lookup_elem(&float_detector_mode, &key);
+    return mode && *mode == 1;
+}
+
 static __always_inline void
 emit_math_diversion(__u32 pid, __u64 payload_signal, __u8 severity)
 {
@@ -111,6 +122,7 @@ int BPF_PROG(float_detector, struct linux_binprm *bprm, int ret)
         return ret;
 
     __u32 pid = bpf_get_current_pid_tgid() >> 32;
+    __u32 enforcing = float_detector_enforcing();
     const char *filename = BPF_CORE_READ(bprm, filename);
 
     char key[256] = {0};
@@ -119,6 +131,21 @@ int BPF_PROG(float_detector, struct linux_binprm *bprm, int ret)
     /* 1. Blacklist explícita — bloqueo inmediato */
     __u8 *blocked = bpf_map_lookup_elem(&float_block_map, key);
     if (blocked && *blocked) {
+        if (!enforcing) {
+            struct cortex_event *e;
+            e = bpf_ringbuf_reserve(&events, sizeof(*e), 0);
+            if (e) {
+                __builtin_memset(e, 0, sizeof(*e));
+                e->timestamp_ns = bpf_ktime_get_ns();
+                e->event_type = EVENT_FLOAT_WOULD_BLOCK;
+                e->pid = pid;
+                e->entropy_signal = (__u64)SEVERITY_CRITICAL * S60_SCALE_0;
+                e->severity = SEVERITY_CRITICAL;
+                e->reserved[0] = GUARDIAN_CODE_FLOAT;
+                bpf_ringbuf_submit(e, 0);
+            }
+            return 0;
+        }
         emit_event(pid, SEVERITY_CRITICAL);
         bpf_printk("FloatDetector [BLOCK]: contaminated %s", filename);
         return -EACCES;

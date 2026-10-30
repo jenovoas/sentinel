@@ -57,6 +57,14 @@ struct {
     __type(value, __u64);
 } stats_map SEC(".maps");
 
+/* 0 = auditoría (valor inicial seguro); 1 = aplicar las denegaciones. */
+struct {
+    __uint(type, BPF_MAP_TYPE_ARRAY);
+    __uint(max_entries, 1);
+    __type(key, __u32);
+    __type(value, __u32);
+} ai_guardian_mode SEC(".maps");
+
 #define STAT_CHECKS 0
 #define STAT_BLOCKS 1
 #define STAT_ALLOWS 2
@@ -105,7 +113,8 @@ static __always_inline void send_cortex_event(
     __u32 event_type,
     __u32 pid,
     __u64 entropy_signal,
-    __u8 severity)
+    __u8 severity,
+    __u32 mode)
 {
     struct cortex_event *e;
     
@@ -122,8 +131,17 @@ static __always_inline void send_cortex_event(
     e->pid = pid;
     e->entropy_signal = entropy_signal;
     e->severity = severity;
+    e->reserved[0] = GUARDIAN_CODE_AI;
+    e->reserved[1] = mode ? 1 : 0; /* 1=enforcement activo */
     
     bpf_ringbuf_submit(e, 0);
+}
+
+static __always_inline __u32 ai_guardian_enforcing(void)
+{
+    __u32 key = 0;
+    __u32 *mode = bpf_map_lookup_elem(&ai_guardian_mode, &key);
+    return mode && *mode == 1;
 }
 
 /*
@@ -188,11 +206,12 @@ int BPF_PROG(me60os_ai_guardian_open, struct file *file)
     __u64 *policy;
     __u32 key;
     __u64 *count;
+    __u32 enforcing = ai_guardian_enforcing();
 
     // 0. God mode bypass — audit each invocation
     god = bpf_map_lookup_elem(&god_mode_uids, &uid);
     if (god && *god == 1) {
-        send_cortex_event(EVENT_GODMODE_INSERT, pid, 0, SEVERITY_HIGH);
+        send_cortex_event(EVENT_GODMODE_INSERT, pid, 0, SEVERITY_HIGH, enforcing);
         return 0;
     }
 
@@ -219,7 +238,7 @@ int BPF_PROG(me60os_ai_guardian_open, struct file *file)
         // Path NOT in whitelist or explicitly blocked
         key = STAT_BLOCKS;
         count = bpf_map_lookup_elem(&stats_map, &key);
-        if (count) __sync_fetch_and_add(count, 1);
+        if (enforcing && count) __sync_fetch_and_add(count, 1);
         
         // Log blocked event
         bpf_printk("ME-60OS AI_GUARDIAN: BLOCKED file_open pid=%d path=%s", pid, path);
@@ -228,9 +247,9 @@ int BPF_PROG(me60os_ai_guardian_open, struct file *file)
         __u64 entropy = calculate_entropy_s60(path, 1);
         __u8 dt_res = dt_classify(entropy, SEVERITY_HIGH, EVENT_FILE_BLOCKED, pid);
         (void)dt_res;
-        send_cortex_event(EVENT_FILE_BLOCKED, pid, entropy, SEVERITY_HIGH);
-        
-        return -EPERM;  // Operation not permitted
+        send_cortex_event(enforcing ? EVENT_FILE_BLOCKED : EVENT_FILE_WOULD_BLOCK,
+                          pid, entropy, SEVERITY_HIGH, enforcing);
+        return enforcing ? -EPERM : 0;
     }
     
     // Allow (found in whitelist)
@@ -245,13 +264,14 @@ int BPF_PROG(me60os_ai_guardian_open, struct file *file)
         bpf_printk("ME-60OS AI_GUARDIAN: DT OVERRIDE BLOCKED file_open pid=%d path=%s", pid, path);
         key = STAT_BLOCKS;
         count = bpf_map_lookup_elem(&stats_map, &key);
-        if (count) __sync_fetch_and_add(count, 1);
-        send_cortex_event(EVENT_FILE_BLOCKED, pid, entropy, SEVERITY_HIGH);
-        return -EPERM;
+        if (enforcing && count) __sync_fetch_and_add(count, 1);
+        send_cortex_event(enforcing ? EVENT_FILE_BLOCKED : EVENT_FILE_WOULD_BLOCK,
+                          pid, entropy, SEVERITY_HIGH, enforcing);
+        return enforcing ? -EPERM : 0;
     }
 
     __u8 sev = (dt_res == DT_CLASS_SUSPECT) ? SEVERITY_MEDIUM : SEVERITY_LOW;
-    send_cortex_event(EVENT_FILE_ALLOWED, pid, entropy, sev);
+    send_cortex_event(EVENT_FILE_ALLOWED, pid, entropy, sev, enforcing);
     
     return 0;
 }
@@ -272,11 +292,12 @@ int BPF_PROG(me60os_ai_guardian_exec, struct linux_binprm *bprm)
     __u64 *policy;
     __u32 key;
     __u64 *count;
+    __u32 enforcing = ai_guardian_enforcing();
 
     // 0. God mode bypass — audit each invocation
     god = bpf_map_lookup_elem(&god_mode_uids, &uid);
     if (god && *god == 1) {
-        send_cortex_event(EVENT_GODMODE_INSERT, pid, 0, SEVERITY_HIGH);
+        send_cortex_event(EVENT_GODMODE_INSERT, pid, 0, SEVERITY_HIGH, enforcing);
         return 0;
     }
 
@@ -301,7 +322,7 @@ int BPF_PROG(me60os_ai_guardian_exec, struct linux_binprm *bprm)
     if (!policy || *policy != ALLOW_AI) {
         key = STAT_BLOCKS;
         count = bpf_map_lookup_elem(&stats_map, &key);
-        if (count) __sync_fetch_and_add(count, 1);
+        if (enforcing && count) __sync_fetch_and_add(count, 1);
         
         bpf_printk("ME-60OS AI_GUARDIAN: BLOCKED exec pid=%d binary=%s", pid, path);
         
@@ -309,9 +330,9 @@ int BPF_PROG(me60os_ai_guardian_exec, struct linux_binprm *bprm)
         __u64 entropy = calculate_entropy_s60(path, 1);
         __u8 dt_res = dt_classify(entropy, SEVERITY_CRITICAL, EVENT_EXEC_BLOCKED, pid);
         (void)dt_res;
-        send_cortex_event(EVENT_EXEC_BLOCKED, pid, entropy, SEVERITY_CRITICAL);
-        
-        return -EPERM;
+        send_cortex_event(enforcing ? EVENT_EXEC_BLOCKED : EVENT_EXEC_WOULD_BLOCK,
+                          pid, entropy, SEVERITY_CRITICAL, enforcing);
+        return enforcing ? -EPERM : 0;
     }
     
     key = STAT_ALLOWS;
@@ -325,13 +346,14 @@ int BPF_PROG(me60os_ai_guardian_exec, struct linux_binprm *bprm)
         bpf_printk("ME-60OS AI_GUARDIAN: DT OVERRIDE BLOCKED exec pid=%d binary=%s", pid, path);
         key = STAT_BLOCKS;
         count = bpf_map_lookup_elem(&stats_map, &key);
-        if (count) __sync_fetch_and_add(count, 1);
-        send_cortex_event(EVENT_EXEC_BLOCKED, pid, entropy, SEVERITY_CRITICAL);
-        return -EPERM;
+        if (enforcing && count) __sync_fetch_and_add(count, 1);
+        send_cortex_event(enforcing ? EVENT_EXEC_BLOCKED : EVENT_EXEC_WOULD_BLOCK,
+                          pid, entropy, SEVERITY_CRITICAL, enforcing);
+        return enforcing ? -EPERM : 0;
     }
 
     __u8 sev = (dt_res == DT_CLASS_SUSPECT) ? SEVERITY_MEDIUM : SEVERITY_LOW;
-    send_cortex_event(EVENT_EXEC_ALLOWED, pid, entropy, sev);
+    send_cortex_event(EVENT_EXEC_ALLOWED, pid, entropy, sev, enforcing);
     
     return 0;
 }
