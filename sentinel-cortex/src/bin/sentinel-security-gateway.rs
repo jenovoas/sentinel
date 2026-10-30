@@ -350,7 +350,10 @@ async fn forward_event(state: &GatewayState, event: CortexEvent) {
         return;
     }
 
-    let is_exec = matches!(event.event_type.as_str(), "EXEC_ALLOWED" | "EXEC_BLOCKED");
+    let is_exec = matches!(
+        event.event_type.as_str(),
+        "EXEC_ALLOWED" | "EXEC_BLOCKED" | "EXEC_WOULD_BLOCK"
+    );
     let payload = json!({
         "event_type": if is_exec { "syscall" } else { event.event_type.as_str() },
         "source": source,

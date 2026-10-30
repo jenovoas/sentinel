@@ -20,12 +20,14 @@ Recaptura de solo lectura por SSH, 2026-10-30 16:54 UTC: los servicios `sentinel
 - AI Guardian informa denegaciones potenciales como `FILE_WOULD_BLOCK`/`EXEC_WOULD_BLOCK`, sin devolver error en auditoría. Los eventos llevan `GUARDIAN_CODE_AI` y estado de modo en `reserved[1]`.
 - Float Detector informa la coincidencia explícita de blacklist como `FLOAT_WOULD_BLOCK` y permite la operación en auditoría.
 - El bridge ahora interpreta eventos 19–23.
+- El bridge conserva `reserved[1]` como `enforcement_active`; el Gateway trata `EXEC_WOULD_BLOCK` como evento de ejecución para mantener el esquema del backend.
 
 ## Validaciones
 
 - Compilación BPF a objetos temporales: `ai_guardian.c` y `float_detector.c`, `clang -target bpf`: correcta.
 - `cargo check --locked --package sentinel-cortex --bin sentinel-security-gateway`: correcto; quedan cuatro warnings preexistentes de constantes DTC SHM sin uso.
 - `cargo fmt --check` y `git diff --check`: correctos.
+- Gateway/bridge compilados después del ajuste de semántica de auditoría.
 - No se cargó ni adjuntó ningún objeto; no se modificó Marte. No se habilitó enforcement.
 
 ## Trabajo pendiente antes del despliegue

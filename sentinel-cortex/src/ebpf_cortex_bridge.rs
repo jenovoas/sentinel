@@ -30,6 +30,8 @@ pub struct CortexEvent {
     pub event_type: String,
     pub entropy_s60_raw: u64,
     pub severity: u8,
+    /// Estado del mapa de modo del Guardian emisor cuando produjo el evento.
+    pub enforcement_active: bool,
     /// Guardian emisor (solo relevante para eventos Gamma 11-18).
     /// Codificado por Guardian-Gamma en _reserved[0]:
     /// 1=alpha, 2=cognitive, 3=ai, 4=float, 5=gamma. 0 = no aplica.
@@ -131,6 +133,7 @@ impl EbpfBridge {
             event_type,
             entropy_s60_raw: raw.entropy_signal,
             severity: raw.severity,
+            enforcement_active: raw._reserved[1] == 1,
             guardian_code,
             process_path,
             uid,
