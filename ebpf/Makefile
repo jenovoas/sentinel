@@ -9,10 +9,21 @@ INCLUDES := -I/usr/include/$(ARCH)-linux-gnu
 
 TARGET := guardian_cognitive
 OBJECT := $(TARGET).o
+# Sensores adicionales (auditoria por defecto, carga separada tras whitelist).
+# Ver docs/AUDITORIA_EBPF_MARTE_2026-10-30.md y T-tareas eBPF.
+SENSORS := ai_guardian float_detector guardian_gamma
+SENSOR_OBJS := $(SENSORS:%=%.o)
 
-.PHONY: all clean load unload test
+.PHONY: all clean load unload test sensors
 
 all: $(OBJECT)
+
+sensors: $(SENSOR_OBJS)
+
+%.o: %.c
+	$(CLANG) -g -O2 -target bpf -D__TARGET_ARCH_$(ARCH) \
+		$(INCLUDES) -c $< -o $@
+	$(LLVM_STRIP) -g $@
 
 $(OBJECT): $(TARGET).c
 	$(CLANG) -g -O2 -target bpf -D__TARGET_ARCH_$(ARCH) \
@@ -20,14 +31,4 @@ $(OBJECT): $(TARGET).c
 	$(LLVM_STRIP) -g $@
 
 clean:
-	rm -f $(OBJECT)
-
-load: $(OBJECT)
-	sudo $(BPFTOOL) prog load $(OBJECT) /sys/fs/bpf/$(TARGET) \
-		type lsm
-
-unload:
-	sudo rm -f /sys/fs/bpf/$(TARGET)
-
-test:
-	./test_intercept.sh
+	rm -f $(OBJECT) $(SENSOR_OBJS)

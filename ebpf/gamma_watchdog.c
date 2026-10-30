@@ -31,9 +31,13 @@
 #include <unistd.h>
 #include "cortex_events.h"
 
-#define BPF_DIR          "/sys/fs/bpf"
-#define PEERS_PIN        BPF_DIR "/known_peer_prog_ids"
-#define HEARTBEAT_PIN    BPF_DIR "/gamma_heartbeat"
+#define BPF_DIR_DEFAULT  "/sys/fs/bpf/guardian_alpha"
+static const char *bpf_dir(void) {
+    const char *env = getenv("GUARDIAN_BPF_DIR");
+    return (env && env[0]) ? env : BPF_DIR_DEFAULT;
+}
+#define PEERS_PIN        BPF_DIR_DEFAULT "/known_peer_prog_ids"
+#define HEARTBEAT_PIN    BPF_DIR_DEFAULT "/gamma_heartbeat"
 #define INOTIFY_BUF_SZ   (16 * (sizeof(struct inotify_event) + NAME_MAX + 1))
 
 struct peer {
@@ -68,8 +72,8 @@ static void emit_ndjson(__u32 event_type, __u8 code, __u8 severity, const char *
 /* Lee el prog_id asociado a un pin LSM y lo registra en known_peer_prog_ids. */
 static int register_peer(int peers_fd, const char *pin_name, __u8 code)
 {
-    char path[256];
-    snprintf(path, sizeof(path), "%s/%s", BPF_DIR, pin_name);
+    char path[512];
+    snprintf(path, sizeof(path), "%s/%s", bpf_dir(), pin_name);
 
     int prog_fd = bpf_obj_get(path);
     if (prog_fd < 0) {
@@ -129,10 +133,10 @@ int main(void)
             registered++;
     fprintf(stderr, "gamma_watchdog: %d/%zu peers registrados\n", registered, NPEERS);
 
-    /* 3. inotify sobre /sys/fs/bpf/ (solo IN_DELETE) */
+    /* 3. inotify sobre el dir de pines Guardian (solo IN_DELETE) */
     int ino_fd = inotify_init1(IN_CLOEXEC | IN_NONBLOCK);
     if (ino_fd < 0) { perror("inotify_init1"); return 1; }
-    if (inotify_add_watch(ino_fd, BPF_DIR, IN_DELETE | IN_MOVED_FROM) < 0) {
+    if (inotify_add_watch(ino_fd, bpf_dir(), IN_DELETE | IN_MOVED_FROM) < 0) {
         perror("inotify_add_watch");
         return 1;
     }
@@ -152,7 +156,7 @@ int main(void)
     epoll_ctl(ep, EPOLL_CTL_ADD, ino_fd, &evi);
     epoll_ctl(ep, EPOLL_CTL_ADD, tfd, &evt);
 
-    fprintf(stderr, "gamma_watchdog: activo. Pulso=%ds, vigilando %s\n", 17, BPF_DIR);
+    fprintf(stderr, "gamma_watchdog: activo. Pulso=%ds, vigilando %s\n", 17, bpf_dir());
 
     /* 6. Loop principal */
     char ibuf[INOTIFY_BUF_SZ] __attribute__((aligned(8)));
