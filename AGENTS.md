@@ -64,7 +64,21 @@ Este proyecto cuenta con soporte de grafo de conocimiento local mediante **graph
 - Tras realizar cambios importantes en el código, ejecuta `graphify update .` para mantener el grafo sincronizado (análisis AST local sin consumo de tokens de API).
 - Para construir o reconstruir el grafo completo, utiliza el comando `/graphify .`.
 
-## Trazabilidad persistente para agentes y sesiones
+## 4. PROCEDIMIENTO DE DESPLIEGUE Y TAREAS (OBLIGATORIO)
+
+> Si tu tarea toca un nodo (fenix/kingu/marte/hercules/ocean), AD, firewall,
+> eBPF, systemd, nginx, DNS o secretos: esto va ANTES que cualquier comando.
+
+- Lee `docs/ops/procedimiento-despliegue-estandar.md` completo (preflight §3, reglas §2, fases §4, rollback §6).
+- Lee `docs/ops/fase0-tareas.md`: ubica tu tarea (T0–T7). No toques ámbito ajeno sin coordinar. Si tu tarea no existe ahí, créala antes de ejecutar.
+- Reporta este checklist en tu primer mensaje de la sesión, con evidencia (no promesas):
+  1. Rama/entorno correcto (`main` systemd vs `alpine_fenix`, no mezclar).
+  2. `sudo -n` en remoto; cero secretos en CLI; `curl -k` prohibido.
+  3. Backup previo + validación (`config --quiet`, `nginx -t`, `named-checkzone`) antes de recargar.
+  4. Un cambio = commit + push + entrada en vault.
+- Omitir este checklist invalida la sesión: el operador puede revertir tus cambios sin revisión.
+
+## 5. Trazabilidad persistente para agentes y sesiones
 - Antes de trabajar, consulta el contexto pertinente del proyecto y la memoria persistente de `~/proyectos/personalvault`.
 - Cada implementación o despliegue debe quedar documentado tanto en el proyecto como en la vault, con evidencia verificable, validaciones y estado operativo real, para permitir auditoría y coordinación entre agentes/sesiones.
 - Distingue preparación local de despliegue realizado; no registres hechos sin evidencia.
