@@ -17,8 +17,10 @@
   `/var/mail/vhosts/pinguinoseguro.cl/`.
 - Las direcciones `@www` se resolvieron como `proxyAddresses` de la cuenta
   canónica. Comparten buzón y credencial AD; no tienen contraseña de alias.
-- No se cambió la contraseña AD existente de `jnovoas`. La contraseña clara no
-  está guardada en este repositorio.
+- La verificación inicial de correo no cambió la contraseña AD. Jaime informó
+  después que el reseteo de su clave AD se completó correctamente; esa misma
+  clave gobierna portal, correo y Guacamole. La contraseña clara no está
+  guardada en este repositorio.
 
 ## Cambios aplicados en Fenix
 
