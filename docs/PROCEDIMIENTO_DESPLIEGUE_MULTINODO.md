@@ -6,10 +6,30 @@ Este procedimiento aplica a `main` y al entorno systemd:
 
 - **Fenix (`10.88.0.1`)**: build, Docker Compose, FastAPI, Cortex, PostgreSQL y Redis.
 - **Kingu (`10.88.0.2`)**: Next.js bajo systemd, Nginx y TLS público.
-- **WireGuard (`10.88.0.0/24`)**: transporte privado entre ambos nodos. Los puertos FastAPI/Cortex/n8n se publican en la IP WireGuard de Fenix; `DOCKER-USER` debe limitar el origen a Kingu.
+- **Marte**: nodo de origen de la capa de seguridad y monitoreo; sus eventos deben llegar al backend privado de Fenix. Su IP/ruta VPN se confirma en el preflight, no se presupone.
+- **WireGuard (`10.88.0.0/24`)**: transporte privado entre nodos. Los puertos FastAPI/Cortex/n8n se publican en la IP WireGuard de Fenix; `DOCKER-USER` debe limitar cada origen y puerto explícitamente autorizado.
 - **Hercules/DNS**: solo se modifica si el alcance incluye explícitamente un cambio DNS.
 
 No mezclar con `alpine_fenix`/OpenRC. No activar Guardian/eBPF ni enforcement como parte implícita del despliegue de la aplicación; su whitelist y recuperación fuera de banda tienen un preflight separado.
+
+SOMA (`soma_orchestrator`/`soma_worker`) queda fuera de este despliegue hasta autorización específica. `qhc-agent` es un servicio independiente requerido por Cortex; utiliza `/run/soma/qhc.sock` como ruta IPC, pero no inicia ni necesita la orquestación SOMA.
+
+### Mapa funcional y criterio de aceptación
+
+| Módulo | Ubicación/relación objetivo | Evidencia para aceptarlo |
+|---|---|---|
+| FastAPI, PostgreSQL, Redis | Backend de Sentinel en Fenix | Contenedores saludables; migración en head; APIs privadas alcanzables desde pares permitidos. |
+| Cortex Rust | Backend de Sentinel en Fenix | Imagen fijada por SHA, `/health`, logs y endpoints autenticados validados. |
+| QHC | Servicio compartido local en Fenix para Sentinel y MyCNet | `sentinel-qhc-agent` activo; socket legible como UID/GID 1000; snapshot reciente; Cortex reporta `QHC=true`. Verificar por separado el consumidor MyCNet en su propio despliegue. |
+| Matriz/cristales, memorias SHM y dual lane A/B | Runtime Cortex en Fenix | `CrystalRuntime` activo, SHM de ambas lanes y semillas presentes, sincronizaciones crecientes y checkpoint persistente. |
+| Cristal isocrónico DTC | Runtime Cortex en Fenix | Tick DTC observable y contrato IPC probado. Las constantes actuales de SHM no bastan: el runtime debe crear/actualizar el objeto DTC compartido. |
+| PAI-60 | Biblioteca/camino de inyección Cortex | Confirmar conversión y amplitud desde el camino activo; mantener la escala acordada y no inferirla desde benchmarks. |
+| FPU | Referencia de CPU/benchmarks, no daemon independiente | Tratar cada uso de punto flotante por ruta de producción; no declarar “FPU desplegada” como módulo. |
+| Dual Lane Security/Observability | Backend de eventos | Probar que eventos reales atraviesan las dos lanes, WAL y almacenamiento; la mera presencia de la biblioteca no demuestra integración. |
+| eBPF/Guardian en Marte | Sensor local en modo auditoría; eventos hacia Fenix | Verificar whitelist/rutas críticas y recuperación fuera de banda antes de adjuntar. No activar enforcement sin autorización separada. Transporte autenticado a Fenix y prueba de recepción antes de darlo por integrado. |
+| Frontend Next.js | Kingu | BFF del navegador hacia APIs privadas de Fenix; sesiones/CSRF, páginas usadas y errores de upstream revisados. No conecta directamente el browser a Fenix. |
+
+SOMA y sus workers no son componentes de este mapa. La evidencia se clasifica como `activo`, `implementado pero no conectado`, `pendiente` o `no verificado`; no se eleva un módulo de estado por su nombre o por un healthcheck general.
 
 ## 1. Fijar alcance, versión y aceptación
 
@@ -35,12 +55,13 @@ Antes de cambiar un nodo, registrar:
 
    Detenerse si la rama no es `main`, el árbol no está limpio o la versión objetivo no está publicada.
 2. Confirmar SSH por el puerto operativo 4222 a ambos nodos y que Fenix conserva una ruta de recuperación independiente antes de tocar firewall, SSH, WireGuard o entrada pública.
-3. Registrar en cada nodo: fecha UTC, hostname, OS/runtime, interfaces y rutas WireGuard, espacio libre, estado de Nginx/systemd/Firewalld y servicios Sentinel.
+3. Registrar en cada nodo (Fenix, Kingu y Marte si está en alcance): fecha UTC, hostname, OS/runtime, interfaces y rutas WireGuard, espacio libre, estado de Nginx/systemd/Firewalld y servicios Sentinel. Para Marte confirmar IP de origen y ruta privada real hacia Fenix.
 4. En Fenix, registrar contenedores, etiquetas Compose, imágenes/digests, bindings y redes. Comparar el estado real con `docker-compose.fenix.yml`; no inferir propiedad por el nombre de un puerto. Identificar qué contenedor escucha en cada puerto.
 5. Guardar el head de Alembic y confirmar backup reciente/restore probado antes de cualquier migración o cambio de datos. No leer ni imprimir archivos de secretos.
 6. Verificar reglas efectivas `DOCKER-USER`/nftables y sus contadores. Las reglas `INPUT` o la zona Firewalld por sí solas no prueban aislamiento de puertos DNAT de Docker.
 7. Registrar DNS A/AAAA, vhost, certificado/SAN, upstreams y salud pública existentes. Conservar nombres y sitios ajenos.
-8. Validar Compose sin mostrar secretos:
+8. En Marte, comprobar whitelists de ejecutables y rutas críticas y probar recuperación fuera de banda. El bootstrap actual adjunta Guardian en auditoría después de esa validación; si faltan precondiciones, no ejecutarlo ni adjuntar eBPF.
+9. Validar Compose sin mostrar secretos:
 
    ```sh
    docker compose --env-file /etc/sentinel/backend.env \
@@ -77,8 +98,9 @@ Si falta un backup, acceso independiente, artefacto verificable o rollback viabl
 
    Para primera instalación, iniciar dependencias primero y luego aplicaciones con `depends_on` saludable. Nunca ejecutar `down` global ni borrar volúmenes.
 5. Verificar tag/digest desplegado, proyecto Compose, estado `healthy`, logs de arranque, mounts requeridos y persistencia. Para Cortex, además verificar `GET /api/v1/crystal_runtime/status`: `active=true`, `runtime.active=true`, `shm_active=true`, ticks y sincronizaciones crecientes, y checkpoint duradero en el volumen persistente. Este endpoint exige autenticación; comprobarlo con una sesión aprobada, sin quitar middleware ni generar tokens que suplanten al operador.
-6. Si QHC está dentro del alcance, comprobar `GET /api/v1/qhc/status` con sesión autorizada: `connected=true`, `stale=false` y tick reciente. Confirmar también `sentinel-qhc-agent.service` y `/run/soma/qhc.sock` en Fenix. Si falta el socket o el log indica `DEAD MAN SWITCH ACTIVATED`, Cortex puede seguir `healthy` mientras su scheduler está enclavado; no declarar funcional esa integración ni simular presencia humana para despejar el estado.
-7. Desde Kingu, comprobar APIs privadas por WireGuard. Desde un segundo peer autorizado y desde el camino público, comprobar que los puertos internos y bases de datos no aceptan conexiones. La ruta pública esperada pasa por Nginx en Kingu.
+6. Instalar QHC como dependencia requerida de Sentinel en Fenix antes de iniciar/recrear Cortex. Construir `qhc_agent` desde el mismo SHA, instalar `systemd/sentinel-qhc-agent.service`, comprobar IPC (`SNAPSHOT`) con el UID/GID del contenedor y arrancarlo. Verificar `GET /api/v1/qhc/status` con sesión autorizada: `connected=true`, `stale=false` y tick reciente; los logs de Cortex deben indicar `QHC=true`. Si falta el socket o el log indica `DEAD MAN SWITCH ACTIVATED`, Cortex puede seguir `healthy` mientras su scheduler está enclavado; no declarar funcional la integración.
+7. En Marte, instalar solo componentes aprobados, en modo auditoría, tras completar el preflight eBPF. Apuntar la ingesta de eventos al backend Fenix por WireGuard (`POST /api/v1/cortex/events`, autenticación `X-Sentinel-Token`) y métricas a la ruta de observabilidad aprobada. Confirmar que el firewall de Fenix permite únicamente la IP WireGuard de Marte y los puertos requeridos; no reutilizar ni imprimir secretos. El servicio actual `sentinel-ebpf-forwarder` ejecuta `bpftool prog tracelog` localmente: no demuestra por sí mismo envío remoto a Fenix.
+8. Desde Kingu y Marte, comprobar APIs privadas por WireGuard. Desde un segundo peer autorizado y desde el camino público, comprobar que los puertos internos y bases de datos no aceptan conexiones. La ruta pública esperada pasa por Nginx en Kingu.
 
 ## 5. Desplegar frontend en Kingu
 

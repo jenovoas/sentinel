@@ -4,10 +4,12 @@ After=network.target
 
 [Service]
 Type=simple
+User=jnovoas
+Group=linuxuser
+ExecStartPre=+/usr/bin/install -d -o jnovoas -g linuxuser -m 2770 /run/soma
 ExecStart=/home/jnovoas/.local/bin/qhc_agent
 Restart=always
 RestartSec=5
-User=jnovoas
 
 [Install]
 WantedBy=multi-user.target

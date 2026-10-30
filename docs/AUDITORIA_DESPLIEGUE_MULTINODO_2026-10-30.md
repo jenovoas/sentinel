@@ -1,8 +1,8 @@
 ---
 title: Auditoría del despliegue Sentinel multi-nodo
 fecha: 2026-10-30
-estado: aplicación_operativa_con_brecha_qhc
-alcance: Fenix, Kingu, publicación Sentinel y n8n
+estado: backend_fenix_operativo_qhc_validado_marte_pendiente
+alcance: backend Fenix, frontend Kingu, QHC compartido y preparación de seguridad/monitoreo Marte
 ---
 
 # Auditoría del despliegue Sentinel multi-nodo — 2026-10-30
@@ -11,7 +11,9 @@ alcance: Fenix, Kingu, publicación Sentinel y n8n
 
 La aplicación web distribuida Kingu↔Fenix está sirviendo por HTTPS y sus servicios principales están saludables. La auditoría encontró y corrigió una omisión real: Fenix ejecutaba Cortex `da843a84`, anterior al commit que integra `CrystalRuntime`. Se publicó la imagen `sentinel-cortex:e096eaa9` y se recreó únicamente Cortex.
 
-El despliegue completo de Cortex **sigue incompleto**: no existe el socket QHC `/run/soma/qhc.sock`; los logs muestran QHC desconectado y el *dead man switch* enclava el scheduler después de 30 segundos. El proceso continúa `healthy`, por lo que el healthcheck por sí solo oculta esta brecha. No se instaló ni inició QHC, y no se activó Guardian/eBPF.
+SOMA (`soma_orchestrator`/`soma_worker`) queda fuera: es orquestación de agentes y no se usará todavía. QHC sí es una dependencia compartida requerida por Sentinel y MyCNet; es un proceso independiente aunque su IPC viva bajo `/run/soma`.
+
+QHC fue instalado y validado en Fenix durante esta sesión. El backend de aplicación sigue operativo; la capa distribuida de seguridad/monitoreo en Marte todavía no se desplegó. No se declara completa la red hasta que se resuelva acceso a Marte, se verifique su ruta a Fenix y se acepte la recepción remota de eventos.
 
 ## Evidencia de estado
 
@@ -41,10 +43,37 @@ Verificación directa por SSH a Fenix y Kingu entre 04:08 y 04:21 UTC:
 
 ## Brecha QHC y efecto real
 
-- `sentinel-qhc-agent.service` no está instalado (systemd devuelve `not-found`); el binario compilado existe en el checkout, pero no está en `/home/jnovoas/.local/bin/qhc_agent`. `/run/soma` existe vacío y `/run/soma/qhc.sock` está ausente.
+- En la captura original (04:08–04:21 UTC), `sentinel-qhc-agent.service` no estaba instalado (systemd devolvía `not-found`); `/run/soma/qhc.sock` estaba ausente.
 - Logs de Cortex: `qhc.connected=false`, `stale=true`, error `No such file or directory`; los *pulse checks* de ticks 17, 34, 51, 68 y 85 reportan `Valid=false`, `Coherence=false`, `QHC=false`.
 - A los 30 segundos el `QuantumScheduler` registra `DEAD MAN SWITCH ACTIVATED - PILOT ABSENT`. El código enclava `is_emergency_shutdown=true` y deja de procesar ticks/tareas del scheduler; **no termina el proceso Cortex**, que por eso sigue pasando el healthcheck.
-- El cliente QHC actual registra un heartbeat de piloto cuando obtiene snapshot QHC. Iniciar ese agente sin validar si ese heartbeat puede sustituir la presencia del operador podría falsear el criterio de seguridad; no se hizo. El alcance de QHC/MycNet/daemons requiere decisión operativa antes de activar esa señal.
+- A las 04:38 UTC se instaló el binario release compilado desde el checkout `main` y la unidad `sentinel-qhc-agent.service`; quedó `enabled` y `active` bajo `jnovoas`.
+- `/run/soma` quedó `jnovoas:linuxuser`, modo `2770`; socket `qhc.sock` modo `0660`, grupo GID 1000. `SNAPSHOT` fue consultado exitosamente como `linuxuser` (UID/GID 1000), mismo UID/GID numérico del proceso Cortex. El primer intento falló porque `ExecStartPre` no tenía privilegio para cambiar el directorio; se corrigió con prefijo systemd `+` solo en ese paso.
+- A las 04:39:10 UTC los logs de Cortex registraron `PULSE CHECK (T=17): ... QHC=true`. La autenticación humana del endpoint `/api/v1/qhc/status` no se probó; una solicitud sin bearer devuelve 401. La ingestión de snapshot y su visibilidad interna sí quedaron verificadas por IPC y log.
+- La implementación actual hace que un snapshot QHC reciente invoque `record_pilot_heartbeat()` en `BioResonator`. Por tanto el agente QHC también mantiene vigente el reloj llamado “pilot”; registrar este acoplamiento para revisión del contrato, sin equipararlo a una presencia humana.
+
+## Mapa de módulos y despliegue distribuido
+
+| Módulo | Estado comprobado / ubicación | Brecha para aceptación integral |
+|---|---|---|
+| FastAPI, PostgreSQL, Redis | Fenix; contenedores `healthy`, Alembic en head. | Sesiones/WebSocket autenticados siguen sin validación independiente. |
+| Cortex Rust | Fenix; imagen `sentinel-cortex:e096eaa9`, `/health` saludable. | Health no sustituye pruebas de cada runtime/contrato. |
+| QHC | Fenix; unidad activa, IPC `SNAPSHOT` y `QHC=true` observados. Compartido con MyCNet por requisito del usuario. | Verificar consumidor MyCNet en una auditoría/deploy de MyCNet; esta sesión solo verifica Sentinel. |
+| CrystalRuntime, matriz/cristales, memorias SHM | Fenix; `me60os_lattice`, `me60os_lattice_b`, ring de semillas y checkpoint persistente presentes. | Endpoint autenticado y contadores de runtime requieren sesión aprobada para aceptación completa. |
+| PAI-60 | Código integrado en el camino de inyección Cortex. | Aceptación requiere trazas del camino real; benchmarks no acreditan ejecución del runtime. |
+| Cristal isocrónico DTC | Runtime/código contiene frecuencia y constantes de IPC. | No se halló publicación efectiva de `me60os_dtc_clock`; symbols/constantes no son un contrato SHM activo. |
+| FPU | Aparece como referencia en benchmarks comparativos, no como daemon o servicio desplegable. | Clasificar por ruta de cómputo; no reportarla como módulo autónomo activo. |
+| Dual Lane | Hay implementación Python/Rust, WAL y pruebas/benchmarks. | No se comprobó una ruta de producción conectando eventos de Marte a ambas lanes con evidencia y observabilidad. |
+| eBPF/Guardian | El bridge está en el código Cortex; no se encontraron programas/mapas Sentinel activos en Fenix. | Capa local Marte pendiente. Preflight obligatorio de whitelist/rutas críticas y recuperación fuera de banda; enforcement requiere autorización separada. |
+| Frontend | Kingu sirve Next.js; handlers BFF en `frontend/src/lib/server/*` mantienen sesión/CSRF y reenvían a Fenix. El visualizador de lattice consume `/api/v1/lattice/hologram` por el BFF. | Frontend pequeño frente al backend; validar estado funcional autenticado y errores de upstream, sin exponer APIs al navegador. |
+| Marte → Fenix | No desplegado en esta sesión. | `ssh marte` resuelve `10.88.0.6:4222`, pero la conexión devolvió `No route to host`. Confirmar ruta/peer y el IP real antes de tocar firewall o instalar. |
+
+FastAPI incluye `POST /api/v1/cortex/events`, autenticado con `X-Sentinel-Token`, como candidato existente para eventos remotos. Aún no se verificó desde Marte ni se configuró su secreto allí. La unidad `sentinel-ebpf-forwarder.service` solo ejecuta `bpftool prog tracelog` a un log local; no prueba envío a Fenix. En Fenix, `SENTINEL-DOCKER-USER` observado permite API 8000/8001 solo desde Kingu; la política tendría que autorizar explícitamente la IP WireGuard de Marte y solo los puertos necesarios.
+
+## Análisis funcional del frontend
+
+- El navegador usa rutas same-origin `/api/v1/...`; el servidor Next.js valida cookie de sesión y CSRF, y agrega el bearer al upstream privado. `SENTINEL_BACKEND_URL` debe apuntar a Fenix por WireGuard; producción falla al iniciar si falta.
+- Kingu aloja UI y BFF, no el backend de datos ni Cortex. Las rutas inspeccionadas cubren dashboard, analítica, IA, backups, failsafe y holograma lattice. El holograma se consulta por polling desde el frontend.
+- La revisión de despliegue encontró la UI servida, pero no validó sesión autenticada extremo a extremo ni todos los contratos backend. El frente es una capa de acceso/visualización reducida respecto a los módulos de runtime en Fenix.
 
 ## Cambios en Git
 
@@ -58,10 +87,12 @@ La imagen previa sigue disponible. Si la nueva versión presenta una regresión,
 
 ## Pendientes antes de aceptar el despliegue integral
 
-1. Definir si el objetivo es la aplicación Kingu↔Fenix o si incluye QHC/MycNet/daemons. Si incluye QHC, decidir qué fuente válida satisface el dead man switch y validar QHC en una sesión autorizada; no simular heartbeat.
-2. Validar `/api/v1/crystal_runtime/status` y `/api/v1/qhc/status` mediante sesión real, además de login y WebSocket autenticados, sin compartir credenciales por chat/log.
-3. Decidir si el contrato multi-nodo requiere publicar el tick DTC por SHM; hoy los símbolos están declarados pero no implementados.
-4. Definir si se corrigen los headers TLS de Sentinel. La advertencia TLS duplicada pertenece a otro vhost y requiere cambio separado.
-5. La comprobación de backups/restauración no formó parte de este cambio de Cortex; validarla antes de una futura migración o cambio de datos.
+1. Resolver conectividad SSH/WireGuard de Marte y confirmar identidad, sistema y ruta efectiva antes del preflight local.
+2. Diseñar y probar el forwarder autenticado Marte→`POST /api/v1/cortex/events`, definir custodia del secreto y permitir solo la IP/puertos requeridos en firewall. Aceptar eventos con ID/confirmación y visibilidad en la lane/WAL correspondiente.
+3. Completar preflight de whitelist y rutas críticas y comprobar recuperación fuera de banda en Marte antes de ejecutar el bootstrap que adjunta Guardian en auditoría. Enforcement sigue requiriendo autorización separada.
+4. Verificar contrato MyCNet↔QHC desde el despliegue de MyCNet; no inferirlo de la salud de Sentinel.
+5. Validar `/api/v1/crystal_runtime/status` y `/api/v1/qhc/status` mediante sesión aprobada, además de login y WebSocket autenticados.
+6. Definir y probar publicación del tick DTC por SHM; hoy las constantes están pero no el objeto compartido.
+7. Revisar headers TLS de Sentinel y backups/restauración antes de declarar cierre de producción. La advertencia TLS duplicada pertenece a otro vhost y requiere cambio separado.
 
-**Estado operativo registrado:** front y APIs accesibles; contenedores core saludables; Cortex nuevo y persistente desplegado; autenticación humana y QHC no verificados/pendientes; no se declara aún «despliegue integral Sentinel completado».
+**Estado operativo actualizado:** frontend y APIs accesibles; contenedores core saludables; Cortex nuevo y persistente desplegado; QHC activo y visto por Cortex; autenticación humana pendiente; capa Marte no desplegada por falta de ruta de red. No se declara «despliegue integral Sentinel completado».
