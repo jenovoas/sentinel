@@ -60,6 +60,11 @@
 - [ ] Omnirouter :20128 + GPU compartida; Nivel 1 CPU (`sovereign-ai-node`, sin GPU) puede ir en T4.
 - Ver vault: `ESTRATEGIA_NEGOCIO_IA_SOBERANA`, `ARQUITECTURA_INFERENCIA_SOBERANA`.
 
+## T7. Poblado monitoreo Marte — `agente:obs`
+
+- [ ] Exporters por nodo, métricas servicios Sentinel, Promtail→Loki, dashboards plataforma + por tenant, alertas vía n8n, rotar admin grafana.
+- Ver spec: `docs/ops/marte-monitoreo-poblado.md`.
+
 ---
 
 ## Reglas para todos los agentes
