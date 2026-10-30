@@ -5,14 +5,14 @@
 
 ## 1. Estado de partida (evidencia, no especulación)
 
-| Elemento | Fenix (gana) | Hercules (fósil) |
+| Elemento | Fenix (autoritativo) | Hercules/Ocean (vistas locales estancadas) |
 |---|---|---|
 | Usuarios | 14: `jnovoas`, `admin`, `max`, `ventas`, `info`, `contacto`, `scliente`, `n8n`, `monitoreo`, `svc-guacamole-bind`, `svc-dovecot-bind`, + base | 4: solo base (Guest, Administrator, jnovoas, krbtgt) |
 | Grupos | 43 (incl. `Portal Admins`, `Guacamole Users`, `Sentinel Admins`) | 39 (solo default) |
 | Computers | `FENIX$`, `KINGU$` | `OCEAN$`, `HERCULES$` |
-| FSMO | Fenix se declara PDC; Kingu lo reconoce | Hercules se declara PDC; Ocean lo reconoce → **split-brain** |
+| FSMO | Fenix titular (base restaurada desde Hercules 17:55, commit `b22835c3`, auditoría:399-404); Kingu lo confirma | Se declaran PDC en sus vistas locales = datos estancados, NO split-brain operativo |
 
-Conclusión: degradar hercules/ocean (T0), nada que migrar.
+Conclusión: FSMO ya consolidados en Fenix, no repetir transferencia. T0 = revisar vista BIND (`:53` NXDOMAIN vs Samba `:5353` OK) y luego degradar hercules/ocean a solo DNS.
 
 ### OUs existentes
 
