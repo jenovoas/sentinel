@@ -450,6 +450,51 @@ async fn main() {
             let _ = tx_bpf_ebpf.send(event);
         }
     });
+    // 2b. MyCNet mesh subscriber (Marte/hercules/ocean → lattice).
+    // guardian-uplink publica seeds por UDP a mycnetd Fenix; este task lee el
+    // stream WS de mycnetd y los canta al lattice como drive de seguridad.
+    // Env MYCNET_STREAM_URL (default ws://10.88.0.1:7474/api/v1/stream).
+    let crystal_input_mesh = crystal_input_tx.clone();
+    tokio::spawn(async move {
+        use futures_util::StreamExt;
+        let url = std::env::var("MYCNET_STREAM_URL")
+            .unwrap_or_else(|_| "ws://10.88.0.1:7474/api/v1/stream".to_string());
+        loop {
+            match tokio_tungstenite::connect_async(&url).await {
+                Ok((mut ws, _)) => {
+                    tracing::info!("MyCNet mesh stream conectado: {}", url);
+                    while let Some(msg) = ws.next().await {
+                        let Ok(msg) = msg else { break };
+                        if !msg.is_text() {
+                            continue;
+                        }
+                        let text = msg.to_text().unwrap_or_default();
+                        let v: serde_json::Value = match serde_json::from_str(text) {
+                            Ok(v) => v,
+                            Err(_) => continue,
+                        };
+                        if v.get("type").and_then(|t| t.as_str()) != Some("fractal_seed_ingested") {
+                            continue;
+                        }
+                        let amplitude = v.get("amplitude_s60").and_then(|a| a.as_i64()).unwrap_or(0);
+                        let token = v.get("token_id").and_then(|t| t.as_u64()).unwrap_or(0) as usize;
+                        let index = token % 64;
+                        if let Some(tx) = crystal_input_mesh.as_ref() {
+                            let _ = tx.try_send(CrystalInput::Security {
+                                index,
+                                amplitude: me60os_core::spa::SPA::from_raw(amplitude),
+                            });
+                        }
+                    }
+                    tracing::warn!("MyCNet mesh stream cerrado; reconectando en 5s");
+                }
+                Err(e) => {
+                    tracing::warn!("MyCNet mesh no disponible ({}); reintento en 5s", e);
+                }
+            }
+            tokio::time::sleep(std::time::Duration::from_secs(5)).await;
+        }
+    });
 
     // 3. Start Lattice Processor (Deterministic Ring-0 eBPF Ingestion + Thermal CPU Noise + LiquidLattice 3x3)
     let lattice_task = lattice.clone();
