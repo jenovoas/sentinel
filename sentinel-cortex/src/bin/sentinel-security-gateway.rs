@@ -82,6 +82,46 @@ fn valid_source(source: &str) -> bool {
             .all(|byte| byte.is_ascii_alphanumeric() || b"._:-".contains(&byte))
 }
 
+fn guardian_source(code: u8) -> &'static str {
+    match code {
+        1 => "guardian_alpha",
+        2 => "guardian_cognitive",
+        3 => "ai_guardian",
+        4 => "float_detector",
+        5 => "guardian_gamma",
+        _ => "guardian_unknown",
+    }
+}
+
+fn configured_ringbufs() -> anyhow::Result<Vec<(String, u8)>> {
+    if let Ok(configured) = env::var("EBPF_EVENTS_PATHS") {
+        let entries = configured
+            .split(',')
+            .map(str::trim)
+            .filter(|entry| !entry.is_empty())
+            .map(|entry| {
+                let (path, code) = entry.rsplit_once('=').ok_or_else(|| {
+                    anyhow::anyhow!("ring entry must be <pinned-map>=<guardian-code>")
+                })?;
+                let code = code.parse::<u8>()?;
+                if !(1..=5).contains(&code) {
+                    anyhow::bail!("guardian code must be between 1 and 5");
+                }
+                std::fs::metadata(path)?;
+                Ok((path.to_string(), code))
+            })
+            .collect::<anyhow::Result<Vec<_>>>()?;
+        if entries.is_empty() {
+            anyhow::bail!("EBPF_EVENTS_PATHS must contain at least one pinned map");
+        }
+        return Ok(entries);
+    }
+
+    let path = env::var("EBPF_EVENTS_PATH").unwrap_or_else(|_| DEFAULT_RINGBUF.to_string());
+    std::fs::metadata(&path)?;
+    Ok(vec![(path, 1)])
+}
+
 fn sanitize_strings(
     value: &mut Value,
     firewall: &AIOpsSemanticFirewall,
@@ -227,6 +267,7 @@ async fn sanitize(
 
 fn start_ring_reader(
     path: String,
+    path_guardian_code: u8,
     tx: mpsc::Sender<CortexEvent>,
     ring_drops_total: Arc<AtomicU64>,
 ) {
@@ -244,7 +285,10 @@ fn start_ring_reader(
         let tx = tx.clone();
         let drops = ring_drops_total.clone();
         if let Err(error) = builder.add(&map, move |data: &[u8]| -> i32 {
-            if let Some(event) = EbpfBridge::parse_event(data) {
+            if let Some(mut event) = EbpfBridge::parse_event(data) {
+                if event.guardian_code == 0 {
+                    event.guardian_code = path_guardian_code;
+                }
                 if tx.try_send(event).is_err() {
                     drops.fetch_add(1, Ordering::Relaxed);
                 }
@@ -258,7 +302,10 @@ fn start_ring_reader(
 
         match builder.build() {
             Ok(ring) => {
-                info!("Guardian Alpha ring buffer reader connected at configured pin");
+                info!(
+                    guardian = guardian_source(path_guardian_code),
+                    "Guardian ring buffer reader connected at configured pin"
+                );
                 loop {
                     if let Err(error) = ring.poll(Duration::from_millis(100)) {
                         warn!("Guardian ring poll failed; reconnecting: {error}");
@@ -275,9 +322,10 @@ fn start_ring_reader(
 }
 
 async fn forward_event(state: &GatewayState, event: CortexEvent) {
+    let source = guardian_source(event.guardian_code);
     let event_id = format!(
-        "guardian-alpha-{}-{}-{}",
-        event.timestamp_ns, event.pid, event.event_type
+        "{}-{}-{}-{}",
+        source, event.timestamp_ns, event.pid, event.event_type
     );
     let raw = match serde_json::to_value(&event) {
         Ok(value) => value,
@@ -305,7 +353,7 @@ async fn forward_event(state: &GatewayState, event: CortexEvent) {
     let is_exec = matches!(event.event_type.as_str(), "EXEC_ALLOWED" | "EXEC_BLOCKED");
     let payload = json!({
         "event_type": if is_exec { "syscall" } else { event.event_type.as_str() },
-        "source": "guardian_alpha",
+        "source": source,
         "data": {
             "guardian_event_type": event.event_type,
             "syscall": if is_exec { Some("execve") } else { None },
@@ -327,7 +375,7 @@ async fn forward_event(state: &GatewayState, event: CortexEvent) {
     };
     if state
         .wal
-        .append(&event_id, "guardian_alpha", &serialized, DataLane::Security)
+        .append(&event_id, source, &serialized, DataLane::Security)
         .is_err()
     {
         error!("Guardian event withheld because forensic WAL append failed");
@@ -378,8 +426,7 @@ async fn main() -> anyhow::Result<()> {
     let bind: SocketAddr = env::var("AIOPS_SHIELD_BIND")
         .unwrap_or_else(|_| DEFAULT_BIND.to_string())
         .parse()?;
-    let ring_path = env::var("EBPF_EVENTS_PATH").unwrap_or_else(|_| DEFAULT_RINGBUF.to_string());
-    std::fs::metadata(&ring_path)?;
+    let ringbufs = configured_ringbufs()?;
     let backend_url =
         env::var("SENTINEL_BACKEND_URL").unwrap_or_else(|_| DEFAULT_BACKEND_URL.to_string());
     let shield_token = required_env("AIOPS_SHIELD_TOKEN")?;
@@ -414,7 +461,14 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let (tx, mut rx) = mpsc::channel::<CortexEvent>(1024);
-    start_ring_reader(ring_path, tx, state.ring_drops_total.clone());
+    for (path, guardian_code) in ringbufs {
+        start_ring_reader(
+            path,
+            guardian_code,
+            tx.clone(),
+            state.ring_drops_total.clone(),
+        );
+    }
     let forwarding_state = state.clone();
     tokio::spawn(async move {
         while let Some(event) = rx.recv().await {
