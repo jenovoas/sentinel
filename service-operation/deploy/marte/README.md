@@ -18,7 +18,7 @@ La API de Loki se publica únicamente en la IP WireGuard de Marte, puerto 3100. 
 - Los paneles existentes de Sentinel se provisionan sin alterar sus consultas. Los que dependan de métricas no exportadas por Cortex seguirán sin datos.
 - El almacenamiento Mimir es monolítico en disco local, con retención de 30 días. No brinda alta disponibilidad ni reemplaza una política de backup.
 - Promtail no se usa: alcanzó EOL el 2026-03-02; Alloy es el agente de logs vigente.
-- TruthSync Core no se arranca como servicio con el score fijo/procesamiento simulado histórico. El filtro de entropía integrado en Fenix permanece separado del verificador/score de contenidos pendiente de recuperar y corregir.
+- Truth Core no se arranca con el score fijo/procesamiento simulado histórico. El filtro SCV/entropía tampoco está conectado al Gateway Marte ni al Cortex servidor: AIOpsShield/`TelemetrySanitizer` son procesos activos distintos. Mantener ambas brechas separadas del verificador/score de contenido pendiente de recuperar y corregir.
 - Guardian Alpha/eBPF está adjunto en Marte en modo auditoría tras comprobar whitelist, acceso administrativo y recuperación. El `sentinel-security-gateway` consume su ring buffer, sanitiza telemetría y mantiene WAL local; eventos reales llegan a Fenix con HTTP 201. No se activa enforcement.
 - AIOpsShield/TelemetrySanitizer corren en el gateway de Marte. AIOpsDoom se trata como clase de amenaza; no se atribuye equivalencia al paper sin evaluar el flujo estructurado completo.
 - Guardian Beta/Cortex y Gamma/API permanecen en Fenix; la UI de aprobación corresponde a Kingu. La GUI Tauri histórica fue un prototipo con métricas simuladas, retirada del árbol activo. No empaquetar hasta recuperar/revisar y conectar sus datos reales.
