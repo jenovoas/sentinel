@@ -291,7 +291,13 @@ Inventario de solo lectura en Marte (`10.88.0.6`): `sentinel-security-gateway.se
 
 El compose y runtime listan esos seis servicios de observabilidad; no listan un TruthSync/Truth Core separado. El gateway desplegado aplica sanitización Rust internamente antes de Fenix, lo cual es la capa integrada de seguridad/entropía; no sustituye el Truth Core/pod de scoring de contenido. El último sigue ausente y el score actual no es aceptable, como se detalla arriba.
 
-Al cotejar `sentinel-security-gateway.rs`, el handler `/api/v1/aiops/sanitize` incrementaba `sentinel_aiops_shield_blocked_total`, pero `forward_event` retenía eventos Guardian detectados, los registraba al WAL y no incrementaba el mismo contador. Eso hacía que métricas pudieran subcontar bloqueos del flujo eBPF. Se corrigió el incremento en la rama de retención de Guardian; pendiente compilar, desplegar el binario actualizado y observar la métrica después del reinicio. No se ejecutó un payload de bloqueo para evitar generar un evento de seguridad artificial.
+Al cotejar `sentinel-security-gateway.rs`, el handler `/api/v1/aiops/sanitize` incrementaba `sentinel_aiops_shield_blocked_total`, pero `forward_event` retenía eventos Guardian detectados, los registraba al WAL y no incrementaba el mismo contador. Eso hacía que métricas pudieran subcontar bloqueos del flujo eBPF. Se corrigió el incremento en la rama de retención de Guardian. No se ejecutó un payload de bloqueo para evitar generar un evento de seguridad artificial.
+
+### Gateway actualizado en Marte
+
+Commit Sentinel `092f474e` incluye la corrección. `cargo fmt --check`, `cargo check --locked --package sentinel-cortex --bin sentinel-security-gateway` y el build release del binario pasaron; no se ejecutó la suite. El bundle transferido tuvo SHA-256 `9a7cd175c029876ad65c22e1272bf4f99160a873ebfa066efa85e238b6070db2`; el binario instalado quedó con SHA-256 `63a9c45d43b32578a4ef206440a2051111433ec80aec242e252566c20200f670`. Se preservó la versión anterior en `/var/tmp/sentinel-security-gateway-rollback-092f474e`.
+
+Tras reiniciar únicamente `sentinel-security-gateway.service`, su log confirmó que enlazó el ring buffer; el health HTTP 200 y la métrica se comprobaron tras estar listo el listener (la primera consulta inmediata al restart ocurrió antes de que aceptara conexión). En esa lectura posterior: `forwarded_total=7`, `forward_errors_total=0`, `ring_drops_total=0`; Fenix registró los eventos posteriores con HTTP 201. Guardian permaneció en auditoría (`guardian_mode_map=0`) y `sentinel-ebpf.service` siguió activo. El nuevo contador de bloqueos reporta 0 después del reinicio; como no se generó un evento malicioso, esa lectura no prueba un incremento positivo, solo que la ruta de despliegue y telemetría está activa.
 
 ## Separación del QHC, el runtime de mallas y el reloj — 2026-10-30
 
