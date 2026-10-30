@@ -32,6 +32,6 @@ El alcance observado son los seis nodos conocidos y una prueba de puertos desde 
 
 - **GCP:** verificado con `gcloud compute firewall-rules describe` (prioridades 900/1000/65534, tags y rangos de origen).
 - **Linode:** verificado con la API: `ocean-dmz` está `enabled`, asignado al Linode `109391597`, inbound `DROP` con solo DNS 53 y UDP/51820.
-- **Vultr:** verificado desde iFenix con `vultr-cli` (IP autorizada). El grupo de Fenix `72f91f35…` tenía TCP/22 desde `191.116.118.108/32`; se eliminó la regla 3. El grupo de Kingu `9af9d0ab…` no tiene TCP/22. TCP/4222 sigue en el grupo de Kingu desde `0.0.0.0/0` y en el de Fenix desde iFenix y `10.88.0.0/24`. Desde Fenix la API rechaza la IP `64.176.28.233` (`401 Unauthorized IP address`), por lo que la verificación se hizo desde iFenix.
+- **Vultr:** verificado desde iFenix con `vultr-cli` (IP autorizada). El grupo de Fenix `72f91f35…` tenía TCP/22 desde `191.116.118.108/32`; se eliminó la regla 3. El grupo de Kingu `9af9d0ab…` no tiene TCP/22. TCP/4222 sigue en el grupo de Kingu desde `0.0.0.0/0` y en el de Fenix desde iFenix y `10.88.0.0/24`. La config accesible al agente en Fenix era la misma de iFenix (`sha256 63ca…`), por lo que la API devolvió `401 Unauthorized IP address: 64.176.28.233`; la key propia de Fenix no estuvo disponible para el agente. La verificación se hizo desde iFenix.
 - **Hosts Hercules/Ocean:** verificado por SSH con `firewall-cmd`, `nft`, `ss` y `sshd -T`.
 - **Pruebas desde iFenix:** se registran como evidencia de la captura; no se repitieron desde una tercera red externa.
