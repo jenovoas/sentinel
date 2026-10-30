@@ -1,0 +1,134 @@
+name: sentinel-marte
+
+services:
+  prometheus:
+    image: prom/prometheus:v3.15.1
+    container_name: sentinel-marte-prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=30d
+      - --storage.tsdb.wal-compression
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      - mimir
+      - node-exporter
+    networks:
+      - sentinel_observability
+    restart: unless-stopped
+    mem_limit: 1g
+    cpus: 1.0
+
+  mimir:
+    image: grafana/mimir:3.2.3
+    container_name: sentinel-marte-mimir
+    command: ["-config.file=/etc/mimir/mimir.yml"]
+    volumes:
+      - ./mimir.yml:/etc/mimir/mimir.yml:ro
+      - mimir_data:/data/mimir
+    networks:
+      - sentinel_observability
+    restart: unless-stopped
+    mem_limit: 3g
+    cpus: 2.0
+
+  loki:
+    image: grafana/loki:3.7.0
+    container_name: sentinel-marte-loki
+    command: ["-config.file=/etc/loki/loki.yml"]
+    volumes:
+      - ./loki.yml:/etc/loki/loki.yml:ro
+      - loki_data:/loki
+    ports:
+      - "10.88.0.6:3100:3100"
+    networks:
+      - sentinel_observability
+    restart: unless-stopped
+    mem_limit: 1536m
+    cpus: 1.5
+
+  grafana:
+    image: grafana/grafana:13.2.1
+    container_name: sentinel-marte-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD:?Provision GF_SECURITY_ADMIN_PASSWORD in .env}
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_SERVER_HTTP_ADDR: 0.0.0.0
+      GF_SERVER_HTTP_PORT: "3000"
+      GF_SERVER_ROOT_URL: http://10.88.0.6:3000/
+      GF_SECURITY_DISABLE_GRAVATAR: "true"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/sentinel.yml:ro
+      - ./grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/sentinel.yml:ro
+      - ./dashboards:/etc/grafana/provisioning/dashboards/json:ro
+    ports:
+      - "10.88.0.6:3000:3000"
+    depends_on:
+      - prometheus
+      - mimir
+      - loki
+    networks:
+      - sentinel_observability
+    restart: unless-stopped
+    mem_limit: 1g
+    cpus: 1.0
+
+  node-exporter:
+    image: quay.io/prometheus/node-exporter:v1.12.1
+    container_name: sentinel-marte-node-exporter
+    pid: host
+    command:
+      - --path.rootfs=/host
+      - --web.listen-address=:9100
+    volumes:
+      - /:/host:ro,rslave
+    networks:
+      - sentinel_observability
+    restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.5
+
+  alloy:
+    image: grafana/alloy:v1.21.3
+    container_name: sentinel-marte-alloy
+    user: "0:0"
+    command:
+      - run
+      - --server.http.listen-addr=127.0.0.1:12345
+      - --storage.path=/var/lib/alloy/data
+      - --disable-reporting
+      - /etc/alloy/config.alloy
+    volumes:
+      - ./alloy-marte.alloy:/etc/alloy/config.alloy:ro
+      - alloy_data:/var/lib/alloy/data
+      - /run/log/journal:/run/log/journal:ro
+      - /var/log/journal:/var/log/journal:ro
+      - /var/log/audit:/var/log/audit:ro
+    networks:
+      - sentinel_observability
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.5
+
+networks:
+  sentinel_observability:
+    name: sentinel_marte_observability
+
+volumes:
+  prometheus_data:
+    name: sentinel_marte_prometheus
+  mimir_data:
+    name: sentinel_marte_mimir
+  loki_data:
+    name: sentinel_marte_loki
+  grafana_data:
+    name: sentinel_marte_grafana
+  alloy_data:
+    name: sentinel_marte_alloy

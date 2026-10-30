@@ -1,0 +1,34 @@
+logging {
+  level  = "info"
+  format = "logfmt"
+}
+
+loki.write "marte" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
+
+loki.source.journal "marte_systemd" {
+  max_age = "24h"
+  labels = {
+    cluster = "securepenguin",
+    node    = "marte",
+    job     = "systemd-journal",
+  }
+  forward_to = [loki.write.marte.receiver]
+}
+
+local.file_match "marte_audit" {
+  path_targets = [{
+    __path__ = "/var/log/audit/audit.log",
+    cluster  = "securepenguin",
+    node     = "marte",
+    job      = "auditd",
+  }]
+}
+
+loki.source.file "marte_audit" {
+  targets    = local.file_match.marte_audit.targets
+  forward_to = [loki.write.marte.receiver]
+}

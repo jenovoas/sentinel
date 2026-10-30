@@ -1,0 +1,48 @@
+logging {
+  level  = "info"
+  format = "logfmt"
+}
+
+loki.write "marte" {
+  endpoint {
+    url = "http://10.88.0.6:3100/loki/api/v1/push"
+  }
+}
+
+loki.source.journal "fenix_systemd" {
+  max_age = "24h"
+  labels = {
+    cluster = "securepenguin",
+    node    = "fenix",
+    job     = "systemd-journal",
+  }
+  forward_to = [loki.write.marte.receiver]
+}
+
+local.file_match "fenix_docker" {
+  path_targets = [{
+    __path__ = "/var/lib/docker/containers/*/*-json.log",
+    cluster  = "securepenguin",
+    node     = "fenix",
+    job      = "docker-container",
+  }]
+}
+
+loki.source.file "fenix_docker" {
+  targets    = local.file_match.fenix_docker.targets
+  forward_to = [loki.write.marte.receiver]
+}
+
+local.file_match "fenix_audit" {
+  path_targets = [{
+    __path__ = "/var/log/audit/audit.log",
+    cluster  = "securepenguin",
+    node     = "fenix",
+    job      = "auditd",
+  }]
+}
+
+loki.source.file "fenix_audit" {
+  targets    = local.file_match.fenix_audit.targets
+  forward_to = [loki.write.marte.receiver]
+}

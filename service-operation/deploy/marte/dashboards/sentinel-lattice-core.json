@@ -1,0 +1,68 @@
+{
+  "id": null,
+  "uid": "sentinel-lattice-core",
+  "title": "Sentinel Lattice Core",
+  "tags": ["sentinel", "lattice", "core"],
+  "timezone": "browser",
+  "schemaVersion": 29,
+  "version": 1,
+  "refresh": "1m",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Lattice Total Energy",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        { "expr": "sentinel_lattice_total_energy", "legendFormat": "total_energy", "refId": "A" }
+      ],
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Temperatura de CPU (Ruido Térmico S60)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        { "expr": "sentinel_cpu_temperature_celsius", "legendFormat": "celsius", "refId": "B" }
+      ],
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Nodos Activos en Lattice",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        { "expr": "sentinel_lattice_active_node_count", "legendFormat": "nodos_activos", "refId": "C" }
+      ],
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Intercepciones de Seguridad (AIOpsShield / WAL)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        { "expr": "sentinel_aiops_shield_interceptions_total", "legendFormat": "intercepciones", "refId": "D" }
+      ],
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 }
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "id": null,
+  "uid": "sentinel-multitenant-clients",
+  "title": "Sentinel — Monitoreo Multi-Tenant y Servicios a Clientes",
+  "tags": ["sentinel", "multitenant", "clients", "services", "sla"],
+  "timezone": "browser",
+  "schemaVersion": 29,
+  "version": 1,
+  "refresh": "1m",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Servicios Entregados a Clientes (SLA / Estado UP)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "sentinel_client_service_up",
+          "legendFormat": "{{service}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "options": { "0": { "text": "CAÍDO (DOWN)", "color": "red" } }, "type": "value" },
+            { "options": { "1": { "text": "OPERATIVO (UP)", "color": "green" } }, "type": "value" }
+          ]
+        }
+      },
+      "gridPos": { "x": 0, "y": 0, "w": 16, "h": 6 }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Tenants / Organizaciones Activas",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "sentinel_tenant_active_total",
+          "legendFormat": "Tenants",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 16, "y": 0, "w": 4, "h": 6 }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Salud de Respaldos por Tenant",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "sentinel_tenant_backup_healthy",
+          "legendFormat": "{{tenant}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "options": { "0": { "text": "DEGRADADO", "color": "red" } }, "type": "value" },
+            { "options": { "1": { "text": "RESPALDADO", "color": "green" } }, "type": "value" }
+          ]
+        }
+      },
+      "gridPos": { "x": 20, "y": 0, "w": 4, "h": 6 }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Histórico de Disponibilidad de Servicios a Clientes",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "sentinel_client_service_up",
+          "legendFormat": "Servicio {{service}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 1,
+          "unit": "short"
+        }
+      },
+      "gridPos": { "x": 0, "y": 6, "w": 12, "h": 8 }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Intercepciones de Seguridad AIOps en Clientes",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "rate(sentinel_aiops_shield_interceptions_total[2m]) * 60",
+          "legendFormat": "Ataques interceptados / min",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "ops/min" }
+      },
+      "gridPos": { "x": 12, "y": 6, "w": 12, "h": 8 }
+    }
+  ]
+}

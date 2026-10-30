@@ -1,0 +1,26 @@
+services:
+  alloy-fenix:
+    image: grafana/alloy:v1.21.3
+    container_name: sentinel-fenix-alloy
+    user: "0:0"
+    command:
+      - run
+      - --server.http.listen-addr=127.0.0.1:12345
+      - --storage.path=/var/lib/alloy/data
+      - --disable-reporting
+      - /etc/alloy/config.alloy
+    network_mode: host
+    volumes:
+      - ./alloy-fenix.alloy:/etc/alloy/config.alloy:ro
+      - alloy_fenix_data:/var/lib/alloy/data
+      - /run/log/journal:/run/log/journal:ro
+      - /var/log/journal:/var/log/journal:ro
+      - /var/log/audit:/var/log/audit:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.5
+
+volumes:
+  alloy_fenix_data:
+    name: sentinel_fenix_alloy
