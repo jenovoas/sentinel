@@ -54,6 +54,15 @@ SOMA y sus workers no son componentes de este mapa. La evidencia se clasifica co
 7. **TruthSync:** alojar el backend TruthSync en Marte y exponerlo solo por WireGuard. La UI sigue llamando a Fenix; FastAPI Fenix será el gateway hacia TruthSync en Marte (API actual `/api/v1/truthsync/verify`, puerto privado por definir). Hoy `truthsync-core` está enlazado dentro de Cortex/Fenix y FastAPI ejecuta un cliente local; no hay daemon TruthSync. Migrar el cliente detrás de un contrato autenticado, evitando motores divergentes o llamadas directas del navegador a Marte.
 8. **Aceptación:** probar cada flujo con datos sintéticos autorizados: Prometheus consulta Fenix; Mimir conserva series; Loki recibe/consulta logs; Grafana muestra datasources saludables; TruthSync responde según su contrato; y el forwarder eBPF recibe respuesta de FastAPI Fenix. `active` por sí solo no acredita integración.
 
+### TruthSync: dos funciones complementarias
+
+TruthSync comprende dos caminos con responsabilidades distintas; desplegar uno no sustituye al otro:
+
+1. **Filtro integrado de seguridad/entropía:** `me-60os-core/src/scv.rs` implementa `ScvEngine` y `EntropicFirewall`; calcula entropía y decide validez (`analyze`/`verify`). `sentinel-cortex/src/security/lfm_security_pipeline.rs` agrega sanitización de ingreso y certificación de salida con el `TruthSyncEngine` enlazado. Esta ruta vive integrada en el runtime y filtra/rechaza entradas o salidas según sus reglas. La conexión exacta entre `ScvEngine` y cada ruta de producción debe verificarse antes de atribuirle cobertura total.
+2. **TruthSync pod / Truth Core:** el motor de verificación y score de contenidos, concebido como servicio pesado independiente. `docs/proven/TRUTHSYNC_ARCHITECTURE.md` describe `truth-core` aislado, con análisis y almacenamiento propios; `backend/truthsync_core.py` contiene un worker de verificación/scoring. La asignación objetivo es Marte, invocado privadamente por FastAPI en Fenix. No existe hoy un manifiesto de servicio comprobado ni el pod apareció en el inventario de Fenix revisado; su historial/runtime en Marte u otro nodo queda por recuperar.
+
+Jaime reporta que ambos eran partes del mismo sistema y que una IA los separó, dejando el pod olvidado. Se conserva como antecedente reportado, no como atribución histórica confirmada por Git. No reemplazar el servicio de contenido por el filtro integrado, ni eliminar/absorber el filtro al recuperar el pod. Antes del despliegue, recuperar la versión/contrato original del pod o reconstruirlo explícitamente y documentar diferencias, API privada, identidad/autenticación, timeout, persistencia, scoring y fallback. La UI continúa entrando por Kingu → Fenix; Fenix enruta la verificación de contenido a Truth Core en Marte.
+
 ## 1. Fijar alcance, versión y aceptación
 
 Antes de cambiar un nodo, registrar:
