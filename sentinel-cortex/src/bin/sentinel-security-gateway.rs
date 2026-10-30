@@ -393,6 +393,10 @@ async fn main() -> anyhow::Result<()> {
     let wal = Arc::new(ForensicWal::new(wal_path, &wal_key)?);
 
     let client = reqwest::Client::builder()
+        // Fenix/uvicorn closes idle keep-alive connections after a few seconds.
+        // Do not reuse a pooled socket past that window or a POST can fail with
+        // "error sending request" and be retried unnecessarily.
+        .pool_idle_timeout(Duration::from_secs(2))
         .connect_timeout(Duration::from_secs(3))
         .timeout(Duration::from_secs(10))
         .build()?;

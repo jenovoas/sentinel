@@ -17,17 +17,19 @@ class GuardianDeploySafetyTests(unittest.TestCase):
         cls.unit = (ROOT / "systemd/sentinel-ebpf.service").read_text()
 
     def test_missing_mode_map_entry_is_fail_open(self):
-        audit_gate = "if (!mode || *mode == 0)"
         self.assertIn("guardian_mode_map SEC(\".maps\")", self.program)
-        self.assertIn(audit_gate, self.program)
-        audit_start = self.program.index(audit_gate)
-        audit_end = self.program.index("return 0;", audit_start)
-        first_deny = self.program.index("return -EACCES;")
-        self.assertLess(audit_end, first_deny)
+        self.assertIn("int enforcing = mode && *mode != 0;", self.program)
+        unknown_start = self.program.index("if (!allowed)")
+        unknown_end = self.program.index("if (!allowed)", unknown_start + 1)
+        unknown_block = self.program[unknown_start:unknown_end]
+        self.assertIn("if (enforcing)", unknown_block)
+        self.assertIn('bpf_printk("Guardian [AUDIT]: Unknown binary', unknown_block)
+        self.assertIn("return 0;", unknown_block)
+        self.assertIn("return -EACCES;", unknown_block)
 
     def test_bootstrap_populates_and_checks_map_before_attach(self):
         batch = self.bootstrap.index('bpftool batch file "$BATCH_FILE"')
-        map_count = self.bootstrap.index('map_entries=$(bpftool map dump pinned "$MAP_PIN"')
+        map_count = self.bootstrap.index('map_entries=$(bpftool -j map dump pinned "$MAP_PIN"')
         required_path_check = self.bootstrap.index('for tool in bash sh sudo systemctl rm bpftool sshd; do')
         attach = self.bootstrap.index('"$ATTACHER" "$PROGRAM_PIN" "$LINK_PIN"')
         self.assertLess(batch, map_count)
