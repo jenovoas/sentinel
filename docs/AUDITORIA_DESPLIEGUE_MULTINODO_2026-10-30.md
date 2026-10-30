@@ -65,7 +65,7 @@ Verificación directa por SSH a Fenix y Kingu entre 04:08 y 04:21 UTC:
 | Dual Lane | Hay implementación Python/Rust, WAL y pruebas/benchmarks. | No se comprobó una ruta de producción conectando eventos de Marte a ambas lanes con evidencia y observabilidad. |
 | eBPF/Guardian | El bridge está en el código Cortex; no se encontraron programas/mapas Sentinel activos en Fenix. | Capa local Marte pendiente. Preflight obligatorio de whitelist/rutas críticas y recuperación fuera de banda; enforcement requiere autorización separada. |
 | Frontend | Kingu sirve Next.js; handlers BFF en `frontend/src/lib/server/*` mantienen sesión/CSRF y reenvían a Fenix. El visualizador de lattice consume `/api/v1/lattice/hologram` por el BFF. | Frontend pequeño frente al backend; validar estado funcional autenticado y errores de upstream, sin exponer APIs al navegador. |
-| Marte → Fenix | Rol previsto: sensor Sentinel en Marte (`10.88.0.6`) → backend Fenix (`10.88.0.1`) por WireGuard. No se verificó ni completó desde esta sesión. | Un intento SSH desde esta ruta devolvió `No route to host`; notas operativas previas registran que Jaime accedió a Marte por SSH 4222 y confirmó Firewalld. Ese fallo no significa que Marte esté globalmente inaccesible. Revalidar por la ruta administrativa de Jaime. |
+| Backend de borde Marte → central Fenix | Marte alojará parte del backend: Guardian/eBPF local, colectores/forwarder de eventos y agentes locales de observabilidad; APIs, estado autoritativo y QHC compartido permanecen en Fenix (`10.88.0.1`). | Es la división objetivo; no estaba desplegada/verificada en Marte durante esta sesión. Un intento SSH desde esta ruta devolvió `No route to host`; notas operativas previas registran acceso directo de Jaime por SSH 4222 y Firewalld. El error solo describe esta ruta. |
 
 ### Perfil y estado de Marte
 
@@ -76,7 +76,21 @@ Verificación directa por SSH a Fenix y Kingu entre 04:08 y 04:21 UTC:
 - El backend Fenix ya incluye `POST /api/v1/cortex/events` con cuerpo `event_type`, `source`, `data`, y cabecera `X-Sentinel-Token`. Se propone como destino de eventos remotos, sujeto a probar compatibilidad del evento eBPF, autenticación, respuesta/persistencia y análisis en DB. El secreto no se distribuyó.
 - `sentinel-ebpf-forwarder.service` actual ejecuta `bpftool prog tracelog` y escribe localmente; por sí solo no reenvía eventos a Fenix. Hace falta configurar o implementar un forwarder remoto verificable. También se debe comprobar en vivo el firewall actual de Fenix: la política observada en la auditoría previa limitaba los puertos API a Kingu, pero luego hubo intervención de Firewalld; no agregar reglas hasta revisar su estado efectivo.
 
-La meta de arquitectura queda explícita: **Marte ejecuta la capa local de seguridad/monitoreo y envía los eventos al backend central de Fenix (`10.88.0.1`)**. Kingu continúa alojando el frontend; Fenix conserva FastAPI/Cortex, datos y QHC compartido. No distribuir el backend a Marte.
+La división objetivo queda explícita: **Fenix es el backend central y Marte aloja servicios de backend de borde que observan/procesan el host y siempre reportan a Fenix (`10.88.0.1`)**. Kingu aloja el frontend. Marte no debe establecer una base de datos ni autoridad Sentinel independiente.
+
+### Componentes de backend que pueden distribuirse
+
+| Componente | Rol objetivo | Situación comprobada |
+|---|---|---|
+| Guardian/eBPF | Sensor kernel local de Marte, modo auditoría al inicio | El estado del host Marte es no verificado; no se cargó desde esta sesión. Whitelist y recuperación fuera de banda son prerrequisitos. |
+| Forwarder de eventos | Leer ring buffer local, normalizar y enviar a FastAPI Fenix (`POST /api/v1/cortex/events`) con `X-Sentinel-Token` | No existe en la unidad `sentinel-ebpf-forwarder.service`: hoy solo ejecuta `bpftool prog tracelog` y escribe en log local. |
+| Node Exporter | Exponer métricas locales de Marte para Prometheus de Fenix | La configuración Fenix scrapea solo `node-exporter:9100` local. Prometheus está unido a `sentinel_internal` (`internal: true`); falta egress controlado al peer WireGuard y target `10.88.0.6:9100`. |
+| Promtail | Enviar logs seleccionados de Marte a Loki de Fenix con etiquetas `node=marte` | Configuración actual lee `/var/log` de Fenix y usa Loki por DNS Compose. Loki publica host `127.0.0.1:3100`; falta un endpoint de transporte privado restringido para Marte. |
+| Neural Guard | Correlación local/distribuida de métricas, logs y Redis; alertas por n8n | Existe como servicio Rust en Compose Fenix, consume Prometheus/Loki/Redis y notifica n8n. No estaba activo en la captura de contenedores y usa nombres Docker internos; asignarlo a Marte exige definir endpoints y accesos mínimos. Su placement sigue pendiente, no se asume. |
+
+En la captura de runtime posterior a instalar QHC estaban activos solo `sentinel-backend`, `sentinel-cortex`, `sentinel-postgres`, `sentinel-redis` y `sentinel-n8n`. Prometheus, Loki, Grafana, Alertmanager, exporters, Promtail y `neural-guard` declarados en Compose no aparecieron en `docker ps`; la observabilidad central descrita aquí es una configuración objetivo, no un stack activo validado.
+
+Por tanto, “parte del backend en Marte” se concreta en backend de borde de seguridad/telemetría. La extensión opcional a `neural-guard` necesita asignación y configuración de dependencias. El contrato de envío de métricas/logs desde Marte a Fenix también requiere cambios de red/configuración; no basta instalar agentes con las plantillas actuales.
 
 ## Análisis funcional del frontend
 
@@ -97,11 +111,12 @@ La imagen previa sigue disponible. Si la nueva versión presenta una regresión,
 ## Pendientes antes de aceptar el despliegue integral
 
 1. Usar la ruta administrativa confirmada por Jaime para inspeccionar Marte en vivo: identidad/hostname, Debian/kernel activo, SSH 4222, WireGuard hacia `10.88.0.1`, Firewalld/zona/interfaz/reglas, whitelist y servicios Sentinel. El error `No route to host` de esta sesión no es un diagnóstico global del nodo.
-2. Diseñar y probar el forwarder autenticado Marte→`POST /api/v1/cortex/events`, definir custodia del secreto y permitir solo la IP/puertos requeridos en firewall. Aceptar eventos con ID/confirmación y visibilidad en la lane/WAL correspondiente.
-3. Completar preflight de whitelist y rutas críticas y comprobar recuperación fuera de banda en Marte antes de ejecutar el bootstrap que adjunta Guardian en auditoría. Enforcement sigue requiriendo autorización separada.
-4. Verificar contrato MyCNet↔QHC desde el despliegue de MyCNet; no inferirlo de la salud de Sentinel.
-5. Validar `/api/v1/crystal_runtime/status` y `/api/v1/qhc/status` mediante sesión aprobada, además de login y WebSocket autenticados.
-6. Definir y probar publicación del tick DTC por SHM; hoy las constantes están pero no el objeto compartido.
-7. Revisar headers TLS de Sentinel y backups/restauración antes de declarar cierre de producción. La advertencia TLS duplicada pertenece a otro vhost y requiere cambio separado.
+2. Completar el backend de borde: preflight y carga Guardian en auditoría; instalar/probar forwarder autenticado a FastAPI Fenix; provisionar node-exporter y Promtail en Marte; abrir solo los transportes necesarios hacia Fenix tras revisar el firewall efectivo.
+3. Resolver los bloqueos de red del stack observability central: Prometheus en red `internal` requiere egress WireGuard para scrape remoto; Loki requiere listener privado autorizado porque hoy solo publica en loopback. Validar `node=marte` en Prometheus/Loki.
+4. Decidir si `neural-guard` es la parte de procesamiento backend que se ubicará en Marte; si sí, cambiar sus URLs de Docker internas por endpoints privados y darle acceso mínimo a Redis, Prometheus, Loki y n8n. Si permanece en Fenix, activar y verificar allí.
+5. Verificar contrato MyCNet↔QHC desde el despliegue de MyCNet; no inferirlo de la salud de Sentinel.
+6. Validar `/api/v1/crystal_runtime/status` y `/api/v1/qhc/status` mediante sesión aprobada, además de login y WebSocket autenticados.
+7. Definir y probar publicación del tick DTC por SHM; hoy las constantes están pero no el objeto compartido.
+8. Revisar headers TLS de Sentinel y backups/restauración antes de declarar cierre de producción. La advertencia TLS duplicada pertenece a otro vhost y requiere cambio separado.
 
-**Estado operativo actualizado:** frontend y APIs accesibles; contenedores core saludables; Cortex nuevo y persistente desplegado; QHC activo y visto por Cortex; autenticación humana pendiente. La capa Sentinel en Marte no se instaló en esta sesión; la ruta desde este agente dio `No route to host`, mientras la memoria registra que Jaime accedió al nodo por SSH 4222. No se declara «despliegue integral Sentinel completado».
+**Estado operativo actualizado:** frontend y APIs accesibles; contenedores core saludables; Cortex nuevo y persistente desplegado; QHC activo y visto por Cortex; autenticación humana pendiente. La arquitectura ahora distingue backend central Fenix y backend de borde Marte. Los servicios de seguridad/telemetría de borde y los pipelines remotos de métricas/logs aún no están desplegados ni verificados. No se declara «despliegue integral Sentinel completado».

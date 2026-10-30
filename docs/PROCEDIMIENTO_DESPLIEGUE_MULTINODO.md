@@ -4,9 +4,9 @@
 
 Este procedimiento aplica a `main` y al entorno systemd:
 
-- **Fenix (`10.88.0.1`)**: build, Docker Compose, FastAPI, Cortex, PostgreSQL y Redis.
+- **Fenix (`10.88.0.1`)**: backend central de API/datos y servicios compartidos: FastAPI, Cortex, PostgreSQL, Redis y QHC. Mantiene como destino central de los datos y eventos de Marte.
 - **Kingu (`10.88.0.2`)**: Next.js bajo systemd, Nginx y TLS público.
-- **Marte (`10.88.0.6`)**: nodo de origen para la capa Sentinel de seguridad y monitoreo; sus eventos deben llegar al backend de Fenix (`10.88.0.1`) por WireGuard.
+- **Marte (`10.88.0.6`)**: backend de borde: seguridad del kernel, colectores de métricas/logs y procesamiento/forwarding local aprobado. Se conecta al backend central Fenix (`10.88.0.1`) por WireGuard; no crea un sistema de datos Sentinel paralelo.
 - **WireGuard (`10.88.0.0/24`)**: transporte privado entre nodos. Los puertos FastAPI/Cortex/n8n se publican en la IP WireGuard de Fenix; `DOCKER-USER` debe limitar cada origen y puerto explícitamente autorizado.
 - **Hercules/DNS**: solo se modifica si el alcance incluye explícitamente un cambio DNS.
 
@@ -18,7 +18,9 @@ SOMA (`soma_orchestrator`/`soma_worker`) queda fuera de este despliegue hasta au
 
 La memoria persistente registra para Marte Debian 13 amd64, kernel `7.3.0-ifenix` activo y administración SSH por TCP 4222 (sin listener SSH 22 en la verificación del 2026-10-30). También registra una intervención para instalar Firewalld 2.3.1; la configuración vigente de zonas/reglas de Marte no fue verificada directamente en esta auditoría Sentinel. Jaime confirmó que tiene acceso al nodo y que usa Firewalld. Un `No route to host` observado desde otra ruta/host describe ese intento, no demuestra indisponibilidad global de Marte.
 
-El rol previsto es ejecutar allí el sensor/monitor Sentinel en modo auditoría y transportar eventos hacia Fenix por `10.88.0.1:8000`; FastAPI ofrece `POST /api/v1/cortex/events` con contrato `event_type`, `source`, `data` y autenticación `X-Sentinel-Token`. Antes de declarar el flujo listo, confirmar desde Marte el transporte WireGuard, la recepción, persistencia/decisión del evento y las reglas efectivas de Firewalld en Marte y Fenix. El token se provisiona por canal seguro y no se incluye en logs, argumentos o bundles.
+El backend de borde previsto en Marte ejecuta allí el sensor/monitor Sentinel en modo auditoría y los agentes de recolección. Los eventos normalizados van a Fenix por `10.88.0.1:8000`; FastAPI ofrece `POST /api/v1/cortex/events` con contrato `event_type`, `source`, `data` y autenticación `X-Sentinel-Token`. Las métricas de host deben terminar en Prometheus de Fenix y los logs en Loki de Fenix. Antes de declarar el flujo listo, confirmar desde Marte el transporte WireGuard, recepción, persistencia/decisión del evento y reglas efectivas de Firewalld en ambos nodos. El token se provisiona por canal seguro y no se incluye en logs, argumentos o bundles.
+
+El reparto entre Fenix (central) y Marte (borde) es intencional: el estado autoritativo Sentinel queda en Fenix; Marte agrega servicios backend que observan/procesan el host y remiten resultados a Fenix. No duplicar PostgreSQL/Redis ni levantar una segunda autoridad de Cortex en Marte salvo que se diseñe y acepte explícitamente replicación, consistencia y failover.
 
 ### Mapa funcional y criterio de aceptación
 
@@ -27,15 +29,26 @@ El rol previsto es ejecutar allí el sensor/monitor Sentinel en modo auditoría 
 | FastAPI, PostgreSQL, Redis | Backend de Sentinel en Fenix | Contenedores saludables; migración en head; APIs privadas alcanzables desde pares permitidos. |
 | Cortex Rust | Backend de Sentinel en Fenix | Imagen fijada por SHA, `/health`, logs y endpoints autenticados validados. |
 | QHC | Servicio compartido local en Fenix para Sentinel y MyCNet | `sentinel-qhc-agent` activo; probar `SNAPSHOT` con la identidad de Cortex y la de MyCNet; snapshot reciente; Cortex reporta `QHC=true`. La conectividad del socket no sustituye verificar el consumidor de cada aplicación. |
+| Backend de borde Marte | Marte (`10.88.0.6`), reporta y entrega a Fenix | Agentes de seguridad, métricas y logs configurados con destino central `10.88.0.1`; eventos autenticados aceptados y visibles en Fenix. |
 | Matriz/cristales, memorias SHM y dual lane A/B | Runtime Cortex en Fenix | `CrystalRuntime` activo, SHM de ambas lanes y semillas presentes, sincronizaciones crecientes y checkpoint persistente. |
 | Cristal isocrónico DTC | Runtime Cortex en Fenix | Tick DTC observable y contrato IPC probado. Las constantes actuales de SHM no bastan: el runtime debe crear/actualizar el objeto DTC compartido. |
 | PAI-60 | Biblioteca/camino de inyección Cortex | Confirmar conversión y amplitud desde el camino activo; mantener la escala acordada y no inferirla desde benchmarks. |
 | FPU | Referencia de CPU/benchmarks, no daemon independiente | Tratar cada uso de punto flotante por ruta de producción; no declarar “FPU desplegada” como módulo. |
 | Dual Lane Security/Observability | Backend de eventos | Probar que eventos reales atraviesan las dos lanes, WAL y almacenamiento; la mera presencia de la biblioteca no demuestra integración. |
 | eBPF/Guardian en Marte | Sensor local en modo auditoría; eventos hacia Fenix | Verificar whitelist/rutas críticas y recuperación fuera de banda antes de adjuntar. No activar enforcement sin autorización separada. Transporte autenticado a Fenix y prueba de recepción antes de darlo por integrado. |
+| `neural-guard` | Worker Rust de correlación; ubicación pendiente de decisión | El código consume Prometheus, Loki, Redis y alerta por n8n. La definición Compose actual usa nombres internos de Fenix; no se puede mover a Marte sin URL/ruta segura para cada dependencia. |
 | Frontend Next.js | Kingu | BFF del navegador hacia APIs privadas de Fenix; sesiones/CSRF, páginas usadas y errores de upstream revisados. No conecta directamente el browser a Fenix. |
 
 SOMA y sus workers no son componentes de este mapa. La evidencia se clasifica como `activo`, `implementado pero no conectado`, `pendiente` o `no verificado`; no se eleva un módulo de estado por su nombre o por un healthcheck general.
+
+### Backend de borde y envío de observabilidad desde Marte
+
+1. **Seguridad:** Guardian/eBPF opera en el kernel de Marte. Instalar y cargar en auditoría solo tras verificar BTF/LSM, whitelist completa y recuperación fuera de banda. Enforcement requiere autorización separada.
+2. **Eventos:** implementar/configurar un agente que lea el ring buffer local, normalice cada evento y lo envíe autenticado a FastAPI Fenix (`POST /api/v1/cortex/events`). `sentinel-ebpf-forwarder.service` actual (`bpftool prog tracelog`) solo presenta trazas en un log local; no es este forwarder de red.
+3. **Métricas:** instalar `node_exporter` en Marte y añadir `10.88.0.6:9100` al scrape de Prometheus Fenix, con etiqueta `node=marte`. Hoy la configuración Fenix solo scrapea `node-exporter:9100` local. Prometheus está en la red Compose `sentinel_internal`; habilitar egress/alcance a WireGuard y restringir el listener de Marte a Fenix antes de aceptar el target.
+4. **Logs:** instalar/configurar un agente Promtail en Marte con `node=marte` y push a Loki Fenix. La configuración actual usa `http://loki:3100`, monta logs locales de Fenix y Loki publica el puerto host solo en `127.0.0.1`; falta un transporte privado autorizado para recibir logs de Marte.
+5. **Correlación:** `neural-guard` es un servicio Rust existente que consulta Prometheus, Loki y Redis y notifica playbooks por n8n. Su placement en Marte no está fijado; el Compose Fenix lo conecta por nombres Docker internos y su estado no estaba activo en la captura. Decidir ubicación y configurar acceso mínimo a dependencias antes del despliegue.
+6. **Aceptación:** generar un evento sintético autorizado desde Marte, verificar respuesta/registro en Fenix; comprobar target Prometheus `UP`, stream Loki etiquetado `node=marte` y alertas de backend. No considerar instalado un agente solo porque el servicio local esté `active`.
 
 ## 1. Fijar alcance, versión y aceptación
 
