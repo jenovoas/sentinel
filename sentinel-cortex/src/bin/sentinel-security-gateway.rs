@@ -301,10 +301,21 @@ async fn forward_event(state: &GatewayState, event: CortexEvent) {
         return;
     }
 
+    let is_exec = matches!(event.event_type.as_str(), "EXEC_ALLOWED" | "EXEC_BLOCKED");
     let payload = json!({
-        "event_type": event.event_type,
+        "event_type": if is_exec { "syscall" } else { event.event_type.as_str() },
         "source": "guardian_alpha",
-        "data": sanitized,
+        "data": {
+            "guardian_event_type": event.event_type,
+            "syscall": if is_exec { Some("execve") } else { None },
+            "process_path": event.process_path,
+            "uid": event.uid,
+            "pid": event.pid,
+            "timestamp_ns": event.timestamp_ns,
+            "severity": event.severity,
+            "entropy_s60_raw": event.entropy_s60_raw,
+            "sanitized_event": sanitized,
+        },
     });
     let serialized = match serde_json::to_string(&payload) {
         Ok(value) => value,

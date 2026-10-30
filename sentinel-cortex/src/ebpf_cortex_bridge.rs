@@ -34,6 +34,11 @@ pub struct CortexEvent {
     /// Codificado por Guardian-Gamma en _reserved[0]:
     /// 1=alpha, 2=cognitive, 3=ai, 4=float, 5=gamma. 0 = no aplica.
     pub guardian_code: u8,
+    /// Present on Guardian Alpha extended exec records (292-byte ABI).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub process_path: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uid: Option<u32>,
 }
 
 #[allow(dead_code)]
@@ -99,6 +104,22 @@ impl EbpfBridge {
         // (float_detector también lo usa con semántica compatible: 0).
         let guardian_code = raw._reserved[0];
 
+        let (process_path, uid) = if data.len() >= 292 {
+            let path_bytes = &data[32..288];
+            let end = path_bytes
+                .iter()
+                .position(|byte| *byte == 0)
+                .unwrap_or(path_bytes.len());
+            let path = std::str::from_utf8(&path_bytes[..end])
+                .ok()
+                .filter(|value| !value.is_empty())
+                .map(str::to_owned);
+            let uid = u32::from_ne_bytes(data[288..292].try_into().ok()?);
+            (path, Some(uid))
+        } else {
+            (None, None)
+        };
+
         Some(CortexEvent {
             timestamp_ns: raw.timestamp_ns,
             pid: raw.pid,
@@ -106,6 +127,8 @@ impl EbpfBridge {
             entropy_s60_raw: raw.entropy_signal,
             severity: raw.severity,
             guardian_code,
+            process_path,
+            uid,
         })
     }
 

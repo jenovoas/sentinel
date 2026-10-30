@@ -164,6 +164,8 @@ Si falta un backup, acceso independiente, artefacto verificable o rollback viabl
 4. Confirmar servicio `active/enabled`, `/login` local HTTP 200 y listener exclusivamente en `127.0.0.1:3001`.
 5. Solo si el alcance incluye publicar o cambiar el vhost: modificar un archivo aislado por hostname, revisar `nginx -t`, recargar Nginx sin detenerlo y verificar proxy, WebSocket y certificado con SNI. DNS se cambia en el primario autoritativo, se incrementa serial y se comprueban primario, secundarios y resolución pública.
 
+6. La interfaz administrativa de escritorio **Tauri también corresponde a Kingu**. Debe consumir las mismas rutas same-origin/BFF autenticadas que Next.js, sin conectarse directamente a Marte ni incluir secretos de Fenix. Solo se instala cuando exista una fuente Tauri recuperada/revisada, telemetría real (sin mocks), compilación reproducible y paquete firmado/verificado para el sistema objetivo. Una mención histórica en Git no equivale a un artefacto listo para producción.
+
 ## 6. Verificación extremo a extremo
 
 Registrar timestamp y resultado por separado:

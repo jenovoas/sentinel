@@ -22,7 +22,7 @@ async def init_security_patterns():
                 "syscalls": ["setuid", "setgid", "setreuid", "setregid"],
                 "target_uid": 0
             },
-            "weight": 0.9,
+            "weight": S60(0, 54, 0).to_base_units(),
             "enabled": True
         },
         {
@@ -34,7 +34,7 @@ async def init_security_patterns():
                 "ports": [4444, 1337, 31337],
                 "protocols": ["raw"]
             },
-            "weight": 0.7,
+            "weight": S60(0, 42, 0).to_base_units(),
             "enabled": True
         },
         {
@@ -46,7 +46,7 @@ async def init_security_patterns():
                 "paths": ["/tmp/", "/dev/shm/", "/var/tmp/"],
                 "syscalls": ["execve"]
             },
-            "weight": 0.95,
+            "weight": S60(0, 57, 0).to_base_units(),
             "enabled": True
         },
         {
@@ -58,7 +58,7 @@ async def init_security_patterns():
                 "min_bytes": 10485760,
                 "external_only": True
             },
-            "weight": 0.85,
+            "weight": S60(0, 51, 0).to_base_units(),
             "enabled": True
         },
         {
@@ -71,28 +71,25 @@ async def init_security_patterns():
                 "internal_network": True,
                 "ssh_like": True
             },
-            "weight": 0.8,
+            "weight": S60(0, 48, 0).to_base_units(),
             "enabled": True
         }
     ]
     
     async with AsyncSessionLocal() as session:
         try:
-            # Check if patterns already exist
             result = await session.execute(select(SecurityPattern))
-            existing = result.scalars().all()
-            
-            if existing:
-                print(f"✅ Security patterns already initialized ({len(existing)} patterns)")
-                return
-            
-            # Insert default patterns
+            existing = {pattern.name: pattern for pattern in result.scalars().all()}
             for pattern_data in default_patterns:
-                pattern = SecurityPattern(**pattern_data)
-                session.add(pattern)
+                pattern = existing.get(pattern_data["name"])
+                if pattern is None:
+                    session.add(SecurityPattern(**pattern_data))
+                else:
+                    # Keep operator-tuned rows intact; add only project defaults missing by name.
+                    continue
             
             await session.commit()
-            print(f"✅ Initialized {len(default_patterns)} security patterns")
+            print(f"✅ Security patterns present: {len(existing)} existing, defaults inserted where missing")
             
         except Exception as e:
             await session.rollback()

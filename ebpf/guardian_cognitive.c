@@ -43,26 +43,39 @@ struct {
   __uint(max_entries, 256 * 1024);
 } events SEC(".maps");
 
-/* Emit the fixed 32-byte contract shared with the Rust Cortex bridge.
- * Initialize every field, including padding, to avoid leaking kernel residue. */
-static __always_inline void emit_exec_event(__u32 event_type, __u8 severity) {
-  struct cortex_event *event =
+/* Extended exec record: retain the stable 32-byte Cortex header and append
+ * the executable path and UID required by the backend's malicious-binary and
+ * privilege analysis. Every byte is initialized before ring submission. */
+struct guardian_exec_event {
+  struct cortex_event cortex;
+  char filename[256];
+  __u32 uid;
+} __attribute__((packed));
+
+_Static_assert(sizeof(struct guardian_exec_event) == 292,
+               "guardian exec record ABI must remain 292 bytes");
+
+static __always_inline void emit_exec_event(__u32 event_type, __u8 severity,
+                                            const char *filename, __u32 uid) {
+  struct guardian_exec_event *event =
       bpf_ringbuf_reserve(&events, sizeof(*event), 0);
   if (!event)
     return;
 
-  event->timestamp_ns = bpf_ktime_get_ns();
-  event->event_type = event_type;
-  event->pid = bpf_get_current_pid_tgid() >> 32;
-  event->entropy_signal = 0;
-  event->severity = severity;
-  event->reserved[0] = 0;
-  event->reserved[1] = 0;
-  event->reserved[2] = 0;
-  event->reserved[3] = 0;
-  event->reserved[4] = 0;
-  event->reserved[5] = 0;
-  event->reserved[6] = 0;
+  event->cortex.timestamp_ns = bpf_ktime_get_ns();
+  event->cortex.event_type = event_type;
+  event->cortex.pid = bpf_get_current_pid_tgid() >> 32;
+  event->cortex.entropy_signal = 0;
+  event->cortex.severity = severity;
+  event->cortex.reserved[0] = 0;
+  event->cortex.reserved[1] = 0;
+  event->cortex.reserved[2] = 0;
+  event->cortex.reserved[3] = 0;
+  event->cortex.reserved[4] = 0;
+  event->cortex.reserved[5] = 0;
+  event->cortex.reserved[6] = 0;
+  __builtin_memcpy(event->filename, filename, sizeof(event->filename));
+  event->uid = uid;
   bpf_ringbuf_submit(event, 0);
 }
 
@@ -167,11 +180,11 @@ int BPF_PROG(guardian_cognitive, struct linux_binprm *bprm, int ret) {
   if (!allowed) {
     if (enforcing) {
       bpf_printk("Guardian [BLOCK]: Unknown binary %s", filename);
-      emit_exec_event(EVENT_EXEC_BLOCKED, SEVERITY_HIGH);
+      emit_exec_event(EVENT_EXEC_BLOCKED, SEVERITY_HIGH, key, uid);
       return -EACCES;
     }
     bpf_printk("Guardian [AUDIT]: Unknown binary %s", filename);
-    emit_exec_event(EVENT_EXEC_ALLOWED, SEVERITY_MEDIUM);
+    emit_exec_event(EVENT_EXEC_ALLOWED, SEVERITY_MEDIUM, key, uid);
     return 0;
   }
 
@@ -234,11 +247,11 @@ int BPF_PROG(guardian_cognitive, struct linux_binprm *bprm, int ret) {
   if (suspicious) {
     if (enforcing) {
       bpf_printk("Guardian [SEMANTIC]: Blocked suspicious name %s", filename);
-      emit_exec_event(EVENT_EXEC_BLOCKED, SEVERITY_CRITICAL);
+      emit_exec_event(EVENT_EXEC_BLOCKED, SEVERITY_CRITICAL, key, uid);
       return -EACCES;
     }
     bpf_printk("Guardian [AUDIT]: Suspicious executable name %s", filename);
-    emit_exec_event(EVENT_EXEC_ALLOWED, SEVERITY_HIGH);
+    emit_exec_event(EVENT_EXEC_ALLOWED, SEVERITY_HIGH, key, uid);
   }
 
   return 0;
