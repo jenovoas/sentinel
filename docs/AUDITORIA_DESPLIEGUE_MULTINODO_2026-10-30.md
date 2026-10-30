@@ -149,3 +149,13 @@ La imagen previa sigue disponible. Si la nueva versión presenta una regresión,
 8. Revisar headers TLS de Sentinel y backups/restauración antes de declarar cierre de producción. La advertencia TLS duplicada pertenece a otro vhost y requiere cambio separado.
 
 **Estado operativo actualizado:** frontend y APIs accesibles; contenedores core saludables; Cortex nuevo y persistente desplegado; QHC activo y visto por Cortex; autenticación humana pendiente. La arquitectura ahora distingue backend central Fenix y backend de borde Marte. Los servicios de seguridad/telemetría de borde y los pipelines remotos de métricas/logs aún no están desplegados ni verificados. No se declara «despliegue integral Sentinel completado».
+
+## Inicio de despliegue — continuación 2026-10-30
+
+Se inició el preflight de aplicación a las 05:33 UTC. Las comprobaciones remotas de Fenix confirman FastAPI (`10.88.0.1:8000`) y Cortex (`:8001`) con HTTP 200, el servicio `sentinel-qhc-agent` activo y un `SNAPSHOT` reciente por `/run/soma/qhc.sock`. Sin embargo, los logs de Cortex siguen registrando `QHC=true` con `Valid=false` y `Coherence=false`; la salud HTTP/QHC no satisface el gate de coherencia.
+
+Marte (`10.88.0.6`) responde ICMP desde Fenix, pero TCP 4222 devuelve `No route to host` desde Fenix y desde la ruta pública probada también desde laptop. No se ejecutó comando remoto ni se cambió su firewall. Por tanto, Grafana, Mimir, Prometheus, TruthSync, Loki y Guardian/eBPF no se aplicaron. El stack de monitoreo permanece asignado a Marte; no se desplazó a Fenix como sustituto.
+
+En Kingu siguen activos frontend y Nginx. `nginx -t` falla al leer el certificado de `impacta.pinguinoseguro.cl` por permisos; es un vhost ajeno a Sentinel y quedó intacto. No hubo despliegue de frontend.
+
+**Resultado de esta continuación:** preflight iniciado, despliegue remoto de Marte bloqueado por conectividad administrativa desde esta sesión. No hay cambios operativos nuevos. Próximo paso: habilitar SSH TCP 4222 desde la ruta de administración de esta sesión o establecer una ruta administrativa aprobada; luego volver a verificar el firewall activo, whitelist, recuperación fuera de banda y estado real de Marte antes de aplicar servicios. Guardian/eBPF solo podrá adjuntarse en auditoría tras pasar esos gates; enforcement no está autorizado.
