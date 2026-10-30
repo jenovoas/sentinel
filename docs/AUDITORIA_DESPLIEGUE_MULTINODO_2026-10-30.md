@@ -318,3 +318,9 @@ Una lectura posterior detectó que la observabilidad aún no estaba completa: Lo
 Se ajustó la definición versionada de Alloy Marte para montar `/etc/machine-id` de solo lectura y añadir los GID del host verificados (`adm=4`, `systemd-journal=999`) como grupos suplementarios. Commit `a0dd68e7`; el compose en `/opt/sentinel-marte/compose.yaml` quedó con SHA-256 `e05dcfb88d603eb61158ba710ab568620dcfb7e43759ff6b1802e653fbadf2dd`. `docker compose config --quiet` pasó y se recreó solo Alloy; el compose anterior se conservó en `/var/tmp/compose-marte-rollback-a0dd68e7.yaml`.
 
 Tras el restart, Alloy leyó y envió 105.449 entradas de journal; `loki_write_batch_retries_total=0` y todos los motivos de `loki_write_dropped_entries_total=0`. Loki devolvió ambos valores `node=fenix,marte`; consulta reciente `{node="marte",job="systemd-journal"}` devolvió logs reales del host. El contenedor Alloy quedó `Up` y su servidor de diagnóstico sigue escuchando solo en loopback. **La ingestión local de Marte queda aceptada** por métricas y consulta de streams, no por el estado del contenedor solamente.
+
+## Estado de presentación en Kingu — 2026-10-30 14:37 UTC
+
+Una captura nueva corrige la observación previa del preflight: `sentinel-frontend.service` sí está `active/running` en Kingu (`10.88.0.2`) desde el 29 de octubre 15:31 UTC. Su release activa es `/opt/sentinel/frontend/releases/96043b54`; Node sirve solo en `127.0.0.1:3001` y `GET /` respondió HTTP 200. No se alteró este servicio.
+
+La GUI nativa Tauri sigue pendiente: no apareció proceso Tauri ni paquete `.AppImage`, `.deb`, `.msi`, `.exe` o `.dmg` dentro de `/opt/sentinel`. Esto no inspecciona posibles instalaciones manuales por usuario fuera de esa ruta. La distribución Tauri queda asignada a Kingu como presentación que consume el BFF autenticado; el prototipo histórico mock no está listo para instalar y no se ejecutará como servicio headless.
