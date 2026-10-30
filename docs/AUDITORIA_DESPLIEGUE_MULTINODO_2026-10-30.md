@@ -73,7 +73,7 @@ El seguimiento se hizo desde las citas en `me-60os-core/src/` y las trazas de `p
 
 | Línea cotejada | Hallazgo código/experimento | Decisión de despliegue |
 |---|---|---|
-| Nandi–Vitiello 2026/2025; EXP-001/028 | `S60PID` conserva historia y `CrystalRuntime` ejecuta matrices A/B y checkpoint en Cortex. El paper sustenta el modelo no-Markoviano; no prueba por sí mismo el runtime. | Cortex se mantiene en Fenix. Falta publicar/consumir el tick DTC en un contrato IPC real; QHC activo en Cortex no demuestra época/tick compartido con MyCNet. |
+| Nandi–Vitiello 2026/2025; EXP-001/028 | `S60PID`/`CrystalRuntime` implementan memoria y mallas A/B; no son el reloj de tiempo. `TimeCrystalClock` y `NetworkTimeCrystal` están en `quantum/`; `time_crystal.rs` solo reexporta `quantum_core`. | Fenix ejecuta el Cortex Rust, no `quantum/cortex_main.py`; no se verificó `NetworkTimeCrystal` en producción. Falta un tick común con contrato/época compartidos entre Cortex, QHC y MyCNet. |
 | Zhang–Wang 2025 y memoria fotónica; EXP-009/016 | Cortex tiene `LiquidLattice`/`NeuralMemory` y checkpoint de software; los papers describen dispositivos mecánicos/fotónicos físicos. | No desplegar hardware de laboratorio. Aceptar la ruta de software solo con eventos BPF reales y recuperación validada del checkpoint. |
 | Papers eBPF 2021/2026 | El código contiene lector de ring buffer local y bridge Cortex. La arquitectura objetivo mueve Guardian a Marte y exige retorno de eventos a Fenix. | Marte necesita sensor local en auditoría más forwarder de red autenticado. La unidad actual `bpftool prog tracelog` no satisface ese flujo. |
 | EXP-015/020/021 y PAI/FPU | `inject_pai` está en rutas de Cortex; `fpu_vs_pai_bench` es un bin auxiliar y su output no está archivado en la traza. | Desplegar/aceptar el camino PAI de Cortex; no desplegar FPU como daemon ni reclamar resultados del bench sin salida reproducible. |
@@ -145,7 +145,7 @@ La imagen previa sigue disponible. Si la nueva versión presenta una regresión,
 5. Mantener `neural-guard` como ubicación pendiente; Jaime no lo incluyó en la lista asignada a Marte.
 5. Verificar contrato MyCNet↔QHC desde el despliegue de MyCNet; no inferirlo de la salud de Sentinel.
 6. Validar `/api/v1/crystal_runtime/status` y `/api/v1/qhc/status` mediante sesión aprobada, además de login y WebSocket autenticados.
-7. Definir y probar publicación del tick DTC por SHM; hoy las constantes están pero no el objeto compartido.
+7. Desplegar y probar el reloj real (`NetworkTimeCrystal`/`TimeCrystalClock` o su migración Rust) y su contrato de tick común. `CrystalRuntime` y sus mallas A/B no son evidencia del cristal de tiempo; sus constantes DTC no crean un reloj compartido.
 8. Revisar headers TLS de Sentinel y backups/restauración antes de declarar cierre de producción. La advertencia TLS duplicada pertenece a otro vhost y requiere cambio separado.
 
 **Estado operativo actualizado:** frontend y APIs accesibles; contenedores core saludables; Cortex nuevo y persistente desplegado; QHC activo y visto por Cortex; autenticación humana pendiente. La arquitectura ahora distingue backend central Fenix y backend de borde Marte. Los servicios de seguridad/telemetría de borde y los pipelines remotos de métricas/logs aún no están desplegados ni verificados. No se declara «despliegue integral Sentinel completado».
@@ -176,3 +176,11 @@ La nota anterior es una captura previa a resolver el acceso administrativo y que
 - No se desplegó frontend en Kingu en esta intervención. QHC queda como componente compartido requerido por Sentinel/MyCNet; esta tarea no valida integración del lado MyCNet. Cortex sigue mostrando `Valid=false` y `Coherence=false` en los pulsos observados, por lo que la salud de servicios no se interpreta como coherencia total.
 
 **Estado:** backend de observabilidad aplicado y verificado con métricas y logs reales Marte↔Fenix. La red completa de Sentinel no está aceptada: TruthSync, Guardian/eventos y gates funcionales/auth del backend/frontend siguen pendientes. El despliegue y rollback reproducibles quedan en [`service-operation/deploy/marte/README.md`](../service-operation/deploy/marte/README.md) y la guía estándar se actualizó en [`PROCEDIMIENTO_DESPLIEGUE_MULTINODO.md`](PROCEDIMIENTO_DESPLIEGUE_MULTINODO.md).
+
+### Aclaración de identidad: cristal de tiempo y mallas
+
+`sentinel-cortex/src/memory/crystal_runtime.rs` gestiona las matrices de memoria dual (lane A seguridad, lane B observabilidad), semillas y checkpoints. **No es el módulo de sincronización del cristal de tiempo**, aunque contiene un contador interno y usa `IsochronousClock`. Su estado `active` no demuestra que el reloj de red esté desplegado.
+
+El reloj local está representado por `quantum/time_crystal_clock.py::TimeCrystalClock`; la coordinación distribuida está en `quantum/time_crystal_network.py::NetworkTimeCrystal`, iniciada desde `quantum/cortex_main.py`. `me-60os-core/src/time_crystal.rs` solo reexporta `quantum_core`, donde vive la primitiva Rust `IsochronousClock`; no crea por sí sola un servicio distribuido. En Fenix se observan el binario `sentinel-cortex` Rust y `sentinel-qhc-agent`, no el entrypoint Python. No hay evidencia de que `NetworkTimeCrystal` esté ejecutándose ni de que su consenso QNTP sincronice los nodos.
+
+Las mallas `/dev/shm/me60os_lattice` y `/dev/shm/me60os_lattice_b` sí existen en Fenix y pertenecen a `CrystalRuntime`; son estado compartido de las dos lanes, no el reloj común. QHC entrega snapshots a una ruta de Cortex, pero sus pulsos aún indican `Valid=false`, `Coherence=false`; tampoco está verificado el consumidor MyCNet↔QHC. Estos contratos quedan separados hasta integrar y observar el sincronizador real.
