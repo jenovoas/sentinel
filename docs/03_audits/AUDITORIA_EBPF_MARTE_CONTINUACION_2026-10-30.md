@@ -4,6 +4,8 @@
 
 **Preparación local; no desplegada en Marte.** La captura de runtime registrada en `AUDITORIA_EBPF_MARTE_2026-10-30.md` mostró únicamente `guardian_cognitive` adjunto y en auditoría. Esta nota no cambia esa evidencia.
 
+Recaptura de solo lectura por SSH, 2026-10-30 16:54 UTC: los servicios `sentinel-ebpf` y `sentinel-security-gateway` siguen activos/habilitados; el ID 292 `guardian_cognitive` es el único LSM Sentinel adjunto; Gateway consume `/sys/fs/bpf/guardian_alpha/events` mediante `EBPF_EVENTS_PATH` (sin `EBPF_EVENTS_PATHS`). Recuento JSON verificado de `whitelist_map`: 2.748 entradas. La cifra 8.246 de la primera captura contaba líneas y queda corregida.
+
 ## Hallazgos de código
 
 - `scripts/package-sentinel-ebpf.sh` empaqueta solo `guardian_cognitive.o`; `install-sentinel-ebpf.sh` instala y configura únicamente ese Guardian.
