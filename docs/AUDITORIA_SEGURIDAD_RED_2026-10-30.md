@@ -35,3 +35,10 @@ El alcance observado son los seis nodos conocidos y una prueba de puertos desde 
 - **Vultr:** verificado desde Fenix con su propia key y desde iFenix con `vultr-cli`. La key de Fenix requirió agregar `64.176.28.233` a la allowlist de la API key; antes devolvía `401 Unauthorized IP address`. El grupo de Fenix `72f91f35…` tenía TCP/22 desde `191.116.118.108/32`; se eliminó la regla 3. El grupo de Kingu `9af9d0ab…` no tiene TCP/22. TCP/4222 sigue en el grupo de Kingu desde `0.0.0.0/0` y en el de Fenix desde iFenix y `10.88.0.0/24`.
 - **Hosts Hercules/Ocean:** verificado por SSH con `firewall-cmd`, `nft`, `ss` y `sshd -T`.
 - **Pruebas desde iFenix:** se registran como evidencia de la captura; no se repitieron desde una tercera red externa.
+
+## Reserva de IPs públicas — 2026-10-30
+
+- **Kingu:** `64.176.8.191` convertida a IP reservada de Vultr (`2c067ffc-ccab-47dc-b436-d55aa1abb5fe`, label `kingu-public`, `/32`), adjunta a la instancia `da5d2fb2…`. El HTTPS público siguió respondiendo 200 tras la conversión.
+- **Hercules:** `35.222.197.225` ya estaba reservada como dirección estática GCP `hercules-static-ip` (`IN_USE`, `us-central1`).
+- **Ocean:** `172.233.6.214` ya figura `reserved: true` en Linode, asignada al Linode `109391597`.
+- **Fenix:** no solicitado; `64.176.28.233` sigue como IP principal de instancia en Vultr, no reservada.
