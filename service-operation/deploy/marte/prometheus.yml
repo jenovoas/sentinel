@@ -35,3 +35,11 @@ scrape_configs:
         labels:
           node: fenix
           service: sentinel-cortex
+
+  - job_name: sentinel-security-gateway-marte
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["10.88.0.6:8090"]
+        labels:
+          node: marte
+          service: sentinel-security-gateway

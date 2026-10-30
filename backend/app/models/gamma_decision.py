@@ -21,7 +21,7 @@ class GammaDecision(Base):
     decision_type = Column(String(50), nullable=False)
     context = Column(JSON, nullable=False)  # Decision context
     evidence = Column(JSON)  # Supporting evidence
-    confidence = Column(Float)  # AI confidence (0-1)
+    confidence = Column(Float)  # New writes store integer S60 base units in legacy FLOAT storage.
     
     status = Column(String(20), default='pending')  # pending/approved/denied/timeout
     human_decision = Column(String(20))  # approved/denied/timeout

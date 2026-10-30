@@ -16,6 +16,7 @@ use sha3::{Digest, Sha3_256};
 use std::collections::HashSet;
 use std::fs::{File, OpenOptions};
 use std::io::{BufRead, BufReader, Write};
+use std::os::unix::fs::OpenOptionsExt;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -278,6 +279,7 @@ impl ForensicWal {
         let mut file = OpenOptions::new()
             .create(true)
             .append(true)
+            .mode(0o600)
             .open(&self.file_path)
             .map_err(|_| "Failed to open WAL file")?;
 

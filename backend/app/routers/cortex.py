@@ -49,7 +49,7 @@ class DecisionResponse(BaseModel):
     """Decision response"""
     decision_id: int
     decision_type: str
-    confidence: float
+    confidence_s60_raw: int
     patterns_detected: list[str]
     reasoning: str
     processing_time_ms: float
@@ -102,7 +102,7 @@ async def submit_event(
         return DecisionResponse(
             decision_id=decision.id,
             decision_type=decision.decision_type,
-            confidence=decision.confidence,
+            confidence_s60_raw=int(decision.confidence),
             patterns_detected=decision.patterns_detected or [],
             reasoning=decision.reasoning or "",
             processing_time_ms=decision.processing_time_ms or S60(0, 0, 0)
@@ -132,7 +132,7 @@ async def get_decisions(
             {
                 "id": d.id,
                 "decision_type": d.decision_type,
-                "confidence": d.confidence,
+                "confidence_s60_raw": int(d.confidence),
                 "patterns": d.patterns_detected or [],
                 "created_at": d.created_at.isoformat() if d.created_at else None
             }

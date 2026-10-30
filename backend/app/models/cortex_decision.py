@@ -34,7 +34,7 @@ class CortexDecision(Base):
     """Decision: 'allow', 'block', 'escalate'"""
     
     confidence = Column(Float, nullable=False, index=True)
-    """Confidence score (S60(0, 0, 0) - S60(1, 0, 0)). Higher = more confident"""
+    """Legacy FLOAT column; new writes store integer S60 base units (0..60^4)."""
     
     # Pattern detection
     patterns_detected = Column(ARRAY(String), default=[])
@@ -62,4 +62,4 @@ class CortexDecision(Base):
     """Post-analysis: was this decision correct? 1=yes, 0=no, null=unknown"""
     
     def __repr__(self):
-        return f"<CortexDecision(id={self.id}, type={self.decision_type}, confidence={self.confidence:.2f})>"
+        return f"<CortexDecision(id={self.id}, type={self.decision_type}, confidence_s60_raw={self.confidence})>"

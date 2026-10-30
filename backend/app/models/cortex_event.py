@@ -51,8 +51,8 @@ class CortexEvent(Base):
     ppid = Column(Integer)
     """Parent Process ID"""
     
-    risk_score = Column(Float, default=S60(0, 0, 0))
-    """Initial risk score (S60(0, 0, 0) - S60(1, 0, 0))"""
+    risk_score = Column(Float, default=0)
+    """Legacy FLOAT column; new writes store integer S60 base units (0..60^4)."""
     
     # Relationships handled via foreign keys in CortexDecision
     

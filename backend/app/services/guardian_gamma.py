@@ -63,7 +63,7 @@ class GuardianGammaService:
         guardian: GuardianSource,
         decision_type: DecisionType,
         context: Dict[str, Any],
-        confidence: float,
+        confidence_s60_raw: int,
         evidence: Optional[Dict[str, Any]] = None,
         timeout_minutes: int = 30
     ) -> int:
@@ -74,7 +74,7 @@ class GuardianGammaService:
             guardian: Source guardian (alpha or beta)
             decision_type: Type of decision
             context: Decision context (binary path, metric, etc)
-            confidence: AI confidence score (0-1)
+            confidence_s60_raw: Exact confidence in S60 base units (0..60^4)
             evidence: Supporting evidence
             timeout_minutes: Minutes before auto-deny
             
@@ -88,7 +88,7 @@ class GuardianGammaService:
             decision_type=decision_type.value,
             context=context,
             evidence=evidence or {},
-            confidence=confidence,
+            confidence=confidence_s60_raw,
             status=DecisionStatus.PENDING.value,
             timeout_at=timeout_at
         )
@@ -132,7 +132,7 @@ class GuardianGammaService:
                 "type": d.decision_type,
                 "context": d.context,
                 "evidence": d.evidence,
-                "confidence": d.confidence,
+                "confidence_s60_raw": int(d.confidence),
                 "created_at": d.created_at.isoformat(),
                 "timeout_at": d.timeout_at.isoformat()
             }

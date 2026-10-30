@@ -1,0 +1,28 @@
+[Unit]
+Description=Sentinel security gateway — Guardian Alpha to Cortex and AIOpsShield
+Wants=network-online.target
+After=network-online.target sentinel-ebpf.service
+Requires=sentinel-ebpf.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+EnvironmentFile=/etc/sentinel/security-gateway.env
+ExecStart=/usr/local/bin/sentinel-security-gateway
+Restart=on-failure
+RestartSec=3s
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=full
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ReadWritePaths=/var/log/sentinel
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target

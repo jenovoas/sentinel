@@ -15,6 +15,7 @@
 #include <bpf/bpf_core_read.h>
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
+#include "cortex_events.h"
 
 /* Whitelist map (same as before) */
 struct {
@@ -36,20 +37,34 @@ struct {
   __type(value, __u32);
 } guardian_mode_map SEC(".maps");
 
-/* Events map (same as before) */
+/* Kernel-to-userspace event channel consumed by Guardian Beta / forwarder. */
 struct {
   __uint(type, BPF_MAP_TYPE_RINGBUF);
   __uint(max_entries, 256 * 1024);
 } events SEC(".maps");
 
-struct event {
-  __u32 pid;
-  __u32 uid;
-  char filename[256];
-  char pattern[64]; // Pattern detected
-  __u8 action;      // 0=Block, 1=Allow
-  __u64 timestamp;
-};
+/* Emit the fixed 32-byte contract shared with the Rust Cortex bridge.
+ * Initialize every field, including padding, to avoid leaking kernel residue. */
+static __always_inline void emit_exec_event(__u32 event_type, __u8 severity) {
+  struct cortex_event *event =
+      bpf_ringbuf_reserve(&events, sizeof(*event), 0);
+  if (!event)
+    return;
+
+  event->timestamp_ns = bpf_ktime_get_ns();
+  event->event_type = event_type;
+  event->pid = bpf_get_current_pid_tgid() >> 32;
+  event->entropy_signal = 0;
+  event->severity = severity;
+  event->reserved[0] = 0;
+  event->reserved[1] = 0;
+  event->reserved[2] = 0;
+  event->reserved[3] = 0;
+  event->reserved[4] = 0;
+  event->reserved[5] = 0;
+  event->reserved[6] = 0;
+  bpf_ringbuf_submit(event, 0);
+}
 
 #ifndef EACCES
 #define EACCES 13
@@ -144,9 +159,19 @@ int BPF_PROG(guardian_cognitive, struct linux_binprm *bprm, int ret) {
   /* Mode 0 (the default) is audit-only; unknown paths are logged and allowed. */
   __u32 mode_key = 0;
   __u32 *mode = bpf_map_lookup_elem(&guardian_mode_map, &mode_key);
-  if (!mode || *mode == 0) {
-    if (!allowed)
-      bpf_printk("Guardian [AUDIT]: Unknown binary %s", filename);
+  int enforcing = mode && *mode != 0;
+  int suspicious = str_contains(key, "attack", 256) ||
+                   str_contains(key, "destroy", 256) ||
+                   str_contains(key, "malicious", 256);
+
+  if (!allowed) {
+    if (enforcing) {
+      bpf_printk("Guardian [BLOCK]: Unknown binary %s", filename);
+      emit_exec_event(EVENT_EXEC_BLOCKED, SEVERITY_HIGH);
+      return -EACCES;
+    }
+    bpf_printk("Guardian [AUDIT]: Unknown binary %s", filename);
+    emit_exec_event(EVENT_EXEC_ALLOWED, SEVERITY_MEDIUM);
     return 0;
   }
 
@@ -204,13 +229,16 @@ int BPF_PROG(guardian_cognitive, struct linux_binprm *bprm, int ret) {
     // request.
   }
 
-  // SEMANTIC PATTERN MATCHING on Filename (as proxy for Intent)
-  // If filename implies malicious intent (e.g. script names)
-  if (str_contains(key, "attack", 256) || str_contains(key, "destroy", 256) ||
-      str_contains(key, "malicious", 256)) {
-    bpf_printk("Guardian [SEMANTIC]: Blocked malicious keyword in %s",
-               filename);
-    return -EACCES;
+  // SEMANTIC PATTERN MATCHING on Filename (as proxy for Intent).
+  // Audit mode always allows; enforcement is gated by the explicit mode map.
+  if (suspicious) {
+    if (enforcing) {
+      bpf_printk("Guardian [SEMANTIC]: Blocked suspicious name %s", filename);
+      emit_exec_event(EVENT_EXEC_BLOCKED, SEVERITY_CRITICAL);
+      return -EACCES;
+    }
+    bpf_printk("Guardian [AUDIT]: Suspicious executable name %s", filename);
+    emit_exec_event(EVENT_EXEC_ALLOWED, SEVERITY_HIGH);
   }
 
   return 0;

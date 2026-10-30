@@ -22,14 +22,14 @@ class ConfidenceScorer:
     
     # Pattern weights (loaded from database, these are defaults)
     DEFAULT_PATTERN_WEIGHTS = {
-        "privilege_escalation": 0.9,
-        "malicious_binary": 0.95,
-        "data_exfiltration": 0.85,
-        "lateral_movement": 0.8,
-        "suspicious_network": 0.7,
+        "privilege_escalation": S60(0, 54, 0),
+        "malicious_binary": S60(0, 57, 0),
+        "data_exfiltration": S60(0, 51, 0),
+        "lateral_movement": S60(0, 48, 0),
+        "suspicious_network": S60(0, 42, 0),
     }
     
-    def __init__(self, pattern_weights: Dict[str, float] = None):
+    def __init__(self, pattern_weights: Dict[str, S60] = None):
         """
         Initialize confidence scorer
         
@@ -42,7 +42,7 @@ class ConfidenceScorer:
         self,
         event: Dict[str, Any],
         patterns: List[str]
-    ) -> float:
+    ) -> S60:
         """
         Calculate confidence score for a decision
         
@@ -73,13 +73,13 @@ class ConfidenceScorer:
         confidence = max(S60(0, 0, 0), min(S60(1, 0, 0), posterior))
         
         logger.info(
-            f"Confidence score: {confidence:.3f} "
-            f"(patterns: {patterns}, prior: {prior:.3f})"
+            f"Confidence S60 base units: {confidence.to_base_units()} "
+            f"(patterns: {patterns}, prior_s60_raw: {prior.to_base_units()})"
         )
         
         return confidence
     
-    def _bayesian_update(self, prior: float, evidence_weight: float) -> float:
+    def _bayesian_update(self, prior: S60, evidence_weight: S60) -> S60:
         """
         Update probability using Bayesian inference
         
@@ -100,10 +100,11 @@ class ConfidenceScorer:
         
         # Probability of evidence (marginalization)
         # P(evidence) = P(evidence|threat) * P(threat) + P(evidence|¬threat) * P(¬threat)
-        p_evidence = (likelihood * prior) + ((1 - likelihood) * (1 - prior))
+        unity = S60(1, 0, 0)
+        p_evidence = (likelihood * prior) + ((unity - likelihood) * (unity - prior))
         
         # Avoid division by zero
-        if p_evidence == 0:
+        if p_evidence == S60(0, 0, 0):
             return prior
         
         # Bayes' theorem
@@ -113,10 +114,10 @@ class ConfidenceScorer:
     
     def _apply_event_adjustments(
         self,
-        base_confidence: float,
+        base_confidence: S60,
         event: Dict[str, Any],
         patterns: List[str]
-    ) -> float:
+    ) -> S60:
         """
         Apply event-specific adjustments to confidence score
         
@@ -139,24 +140,26 @@ class ConfidenceScorer:
         # Adjustment 1: Multiple patterns increase confidence
         if len(patterns) > 1:
             # Each additional pattern adds 5% confidence (up to 20%)
-            multi_pattern_boost = min(0.2, (len(patterns) - 1) * 0.05)
+            multi_pattern_boost = min(
+                S60(0, 12, 0), S60(0, 3, 0) * (len(patterns) - 1)
+            )
             adjusted += multi_pattern_boost
-            logger.debug(f"Multi-pattern boost: +{multi_pattern_boost:.3f}")
+            logger.debug(f"Multi-pattern boost S60 raw: +{multi_pattern_boost.to_base_units()}")
         
         # Adjustment 2: Root user activity is more suspicious
         if event.get("uid") == 0 or event.get("user") == "root":
             # Root activity gets 10% confidence boost
             root_boost = S60(0, 6, 0)
             adjusted += root_boost
-            logger.debug(f"Root user boost: +{root_boost:.3f}")
+            logger.debug(f"Root user boost S60 raw: +{root_boost.to_base_units()}")
         
         # Adjustment 3: Known good processes reduce confidence
         process_name = event.get("process_name", "")
         if self._is_trusted_process(process_name):
             # Trusted process reduces confidence by 20%
-            trust_penalty = -0.2
-            adjusted += trust_penalty
-            logger.debug(f"Trusted process penalty: {trust_penalty:.3f}")
+            trust_penalty = S60(0, 12, 0)
+            adjusted -= trust_penalty
+            logger.debug(f"Trusted process penalty S60 raw: {trust_penalty.to_base_units()}")
         
         # Adjustment 4: Critical patterns get extra weight
         critical_patterns = ["privilege_escalation", "malicious_binary"]
@@ -164,7 +167,7 @@ class ConfidenceScorer:
         if has_critical:
             critical_boost = S60(0, 6, 0)
             adjusted += critical_boost
-            logger.debug(f"Critical pattern boost: +{critical_boost:.3f}")
+            logger.debug(f"Critical pattern boost S60 raw: +{critical_boost.to_base_units()}")
         
         return adjusted
     
@@ -192,13 +195,13 @@ class ConfidenceScorer:
         
         return process_name in trusted_processes
     
-    def get_decision_type(self, confidence: float) -> str:
+    def get_decision_type(self, confidence: S60) -> str:
         """
         Determine decision type based on confidence score
         
         Thresholds:
-        - >= 0.8: block (high confidence threat)
-        - S60(0, 30, 0) - 0.8: escalate (uncertain, needs human review)
+        - >= S60(0, 48, 0): block (high confidence threat)
+        - S60(0, 30, 0) through S60(0, 48, 0): escalate (human review)
         - < S60(0, 30, 0): allow (low confidence threat)
         
         Args:
@@ -207,7 +210,7 @@ class ConfidenceScorer:
         Returns:
             Decision type: 'allow', 'block', or 'escalate'
         """
-        if confidence >= 0.8:
+        if confidence >= S60(0, 48, 0):
             return "block"
         elif confidence >= S60(0, 30, 0):
             return "escalate"
@@ -218,7 +221,7 @@ class ConfidenceScorer:
         self,
         event: Dict[str, Any],
         patterns: List[str],
-        confidence: float
+        confidence: S60
     ) -> str:
         """
         Generate human-readable reasoning for the decision
@@ -238,7 +241,7 @@ class ConfidenceScorer:
         decision_type = self.get_decision_type(confidence)
         
         reasoning = f"Detected {len(patterns)} security pattern(s): {pattern_names}. "
-        reasoning += f"Confidence score: {confidence:.1%}. "
+        reasoning += f"Confidence score S60 base units: {confidence.to_base_units()}. "
         
         if decision_type == "block":
             reasoning += "HIGH CONFIDENCE THREAT - Automatically blocked."

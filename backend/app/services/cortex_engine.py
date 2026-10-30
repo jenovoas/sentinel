@@ -13,7 +13,7 @@ from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 from typing import Dict, Any
 import logging
 from datetime import datetime
-from time import time
+from time import time_ns
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -31,10 +31,21 @@ from app.services.metrics_service import (
     track_time
 )
 
+
+def _json_safe_exact(value: Any) -> Any:
+    """Serialize native base-60 values as lossless scaled integers for JSONB."""
+    if isinstance(value, S60):
+        return {"_s60_base_units": value.to_base_units()}
+    if isinstance(value, dict):
+        return {key: _json_safe_exact(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_safe_exact(item) for item in value]
+    return value
+
 logger = logging.getLogger(__name__)
 
 # Umbral máximo de tiempo de procesamiento permitido antes de Fail-Closed (TOCTOU Defense)
-MAX_SAFE_PROCESS_TIME_MS = 100.0
+MAX_SAFE_PROCESS_TIME_NS = 100_000_000
 
 # Umbral de eventos por segundo para detectar inundación (Ring Wrap-around Defense)
 MAX_EVENTS_PER_SECOND = 100
@@ -58,7 +69,7 @@ class CortexDecisionEngine:
         self.db = db
         self.pattern_detector = PatternDetector(db)
         self.confidence_scorer = ConfidenceScorer()
-        self.guardian_heartbeats = {"guardian_alpha": time(), "guardian_beta": time()}
+        self.guardian_heartbeats = {"guardian_alpha": time_ns(), "guardian_beta": time_ns()}
         self.autoinmune_mode = False
     
     @track_time(CORTEX_PROCESSING_TIME)
@@ -66,7 +77,7 @@ class CortexDecisionEngine:
         """
         Procesa un evento de seguridad y toma una decisión inteligente.
         """
-        start_time_total = time()
+        start_time_total_ns = time_ns()
         
         # ACT 1: Cognitive Hardening (AIOpsShield)
         # Prevent AIOpsDoom by blocking toxic logs before they reach the engine
@@ -76,10 +87,10 @@ class CortexDecisionEngine:
             decision = CortexDecision(
                 event_id=None, # Will be set or handled below if we want to save it
                 decision_type="quarantine",
-                confidence=S60(1, 0, 0),
+                confidence=S60(1, 0, 0).to_base_units(),
                 patterns_detected=["AIOpsDoom"],
                 reasoning="AIOpsShield: Potential cognitive injection (AIOpsDoom) detected in telemetry logs. Event blocked from LLM processing.",
-                processing_time_ms=(time() - start_time_total) * 1000
+                processing_time_ms=(time_ns() - start_time_total_ns) // 1_000_000
             )
             # We still want to save the event for forensics
             enriched_event = await self._enrich_event(event_data)
@@ -129,20 +140,27 @@ class CortexDecisionEngine:
             CORTEX_DECISIONS_TOTAL.labels(decision_type=decision_type).inc()
             
             # Paso 6: Calcular tiempo de procesamiento real
-            p_time_ms = (time() - start_time_total) * 1000
+            p_time_ns = time_ns() - start_time_total_ns
+            p_time_ms = p_time_ns // 1_000_000
             
             # MECANISMO FAIL-CLOSED (Defensa TOCTOU)
             # Si el procesamiento ha sido demasiado lento, bloqueamos preventivamente
-            if p_time_ms > MAX_SAFE_PROCESS_TIME_MS:
-                logger.warning(f"⚠️ FAIL-CLOSED ACTIVADO: Procesamiento lento ({p_time_ms:.1f}ms > {MAX_SAFE_PROCESS_TIME_MS}ms). Bloqueo preventivo.")
+            if p_time_ns > MAX_SAFE_PROCESS_TIME_NS:
+                logger.warning(
+                    "⚠️ FAIL-CLOSED ACTIVADO: Procesamiento lento "
+                    f"({p_time_ns}ns > {MAX_SAFE_PROCESS_TIME_NS}ns). Bloqueo preventivo."
+                )
                 decision_type = "block"
-                reasoning = f"SEC_FAIL_CLOSED - Processing latency ({p_time_ms:.1f}ms) exceeded safety threshold to prevent TOCTOU attack."
+                reasoning = (
+                    "SEC_FAIL_CLOSED - Processing latency "
+                    f"({p_time_ns}ns) exceeded safety threshold to prevent TOCTOU attack."
+                )
             
             # Paso 7: Crear objeto de decisión
             decision = CortexDecision(
                 event_id=db_event.id,
                 decision_type=decision_type,
-                confidence=confidence,
+                confidence=confidence.to_base_units(),
                 patterns_detected=pattern_names,
                 reasoning=reasoning,
                 processing_time_ms=p_time_ms
@@ -154,7 +172,7 @@ class CortexDecisionEngine:
             
             # Paso 8: Escalar a Guardian Gamma si es necesario
             if decision_type == "escalate":
-                await self._escalate_to_gamma(decision, enriched_event)
+                await self._escalate_to_gamma(decision, enriched_event, confidence)
             
             # BROADCAST REAL-TIME EVENT (Battlefield UI)
             # Enviar el evento y decisión al sistema de visualización vía WebSocket
@@ -168,7 +186,7 @@ class CortexDecisionEngine:
                     "data": {
                         "id": decision.id,
                         "decision_type": decision.decision_type,
-                        "confidence": decision.confidence,
+                        "confidence_s60_raw": int(decision.confidence),
                         "patterns": decision.patterns_detected,
                         "process": enriched_event.get("process_name"),
                         "timestamp": enriched_event.get("timestamp"),
@@ -238,13 +256,17 @@ class CortexDecisionEngine:
         event = CortexEvent(
             event_type=event_data.get("event_type", "unknown"),
             source=event_data.get("source", "unknown"),
-            raw_data=event_data,
+            raw_data=_json_safe_exact(event_data),
             process_name=event_data.get("process_name"),
             process_path=event_data.get("process_path"),
             user=event_data.get("user"),
             pid=event_data.get("pid"),
             ppid=event_data.get("ppid"),
-            risk_score=event_data.get("risk_score", S60(0, 0, 0))
+            # Store the exact S60 base-unit integer. The existing FLOAT column
+            # represents every possible score integer exactly (<= 60^4); a
+            # later schema migration can replace the legacy column type once a
+            # verified database backup is available.
+            risk_score=event_data.get("risk_score", S60(0, 0, 0)).to_base_units()
         )
         
         self.db.add(event)
@@ -255,7 +277,8 @@ class CortexDecisionEngine:
     async def _escalate_to_gamma(
         self,
         decision: CortexDecision,
-        event_data: Dict[str, Any]
+        event_data: Dict[str, Any],
+        confidence: S60
     ) -> None:
         """
         Escalate decision to Guardian Gamma (Human-in-the-Loop)
@@ -288,7 +311,7 @@ class CortexDecisionEngine:
                 "process_path": event_data.get("process_path"),
                 "user": event_data.get("user"),
                 "patterns_detected": decision.patterns_detected,
-                "confidence": decision.confidence,
+                "confidence_s60_raw": confidence.to_base_units(),
                 "reasoning": decision.reasoning
             }
             
@@ -297,8 +320,8 @@ class CortexDecisionEngine:
                 guardian=GuardianSource.ALPHA,  # Assume Alpha for now
                 decision_type=gamma_decision_type,
                 context=context,
-                confidence=decision.confidence,
-                evidence=event_data,
+                confidence_s60_raw=confidence.to_base_units(),
+                evidence=_json_safe_exact(event_data),
                 timeout_minutes=30
             )
             
@@ -342,7 +365,7 @@ class CortexDecisionEngine:
         
         return not any(ip.startswith(prefix) for prefix in private_ranges)
     
-    def _calculate_initial_risk(self, event_data: Dict[str, Any]) -> float:
+    def _calculate_initial_risk(self, event_data: Dict[str, Any]) -> S60:
         """
         Calculate initial risk score based on event characteristics
         
@@ -357,20 +380,20 @@ class CortexDecisionEngine:
         # Event type risk
         event_type = event_data.get("event_type", "")
         type_risk = {
-            "syscall": 0.3,
-            "network": 0.2,
-            "memory": 0.4,
+            "syscall": S60(0, 18, 0),
+            "network": S60(0, 12, 0),
+            "memory": S60(0, 24, 0),
             "file": S60(0, 6, 0)
         }
         risk += type_risk.get(event_type, S60(0, 6, 0))
         
         # Root user increases risk
         if event_data.get("uid") == 0:
-            risk += 0.2
+            risk += S60(0, 12, 0)
         
         # External network increases risk
         if event_data.get("is_external"):
-            risk += 0.3
+            risk += S60(0, 18, 0)
         
         return min(S60(1, 0, 0), risk)
     
@@ -451,9 +474,9 @@ class CortexDecisionEngine:
         Detección de "Ceguera de Guardianes" (Chaos Engineering).
         Si un Guardián no reporta latido en > 500ms, se activa el Fail-Closed.
         """
-        now = time()
+        now_ns = time_ns()
         for guardian, last_beat in self.guardian_heartbeats.items():
-            if now - last_beat > S60(0, 30, 0): # 500ms de gracia
+            if now_ns - last_beat > 500_000_000:  # 500 ms exactos en ns enteros
                 self.autoinmune_mode = True
                 return guardian
         return None

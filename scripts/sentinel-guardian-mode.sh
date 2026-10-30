@@ -22,7 +22,7 @@ declare -a key_bytes
 build_key() {
     local path=$1 padding
     key_bytes=()
-    read -r -a key_bytes <<< "$(printf '%s' "$path" | od -An -v -tx1)"
+    read -r -a key_bytes <<< "$(printf '%s' "$path" | od -An -v -tx1 | tr '\n' ' ')"
     padding=$((256 - ${#key_bytes[@]}))
     (( padding > 0 )) || { echo "path does not fit BPF whitelist key: $path" >&2; return 1; }
     while (( padding > 0 )); do

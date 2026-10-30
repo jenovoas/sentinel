@@ -27,7 +27,7 @@ class CreateDecisionRequest(BaseModel):
     guardian: GuardianSource
     decision_type: DecisionType
     context: Dict[str, Any] = Field(..., description="Decision context")
-    confidence: float = Field(..., ge=0.0, le=1.0, description="AI confidence score")
+    confidence_s60_raw: int = Field(..., ge=0, le=12960000, description="Exact S60 confidence in base units")
     evidence: Optional[Dict[str, Any]] = Field(None, description="Supporting evidence")
     timeout_minutes: int = Field(30, ge=1, le=1440, description="Timeout in minutes")
 
@@ -51,7 +51,7 @@ class PendingDecision(BaseModel):
     type: str
     context: Dict[str, Any]
     evidence: Dict[str, Any]
-    confidence: float
+    confidence_s60_raw: int
     created_at: str
     timeout_at: str
 
@@ -78,7 +78,7 @@ async def create_decision(
                 "binary_path": "/tmp/suspicious",
                 "hash": "abc123..."
             },
-            "confidence": 0.65,
+            "confidence_s60_raw": 8424000,
             "timeout_minutes": 30
         })
         ```
@@ -89,7 +89,7 @@ async def create_decision(
         guardian=request.guardian,
         decision_type=request.decision_type,
         context=request.context,
-        confidence=request.confidence,
+        confidence_s60_raw=request.confidence_s60_raw,
         evidence=request.evidence,
         timeout_minutes=request.timeout_minutes
     )

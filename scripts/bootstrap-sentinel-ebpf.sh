@@ -100,7 +100,7 @@ declare -a key_bytes
 build_key() {
     local path=$1 padding
     key_bytes=()
-    read -r -a key_bytes <<< "$(printf '%s' "$path" | od -An -v -tx1)"
+    read -r -a key_bytes <<< "$(printf '%s' "$path" | od -An -v -tx1 | tr '\n' ' ')"
     padding=$((256 - ${#key_bytes[@]}))
     (( padding > 0 )) || { echo "path does not fit BPF whitelist key: $path" >&2; return 1; }
     while (( padding > 0 )); do
@@ -122,7 +122,7 @@ done < "$PATH_FILE"
 
 (( batch_updates > 0 )) || { echo "refusing to attach with an empty executable inventory" >&2; exit 1; }
 bpftool batch file "$BATCH_FILE"
-map_entries=$(bpftool map dump pinned "$MAP_PIN" | awk '/^key:/ { count++ } END { print count + 0 }')
+map_entries=$(bpftool -j map dump pinned "$MAP_PIN" | python3 -c 'import json, sys; print(len(json.load(sys.stdin)))')
 [[ $map_entries =~ ^[0-9]+$ ]] && (( map_entries >= batch_updates )) || {
     echo "whitelist map verification failed: expected at least $batch_updates entries, found $map_entries" >&2
     exit 1

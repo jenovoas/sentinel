@@ -20,6 +20,7 @@
 mod buffer_system;
 pub mod concentrator;
 pub mod detectors;
+pub mod ebpf_cortex_bridge;
 pub mod math;
 pub mod memory;
 pub mod quantum;

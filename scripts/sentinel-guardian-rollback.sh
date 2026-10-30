@@ -7,6 +7,7 @@ readonly PROGRAM_PIN="$BPF_DIR/guardian_prog"
 readonly WHITELIST_PIN="$BPF_DIR/whitelist_map"
 readonly MODE_PIN="$BPF_DIR/guardian_mode_map"
 readonly EVENTS_PIN="$BPF_DIR/events"
+readonly RODATA_PIN="$BPF_DIR/guardian_rodata"
 
 if [[ $EUID -ne 0 ]]; then
     echo "run as root" >&2
@@ -25,7 +26,7 @@ fi
 if [[ $detach == --detach ]]; then
     rm -f "$LINK_PIN"
     [[ ! -e $LINK_PIN ]] || { echo "failed to detach Guardian link" >&2; exit 1; }
-    rm -f "$PROGRAM_PIN" "$WHITELIST_PIN" "$MODE_PIN" "$EVENTS_PIN"
+    rm -f "$PROGRAM_PIN" "$WHITELIST_PIN" "$MODE_PIN" "$EVENTS_PIN" "$RODATA_PIN"
     echo "Guardian link detached."
 elif [[ -n $detach ]]; then
     echo "usage: $0 [--detach]" >&2
