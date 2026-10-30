@@ -14,6 +14,8 @@ No mezclar con `alpine_fenix`/OpenRC. No activar Guardian/eBPF ni enforcement co
 
 SOMA (`soma_orchestrator`/`soma_worker`) queda fuera de este despliegue hasta autorización específica. `qhc-agent` es un servicio independiente requerido por Cortex; utiliza `/run/soma/qhc.sock` como ruta IPC, pero no inicia ni necesita la orquestación SOMA.
 
+El procedimiento incorpora el cotejo de papers y experimentos registrado en [`ARQUITECTURA_FUNCIONAL_SENTINEL_Y_EXPERIMENTOS.md`](ARQUITECTURA_FUNCIONAL_SENTINEL_Y_EXPERIMENTOS.md). Antes de agregar un proceso al despliegue, identificar su experimento/cita, ruta Rust/Python activa, consumidor y evidencia runtime. Un paper, un módulo compilable o un benchmark aislado no son evidencia de servicio desplegado.
+
 ### Perfil operativo conocido de Marte
 
 La memoria persistente registra para Marte Debian 13 amd64, kernel `7.3.0-ifenix` activo y administración SSH por TCP 4222 (sin listener SSH 22 en la verificación del 2026-10-30). También registra una intervención para instalar Firewalld 2.3.1; la configuración vigente de zonas/reglas de Marte no fue verificada directamente en esta auditoría Sentinel. Jaime confirmó que tiene acceso al nodo y que usa Firewalld. Un `No route to host` observado desde otra ruta/host describe ese intento, no demuestra indisponibilidad global de Marte.
@@ -40,8 +42,19 @@ El reparto entre Fenix (backend Sentinel central) y Marte (backend de seguridad/
 | eBPF/Guardian en Marte | Sensor local en modo auditoría; eventos hacia Fenix | Verificar whitelist/rutas críticas y recuperación fuera de banda antes de adjuntar. No activar enforcement sin autorización separada. Transporte autenticado a Fenix y prueba de recepción antes de darlo por integrado. |
 | `neural-guard` | Worker Rust de correlación; ubicación pendiente de decisión | El código consume Prometheus, Loki, Redis y alerta por n8n. La definición Compose actual usa nombres internos de Fenix; no se puede mover a Marte sin URL/ruta segura para cada dependencia. |
 | Frontend Next.js | Kingu | BFF del navegador hacia APIs privadas de Fenix; sesiones/CSRF, páginas usadas y errores de upstream revisados. No conecta directamente el browser a Fenix. |
+| Crystal Cipher | Sin nodo asignado hasta cerrar diseño e integración | No desplegar para datos reales: no hay consumidor productivo y la clave actual se deriva de estado determinista del cristal/pulso sin gestión de secreto. Antes se requiere contrato de claves, rotación/reinicio, unicidad de nonce por clave y pruebas con SHM/ring buffer. |
+| Hardware optomecánico/fotónico/fonónico de los papers | No es parte del despliegue software | `optomechanical.rs`, `LiquidLattice` y las memorias de software no instalan ni controlan los dispositivos físicos de los papers; exigir driver y sensor físico antes de declarar integración de hardware. |
 
 SOMA y sus workers no son componentes de este mapa. La evidencia se clasifica como `activo`, `implementado pero no conectado`, `pendiente` o `no verificado`; no se eleva un módulo de estado por su nombre o por un healthcheck general.
+
+### Gates basados en los experimentos y papers
+
+1. **Reloj/memoria:** papers Nandi–Vitiello y EXP-001/028 sustentan el kernel de historia; revisar `S60PID` y `CrystalRuntime`. Para aceptación operativa en Fenix se requieren tick DTC observable, unidades/época de QHC acordadas, sincronizaciones SHM A/B y checkpoint restaurable. Las constantes `DTC_CLOCK_SHM` no cuentan como contrato IPC implementado.
+2. **PAI-60:** aceptar el camino activo por amplitud observada y escala documentada. `inject(i64)`/`inject_pai` reescalan; no suministrar `SPA::to_raw()`. Los benchmarks FPU/PAI son diagnósticos del algoritmo, no servicios ni sustituto de la traza de Cortex.
+3. **Memoria fonónica/líquida:** EXP-009/016 y los papers citados justifican inspeccionar la ruta Cortex→`LiquidLattice`/`NeuralMemory`→checkpoint. El software no equivale a una memoria fotónica o metasuperficie fonónica física. Verificar el origen real del ring buffer y la recuperación desde el volumen; no aceptar un smoke bench como prueba de producción.
+4. **Seguridad eBPF:** los papers citados describen patrones de IDS/verificación, no acreditan que Guardian esté adjunto en Marte. La aceptación requiere carga local en modo auditoría, whitelist/rutas críticas, recuperación fuera de banda y forwarder autenticado a Fenix con evento recibido y correlacionable.
+5. **Dos tipos de Dual Lane:** validar `CrystalRuntime` A/B por SHM separadamente de `DualLaneRouter` Security/Audit + Observability. Para el segundo, demostrar que eventos reales pasan por la clasificación, WAL síncrono de seguridad y colector de observabilidad. La existencia del `dual_lane_bench` no satisface el gate.
+6. **TruthSync:** mantener filtro integrado en Fenix y Truth Core como servicio separado en Marte. No desplegar el artefacto histórico sin corregir su procesamiento simulado/score fijo ni abrir ruta directa desde navegador a Marte.
 
 ### Backend de seguridad y observabilidad en Marte
 

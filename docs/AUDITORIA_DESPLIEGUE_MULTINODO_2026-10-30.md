@@ -67,6 +67,21 @@ Verificación directa por SSH a Fenix y Kingu entre 04:08 y 04:21 UTC:
 | Frontend | Kingu sirve Next.js; handlers BFF en `frontend/src/lib/server/*` mantienen sesión/CSRF y reenvían a Fenix. El visualizador de lattice consume `/api/v1/lattice/hologram` por el BFF. | Frontend pequeño frente al backend; validar estado funcional autenticado y errores de upstream, sin exponer APIs al navegador. |
 | Backend de observabilidad/seguridad en Marte → Sentinel central Fenix | Jaime asignó Grafana, Mimir, Prometheus, TruthSync y Loki a Marte (`10.88.0.6`), además de la capa Guardian/eBPF. Los módulos observan/consultan Sentinel en Fenix (`10.88.0.1`) por WireGuard. | Ubicación objetivo confirmada por el usuario; todavía no instalada ni verificada en Marte. SSH desde esta ruta devolvió `No route to host`, aunque notas previas registran acceso directo de Jaime por SSH 4222 y Firewalld. |
 
+### Cotejo de papers y experimentos para decidir qué desplegar
+
+El seguimiento se hizo desde las citas en `me-60os-core/src/` y las trazas de `personalvault/Experimentos/`, hasta los consumidores Rust. Los papers de memoria Bateman, memoria fonónica/fotónica, optomecánica y eBPF no justifican instalar hardware o servicios adicionales solo por aparecer citados. La correspondencia y los criterios completos quedan en [`ARQUITECTURA_FUNCIONAL_SENTINEL_Y_EXPERIMENTOS.md`](ARQUITECTURA_FUNCIONAL_SENTINEL_Y_EXPERIMENTOS.md).
+
+| Línea cotejada | Hallazgo código/experimento | Decisión de despliegue |
+|---|---|---|
+| Nandi–Vitiello 2026/2025; EXP-001/028 | `S60PID` conserva historia y `CrystalRuntime` ejecuta matrices A/B y checkpoint en Cortex. El paper sustenta el modelo no-Markoviano; no prueba por sí mismo el runtime. | Cortex se mantiene en Fenix. Falta publicar/consumir el tick DTC en un contrato IPC real; QHC activo en Cortex no demuestra época/tick compartido con MyCNet. |
+| Zhang–Wang 2025 y memoria fotónica; EXP-009/016 | Cortex tiene `LiquidLattice`/`NeuralMemory` y checkpoint de software; los papers describen dispositivos mecánicos/fotónicos físicos. | No desplegar hardware de laboratorio. Aceptar la ruta de software solo con eventos BPF reales y recuperación validada del checkpoint. |
+| Papers eBPF 2021/2026 | El código contiene lector de ring buffer local y bridge Cortex. La arquitectura objetivo mueve Guardian a Marte y exige retorno de eventos a Fenix. | Marte necesita sensor local en auditoría más forwarder de red autenticado. La unidad actual `bpftool prog tracelog` no satisface ese flujo. |
+| EXP-015/020/021 y PAI/FPU | `inject_pai` está en rutas de Cortex; `fpu_vs_pai_bench` es un bin auxiliar y su output no está archivado en la traza. | Desplegar/aceptar el camino PAI de Cortex; no desplegar FPU como daemon ni reclamar resultados del bench sin salida reproducible. |
+| EXP-031 / dual lane | `CrystalRuntime` A/B por SHM está conectado; `DualLaneRouter` de Security/Observability no se encontró conectado a la ingesta principal. Son dos mecanismos diferentes. | Falta cablear y verificar WAL/carril de seguridad y colector/carril de observabilidad para los eventos remotos de Marte. |
+| Crystal Cipher | La implementación Rust no tiene consumidor productivo; deriva claves del estado determinista del cristal/pulso. | No usarlo para proteger SHM/ring buffer todavía. Resolver consumidor, claves secretas/rotación/reinicio y unicidad de nonce antes de incluirlo en el despliegue de seguridad. |
+
+Esta adición es un cotejo documental de citas, experimentos y código. **No añade evidencia nueva de runtime ni indica que el despliegue en Marte se haya ejecutado.**
+
 ### Perfil y estado de Marte
 
 - La memoria operativa registra Marte (`10.88.0.6`) con Debian 13 amd64, kernel `7.3.0-ifenix` activo y SSH administrativo en TCP 4222, sin listener en 22 en la verificación del 2026-10-30. También registra la instalación de Firewalld 2.3.1 como parte de una intervención en Fenix/Marte.
