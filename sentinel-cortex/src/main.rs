@@ -113,7 +113,6 @@ pub(crate) struct AppState {
     neural_memory: Arc<Mutex<me60os_core::neural_memory::NeuralMemory>>,
     crystal_runtime_status: Arc<Mutex<CrystalRuntimeStatusResponse>>,
     quantum_scheduler: Arc<Mutex<quantum::quantum_scheduler::QuantumScheduler>>,
-    #[allow(dead_code)]
     bio_resonator: Arc<Mutex<quantum::bio_resonator::BioResonator>>,
     qhc: Arc<parking_lot::Mutex<qhc_client::QhcStatus>>,
 }
@@ -373,6 +372,37 @@ async fn main() {
             {
                 let mut sched = scheduler_task.lock().unwrap();
                 sched.tick(math::s60::S60::from_int(tick as i32));
+                // El lattice canta, el scheduler escucha: encolar trabajo
+                // para que el portal lo ejecute. Callbacks no-op: el trabajo
+                // real lo hace el worker al ver tasks_in_portal avanzar.
+                // LatticeGC cada 17s (ciclo Salto), PhaseAlign cada 68s
+                // (ciclo Quantum Leap), BackupS60 cada 300s (critico).
+                extern "C" fn noop() {}
+                let next_id = sched.queue_len() as u64 + sched.get_stats().tasks_in_portal + sched.get_stats().tasks_forced;
+                if tick > 0 && tick.is_multiple_of(17) {
+                    sched.enqueue(quantum::quantum_scheduler::Task {
+                        id: next_id,
+                        task_type: quantum::quantum_scheduler::TaskType::LatticeGC,
+                        cost: 10,
+                        callback: noop,
+                    });
+                }
+                if tick > 0 && tick.is_multiple_of(68) {
+                    sched.enqueue(quantum::quantum_scheduler::Task {
+                        id: next_id + 1,
+                        task_type: quantum::quantum_scheduler::TaskType::PhaseAlign,
+                        cost: 20,
+                        callback: noop,
+                    });
+                }
+                if tick > 0 && tick.is_multiple_of(300) {
+                    sched.enqueue(quantum::quantum_scheduler::Task {
+                        id: next_id + 2,
+                        task_type: quantum::quantum_scheduler::TaskType::BackupS60,
+                        cost: 50,
+                        callback: noop,
+                    });
+                }
             }
 
             if tick > 0 && tick.is_multiple_of(17) {
@@ -764,7 +794,12 @@ async fn health_handler(
     axum::extract::State(state): axum::extract::State<Arc<AppState>>,
 ) -> Json<HealthStatus> {
     let bio_coherence = state.resonance.lock().unwrap().get_coherence_raw();
+    let sched_stats = state.quantum_scheduler.lock().unwrap().get_stats();
     let scheduler_efficiency = state.quantum_scheduler.lock().unwrap().efficiency_percent();
+    let (bio_coherence_raw, bio_portal_open) = {
+        let bio = state.bio_resonator.lock().unwrap();
+        (bio.get_coherence_raw(), bio.is_portal_open())
+    };
     let qhc = state.qhc.lock().clone();
     Json(HealthStatus {
         status: "OK".to_string(),
@@ -774,6 +809,10 @@ async fn health_handler(
             efficiency: scheduler_efficiency.unwrap_or(0) as i64,
             efficiency_available: scheduler_efficiency.is_some(),
             timestamp_s60: 0, // Placeholder
+            tasks_in_portal: sched_stats.tasks_in_portal,
+            tasks_forced: sched_stats.tasks_forced,
+            bio_coherence_raw,
+            bio_portal_open,
         },
         qhc,
     })

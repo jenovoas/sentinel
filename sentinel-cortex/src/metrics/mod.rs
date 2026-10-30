@@ -14,4 +14,10 @@ pub struct MetricsSnapshot {
     pub efficiency: i64,
     pub efficiency_available: bool,
     pub timestamp_s60: i64,
+    // Portal-lock (EXP-028/029): visibles en Marte para verificar que el
+    // scheduler canta con el lattice en vez de latir en vacio.
+    pub tasks_in_portal: u64,
+    pub tasks_forced: u64,
+    pub bio_coherence_raw: i64,
+    pub bio_portal_open: bool,
 }

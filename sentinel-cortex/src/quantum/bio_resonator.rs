@@ -7,7 +7,6 @@
 //! Translates biological events (keyboard/mouse) into quantum coherence states.
 //
 // Bio-quantum coherence engine; consumed by quantum_scheduler.
-#![allow(dead_code)]
 
 use crate::math::s60::S60;
 use std::time::Instant;
@@ -45,11 +44,14 @@ impl BioResonator {
         if self.coherence > S60::one() {
             self.coherence = S60::one();
         }
-        self.record_pilot_heartbeat();
+        self.last_pulse = Instant::now();
     }
 
     pub fn record_pilot_heartbeat(&mut self) {
-        self.last_pulse = Instant::now();
+        // El pilot (QHC vivo) canta en el lattice: cada heartbeat suma
+        // coherencia como un bio-pulso. Sin esto el portal bio nunca abre
+        // y el scheduler portal-locked jamas ejecuta (gap cableado 2026-10-30).
+        self.inject_bio_pulse();
     }
 
     pub fn tick_entropy(&mut self) {
@@ -103,13 +105,13 @@ mod tests {
     }
 
     #[test]
-    fn pilot_heartbeat_does_not_change_coherence() {
+    fn pilot_heartbeat_builds_coherence() {
         let mut bio = BioResonator::new();
         let coherence = bio.get_coherence_raw();
 
         bio.record_pilot_heartbeat();
 
         assert!(bio.is_pilot_present());
-        assert_eq!(bio.get_coherence_raw(), coherence);
+        assert!(bio.get_coherence_raw() > coherence);
     }
 }

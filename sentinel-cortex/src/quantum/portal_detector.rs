@@ -5,7 +5,6 @@
 //! Portal Detector - Penta-Resonance Convergence
 //
 // Penta-resonance convergence detector; consumed by the quantum scheduler.
-#![allow(dead_code)]
 
 use crate::math::s60::S60;
 use crate::math::s60_math::sin_s60;

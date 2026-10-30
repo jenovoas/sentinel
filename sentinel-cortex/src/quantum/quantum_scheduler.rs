@@ -9,7 +9,6 @@
 //
 // Quantum task orchestration primitives. Currently exercised through the
 // lib.rs integration harness; many methods are ready for future wiring.
-#![allow(dead_code)]
 
 use crate::math::s60::S60;
 use crate::quantum::bio_resonator::BioResonator;
