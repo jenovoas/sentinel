@@ -285,6 +285,14 @@ La inspección del código activo encontró una segunda ruta de score engañoso 
 
 **Límite de verificación:** no se probó una sesión humana aprobada contra las rutas Cortex protegidas; no se generó ni usó un token para ese fin. La imagen y health fueron comprobados en vivo; la respuesta de las rutas se verifica por código/compilación, pendiente de aceptación funcional con una sesión autorizada.
 
+## Verificación posterior de Marte y métrica AIOpsShield — 2026-10-30 14:27 UTC
+
+Inventario de solo lectura en Marte (`10.88.0.6`): `sentinel-security-gateway.service` y `sentinel-ebpf.service` están activos; Guardian `guardian_cognitive` está adjunto como LSM, el mapa whitelist contiene 8.246 entradas y `guardian_mode_map=0` (auditoría). `/health` del gateway responde HTTP 200. Sus métricas observadas: 7.860 eventos enviados, 1.418 intentos de reenvío fallidos acumulados y 0 descartes del ring buffer. El contador de errores incrementa por intento, no equivale a 1.418 eventos perdidos: los logs de Fenix muestran que el mismo intervalo tuvo múltiples POST de Marte aceptados con HTTP 201. En la lectura de targets, Prometheus informó `up` para sus cinco targets: node-exporter Marte, Prometheus, FastAPI Fenix, Cortex Fenix y Gateway Marte. Grafana `/api/health` respondió con DB `ok`; Grafana, Prometheus, Mimir, Loki, Alloy y node-exporter aparecen como contenedores `Up`.
+
+El compose y runtime listan esos seis servicios de observabilidad; no listan un TruthSync/Truth Core separado. El gateway desplegado aplica sanitización Rust internamente antes de Fenix, lo cual es la capa integrada de seguridad/entropía; no sustituye el Truth Core/pod de scoring de contenido. El último sigue ausente y el score actual no es aceptable, como se detalla arriba.
+
+Al cotejar `sentinel-security-gateway.rs`, el handler `/api/v1/aiops/sanitize` incrementaba `sentinel_aiops_shield_blocked_total`, pero `forward_event` retenía eventos Guardian detectados, los registraba al WAL y no incrementaba el mismo contador. Eso hacía que métricas pudieran subcontar bloqueos del flujo eBPF. Se corrigió el incremento en la rama de retención de Guardian; pendiente compilar, desplegar el binario actualizado y observar la métrica después del reinicio. No se ejecutó un payload de bloqueo para evitar generar un evento de seguridad artificial.
+
 ## Separación del QHC, el runtime de mallas y el reloj — 2026-10-30
 
 La revisión de `Experimentos/EXP_027_YHWH_PULSE_MONITOR.md`, la nota `Experimentos/qm_rev_EXP001_vs_timecrystal.md` de la vault y el código Rust distingue tres rutas que antes aparecían agrupadas como “cristal de tiempo”:

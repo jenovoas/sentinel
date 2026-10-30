@@ -288,6 +288,7 @@ async fn forward_event(state: &GatewayState, event: CortexEvent) {
     };
     let (sanitized, categories, digest) = sanitize_record(raw);
     if !categories.is_empty() {
+        state.blocked_total.fetch_add(1, Ordering::Relaxed);
         let evidence = json!({"record_sha3_256":digest,"categories":categories});
         if let Ok(payload) = serde_json::to_string(&evidence) {
             if state
