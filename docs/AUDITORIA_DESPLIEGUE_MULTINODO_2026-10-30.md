@@ -349,3 +349,13 @@ Esta captura se coteja con el código y el contenedor que respondieron ahora; la
 - Los logs de los últimos cinco minutos mostraron verificaciones NPU en ticks 36703–36975 con `Valid=false`, `Coherence=false`, `QHC=true`; no apareció `PROCESSOR RESULT` ni `Bio-Pulse received`. QHC está vivo; la ruta de pulso/coherencia sigue sin aceptación.
 - No hay series `maat_*`, `gpu_*` ni `npu_*` en el endpoint de métricas. El código vigente instancia Maat/GpuController con verdad fija `58/60`, mide el tramo de lectura/conversión térmica y solo registra el batch a trace; no demuestra control de GPU ni inferencia.
 - Dictamen: módulos compilados y tareas ejecutándose no equivalen a funciones integradas. NPU no valida pulsos en vivo; Maat no gobierna un consumidor de carga identificado. No se modificó código ni runtime en esta captura.
+
+## Cierre global de TCP/22 — 2026-10-30
+
+Se verificó el inventario de nodos conocido (`fenix`, `kingu`, `hercules`, `ocean`, `marte`, `ifenix`) desde las rutas WireGuard y se cerró la única regla de entrada TCP/22 que estaba activa:
+
+- **Marte (`10.88.0.6`):** se retiró el servicio `ssh` de la zona `public` en Firewalld y se recargó. La consulta runtime y la persistente devuelven `no`; `firewall-cmd --check-config` devuelve `success`. `sshd -T` conserva solo `port 4222`, y no hay listener en TCP/22. Una conexión nueva por el alias `marte`/4222 respondió correctamente.
+- **Fenix (`10.88.0.1`), Kingu (`10.88.0.2`) y Hércules (`10.88.0.4`):** Firewalld está activo; sus zonas activas no habilitan el servicio SSH ni el puerto 22. `sshd -T` informa solo el puerto 4222 y `ss` no muestra listeners en 22.
+- **Ocean (`10.88.0.5`):** nftables está activo con política `drop` en `input`; las reglas permiten TCP/4222 por `wg0` y no permiten TCP/22. `sshd -T` informa el puerto 4222, sin listener en 22.
+- **iFenix (`10.88.0.3`):** Firewalld está activo; la zona `public` no habilita SSH ni TCP/22 y la zona `trusted` contiene una regla explícita `drop` para TCP/22, presente en runtime y configuración persistente. `sshd -T` informa solo el puerto 4222, sin listener en 22. La conexión por 4222 respondió correctamente.
+- UFW no está instalado en los seis nodos. No se modificaron reglas de los otros nodos porque ya bloqueaban/descartaban TCP/22.
