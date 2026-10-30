@@ -5,14 +5,18 @@
 Este procedimiento aplica a `main` y al entorno systemd:
 
 - **Fenix (`10.88.0.1`)**: backend central de API/datos y servicios compartidos: FastAPI, Cortex, PostgreSQL, Redis y QHC. Mantiene como destino central de los datos y eventos de Marte.
-- **Kingu (`10.88.0.2`)**: Next.js bajo systemd, Nginx y TLS público. La GUI Tauri de administración también pertenece a esta capa de presentación y debe consumir el BFF/API privado de Fenix; nunca conecta directo a Marte. El artefacto Tauri activo no está presente en el árbol actual: el prototipo histórico en `gui/` fue eliminado en `0c5780f7` y usaba telemetría simulada, así que requiere recuperación y revisión antes de empaquetarlo.
+- **Kingu (`10.88.0.2`)**: Next.js bajo systemd, Nginx y TLS público; junto a Fenix forma parte de la infraestructura interna de dominio. El dominio AD/Samba interno debe residir en Fenix y Kingu, no en los DNS públicos de DMZ. La GUI Tauri de administración también pertenece a esta capa de presentación y debe consumir el BFF/API privado de Fenix; nunca conecta directo a Marte. El artefacto Tauri activo no está presente en el árbol actual: el prototipo histórico en `gui/` fue eliminado en `0c5780f7` y usaba telemetría simulada, así que requiere recuperación y revisión antes de empaquetarlo.
 - **Marte (`10.88.0.6`)**: backend de seguridad/observabilidad: Guardian/eBPF, Grafana, Mimir, Prometheus, TruthSync y Loki. Opera por WireGuard contra Fenix (`10.88.0.1`) como backend Sentinel central/fuente de verdad; no expone APIs Sentinel al público.
 - **WireGuard (`10.88.0.0/24`)**: transporte privado entre nodos. Los puertos FastAPI/Cortex/n8n se publican en la IP WireGuard de Fenix; `DOCKER-USER` debe limitar cada origen y puerto explícitamente autorizado.
-- **Hercules PDC (`10.88.0.4`) y Ocean BDC (`10.88.0.5`)**: servidores DNS autoritativos en DMZ, fuera del plano de cómputo Sentinel. No desplegar allí backend, observabilidad ni Guardianes Sentinel. Solo se modifican para cambios DNS explícitos, preservando las excepciones funcionales TCP/UDP 53 y WireGuard UDP/51820 verificadas en [`AUDITORIA_SEGURIDAD_RED_2026-10-30.md`](AUDITORIA_SEGURIDAD_RED_2026-10-30.md). La relación DNS no los convierte en nodos del backend Sentinel.
+- **Hercules (`10.88.0.4`) y Ocean (`10.88.0.5`)**: DNS público/externo únicamente, aislado en DMZ. No son PDC/BDC ni deben alojar AD/Samba. Mantener el DNS público TCP/UDP 53 y WireGuard UDP/51820; no instalar en ellos backend, observabilidad ni Guardianes Sentinel. Ver [`AUDITORIA_SEGURIDAD_RED_2026-10-30.md`](AUDITORIA_SEGURIDAD_RED_2026-10-30.md).
 
 No mezclar con `alpine_fenix`/OpenRC. No activar Guardian/eBPF ni enforcement como parte implícita del despliegue de la aplicación; su whitelist y recuperación fuera de banda tienen un preflight separado.
 
 SOMA (`soma_orchestrator`/`soma_worker`) queda fuera de este despliegue hasta autorización específica. `qhc-agent` es un servicio independiente requerido por Cortex; utiliza `/run/soma/qhc.sock` como ruta IPC, pero no inicia ni necesita la orquestación SOMA.
+
+### Dominio interno y DNS público
+
+El objetivo es Samba AD en Fenix y Kingu para el dominio interno; Hercules y Ocean sirven únicamente DNS público desde DMZ. No mezclar la autoridad DNS externa con los controladores del dominio interno. La captura de solo lectura del 2026-10-30 mostró Samba AD activo en Hercules/Ocean y solo BIND activo en Fenix/Kingu: el runtime actual contradice el diseño objetivo y requiere una migración AD/DNS planificada antes de declarar este componente conforme. Este procedimiento no transfiere roles ni detiene controladores.
 
 El procedimiento incorpora el cotejo de papers y experimentos registrado en [`ARQUITECTURA_FUNCIONAL_SENTINEL_Y_EXPERIMENTOS.md`](ARQUITECTURA_FUNCIONAL_SENTINEL_Y_EXPERIMENTOS.md). Antes de agregar un proceso al despliegue, identificar su experimento/cita, ruta Rust/Python activa, consumidor y evidencia runtime. Un paper, un módulo compilable o un benchmark aislado no son evidencia de servicio desplegado.
 
