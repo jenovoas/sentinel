@@ -76,8 +76,9 @@ Si falta un backup, acceso independiente, artefacto verificable o rollback viabl
    ```
 
    Para primera instalación, iniciar dependencias primero y luego aplicaciones con `depends_on` saludable. Nunca ejecutar `down` global ni borrar volúmenes.
-5. Verificar tag/digest desplegado, proyecto Compose, estado `healthy`, logs de arranque, mounts requeridos y persistencia. Para Cortex, además verificar `GET /api/v1/crystal_runtime/status`: `active=true`, `runtime.active=true`, `shm_active=true`, ticks y sincronizaciones crecientes, y checkpoint duradero en el volumen persistente.
-6. Desde Kingu, comprobar APIs privadas por WireGuard. Desde un segundo peer autorizado y desde el camino público, comprobar que los puertos internos y bases de datos no aceptan conexiones. La ruta pública esperada pasa por Nginx en Kingu.
+5. Verificar tag/digest desplegado, proyecto Compose, estado `healthy`, logs de arranque, mounts requeridos y persistencia. Para Cortex, además verificar `GET /api/v1/crystal_runtime/status`: `active=true`, `runtime.active=true`, `shm_active=true`, ticks y sincronizaciones crecientes, y checkpoint duradero en el volumen persistente. Este endpoint exige autenticación; comprobarlo con una sesión aprobada, sin quitar middleware ni generar tokens que suplanten al operador.
+6. Si QHC está dentro del alcance, comprobar `GET /api/v1/qhc/status` con sesión autorizada: `connected=true`, `stale=false` y tick reciente. Confirmar también `sentinel-qhc-agent.service` y `/run/soma/qhc.sock` en Fenix. Si falta el socket o el log indica `DEAD MAN SWITCH ACTIVATED`, Cortex puede seguir `healthy` mientras su scheduler está enclavado; no declarar funcional esa integración ni simular presencia humana para despejar el estado.
+7. Desde Kingu, comprobar APIs privadas por WireGuard. Desde un segundo peer autorizado y desde el camino público, comprobar que los puertos internos y bases de datos no aceptan conexiones. La ruta pública esperada pasa por Nginx en Kingu.
 
 ## 5. Desplegar frontend en Kingu
 
@@ -95,10 +96,11 @@ Registrar timestamp y resultado por separado:
 |---|---|
 | Frontend | Dominio y `/login` devuelven 200; build/release coincide con SHA registrado; Node solo en loopback. |
 | TLS | `curl` valida cadena sin `-k`; SAN corresponde al hostname y certificado está vigente. HTTP redirige a HTTPS. |
+| Headers web | Revisar HSTS, CSP, X-Content-Type-Options, protección de framing y Referrer-Policy; documentar excepciones antes de aceptar exposición pública. |
 | BFF/FastAPI | Health 200 y dependencias saludables; `/api/auth/me` sin sesión devuelve 401 esperado. Prueba de credenciales inválidas solo con datos sintéticos y sin registrar cuerpos sensibles. |
 | Cortex/WebSocket | `/health` 200; endpoint de runtime activo y métricas dinámicas; Origin autorizado sin token devuelve 401 y Origin ajeno 403; handshake autenticado requiere sesión aprobada por el usuario. |
 | Red | Kingu llega a los upstreams privados; peer VPN distinto no llega a 8000/8001/5678; PostgreSQL/Redis no tienen binding accesible desde la VPN o Internet. |
-| Nginx | `nginx -t` exitoso; vhost usa upstreams Sentinel previstos y no altera sitios ajenos; logs sin errores nuevos. |
+| Nginx | `nginx -t` exitoso; vhost usa upstreams Sentinel previstos y no altera sitios ajenos; logs sin errores nuevos. Registrar advertencias existentes de otros vhosts por separado. |
 | Integridad | Contenedores no relacionados mantienen estado; volúmenes y DB persisten; no aparece un contenedor Sentinel fuera del proyecto Compose. |
 
 HTTP 200 de `/health` solo valida salud del proceso. No demuestra que se desplegó el SHA correcto, que el runtime opcional esté activo, que la autenticación funcione ni que el sistema completo esté aceptado.

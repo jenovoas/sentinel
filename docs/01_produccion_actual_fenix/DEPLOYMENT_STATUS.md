@@ -1,5 +1,9 @@
 # DEPLOYMENT STATUS — Sentinel Infrastructure
 
+> El inventario inicial de este archivo es histórico. La auditoría multi-nodo
+> verificada el 2026-10-30 está en
+> [`AUDITORIA_DESPLIEGUE_MULTINODO_2026-10-30.md`](../AUDITORIA_DESPLIEGUE_MULTINODO_2026-10-30.md).
+
 > **Última actualización:** 2026-07-28
 > **Despliegue integral:** Laptop (jnovoas) ↔ Fan (servidor remoto)
 > **Arquitectura:** Red mesh batman-adv sobre WireGuard + VXLAN

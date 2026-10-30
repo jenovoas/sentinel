@@ -2,6 +2,8 @@
 
 El procedimiento normativo y los gates de auditoría están en
 [`PROCEDIMIENTO_DESPLIEGUE_MULTINODO.md`](PROCEDIMIENTO_DESPLIEGUE_MULTINODO.md).
+La revisión operativa más reciente está en
+[`AUDITORIA_DESPLIEGUE_MULTINODO_2026-10-30.md`](AUDITORIA_DESPLIEGUE_MULTINODO_2026-10-30.md).
 
 ## Objetivo
 
