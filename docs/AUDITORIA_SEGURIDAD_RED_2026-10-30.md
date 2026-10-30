@@ -42,3 +42,10 @@ El alcance observado son los seis nodos conocidos y una prueba de puertos desde 
 - **Hercules:** `35.222.197.225` ya estaba reservada como dirección estática GCP `hercules-static-ip` (`IN_USE`, `us-central1`).
 - **Ocean:** `172.233.6.214` ya figura `reserved: true` en Linode, asignada al Linode `109391597`.
 - **Fenix:** `64.176.28.233` convertida a IP reservada de Vultr (`58ca117c-0f18-4218-a2c1-b567c2a2c6dd`, label `fenix-mail`, `/32`), adjunta a la instancia `8593db7d…`. Es la IP de `mail.pinguinoseguro.cl`; tras la conversión, `25/465/587/993` y `4222` siguen respondiendo y el MX no cambió.
+
+## Endurecimiento del firewall de Fenix — 2026-10-30
+
+- Vultr, grupo de Fenix `72f91f35…`: se eliminó la regla TCP/80. Quedan TCP 25/465/587/993 públicos (correo), TCP/4222 solo desde iFenix y `10.88.0.0/24`, y UDP/51820.
+- `SENTINEL-DOCKER-USER`: se añadieron reglas para que los puertos publicados de Impacta (`5435`, `6381`, `3102`) solo sean accesibles por `wg0`/`10.88.0.0/24` o localhost; el resto se descarta antes del `RETURN` final.
+- Verificación desde iFenix: `25/465/587/993/4222` abiertos; `80/5435/6381/3102` cerrados. Desde Kingu por VPN: `5435/6381/3102` abiertos. Handshakes WireGuard activos. MX y `mail.pinguinoseguro.cl` sin cambios.
+- El correo sigue en Fenix y requiere esos puertos públicos hasta moverlo o proxyearlo a Kingu; no se cambiaron DNS ni servicios.

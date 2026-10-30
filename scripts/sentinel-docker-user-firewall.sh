@@ -28,6 +28,17 @@ for port in 8000 8001 5678; do
     --ctorigdstport "$port" -j DROP
 done
 
+# Impacta containers publish on 0.0.0.0. Keep their host ports reachable only
+# from the WireGuard mesh or localhost; never from the public interface.
+for port in 5435 6381 3102; do
+  $IPT -w -A "$CHAIN" -i wg0 -s 10.88.0.0/24 -p tcp \
+    -m conntrack --ctdir ORIGINAL --ctorigdstport "$port" -j RETURN
+  $IPT -w -A "$CHAIN" -i lo -p tcp \
+    -m conntrack --ctdir ORIGINAL --ctorigdstport "$port" -j RETURN
+  $IPT -w -A "$CHAIN" -p tcp \
+    -m conntrack --ctdir ORIGINAL --ctorigdstport "$port" -j DROP
+done
+
 $IPT -w -A "$CHAIN" -j RETURN
 $IPT -w -C DOCKER-USER -j "$CHAIN" 2>/dev/null || \
   $IPT -w -I DOCKER-USER 1 -j "$CHAIN"
