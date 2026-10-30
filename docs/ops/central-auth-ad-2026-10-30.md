@@ -24,9 +24,14 @@ hashes locales reutilizables.
   contra AD, limitados al grupo `Guacamole Users`; el grupo `Guacamole Admins`
   recibe permisos de conexión limitados. Se eliminó el usuario local inicial
   `guacadmin` y se verificó que la base no conserva usuarios humanos locales.
-  DNS, certificado propio y proxy HTTPS responden correctamente. La prueba de
-  login AD válido queda pendiente de verificación interactiva por el usuario;
-  no se configuraron destinos RDP/SSH.
+  DNS, certificado propio y proxy HTTPS responden correctamente. La página en
+  blanco se debió a una regla de firewalld que bloqueaba el tráfico entre
+  contenedores en la red interna; después de limitar forwarding a la subred
+  dedicada, se registró login interactivo exitoso contra AD. No se configuraron
+  destinos RDP/SSH en esa etapa; posteriormente se agregaron cinco perfiles SSH
+  (Fenix, Kingu, Marte, Hercules y Ocean) con permisos para los grupos AD de
+  Guacamole. La evidencia operativa está en
+  `docs/ops/guacamole-ad-deployment-2026-10-30.md`.
 - **Cortex:** acepta JWT emitidos por Sentinel; no mantiene inicio de sesión ni
   credenciales humanas propias.
 - **n8n:** contenedor activo versión 1.41.0. Usa gestión de usuarios propia.

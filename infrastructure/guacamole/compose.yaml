@@ -61,6 +61,8 @@ services:
       - "fenix.pinguinoseguro.cl:172.24.0.1"
     ports:
       - "10.88.0.1:8082:8080"
+    volumes:
+      - ./ssh_known_hosts:/etc/guacamole/ssh_known_hosts:ro
     depends_on:
       database:
         condition: service_healthy
