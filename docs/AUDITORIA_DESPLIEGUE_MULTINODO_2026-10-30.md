@@ -263,3 +263,13 @@ La GUI administrativa Tauri queda asignada a Kingu como componente de presentaci
 - Próxima etapa para Kingu: recuperar el prototipo como trabajo aislado; reemplazar comandos mock por consultas permitidas al BFF y autenticadas mediante la sesión del usuario; definir un contrato de telemetría con timestamp/estado de frescura; retirar SHM local y cualquier credencial embebida; actualizar dependencias Tauri/Svelte; producir bundle reproducible y verificar firma/hash antes de instalar.
 
 **Estado:** destino arquitectónico confirmado (Kingu); artefacto no recuperado ni listo para instalación. No se modifica el runtime de Kingu con esta nota.
+
+## Corrección de health Guardian en Fenix — 2026-10-30
+
+El endpoint `/api/v1/health` confundía el proceso legacy local `watchdog_service.py` con Guardian Alpha remoto en Marte. Se corrigió en `cb9a4ba6`: `components.guardian.active=null`, `status=unknown`, `source=marte`, `reason=remote_guardian_not_probed`, y el resultado del proceso local ahora aparece como `local_watchdog_active`. La API deja explícito que Fenix no hizo una sonda remota; no altera el resultado de la cadena Guardian ya aceptada por eventos.
+
+- Construcción en Fenix desde `main`, SHA `cb9a4ba6`; imagen `sentinel-backend:cb9a4ba6`, digest `sha256:bd0862f57666ed7e434a4570902c614fb924717e79742936849606743e70f100`.
+- Se recreó exclusivamente `backend` con `--no-build --no-deps`. Quedó `running/healthy`; `/api/v1/health` por `10.88.0.1:8000` devolvió HTTP 200, Guardian `unknown`/no probado remotamente y TruthSync `unavailable` (como corresponde al motor deshabilitado). Cortex, PostgreSQL y Redis siguieron `healthy`.
+- `/etc/sentinel/backend.env` conservó propietario `root:docker` y modo `0640`. No hubo cambios de esquema ni se activó/desactivó protección.
+
+**Resultado:** se eliminó la afirmación falsa `unprotected` para un componente remoto que el endpoint de Fenix no consulta. El estado real de Guardian sigue acreditado por las verificaciones Marte→Fenix anteriores; este health no lo vuelve a sondear.
