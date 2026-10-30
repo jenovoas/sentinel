@@ -15,11 +15,10 @@ hashes locales reutilizables.
   PostgreSQL conserva `objectGUID` y asignaciones tenant/rol; no almacena
   contraseñas. TLS hacia el PDC y health HTTP 200 fueron comprobados. Falta
   completar una autenticación válida interactiva y MFA.
-- **API Sentinel:** el código ahora autentica por bind UPN a AD y utiliza la
-  fila `users` solamente como asignación tenant/perfil/rol. La migración elimina
-  los hashes bcrypt existentes y agrega el vínculo por `objectGUID`. El
-  despliegue runtime y su verificación se registran abajo cuando terminen; no
-  se debe inferir despliegue por el commit.
+- **API Sentinel:** desplegada en Fenix desde `main` (`075a2707`). Autentica por
+  bind UPN a AD y utiliza la fila `users` solamente como asignación
+  tenant/perfil/rol. La migración eliminó los hashes bcrypt existentes y agregó
+  el vínculo por `objectGUID`.
 - **Cortex:** acepta JWT emitidos por Sentinel; no mantiene inicio de sesión ni
   credenciales humanas propias.
 - **n8n:** contenedor activo versión 1.41.0. Usa gestión de usuarios propia.
@@ -59,7 +58,30 @@ ni exponer el bridge fuera de Fenix.
 
 ## Despliegue Sentinel
 
-Estado: **preparación local**, hasta que se añada evidencia runtime.
+Estado: **desplegado en Fenix**. Evidencia observada el 2026-10-30:
+
+- Backup previo root-only: `/root/ad-sentinel-auth-20261030/backup/`; dump
+  PostgreSQL `821822` bytes, permisos `0600`; incluye env, `smb.conf`, Compose y
+  CA con permisos `0600`.
+- Bridge interno `sentinel_ad_ldap`, gateway Fenix `172.23.0.1`; Samba escucha
+  LDAPS en `172.23.0.1:636`. La zona `ad-ldap` limita el origen
+  `172.23.0.0/16` a TCP/636.
+- `sentinel-backend` recreado individualmente. El entrypoint ejecutó Alembic y
+  la revisión actual es `20261030_directory_identity_auth`.
+- Desde el contenedor, validación de CA y hostname LDAP correcta con TLS 1.3;
+  `GET /api/v1/health` devolvió HTTP 200.
+- Base Sentinel: 1 fila de usuario; 0 filas con `password_hash` no nulo.
+- Login de prueba con credencial AD inválida y organización existente devolvió
+  HTTP 401; esto confirma el camino de bind AD y no constituye un login válido.
+- No se probó login válido ni MFA. Queda pendiente antes de dar por verificado
+  el acceso interactivo.
+- En logs de arranque se observaron errores `Task was destroyed but it is
+  pending` / `aclose(): asynchronous generator is already running` del listener
+  `quantum_pulse_listener` en `app/routers/health.py`. La API permaneció sana;
+  registrar y corregir como incidencia de lifecycle aparte de AD.
+- La reinicialización de Samba reportó registros DNS ya existentes en
+  `samba_dnsupdate`; Samba quedó `active` y LDAPS escuchando. No se declara
+  resuelta la replicación AD inversa ya documentada.
 
 Antes de ejecutar la migración:
 
