@@ -19,6 +19,14 @@ hashes locales reutilizables.
   bind UPN a AD y utiliza la fila `users` solamente como asignación
   tenant/perfil/rol. La migración eliminó los hashes bcrypt existentes y agregó
   el vínculo por `objectGUID`.
+- **Apache Guacamole:** desplegado en Fenix y publicado en
+  `https://guacamole.pinguinoseguro.cl` por Kingu. Autentica usuarios por LDAPS
+  contra AD, limitados al grupo `Guacamole Users`; el grupo `Guacamole Admins`
+  recibe permisos de conexión limitados. Se eliminó el usuario local inicial
+  `guacadmin` y se verificó que la base no conserva usuarios humanos locales.
+  DNS, certificado propio y proxy HTTPS responden correctamente. La prueba de
+  login AD válido queda pendiente de verificación interactiva por el usuario;
+  no se configuraron destinos RDP/SSH.
 - **Cortex:** acepta JWT emitidos por Sentinel; no mantiene inicio de sesión ni
   credenciales humanas propias.
 - **n8n:** contenedor activo versión 1.41.0. Usa gestión de usuarios propia.
@@ -115,6 +123,7 @@ Antes de ejecutar la migración:
 ## Referencias
 
 - [`central-auth-mail-2026-10-30.md`](central-auth-mail-2026-10-30.md)
+- [`guacamole-ad-deployment-2026-10-30.md`](guacamole-ad-deployment-2026-10-30.md)
 - Pinguino Seguro: `docs/ops/central-auth-multitenant.md`, CHG-0023 y ADR-0011.
 - n8n LDAP/SSO: requiere edición Business/Enterprise self-hosted.
 - Grafana OSS LDAP: documentación oficial de autenticación LDAP.

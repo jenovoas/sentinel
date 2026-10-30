@@ -1,0 +1,100 @@
+services:
+  database:
+    image: docker.io/library/postgres:16-alpine
+    container_name: guacamole-postgres
+    environment:
+      POSTGRES_DB: guacamole
+      POSTGRES_USER: guacamole
+      POSTGRES_PASSWORD: ${GUAC_DB_PASSWORD:?Set GUAC_DB_PASSWORD in /etc/guacamole/guacamole.env}
+    volumes:
+      - guacamole_data:/var/lib/postgresql/data
+      - ./postgres-init.sql:/docker-entrypoint-initdb.d/10-guacamole-schema.sql:ro
+      - ./authz-init.sql:/docker-entrypoint-initdb.d/20-guacamole-authz.sql:ro
+    networks:
+      - guac_internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U guacamole -d guacamole"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    restart: unless-stopped
+
+  guacd:
+    image: guacamole/guacd:1.6.0
+    container_name: guacd
+    networks:
+      - guac_internal
+    restart: unless-stopped
+
+  guacamole:
+    image: local/guacamole-ad:1.6.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: guacamole
+    environment:
+      GUACD_HOSTNAME: guacd
+      WEBAPP_CONTEXT: ROOT
+      REMOTE_IP_VALVE_ENABLED: "true"
+      PROXY_ALLOWED_IPS_REGEX: "10\\.88\\.0\\.2|172\\.26\\.0\\.1"
+      LDAP_ENABLED: "true"
+      LDAP_HOSTNAME: fenix.pinguinoseguro.cl
+      LDAP_PORT: "636"
+      LDAP_ENCRYPTION_METHOD: ssl
+      LDAP_SSL_PROTOCOL: TLSv1.3
+      LDAP_USER_BASE_DN: DC=pinguinoseguro,DC=cl
+      LDAP_USERNAME_ATTRIBUTE: userPrincipalName
+      LDAP_SEARCH_BIND_DN: CN=svc-guacamole-bind,OU=ServiceAccounts,DC=pinguinoseguro,DC=cl
+      LDAP_SEARCH_BIND_PASSWORD: ${GUAC_LDAP_BIND_PASSWORD:?Set GUAC_LDAP_BIND_PASSWORD in /etc/guacamole/guacamole.env}
+      LDAP_USER_SEARCH_FILTER: '(&(objectCategory=person)(objectClass=user)(memberOf=CN=Guacamole Users,CN=Users,DC=pinguinoseguro,DC=cl))'
+      LDAP_GROUP_BASE_DN: CN=Users,DC=pinguinoseguro,DC=cl
+      LDAP_GROUP_SEARCH_FILTER: '(&(objectClass=group)(|(cn=Guacamole Users)(cn=Guacamole Admins)))'
+      LDAP_GROUP_NAME_ATTRIBUTE: cn
+      LDAP_FOLLOW_REFERRALS: "false"
+      POSTGRESQL_ENABLED: "true"
+      POSTGRESQL_HOSTNAME: database
+      POSTGRESQL_PORT: "5432"
+      POSTGRESQL_DATABASE: guacamole
+      POSTGRESQL_USERNAME: guacamole
+      POSTGRESQL_PASSWORD: ${GUAC_DB_PASSWORD:?Set GUAC_DB_PASSWORD in /etc/guacamole/guacamole.env}
+    extra_hosts:
+      - "fenix.pinguinoseguro.cl:172.24.0.1"
+    ports:
+      - "10.88.0.1:8082:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+      guacd:
+        condition: service_started
+    networks:
+      - guac_edge
+      - guac_ad
+      - guac_internal
+    restart: unless-stopped
+
+volumes:
+  guacamole_data:
+
+networks:
+  guac_internal:
+    name: guacamole_internal
+    driver: bridge
+    internal: true
+  guac_ad:
+    name: guacamole_ad_ldap
+    driver: bridge
+    internal: true
+    driver_opts:
+      com.docker.network.bridge.name: br-guac
+    ipam:
+      config:
+        - subnet: 172.24.0.0/16
+          gateway: 172.24.0.1
+  guac_edge:
+    name: guacamole_edge
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-guac-edge
+    ipam:
+      config:
+        - subnet: 172.26.0.0/16
