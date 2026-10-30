@@ -254,7 +254,7 @@ El código vivo sigue fijando `current_truth=58/60`; `GpuController` regula un b
 
 ## Seguimiento de GUI Tauri para Kingu — 2026-10-30
 
-La GUI administrativa Tauri queda asignada a Kingu como componente de presentación, consumiendo el BFF/API autenticado de Fenix. No se instaló ni se desplegó una aplicación Tauri en Kingu durante esta auditoría.
+La GUI administrativa Tauri queda asignada a Kingu como componente de presentación, consumiendo el BFF/API autenticado de Fenix. En una comprobación de solo lectura no aparecieron unidades systemd Tauri/Sentinel GUI ni artefactos Tauri bajo `/opt/sentinel`; esto no descarta una instalación manual por usuario fuera de esas ubicaciones.
 
 - El árbol actual no contiene `gui/src-tauri`; Git confirma que el prototipo fue retirado en `0c5780f7`. El manifest recuperado desde su padre usa Tauri 1.6, Svelte 4 y Vite 5, de modo que es una base histórica y sus dependencias/build no se deben asumir compatibles con el toolchain actual.
 - `gui/src/routes/+page.svelte` del prototipo asigna métricas iniciales constantes y luego genera `entropy`/`tte` con `Math.random()` cuando corre en navegador. La interfaz puede, por tanto, mostrar datos aparentes sin telemetría.
@@ -262,7 +262,7 @@ La GUI administrativa Tauri queda asignada a Kingu como componente de presentaci
 - `get_system_vector` abre `/var/run/sentinel/truthsync_shm`, lee 32 bytes y decodifica tres `f64` little-endian. Ese layout/ruta no se ha cotejado con un productor SHM desplegado, y no coincide por sí mismo con la telemetría autenticada del BFF. El fallback a ceros tampoco separa “sin dato” de medición cero.
 - Próxima etapa para Kingu: recuperar el prototipo como trabajo aislado; reemplazar comandos mock por consultas permitidas al BFF y autenticadas mediante la sesión del usuario; definir un contrato de telemetría con timestamp/estado de frescura; retirar SHM local y cualquier credencial embebida; actualizar dependencias Tauri/Svelte; producir bundle reproducible y verificar firma/hash antes de instalar.
 
-**Estado:** destino arquitectónico confirmado (Kingu); artefacto no recuperado ni listo para instalación. No se modifica el runtime de Kingu con esta nota.
+**Estado:** destino arquitectónico confirmado (Kingu); artefacto no recuperado ni listo para instalación. No se modificó el runtime de Kingu.
 
 ## Corrección de health Guardian en Fenix — 2026-10-30
 
