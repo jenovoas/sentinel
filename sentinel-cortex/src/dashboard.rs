@@ -524,7 +524,8 @@ pub async fn ai_health_handler(State(state): State<Arc<AppState>>) -> Json<Value
         "available": true,
         "status": status_str,
         "subsystems": {
-            "truthsync": "active",
+            "truthsync": "unavailable",
+            "truthsync_reason": "no_evidence_verifier",
             "neural_memory_lif": "active",
             "qhc_harmonic_driver": if qhc.connected { "connected" } else { "offline" },
             "liquid_lattice": "active"
@@ -590,28 +591,18 @@ pub async fn ai_query_handler(
         );
     }
 
-    let lat = state.lattice.lock().unwrap();
-    let total_energy = lat.total_energy_raw();
-    drop(lat);
-
-    let res = state
-        .truthsync
-        .lock()
-        .unwrap()
-        .verify_text(&payload.query, total_energy);
-
     (
-        axum::http::StatusCode::OK,
+        axum::http::StatusCode::SERVICE_UNAVAILABLE,
         Json(json!({
             "query": payload.query,
-            "certified": res.is_certified,
-            "trust_score_raw": res.overall_trust_score.to_raw(),
+            "verification_available": false,
+            "verification_status": "unavailable",
+            "certified": false,
+            "trust_score_raw": null,
             "trust_score_scale": me60os_core::spa::SPA::SCALE_0,
-            "verification_time_us": res.verification_time_us,
-            "lattice_energy_raw": total_energy,
             "generation_available": false,
             "answer": null,
-            "message": "TruthSync verificó la consulta. Cortex no tiene un generador de respuestas IA conectado; no se generó texto."
+            "message": "El Truth Core no dispone de verificación basada en evidencia. La consulta no fue certificada y Cortex no generó una respuesta."
         })),
     )
 }

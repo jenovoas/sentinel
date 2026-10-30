@@ -107,7 +107,6 @@ pub(crate) struct AppState {
     security_wal: SecurityWal,
     bpf_stream: broadcast::Sender<CortexEvent>,
     lattice: Arc<Mutex<memory::resonant_lattice_bridge::ResonantLatticeBridge>>,
-    truthsync: Arc<Mutex<truthsync_core::TruthSyncEngine>>,
     liquid_lattice: Arc<Mutex<memory::liquid_lattice::LiquidLattice>>,
     #[allow(dead_code)]
     pattern_detector: Arc<engine::patterns::PatternDetector>,
@@ -303,7 +302,6 @@ async fn main() {
     }));
     let crystal_input_tx = start_crystal_runtime(calculated_nodes, crystal_runtime_status.clone());
     let pattern_detector = Arc::new(engine::patterns::PatternDetector::new());
-    let truthsync = Arc::new(Mutex::new(truthsync_core::TruthSyncEngine::new()));
 
     let crystal_path = std::path::Path::new("/var/lib/sentinel/snn_weights.crystal");
     let fallback_path = std::path::Path::new("/tmp/snn_weights.crystal");
@@ -328,7 +326,6 @@ async fn main() {
         security_wal: SecurityWal::production(),
         bpf_stream: tx_bpf.clone(),
         lattice: lattice.clone(),
-        truthsync: truthsync.clone(),
         liquid_lattice: liquid_lattice.clone(),
         pattern_detector: pattern_detector.clone(),
         neural_memory: neural_memory.clone(),
@@ -1239,14 +1236,16 @@ pub struct TruthClaimRequest {
 #[derive(Serialize)]
 pub struct TruthClaimResponse {
     pub claim_valid: bool,
-    pub sentinel_score: f64,
+    pub verification_available: bool,
+    pub verification_status: &'static str,
+    pub sentinel_score: Option<f64>,
     pub truthsync_cache_hit: bool,
     pub security_blocked: bool,
     pub security_event_logged: bool,
-    pub verification_time_us: u64,
-    pub current_coherence_raw: i64,
-    pub future_coherence_raw: i64,
-    pub cascade_mitigated: bool,
+    pub verification_time_us: Option<u64>,
+    pub current_coherence_raw: Option<i64>,
+    pub future_coherence_raw: Option<i64>,
+    pub cascade_mitigated: Option<bool>,
     /// Ring-0 events are not measured by this userspace handler.
     pub ring0_intercepts: Option<u32>,
 }
@@ -1260,45 +1259,21 @@ pub(crate) async fn truth_claim_handler(
         payload.engine
     );
 
-    let lat = state.lattice.lock().unwrap();
-    let total_energy = lat.total_energy_raw();
-    drop(lat);
-
-    let timestamp = me60os_core::spa::SPA::from_int(chrono::Utc::now().timestamp());
-    let res = state.truthsync.lock().unwrap().verify_node_text(
-        &payload.engine,
-        &payload.claim_payload,
-        total_energy,
-        timestamp,
-    );
-    let verification = res.verification;
-
-    tracing::info!(
-        "TruthSync Verification complete in {}us | Score: {} | Certified: {} | Critical: {}",
-        verification.verification_time_us,
-        verification.overall_trust_score,
-        verification.is_certified,
-        verification.critical_pattern_detected
-    );
-
-    // 🛡️ YATRA: la comparación permanece en SPA; la conversión a f64 solo
-    // serializa el score en el borde HTTP.
-    let threshold_s60 =
-        me60os_core::spa::SPA::from_decimal_for_import_only(payload.trust_threshold);
-    let sentinel_score_f64 =
-        verification.overall_trust_score.to_raw() as f64 / me60os_core::spa::SPA::SCALE_0 as f64;
+    let lower_claim = payload.claim_payload.to_lowercase();
+    let critical_pattern_detected = ["drop database", "rm -rf", "shutdown", "systemctl stop"]
+        .iter()
+        .any(|pattern| lower_claim.contains(pattern));
     // 🛡️ AIOpsShield Semantic Firewall (Claim 2): Inspección cognitiva de AIOpsDoom
     let semantic_firewall = sentinel_cortex::security::AIOpsSemanticFirewall::new();
     let detections = semantic_firewall.inspect(&payload.claim_payload);
-    let blocked = verification.critical_pattern_detected || !detections.is_empty();
+    let blocked = critical_pattern_detected || !detections.is_empty();
     let (status, security_event_logged) = if blocked {
         let event = serde_json::json!({
             "event": "truth_claim_blocked",
             "engine": &payload.engine,
             "claim_payload": &payload.claim_payload,
             "reason": "critical_pattern_detected",
-            "score_raw": verification.overall_trust_score.to_raw(),
-            "verification_time_us": verification.verification_time_us,
+            "detections": detections.iter().map(|item| item.injection_type.as_str()).collect::<Vec<_>>(),
             "recorded_at": chrono::Utc::now().to_rfc3339(),
         });
         match state.security_wal.write(&event.to_string()) {
@@ -1309,21 +1284,27 @@ pub(crate) async fn truth_claim_handler(
             }
         }
     } else {
-        (StatusCode::OK, false)
+        (StatusCode::SERVICE_UNAVAILABLE, false)
     };
 
     (
         status,
         Json(TruthClaimResponse {
-            claim_valid: !blocked && verification.overall_trust_score >= threshold_s60,
-            sentinel_score: sentinel_score_f64,
+            claim_valid: false,
+            verification_available: false,
+            verification_status: if blocked {
+                "blocked_by_security"
+            } else {
+                "unavailable"
+            },
+            sentinel_score: None,
             truthsync_cache_hit: false,
             security_blocked: blocked,
             security_event_logged,
-            verification_time_us: verification.verification_time_us,
-            current_coherence_raw: res.current_coherence.to_raw(),
-            future_coherence_raw: res.future_coherence.to_raw(),
-            cascade_mitigated: res.is_cascade_mitigated,
+            verification_time_us: None,
+            current_coherence_raw: None,
+            future_coherence_raw: None,
+            cascade_mitigated: None,
             ring0_intercepts: None,
         }),
     )
@@ -1409,7 +1390,6 @@ mod tests {
         let lattice = Arc::new(Mutex::new(
             memory::resonant_lattice_bridge::ResonantLatticeBridge::new(1),
         ));
-        let truthsync = Arc::new(Mutex::new(truthsync_core::TruthSyncEngine::new()));
         let resonance = Arc::new(Mutex::new(ResonanceEngine::new()));
         let liquid_lattice = Arc::new(Mutex::new(memory::liquid_lattice::LiquidLattice::new()));
         let pattern_detector = Arc::new(engine::patterns::PatternDetector::new());
@@ -1432,7 +1412,6 @@ mod tests {
             security_wal,
             bpf_stream: tx_bpf,
             lattice,
-            truthsync,
             liquid_lattice,
             pattern_detector,
             neural_memory,
@@ -1686,17 +1665,19 @@ mod tests {
             .await
             .unwrap();
 
-        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(response.status(), StatusCode::SERVICE_UNAVAILABLE);
         let body = axum::body::to_bytes(response.into_body(), usize::MAX)
             .await
             .unwrap();
         let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
 
-        assert!(json.get("claim_valid").is_some());
-        assert!(json.get("sentinel_score").is_some());
+        assert_eq!(json["claim_valid"], false);
+        assert_eq!(json["verification_available"], false);
+        assert_eq!(json["verification_status"], "unavailable");
+        assert!(json["sentinel_score"].is_null());
         assert_eq!(json["security_blocked"], false);
         assert_eq!(json["security_event_logged"], false);
-        assert!(json["verification_time_us"].is_number());
+        assert!(json["verification_time_us"].is_null());
         assert!(json["ring0_intercepts"].is_null());
     }
 
