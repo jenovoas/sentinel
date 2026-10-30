@@ -99,6 +99,9 @@ services:
     image: grafana/alloy:v1.21.3
     container_name: sentinel-marte-alloy
     user: "0:0"
+    group_add:
+      - "4"
+      - "999"
     command:
       - run
       - --server.http.listen-addr=127.0.0.1:12345
@@ -108,6 +111,7 @@ services:
     volumes:
       - ./alloy-marte.alloy:/etc/alloy/config.alloy:ro
       - alloy_data:/var/lib/alloy/data
+      - /etc/machine-id:/etc/machine-id:ro
       - /run/log/journal:/run/log/journal:ro
       - /var/log/journal:/var/log/journal:ro
       - /var/log/audit:/var/log/audit:ro
