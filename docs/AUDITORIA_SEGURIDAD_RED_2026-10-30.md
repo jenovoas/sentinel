@@ -27,3 +27,11 @@ Pruebas TCP desde el punto externo iFenix a los cinco servidores públicos y lec
 - **Actualizaciones:** `apt list --upgradable` mostró solo `tzdata` en Kingu y ninguna actualización pendiente en los otros cinco nodos. El servicio `unattended-upgrades` está activo en Fenix, Kingu y Hercules; no activo en iFenix, Ocean y Marte.
 
 El alcance observado son los seis nodos conocidos y una prueba de puertos desde iFenix. Incluye la política Cloud Firewall Linode de Ocean, pero no el router doméstico, otros dispositivos finales, un escaneo completo de vulnerabilidades ni revisión de cuentas.
+
+## Límites de verificación de esta captura
+
+- **GCP:** verificado con `gcloud compute firewall-rules describe` (prioridades 900/1000/65534, tags y rangos de origen).
+- **Linode:** verificado con la API: `ocean-dmz` está `enabled`, asignado al Linode `109391597`, inbound `DROP` con solo DNS 53 y UDP/51820.
+- **Vultr:** no verificable desde Fenix. La API rechaza la IP de origen `64.176.28.233` con `401 Unauthorized IP address`; la regla TCP/4222 de Vultr se mantiene como dato de la revisión del operador, no como verificación independiente de esta captura.
+- **Hosts Hercules/Ocean:** verificado por SSH con `firewall-cmd`, `nft`, `ss` y `sshd -T`.
+- **Pruebas desde iFenix:** se registran como evidencia de la captura; no se repitieron desde una tercera red externa.
