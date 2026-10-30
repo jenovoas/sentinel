@@ -41,4 +41,4 @@ El alcance observado son los seis nodos conocidos y una prueba de puertos desde 
 - **Kingu:** `64.176.8.191` convertida a IP reservada de Vultr (`2c067ffc-ccab-47dc-b436-d55aa1abb5fe`, label `kingu-public`, `/32`), adjunta a la instancia `da5d2fb2…`. El HTTPS público siguió respondiendo 200 tras la conversión.
 - **Hercules:** `35.222.197.225` ya estaba reservada como dirección estática GCP `hercules-static-ip` (`IN_USE`, `us-central1`).
 - **Ocean:** `172.233.6.214` ya figura `reserved: true` en Linode, asignada al Linode `109391597`.
-- **Fenix:** no solicitado; `64.176.28.233` sigue como IP principal de instancia en Vultr, no reservada.
+- **Fenix:** `64.176.28.233` convertida a IP reservada de Vultr (`58ca117c-0f18-4218-a2c1-b567c2a2c6dd`, label `fenix-mail`, `/32`), adjunta a la instancia `8593db7d…`. Es la IP de `mail.pinguinoseguro.cl`; tras la conversión, `25/465/587/993` y `4222` siguen respondiendo y el MX no cambió.
