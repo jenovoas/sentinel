@@ -273,3 +273,15 @@ El endpoint `/api/v1/health` confundía el proceso legacy local `watchdog_servic
 - `/etc/sentinel/backend.env` conservó propietario `root:docker` y modo `0640`. No hubo cambios de esquema ni se activó/desactivó protección.
 
 **Resultado:** se eliminó la afirmación falsa `unprotected` para un componente remoto que el endpoint de Fenix no consulta. El estado real de Guardian sigue acreditado por las verificaciones Marte→Fenix anteriores; este health no lo vuelve a sondear.
+
+## Separación del QHC, el runtime de mallas y el reloj — 2026-10-30
+
+La revisión de `Experimentos/EXP_027_YHWH_PULSE_MONITOR.md`, la nota `Experimentos/qm_rev_EXP001_vs_timecrystal.md` de la vault y el código Rust distingue tres rutas que antes aparecían agrupadas como “cristal de tiempo”:
+
+1. **QHC Agent compartido (Fenix):** `me-60os-core/src/bin/qhc_agent.rs` avanza un tick cada segundo y publica `QhcSnapshot` por `/run/soma/qhc.sock`; `QhcTensor` entrega patrón/corrección. Cortex usa el snapshot para su heartbeat/pilot. Eso acredita IPC QHC, no un tick de 41 Hz ni sincronización con Marte/Kingu.
+2. **CrystalRuntime de mallas (Cortex/Fenix):** es el runtime de las dos mallas/cristales y memoria A/B, no el servicio de reloj. Su loop usa `std::time::Instant` para llamar `tick_dtc()` a intervalos devueltos por una tabla fija de frecuencias QHC (~41–44 Hz). El método actual aplica fase a ambas mallas y sincroniza SHM en el tick 68. Aunque contiene un `IsochronousClock`, el runtime solo incrementa manualmente su contador; no invoca `tick_internal()`. Las constantes `DTC_CLOCK_SHM`/`DTC_CLOCK_SHM_BYTES` están declaradas pero no tienen lector/escritor en ese archivo. Por tanto, la tabla de fases sí impulsa localmente las mallas, pero no publica una época/tick de reloj compartido para otros procesos o nodos.
+3. **NetworkTimeCrystal Python:** permanece como legado no desplegado. El protocolo serializa `perf_counter_ns()` local, `phase_raw=0` está reservado y el consenso de drift no corrige el reloj. No sustituye la ruta Rust ni NTP.
+
+La traza de EXP-027 describe simulación de ticks y codifica sus frecuencias en el código; `get_tick_interval_ns()` devuelve esas frecuencias desde una tabla fija. Eso no es una medición física en vivo del reloj. El paper citado, [Nandi y Vitiello, arXiv:2606.30890](https://arxiv.org/abs/2606.30890), desarrolla dinámica tipo cristal de tiempo y memoria no-Markoviana de un oscilador dual de Bateman; no acredita por sí solo sincronización de relojes entre hosts.
+
+El runtime Cortex sigue registrando `QHC=true`, pero las sondas NPU de cada salto 17 continúan `Valid=false` y `Coherence=false`. **Dictamen afinado:** QHC agent está conectado; QHC modula localmente las mallas; el reloj temporal común entre procesos/nodos y la ruta que haga válida la verificación NPU siguen sin estar aceptados. No se cambió código ni se instaló un servicio de reloj en esta revisión.
