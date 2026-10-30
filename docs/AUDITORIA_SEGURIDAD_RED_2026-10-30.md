@@ -49,3 +49,11 @@ El alcance observado son los seis nodos conocidos y una prueba de puertos desde 
 - `SENTINEL-DOCKER-USER`: se añadieron reglas para que los puertos publicados de Impacta (`5435`, `6381`, `3102`) solo sean accesibles por `wg0`/`10.88.0.0/24` o localhost; el resto se descarta antes del `RETURN` final.
 - Verificación desde iFenix: `25/465/587/993/4222` abiertos; `80/5435/6381/3102` cerrados. Desde Kingu por VPN: `5435/6381/3102` abiertos. Handshakes WireGuard activos. MX y `mail.pinguinoseguro.cl` sin cambios.
 - El correo sigue en Fenix y requiere esos puertos públicos hasta moverlo o proxyearlo a Kingu; no se cambiaron DNS ni servicios.
+
+## Intento de proxy de correo en Kingu y rollback — 2026-10-30
+
+- Se configuró Nginx stream en Kingu para `25/465/587/993` → Fenix `10.88.0.1` y se abrieron esos puertos en Firewalld/Vultr.
+- La prueba de relay desde iFenix a `64.176.8.191:25` aceptó `MAIL FROM` y `RCPT TO` hacia un dominio externo sin autenticación. Causa: el proxy presenta `10.88.0.2` como cliente y Postfix lo considera confiable por `mynetworks = 127.0.0.0/8, 10.88.0.0/24`; `smtpd_relay_restrictions` incluye `permit_mynetworks`.
+- Se deshabilitó el stream (`/etc/nginx/stream.d/mail.conf.disabled-20261030`), se cerraron `25/465/587/993` en Kingu (Firewalld y Vultr) y se retiraron las reglas de Fenix `wgmesh` para Kingu. Verificado: puertos de Kingu cerrados desde iFenix; `64.176.28.233:25` sigue abierto; relay por Kingu bloqueado.
+- Conclusión: Nginx stream sin PROXY protocol no es apto para este Postfix. Alternativas seguras: gateway Postfix en Kingu, o Nginx stream con PROXY protocol más `smtpd_upstream_proxy_protocol=haproxy` y el equivalente en Dovecot.
+- Samba AD: los DC activos son Hercules y Ocean (`samba-ad-dc` activo, forest `pinguinoseguro.cl`); Kingu no tiene Samba instalado/activo, solo BIND en `53`.
