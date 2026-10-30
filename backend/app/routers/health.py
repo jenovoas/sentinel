@@ -340,20 +340,21 @@ async def health_check(response: Response):
     from app.services.truthsync import truthsync_client
     truthsync_status = await truthsync_client.health_check()
     
-    # Add Guardian/Security check (Real Process Verification)
-    guardian_active = False
+    # The process check below covers only the legacy local watchdog. Guardian
+    # Alpha/eBPF runs on Marte and cannot be inferred from this Fenix process list.
+    local_watchdog_active = False
     try:
          for proc in psutil.process_iter(['cmdline']):
              try:
                  cmd = proc.info.get('cmdline')
                  if cmd and any('watchdog_service.py' in str(arg) for arg in cmd):
-                     guardian_active = True
+                     local_watchdog_active = True
                      break
              except (psutil.NoSuchProcess, psutil.AccessDenied):
                  continue
     except Exception as e:
          logger.error(f"Error checking watchdog status: {e}")
-         guardian_active = False
+         local_watchdog_active = False
 
     health_data = {
         "status": overall_status,
@@ -376,8 +377,11 @@ async def health_check(response: Response):
                 "available": truthsync_status.get("status") == "healthy"
             },
             "guardian": {
-                "active": guardian_active,
-                "status": "protected" if guardian_active else "unprotected"
+                "active": None,
+                "status": "unknown",
+                "source": "marte",
+                "reason": "remote_guardian_not_probed",
+                "local_watchdog_active": local_watchdog_active
             }
         }
     }
