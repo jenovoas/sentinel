@@ -223,3 +223,31 @@ El inventario de `sentinel-cortex/` contiene 53 archivos `.rs` y 11.769 líneas 
 - Brecha de interpretación de health: `/api/v1/health` de Fenix reporta `components.guardian.active=false/status=unprotected` porque busca el proceso legacy `watchdog_service.py`. Ese booleano no consulta el Guardian remoto de Marte y no invalida la evidencia eBPF/gateway anterior; debe corregirse para distinguir watchdog local de protección remota y evitar presentar el health general `healthy` como cobertura Guardian.
 - Kingu: Next.js/BFF y el dashboard Tauri pertenecen a Kingu. No hay fuente Tauri activa en el checkout; el prototipo histórico era mock y no se desplegó. Para instalarlo hace falta recuperar una versión funcional, eliminar datos aleatorios, integrar la API/BFF autenticada de Fenix y producir un paquete reproducible.
 - Aún no se acepta Sentinel completo. Permanecen Truth Core/pod de scoring, la llamada Beta→Gamma, reloj de red, QHC con `Valid=false/Coherence=false`, integración MyCNet↔QHC (fuera del alcance de esta verificación), rutas NPU/Atlantean con consumidores efectivos y gates de autenticación. No se afirma que Crystal Time sea `CrystalRuntime` ni que el despliegue integral esté terminado.
+
+## Continuación de auditoría — NPU/QHC, reloj de red y TruthSync — 2026-10-30 14:06 UTC
+
+### Estado operativo QHC y NPU
+
+- Cortex sigue `healthy` y QHC conectado, pero los logs recientes muestran cada verificación de salto 17 con `QHC=true`, `Valid=false`; no aparece `PROCESSOR RESULT`.
+- En `sentinel-cortex/src/main.rs`, cada snapshot QHC reciente llama `BioResonator::record_pilot_heartbeat()`, pero no llama `ResonanceEngine::inject_pulse()`. El `ResonanceEngine` parte con coherencia cero y solo cambia por su propia entrada de pulso.
+- El listener de ResonanceEngine está suscrito a Redis `sentinel:bio_pulse`; `PUBSUB NUMSUB` mostró un suscriptor en ese canal y cero en `sentinel:quantum:pulse`. El árbol Sentinel no contiene un publicador de `sentinel:bio_pulse`. `bci/mantra_bridge.py` y `quantum/cortex_main.py` publican en el otro canal; no se despliegan como productores actuales y el pulso de Cortex es sintético, por lo que no se conectarán como si fueran presencia humana. MyCNet no se inspeccionó.
+- Resultado: QHC evita el watchdog por ausencia de heartbeat, pero no carga la coherencia que valida NPU. Se mantiene pendiente identificar/activar el productor autorizado del pulso humano y cablear su contrato sin convertir un heartbeat sintético o QHC en presencia humana.
+
+### Cristal de tiempo distribuido
+
+- En Fenix, Marte y Kingu, `timedatectl` reportó NTP habilitado y `NTPSynchronized=yes` en esta captura. Los servicios `sentinel-time-crystal.service` y `network-time-crystal.service` no están activos ni instalados.
+- `quantum/time_crystal_network.py` no constituye sincronización operativa: serializa `time.perf_counter_ns()` (reloj monotónico local no comparable entre hosts), envía `phase_raw=0`, calcula `network_consensus_drift_ns` pero no aplica una corrección a `TimeCrystalClock`. El módulo requiere Redis local por defecto y no tiene contrato de transporte autenticado entre nodos.
+- No se desplegó como reemplazo de NTP. La implementación futura debe definir época común, unidad/tick, medición de offset/retardo entre hosts, autenticación por WireGuard y consumo observable; no se expondrá Redis.
+
+### TruthSync de contenido
+
+- El motor activo de FastAPI en Fenix es `LocalTruthSyncEngine`; el runtime reportó `enabled=false` porque falta `truth_algorithm`. Antes del cambio, `/api/v1/truthsync/health` afirmaba `healthy` y `/verify` devolvía el error dentro de HTTP 200.
+- Commit `1096065f` corrige la señalización: `health_check` responde `status=unavailable`, `enabled=false`; `/api/v1/truthsync/verify` y `/search` responden HTTP 503 con `truthsync_engine_unavailable` cuando el motor falta. Se desplegó solo backend Fenix como `sentinel-backend:1096065f`, ID `sha256:f84e301ca5588f0f035e35ddfc65734ea15cc60e4478462aa6dbb004b726b723`; quedó `running/healthy`. `/api/v1/health` permanece HTTP 200 para DB/Redis y expone TruthSync `available=false`; TruthSync health devolvió `unavailable`; verify devolvió HTTP 503 en sonda sintética.
+- Auditoría de Git: el pod histórico se eliminó del árbol activo en `0c5780f7`. `truthsync-core/src/lib.rs` actual calcula `overall_trust_score` a partir del primer byte de SHA3, no de fuentes que apoyen/refuten el claim; el benchmark de `truthsync-core` mide rendimiento. El servidor de `86bdffdd` fijaba confianza `0.95`. El algoritmo Python histórico (por ejemplo `8c78e470`) usa consenso sobre una clasificación de snippets por palabras clave y `source_search.py` cae a MOCK cuando falla proveedor o dependencia. No es aceptable desplegar cualquiera de esos scores como verificación real sin corregir el algoritmo y exigir evidencia verificable.
+- La capa integrada de seguridad/entropía se mantiene distinta del Truth Core de scoring; el endpoint que ahora reporta `unavailable` corresponde al motor de verificación de contenido, no invalida el filtro de telemetría Guardian que se ejecuta en Marte.
+
+### Maat / Atlantean
+
+El código vivo sigue fijando `current_truth=58/60`; `GpuController` regula un batch usando latencia local, pero el resultado solo se escribe con nivel `trace` y no llega a carga GPU/inferencia identificada. No se fabricó una medida TruthSync ni se conectó un workload por esta continuación.
+
+**Siguiente bloque de implementación:** recuperar una fuente de pulso humano real y autorizada para NPU; definir un contrato de tiempo común sobre WireGuard; reconstruir el Truth Core con evidencia y abstención cuando no existan fuentes fiables. No se inspeccionó MyCNet ni se cambió su runtime.
