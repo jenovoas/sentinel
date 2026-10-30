@@ -80,7 +80,7 @@ El seguimiento se hizo desde las citas en `me-60os-core/src/` y las trazas de `p
 | Papers eBPF 2021/2026 | El código contiene lector de ring buffer local y bridge Cortex. La arquitectura objetivo mueve Guardian a Marte y exige retorno de eventos a Fenix. | Marte necesita sensor local en auditoría más forwarder de red autenticado. La unidad actual `bpftool prog tracelog` no satisface ese flujo. |
 | EXP-015/020/021 y PAI/FPU | `inject_pai` está en rutas de Cortex; `fpu_vs_pai_bench` es un bin auxiliar y su output no está archivado en la traza. | Desplegar/aceptar el camino PAI de Cortex; no desplegar FPU como daemon ni reclamar resultados del bench sin salida reproducible. |
 | EXP-031 / dual lane | `CrystalRuntime` A/B por SHM está conectado; `DualLaneRouter` de Security/Observability no se encontró conectado a la ingesta principal. Son dos mecanismos diferentes. | Falta cablear y verificar WAL/carril de seguridad y colector/carril de observabilidad para los eventos remotos de Marte. |
-| Crystal Cipher | La implementación Rust no tiene consumidor productivo; deriva claves del estado determinista del cristal/pulso. | No usarlo para proteger SHM/ring buffer todavía. Resolver consumidor, claves secretas/rotación/reinicio y unicidad de nonce antes de incluirlo en el despliegue de seguridad. |
+| Crystal Cipher | La implementación Rust no tiene consumidor productivo; el oscilador empieza con fase/amplitud cero, no recibe drive, y deriva claves reproducibles. `current_key()` expone la clave. El nonce GCM es aleatorio desde los cambios del 2026-10-22. | No usarlo para proteger SHM/ring buffer todavía. Definir secreto/KDF, rotación/reinicio, límites de uso de clave y protocolo. Detalle en [auditoría Crystal Cipher](AUDITORIA_CRYSTAL_CIPHER_2026-10-30.md). |
 
 Esta adición es un cotejo documental de citas, experimentos y código. **No añade evidencia nueva de runtime ni indica que el despliegue en Marte se haya ejecutado.**
 
@@ -359,3 +359,18 @@ Se verificó el inventario de nodos conocido (`fenix`, `kingu`, `hercules`, `oce
 - **Ocean (`10.88.0.5`):** nftables está activo con política `drop` en `input`; las reglas permiten TCP/4222 por `wg0` y no permiten TCP/22. `sshd -T` informa el puerto 4222, sin listener en 22.
 - **iFenix (`10.88.0.3`):** Firewalld está activo; la zona `public` no habilita SSH ni TCP/22 y la zona `trusted` contiene una regla explícita `drop` para TCP/22, presente en runtime y configuración persistente. `sshd -T` informa solo el puerto 4222, sin listener en 22. La conexión por 4222 respondió correctamente.
 - UFW no está instalado en los seis nodos. No se modificaron reglas de los otros nodos porque ya bloqueaban/descartaban TCP/22.
+
+### Re-verificación TCP/22 — 2026-10-30 15:15 UTC
+
+- En los seis nodos `sshd -T` informa únicamente `port 4222`; `ss -ltn` no muestra listeners en `:22` y `systemctl` mantiene `ssh.service` activo con `sshd-unix-local.socket`.
+- Firewalld: Fenix tiene `public` y `wgmesh` con target `DROP`; Kingu e iFenix tienen regla rica permanente `port 22/tcp drop` en `trusted`; Hercules y Marte tienen `public` con target `default` (rechazo) y sin servicio SSH; Ocean mantiene `input` con política `drop`.
+- Sondas TCP desde esta estación a las IP públicas `64.176.28.233`, `64.176.8.191`, `35.222.197.225`, `172.233.6.214` y `199.19.74.65`: TCP/22 cerrado en las cinco. `4222` solo respondió en la IP pública de Fenix desde esta ruta.
+- No se modificó ningún firewall en esta re-verificación; el objetivo «22 bloqueado» se cumple en host y en las reglas cloud registradas en la auditoría de segmentación.
+
+## Corrección del forwarder Marte→Fenix — 2026-10-30 15:20 UTC
+
+- Commit `c83b8d47`: se añadió `pool_idle_timeout(2s)` al cliente `reqwest` de `sentinel-security-gateway` para no reutilizar sockets keep-alive que Fenix/uvicorn cierra; el POST fallaba con `error sending request` y se reintentaba.
+- Bundle `/tmp/sentinel-security-gateway-20261030.tar.gz` SHA-256 `77aa925e27869e7be74ad99aa67e8a1668f2761fc5c2813fee7bec9d684b9e6e`.
+- Binario instalado `/usr/local/bin/sentinel-security-gateway` SHA-256 `d0f337696b50b92714488b2afeed935c9d3e9307ed7b88973dda07560b0a5479`; copia previa `sentinel-security-gateway.bak-20261030` SHA-256 `63a9c45d43b32578a4ef206440a2051111433ec80aec242e252566c20200f670`.
+- Servicio reiniciado a las 15:20:17 UTC. `/health` devolvió 200; tras 75 s: `forwarded_total=28`, `forward_errors_total=0`, `ring_drops_total=0`. El contador acumulado previo al reinicio era 129 errores.
+- No se modificó el modo Guardian: `guardian_mode_map=0`, enforcement desactivado.
