@@ -131,7 +131,20 @@ class LocalTruthSyncEngine:
                 pass
 
     async def health_check(self):
-        return {"status": "healthy", "engine": "LocalTruthAlgorithm", "provider": "DuckDuckGo"}
+        if not self.enabled:
+            return {
+                "status": "unavailable",
+                "enabled": False,
+                "engine": "LocalTruthSyncEngine",
+                "error": "truth_algorithm_unavailable",
+            }
+
+        return {
+            "status": "healthy",
+            "enabled": True,
+            "engine": "LocalTruthAlgorithm",
+            "provider": "DuckDuckGo",
+        }
 
 # Singleton
 truthsync_client = LocalTruthSyncEngine()

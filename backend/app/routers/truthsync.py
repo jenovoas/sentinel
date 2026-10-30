@@ -26,8 +26,15 @@ async def verify_claim(request: VerificationRequest):
     Verify a claim or query using TruthSync service
     """
     try:
+        if not truthsync_client.enabled:
+            raise HTTPException(
+                status_code=503,
+                detail={"code": "truthsync_engine_unavailable"},
+            )
         result = await truthsync_client.verify(request.text, request.metadata)
         return result
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error in truth verification: {e}")
         return {
@@ -44,6 +51,11 @@ async def search_truth(query: str = Query(...), max_results: int = 5):
     """
     try:
         from app.services.truthsync import truthsync_client
+        if not truthsync_client.enabled:
+            raise HTTPException(
+                status_code=503,
+                detail={"code": "truthsync_engine_unavailable"},
+            )
         # Usamos el engine interno para buscar sin necesariamente verificar un claim complejo
         loop = asyncio.get_event_loop()
         # El motor local ya tiene acceso al engine de búsqueda
