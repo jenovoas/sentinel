@@ -7,7 +7,7 @@ from fastapi import HTTPException
 from app.bootstrap_admin import BootstrapError, provision_initial_superuser
 from app.models.organization import Organization
 from app.models.user import UserRole
-from app.security.auth import EXPECTED_ALEMBIC_HEADS, verify_password
+from app.security.auth import EXPECTED_ALEMBIC_HEADS
 
 
 def scalars(rows):
@@ -22,7 +22,7 @@ def version_result(heads=EXPECTED_ALEMBIC_HEADS):
 
 
 def test_expected_alembic_head_is_canonical_revision():
-    assert EXPECTED_ALEMBIC_HEADS == frozenset({"20261029_user_timestamp_defaults"})
+    assert EXPECTED_ALEMBIC_HEADS == frozenset({"20261030_directory_identity_auth"})
 
 
 def bootstrap_inputs(**overrides):
@@ -32,8 +32,6 @@ def bootstrap_inputs(**overrides):
         "username": "owner",
         "first_name": "Initial",
         "last_name": "Owner",
-        "password": "safe-password-123",
-        "password_confirmation": "safe-password-123",
         **overrides,
     }
 
@@ -87,7 +85,8 @@ async def test_bootstrap_creates_admin_superuser_for_active_organization():
     assert user.role is UserRole.ADMIN
     assert user.is_superuser is True
     assert user.is_active is True
-    assert verify_password("safe-password-123", user.password_hash)
+    assert user.password_hash is None
+    assert user.directory_id is None
     db.add.assert_called_once_with(user)
     db.commit.assert_awaited_once()
     db.rollback.assert_not_awaited()

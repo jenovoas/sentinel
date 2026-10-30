@@ -31,7 +31,7 @@ from app.models.user import User, UserRole
 settings = get_settings()
 JWT_ALGORITHM = "HS256"
 ACCESS_TOKEN_TTL = timedelta(minutes=10)
-EXPECTED_ALEMBIC_HEADS = frozenset({"20261029_user_timestamp_defaults"})
+EXPECTED_ALEMBIC_HEADS = frozenset({"20261030_directory_identity_auth"})
 
 # ============================================================================
 # PASSWORD HASHING

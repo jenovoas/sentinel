@@ -39,10 +39,10 @@ async def create_user(
     Requires authentication.
     If a tenant_id is not provided, the user is assigned to the 'default' tenant.
     """
-    organization_id = str(current_user.organization_id)
-    if user.tenant_id is None:
-        user.tenant_id = organization_id
-    elif not current_user.is_superuser and user.tenant_id != organization_id:
+    if (
+        not current_user.is_superuser
+        and user.organization_id != current_user.organization_id
+    ):
         raise HTTPException(status_code=403, detail="Cannot create users outside your organization")
     return await create_user_service(db=db, user=user)
 

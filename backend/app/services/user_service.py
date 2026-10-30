@@ -12,8 +12,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
 from app.schemas import UserCreate
-from app.security import get_password_hash, verify_password
-from app.services.tenant_service import get_tenant_by_slug
 
 
 async def get_user(db: AsyncSession, user_id: str):
@@ -33,40 +31,22 @@ async def get_users(db: AsyncSession, skip: int = 0, limit: int = 100):
 
 async def create_user(db: AsyncSession, user: UserCreate):
     """
-    Create a new user. Supports both legacy tenant_id and new organization_id.
+    Create a tenant mapping for an account that will authenticate through AD.
     """
-    hashed_password = get_password_hash(user.password)
+    org_id = UUID(str(user.organization_id))
 
-    # Determine organization/tenant ID
-    org_id = getattr(user, 'organization_id', None) or getattr(user, 'tenant_id', None)
-    if not org_id:
-        default_tenant = await get_tenant_by_slug(db, "default")
-        if not default_tenant:
-            raise Exception("Default tenant/organization not found")
-        org_id = default_tenant.id
-    org_id = UUID(str(org_id))
-
-    # Create user with new model structure
     db_user = User(
         email=user.email,
         username=user.username,
-        password_hash=hashed_password,
+        password_hash=None,
+        directory_id=None,
         organization_id=org_id,
         tenant_id=org_id,
-        first_name=getattr(user, 'first_name', 'User'),
-        last_name=getattr(user, 'last_name', 'Account'),
+        first_name=user.first_name,
+        last_name=user.last_name,
+        role=user.role,
     )
     db.add(db_user)
     await db.commit()
     await db.refresh(db_user)
     return db_user
-
-
-async def authenticate_user(db: AsyncSession, email: str, password: str):
-    """Authenticate user with email and password"""
-    user = await get_user_by_email(db, email)
-    if not user:
-        return False
-    if not verify_password(password, user.password_hash):
-        return False
-    return user

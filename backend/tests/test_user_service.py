@@ -50,13 +50,16 @@ async def test_create_user_persists_both_tenant_and_organization_ids():
     data = UserCreate(
         email="member@example.com",
         username="member",
-        password="secure-password",
-        tenant_id=str(organization_id),
+        first_name="Member",
+        last_name="User",
+        organization_id=organization_id,
     )
 
     created = await create_user(db, data)
 
     assert created.organization_id == organization_id
     assert created.tenant_id == organization_id
+    assert created.directory_id is None
+    assert created.password_hash is None
     db.add.assert_called_once_with(created)
     db.commit.assert_awaited_once()

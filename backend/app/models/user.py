@@ -9,7 +9,16 @@ from datetime import datetime
 from enum import Enum as PyEnum
 from typing import Optional
 
-from sqlalchemy import String, Boolean, DateTime, ForeignKey, Enum, event, func
+from sqlalchemy import (
+    String,
+    Boolean,
+    DateTime,
+    ForeignKey,
+    Enum,
+    UniqueConstraint,
+    event,
+    func,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -26,6 +35,13 @@ class UserRole(str, PyEnum):
 
 class User(Base):
     __tablename__ = "users"
+    __table_args__ = (
+        UniqueConstraint("organization_id", "email", name="uq_users_org_email"),
+        UniqueConstraint("organization_id", "username", name="uq_users_org_username"),
+        UniqueConstraint(
+            "organization_id", "directory_id", name="uq_users_org_directory_id"
+        ),
+    )
 
     # Primary key: UUID v4 (PostgreSQL native)
     id: Mapped[uuid.UUID] = mapped_column(
@@ -54,21 +70,23 @@ class User(Base):
     # Authentication fields
     email: Mapped[str] = mapped_column(
         String(255),
-        unique=True,
         nullable=False,
-        index=True
     )
 
     username: Mapped[str] = mapped_column(
         String(64),
-        unique=True,
         nullable=False,
-        index=True
     )
 
-    password_hash: Mapped[str] = mapped_column(
+    # Immutable Samba AD objectGUID; may repeat across tenant mappings.
+    directory_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True)
+
+    # Retained as a nullable legacy column for schema compatibility. The AD
+    # migration clears every value and no runtime path reads or writes it.
+    password_hash: Mapped[Optional[str]] = mapped_column(
         String(255),
-        nullable=False
+        nullable=True,
+        default=None,
     )
 
     # Profile fields

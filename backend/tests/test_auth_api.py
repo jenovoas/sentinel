@@ -5,15 +5,16 @@ import jwt
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.auth_main import app as auth_app
 from app.database import get_db
 from app.models.organization import Organization
 from app.models.user import User, UserRole
 from app.routers.users import router as users_router
-from app.security.auth import EXPECTED_ALEMBIC_HEADS, get_current_user, get_password_hash
+from app.security.auth import EXPECTED_ALEMBIC_HEADS, get_current_user
 from app.config import get_settings
+from app.services.directory_auth import DirectoryIdentity
 
 
 def result(rows):
@@ -33,7 +34,8 @@ def identity(role=UserRole.MEMBER, *, active=True, org_active=True):
         organization_id=organization_id,
         email="user@example.com",
         username="user",
-        password_hash=get_password_hash("correct horse battery staple"),
+        directory_id="00000000-0000-4000-8000-000000000001",
+        password_hash=None,
         first_name="Test",
         last_name="User",
         created_at=datetime.now(timezone.utc),
@@ -60,14 +62,26 @@ def login_with(organization, user):
         result([user]),
     ]
     install_db_override(auth_app, db)
-    response = TestClient(auth_app).post(
-        "/api/v1/auth/login",
-        data={
-            "organization_slug": organization.slug,
-            "username": user.email,
-            "password": "correct horse battery staple",
-        },
+    identity = DirectoryIdentity(
+        directory_id=user.directory_id,
+        user_principal_name=user.email,
+        email=user.email,
+        display_name="Test User",
+        sam_account_name=user.username,
+        member_of=frozenset(),
     )
+    with patch(
+        "app.routers.auth.authenticate_directory_user",
+        new=AsyncMock(return_value=identity),
+    ):
+        response = TestClient(auth_app).post(
+            "/api/v1/auth/login",
+            data={
+                "organization_slug": organization.slug,
+                "username": user.email,
+                "password": "directory-password",
+            },
+        )
     auth_app.dependency_overrides.clear()
     return response, db
 
@@ -165,7 +179,13 @@ def test_member_cannot_create_users():
 
     response = TestClient(app).post(
         "/api/v1/users/",
-        json={"email": "new@example.com", "username": "newuser", "password": "password123"},
+        json={
+            "email": "new@example.com",
+            "username": "newuser",
+            "first_name": "New",
+            "last_name": "User",
+            "organization_id": str(member.organization_id),
+        },
     )
     app.dependency_overrides.clear()
     assert response.status_code == 403

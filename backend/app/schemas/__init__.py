@@ -1,5 +1,5 @@
 from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
-from pydantic import BaseModel, EmailStr, Field, validator
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import datetime
 from uuid import UUID
@@ -14,7 +14,6 @@ from .users import (
     UserUpdate as UserUpdateNew,
     UserWithOrganization
 )
-from .users import _validate_password_length
 
 # Legacy Tenant Schemas (for backward compatibility)
 class TenantCreate(BaseModel):
@@ -39,24 +38,10 @@ class TenantResponse(BaseModel):
     class Config:
         from_attributes = True
 
-# Legacy User Schemas (for backward compatibility)
-class UserCreate(BaseModel):
-    email: EmailStr
-    username: str = Field(..., min_length=3, max_length=100)
-    password: str = Field(..., min_length=8, max_length=128)
-    tenant_id: Optional[str] = None
-
-    @validator("password")
-    def password_within_bcrypt_limit(cls, value: str) -> str:
-        if len(value.encode("utf-8")) > 72:
-            raise ValueError("password must not exceed 72 UTF-8 bytes")
-        return value
-
-
-class UserUpdate(BaseModel):
-    email: Optional[EmailStr] = None
-    username: Optional[str] = Field(None, min_length=3, max_length=100)
-    is_active: Optional[bool] = None
+# Human credentials are provisioned in AD; these schemas only manage tenant
+# authorization/profile mappings in the application database.
+UserCreate = UserCreateNew
+UserUpdate = UserUpdateNew
 
 
 class UserResponse(BaseModel):

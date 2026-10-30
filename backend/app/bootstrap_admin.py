@@ -2,7 +2,6 @@
 
 import asyncio
 import sys
-from getpass import getpass
 
 from pydantic import ValidationError
 from sqlalchemy import select, text
@@ -13,7 +12,7 @@ from app.models.organization import Organization
 from app.models.tenant import Tenant
 from app.models.user import User, UserRole
 from app.schemas.users import UserCreate as UserCreateSchema
-from app.security.auth import ensure_schema_current, get_password_hash, set_tenant_context
+from app.security.auth import ensure_schema_current, set_tenant_context
 
 
 class BootstrapError(RuntimeError):
@@ -28,14 +27,9 @@ async def provision_initial_superuser(
     username: str,
     first_name: str,
     last_name: str,
-    password: str,
-    password_confirmation: str,
 ) -> User:
-    """Create the only initial superuser in a schema-verified transaction."""
+    """Create a tenant mapping; AD remains the only credential authority."""
     try:
-        if password != password_confirmation:
-            raise BootstrapError("Las contraseñas no coinciden")
-
         await ensure_schema_current(db)
         # The global check must not be silently narrowed by RLS; insufficient DB
         # privileges raise and abort instead of allowing a duplicate bootstrap.
@@ -70,7 +64,6 @@ async def provision_initial_superuser(
             username=username,
             first_name=first_name,
             last_name=last_name,
-            password=password,
             organization_id=organization.id,
             role=UserRole.ADMIN,
         )
@@ -80,7 +73,8 @@ async def provision_initial_superuser(
             username=account.username,
             first_name=account.first_name,
             last_name=account.last_name,
-            password_hash=get_password_hash(account.password),
+            directory_id=None,
+            password_hash=None,
             organization_id=organization.id,
             tenant_id=organization.id,
             role=UserRole.ADMIN,
@@ -116,8 +110,6 @@ def main() -> None:
         "username": input("Username: ").strip(),
         "first_name": input("Nombre: ").strip(),
         "last_name": input("Apellido: ").strip(),
-        "password": getpass("Contraseña: "),
-        "password_confirmation": getpass("Confirmar contraseña: "),
     }
     raise SystemExit(asyncio.run(_run(values)))
 

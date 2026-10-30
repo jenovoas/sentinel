@@ -74,6 +74,12 @@ class Settings(BaseSettings):
         "SECRET_KEY", 
         "your-secret-key-change-in-production-min-32-chars-xyz123"
     )
+
+    ldap_url: str = os.getenv("LDAP_URL", "")
+    ldap_base_dn: str = os.getenv("LDAP_BASE_DN", "")
+    ldap_tls_ca_file: str = os.getenv("LDAP_TLS_CA_FILE", "")
+    ldap_tls_servername: str = os.getenv("LDAP_TLS_SERVERNAME", "")
+    sentinel_admin_group_dn: str = os.getenv("SENTINEL_ADMIN_GROUP_DN", "")
     
     def __init__(self, **data):
         super().__init__(**data)

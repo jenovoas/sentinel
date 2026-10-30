@@ -80,6 +80,10 @@ services:
       JWT_ISSUER: ${JWT_ISSUER:-sentinel-auth}
       JWT_AUDIENCE: ${JWT_AUDIENCE:-sentinel-cortex}
       LOG_LEVEL: ${LOG_LEVEL:-WARNING}
+    extra_hosts:
+      - "fenix.pinguinoseguro.cl:172.23.0.1"
+    volumes:
+      - /usr/local/share/ca-certificates/pinguinoseguro-ad-ldap-ca.crt:/etc/ssl/certs/pinguinoseguro-ad-ldap-ca.crt:ro
     depends_on:
       postgres:
         condition: service_healthy
@@ -88,6 +92,7 @@ services:
     networks:
       - sentinel_internal
       - backend_egress
+      - ad_ldap
     ports:
       - target: 8000
         published: "${SENTINEL_BACKEND_PORT:-8000}"
@@ -387,5 +392,15 @@ networks:
     internal: true
   backend_egress:
     driver: bridge
+  ad_ldap:
+    name: sentinel_ad_ldap
+    driver: bridge
+    internal: true
+    driver_opts:
+      com.docker.network.bridge.name: br-sentad
+    ipam:
+      config:
+        - subnet: 172.23.0.0/16
+          gateway: 172.23.0.1
   proxy:
     external: true

@@ -7,15 +7,9 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
 from app.models.user import UserRole
-
-
-def _validate_password_length(password: str | None) -> str | None:
-    if password is not None and len(password.encode("utf-8")) > 72:
-        raise ValueError("password must not exceed 72 UTF-8 bytes")
-    return password
 
 
 # ===== Organization Schemas =====
@@ -57,15 +51,9 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    password: str = Field(..., min_length=8, max_length=128)
     organization_id: UUID
 
-    @field_validator("password")
-    @classmethod
-    def password_within_bcrypt_limit(cls, value: str) -> str:
-        if len(value.encode("utf-8")) > 72:
-            raise ValueError("password must not exceed 72 UTF-8 bytes")
-        return value
+    model_config = ConfigDict(extra="forbid")
 
 
 class UserUpdate(BaseModel):
@@ -75,14 +63,8 @@ class UserUpdate(BaseModel):
     last_name: Optional[str] = Field(None, min_length=1, max_length=64)
     role: Optional[UserRole] = None
     is_active: Optional[bool] = None
-    password: Optional[str] = Field(None, min_length=8, max_length=128)
 
-    @field_validator("password")
-    @classmethod
-    def password_within_bcrypt_limit(cls, value: Optional[str]) -> Optional[str]:
-        if value is not None and len(value.encode("utf-8")) > 72:
-            raise ValueError("password must not exceed 72 UTF-8 bytes")
-        return value
+    model_config = ConfigDict(extra="forbid")
 
 
 class UserInDB(UserBase):
