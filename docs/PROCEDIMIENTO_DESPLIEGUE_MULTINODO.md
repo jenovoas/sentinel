@@ -8,7 +8,7 @@ Este procedimiento aplica a `main` y al entorno systemd:
 - **Kingu (`10.88.0.2`)**: Next.js bajo systemd, Nginx y TLS público. La GUI Tauri de administración también pertenece a esta capa de presentación y debe consumir el BFF/API privado de Fenix; nunca conecta directo a Marte. El artefacto Tauri activo no está presente en el árbol actual: el prototipo histórico en `gui/` fue eliminado en `0c5780f7` y usaba telemetría simulada, así que requiere recuperación y revisión antes de empaquetarlo.
 - **Marte (`10.88.0.6`)**: backend de seguridad/observabilidad: Guardian/eBPF, Grafana, Mimir, Prometheus, TruthSync y Loki. Opera por WireGuard contra Fenix (`10.88.0.1`) como backend Sentinel central/fuente de verdad; no expone APIs Sentinel al público.
 - **WireGuard (`10.88.0.0/24`)**: transporte privado entre nodos. Los puertos FastAPI/Cortex/n8n se publican en la IP WireGuard de Fenix; `DOCKER-USER` debe limitar cada origen y puerto explícitamente autorizado.
-- **Hercules/DNS**: solo se modifica si el alcance incluye explícitamente un cambio DNS.
+- **Hercules PDC (`10.88.0.4`) y Ocean BDC (`10.88.0.5`)**: servidores DNS autoritativos en DMZ, fuera del plano de cómputo Sentinel. No desplegar allí backend, observabilidad ni Guardianes Sentinel. Solo se modifican para cambios DNS explícitos, preservando las excepciones funcionales TCP/UDP 53 y WireGuard UDP/51820 verificadas en [`AUDITORIA_SEGURIDAD_RED_2026-10-30.md`](AUDITORIA_SEGURIDAD_RED_2026-10-30.md). La relación DNS no los convierte en nodos del backend Sentinel.
 
 No mezclar con `alpine_fenix`/OpenRC. No activar Guardian/eBPF ni enforcement como parte implícita del despliegue de la aplicación; su whitelist y recuperación fuera de banda tienen un preflight separado.
 
