@@ -1,5 +1,8 @@
 # Despliegue separado: Fenix y Kingu
 
+El procedimiento normativo y los gates de auditoría están en
+[`PROCEDIMIENTO_DESPLIEGUE_MULTINODO.md`](PROCEDIMIENTO_DESPLIEGUE_MULTINODO.md).
+
 ## Objetivo
 
 Separar la superficie pública de los servicios internos:
