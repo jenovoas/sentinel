@@ -113,6 +113,7 @@ Antes de cambiar un nodo, registrar:
 4. En Fenix, registrar contenedores, etiquetas Compose, imágenes/digests, bindings y redes. Comparar el estado real con `docker-compose.fenix.yml`; no inferir propiedad por el nombre de un puerto. Identificar qué contenedor escucha en cada puerto.
 5. Guardar el head de Alembic y confirmar backup reciente/restore probado antes de cualquier migración o cambio de datos. No leer ni imprimir archivos de secretos.
 6. Verificar reglas efectivas `DOCKER-USER`/nftables y sus contadores. Las reglas `INPUT` o la zona Firewalld por sí solas no prueban aislamiento de puertos DNAT de Docker.
+
 7. Registrar DNS A/AAAA, vhost, certificado/SAN, upstreams y salud pública existentes. Conservar nombres y sitios ajenos.
 8. En Marte, comprobar whitelists de ejecutables y rutas críticas y probar recuperación fuera de banda. El bootstrap actual adjunta Guardian en auditoría después de esa validación; si faltan precondiciones, no ejecutarlo ni adjuntar eBPF.
 9. Validar Compose sin mostrar secretos:
@@ -123,6 +124,10 @@ Antes de cambiar un nodo, registrar:
    ```
 
 Si falta un backup, acceso independiente, artefacto verificable o rollback viable, no iniciar el cambio.
+
+## Vigencia de la evidencia
+
+La documentación, especificaciones y planes antiguos son fuentes de intención, diseño e historia; no prueban por sí mismos el estado actual ni que un módulo esté desplegado. Antes de marcar un componente como operativo, cotejar el código vigente y su historial con el artefacto/proceso activo, configuración efectiva, logs y métricas o respuestas funcionales recientes. Registrar fecha UTC, nodo, comando/endpoint y resultado; separar explícitamente lo observado en runtime, lo inferido del código y lo que sigue pendiente. Si las fuentes discrepan, conservar la discrepancia y dar prioridad a la observación actual para describir el estado operativo, usando Git y experimentos para explicar cómo llegó allí. No convertir un benchmark histórico o un paper en una validación que no midió.
 
 ## 3. Compilar y verificar artefactos en Fenix
 

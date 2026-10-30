@@ -339,3 +339,13 @@ La inspección del call graph corrige una ambigüedad del procedimiento: el cód
 - `EntropicFirewall::verify_text` en `scv.rs` usa un rango estricto de 2–6 bits; `EntropicFirewall::verify` para eventos usa `SoulVerifier::analyze` y sus rangos biométricos EXP-019. Ese cálculo no equivale al drive actual de CPU. `ScvEngine::analyze` exceptúa textos menores de 5 bytes. No se conectó el filtro al `entropy_signal=0` ni se desplegó como función activa. Gap pendiente: especificar cómo se mapea el drive de CPU/evento Guardian a la entrada y semántica del filtro, y validar el criterio de aceptación para telemetría.
 
 **Estado operativo:** capa integrada de seguridad/entropía pendiente de despliegue efectivo en Marte; AIOpsShield/TelemetrySanitizer sí están activos. Se debe establecer desde la investigación la fuente/semántica del valor de entropía y el contrato/umbral antes de conectarlo al gateway. El Truth Core/pod de scoring de contenido sigue siendo otra brecha separada. Esta revisión no cambió código ni runtime.
+
+### Captura de runtime Cortex: NPU/QHC/Maat — 2026-10-30 14:55 UTC
+
+Esta captura se coteja con el código y el contenedor que respondieron ahora; las secciones previas de este archivo son historial de auditoría y no sustituyen esta lectura.
+
+- `GET http://10.88.0.1:8001/health` respondió `status=OK`, versión `0.1.0`, QHC `connected=true`, `stale=false`, tick `36967`, fase `HE`, modulación `5`.
+- Métricas: `sentinel_lattice_total_energy=167287522716`, `sentinel_lattice_active_node_count=63050`, retención `1.0000` y temperatura `49.00 °C`. La actividad de la malla no demuestra NPU aceptada.
+- Los logs de los últimos cinco minutos mostraron verificaciones NPU en ticks 36703–36975 con `Valid=false`, `Coherence=false`, `QHC=true`; no apareció `PROCESSOR RESULT` ni `Bio-Pulse received`. QHC está vivo; la ruta de pulso/coherencia sigue sin aceptación.
+- No hay series `maat_*`, `gpu_*` ni `npu_*` en el endpoint de métricas. El código vigente instancia Maat/GpuController con verdad fija `58/60`, mide el tramo de lectura/conversión térmica y solo registra el batch a trace; no demuestra control de GPU ni inferencia.
+- Dictamen: módulos compilados y tareas ejecutándose no equivalen a funciones integradas. NPU no valida pulsos en vivo; Maat no gobierna un consumidor de carga identificado. No se modificó código ni runtime en esta captura.
