@@ -10,6 +10,7 @@ RUN chmod +x /usr/local/bin/sentinel-cortex
 
 # Run as non-root user
 RUN useradd -m -u 1000 sentinel
+RUN install -d -o sentinel -g sentinel /var/lib/sentinel/crystal-state
 USER sentinel
 
 CMD ["sentinel-cortex"]

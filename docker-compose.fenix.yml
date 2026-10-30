@@ -118,6 +118,7 @@ services:
       RUST_LOG: info
       SENTINEL_PORT: "8000"
       SENTINEL_CRYSTAL_RUNTIME: "1"
+      SENTINEL_CRYSTAL_STATE_DIR: /var/lib/sentinel/crystal-state
       SECRET_KEY: ${SECRET_KEY}
       SENTINEL_JWT_SECRET: ${SECRET_KEY:?Configura SECRET_KEY en el .env de Fenix}
       SENTINEL_JWT_ISSUER: ${JWT_ISSUER:-sentinel-auth}
@@ -140,6 +141,7 @@ services:
       - /sys/fs/bpf:/sys/fs/bpf:rw
       - /dev/shm:/dev/shm:rw
       - /run/soma:/run/soma:ro
+      - crystal_state:/var/lib/sentinel/crystal-state
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://127.0.0.1:8000/health"]
       interval: 30s
@@ -377,6 +379,7 @@ volumes:
   grafana_data:
   loki_data:
   n8n_data:
+  crystal_state:
 
 networks:
   sentinel_internal:
