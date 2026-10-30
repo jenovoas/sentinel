@@ -21,6 +21,8 @@ Recursos por `apply` (un contenedor = un "servidor/escritorio" del cliente):
 
 Al `apply`: crear conexión (SSH/RDP/VNC) por API de Guacamole y asignarla **solo** al `objectGUID` del usuario (grupo `SP-Guacamole-Remote` como condición previa). Al `destroy`/quitar grupo: revocar conexión + detener contenedor. Nunca conexiones huérfanas visibles a otros tenants.
 
+**Gate de identidad:** la instancia actual combina LDAP + PostgreSQL y su ACL Guacamole se resuelve con nombres canónicos de usuario/grupo LDAP. No se ha validado que la API pueda autorizar directamente un `objectGUID`. Antes de implementar la línea anterior, probar y documentar la traducción `objectGUID` → UPN/grupo AD → entidad ACL Guacamole, incluido renombre, baja y grupos anidados. No escribir el GUID en `guacamole_entity` como si Guacamole lo asociara automáticamente. El modelo de protocolos, grupos y aislamiento está en [`guacamole-servicios-remotos-plan-2026-10-30.md`](guacamole-servicios-remotos-plan-2026-10-30.md).
+
 ## 3. Packs (vault `ESTRATEGIA_NEGOCIO_IA_SOBERANA` §5)
 
 - *Pack Teletrabajo* = `SP-VPN-Access` + `SP-Guacamole-Remote` + 1× `vm-desktop`.

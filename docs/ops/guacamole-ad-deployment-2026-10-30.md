@@ -63,6 +63,7 @@ La primera comprobación de conectividad se hizo desde el contenedor web y no re
 
 - Compose: `infrastructure/guacamole/compose.yaml`.
 - Configuración Nginx versionada: `infrastructure/guacamole/nginx/guacamole.pinguinoseguro.cl.conf`.
+- Plan de ampliación RDP/VNC/Kubernetes/SFTP, grabación e integración multitenant: [`guacamole-servicios-remotos-plan-2026-10-30.md`](guacamole-servicios-remotos-plan-2026-10-30.md).
 - Para ver estado en Fenix: `cd /home/jnovoas/proyectos/sentinel/infrastructure/guacamole && sudo -n docker compose --env-file /etc/guacamole/guacamole.env ps`.
 - Para comprobar Nginx en Kingu: `sudo -n nginx -t && sudo -n systemctl reload nginx`.
 - La renovación del certificado queda a cargo de Certbot en Kingu; verificarla con `sudo -n certbot renew --dry-run` en una ventana operativa.

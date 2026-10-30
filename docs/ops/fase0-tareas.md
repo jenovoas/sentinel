@@ -42,6 +42,7 @@
 - [ ] `modules/tenant-compute/`: red Podman dedicada por tenant, contenedor servidor (SSH) o escritorio (xRDP/noVNC), DNS interno, node-exporter → Marte.
 - [ ] Sin KVM: fenix/kingu Azure sin `/dev/kvm` (verificado 2026-10-30). Contenedores rootless, cuota CPU/RAM/disco.
 - [ ] Alta Guacamole automática al desplegar (conexión RDP/VNC/SSH asignada solo a su `objectGUID`); revoke al quitar el grupo.
+- [ ] Antes de elegir escritorio, seguir [`guacamole-servicios-remotos-plan-2026-10-30.md`](guacamole-servicios-remotos-plan-2026-10-30.md): piloto xRDP/RDP como candidato Guacamole; noVNC es un canal alternativo. Resolver en prueba la conversión `objectGUID` → principal LDAP/Guac autorizado.
 - [ ] Conectar con `/api/portal/deploy` existente (servicio `services/deployment.ts`, tests en `__tests__/api/deployment-route.test.ts`).
 - Ver spec: `docs/ops/terraform-tenant-compute.md`.
 
