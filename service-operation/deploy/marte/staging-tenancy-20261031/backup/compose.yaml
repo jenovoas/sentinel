@@ -1,0 +1,197 @@
+name: sentinel-marte
+
+services:
+  prometheus:
+    image: prom/prometheus:v3.15.1
+    container_name: sentinel-marte-prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=30d
+      - --storage.tsdb.wal-compression
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./rules-sentinel.yml:/etc/prometheus/rules-sentinel.yml:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      - mimir
+      - node-exporter
+    networks:
+      - sentinel_observability
+    restart: unless-stopped
+    mem_limit: 1g
+    cpus: 1.0
+
+  mimir:
+    image: grafana/mimir:3.2.3
+    container_name: sentinel-marte-mimir
+    command: ["-config.file=/etc/mimir/mimir.yml"]
+    volumes:
+      - ./mimir.yml:/etc/mimir/mimir.yml:ro
+      - mimir_data:/data/mimir
+    networks:
+      - sentinel_observability
+    restart: unless-stopped
+    mem_limit: 3g
+    cpus: 2.0
+
+  loki:
+    image: grafana/loki:3.7.0
+    container_name: sentinel-marte-loki
+    command: ["-config.file=/etc/loki/loki.yml"]
+    volumes:
+      - ./loki.yml:/etc/loki/loki.yml:ro
+      - loki_data:/loki
+    ports:
+      - "10.88.0.6:3100:3100"
+    networks:
+      - sentinel_observability
+    restart: unless-stopped
+    mem_limit: 1536m
+    cpus: 1.5
+
+  grafana:
+    image: grafana/grafana:13.2.1
+    container_name: sentinel-marte-grafana
+    env_file:
+      - ./grafana/org-mapping.env
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana-admin-password
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_SERVER_HTTP_ADDR: 0.0.0.0
+      GF_SERVER_HTTP_PORT: "3000"
+      GF_SERVER_ROOT_URL: https://pinguinoseguro.cl/portal/grafana/
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+      GF_AUTH_LDAP_ENABLED: "true"
+      GF_AUTH_LDAP_CONFIG_FILE: /etc/grafana/ldap.toml
+      GF_AUTH_LDAP_ALLOW_SIGN_UP: "true"
+      GF_USERS_AUTO_ASSIGN_ORG_ROLE: "None"
+      GF_AUTH_JWT_ENABLED: "true"
+      GF_AUTH_JWT_HEADER_NAME: X-JWT-Assertion
+      GF_AUTH_JWT_USERNAME_CLAIM: sub
+      GF_AUTH_JWT_EMAIL_CLAIM: email
+      GF_AUTH_JWT_KEY_FILE: /etc/grafana/jwt-public.pem
+      GF_AUTH_JWT_AUTO_SIGN_UP: "true"
+      GF_AUTH_JWT_URL_LOGIN: "false"
+      GF_AUTH_JWT_ORG_ATTRIBUTE_PATH: orgs
+      GF_AUTH_JWT_ROLE_ATTRIBUTE_PATH: "profile == 'technician' && 'Editor' || profile == 'monitoring' && 'Editor' || 'Viewer'"
+      GF_AUTH_JWT_ALLOW_ASSIGN_GRAFANA_ADMIN: "true"
+      GF_AUTH_JWT_EXPECT_CLAIMS: '{"iss":"urn:pinguinoseguro:auth","aud":"grafana"}'
+      GF_AUTH_COOKIE_SAMESITE: "lax"
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_SECURITY_DISABLE_GRAVATAR: "true"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - /etc/sentinel/grafana-admin-password:/run/secrets/grafana-admin-password:ro
+      - ./grafana/ldap.toml:/etc/grafana/ldap.toml:ro
+      - ./grafana/jwt-public.pem:/etc/grafana/jwt-public.pem:ro
+      - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/sentinel.yml:ro
+      - ./grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/sentinel.yml:ro
+      - ./dashboards:/etc/grafana/provisioning/dashboards/json:ro
+    ports:
+      - "10.88.0.6:3000:3000"
+    depends_on:
+      - prometheus
+      - mimir
+      - loki
+    networks:
+      - sentinel_observability
+    restart: unless-stopped
+    mem_limit: 1g
+    cpus: 1.0
+
+  node-exporter:
+    image: quay.io/prometheus/node-exporter:v1.12.1
+    container_name: sentinel-marte-node-exporter
+    pid: host
+    command:
+      - --path.rootfs=/host
+      - --web.listen-address=:9100
+    volumes:
+      - /:/host:ro,rslave
+    networks:
+      - sentinel_observability
+    restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.5
+
+  blackbox-exporter:
+    image: prom/blackbox-exporter:v0.27.0
+    container_name: sentinel-marte-blackbox-exporter
+    user: "0:0"
+    cap_drop: ["ALL"]
+    cap_add: ["NET_RAW"]
+    command: ["--config.file=/etc/blackbox/blackbox.yml"]
+    volumes:
+      - ./blackbox.yml:/etc/blackbox/blackbox.yml:ro
+    networks:
+      - sentinel_observability
+    read_only: true
+    restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.5
+
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: sentinel-marte-alertmanager
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+      - --cluster.listen-address=
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - /etc/sentinel/alertmanager-smtp-password:/run/secrets/alertmanager-smtp-password:ro
+      - alertmanager_data:/alertmanager
+    networks:
+      - sentinel_observability
+    restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.25
+
+  alloy:
+    image: grafana/alloy:v1.21.3
+    container_name: sentinel-marte-alloy
+    user: "0:0"
+    group_add:
+      - "4"
+      - "999"
+    command:
+      - run
+      - --server.http.listen-addr=127.0.0.1:12345
+      - --storage.path=/var/lib/alloy/data
+      - --disable-reporting
+      - /etc/alloy/config.alloy
+    volumes:
+      - ./alloy-marte.alloy:/etc/alloy/config.alloy:ro
+      - alloy_data:/var/lib/alloy/data
+      - /etc/machine-id:/etc/machine-id:ro
+      - /run/log/journal:/run/log/journal:ro
+      - /var/log/journal:/var/log/journal:ro
+      - /var/log/audit:/var/log/audit:ro
+    networks:
+      - sentinel_observability
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.5
+
+networks:
+  sentinel_observability:
+    name: sentinel_marte_observability
+
+volumes:
+  prometheus_data:
+    name: sentinel_marte_prometheus
+  mimir_data:
+    name: sentinel_marte_mimir
+  loki_data:
+    name: sentinel_marte_loki
+  grafana_data:
+    name: sentinel_marte_grafana
+  alloy_data:
+    name: sentinel_marte_alloy
+  alertmanager_data:
+    name: sentinel_marte_alertmanager
