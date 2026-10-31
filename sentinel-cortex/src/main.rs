@@ -104,6 +104,38 @@ enum CrystalInput {
     },
 }
 
+#[derive(Clone, Copy)]
+enum CrystalTask {
+    Checkpoint,
+}
+
+#[derive(Clone, Copy)]
+struct SchedulerRuntimeStatus {
+    stats: quantum::quantum_scheduler::SchedulerStats,
+    efficiency_percent: Option<u64>,
+    pending: usize,
+    emergency_shutdown: bool,
+    dual_lane_portal_open: bool,
+    dtc_ticks: u64,
+}
+
+impl SchedulerRuntimeStatus {
+    fn capture(
+        scheduler: &quantum::quantum_scheduler::QuantumScheduler<CrystalTask>,
+        dual_lane_portal_open: bool,
+        dtc_ticks: u64,
+    ) -> Self {
+        Self {
+            stats: scheduler.get_stats(),
+            efficiency_percent: scheduler.efficiency_percent(),
+            pending: scheduler.queue_len(),
+            emergency_shutdown: scheduler.is_emergency_shutdown(),
+            dual_lane_portal_open,
+            dtc_ticks,
+        }
+    }
+}
+
 pub(crate) struct AppState {
     resonance: Arc<Mutex<ResonanceEngine>>,
     security_wal: SecurityWal,
@@ -114,7 +146,7 @@ pub(crate) struct AppState {
     pattern_detector: Arc<engine::patterns::PatternDetector>,
     neural_memory: Arc<Mutex<me60os_core::neural_memory::NeuralMemory>>,
     crystal_runtime_status: Arc<Mutex<CrystalRuntimeStatusResponse>>,
-    quantum_scheduler: Arc<Mutex<quantum::quantum_scheduler::QuantumScheduler>>,
+    quantum_scheduler_status: Arc<Mutex<SchedulerRuntimeStatus>>,
     bio_resonator: Arc<Mutex<quantum::bio_resonator::BioResonator>>,
     qhc: Arc<parking_lot::Mutex<qhc_client::QhcStatus>>,
 }
@@ -135,6 +167,8 @@ fn thermal_half(amplitude: me60os_core::spa::SPA) -> me60os_core::spa::SPA {
 fn start_crystal_runtime(
     nodes: usize,
     status: Arc<Mutex<CrystalRuntimeStatusResponse>>,
+    mut scheduler: quantum::quantum_scheduler::QuantumScheduler<CrystalTask>,
+    scheduler_status: Arc<Mutex<SchedulerRuntimeStatus>>,
 ) -> Option<std::sync::mpsc::SyncSender<CrystalInput>> {
     if std::env::var("SENTINEL_CRYSTAL_RUNTIME").as_deref() != Ok("1") {
         status.lock().unwrap().error = Some("disabled by SENTINEL_CRYSTAL_RUNTIME".to_string());
@@ -166,6 +200,9 @@ fn start_crystal_runtime(
                 + Duration::from_nanos(memory::crystal_runtime::DTC_TICK_INTERVAL_NS);
             let mut next_step = std::time::Instant::now() + Duration::from_millis(500);
             let mut next_persist = std::time::Instant::now() + Duration::from_secs(60);
+            let scheduler_epoch = std::time::Instant::now();
+            let mut portal_open = false;
+            let mut checkpoint_id = 0_u64;
 
             loop {
                 loop {
@@ -199,7 +236,8 @@ fn start_crystal_runtime(
                 }
 
                 let now = std::time::Instant::now();
-                if now >= next_tick {
+                let dtc_tick_due = now >= next_tick;
+                if dtc_tick_due {
                     match runtime.tick_dtc() {
                         Ok(interval_ns) => next_tick += Duration::from_nanos(interval_ns),
                         Err(error) => {
@@ -221,17 +259,40 @@ fn start_crystal_runtime(
                     }
                     next_step = now + Duration::from_millis(500);
                 }
-                if now >= next_persist {
-                    if let Err(error) = runtime.persist() {
-                        tracing::error!(%error, "CrystalRuntime checkpoint failed");
-                    }
+                let checkpoint_due = now >= next_persist;
+                if checkpoint_due {
+                    checkpoint_id += 1;
+                    scheduler.enqueue(quantum::quantum_scheduler::Task {
+                        id: checkpoint_id,
+                        task_type: quantum::quantum_scheduler::TaskType::BackupS60,
+                        // No measured energy cost is available for this operation.
+                        cost: 0,
+                        callback: CrystalTask::Checkpoint,
+                    });
                     next_persist = now + Duration::from_secs(60);
                 }
+                if dtc_tick_due || checkpoint_due {
+                    portal_open = runtime.dual_lane_portal_open();
+                    let elapsed_raw = now.duration_since(scheduler_epoch).as_nanos()
+                        * math::s60::S60::SCALE_0 as u128 / 1_000_000_000;
+                    scheduler.tick_observed(
+                        math::s60::S60::from_raw(elapsed_raw as i64),
+                        portal_open,
+                        |task| match task {
+                            CrystalTask::Checkpoint => {
+                                runtime.persist()?;
+                                tracing::info!("Scheduler checkpoint committed by CrystalRuntime");
+                                Ok(())
+                            }
+                        },
+                    );
+                }
 
-                let current = thread_status.lock().unwrap();
-                let mut current = current;
-                current.runtime = Some(runtime.status());
-                drop(current);
+                let runtime_status = runtime.status();
+                *scheduler_status.lock().unwrap() = SchedulerRuntimeStatus::capture(
+                    &scheduler, portal_open, runtime_status.dtc_ticks,
+                );
+                thread_status.lock().unwrap().runtime = Some(runtime_status);
 
                 let next_deadline = next_tick.min(next_step).min(next_persist);
                 std::thread::sleep(
@@ -318,7 +379,6 @@ async fn main() {
         error: None,
         runtime: None,
     }));
-    let crystal_input_tx = start_crystal_runtime(calculated_nodes, crystal_runtime_status.clone());
     let pattern_detector = Arc::new(engine::patterns::PatternDetector::new());
 
     let crystal_path = std::path::Path::new("/var/lib/sentinel/snn_weights.crystal");
@@ -334,9 +394,17 @@ async fn main() {
             });
     let neural_memory = Arc::new(Mutex::new(initial_neural_memory));
     let bio_resonator = Arc::new(Mutex::new(quantum::bio_resonator::BioResonator::new()));
-    let quantum_scheduler = Arc::new(Mutex::new(
-        quantum::quantum_scheduler::QuantumScheduler::new(bio_resonator.clone()),
+    let quantum_scheduler =
+        quantum::quantum_scheduler::QuantumScheduler::<CrystalTask>::new(bio_resonator.clone());
+    let quantum_scheduler_status = Arc::new(Mutex::new(
+        SchedulerRuntimeStatus::capture(&quantum_scheduler, false, 0),
     ));
+    let crystal_input_tx = start_crystal_runtime(
+        calculated_nodes,
+        crystal_runtime_status.clone(),
+        quantum_scheduler,
+        quantum_scheduler_status.clone(),
+    );
 
     let qhc = Arc::new(parking_lot::Mutex::new(qhc_client::QhcStatus::unavailable()));
     let state = Arc::new(AppState {
@@ -348,7 +416,7 @@ async fn main() {
         pattern_detector: pattern_detector.clone(),
         neural_memory: neural_memory.clone(),
         crystal_runtime_status: crystal_runtime_status.clone(),
-        quantum_scheduler: quantum_scheduler.clone(),
+        quantum_scheduler_status,
         bio_resonator: bio_resonator.clone(),
         qhc: qhc.clone(),
     });
@@ -363,8 +431,6 @@ async fn main() {
 
     let resonance_task = resonance.clone();
     let processor_task = processor.clone();
-    let scheduler_task = quantum_scheduler.clone();
-    let bio_resonator_task = bio_resonator.clone();
     let qhc_task = state.qhc.clone();
     tokio::spawn(async move {
         tracing::info!("Resonance Engine active. Syncing to QHC pulse...");
@@ -379,49 +445,11 @@ async fn main() {
             last_second = elapsed_secs;
             let local_tick = elapsed_secs;
             let qhc_tick = qhc_client::live_tick(&qhc_task.lock());
-            if qhc_tick.is_some() {
-                bio_resonator_task.lock().unwrap().record_pilot_heartbeat();
-            }
             let tick = qhc_tick.unwrap_or(local_tick);
 
             {
                 let mut res = resonance_task.lock().unwrap();
                 res.tick_entropy();
-            }
-            {
-                let mut sched = scheduler_task.lock().unwrap();
-                sched.tick(math::s60::S60::from_int(tick as i32));
-                // El lattice canta, el scheduler escucha: encolar trabajo
-                // para que el portal lo ejecute. Callbacks no-op: el trabajo
-                // real lo hace el worker al ver tasks_in_portal avanzar.
-                // LatticeGC cada 17s (ciclo Salto), PhaseAlign cada 68s
-                // (ciclo Quantum Leap), BackupS60 cada 300s (critico).
-                extern "C" fn noop() {}
-                let next_id = sched.queue_len() as u64 + sched.get_stats().tasks_in_portal + sched.get_stats().tasks_forced;
-                if tick > 0 && tick.is_multiple_of(17) {
-                    sched.enqueue(quantum::quantum_scheduler::Task {
-                        id: next_id,
-                        task_type: quantum::quantum_scheduler::TaskType::LatticeGC,
-                        cost: 10,
-                        callback: noop,
-                    });
-                }
-                if tick > 0 && tick.is_multiple_of(68) {
-                    sched.enqueue(quantum::quantum_scheduler::Task {
-                        id: next_id + 1,
-                        task_type: quantum::quantum_scheduler::TaskType::PhaseAlign,
-                        cost: 20,
-                        callback: noop,
-                    });
-                }
-                if tick > 0 && tick.is_multiple_of(300) {
-                    sched.enqueue(quantum::quantum_scheduler::Task {
-                        id: next_id + 2,
-                        task_type: quantum::quantum_scheduler::TaskType::BackupS60,
-                        cost: 50,
-                        callback: noop,
-                    });
-                }
             }
 
             if tick > 0 && tick.is_multiple_of(17) {
@@ -820,8 +848,9 @@ async fn health_handler(
     axum::extract::State(state): axum::extract::State<Arc<AppState>>,
 ) -> Json<HealthStatus> {
     let bio_coherence = state.resonance.lock().unwrap().get_coherence_raw();
-    let sched_stats = state.quantum_scheduler.lock().unwrap().get_stats();
-    let scheduler_efficiency = state.quantum_scheduler.lock().unwrap().efficiency_percent();
+    let scheduler = *state.quantum_scheduler_status.lock().unwrap();
+    let sched_stats = scheduler.stats;
+    let scheduler_efficiency = scheduler.efficiency_percent;
     let (bio_coherence_raw, bio_portal_open) = {
         let bio = state.bio_resonator.lock().unwrap();
         (bio.get_coherence_raw(), bio.is_portal_open())
@@ -837,6 +866,12 @@ async fn health_handler(
             timestamp_s60: 0, // Placeholder
             tasks_in_portal: sched_stats.tasks_in_portal,
             tasks_forced: sched_stats.tasks_forced,
+            tasks_critical: sched_stats.tasks_critical,
+            tasks_failed: sched_stats.tasks_failed,
+            scheduler_queue_len: scheduler.pending,
+            scheduler_emergency_shutdown: scheduler.emergency_shutdown,
+            dual_lane_portal_open: scheduler.dual_lane_portal_open,
+            dtc_ticks: scheduler.dtc_ticks,
             bio_coherence_raw,
             bio_portal_open,
         },
@@ -1460,8 +1495,10 @@ mod tests {
         let pattern_detector = Arc::new(engine::patterns::PatternDetector::new());
         let neural_memory = Arc::new(Mutex::new(me60os_core::neural_memory::NeuralMemory::new()));
         let bio_resonator = Arc::new(Mutex::new(quantum::bio_resonator::BioResonator::new()));
-        let quantum_scheduler = Arc::new(Mutex::new(
-            quantum::quantum_scheduler::QuantumScheduler::new(bio_resonator.clone()),
+        let quantum_scheduler =
+            quantum::quantum_scheduler::QuantumScheduler::<CrystalTask>::new(bio_resonator.clone());
+        let quantum_scheduler_status = Arc::new(Mutex::new(
+            SchedulerRuntimeStatus::capture(&quantum_scheduler, false, 0),
         ));
         let (tx_bpf, _) = broadcast::channel(100);
 
@@ -1481,7 +1518,7 @@ mod tests {
             pattern_detector,
             neural_memory,
             crystal_runtime_status,
-            quantum_scheduler,
+            quantum_scheduler_status,
             bio_resonator,
             qhc,
         });

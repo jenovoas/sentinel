@@ -31,7 +31,7 @@ fn main() {
     println!("{}", "-".repeat(72));
 
     let bio = Arc::new(Mutex::new(BioResonator::new()));
-    let mut scheduler = QuantumScheduler::new(bio.clone());
+    let mut scheduler: QuantumScheduler = QuantumScheduler::new(bio.clone());
 
     // Llenar la cola para que cada tick tenga trabajo
     for i in 0..200u64 {

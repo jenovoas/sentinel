@@ -25,7 +25,7 @@ fn main() {
     println!("{}", "-".repeat(72));
 
     let bio = Arc::new(Mutex::new(BioResonator::new()));
-    let mut scheduler = QuantumScheduler::new(bio.clone());
+    let mut scheduler: QuantumScheduler = QuantumScheduler::new(bio.clone());
 
     // Agregar tareas: 2 normales, 1 critica
     scheduler.enqueue(Task {

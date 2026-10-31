@@ -207,6 +207,26 @@ impl CrystalRuntime {
         self.lane_a.count_nodes()
     }
 
+    /// Observes exact raw phase/amplitude agreement without changing either lane.
+    /// Equal ground states are not an active dual-lane portal.
+    pub fn dual_lane_portal_open(&self) -> bool {
+        if self.lane_a.crystals.is_empty()
+            || self.lane_a.crystals.len() != self.lane_b.crystals.len()
+        {
+            return false;
+        }
+
+        let mut active = false;
+        for (a, b) in self.lane_a.crystals.iter().zip(&self.lane_b.crystals) {
+            let amplitude = a.amplitude.to_raw();
+            if amplitude != b.amplitude.to_raw() || a.phase.to_raw() != b.phase.to_raw() {
+                return false;
+            }
+            active |= amplitude != 0;
+        }
+        active
+    }
+
     /// Advances the shared DTC/QHC pulse. The Tokio scheduler owns the pulse
     /// deadline; this method advances the logical DTC counter without sleeping.
     pub fn tick_dtc(&mut self) -> Result<u64, String> {
@@ -674,6 +694,82 @@ fn acquire_shm_writer_lock() -> Result<File, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn portal_runtime() -> CrystalRuntime {
+        let mut runtime = CrystalRuntime::in_memory(3);
+        for lane in [&mut runtime.lane_a, &mut runtime.lane_b] {
+            for (index, crystal) in lane.crystals.iter_mut().enumerate() {
+                crystal.amplitude = SPA::from_raw(if index == 1 { 17 } else { 0 });
+                crystal.phase = SPA::from_raw(index as i64 + 3);
+            }
+        }
+        runtime
+    }
+
+    fn raw_lane_state(lane: &ResonantMatrix) -> Vec<(i64, i64)> {
+        lane.crystals
+            .iter()
+            .map(|crystal| (crystal.amplitude.to_raw(), crystal.phase.to_raw()))
+            .collect()
+    }
+
+    #[test]
+    fn dual_lane_portal_opens_for_equal_active_states_without_mutating_them() {
+        let runtime = portal_runtime();
+        let before_a = raw_lane_state(&runtime.lane_a);
+        let before_b = raw_lane_state(&runtime.lane_b);
+        assert!(runtime.dual_lane_portal_open());
+        assert_eq!(raw_lane_state(&runtime.lane_a), before_a);
+        assert_eq!(raw_lane_state(&runtime.lane_b), before_b);
+    }
+
+    #[test]
+    fn dual_lane_portal_rejects_amplitude_mismatch_with_equal_phases() {
+        let mut runtime = portal_runtime();
+        runtime.lane_b.crystals[2].amplitude = SPA::from_raw(1);
+        let before_a = raw_lane_state(&runtime.lane_a);
+        let before_b = raw_lane_state(&runtime.lane_b);
+        assert!(!runtime.dual_lane_portal_open());
+        assert_eq!(raw_lane_state(&runtime.lane_a), before_a);
+        assert_eq!(raw_lane_state(&runtime.lane_b), before_b);
+    }
+
+    #[test]
+    fn dual_lane_portal_rejects_phase_mismatch_with_equal_amplitudes() {
+        let mut runtime = portal_runtime();
+        runtime.lane_b.crystals[2].phase = SPA::from_raw(6);
+        let before_a = raw_lane_state(&runtime.lane_a);
+        let before_b = raw_lane_state(&runtime.lane_b);
+        assert!(!runtime.dual_lane_portal_open());
+        assert_eq!(raw_lane_state(&runtime.lane_a), before_a);
+        assert_eq!(raw_lane_state(&runtime.lane_b), before_b);
+    }
+
+    #[test]
+    fn dual_lane_portal_rejects_equal_ground_states() {
+        let mut runtime = portal_runtime();
+        for lane in [&mut runtime.lane_a, &mut runtime.lane_b] {
+            for crystal in &mut lane.crystals {
+                crystal.amplitude = SPA::from_raw(0);
+                crystal.phase = SPA::from_raw(0);
+            }
+        }
+        let before_a = raw_lane_state(&runtime.lane_a);
+        let before_b = raw_lane_state(&runtime.lane_b);
+        assert!(!runtime.dual_lane_portal_open());
+        assert_eq!(raw_lane_state(&runtime.lane_a), before_a);
+        assert_eq!(raw_lane_state(&runtime.lane_b), before_b);
+    }
+
+    #[test]
+    fn dual_lane_portal_rejects_unequal_or_empty_lanes() {
+        let mut runtime = portal_runtime();
+        runtime.lane_b.crystals.pop();
+        assert!(!runtime.dual_lane_portal_open());
+        runtime.lane_a.crystals.clear();
+        runtime.lane_b.crystals.clear();
+        assert!(!runtime.dual_lane_portal_open());
+    }
 
     struct TestFractalRing {
         name: String,

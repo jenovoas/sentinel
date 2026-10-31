@@ -435,7 +435,7 @@ pub async fn analytics_statistics_handler(
     let cpu = sample_cpu_utilization();
     let memory = memory_utilization();
     let coherence = state.resonance.lock().unwrap().get_coherence_raw();
-    let efficiency = state.quantum_scheduler.lock().unwrap().efficiency_percent();
+    let efficiency = state.quantum_scheduler_status.lock().unwrap().efficiency_percent;
 
     Json(json!({
         "window_hours": hours,

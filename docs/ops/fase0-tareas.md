@@ -83,6 +83,21 @@
 - Pruebas finales: 59/60 pasan, incluidas las6 del puente; falla `test_truth_claim_handler_smoke_aiopsdoom_intercept` (`verification_time_us.is_number()`), causalidad no establecida, sin reintento ni cambio fuera de alcance. Detalle/límites/incidente de captura: [puente-mycnet-cortex-2026-10-30](puente-mycnet-cortex-2026-10-30.md); vault `sentinel/15_Puente_MyCNet_Cortex_2026-10-30.md`.
 - Correlación final propia 23:57:56 UTC: 12/12 event_id realmente emitidos en WAL Marte, convertidos con el mismo DefaultHasher del uplink, coinciden con tokens aceptados por CrystalRuntime Fenix. Ejemplo `guardian-alpha-80945644173814-225437-EXEC_ALLOWED` → token711715798 → lane A índice22 a23:57:55.950191, raw0. La sonda coordinada PID225249 no apareció en22s (reporte Main); no se declara cobertura de todo exec ni se le atribuyen estas filas.
 
+## T9. Scheduler observado y checkpoint real — `agente:principal`
+
+- Retirados encolados ficticios GC/PhaseAlign/BackupS60 y heartbeat QHC→BIO.
+- La compuerta nativa observa igualdad exacta de fase/amplitud nodo a nodo en
+  las dos lanes existentes; no fuerza su estado ni usa senos temporales.
+- Checkpoint local real por `CrystalRuntime::persist`, conservando plazo60s y
+  ruta crítica independiente de portal/presencia; éxito y fallo separados.
+- DTC, evolución/PID y drive continuo no se sustituyen por trabajos del scheduler.
+- El modelo temporal C/experimentos permanece separado de la compuerta nativa.
+- Detalle, pruebas y evidencia de despliegue:
+  [scheduler-observado-2026-10-31.md](scheduler-observado-2026-10-31.md).
+- Pendiente fuera de esta corrección: definir/conectar presencia de operador
+  autorizada; no asumir que QHC, Redis sin validar o el singleton FFI la proveen.
+
+
 ---
 
 ## Reglas para todos los agentes

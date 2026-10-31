@@ -1,5 +1,11 @@
 # Gap de sistema cableado — scheduler portal-locked (EXP-028/029)
 
+> **Registro histórico, no runbook vigente.** La revisión del31 de octubre
+> confirmó que los callbacks eran vacíos y que el heartbeat QHC fabricaba
+> coherencia BIO. Los contadores y tests aquí citados no demostraban trabajo
+> productivo. Corrección y evidencia en
+> [scheduler-observado-2026-10-31.md](scheduler-observado-2026-10-31.md).
+
 **Fecha:** 2026-10-30 · **Rama:** `main` · **Estado:** implementado, tests 49/49, pendiente deploy Fenix.
 
 ## Qué era el gap

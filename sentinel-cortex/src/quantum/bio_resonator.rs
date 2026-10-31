@@ -47,12 +47,6 @@ impl BioResonator {
         self.last_pulse = Instant::now();
     }
 
-    pub fn record_pilot_heartbeat(&mut self) {
-        // El pilot (QHC vivo) canta en el lattice: cada heartbeat suma
-        // coherencia como un bio-pulso. Sin esto el portal bio nunca abre
-        // y el scheduler portal-locked jamas ejecuta (gap cableado 2026-10-30).
-        self.inject_bio_pulse();
-    }
 
     pub fn tick_entropy(&mut self) {
         if self.coherence > S60::zero() {
@@ -104,14 +98,4 @@ mod tests {
         assert!(bio.is_portal_open());
     }
 
-    #[test]
-    fn pilot_heartbeat_builds_coherence() {
-        let mut bio = BioResonator::new();
-        let coherence = bio.get_coherence_raw();
-
-        bio.record_pilot_heartbeat();
-
-        assert!(bio.is_pilot_present());
-        assert!(bio.get_coherence_raw() > coherence);
-    }
 }

@@ -14,10 +14,16 @@ pub struct MetricsSnapshot {
     pub efficiency: i64,
     pub efficiency_available: bool,
     pub timestamp_s60: i64,
-    // Portal-lock (EXP-028/029): visibles en Marte para verificar que el
-    // scheduler canta con el lattice en vez de latir en vacio.
+    // Successful task executions, classified by the actual dispatch path.
+    // The percentage is a portal share, not a measurement of energy savings.
     pub tasks_in_portal: u64,
     pub tasks_forced: u64,
+    pub tasks_critical: u64,
+    pub tasks_failed: u64,
+    pub scheduler_queue_len: usize,
+    pub scheduler_emergency_shutdown: bool,
+    pub dual_lane_portal_open: bool,
+    pub dtc_ticks: u64,
     pub bio_coherence_raw: i64,
     pub bio_portal_open: bool,
 }
