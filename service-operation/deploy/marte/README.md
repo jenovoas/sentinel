@@ -47,7 +47,7 @@ Los tres datasources Grafana (`prometheus`, `mimir`, `loki`) respondieron `OK` a
 
 ### Cambios operativos acotados
 
-- Marte: siete contenedores del stack tras agregar blackbox-exporter, sin puerto publicado. Se recrearon exclusivamente Prometheus y Alloy para aplicar sus archivos montados; Grafana recargó los JSON sin reinicio. Se preservó el compose remoto con el secreto FILE.
+- Alertmanager `sentinel-marte-alertmanager` (octavo contenedor del stack): SMTP a `10.88.0.1:587` con `server_name=mail.pinguinoseguro.cl` (el cert no tiene IP SAN), secreto `/etc/sentinel/alertmanager-smtp-password` dueño `nobody:nogroup` 0600 (el contenedor corre como 65534). Reglas en `rules-sentinel.yml`.
 - Fenix: Alloy incorpora `/etc/machine-id`; se agregó un único node-exporter en `10.88.0.1:9100` y un PostgreSQL exporter en `10.88.0.1:9187`. Este último usa `sentinel_monitor` sin privilegios administrativos, secreto `0400` y una red de exposición dedicada: la red de datos `sentinel_internal` permanece `internal: true`.
 - Kingu, Hercules y Ocean: paquete Debian `prometheus-node-exporter` `1.9.0-1+b4`, una instancia nativa por nodo. Se creó `/etc/default/prometheus-node-exporter` con `ARGS="--web.listen-address=<IP_WG>:9100"` **antes** de instalar, manteniendo ese archivo con `--force-confold`, para impedir un arranque inicial público. No se instaló Docker ni se duplicaron exporters.
 - Hercules: regla Firewalld runtime y permanente en `wgmesh` para TCP 9100, únicamente desde `10.88.0.6/32`. Su resolución del repositorio Debian falló; se transfirió por SSH el mismo paquete descargado por APT en Kingu, sin cambiar DNS ni AD.

@@ -1,0 +1,19 @@
+global:
+  smtp_smarthost: '10.88.0.1:587'
+  smtp_from: 'monitoreo@pinguinoseguro.cl'
+  smtp_auth_username: 'monitoreo@pinguinoseguro.cl'
+  smtp_auth_password_file: /run/secrets/alertmanager-smtp-password
+  smtp_require_tls: true
+route:
+  receiver: monitoreo-mail
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+receivers:
+  - name: monitoreo-mail
+    email_configs:
+      - to: 'monitoreo@pinguinoseguro.cl'
+        tls_config:
+          server_name: 'mail.pinguinoseguro.cl'
+        headers:
+          Subject: '[Sentinel] {{ .GroupLabels.alertname }}'

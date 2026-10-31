@@ -1,0 +1,25 @@
+groups:
+  - name: sentinel-ha
+    interval: 1m
+    rules:
+      - alert: SentinelBackendDown
+        expr: up{job="sentinel-fastapi-fenix"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Backend Sentinel Fenix caído"
+      - alert: SentinelDiskFull
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.15
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disco bajo 15% en {{ $labels.node }}"
+      - alert: SentinelReplicaDown
+        expr: up{job="sentinel-postgres-fenix"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL Fenix no scrapeable (posible caída primaria)"

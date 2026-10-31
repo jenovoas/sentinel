@@ -6,8 +6,12 @@ global:
     environment: production
     tenant: platform
 
-remote_write:
-  - url: http://mimir:9009/api/v1/push
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]
+rule_files:
+  - /etc/prometheus/rules-sentinel.yml
 
 scrape_configs:
   - job_name: prometheus

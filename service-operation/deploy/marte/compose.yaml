@@ -11,6 +11,7 @@ services:
       - --storage.tsdb.wal-compression
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./rules-sentinel.yml:/etc/prometheus/rules-sentinel.yml:ro
       - prometheus_data:/prometheus
     depends_on:
       - mimir
@@ -112,6 +113,23 @@ services:
     mem_limit: 128m
     cpus: 0.5
 
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: sentinel-marte-alertmanager
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+      - --cluster.listen-address=
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - /etc/sentinel/alertmanager-smtp-password:/run/secrets/alertmanager-smtp-password:ro
+      - alertmanager_data:/alertmanager
+    networks:
+      - sentinel_observability
+    restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.25
+
   alloy:
     image: grafana/alloy:v1.21.3
     container_name: sentinel-marte-alloy
@@ -153,3 +171,5 @@ volumes:
     name: sentinel_marte_grafana
   alloy_data:
     name: sentinel_marte_alloy
+  alertmanager_data:
+    name: sentinel_marte_alertmanager
