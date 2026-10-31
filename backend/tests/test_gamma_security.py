@@ -61,7 +61,7 @@ def result(rows):
 def gamma_api():
     organization = Organization(id=uuid4(), name="Acme", slug="acme", is_active=True)
     user = User(
-        id=uuid4(), organization_id=organization.id,
+        id=uuid4(), organization_id=organization.id, tenant_id=organization.id,
         email="reviewer@example.com", username="reviewer", password_hash=None,
         first_name="Gamma", last_name="Reviewer", role=UserRole.ADMIN,
         is_superuser=True, is_active=True,
@@ -176,5 +176,34 @@ def test_gamma_preserves_not_found_for_authorized_decisions(gamma_api, operation
     assert response.status_code == 404
     assert response.json() == {"detail": "Decision not found or already decided"}
     getattr(service, f"{operation}_decision").assert_awaited_once_with(
-        decision_id=7, feedback="Reviewed"
+        decision_id=7, feedback="Reviewed", actor=user
     )
+
+
+@pytest.mark.parametrize("operation", ["approve", "deny"])
+def test_gamma_uses_authenticated_actor_and_rejects_client_actor(gamma_api, operation):
+    client, user, _, _, service, _ = gamma_api
+    headers = {"Authorization": f"Bearer {create_access_token(user)}"}
+    response = client.post(
+        f"/api/v1/gamma/{operation}/7",
+        json={"feedback": "Evidence reviewed"}, headers=headers,
+    )
+    assert response.status_code == 200
+    getattr(service, f"{operation}_decision").assert_awaited_once_with(
+        decision_id=7, feedback="Evidence reviewed", actor=user,
+    )
+
+
+@pytest.mark.parametrize("body", [
+    {}, {"feedback": ""}, {"feedback": "   "}, {"feedback": "x" * 2001},
+    {"feedback": "Reviewed", "actor": "another-user"},
+    {"feedback": "Reviewed", "user_id": "another-user"},
+])
+def test_gamma_rejects_missing_rationale_and_actor_spoofing(gamma_api, body):
+    client, user, _, _, service, _ = gamma_api
+    response = client.post(
+        "/api/v1/gamma/approve/7", json=body,
+        headers={"Authorization": f"Bearer {create_access_token(user)}"},
+    )
+    assert response.status_code == 422
+    service.approve_decision.assert_not_awaited()

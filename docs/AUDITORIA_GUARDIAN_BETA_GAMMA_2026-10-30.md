@@ -24,3 +24,25 @@ La ruta prevista en el código activo es `Guardian Alpha/eBPF en Marte → senti
 El transporte Alpha→Fenix está activo; la aceptación de HTTP 201 no prueba el ciclo Cortex→Gamma. No hay evidencia runtime de una escalación reciente, la fuente se fija como Alpha, el API Gamma carece de autorización de aplicación y la UI/BFF Kingu no expone el flujo.
 
 Antes de declarar Beta→Gamma desplegado: conservar la fuente del evento; proteger todas las operaciones Gamma con identidad y rol administrativo (incluidas aprobación/rechazo y limpieza); conectar únicamente las rutas necesarias al BFF Kingu con sesión, CSRF y autorización; añadir una pantalla de decisión; y validar un caso autorizado de extremo a extremo con decisión persistida y audit trail. No se modificó código de API, no se desplegó ningún servicio y no se habilitó enforcement.
+
+## Actualización de fuente — 2026-10-31, sin despliegue de este recorrido
+
+Los hallazgos anteriores son evidencia histórica del 30/10; no describen el estado de código posterior. El bloqueo de autenticación ya publicado exige `get_current_superuser` para **todas** las operaciones de la cola global: un administrador de tenant no obtiene acceso.
+
+El recorrido de revisión incorporado en fuente reutiliza la sesión HttpOnly, validación de identidad backend, allowlist BFF y CSRF/origen existentes. Solo expone `GET gamma/pending` y `POST gamma/approve/{id}` / `gamma/deny/{id}`; creación y limpieza no se publican por el BFF. `/security/gamma` muestra la cola, contexto/evidencia como texto inerte y una confirmación explícita con justificación obligatoria. Los errores upstream no se presentan como éxitos. La navegación Gamma se muestra únicamente a identidades de plataforma, sin sustituir los controles efectivos BFF/backend.
+
+Cortex valida `source` como `guardian_alpha` o `guardian_beta` y conserva ese origen al escalar, junto con identificadores del evento y de la decisión Cortex. Una fuente desconocida no se etiqueta como Alpha. No se cambia la escala S60 ni la representación `confidence_s60_raw`.
+
+Aprobar/denegar realiza un `UPDATE ... WHERE status='pending' AND timeout_at > now RETURNING ...`, y añade `AuditLog` en **la misma transacción**. El actor procede exclusivamente de `get_current_superuser`, nunca del JSON cliente. Un segundo intento no sobrescribe veredicto/feedback ni genera otra auditoría; si falla la persistencia de auditoría, se revierte el cambio. La auditoría se guarda bajo el tenant/organización del revisor en el mecanismo existente, aunque la cola revisada es global. No se agrega columna, migración ni cambio de RLS.
+
+El contexto/evidencia original permanece en `GammaDecision`; la proyección para navegador y auditoría redacta claves sensibles, credenciales reconocibles y controles, y limita profundidad, nodos y texto. Las marcas `TRUNCATED`/`REDACTED` indican omisiones; el revisor debe obtener evidencia autorizada adicional si la proyección no basta, no aprobar por ausencia de información. La justificación no debe contener secretos. El timeout automático no inventa un actor humano ni registra una aprobación.
+
+`backend/scripts/verify_gamma_flow.py` pasa a inventario de solo lectura: imprime únicamente identificadores de decisiones, origen, tipo, confianza y fechas. Se retira su simulación de eventos y de aprobación con identidad ficticia. Las transiciones pertenecen a pruebas aisladas, no a este script operacional.
+
+### Gates de integración y paso humano real
+
+- Ejecutar las pruebas de permisos/autenticación, transiciones SQL/auditoría y BFF/CSRF incorporadas, y la comprobación de tipos frontend. No se ejecutaron durante esta edición.
+- Las pruebas SQL aisladas usan SQLite; la atomicidad/RLS reales de PostgreSQL y dos revisores concurrentes deben validarse en integración no productiva. No sustituyen esa comprobación.
+- La comprobación de referencias se hizo por búsqueda exacta de consumidores; no había herramienta LSP montada. No quedan consumidores de `submit_human_verdict`.
+- Durante esta edición no se compiló ni desplegó, ni se modificaron decisiones de producción. No se habilita enforcement, XDP, nuevos attaches eBPF ni watchdog.
+- Tras integración/despliegue autorizados, un operador real de plataforma debe iniciar sesión normalmente desde Kingu y revisar una **escalación genuina autorizada**. Cotejar el origen, el veredicto persistido y su `AuditLog` sin fabricar eventos, sesión/JWT ni actor. Hasta entonces no se declara probado el ciclo humano de extremo a extremo ni ejecución de una acción.

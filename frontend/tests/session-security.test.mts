@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { hasValidCsrf, isSameOrigin, readCookie } from "../src/lib/server/security.ts";
-import { isValidReportName } from "../src/lib/server/reports.ts";
+import "./server-test-hooks.mts";
+const { isValidReportName } = await import("../src/lib/server/reports.ts");
 
 test("Origin must match the externally visible host and protocol", () => {
   const sameOrigin = new Request("http://internal:3000/api/auth/logout", {

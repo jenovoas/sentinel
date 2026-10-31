@@ -6,7 +6,7 @@ REST API endpoints for the Cortex Decision Engine.
 
 from quantum.yatra_core import S60, PI_S60 # YATRA AUTO-INJECT
 import logging
-from typing import Optional
+from typing import Literal, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Header
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel, Field
@@ -26,7 +26,10 @@ router = APIRouter(prefix="/api/v1/cortex", tags=["Cortex Decision Engine"])
 class EventSubmission(BaseModel):
     """Event submission request"""
     event_type: str = Field(..., description="Event type: syscall, network, memory, file")
-    source: str = Field(..., description="Source: guardian_alpha, guardian_beta")
+    source: Literal[
+        "guardian_alpha", "guardian_beta", "guardian_cognitive",
+        "ai_guardian", "float_detector", "guardian_gamma",
+    ] = Field(..., description="Validated originating guardian")
     data: dict = Field(..., description="Event data")
     
     class Config:

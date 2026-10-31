@@ -8,11 +8,12 @@ All operations require an authenticated platform superuser: the queue is global.
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Optional, Dict, Any, List
-from pydantic import BaseModel, Field
+from typing import Annotated, Optional, Dict, Any, List
+from pydantic import BaseModel, Field, StringConstraints
 
 from app.database import get_db
 from app.security.auth import get_current_superuser
+from app.models.user import User
 from app.services.guardian_gamma import (
     GuardianGammaService,
     GuardianSource,
@@ -48,7 +49,9 @@ class CreateDecisionResponse(BaseModel):
 
 class DecisionFeedback(BaseModel):
     """Feedback for a decision"""
-    feedback: Optional[str] = Field(None, description="Human feedback for learning")
+    feedback: Annotated[str, StringConstraints(strip_whitespace=True)] = Field(..., min_length=1, max_length=2000, description="Review rationale retained with the authenticated actor")
+
+    model_config = {"extra": "forbid"}
 
 
 class PendingDecision(BaseModel):
@@ -73,7 +76,7 @@ async def create_decision(
     """
     Create a new decision request for human validation.
     
-    Authenticated administrators may submit escalations on behalf of Alpha/Beta.
+    Authenticated platform superusers may submit escalations on behalf of Alpha/Beta.
     
     Example:
         ```python
@@ -135,7 +138,8 @@ async def get_pending_decisions(
 async def approve_decision(
     decision_id: int,
     feedback: DecisionFeedback,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    actor: User = Depends(get_current_superuser),
 ):
     """
     Approve a decision and provide feedback.
@@ -146,7 +150,8 @@ async def approve_decision(
     
     success = await service.approve_decision(
         decision_id=decision_id,
-        feedback=feedback.feedback
+        feedback=feedback.feedback,
+        actor=actor,
     )
     
     if not success:
@@ -162,7 +167,8 @@ async def approve_decision(
 async def deny_decision(
     decision_id: int,
     feedback: DecisionFeedback,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    actor: User = Depends(get_current_superuser),
 ):
     """
     Deny a decision and provide feedback.
@@ -173,7 +179,8 @@ async def deny_decision(
     
     success = await service.deny_decision(
         decision_id=decision_id,
-        feedback=feedback.feedback
+        feedback=feedback.feedback,
+        actor=actor,
     )
     
     if not success:
@@ -192,7 +199,7 @@ async def cleanup_expired_decisions(
     """
     Mark expired decisions as timeout.
     
-    An authenticated administrator may call this periodically to clean up decisions
+    An authenticated platform superuser may call this periodically to clean up decisions
     that exceeded their timeout; unauthenticated cron calls are not supported.
     """
     service = GuardianGammaService(db)

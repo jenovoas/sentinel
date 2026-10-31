@@ -11,6 +11,7 @@ export function SessionGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [state, setState] = useState<SessionState>("checking");
+  const [isSuperuser, setIsSuperuser] = useState(false);
   const isLogin = pathname === "/login";
 
   useEffect(() => {
@@ -22,9 +23,13 @@ export function SessionGuard({ children }: { children: React.ReactNode }) {
     const controller = new AbortController();
     setState("checking");
     fetch("/api/auth/me", { cache: "no-store", signal: controller.signal })
-      .then((response) => {
-        if (response.ok) setState("authenticated");
-        else {
+      .then(async (response) => {
+        if (response.ok) {
+          const identity = await response.json();
+          if (controller.signal.aborted) return;
+          setIsSuperuser(identity?.is_superuser === true);
+          setState("authenticated");
+        } else {
           setState("anonymous");
           router.replace("/login");
         }
@@ -42,5 +47,5 @@ export function SessionGuard({ children }: { children: React.ReactNode }) {
   if (state !== "authenticated") {
     return <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-300" role="status" aria-live="polite"><p>Comprobando sesión…</p></div>;
   }
-  return <><WipModal /><Navigation /><main style={{ paddingTop: "72px" }}>{children}</main></>;
+  return <><WipModal /><Navigation isSuperuser={isSuperuser} /><main style={{ paddingTop: "72px" }}>{children}</main></>;
 }

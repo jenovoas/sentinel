@@ -12,12 +12,13 @@ La primera validación Compose detectó `BACKEND_IMAGE` ausente antes de modific
 
 ## Gamma
 
-Las cinco operaciones de `backend/app/routers/gamma.py` requieren la dependencia existente `get_current_superuser`: JWT válido, identidad/organización activas e `is_superuser=true`. La cola es global sin tenant: un administrador de organización no está autorizado. Token de ingesta no es sesión humana. Servicio y datos intactos; no se añadió UI ni BFF y la fuente ALPHA fija sigue pendiente del ciclo de decisiones.
+Las cinco operaciones de `backend/app/routers/gamma.py` requieren `get_current_superuser`: JWT válido, identidad/organización activas e `is_superuser=true`. La cola es global sin tenant; un administrador de organización no está autorizado. Token de ingesta no es sesión humana.
 
-58 pruebas de Gamma/auth/identidad pasan dentro de imagen backend compatible, con red deshabilitada, app/tests montados read-only y sin caché. Python local falló primero por rutas y después por ABI de la extensión nativa (`PyErr_GetRaisedException`); no se sustituyó por mock ni se modificó producción para ocultarlo. Avisos de deprecación no suprimidos.
+La revisión final incorpora BFF con allowlist estricta, revalidación de sesión/superusuario, CSRF/origen y `Content-Type`; UI `/security/gamma` con evidencia inerte, feedback obligatorio y confirmación explícita; transición condicional `pending -> approved|denied`; y `AuditLog` en la misma transacción. Las fuentes COGNITIVE, AI, FLOAT y GAMMA se preservan además de ALPHA/BETA.
 
-Imagen inicial `sentinel-backend:37cacce7-gamma-admin-1` (`sha256:b65c6efef4d1cf6f1b158cc51f94e8ff8cb655491b4bea2a0c6437ca937edcac`) sustituida por la restricción final de plataforma: `sentinel-backend:37cacce7-gamma-superuser-2`, digest `sha256:aa8e2ab6b15fc968f1591fd77ef07d01e608804f30d19439c03423ca79123d0d`. Las58 pruebas volvieron a pasar con el contrato final; backend healthy y Gamma sin sesión401 tras recreación exclusiva. Backup final `/etc/sentinel/backend.env.pre-backend-image-20261031T053850Z`.
-Solo backend recreado, healthy. GET privado Gamma pendiente sin sesión: HTTP401. El acceso autorizado de producción no se ejercitó fabricando JWT.
+Backend: 94 pruebas pasan contra PostgreSQL desechable, incluida carrera de dos revisores; smoke asyncpg real crea, aprueba y audita en esquema aislado. Frontend: 7 pruebas Node 22, type-check y build Next pasan. Imagen desplegada `sentinel-backend:dd532f7a-gamma-review-1`, healthy; `/api/v1/gamma/pending` sin sesión devuelve401. Release Kingu `/opt/sentinel/frontend/releases/dd532f7a-gamma-review-1`, unidad activa; `/login` y `/security/gamma` responden200 internamente.
+
+La validación visual pública navegó a `/security/gamma` y terminó en `/login`, mostrando organización, correo y contraseña; la ruta privada no filtró la cola. No se fabricó JWT ni decisión operativa. El ciclo humano autenticado de producción sigue bloqueado hasta usar una sesión real de superusuario.
 
 Configuración protegida con `scripts/configure-backend-image.sh`; backup `/etc/sentinel/backend.env.pre-backend-image-20261031T053112Z`. Retirado override con credencial heredada en `backend/scripts/verify_gamma_flow.py`; usa configuración aprobada.
 
@@ -39,4 +40,4 @@ Recreado solo Grafana. La nueva credencial autenticó `/api/user` como administr
 
 Conservar imágenes y backups protegidos. No restaurar solo el env antiguo después de rotar stores: se desalinearían clientes/servidores y se reintroducirían credenciales expuestas. Recuperar mediante acceso administrativo aprobado y coordinar cambios en ambos extremos. No publicar backups o secretos en Git/vault.
 
-Pendientes siguientes: inventario Guardian/eBPF/watchdog/XPS, época/tick compartidos, flujo Gamma humano autorizado, observabilidad extremo a extremo y recuperación/HA. No se declara cerrada esa cadena por tener servicios activos. El grafo MCP sigue vacío y el índice Graphify previo no completó su actualización; fuente y pruebas runtime prevalecen.
+Pendientes siguientes: recuperación fuera de banda antes de XDP/watchdog, contrato temporal compartido, ciclo Gamma humano autenticado, alertas/Redis/aislamiento tenant y un nodo backend elegible para HA. No se declara cerrada esa cadena por tener servicios activos. El grafo MCP sigue vacío y el índice Graphify previo no completó su actualización; fuente y pruebas runtime prevalecen.

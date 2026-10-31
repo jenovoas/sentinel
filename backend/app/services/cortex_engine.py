@@ -287,10 +287,20 @@ class CortexDecisionEngine:
             decision: The decision to escalate
             event_data: Event data for context
         """
+        from app.services.guardian_gamma import GuardianGammaService, GuardianSource, DecisionType
+
+        # Preserve every producer accepted by the deployed gateway and Beta.
+        guardian = {
+            "guardian_alpha": GuardianSource.ALPHA,
+            "guardian_beta": GuardianSource.BETA,
+            "guardian_cognitive": GuardianSource.COGNITIVE,
+            "ai_guardian": GuardianSource.AI,
+            "float_detector": GuardianSource.FLOAT,
+            "guardian_gamma": GuardianSource.GAMMA,
+        }.get(event_data.get("source"))
+        if guardian is None:
+            raise ValueError("Gamma escalation requires a validated guardian source")
         try:
-            # Import here to avoid circular dependency
-            from app.services.guardian_gamma import GuardianGammaService, GuardianSource, DecisionType
-            
             gamma_service = GuardianGammaService(self.db)
             
             # Map decision to Gamma decision type
@@ -307,6 +317,9 @@ class CortexDecisionEngine:
             
             # Create context for human review
             context = {
+                "source": event_data["source"],
+                "cortex_decision_id": decision.id,
+                "event_id": decision.event_id,
                 "event_type": event_data.get("event_type"),
                 "process_path": event_data.get("process_path"),
                 "user": event_data.get("user"),
@@ -317,7 +330,7 @@ class CortexDecisionEngine:
             
             # Create Gamma decision
             gamma_id = await gamma_service.create_decision(
-                guardian=GuardianSource.ALPHA,  # Assume Alpha for now
+                guardian=guardian,
                 decision_type=gamma_decision_type,
                 context=context,
                 confidence_s60_raw=confidence.to_base_units(),

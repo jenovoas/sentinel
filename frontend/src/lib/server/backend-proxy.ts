@@ -9,6 +9,7 @@ import {
   noStore,
   readCookie,
   sessionError,
+  validateSession,
 } from "@/lib/server/session";
 
 const BACKEND_ROUTES: Record<string, readonly [string, string][]> = {
@@ -23,12 +24,17 @@ const BACKEND_ROUTES: Record<string, readonly [string, string][]> = {
   "dashboard/status": [["GET", "/api/v1/dashboard/status"]],
   "failsafe/status": [["GET", "/api/v1/failsafe/status"]],
   "lattice/hologram": [["GET", "/api/v1/lattice/hologram"]],
+  "gamma/pending": [["GET", "/api/v1/gamma/pending"]],
 };
 
 export async function proxyBackend(request: Request, route: string): Promise<NextResponse> {
-  const target = BACKEND_ROUTES[route]?.find(([method]) => method === request.method);
+  // Only canonical numeric review IDs are accepted; creation/cleanup stay server-only.
+  const review = /^gamma\/(approve|deny)\/([1-9]\d{0,9})$/.exec(route);
+  const allowedRoute = BACKEND_ROUTES[route] ?? (review
+    ? [["POST", `/api/v1/gamma/${review[1]}/${review[2]}`] as const]
+    : undefined);
+  const target = allowedRoute?.find(([method]) => method === request.method);
   if (!target) {
-    const allowedRoute = BACKEND_ROUTES[route];
     return noStore(NextResponse.json(
       { error: allowedRoute ? "Método no permitido" : "Ruta no permitida" },
       { status: allowedRoute ? 405 : 404 },
@@ -43,6 +49,20 @@ export async function proxyBackend(request: Request, route: string): Promise<Nex
     }
     if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/json")) {
       return noStore(NextResponse.json({ error: "Content-Type no permitido" }, { status: 415 }));
+    }
+  }
+
+  if (route.startsWith("gamma/")) {
+    const session = await validateSession(request);
+    if (!session.ok) {
+      const response = sessionError(session.status);
+      return session.status === 401 ? clearSessionCookies(response) : response;
+    }
+    if (
+      typeof session.identity !== "object" || session.identity === null ||
+      !("is_superuser" in session.identity) || session.identity.is_superuser !== true
+    ) {
+      return noStore(NextResponse.json({ error: "Se requiere superusuario de plataforma" }, { status: 403 }));
     }
   }
 

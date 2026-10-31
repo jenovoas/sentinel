@@ -11,17 +11,26 @@ from datetime import datetime, timedelta
 from typing import Optional, Dict, Any, List
 from enum import Enum
 import asyncio
+import json
+from uuid import UUID, uuid4
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.models import GammaDecision
+from app.models.audit_log import AuditLog
+from app.models.user import User
+from app.security.gamma_review import review_snapshot
 
 
 class GuardianSource(str, Enum):
     """Source guardian that created the decision"""
     ALPHA = "alpha"
     BETA = "beta"
+    COGNITIVE = "cognitive"
+    AI = "ai"
+    FLOAT = "float"
+    GAMMA = "gamma"
 
 
 class DecisionType(str, Enum):
@@ -130,8 +139,8 @@ class GuardianGammaService:
                 "id": d.id,
                 "guardian": d.guardian_source,
                 "type": d.decision_type,
-                "context": d.context,
-                "evidence": d.evidence,
+                "context": review_snapshot(d.context),
+                "evidence": review_snapshot(d.evidence or {}),
                 "confidence_s60_raw": int(d.confidence),
                 "created_at": d.created_at.isoformat(),
                 "timeout_at": d.timeout_at.isoformat()
@@ -139,69 +148,61 @@ class GuardianGammaService:
             for d in decisions
         ]
     
+    async def _review_decision(
+        self, decision_id: int, outcome: DecisionStatus, actor: User,
+        feedback: Optional[str],
+    ) -> bool:
+        """Resolve once and persist actor + review snapshot in the same transaction."""
+        if not actor.is_active or not actor.is_superuser:
+            raise PermissionError("A platform superuser must review global Gamma decisions")
+        # Validate identity before touching the queue. Never accept an actor from JSON.
+        actor_id = UUID(str(actor.id))
+        tenant_id = UUID(str(actor.tenant_id))
+        organization_id = UUID(str(actor.organization_id))
+        now = datetime.utcnow()
+        try:
+            result = await self.db.execute(
+                update(GammaDecision)
+                .where(GammaDecision.id == decision_id)
+                .where(GammaDecision.status == DecisionStatus.PENDING.value)
+                .where(GammaDecision.timeout_at > now)
+                .values(
+                    status=outcome.value, human_decision=outcome.value,
+                    human_feedback=feedback, decided_at=now,
+                )
+                .returning(GammaDecision)
+            )
+            decision = result.scalar_one_or_none()
+            if decision is None:
+                return False
+            self.db.add(AuditLog(
+                id=uuid4(), tenant_id=tenant_id, organization_id=organization_id,
+                user_id=actor_id, action=f"gamma.{outcome.value}",
+                resource=f"gamma_decision:{decision.id}",
+                details=json.dumps(review_snapshot({
+                    "actor_id": str(actor_id), "decision_id": decision.id,
+                    "outcome": outcome.value, "guardian": decision.guardian_source,
+                    "type": decision.decision_type,
+                    "confidence_s60_raw": int(decision.confidence),
+                    "feedback": feedback, "context": decision.context,
+                    "evidence": decision.evidence or {},
+                }), ensure_ascii=True),
+            ))
+            await self.db.commit()
+            return True
+        except Exception:
+            await self.db.rollback()
+            raise
+
     async def approve_decision(
-        self,
-        decision_id: int,
-        feedback: Optional[str] = None
+        self, decision_id: int, feedback: Optional[str] = None, *, actor: User,
     ) -> bool:
-        """
-        Approve a decision and provide feedback.
-        
-        Args:
-            decision_id: Decision ID
-            feedback: Human feedback for learning
-            
-        Returns:
-            True if approved, False if not found or already decided
-        """
-        query = (
-            update(GammaDecision)
-            .where(GammaDecision.id == decision_id)
-            .where(GammaDecision.status == DecisionStatus.PENDING.value)
-            .values(
-                status=DecisionStatus.APPROVED.value,
-                human_decision="approved",
-                human_feedback=feedback,
-                decided_at=datetime.utcnow()
-            )
-        )
-        
-        result = await self.db.execute(query)
-        await self.db.commit()
-        
-        return result.rowcount > 0
-    
+        return await self._review_decision(decision_id, DecisionStatus.APPROVED, actor, feedback)
+
     async def deny_decision(
-        self,
-        decision_id: int,
-        feedback: Optional[str] = None
+        self, decision_id: int, feedback: Optional[str] = None, *, actor: User,
     ) -> bool:
-        """
-        Deny a decision and provide feedback.
-        
-        Args:
-            decision_id: Decision ID
-            feedback: Human feedback for learning
-            
-        Returns:
-            True if denied, False if not found or already decided
-        """
-        query = (
-            update(GammaDecision)
-            .where(GammaDecision.id == decision_id)
-            .where(GammaDecision.status == DecisionStatus.PENDING.value)
-            .values(
-                status=DecisionStatus.DENIED.value,
-                human_decision="denied",
-                human_feedback=feedback,
-                decided_at=datetime.utcnow()
-            )
-        )
-        
-        result = await self.db.execute(query)
-        await self.db.commit()
-        
-        return result.rowcount > 0
+        return await self._review_decision(decision_id, DecisionStatus.DENIED, actor, feedback)
     
     async def wait_for_decision(
         self,
@@ -218,7 +219,7 @@ class GuardianGammaService:
             timeout_seconds: Max wait time
             
         Returns:
-            "approved", "denied", or None if timeout
+            "approved", "denied", "timeout", or None if the decision no longer exists
         """
         start_time = datetime.utcnow()
         
@@ -237,9 +238,20 @@ class GuardianGammaService:
             # Check timeout
             elapsed = (datetime.utcnow() - start_time).total_seconds()
             if elapsed > timeout_seconds:
-                # Auto-deny on timeout
-                await self.deny_decision(decision_id, "Auto-denied: timeout")
-                return "denied"
+                # System timeout is not a human denial and must not invent an actor.
+                await self.db.execute(
+                    update(GammaDecision)
+                    .where(GammaDecision.id == decision_id)
+                    .where(GammaDecision.status == DecisionStatus.PENDING.value)
+                    .values(
+                        status=DecisionStatus.TIMEOUT.value,
+                        human_decision="timeout", decided_at=datetime.utcnow(),
+                    )
+                )
+                await self.db.commit()
+                # Another reviewer may have won the guarded update.
+                await self.db.refresh(decision)
+                return decision.human_decision
             
             # Wait before checking again
             await asyncio.sleep(1)
@@ -275,22 +287,6 @@ class GuardianGammaService:
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
     
-    async def submit_human_verdict(
-        self,
-        decision_id: int,
-        verdict: DecisionType,
-        user_id: str,
-        notes: str = ""
-    ) -> Optional[GammaDecision]:
-        """
-        Submit a human verdict (Approve/Deny wrapper).
-        """
-        if verdict == DecisionType.ALLOW:
-            await self.approve_decision(decision_id, feedback=notes)
-        else:
-            await self.deny_decision(decision_id, feedback=notes)
-            
-        return await self.get_decision(decision_id)
 
 
 async def get_gamma_service(db: AsyncSession = None) -> GuardianGammaService:

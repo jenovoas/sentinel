@@ -28,11 +28,14 @@ const NAV_ITEMS: NavItem[] = [
     { label: "Analytics",    href: "/analytics",         icon: "📉" },
 ];
 
-export function Navigation() {
+export function Navigation({ isSuperuser = false }: { isSuperuser?: boolean }) {
     const pathname = usePathname();
     const router = useRouter();
     const [menuOpen, setMenuOpen] = useState(false);
     const [cortexResponding, setCortexResponding] = useState<boolean | null>(null);
+    const navItems: NavItem[] = isSuperuser
+        ? [...NAV_ITEMS, { label: "Gamma", href: "/security/gamma", icon: "Γ" }]
+        : NAV_ITEMS;
 
     useEffect(() => {
         let active = true;
@@ -105,7 +108,7 @@ export function Navigation() {
                         className="desktop-nav"
                         style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}
                     >
-                        {NAV_ITEMS.map((item) => (
+                        {navItems.map((item) => (
                             <Link
                                 key={item.href}
                                 href={item.href}
@@ -229,7 +232,7 @@ export function Navigation() {
                     }}
                     aria-label="Menú móvil"
                 >
-                    {NAV_ITEMS.map((item) => (
+                    {navItems.map((item) => (
                         <Link
                             key={item.href}
                             href={item.href}
