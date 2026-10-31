@@ -50,12 +50,18 @@ services:
       - redis_data:/data
     networks:
       - sentinel_internal
+      - monitoring_exposure
     ports:
       - target: 6379
         published: "6379"
         host_ip: 127.0.0.1
         mode: host
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+      # Replicación hacia Marte (réplica Redis). Puerto WG dedicado 6380.
+      - target: 6379
+        published: "6380"
+        host_ip: ${FENIX_WIREGUARD_IP:?Configura la IP WireGuard de Fenix en .env}
+        protocol: tcp
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD} --aclfile /data/users.acl
     env_file:
       - /etc/sentinel/backend.env
     healthcheck:

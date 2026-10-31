@@ -57,7 +57,7 @@
 ## T5. HA + backups — `agente:infra-ha` (después de T0–T4)
 
 - [x] Postgres cron 03:00 UTC configurado + gzip + SHA256 + rsync por WireGuard; restore real desde copia Kingu probado el2026-10-31. Primera ejecución automática todavía no observada.
-- [x] Jaime designó Marte como segundo backend (2026-10-31). Standby PostgreSQL streaming operativo Fenix→Marte; ver evidencia abajo. Pendiente: Redis réplica, backend en espera, failover/DNS.
+- [x] Jaime designó Marte como segundo backend (2026-10-31). Standby PostgreSQL streaming y réplica Redis operativos Fenix→Marte; ver evidencia abajo. Pendiente: backend en espera, failover/DNS.
 - [ ] Status page informativa (sin SLA contractual hasta restore verificado).
 - Diseño existe en vault (`PLAN_DESPLIEGUE_SENTINEL_HA`); aquí es ejecutar.
 
@@ -73,7 +73,10 @@
 - RPO objetivo programado24h más retrasos/fallos, no garantizado; no WAL/PITR, cifrado en reposo ni WORM. El tránsito sí usa SSH sobre WireGuard.
 - **Standby Marte operativo (2026-10-31 ~06:35 UTC):** `sentinel-postgres-standby` en Marte, red host, volumen `/var/lib/sentinel-postgres-standby`, `hot_standby=on`, imagen `postgres:16-alpine`. Primario ve `pg_stat_replication=10.88.0.6|streaming|async`; slot físico `marte_standby`. Prueba funcional: fila insertada en Fenix leída en Marte (`pg_is_in_recovery=true`); tabla de prueba eliminada después. Secreto `replicator` en `/etc/sentinel/postgres-replication-password` (0600) en ambos nodos, sincronizado por SSH; rol con `REPLICATION LOGIN` sin superusuario. `pg_hba` del primario limita replicación a `10.88.0.6/32` (+ red bridge interna por el DNAT de Docker); firewall Fenix acepta 5433 TCP solo desde `10.88.0.6/32`.
 - Hallazgo: `10.88.0.1:5432` lo ocupa `laespiguita-db` (otro proyecto, no tocar). Sentinel publica replicación en `10.88.0.1:5433` dedicado + `monitoring_exposure`; `sentinel_internal` sigue `internal: true`. Compose validado y primario `healthy` tras recreación (16 tablas intactas).
-- **Gate HA actualizado:** existe standby async real, pero NO hay failover automático, promoción ensayada, DNS cruzado, SLA ni backend en espera. Siguiente: Redis réplica, backend standby, procedimiento de promoción/failback.
+- **Réplica Redis operativa (2026-10-31 ~06:40 UTC):** `sentinel-redis-replica` en Marte, red host, volumen `/var/lib/sentinel-redis-replica`, AOF activado, imagen `redis:7-alpine`. Primario ve `connected_slaves=1`, `slave0=10.88.0.6,online,lag=0`; réplica `role:slave`, `master_link_status:up`. Prueba funcional: clave escrita en Fenix leída en Marte; escritura directa en réplica rechazada (`READONLY`); clave de prueba eliminada del primario.
+- Usuario ACL `replicator` mínimo (`+psync|+replconf|+ping`, sin canales), secreto en `/etc/sentinel/redis-replication-password` (0600) en ambos nodos. `aclfile /data/users.acl` persistido en volumen `redis_data`; sobrevive recreaciones. Publicación WG dedicada `10.88.0.1:6380`; firewall acepta solo desde `10.88.0.6/32`.
+- Incidente controlado: el primer `ACL SAVE` persistió `user default on nopass` y dejó Redis sin contraseña (backend 503). Se restauró la contraseña del default en el ACL, `ACL SAVE`, backend 200 y `NOAUTH` verificado sin credencial. Sin pérdida de datos (AOF intacto).
+- **Gate HA actualizado:** standby PostgreSQL async + réplica Redis reales, pero NO hay failover automático, promoción ensayada, DNS cruzado, SLA ni backend en espera. Siguiente: backend standby, procedimiento de promoción/failback.
 
 
 ## T6. Pool soberano GPU — `agente:ia` (con cliente piloto firmado)
