@@ -1,5 +1,8 @@
 version: '3.8'
 
+# LEGADO (Podman rootless). El stack n8n activo en producción corre desde
+# `n8n/docker-compose.yml` con `/etc/sentinel/n8n.env` y autenticación en Authelia.
+# Este archivo se conserva solo como referencia y no contiene credenciales.
 services:
   n8n:
     image: n8nio/n8n:latest
@@ -8,20 +11,14 @@ services:
     userns_mode: keep-id   # Fix: mapeo correcto de UID en Podman rootless
     ports:
       - "5678:5678"
+    env_file:
+      - /etc/sentinel/n8n.env
     environment:
-      # Basic Auth
-      - N8N_BASIC_AUTH_ACTIVE=true
-      - N8N_BASIC_AUTH_USER=jaime.novoase@gmail.com
-      - N8N_BASIC_AUTH_PASSWORD=Eyedol2119!.
-
       # Directorio de datos (debe coincidir con el UID del host en rootless)
       - N8N_USER_FOLDER=/home/jnovoas/.n8n
 
       # Webhook URL
       - WEBHOOK_URL=http://localhost:5678/
-
-      # Encryption
-      - N8N_ENCRYPTION_KEY=sentinel_encryption_key_change_in_production
 
       # Timezone
       - GENERIC_TIMEZONE=America/Santiago
