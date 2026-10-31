@@ -57,7 +57,7 @@
 ## T5. HA + backups — `agente:infra-ha` (después de T0–T4)
 
 - [x] Postgres cron 03:00 UTC configurado + gzip + SHA256 + rsync por WireGuard; restore real desde copia Kingu probado el2026-10-31. Primera ejecución automática todavía no observada.
-- [ ] DNS cruzado + Traefik failover Kingu; réplica acordada.
+- [x] Jaime designó Marte como segundo backend (2026-10-31). Standby PostgreSQL streaming operativo Fenix→Marte; ver evidencia abajo. Pendiente: Redis réplica, backend en espera, failover/DNS.
 - [ ] Status page informativa (sin SLA contractual hasta restore verificado).
 - Diseño existe en vault (`PLAN_DESPLIEGUE_SENTINEL_HA`); aquí es ejecutar.
 
@@ -71,7 +71,9 @@
 - Cron único del usuario real `jnovoas` (UID1001),03:00 diario Etc/UTC: `/usr/bin/python3 .../recovery.py --config /home/jnovoas/.sentinel-backup-recovery.json`. Primera ejecución automática prevista2026-11-01 y aún no observada. Lock evita concurrencia; retención automática sigue deshabilitada.
 - Verificación final: test unitario de recuperación, `bash -n` de scripts y restore real completos pasan. La guarda de capacidad rechaza antes del backup cuando `2*database_bytes +128MiB` supera el tmpfs de512MiB.
 - RPO objetivo programado24h más retrasos/fallos, no garantizado; no WAL/PITR, cifrado en reposo ni WORM. El tránsito sí usa SSH sobre WireGuard.
-- **Gate HA bloqueado:** no existe réplica (`pg_stat_replication=0`) ni standby Sentinel. Kingu no tiene Docker/Podman y es frontend/edge, no backend; Hercules/Ocean son DMZ y Marte observabilidad/seguridad. Los Compose/guías HA históricos describen PostgreSQL14/Patroni/cloud y no acreditan producción. Se requiere un nodo backend elegible, contrato de consistencia/promoción/failback y recuperación fuera de banda antes de ejecutar HA, DNS o SLA.
+- **Standby Marte operativo (2026-10-31 ~06:35 UTC):** `sentinel-postgres-standby` en Marte, red host, volumen `/var/lib/sentinel-postgres-standby`, `hot_standby=on`, imagen `postgres:16-alpine`. Primario ve `pg_stat_replication=10.88.0.6|streaming|async`; slot físico `marte_standby`. Prueba funcional: fila insertada en Fenix leída en Marte (`pg_is_in_recovery=true`); tabla de prueba eliminada después. Secreto `replicator` en `/etc/sentinel/postgres-replication-password` (0600) en ambos nodos, sincronizado por SSH; rol con `REPLICATION LOGIN` sin superusuario. `pg_hba` del primario limita replicación a `10.88.0.6/32` (+ red bridge interna por el DNAT de Docker); firewall Fenix acepta 5433 TCP solo desde `10.88.0.6/32`.
+- Hallazgo: `10.88.0.1:5432` lo ocupa `laespiguita-db` (otro proyecto, no tocar). Sentinel publica replicación en `10.88.0.1:5433` dedicado + `monitoring_exposure`; `sentinel_internal` sigue `internal: true`. Compose validado y primario `healthy` tras recreación (16 tablas intactas).
+- **Gate HA actualizado:** existe standby async real, pero NO hay failover automático, promoción ensayada, DNS cruzado, SLA ni backend en espera. Siguiente: Redis réplica, backend standby, procedimiento de promoción/failback.
 
 
 ## T6. Pool soberano GPU — `agente:ia` (con cliente piloto firmado)

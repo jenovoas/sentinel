@@ -19,11 +19,17 @@ services:
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro,z
     networks:
       - sentinel_internal
+      - monitoring_exposure
     ports:
       - target: 5432
         published: "5432"
         host_ip: 127.0.0.1
         mode: host
+      # Replicación streaming hacia Marte (standby). 10.88.0.1:5432 pertenece a
+      # otro proyecto (laespiguita-db) y no se toca; se usa 5433 dedicado.
+      - target: 5432
+        published: "5433"
+        host_ip: ${FENIX_WIREGUARD_IP:?Configura la IP WireGuard de Fenix en .env}
     healthcheck:
       test:
         [
