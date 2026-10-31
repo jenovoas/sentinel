@@ -177,7 +177,7 @@ class GuardianGammaService:
                 return False
             self.db.add(AuditLog(
                 id=uuid4(), tenant_id=tenant_id, organization_id=organization_id,
-                user_id=actor_id, action=f"gamma.{outcome.value}",
+                user_id=actor_id, created_at=now, action=f"gamma.{outcome.value}",
                 resource=f"gamma_decision:{decision.id}",
                 details=json.dumps(review_snapshot({
                     "actor_id": str(actor_id), "decision_id": decision.id,

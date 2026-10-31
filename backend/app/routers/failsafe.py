@@ -190,7 +190,7 @@ async def get_failsafe_status():
         "status": "initializing",
         "last_auto_remediation": None,
         "active_playbooks": len(PLAYBOOK_WEBHOOKS),
-        "success_rate_30d": S60(0, 0, 0),
+        "success_rate_30d": 0.0,
         "total_executions": 0,
         "playbooks": []
     }

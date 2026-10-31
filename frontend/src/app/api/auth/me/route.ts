@@ -7,5 +7,5 @@ export async function GET(request: Request) {
     const response = sessionError(session.status);
     return session.status === 401 ? clearSessionCookies(response) : response;
   }
-  return noStore(NextResponse.json({ user: session.identity }));
+  return noStore(NextResponse.json(session.identity));
 }

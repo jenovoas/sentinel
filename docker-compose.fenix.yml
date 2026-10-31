@@ -96,6 +96,7 @@ services:
       - "fenix.pinguinoseguro.cl:172.23.0.1"
     volumes:
       - /usr/local/share/ca-certificates/pinguinoseguro-ad-ldap-ca.crt:/etc/ssl/certs/pinguinoseguro-ad-ldap-ca.crt:ro
+      - /var/backups/sentinel:/var/backups/sentinel:ro
     depends_on:
       postgres:
         condition: service_healthy
