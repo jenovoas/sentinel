@@ -114,7 +114,7 @@ def _authenticate_sync(username: str, password: str) -> DirectoryIdentity | None
         entry = connection.entries[0]
         raw_attributes = {
             attribute.casefold(): values
-            for attribute, values in entry.raw_attributes.items()
+            for attribute, values in entry.entry_raw_attributes.items()
         }
         raw_guids = raw_attributes.get("objectguid", [])
         if not raw_guids or len(raw_guids[0]) != 16:

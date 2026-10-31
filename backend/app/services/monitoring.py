@@ -36,6 +36,64 @@ async def _fetch_dict(query: str) -> Dict[str, Any]:
         return {}
 
 
+async def get_system_metrics() -> Dict[str, Any]:
+    """Host CPU/RAM/disco vía psutil; nunca lanza."""
+    try:
+        return {
+            "cpu_percent": psutil.cpu_percent(interval=None),
+            "mem_percent": psutil.virtual_memory().percent,
+            "disk_percent": psutil.disk_usage("/").percent,
+        }
+    except Exception:
+        return {"cpu_percent": 0.0, "mem_percent": 0.0, "disk_percent": 0.0}
+
+
+async def get_gpu_metrics() -> Dict[str, Any]:
+    """Sin GPU en Fenix: estructura vacía, no N/A inventado."""
+    return {"available": False, "detail": "no GPU expuesta por el host"}
+
+
+async def get_network_metrics() -> Dict[str, Any]:
+    """Contadores de red del host vía psutil."""
+    try:
+        io = psutil.net_io_counters()
+        return {"bytes_sent": io.bytes_sent, "bytes_recv": io.bytes_recv}
+    except Exception:
+        return {"bytes_sent": 0, "bytes_recv": 0}
+
+
+async def get_repo_activity(limit: int = 10) -> List[Dict[str, Any]]:
+    """Sin feed de repo en este contrato: lista vacía."""
+    return []
+
+
+async def get_db_health() -> Dict[str, Any]:
+    """Ping simple a la base; nunca lanza."""
+    try:
+        await _fetch_one("SELECT 1")
+        return {"status": "healthy"}
+    except Exception as exc:
+        return {"status": "unhealthy", "error": str(exc)[:200]}
+
+async def check_thresholds_and_log(db_stats: Dict[str, Any], sys_metrics: Dict[str, Any]) -> None:
+    """Registra sobreconsumo en LOG_PATH; nunca lanza."""
+    try:
+        alerts = []
+        if sys_metrics.get("cpu_percent", 0) > CPU_THRESHOLD:
+            alerts.append(f"cpu={sys_metrics['cpu_percent']}")
+        if sys_metrics.get("mem_percent", 0) > MEM_THRESHOLD:
+            alerts.append(f"mem={sys_metrics['mem_percent']}")
+        if db_stats.get("connections_total", 0) > CONN_THRESHOLD:
+            alerts.append(f"conns={db_stats['connections_total']}")
+        if alerts:
+            os.makedirs(os.path.dirname(LOG_PATH) or ".", exist_ok=True)
+            with open(LOG_PATH, "a") as fh:
+                fh.write(f"{datetime.utcnow().isoformat()}Z {' '.join(alerts)}\n")
+    except Exception as exc:
+        logger.warning("threshold log skipped: %s", exc)
+
+
+
 async def get_db_stats() -> Dict[str, Any]:
     """Collect DB stats: connections, locks, DB size."""
     try:
