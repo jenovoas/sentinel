@@ -112,6 +112,35 @@ backend/
 
 **Tecnología**: FastAPI (async, auto-documentación con Swagger)
 
+### Autorización de Guardian Gamma
+
+Todas las operaciones de `/api/v1/gamma` requieren un JWT Bearer vigente y el
+control compartido `get_current_superuser` (`is_superuser=true`). La cola es
+global, sin tenant; un administrador de organización no puede acceder. Incluye
+`POST /decision`, `GET /pending`,
+`POST /approve/{decision_id}`, `POST /deny/{decision_id}` y `POST /cleanup`.
+Sin credenciales o con un token inválido se devuelve `401`; usuarios autenticados
+sin privilegios administrativos reciben `403`. `X-Sentinel-Token` de ingesta no
+autoriza estas rutas.
+
+Los consumidores HTTP, incluidos trabajos de limpieza, deben obtener y enviar un
+JWT de superusuario mediante el flujo de autenticación existente; no hay bypass
+para automatizaciones. La escalación interna de Cortex continúa usando
+`GuardianGammaService` directamente, sin cambios en persistencia ni en el servicio.
+Este cierre no agrega rutas al BFF ni interfaz de revisión en Kingu.
+
+Despliegue: actualizar únicamente la imagen del backend; este cambio no requiere
+migraciones adicionales. La autenticación exige usuario y organización activos y
+la versión de esquema esperada por el backend. Coordinar los consumidores HTTP
+antes del cambio: sus peticiones anónimas dejarán de funcionar.
+
+Smoke no destructivo: ejecutar `GET /api/v1/gamma/pending?limit=1` sin credenciales
+(esperado `401`), con sesión de miembro/lector/admin de tenant (`403`) y con sesión
+de superusuario (`200`). Obtener tokens de forma segura sin imprimirlos ni registrarlos.
+No aprobar, denegar, crear ni limpiar decisiones como parte de este smoke.
+La cobertura conductual de las cinco operaciones está en
+`tests/test_gamma_security.py`.
+
 ### 2. Modelos de Datos (app/db/)
 
 **Función**: Define estructura de tablas en PostgreSQL

@@ -18,9 +18,8 @@ from datetime import datetime
 # Ensure we can import from app
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# FORCE LOCALHOST for verification script outside Docker
-os.environ["DATABASE_URL"] = "postgresql+asyncpg://sentinel_user:2wA4KgRinuKNgcOrA839ZRC2R1ycNtC4@localhost:5432/sentinel_db"
-os.environ["REDIS_URL"] = "redis://localhost:6379/0"
+# Use the approved application configuration; never override connection credentials.
+
 
 from app.database import AsyncSessionLocal
 from app.services.cortex_engine import CortexDecisionEngine

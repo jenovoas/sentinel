@@ -2,6 +2,8 @@
 Guardian Gamma API Router - Human-in-the-Loop Decisions
 
 Endpoints for managing critical security decisions that require human validation.
+
+All operations require an authenticated platform superuser: the queue is global.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -10,6 +12,7 @@ from typing import Optional, Dict, Any, List
 from pydantic import BaseModel, Field
 
 from app.database import get_db
+from app.security.auth import get_current_superuser
 from app.services.guardian_gamma import (
     GuardianGammaService,
     GuardianSource,
@@ -17,7 +20,11 @@ from app.services.guardian_gamma import (
 )
 
 
-router = APIRouter(prefix="/api/v1/gamma", tags=["Guardian Gamma"])
+router = APIRouter(
+    prefix="/api/v1/gamma",
+    tags=["Guardian Gamma"],
+    dependencies=[Depends(get_current_superuser)],
+)
 
 
 # Request/Response Models
@@ -66,12 +73,12 @@ async def create_decision(
     """
     Create a new decision request for human validation.
     
-    Used by Guardian Alpha/Beta to escalate decisions when confidence is low.
+    Authenticated administrators may submit escalations on behalf of Alpha/Beta.
     
     Example:
         ```python
         # Guardian Alpha escalates binary block decision
-        response = await client.post("/gamma/decision", json={
+        response = await client.post("/api/v1/gamma/decision", headers=admin_headers, json={
             "guardian": "alpha",
             "decision_type": "binary_block",
             "context": {
@@ -185,8 +192,8 @@ async def cleanup_expired_decisions(
     """
     Mark expired decisions as timeout.
     
-    This endpoint should be called periodically (e.g., via cron job)
-    to clean up decisions that exceeded their timeout.
+    An authenticated administrator may call this periodically to clean up decisions
+    that exceeded their timeout; unauthenticated cron calls are not supported.
     """
     service = GuardianGammaService(db)
     count = await service.cleanup_expired()

@@ -54,7 +54,7 @@ services:
     container_name: sentinel-marte-grafana
     environment:
       GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD:?Provision GF_SECURITY_ADMIN_PASSWORD in .env}
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana-admin-password
       GF_AUTH_ANONYMOUS_ENABLED: "false"
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_SERVER_HTTP_ADDR: 0.0.0.0
@@ -65,6 +65,7 @@ services:
       GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
     volumes:
       - grafana_data:/var/lib/grafana
+      - /etc/sentinel/grafana-admin-password:/run/secrets/grafana-admin-password:ro
       - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/sentinel.yml:ro
       - ./grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/sentinel.yml:ro
       - ./dashboards:/etc/grafana/provisioning/dashboards/json:ro
