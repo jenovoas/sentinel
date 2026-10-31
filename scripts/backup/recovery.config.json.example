@@ -1,0 +1,8 @@
+{
+  "container": "sentinel-postgres",
+  "user": "sentinel_user",
+  "database": "sentinel_db",
+  "backup_dir": "/var/backups/sentinel/postgres",
+  "ssh_host": "kingu",
+  "remote_dir": "/REPLACE_WITH_VERIFIED_REMOTE_HOME/backups/sentinel/fenix-postgres"
+}

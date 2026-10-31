@@ -30,6 +30,7 @@
 #
 
 set -euo pipefail
+umask 077
 
 # ============================================================================
 # INITIALIZATION
@@ -155,12 +156,12 @@ create_backup() {
 # Create unencrypted backup
 #
 create_unencrypted_backup() {
-    docker exec -t "${POSTGRES_CONTAINER}" pg_dump \
-        -U "${POSTGRES_USER}" \
-        -d "${POSTGRES_DB}" \
-        --format=custom \
-        --compress="${BACKUP_COMPRESSION_LEVEL}" \
-        2>&1 | gzip > "$BACKUP_PATH"
+    local snapshot_args=()
+    [[ -z "${POSTGRES_SNAPSHOT:-}" ]] || snapshot_args+=(--snapshot="$POSTGRES_SNAPSHOT")
+    docker exec "${POSTGRES_CONTAINER}" pg_dump \
+        -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" \
+        --format=custom --compress="${BACKUP_COMPRESSION_LEVEL}" \
+        "${snapshot_args[@]}" | gzip > "$BACKUP_PATH"
 }
 
 #
@@ -176,12 +177,12 @@ create_encrypted_backup() {
         return 1
     fi
     
-    docker exec -t "${POSTGRES_CONTAINER}" pg_dump \
-        -U "${POSTGRES_USER}" \
-        -d "${POSTGRES_DB}" \
-        --format=custom \
-        --compress="${BACKUP_COMPRESSION_LEVEL}" \
-        2>&1 \
+    local snapshot_args=()
+    [[ -z "${POSTGRES_SNAPSHOT:-}" ]] || snapshot_args+=(--snapshot="$POSTGRES_SNAPSHOT")
+    docker exec "${POSTGRES_CONTAINER}" pg_dump \
+        -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" \
+        --format=custom --compress="${BACKUP_COMPRESSION_LEVEL}" \
+        "${snapshot_args[@]}" \
         | gzip \
         | openssl enc -aes-256-cbc -salt -pbkdf2 \
           -pass file:"$key_path" \
@@ -289,6 +290,10 @@ upload_to_minio() {
 # Cleanup old backups
 #
 cleanup_old_backups() {
+    if [[ "${BACKUP_CLEANUP_ENABLED:-true}" != "true" ]]; then
+        log_info "Automatic backup deletion disabled"
+        return 0
+    fi
     log_info "Cleaning up old backups..."
     
     local retention_days="${BACKUP_RETENTION_DAYS}"

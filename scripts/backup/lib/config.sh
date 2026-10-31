@@ -86,7 +86,7 @@ LOG_TO_STDOUT="${LOG_TO_STDOUT:-true}"
 # Does not override existing environment variables.
 #
 load_env_file() {
-    local env_file="$PROJECT_ROOT/.env"
+    local env_file="${BACKUP_ENV_FILE:-$PROJECT_ROOT/.env}"
     
     if [[ -f "$env_file" ]]; then
         # Load .env file, ignoring comments and empty lines
@@ -94,6 +94,7 @@ load_env_file() {
             # Skip comments and empty lines
             [[ "$key" =~ ^#.*$ ]] && continue
             [[ -z "$key" ]] && continue
+            [[ "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || continue
             
             # Remove quotes from value
             value="${value%\"}"
@@ -121,30 +122,30 @@ validate_config() {
     # Required PostgreSQL configuration
     if [[ -z "$POSTGRES_CONTAINER" ]]; then
         echo "ERROR: POSTGRES_CONTAINER is not set" >&2
-        ((errors++))
+        errors=$((errors + 1))
     fi
     
     if [[ -z "$POSTGRES_USER" ]]; then
         echo "ERROR: POSTGRES_USER is not set" >&2
-        ((errors++))
+        errors=$((errors + 1))
     fi
     
     if [[ -z "$POSTGRES_DB" ]]; then
         echo "ERROR: POSTGRES_DB is not set" >&2
-        ((errors++))
+        errors=$((errors + 1))
     fi
     
     # Validate backup directory
     if [[ -z "$BACKUP_DIR" ]]; then
         echo "ERROR: BACKUP_DIR is not set" >&2
-        ((errors++))
+        errors=$((errors + 1))
     fi
     
     # Validate S3 configuration if enabled
     if [[ "$S3_ENABLED" == "true" ]]; then
         if [[ -z "$S3_BUCKET" ]]; then
             echo "ERROR: S3_ENABLED is true but S3_BUCKET is not set" >&2
-            ((errors++))
+            errors=$((errors + 1))
         fi
     fi
     
@@ -152,7 +153,7 @@ validate_config() {
     if [[ "$MINIO_ENABLED" == "true" ]]; then
         if [[ -z "$MINIO_ENDPOINT" ]] || [[ -z "$MINIO_BUCKET" ]]; then
             echo "ERROR: MINIO_ENABLED is true but MINIO_ENDPOINT or MINIO_BUCKET is not set" >&2
-            ((errors++))
+            errors=$((errors + 1))
         fi
     fi
     
@@ -161,7 +162,7 @@ validate_config() {
         if [[ ! -f "$ENCRYPTION_KEY_PATH" ]]; then
             echo "ERROR: ENCRYPT_ENABLED is true but encryption key not found at $ENCRYPTION_KEY_PATH" >&2
             echo "Generate key with: openssl rand -base64 32 > $ENCRYPTION_KEY_PATH" >&2
-            ((errors++))
+            errors=$((errors + 1))
         fi
     fi
     

@@ -56,8 +56,10 @@ validate_backup_integrity() {
         return $?
     fi
     
-    # Validate gzip integrity
-    if gunzip -t "$backup_file" 2>/dev/null; then
+    # Validate both the gzip stream and the PostgreSQL custom archive catalog.
+    if gunzip -t "$backup_file" 2>/dev/null &&
+        gunzip -c "$backup_file" | docker exec -i "${POSTGRES_CONTAINER}" sh -c \
+            'pg_restore --list >/dev/null; status=$?; cat >/dev/null; exit "$status"'; then
         log_debug "Backup integrity check passed: $backup_file"
         return 0
     else
@@ -91,7 +93,9 @@ validate_encrypted_backup_integrity() {
     if openssl enc -aes-256-cbc -d -pbkdf2 \
         -pass file:"$encryption_key" \
         -in "$backup_file" \
-        2>/dev/null | gunzip -t 2>/dev/null; then
+        2>/dev/null | gunzip -c |
+        docker exec -i "${POSTGRES_CONTAINER}" sh -c \
+            'pg_restore --list >/dev/null; status=$?; cat >/dev/null; exit "$status"'; then
         log_debug "Encrypted backup integrity check passed: $backup_file"
         return 0
     else
@@ -256,17 +260,17 @@ validate_backup() {
     
     # Validate integrity
     if ! validate_backup_integrity "$backup_file"; then
-        ((errors++))
+        errors=$((errors + 1))
     fi
     
     # Validate size
     if ! validate_backup_size "$backup_file"; then
-        ((errors++))
+        errors=$((errors + 1))
     fi
     
-    # Verify checksum if available
-    if ! verify_backup_checksum "$backup_file"; then
-        log_warn "Checksum verification skipped or failed"
+    # A new backup has no checksum yet; an existing mismatched checksum is fatal.
+    if [[ -f "${backup_file}.sha256" ]] && ! verify_backup_checksum "$backup_file"; then
+        errors=$((errors + 1))
     fi
     
     # Report results

@@ -56,10 +56,23 @@
 
 ## T5. HA + backups — `agente:infra-ha` (después de T0–T4)
 
-- [ ] Postgres cron 03:00 + gzip + SHA256 + rsync por WireGuard; restore probado (no solo backup).
+- [x] Postgres cron 03:00 UTC configurado + gzip + SHA256 + rsync por WireGuard; restore real desde copia Kingu probado el2026-10-31. Primera ejecución automática todavía no observada.
 - [ ] DNS cruzado + Traefik failover Kingu; réplica acordada.
 - [ ] Status page informativa (sin SLA contractual hasta restore verificado).
 - Diseño existe en vault (`PLAN_DESPLIEGUE_SENTINEL_HA`); aquí es ejecutar.
+
+### Evidencia T5 — recuperación PostgreSQL, 2026-10-31
+
+- Producción inspeccionada: `sentinel-postgres` PostgreSQL16.15, primaria (`pg_is_in_recovery=false`) y **cero** conexiones en `pg_stat_replication`. No se reinició ni modificó la base/volumen vivo: solo snapshot SQL consistente y `pg_dump`. Credenciales rotadas no se copiaron ni expusieron.
+- Evidencia final autoritativa: `sentinel_backup_20261031_060109.sql.gz`,1.259.643bytes, SHA256 `f3801232d7d3471e5215a34e9b972c4f47ff5da119fa16bb293d5449eec3debe`; inicio06:01:08.500104UTC, fin06:01:15.226589UTC. Las corridas anteriores se conservan como historial, no sustituyen este resultado.
+- `scripts/backup/recovery.py` envió archivo, checksum y manifiesto a Kingu por SSH4222/WireGuard; recuperó la copia realmente almacenada en `/home/jnovoas/backups/sentinel/fenix-postgres` y restauró con la imagen local fija `sha256:6a2e324ebe59af6031c4c1cd96c1d5072c2ebc36563d2196365e43b8297c062d`, red none, sin puertos, tmpfs512MiB, memoria512MiB/CPU1 y sin volúmenes vivos.
+- Coincidieron16 tablas,49.538filas por conteo/fingerprint y297registros de catálogo/large objects. Invariantes SHA256 `86e4affe3412075395ae366ea956605cca32b570d63c147a17dc11c0436815f7`. Temporales propios eliminados; copia off-node y reporte0600 conservados en directorio0700.
+- Tiempos finales: dump1,097s; transferencia0,366s; restore+verificación3,753s; total6,727s. Esto mide restore PostgreSQL aislado con imagen disponible, **no** RTO de host/aplicación. No prueba roles globales, secretos, Redis, checkpoints Cortex, PITR ni failover.
+- Cron único del usuario real `jnovoas` (UID1001),03:00 diario Etc/UTC: `/usr/bin/python3 .../recovery.py --config /home/jnovoas/.sentinel-backup-recovery.json`. Primera ejecución automática prevista2026-11-01 y aún no observada. Lock evita concurrencia; retención automática sigue deshabilitada.
+- Verificación final: test unitario de recuperación, `bash -n` de scripts y restore real completos pasan. La guarda de capacidad rechaza antes del backup cuando `2*database_bytes +128MiB` supera el tmpfs de512MiB.
+- RPO objetivo programado24h más retrasos/fallos, no garantizado; no WAL/PITR, cifrado en reposo ni WORM. El tránsito sí usa SSH sobre WireGuard.
+- **Gate HA bloqueado:** no existe réplica (`pg_stat_replication=0`) ni standby Sentinel. Kingu no tiene Docker/Podman y es frontend/edge, no backend; Hercules/Ocean son DMZ y Marte observabilidad/seguridad. Los Compose/guías HA históricos describen PostgreSQL14/Patroni/cloud y no acreditan producción. Se requiere un nodo backend elegible, contrato de consistencia/promoción/failback y recuperación fuera de banda antes de ejecutar HA, DNS o SLA.
+
 
 ## T6. Pool soberano GPU — `agente:ia` (con cliente piloto firmado)
 
