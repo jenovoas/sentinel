@@ -116,3 +116,13 @@ Alcance: cierre/reapertura del mismo objeto SHM, que PySharedBuffer no elimina
 al salir. No cubre unlink/reemplazo manual del objeto, garantía de entrega bajo
 overrun, persistencia al reiniciar el host, reloj distribuido ni medición DTC.
 La corrección no cambia fases, modulación, amplitudes o modo eBPF.
+
+Publicación: Sentinel `28945cd7` y MyCNet `2ed55f0`, ambos en `main`.
+Memoria persistente de la prueba: vault `db8ac96`.
+
+Graphify: MyCNet completó actualización AST local (2241 nodos,2543 aristas).
+En Sentinel la extracción de80 archivos terminó, pero el comando no completó
+la actualización del grafo dentro de300s y fue terminado por timeout. No se
+declara ese índice actualizado. También informó extractor SQL ausente y
+extracción parcial en dos archivos C ajenos a este cambio; no se alteraron
+dependencias ni esos archivos para cerrar esta corrección de SHM.
