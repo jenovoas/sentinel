@@ -57,7 +57,7 @@
 ## T5. HA + backups — `agente:infra-ha` (después de T0–T4)
 
 - [x] Postgres cron 03:00 UTC configurado + gzip + SHA256 + rsync por WireGuard; restore real desde copia Kingu probado el2026-10-31. Primera ejecución automática todavía no observada.
-- [x] Jaime designó Marte como segundo backend (2026-10-31). Standby PostgreSQL streaming y réplica Redis operativos Fenix→Marte; ver evidencia abajo. Pendiente: backend en espera, failover/DNS.
+- [x] Jaime designó Marte como segundo backend (2026-10-31). Standby PostgreSQL streaming, réplica Redis y backend en espera operativos en Marte; ver evidencia abajo. Pendiente: failover/DNS.
 - [ ] Status page informativa (sin SLA contractual hasta restore verificado).
 - Diseño existe en vault (`PLAN_DESPLIEGUE_SENTINEL_HA`); aquí es ejecutar.
 
@@ -76,8 +76,10 @@
 - **Réplica Redis operativa (2026-10-31 ~06:40 UTC):** `sentinel-redis-replica` en Marte, red host, volumen `/var/lib/sentinel-redis-replica`, AOF activado, imagen `redis:7-alpine`. Primario ve `connected_slaves=1`, `slave0=10.88.0.6,online,lag=0`; réplica `role:slave`, `master_link_status:up`. Prueba funcional: clave escrita en Fenix leída en Marte; escritura directa en réplica rechazada (`READONLY`); clave de prueba eliminada del primario.
 - Usuario ACL `replicator` mínimo (`+psync|+replconf|+ping`, sin canales), secreto en `/etc/sentinel/redis-replication-password` (0600) en ambos nodos. `aclfile /data/users.acl` persistido en volumen `redis_data`; sobrevive recreaciones. Publicación WG dedicada `10.88.0.1:6380`; firewall acepta solo desde `10.88.0.6/32`.
 - Incidente controlado: el primer `ACL SAVE` persistió `user default on nopass` y dejó Redis sin contraseña (backend 503). Se restauró la contraseña del default en el ACL, `ACL SAVE`, backend 200 y `NOAUTH` verificado sin credencial. Sin pérdida de datos (AOF intacto).
-- **Gate HA actualizado:** standby PostgreSQL async + réplica Redis reales, pero NO hay failover automático, promoción ensayada, DNS cruzado, SLA ni backend en espera. Siguiente: backend standby, procedimiento de promoción/failback.
-
+- **Backend en espera (2026-10-31 ~06:44 UTC):** `sentinel-backend-standby` en Marte, misma imagen `dd532f7a-gamma-review-1`, env `/etc/sentinel/backend-standby.env` (0600, mismas claves JWT/LDAP, DB/Redis a réplicas locales), puerto solo loopback. Health 503 esperado: DB `healthy/is_primary:false`, Redis `READONLY` (réplica). El 503 acredita modo espera, no fallo. Procedimiento de promoción/failback en `docs/ops/failover-fenix-marte.md`, validado en seco (estados reales, sin promover).
+- **Ensayo failover 2026-10-31:** promoción Marte con pérdida cero (LSN `0/822D420` idéntico), failback a Fenix timeline 3, réplicas reconstruidas y verificadas. Detalle en `docs/ops/failover-fenix-marte.md`.
+- **Recuperación Marte (2026-10-31):** configuración versionada en git (`service-operation/deploy/marte/`, commit `65165525`, sin cambios pendientes) + backups de config en `/var/backups/sentinel-observability/`. Datos de observabilidad (5 volúmenes Mimir/Loki/Grafana/Prometheus/Alloy) sin backup off-node: ante pérdida total se reconstruye la plataforma pero se pierden series/logs históricos. Estado crítico (Postgres/Redis standby) se reconstruye por replicación desde Fenix, ya ensayado. eBPF/XDP/watchdog/enforcement siguen sin prerrequisitos.
+- **Tenants (2026-10-31):** sin evaluar en esta sesión. La etiqueta `tenant="platform"` no constituye aislamiento; no existen identidades/grupos ni vistas aisladas verificadas.
 
 ## T6. Pool soberano GPU — `agente:ia` (con cliente piloto firmado)
 
