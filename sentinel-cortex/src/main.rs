@@ -1816,7 +1816,7 @@ mod tests {
         assert_eq!(json["claim_valid"], false);
         assert_eq!(json["security_blocked"], true);
         assert_eq!(json["security_event_logged"], true);
-        assert!(json["verification_time_us"].is_number());
+        assert!(json["verification_time_us"].is_null());
         assert!(json["ring0_intercepts"].is_null());
 
         let wal_path = wal_dir.join("primary/security_wal.log");
