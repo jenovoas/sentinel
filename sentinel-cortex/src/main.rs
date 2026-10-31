@@ -14,6 +14,7 @@ mod math;
 mod memory;
 mod metrics;
 mod models;
+mod mycnet_stream;
 mod qhc_client;
 mod quantum;
 
@@ -96,6 +97,7 @@ enum CrystalInput {
     Security {
         index: usize,
         amplitude: me60os_core::spa::SPA,
+        mesh_token_id: Option<u32>,
     },
     Observability {
         amplitude: me60os_core::spa::SPA,
@@ -168,8 +170,25 @@ fn start_crystal_runtime(
             loop {
                 loop {
                     match rx.try_recv() {
-                        Ok(CrystalInput::Security { index, amplitude }) => {
-                            runtime.inject_security_spa(index, amplitude);
+                        Ok(CrystalInput::Security {
+                            index,
+                            amplitude,
+                            mesh_token_id,
+                        }) => {
+                            if let Some(token_id) = mesh_token_id {
+                                match runtime.inject_remote_security_spa(index, amplitude) {
+                                    Ok(crystal_amplitude_raw) => tracing::info!(
+                                        token_id,
+                                        index,
+                                        amplitude_raw = amplitude.to_raw(),
+                                        crystal_amplitude_raw,
+                                        "MyCNet seed accepted by CrystalRuntime security lane"
+                                    ),
+                                    Err(error) => tracing::warn!(token_id, index, %error, "MyCNet seed rejected by CrystalRuntime"),
+                                }
+                            } else {
+                                runtime.inject_security_spa(index, amplitude);
+                            }
                         }
                         Ok(CrystalInput::Observability { amplitude }) => {
                             runtime.inject_observability_spa(0, amplitude);
@@ -450,51 +469,12 @@ async fn main() {
             let _ = tx_bpf_ebpf.send(event);
         }
     });
-    // 2b. MyCNet mesh subscriber (Marte/hercules/ocean → lattice).
-    // guardian-uplink publica seeds por UDP a mycnetd Fenix; este task lee el
-    // stream WS de mycnetd y los canta al lattice como drive de seguridad.
-    // Env MYCNET_STREAM_URL (default ws://10.88.0.1:7474/api/v1/stream).
-    let crystal_input_mesh = crystal_input_tx.clone();
-    tokio::spawn(async move {
-        use futures_util::StreamExt;
-        let url = std::env::var("MYCNET_STREAM_URL")
-            .unwrap_or_else(|_| "ws://10.88.0.1:7474/api/v1/stream".to_string());
-        loop {
-            match tokio_tungstenite::connect_async(&url).await {
-                Ok((mut ws, _)) => {
-                    tracing::info!("MyCNet mesh stream conectado: {}", url);
-                    while let Some(msg) = ws.next().await {
-                        let Ok(msg) = msg else { break };
-                        if !msg.is_text() {
-                            continue;
-                        }
-                        let text = msg.to_text().unwrap_or_default();
-                        let v: serde_json::Value = match serde_json::from_str(text) {
-                            Ok(v) => v,
-                            Err(_) => continue,
-                        };
-                        if v.get("type").and_then(|t| t.as_str()) != Some("fractal_seed_ingested") {
-                            continue;
-                        }
-                        let amplitude = v.get("amplitude_s60").and_then(|a| a.as_i64()).unwrap_or(0);
-                        let token = v.get("token_id").and_then(|t| t.as_u64()).unwrap_or(0) as usize;
-                        let index = token % 64;
-                        if let Some(tx) = crystal_input_mesh.as_ref() {
-                            let _ = tx.try_send(CrystalInput::Security {
-                                index,
-                                amplitude: me60os_core::spa::SPA::from_raw(amplitude),
-                            });
-                        }
-                    }
-                    tracing::warn!("MyCNet mesh stream cerrado; reconectando en 5s");
-                }
-                Err(e) => {
-                    tracing::warn!("MyCNet mesh no disponible ({}); reintento en 5s", e);
-                }
-            }
-            tokio::time::sleep(std::time::Duration::from_secs(5)).await;
-        }
-    });
+    // MyCNet emits fractal_seed_ingested only for remote UDP ingress, not local SHM.
+    if let Some(tx) = crystal_input_tx.clone() {
+        tokio::spawn(mycnet_stream::run(tx));
+    } else {
+        tracing::warn!("MyCNet mesh subscriber disabled: CrystalRuntime is unavailable");
+    }
 
     // 3. Start Lattice Processor (Deterministic Ring-0 eBPF Ingestion + Thermal CPU Noise + LiquidLattice 3x3)
     let lattice_task = lattice.clone();
@@ -538,6 +518,7 @@ async fn main() {
                 let _ = runtime.try_send(CrystalInput::Security {
                     index: node,
                     amplitude: entropy_spa,
+                    mesh_token_id: None,
                 });
             }
         }

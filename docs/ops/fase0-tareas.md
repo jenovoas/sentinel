@@ -71,6 +71,18 @@
 - [ ] Exporters por nodo, métricas servicios Sentinel, Promtail→Loki, dashboards plataforma + por tenant, alertas vía n8n, rotar admin grafana.
 - Ver spec: `docs/ops/marte-monitoreo-poblado.md`.
 
+## T8. Guardian Marte → MyCNet Fenix → CrystalRuntime — `agente:PuenteCortex`
+
+- Alcance autorizado: suscriptor WebSocket de Cortex y aceptación real de semillas remotas en lane A, configuración privada de Cortex Fenix y evidencia proyecto/vault. Main mantiene `guardian-uplink` Marte.
+- No tocar scheduler/bio, enforcement eBPF, portal, Docker global ni reglas de firewall globales dentro de esta subtarea. La integración y los commits corresponden al agente principal.
+- Preflight 2026-10-30: `main` en `8f0423f3`; cambios previos en `Cargo.lock`, Compose Fenix y Guacamole preservados. `sudo -n true` pasó; Cortex `sentinel-cortex:8f0423f3` healthy; MyCNet escucha únicamente `10.88.0.1:7474/TCP` y `:4242/UDP`.
+- La URL efectiva `ws://172.20.0.1:7474/api/v1/stream` no coincide con el listener. Cortex ya tiene egress `172.29.0.2/16`, zona Docker `ACCEPT`: corregir destino a la IP privada real antes de inventar DNAT/proxy/reglas.
+- Aceptación: handshake y suscripción desde Cortex; seed remoto correlacionado hasta la inyección real del cristal, sin confundir amplitud cero con excitación ni QHC 1 Hz con DTC software.
+- Despliegue observado: imagen `sentinel-cortex:8f0423f3-uplink-a1e1fe4a1045` (huella de árbol sin commit), digest `sha256:878ce8ddc65a4e10fe2aa70cdb71d5d0db6742724faf28bd9d206201d84b6bf3`; solo Cortex recreado, healthy. URL corregida a `ws://10.88.0.1:7474/api/v1/stream`, backup protegido, Compose válido, sin cambios de firewall/Docker global.
+- Evidencia propia: 23:54:37 UTC WS101 y frames recibidos; 23:54:41 token647121428/raw0 aceptado realmente por lane A. QHC=true, pero PULSE CHECK Valid=false/Coherence=False; frecuencia DTC no medida por falta de sesión autorizada.
+- Pruebas finales: 59/60 pasan, incluidas las6 del puente; falla `test_truth_claim_handler_smoke_aiopsdoom_intercept` (`verification_time_us.is_number()`), causalidad no establecida, sin reintento ni cambio fuera de alcance. Detalle/límites/incidente de captura: [puente-mycnet-cortex-2026-10-30](puente-mycnet-cortex-2026-10-30.md); vault `sentinel/15_Puente_MyCNet_Cortex_2026-10-30.md`.
+- Correlación final propia 23:57:56 UTC: 12/12 event_id realmente emitidos en WAL Marte, convertidos con el mismo DefaultHasher del uplink, coinciden con tokens aceptados por CrystalRuntime Fenix. Ejemplo `guardian-alpha-80945644173814-225437-EXEC_ALLOWED` → token711715798 → lane A índice22 a23:57:55.950191, raw0. La sonda coordinada PID225249 no apareció en22s (reporte Main); no se declara cobertura de todo exec ni se le atribuyen estas filas.
+
 ---
 
 ## Reglas para todos los agentes

@@ -27,7 +27,7 @@ services:
     networks:
       guac_internal: {}
       guac_ssh:
-        ipv4_address: 172.27.0.2
+        ipv4_address: 172.30.0.2
     restart: unless-stopped
 
   guacamole:
@@ -84,6 +84,10 @@ networks:
     name: guacamole_internal
     driver: bridge
     internal: true
+    ipam:
+      config:
+        - subnet: 172.27.0.0/16
+          gateway: 172.27.0.1
   guac_ad:
     name: guacamole_ad_ldap
     driver: bridge
@@ -109,5 +113,5 @@ networks:
       com.docker.network.bridge.name: br-guac-ssh
     ipam:
       config:
-        - subnet: 172.27.0.0/16
-          gateway: 172.27.0.1
+        - subnet: 172.30.0.0/16
+          gateway: 172.30.0.1

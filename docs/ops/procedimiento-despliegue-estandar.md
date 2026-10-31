@@ -74,8 +74,8 @@ Si cualquier preflight falla: **detener, diagnosticar, no desplegar encima.**
 
 | Zona | Sources | Forward | Propósito |
 |---|---|---|---|
-| `guac-internal` | `172.25.0.0/16` | yes | Red interna Guacamole (DB). DROP por defecto, solo forwarding gestionado |
-| `guac-edge` | `172.26.0.0/16 172.27.0.0/16` | no | Sesiones guacd→destinos. DROP, egress por rich rules puntuales, no forward global |
+| `guac-internal` | `172.27.0.0/16` | yes | Red interna Guacamole (DB), fijada explícitamente en Compose tras reasignación |
+| `guac-edge` | `172.26.0.0/16 172.30.0.0/16` | no | Sesiones guacd→destinos; guacd fijo `172.30.0.2`, DROP y reglas puntuales |
 | `ad-ldap` | `172.21/16 172.23/16 172.24/16` | — | Contenedores que autentican LDAPS contra Fenix |
 | `sentinel-bridge` | `br-cbd16f207701` | — | Bridge contenedores Sentinel |
 | `wgmesh` | `wg0` | — | Mesh WireGuard 10.88.0.0/24 |

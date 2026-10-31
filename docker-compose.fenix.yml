@@ -392,6 +392,10 @@ networks:
     internal: true
   backend_egress:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.29.0.0/16
+          gateway: 172.29.0.1
   ad_ldap:
     name: sentinel_ad_ldap
     driver: bridge

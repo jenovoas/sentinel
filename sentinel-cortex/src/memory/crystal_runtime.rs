@@ -253,6 +253,16 @@ impl CrystalRuntime {
         self.publish_fractal_seed(true, index);
     }
 
+    /// Import remote drive without immediately echoing it into MyCNet's SHM ring.
+    /// Periodic snapshots still export the resulting crystal state.
+    pub fn inject_remote_security_spa(&mut self, index: usize, amplitude: SPA) -> Result<i64, &'static str> {
+        let crystal = self.lane_a.crystals.get_mut(index).ok_or("crystal index out of range")?;
+        let raw = crystal.amplitude.to_raw().checked_add(amplitude.to_raw())
+            .ok_or("SPA amplitude overflow")?;
+        crystal.amplitude = SPA::from_raw(raw);
+        Ok(raw)
+    }
+
     pub fn inject_security(&mut self, index: usize, pressure: i64) {
         self.lane_a.inject(index, pressure);
     }
@@ -655,6 +665,28 @@ fn acquire_shm_writer_lock() -> Result<File, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn remote_security_preserves_raw_scale_and_only_changes_lane_a() {
+        let mut runtime = CrystalRuntime::in_memory(3);
+        let before = runtime.lane_a.crystals[1].amplitude.to_raw();
+        let lane_b_before = runtime.lane_b.crystals[1].amplitude.to_raw();
+        assert_eq!(
+            runtime.inject_remote_security_spa(1, SPA::from_raw(17)),
+            Ok(before + 17)
+        );
+        assert_eq!(runtime.lane_b.crystals[1].amplitude.to_raw(), lane_b_before);
+        assert_eq!(runtime.inject_remote_security_spa(3, SPA::from_raw(17)), Err("crystal index out of range"));
+        assert_eq!(
+            runtime.inject_remote_security_spa(1, SPA::from_raw(0)),
+            Ok(before + 17)
+        );
+        runtime.lane_a.crystals[1].amplitude = SPA::from_raw(i64::MAX);
+        assert_eq!(
+            runtime.inject_remote_security_spa(1, SPA::from_raw(1)),
+            Err("SPA amplitude overflow")
+        );
+    }
 
     #[test]
     fn in_memory_runtime_advances_dtc_and_non_markovian_step() {

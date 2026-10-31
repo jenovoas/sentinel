@@ -4,6 +4,10 @@
 **Estado:** desplegado en Fenix, publicado por Kingu; HTTPS y DNS comprobados.
 **URL:** <https://guacamole.pinguinoseguro.cl>
 
+> **Actualización 30/31 de octubre:** la recuperación descrita al final fija
+> `guacamole_internal=172.27/16` y `guacamole_ssh_egress=172.30/16`,
+> guacd `172.30.0.2`. Las IP anteriores en la cronología son históricas.
+
 ## Arquitectura efectiva
 
 - El DNS público `guacamole.pinguinoseguro.cl` apunta a `64.176.8.191`, IP pública de Kingu. Las consultas a los DNS autoritativos y a resolutores públicos devolvieron esa dirección.
@@ -13,7 +17,7 @@
 - PostgreSQL conserva autorización y configuración. Se retiró el usuario local inicial `guacadmin`; no se deben aprovisionar cuentas humanas ni contraseñas locales en Guacamole.
 - El bind técnico `svc-guacamole-bind` y su contraseña se guardan fuera del repositorio, en `/etc/guacamole/guacamole.env` con permisos root-only. La memoria persistente contiene la referencia de custodia; no registrar el valor del secreto en Git.
 - Se aprovisionaron cinco conexiones SSH: Fenix (`10.88.0.1`), Kingu (`10.88.0.2`), Hercules (`10.88.0.4`), Ocean (`10.88.0.5`) y Marte (`10.88.0.6`), todas en puerto `4222`. Soma queda excluido según decisión del usuario.
-- Las conexiones usan `jnovoas` con una clave Ed25519 dedicada a Guacamole. La clave privada se guarda en PostgreSQL de Guacamole y en `/etc/guacamole/ssh/id_ed25519` en Fenix, sin versionarla. En cada servidor se agregó la clave pública sin reemplazar otras claves, con `restrict,pty` y restricción de origen: Fenix permite el IP fijo de guacd en `guacamole_ssh_egress` (`172.27.0.2`); los nodos remotos permiten `10.88.0.1`. Para revocarla, quitar su entrada identificada como `guac-ssh-jnovoas-20261030` de `~jnovoas/.ssh/authorized_keys`.
+- Las conexiones usan `jnovoas` con una clave Ed25519 dedicada a Guacamole. La clave privada se guarda en PostgreSQL de Guacamole y en `/etc/guacamole/ssh/id_ed25519` en Fenix, sin versionarla. En cada servidor se agregó la clave pública sin reemplazar otras claves, con `restrict,pty` y restricción de origen: Fenix permite el IP fijo de guacd en `guacamole_ssh_egress` (`172.30.0.2`); los nodos remotos permiten `10.88.0.1`. Para revocarla, quitar su entrada identificada como `guac-ssh-jnovoas-20261030` de `~jnovoas/.ssh/authorized_keys`.
 - Las identidades SSH están fijadas en `infrastructure/guacamole/ssh_known_hosts`, montado de solo lectura en **guacd**. El archivo incluye las claves RSA, ECDSA y Ed25519 que cada host tiene configuradas; además incluye los certificados Ed25519 presentes en Fenix, Kingu, Hercules y Ocean. Las claves públicas se cotejaron con `/etc/ssh/ssh_host_*_key.pub` y los certificados con los archivos `ssh_host_ed25519_key-cert.pub` de cada host.
 - Los cinco perfiles de infraestructura conceden `READ` y `ADMINISTER` solo a `Guacamole Admins`. No se guarda la contraseña AD en los perfiles.
 
@@ -68,9 +72,48 @@ La primera comprobación de conectividad se hizo desde el contenedor web y no re
 - Para comprobar Nginx en Kingu: `sudo -n nginx -t && sudo -n systemctl reload nginx`.
 - La renovación del certificado queda a cargo de Certbot en Kingu; verificarla con `sudo -n certbot renew --dry-run` en una ventana operativa.
 - Mantener egress y acceso a redes Docker bajo revisión: `guacamole_edge` es no interna para que Docker publique el listener; PostgreSQL permanece en la red interna; guacd usa `guacamole_internal` y la red dedicada `guacamole_ssh_egress`; LDAPS usa su bridge dedicado.
-- Firewall Fenix: revisar `sudo -n firewall-cmd --zone=guac-internal --list-all`, `sudo -n firewall-cmd --zone=guac-edge --list-all` y `sudo -n firewall-cmd --info-policy guac-to-host` / `guac-to-wgmesh`, además de sus equivalentes `--permanent`. `guac-internal` requiere `172.25.0.0/16`, `forward=yes` y `target=DROP`; `guac-edge` requiere `172.26.0.0/16` y `172.27.0.0/16`, `target=DROP`; las políticas SSH deben limitar origen a guacd `172.27.0.2` y destinos/puertos descritos arriba. No sustituir estas zonas por `trusted` ni ampliar sus destinos/puertos sin revisar el flujo.
+- Firewall Fenix: `guac-internal` usa `172.27.0.0/16`, `forward=yes`, `target=DROP`; `guac-edge` usa `172.26.0.0/16` y `172.30.0.0/16`, `target=DROP`. Las políticas SSH limitan el origen a guacd `172.30.0.2` y mantienen únicamente los cinco destinos TCP/4222 descritos. `scripts/configure-guacamole-network.sh runtime` alinea las fuentes/reglas con las subredes efectivas; después del smoke, repetir con `permanent`. Nunca hace reload ni sustituye zonas por `trusted`.
 - Clave dedicada: custodiar `/etc/guacamole/ssh/id_ed25519` en Fenix con permisos `0600`; no copiarla fuera del host ni añadirla al repositorio. Para rotarla, actualizar los perfiles y los cinco `authorized_keys`, verificar sesiones y retirar la clave anterior.
 
 ## Respaldo y trazabilidad
 
 Se conservaron respaldos root-only previos a la intervención en Fenix y Kingu, bajo `/root/guac-deploy-20261030/backup/`. La zona DNS vive en la configuración operativa del servidor DNS autoritativo y no forma parte de este repositorio. El cambio de código se documenta aquí; la nota persistente de Guacamole en la vault complementa la evidencia operativa sin incluir secretos en Git.
+
+## Recuperación tras reasignación de redes — 30/31 de octubre
+
+El operador reportó JavaScript de Next/Turbopack al abrir Guacamole. En la URL
+canónica no se observó esa respuesta: Kingu y el upstream Fenix entregaron HTML
+de Guacamole. Sin embargo, una comprobación real en Chromium encontró fallo en
+el bootstrap de autenticación: PostgreSQL no era alcanzable y la aplicación
+mostraba su pantalla de error. El HTTP200 del HTML no era prueba de funcionamiento.
+
+La recreación anterior de redes había dejado `sentinel_sentinel_internal` en
+`172.25/16`, `guacamole_internal` en `172.27/16` y el egress SSH en `172.30/16`.
+El firewall conservaba la asignación antigua: clasificaba `172.27/16` como
+`guac-edge`, con forward bloqueado. Se alineó la política con las redes actuales,
+sin mover Sentinel ni reiniciar Docker:
+
+- Compose fija ahora explícitamente `guacamole_internal=172.27.0.0/16`;
+  conserva la red SSH ya efectiva `172.30/16` y guacd `172.30.0.2`.
+- Script versionado `scripts/configure-guacamole-network.sh`: migra
+  `172.27/16` a `guac-internal`, añade `172.30/16` a `guac-edge`, retira la
+  asignación obsoleta `172.25/16` y actualiza solo el origen de las reglas
+  TCP/4222 existentes. Aplicado runtime y permanent, sin reload Firewalld.
+- La clave dedicada de Fenix conserva `restrict,pty` y limita su origen a
+  `172.30.0.2`, no a la IP antigua. Respaldo de `authorized_keys` conservado;
+  no se cambió material de clave ni contraseña humana.
+- Validación Compose correcta; no fue necesario recrear ningún contenedor.
+- Chromium cargó la URL canónica con resolución aislada a `64.176.8.191`,
+  conservando hostname/SNI y validación TLS. Formulario visible de Apache
+  Guacamole1.6.0, campos Username/Password; `/api/patches` y `/api/languages`
+  HTTP200; solicitud inicial vacía, con Content-Type de formulario, a
+  `/api/tokens` HTTP403 esperado. Sin fallos de transporte en esa carga.
+- Desde el namespace real de guacd, SSH estricto usando la clave existente
+  y `ssh_known_hosts` completó `/usr/bin/true` con salida0 en Fenix, Kingu,
+  Hercules, Ocean y Marte. No se copiaron secretos.
+
+No se verificó login humano válido ni una sesión gráfica de Guacamole. La
+respuesta Next/Turbopack pegada por el operador no se atribuye a este fallo de
+PostgreSQL sin la URL exacta que la produjo. El resolver local del entorno de
+auditoría continúa sin resolver el dominio; el DNS público consultado sí devuelve
+Kingu. No se cambió DNS global ni se omitió validación TLS.
