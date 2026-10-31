@@ -68,3 +68,51 @@ Los **12/12 identificadores calculados** aparecen en los logs de aceptación de 
 Esto acredita eventos Guardian efectivamente presentes en WAL Marte → token de transporte → aceptación software real en lane A de Cortex Fenix. Un hash u32 no es una identidad global sin colisiones ni una firma criptográfica. No acredita excitación remota no nula: los doce eventos transportan exactamente raw0 y las amplitudes resultantes incluyen el estado previo.
 
 Límite de la sonda coordinada: Main informó que `/usr/bin/true`, PID **225249**, terminó con código 0 pero no apareció en el WAL observado durante **22 s**. No se atribuye a esa sonda ninguna de las filas anteriores ni se declara captura completa de todo `exec`. Se usaron eventos que sí fueron emitidos, no una cadena sintética. `/api/v1/crystal_runtime/status` sin sesión devolvió **401** en el contenedor; frecuencia DTC continúa no medida.
+
+## Continuidad de SHM corregida — 2026-10-31
+
+La limitación de reinicio descrita arriba se corrigió sin cambiar el contrato
+binario del ring. `initialize_fractal_ring` conserva el head publicado al abrir
+un objeto POSIX válido bajo el lock de escritor único. La cabecera desconocida
+se rechaza sin resetear su contador. `PySharedBuffer::load_u64_acquire` comprueba
+mapping abierto, alineación y límites antes de la lectura atómica.
+
+MyCNet limita su cursor a las últimas1024 posiciones retenidas y recupera una
+disminución observada de head. Se reprodujo antes el fallo de overrun: tokens
+1024–1055 en vez de40–71; la regresión pasa con el lector corregido.
+
+Verificación:37 pruebas del workspace MyCNet y5 pruebas seleccionadas de
+CrystalRuntime pasan. Estas últimas prueban reapertura del productor con el
+head publicado conservado, header desconocido, mapping cerrado y las2 pruebas
+anteriores del runtime. No se repitió el fallo TruthSync ni se declara verde la
+suite completa; la compilación mantiene avisos de código no utilizado.
+
+Despliegue Fenix: MyCNet SHA256
+`4a2d1675a6e85e30a7901f149cc5abc264627b8e310269ce581eedfdbd643c0b`;
+Cortex `sentinel-cortex:8ee902e9-shm-continuity-2`, imagen
+`sha256:5392ea57246d58c86487c260124c3869774412675607bae2af8a21b4f1f4a2d1`.
+Entre00:16:12 y00:16:53 UTC se recreó únicamente Cortex, que terminó healthy,
+sin reiniciar MyCNet (PID1759643), Docker global ni Firewalld.
+Backup de entorno: `/etc/sentinel/backend.env.pre-cortex-uplink-20261031T001612Z`;
+el script modificó solo las claves Cortex permitidas.
+
+Tras la recreación: WS101 a00:16:23.122 y token1836041237/raw0 aceptado a
+00:16:23.545. Marte reportó72091 recepciones acumuladas desde Fenix.
+
+Observación continua de180s, con intervalo solicitado de100ms, manteniendo
+abierto el mapping anterior a la recreación:
+
+| Campo | Antes | Después |
+|---|---:|---:|
+| Head publicado | 55908 | 63866 |
+| Envíos MyCNet acumulados | 43550 | 83360 |
+| Inode SHM | 25 | 25 |
+| PID MyCNet | 1759643 | 1759643 |
+
+No se observaron retrocesos de head; fuente conectada al inicio y al final.
+Esto no mide latencia por evento ni acredita frecuencia DTC.
+
+Alcance: cierre/reapertura del mismo objeto SHM, que PySharedBuffer no elimina
+al salir. No cubre unlink/reemplazo manual del objeto, garantía de entrega bajo
+overrun, persistencia al reiniciar el host, reloj distribuido ni medición DTC.
+La corrección no cambia fases, modulación, amplitudes o modo eBPF.

@@ -161,7 +161,7 @@ impl CrystalRuntime {
         let shm_bytes = nodes
             .checked_mul(std::mem::size_of::<IsochronousOscillator>())
             .ok_or_else(|| "crystal SHM size overflow".to_string())?;
-        let (shm_a, shm_b, fractal_seeds_shm) = if create_shm {
+        let (shm_a, shm_b, fractal_seeds_shm, fractal_seed_head) = if create_shm {
             let a = PySharedBuffer::new(LANE_A_SHM.to_string(), shm_bytes, true)
                 .map_err(|e| format!("create {LANE_A_SHM}: {e}"))?;
             let b = PySharedBuffer::new(LANE_B_SHM.to_string(), shm_bytes, true)
@@ -169,20 +169,10 @@ impl CrystalRuntime {
             let seed_bytes = FRACTAL_HEADER_BYTES + FRACTAL_SEEDS_CAPACITY * FRACTAL_SEED_BYTES;
             let seeds = PySharedBuffer::new(FRACTAL_SEEDS_SHM.to_string(), seed_bytes, true)
                 .map_err(|e| format!("create {FRACTAL_SEEDS_SHM}: {e}"))?;
-            seeds
-                .write_native(0, &0x5346_5231_u32.to_le_bytes())
-                .map_err(|e| e.to_string())?;
-            seeds
-                .write_native(4, &1_u32.to_le_bytes())
-                .map_err(|e| e.to_string())?;
-            seeds.store_u64_release(8, 0)?;
-            seeds.store_u64_release(16, 0)?;
-            seeds
-                .write_native(24, &[0_u8; 40])
-                .map_err(|e| e.to_string())?;
-            (Some(a), Some(b), Some(seeds))
+            let head = initialize_fractal_ring(&seeds)?;
+            (Some(a), Some(b), Some(seeds), head)
         } else {
-            (None, None, None)
+            (None, None, None, 0)
         };
 
         let mut runtime = Self {
@@ -202,7 +192,7 @@ impl CrystalRuntime {
             shm_a,
             shm_b,
             fractal_seeds_shm,
-            fractal_seed_head: 0,
+            fractal_seed_head,
             fractal_seeds_published: 0,
             _shm_lock: shm_lock,
             shm_sync_count: 0,
@@ -631,6 +621,25 @@ fn load_snapshot(
     Some(restored)
 }
 
+/// Called only while holding the exclusive CrystalRuntime writer lock.
+/// The POSIX object survives process exit, so readers keep the same mapping.
+fn initialize_fractal_ring(seeds: &PySharedBuffer) -> Result<u64, String> {
+    const SIGNATURE: u64 = (1_u64 << 32) | 0x5346_5231;
+    let signature = seeds.load_u64_acquire(0)?;
+    if signature == SIGNATURE {
+        return seeds.load_u64_acquire(8);
+    }
+    if signature != 0 {
+        return Err("unsupported fractal ring header; refusing to reset published head".into());
+    }
+    seeds.write_native(0, &0x5346_5231_u32.to_le_bytes())?;
+    seeds.write_native(4, &1_u32.to_le_bytes())?;
+    seeds.store_u64_release(8, 0)?;
+    seeds.store_u64_release(16, 0)?;
+    seeds.write_native(24, &[0_u8; 40])?;
+    Ok(0)
+}
+
 fn now_unix_ms() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -665,6 +674,57 @@ fn acquire_shm_writer_lock() -> Result<File, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    struct TestFractalRing {
+        name: String,
+        buffer: PySharedBuffer,
+    }
+
+    impl TestFractalRing {
+        fn new() -> Self {
+            static NEXT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+            let id = NEXT.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+            let name = format!("/sentinel-fractal-test-{}-{id}", std::process::id());
+            let buffer = PySharedBuffer::new(name.clone(),
+                FRACTAL_HEADER_BYTES + FRACTAL_SEEDS_CAPACITY * FRACTAL_SEED_BYTES, true).unwrap();
+            Self { name, buffer }
+        }
+    }
+
+    impl Drop for TestFractalRing {
+        fn drop(&mut self) {
+            self.buffer.unlink();
+        }
+    }
+
+    #[test]
+    fn closed_ring_rejects_reads_without_dereferencing_unmapped_memory() {
+        let mut ring = TestFractalRing::new();
+        ring.buffer.close();
+        assert!(initialize_fractal_ring(&ring.buffer).is_err());
+    }
+
+    #[test]
+    fn restarting_producer_preserves_head_seen_by_existing_mapping() {
+        let ring = TestFractalRing::new();
+        assert_eq!(initialize_fractal_ring(&ring.buffer), Ok(0));
+        ring.buffer.store_u64_release(8, 123_456).unwrap();
+        let restarted = PySharedBuffer::new(ring.name.clone(),
+            FRACTAL_HEADER_BYTES + FRACTAL_SEEDS_CAPACITY * FRACTAL_SEED_BYTES, true).unwrap();
+        let head = initialize_fractal_ring(&restarted).unwrap();
+        assert_eq!(head, 123_456);
+        restarted.store_u64_release(8, head + 1).unwrap();
+        assert_eq!(ring.buffer.load_u64_acquire(8), Ok(123_457));
+    }
+
+    #[test]
+    fn unknown_ring_header_does_not_reset_published_head() {
+        let ring = TestFractalRing::new();
+        ring.buffer.store_u64_release(0, 2_u64 << 32).unwrap();
+        ring.buffer.store_u64_release(8, 123_456).unwrap();
+        assert!(initialize_fractal_ring(&ring.buffer).is_err());
+        assert_eq!(ring.buffer.load_u64_acquire(8), Ok(123_456));
+    }
 
     #[test]
     fn remote_security_preserves_raw_scale_and_only_changes_lane_a() {

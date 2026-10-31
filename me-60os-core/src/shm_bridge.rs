@@ -121,6 +121,27 @@ impl PySharedBuffer {
         Ok(data.len())
     }
 
+    /// Read an aligned u64 published by a shared-memory producer.
+    pub fn load_u64_acquire(&self, offset: usize) -> Result<u64, String> {
+        if self.ptr.is_null() {
+            return Err("SHM mapping is closed".into());
+        }
+        if offset
+            .checked_add(std::mem::size_of::<u64>())
+            .is_none_or(|end| end > self.size)
+        {
+            return Err("atomic SHM read out of bounds".into());
+        }
+        if !offset.is_multiple_of(std::mem::align_of::<std::sync::atomic::AtomicU64>()) {
+            return Err("atomic SHM read is not aligned".into());
+        }
+        // SAFETY: bounds and alignment are validated; the mapping remains alive.
+        unsafe {
+            let ptr = self.ptr.add(offset) as *const std::sync::atomic::AtomicU64;
+            Ok((*ptr).load(std::sync::atomic::Ordering::Acquire))
+        }
+    }
+
     /// Publish an aligned u64 to shared-memory consumers with release ordering.
     pub fn store_u64_release(&self, offset: usize, value: u64) -> Result<(), String> {
         if offset
