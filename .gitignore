@@ -51,3 +51,7 @@ graphify-out/
 .openspec/
 .dsh/
 *.bak*
+
+# Estado de runtime de servicios (no versionar): sesiones, 2FA y notificaciones
+authelia/config/db.sqlite3
+authelia/config/notifications.txt
