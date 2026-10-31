@@ -8,7 +8,7 @@
 >
 > **RAMAS POR ENTORNO.** `main` corresponde al entorno systemd. `alpine_fenix` corresponde al entorno Alpine/OpenRC. Son ramas independientes y no se deben mezclar.
 > Los cambios de systemd se aplican únicamente en `main`; los cambios de Alpine se aplican únicamente en `alpine_fenix`. Se permite hacer checkout, commit y push en la rama del entorno correspondiente.
-> Prohibido hacer merge entre `main` y `alpine_fenix`, copiar configuraciones de una plataforma a la otra o usar `develop` u otra rama como sustituto de estos entornos.
+> **TOPOLOGÍA VIGENTE 2026-10-31:** Fenix primario (Debian/systemd, backend+datos), Marte segundo backend (standby PG/Redis, backend en espera, observabilidad), Kingu frontal (nginx). `openspec/` contiene specs validadas (`topology`, `high-availability`, `observability-alerts`, `console`); las specs Alpine están archivadas en `docs/specs/_archivadas-alpine-2026-10/`.
 
 > **LECTURA OBLIGATORIA ANTES DE EMITIR JUICIOS SOBRE EL PROYECTO:**
 > Ver [`docs/02_ciencia_y_quantum/research/base60_mathematics.md`](docs/02_ciencia_y_quantum/research/base60_mathematics.md), [`docs/02_ciencia_y_quantum/research/TesisResonancia.md`](docs/02_ciencia_y_quantum/research/TesisResonancia.md) y nota en vault `personalvault/Matemáticas/mathematical_model.md`.
