@@ -96,6 +96,22 @@ services:
     mem_limit: 128m
     cpus: 0.5
 
+  blackbox-exporter:
+    image: prom/blackbox-exporter:v0.27.0
+    container_name: sentinel-marte-blackbox-exporter
+    user: "0:0"
+    cap_drop: ["ALL"]
+    cap_add: ["NET_RAW"]
+    command: ["--config.file=/etc/blackbox/blackbox.yml"]
+    volumes:
+      - ./blackbox.yml:/etc/blackbox/blackbox.yml:ro
+    networks:
+      - sentinel_observability
+    read_only: true
+    restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.5
+
   alloy:
     image: grafana/alloy:v1.21.3
     container_name: sentinel-marte-alloy

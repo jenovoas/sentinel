@@ -9,12 +9,28 @@ loki.write "marte" {
   }
 }
 
+loki.relabel "journal_service" {
+  forward_to = []
+  rule {
+    source_labels = ["__journal_syslog_identifier"]
+    regex         = "(.+)"
+    target_label  = "service"
+  }
+  rule {
+    source_labels = ["__journal__systemd_unit"]
+    regex         = "(.+)"
+    target_label  = "service"
+  }
+}
+
 loki.source.journal "marte_systemd" {
   max_age = "24h"
+  relabel_rules = loki.relabel.journal_service.rules
   labels = {
     cluster = "securepenguin",
     node    = "marte",
     job     = "systemd-journal",
+    tenant  = "platform",
   }
   forward_to = [loki.write.marte.receiver]
 }
@@ -25,6 +41,8 @@ local.file_match "marte_audit" {
     cluster  = "securepenguin",
     node     = "marte",
     job      = "auditd",
+    service  = "auditd",
+    tenant   = "platform",
   }]
 }
 

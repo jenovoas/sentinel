@@ -5,7 +5,7 @@
   "tags": ["sentinel", "host", "cpu", "memory", "disk", "network"],
   "timezone": "browser",
   "schemaVersion": 29,
-  "version": 1,
+  "version": 2,
   "refresh": "1m",
   "time": {
     "from": "now-1h",
@@ -19,7 +19,7 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\"}[2m])) * 100)",
+          "expr": "100 - (avg(rate(node_cpu_seconds_total{node=\"fenix\",mode=\"idle\"}[2m])) * 100)",
           "legendFormat": "CPU %",
           "refId": "A"
         }
@@ -48,7 +48,7 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
+          "expr": "(1 - (node_memory_MemAvailable_bytes{node=\"fenix\"} / node_memory_MemTotal_bytes{node=\"fenix\"})) * 100",
           "legendFormat": "RAM %",
           "refId": "A"
         }
@@ -73,16 +73,16 @@
     {
       "id": 3,
       "type": "stat",
-      "title": "RAM Libre (GB)",
+      "title": "RAM Disponible",
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "node_memory_MemAvailable_bytes / (1024 * 1024 * 1024)",
-          "legendFormat": "Disponible GB",
+          "expr": "node_memory_MemAvailable_bytes{node=\"fenix\"}",
+          "legendFormat": "Disponible",
           "refId": "A"
         }
       ],
-      "fieldConfig": { "defaults": { "unit": "decbytes" } },
+      "fieldConfig": { "defaults": { "unit": "bytes" } },
       "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 }
     },
     {
@@ -92,7 +92,7 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "time() - node_boot_time_seconds",
+          "expr": "time() - node_boot_time_seconds{node=\"fenix\"}",
           "legendFormat": "Uptime",
           "refId": "A"
         }
@@ -107,7 +107,7 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "sum by (mode) (rate(node_cpu_seconds_total{mode!=\"idle\"}[2m])) * 100",
+          "expr": "sum by (mode) (rate(node_cpu_seconds_total{node=\"fenix\",mode!=\"idle\"}[2m])) * 100",
           "legendFormat": "{{mode}}",
           "refId": "A"
         }
@@ -122,17 +122,17 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "node_memory_MemTotal_bytes",
+          "expr": "node_memory_MemTotal_bytes{node=\"fenix\"}",
           "legendFormat": "Total",
           "refId": "A"
         },
         {
-          "expr": "node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes",
+          "expr": "node_memory_MemTotal_bytes{node=\"fenix\"} - node_memory_MemAvailable_bytes{node=\"fenix\"}",
           "legendFormat": "Usada",
           "refId": "B"
         },
         {
-          "expr": "node_memory_MemAvailable_bytes",
+          "expr": "node_memory_MemAvailable_bytes{node=\"fenix\"}",
           "legendFormat": "Disponible",
           "refId": "C"
         }
@@ -147,12 +147,12 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "sum(rate(node_disk_read_bytes_total[2m]))",
+          "expr": "sum(rate(node_disk_read_bytes_total{node=\"fenix\"}[2m]))",
           "legendFormat": "Lectura bytes/s",
           "refId": "A"
         },
         {
-          "expr": "sum(rate(node_disk_written_bytes_total[2m]))",
+          "expr": "sum(rate(node_disk_written_bytes_total{node=\"fenix\"}[2m]))",
           "legendFormat": "Escritura bytes/s",
           "refId": "B"
         }
@@ -167,12 +167,12 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "rate(node_network_receive_bytes_total{device!~\"lo|veth.*|br-.*\"}[2m]) * 8",
+          "expr": "rate(node_network_receive_bytes_total{node=\"fenix\",device!~\"lo|veth.*|br-.*\"}[2m]) * 8",
           "legendFormat": "Bajada {{device}}",
           "refId": "A"
         },
         {
-          "expr": "rate(node_network_transmit_bytes_total{device!~\"lo|veth.*|br-.*\"}[2m]) * 8",
+          "expr": "rate(node_network_transmit_bytes_total{node=\"fenix\",device!~\"lo|veth.*|br-.*\"}[2m]) * 8",
           "legendFormat": "Subida {{device}}",
           "refId": "B"
         }
@@ -187,7 +187,7 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "100 - ((node_filesystem_avail_bytes{mountpoint=\"/\"} / node_filesystem_size_bytes{mountpoint=\"/\"}) * 100)",
+          "expr": "100 - ((node_filesystem_avail_bytes{node=\"fenix\",mountpoint=\"/\",fstype!~\"tmpfs|overlay|squashfs\"} / node_filesystem_size_bytes{node=\"fenix\",mountpoint=\"/\",fstype!~\"tmpfs|overlay|squashfs\"}) * 100)",
           "legendFormat": "Raíz /",
           "refId": "A"
         }
@@ -216,7 +216,7 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "sum(rate(node_disk_reads_completed_total[2m]) + rate(node_disk_writes_completed_total[2m]))",
+          "expr": "sum(rate(node_disk_reads_completed_total{node=\"fenix\"}[2m]) + rate(node_disk_writes_completed_total{node=\"fenix\"}[2m]))",
           "legendFormat": "IOPS",
           "refId": "A"
         }
@@ -231,7 +231,7 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "sum(rate(node_network_receive_errs_total[2m]) + rate(node_network_transmit_errs_total[2m]))",
+          "expr": "sum(rate(node_network_receive_errs_total{node=\"fenix\"}[2m]) + rate(node_network_transmit_errs_total{node=\"fenix\"}[2m]))",
           "legendFormat": "Errores/s",
           "refId": "A"
         }

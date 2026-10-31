@@ -2,10 +2,10 @@
   "id": null,
   "uid": "sentinel-containers-and-logs",
   "title": "Sentinel — Logs del Sistema y Auditoría (Loki)",
-  "tags": ["sentinel", "logs", "loki", "syslog", "security", "audit"],
+  "tags": ["sentinel", "logs", "loki", "journal", "security", "audit"],
   "timezone": "browser",
   "schemaVersion": 29,
-  "version": 1,
+  "version": 2,
   "refresh": "1m",
   "time": {
     "from": "now-1h",
@@ -15,12 +15,12 @@
     {
       "id": 1,
       "type": "timeseries",
-      "title": "Tasa de Ingesta de Logs por Archivo (Loki)",
+      "title": "Tasa de Ingesta por Nodo y Servicio (Loki)",
       "datasource": { "type": "loki", "uid": "loki" },
       "targets": [
         {
-          "expr": "sum by (filename) (rate({job=\"syslog\"}[1m]))",
-          "legendFormat": "{{filename}}",
+          "expr": "sum by (node, service) (rate({node=~\"fenix|marte\", job=~\"systemd-journal|docker-container|auditd\"}[1m]))",
+          "legendFormat": "{{node}} {{service}}",
           "refId": "A"
         }
       ],
@@ -30,11 +30,11 @@
     {
       "id": 2,
       "type": "logs",
-      "title": "Logs de Daemons Nativos de Sentinel (/var/log/sentinel/*.log)",
+      "title": "Logs de Servicios Sentinel (journald)",
       "datasource": { "type": "loki", "uid": "loki" },
       "targets": [
         {
-          "expr": "{job=\"syslog\", filename=~\"/var/log/sentinel/.*\"}",
+          "expr": "{node=~\"fenix|marte\", job=\"systemd-journal\", service=~\"sentinel.*\"}",
           "refId": "A"
         }
       ],
@@ -53,7 +53,7 @@
       "datasource": { "type": "loki", "uid": "loki" },
       "targets": [
         {
-          "expr": "{job=\"syslog\"} |~ \"(?i)(sudo|sshd|failed|auth|forbidden|intercept|wal)\"",
+          "expr": "{node=~\"fenix|marte\", job=~\"systemd-journal|auditd\"} |~ \"(?i)(sudo|sshd|failed|auth|forbidden|intercept|wal)\"",
           "refId": "A"
         }
       ],
@@ -68,11 +68,11 @@
     {
       "id": 4,
       "type": "logs",
-      "title": "Stream de Syslog del Sistema (/var/log/messages)",
+      "title": "Logs de Contenedores de Fenix (JSON Docker)",
       "datasource": { "type": "loki", "uid": "loki" },
       "targets": [
         {
-          "expr": "{job=\"syslog\", filename=\"/var/log/messages\"}",
+          "expr": "{node=\"fenix\", job=\"docker-container\"} | json | line_format \"{{.log}}\"",
           "refId": "A"
         }
       ],

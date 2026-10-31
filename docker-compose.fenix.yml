@@ -203,33 +203,25 @@ services:
     image: quay.io/prometheuscommunity/postgres-exporter:v0.15.0
     container_name: sentinel-postgres-exporter
     environment:
-      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER:-sentinel_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-sentinel_db}?sslmode=disable"
+      DATA_SOURCE_URI: "postgres:5432/${POSTGRES_DB:-sentinel_db}?sslmode=disable"
+      DATA_SOURCE_USER: sentinel_monitor
+      DATA_SOURCE_PASS_FILE: /run/secrets/postgres-exporter-password
+    volumes:
+      - /etc/sentinel/monitoring/postgres-exporter-password:/run/secrets/postgres-exporter-password:ro
+    ports:
+      - "${FENIX_WIREGUARD_IP:?Set FENIX_WIREGUARD_IP in /etc/sentinel/backend.env}:9187:9187"
     depends_on:
       postgres:
         condition: service_healthy
     networks:
       - sentinel_internal
+      - monitoring_exposure
     deploy:
       resources:
         limits:
           memory: 64M
     restart: unless-stopped
 
-  redis-exporter:
-    image: docker.io/oliver006/redis_exporter:v1.59.0
-    container_name: sentinel-redis-exporter
-    environment:
-      REDIS_ADDR: "redis://redis:6379"
-      REDIS_PASSWORD: "${REDIS_PASSWORD}"
-    depends_on:
-      - redis
-    networks:
-      - sentinel_internal
-    deploy:
-      resources:
-        limits:
-          memory: 64M
-    restart: unless-stopped
 
   grafana:
     image: docker.io/grafana/grafana:10.4.2
@@ -390,6 +382,8 @@ networks:
   sentinel_internal:
     driver: bridge
     internal: true
+  monitoring_exposure:
+    driver: bridge
   backend_egress:
     driver: bridge
     ipam:

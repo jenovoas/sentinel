@@ -4,7 +4,7 @@ global:
   external_labels:
     cluster: securepenguin
     environment: production
-    node: marte
+    tenant: platform
 
 remote_write:
   - url: http://mimir:9009/api/v1/push
@@ -13,12 +13,41 @@ scrape_configs:
   - job_name: prometheus
     static_configs:
       - targets: ["prometheus:9090"]
+        labels:
+          node: marte
+          rol: obs
+          tenant: platform
 
   - job_name: node-exporter-marte
     static_configs:
       - targets: ["node-exporter:9100"]
         labels:
           node: marte
+          rol: obs
+          tenant: platform
+
+  - job_name: node-exporter-wg
+    static_configs:
+      - targets: ["10.88.0.1:9100"]
+        labels:
+          node: fenix
+          rol: backend
+          tenant: platform
+      - targets: ["10.88.0.2:9100"]
+        labels:
+          node: kingu
+          rol: frontend
+          tenant: platform
+      - targets: ["10.88.0.4:9100"]
+        labels:
+          node: hercules
+          rol: dns
+          tenant: platform
+      - targets: ["10.88.0.5:9100"]
+        labels:
+          node: ocean
+          rol: infraestructura
+          tenant: platform
 
   - job_name: sentinel-fastapi-fenix
     metrics_path: /metrics
@@ -27,6 +56,8 @@ scrape_configs:
         labels:
           node: fenix
           service: sentinel-backend
+          rol: backend
+          tenant: platform
 
   - job_name: sentinel-cortex-fenix
     metrics_path: /metrics
@@ -35,6 +66,18 @@ scrape_configs:
         labels:
           node: fenix
           service: sentinel-cortex
+          rol: backend
+          tenant: platform
+
+  - job_name: sentinel-postgres-fenix
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["10.88.0.1:9187"]
+        labels:
+          node: fenix
+          service: sentinel-postgres
+          rol: backend
+          tenant: platform
 
   - job_name: sentinel-security-gateway-marte
     metrics_path: /metrics
@@ -43,3 +86,38 @@ scrape_configs:
         labels:
           node: marte
           service: sentinel-security-gateway
+          rol: obs
+          tenant: platform
+
+  - job_name: wireguard-icmp
+    metrics_path: /probe
+    params:
+      module: [icmp_ipv4]
+    static_configs:
+      - targets: ["10.88.0.1"]
+        labels:
+          node: fenix
+          tenant: platform
+      - targets: ["10.88.0.2"]
+        labels:
+          node: kingu
+          tenant: platform
+      - targets: ["10.88.0.4"]
+        labels:
+          node: hercules
+          tenant: platform
+      - targets: ["10.88.0.5"]
+        labels:
+          node: ocean
+          tenant: platform
+      - targets: ["10.88.0.6"]
+        labels:
+          node: marte
+          tenant: platform
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115

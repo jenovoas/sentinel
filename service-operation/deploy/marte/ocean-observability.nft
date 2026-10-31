@@ -1,0 +1,2 @@
+# Scrape exclusivo desde Prometheus de Marte por WireGuard.
+add rule inet filter input iifname "wg0" ip saddr 10.88.0.6 ip daddr 10.88.0.5 tcp dport 9100 accept comment "sentinel-observability"

@@ -13,12 +13,28 @@ services:
     volumes:
       - ./alloy-fenix.alloy:/etc/alloy/config.alloy:ro
       - alloy_fenix_data:/var/lib/alloy/data
+      - /etc/machine-id:/etc/machine-id:ro
       - /run/log/journal:/run/log/journal:ro
       - /var/log/journal:/var/log/journal:ro
       - /var/log/audit:/var/log/audit:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
     restart: unless-stopped
     mem_limit: 256m
+    cpus: 0.5
+
+  node-exporter-fenix:
+    image: quay.io/prometheus/node-exporter:v1.12.1
+    container_name: sentinel-fenix-node-exporter
+    pid: host
+    command:
+      - --path.rootfs=/host
+      - --web.listen-address=:9100
+    volumes:
+      - /:/host:ro,rslave
+    ports:
+      - "10.88.0.1:9100:9100"
+    restart: unless-stopped
+    mem_limit: 128m
     cpus: 0.5
 
 volumes:
