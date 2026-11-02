@@ -459,13 +459,6 @@ async fn main() {
                 // Sin Redis ni sintéticos: si el cristal tiene energía, carga;
                 // si está vacío, el decaimiento la lleva a cero honestamente.
                 if let Some(rt) = crystal_status_task.lock().unwrap().runtime.clone() {
-                    tracing::info!(
-                        energy_a = rt.lane_a_energy_raw,
-                        energy_b = rt.lane_b_energy_raw,
-                        nodes = rt.node_count_per_lane,
-                        dtc_ticks = rt.dtc_ticks,
-                        "CRYSTAL ENERGY SAMPLE",
-                    );
                     res.charge_from_crystal_energy(
                         rt.lane_a_energy_raw,
                         rt.lane_b_energy_raw,
