@@ -54,6 +54,84 @@ unsafe fn anchor_shm(name: &str, size: usize) -> (*mut u8, i32) {
     }
     (ptr as *mut u8, fd)
 }
+/// Publica la semilla del cristal central al ring /me60os_fractal_seeds.
+/// Layout idéntico a CrystalRuntime::publish_fractal_seed:
+/// header 64 B (firma 0x53465231 + versión + head/tail) + 1024 slots × 30 B.
+/// mycnetd lo lee vía SentinelFractalBridge sin cambios.
+fn publish_seed_to_ring(lane: &me60os_core::resonant_matrix::ResonantMatrix) {
+    use std::ffi::CString;
+    const RING_NAME: &str = "/me60os_fractal_seeds";
+    const HEADER: usize = 64;
+    const SLOTS: usize = 1024;
+    const SLOT: usize = 32; // HolographicSeedBinary completo, igual que CrystalRuntime
+    let size = HEADER + SLOTS * SLOT;
+    unsafe {
+        let c = CString::new(RING_NAME).expect("nombre shm");
+        let fd = libc::shm_open(c.as_ptr(), libc::O_CREAT | libc::O_RDWR, 0o600);
+        if fd == -1 {
+            return;
+        }
+        if libc::ftruncate(fd, size as i64) == -1 {
+            libc::close(fd);
+            return;
+        }
+        let ptr = libc::mmap(
+            ptr::null_mut(),
+            size,
+            libc::PROT_READ | libc::PROT_WRITE,
+            libc::MAP_SHARED,
+            fd,
+            0,
+        );
+        if ptr == libc::MAP_FAILED {
+            libc::close(fd);
+            return;
+        }
+        let base = ptr as *mut u8;
+        // Header: firma + versión si es nuevo (head se preserva si existe).
+        let sig = std::ptr::read_unaligned(base as *const u32);
+        if sig != 0x5346_5231 {
+            std::ptr::write_unaligned(base as *mut u32, 0x5346_5231u32);
+            std::ptr::write_unaligned(base.add(4) as *mut u32, 1u32);
+            std::ptr::write_unaligned(base.add(8) as *mut u64, 0u64);
+        }
+        let head = std::ptr::read_unaligned(base.add(8) as *const u64);
+        // Semilla del cristal central: amplitud real del lattice local.
+        let center = lane.size() / 2;
+        let amp = lane.get_amplitudes().get(center).map(|a| a.to_raw()).unwrap_or(0);
+        let slot = (head as usize) % SLOTS;
+        let off = HEADER + slot * SLOT;
+        let token = (head as u32).wrapping_add(center as u32);
+        let q = (center as i32) % 37;
+        let r = ((center as i32) / 37) % 37;
+        // Slot 32 B = HolographicSeedBinary (ver s60.rs: token, q, r, s,
+        // amplitude, phase_sector, yhwh_pulse, flags, crc).
+        let mut bytes = [0u8; 32];
+        bytes[0..4].copy_from_slice(&token.to_le_bytes());
+        bytes[4..8].copy_from_slice(&q.to_le_bytes());
+        bytes[8..12].copy_from_slice(&r.to_le_bytes());
+        bytes[12..16].copy_from_slice(&(-q - r).to_le_bytes());
+        bytes[16..24].copy_from_slice(&amp.to_le_bytes());
+        bytes[24] = (amp % 60) as u8; // phase_sector
+        bytes[25] = 10; // yhwh_pulse = QHC YHWH[0]
+        bytes[26..28].copy_from_slice(&1u16.to_le_bytes()); // flags
+        // CRC16-CCITT idéntico a CrystalRuntime::crc16_ccitt y s60::compute_crc16.
+        let mut crc = 0xffffu16;
+        for &b in &bytes[..28] {
+            crc ^= (b as u16) << 8;
+            for _ in 0..8 {
+                crc = if crc & 0x8000 != 0 { (crc << 1) ^ 0x1021 } else { crc << 1 };
+            }
+        }
+        bytes[28..30].copy_from_slice(&crc.to_le_bytes());
+        bytes[30..32].copy_from_slice(&0u16.to_le_bytes()); // padding/reserva
+        std::ptr::copy_nonoverlapping(bytes.as_ptr(), base.add(off), SLOT);
+        std::ptr::write_unaligned(base.add(8) as *mut u64, head.saturating_add(1));
+        libc::munmap(ptr, size);
+        libc::close(fd);
+    }
+}
+
 
 fn main() {
     // Modo productor persistente: --keep deja el SHM anclado para mycnetd.
@@ -188,6 +266,13 @@ fn main() {
             println!("   --keep: SHM persistente para mycnetd (no se desancla).");
         }
     }
+    // RING DE SEMILLAS (multi-nodo): publica una semilla PAI al ring que lee mycnetd.
+    // Layout idéntico a CrystalRuntime: header 64 B + 1024×32 B.
+    // Solo en --keep: en modo demo no se deja rastro.
+    if keep {
+        publish_seed_to_ring(&lane_a);
+    }
+
 
     println!("{:-<72}", "");
     println!("🏆 MEMORIA DE CRISTALES: doble malla + SHM + fractal = RAM extendida y resiliente.");
