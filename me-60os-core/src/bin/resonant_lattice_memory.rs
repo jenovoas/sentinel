@@ -56,6 +56,9 @@ unsafe fn anchor_shm(name: &str, size: usize) -> (*mut u8, i32) {
 }
 
 fn main() {
+    // Modo productor persistente: --keep deja el SHM anclado para mycnetd.
+    // Sin --keep (demo servidor único): crea, verifica, limpia y sale.
+    let keep = std::env::args().any(|a| a == "--keep");
     // DOBLE MALLA — una por lane, cada una anclada a su SHM.
     let mut lane_a = ResonantMatrix::new(N_NODES);
     let mut lane_b = ResonantMatrix::new(N_NODES);
@@ -69,8 +72,8 @@ fn main() {
     let total = crystal_size * N_NODES;
 
     // Anclar ambas mallas a /dev/shm (extensión de RAM por cristal).
-    let (ptr_a, fd_a) = unsafe { anchor_shm("/resonant_lattice_a", total) };
-    let (ptr_b, fd_b) = unsafe { anchor_shm("/resonant_lattice_b", total) };
+    let (ptr_a, fd_a) = unsafe { anchor_shm("/me60os_lattice", total) };
+    let (ptr_b, fd_b) = unsafe { anchor_shm("/me60os_lattice_b", total) };
 
     println!("💎 RESONANT LATTICE MEMORY — DOBLE MALLA + SHM + fractal (S60 puro)");
     println!("   Lane A y B anclados a /dev/shm (RAM extendida por cristal).");
@@ -167,19 +170,23 @@ fn main() {
     unsafe {
         ptr::copy_nonoverlapping(lane_a.crystals.as_ptr() as *const u8, ptr_a, total);
         ptr::copy_nonoverlapping(lane_b.crystals.as_ptr() as *const u8, ptr_b, total);
-        println!("💾 Mallas ancladas a /dev/shm (/resonant_lattice_a, /resonant_lattice_b).");
+        println!("💾 Mallas ancladas a /dev/shm (/me60os_lattice, /me60os_lattice_b).");
         println!(
             "   RAM extendida por cristal: {} bytes/lane fuera del heap del proceso.",
             total
         );
 
-        // Limpieza.
+        // Limpieza solo en modo demo. Con --keep el SHM queda para mycnetd.
         munmap(ptr_a as *mut libc::c_void, total);
         munmap(ptr_b as *mut libc::c_void, total);
         libc::close(fd_a);
         libc::close(fd_b);
-        let _ = shm_unlink(CString::new("/resonant_lattice_a").unwrap().as_ptr());
-        let _ = shm_unlink(CString::new("/resonant_lattice_b").unwrap().as_ptr());
+        if !keep {
+            let _ = shm_unlink(CString::new("/me60os_lattice").unwrap().as_ptr());
+            let _ = shm_unlink(CString::new("/me60os_lattice_b").unwrap().as_ptr());
+        } else {
+            println!("   --keep: SHM persistente para mycnetd (no se desancla).");
+        }
     }
 
     println!("{:-<72}", "");

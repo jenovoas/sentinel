@@ -16,9 +16,11 @@ fn main() {
 
     loop {
         if tick.is_multiple_of(5) {
-            // Read Time Crystal live energy from Cortex local metrics HTTP endpoint
+            // Endpoint parametrizable: CORTEX_METRICS_URL (multi-nodo) o localhost (servidor único).
+            let metrics_url = std::env::var("CORTEX_METRICS_URL")
+                .unwrap_or_else(|_| "http://127.0.0.1:8000/metrics".to_string());
             let crystal_energy_raw: i64 =
-                match reqwest::blocking::get("http://127.0.0.1:8000/metrics") {
+                match reqwest::blocking::get(&metrics_url) {
                     Ok(resp) => resp
                         .text()
                         .ok()
