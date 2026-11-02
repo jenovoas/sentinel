@@ -38,6 +38,19 @@ use std::ptr;
 /// Padding mínimo por entrada (igual que el legacy: 32 * 16 = 512 bytes).
 const MIN_DATA_LEN: usize = 512;
 
+/// Semilla replicable mínima (fase 1 KV distribuida).
+/// Layout compatible con `mycnet_memory::HolographicSeed`:
+/// key + amplitude S60 raw + hash blake3. Sin pyo3, sin dependencias cruzadas.
+#[derive(Debug, Clone)]
+pub struct ReplicableSeed {
+    /// Clave original (bytes).
+    pub key: Vec<u8>,
+    /// Energía total del lattice al replicar (amplitud real medida).
+    pub amplitude_raw: i64,
+    /// Hash blake3 del payload (integridad extremo a extremo).
+    pub hash: [u8; 32],
+}
+
 /// Metadata de una entrada almacenada.
 #[derive(Debug, Clone)]
 pub struct LiquidEntry {
@@ -226,6 +239,21 @@ impl LiquidMemory {
         self.owned_buffers.push(shm);
         Ok(())
     }
+    /// Empaqueta una clave local en semilla replicable (fase 1 KV distribuida).
+    /// Reutiliza metadata + energía medida del lattice. Sin duplicar `store`.
+    pub fn replicate(&self, key: &str) -> Result<ReplicableSeed, String> {
+        let entry = self.file_table.get(key)
+            .ok_or_else(|| format!("clave '{key}' no existe local"))?;
+        // Energía = suma de amplitudes del lattice (estado real medido).
+        let energy: i64 = self.lattice.buffer.lattice.iter()
+            .map(|n| n.amplitude.to_raw()).sum();
+        Ok(ReplicableSeed {
+            key: key.as_bytes().to_vec(),
+            amplitude_raw: energy,
+            hash: entry.hash,
+        })
+    }
+
 
     /// Recupera por clave. Lee del SHM (rápido) y verifica integridad
     /// blake3 contra la metadata. Devuelve None si la clave no existe;
