@@ -29,6 +29,8 @@ pub mod forensic_wal;
 
 // DUAL-GUARDIAN MUTUAL SURVEILLANCE (Claim 3): eBPF Alpha ↔ Cortex Beta
 pub mod mutual_surveillance;
+// JEV DECIDE (TypeSafe AI): decisión tipada barata para SUSPECT, sin LFM local.
+pub mod jev_decide;
 
 #[allow(unused_imports)]
 pub use forensic_wal::{DataLane, ForensicWal, WalAuditReport, WalRecord, WalVerificationError};
