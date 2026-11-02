@@ -9,8 +9,9 @@ members = [
 resolver = "2"
 
 [workspace.lints.clippy]
-float_cmp = "deny"
-cast_precision_loss = "allow"
+float_arithmetic = "forbid"
+float_cmp = "forbid"
+cast_precision_loss = "forbid"
 
 [profile.release]
 opt-level = 3

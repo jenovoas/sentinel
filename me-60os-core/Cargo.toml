@@ -63,9 +63,10 @@ default = []
 extension-module = ["dep:pyo3"]
 
 [lints.clippy]
-float_cmp = "deny"
-cast_possible_truncation = "allow"
-cast_precision_loss = "allow"
+float_arithmetic = "forbid"
+float_cmp = "forbid"
+cast_possible_truncation = "forbid"
+cast_precision_loss = "forbid"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ["cfg(kani)"] }
