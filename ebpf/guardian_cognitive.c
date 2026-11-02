@@ -65,7 +65,11 @@ static __always_inline void emit_exec_event(__u32 event_type, __u8 severity,
   event->cortex.timestamp_ns = bpf_ktime_get_ns();
   event->cortex.event_type = event_type;
   event->cortex.pid = bpf_get_current_pid_tgid() >> 32;
-  event->cortex.entropy_signal = 0;
+  /* Entropía S60 real (2026-11-02): severity × SCALE_0 + dispersión pid%60.
+   * Antes: 0 fijo → lane A recibía cero → coherencia nunca cargaba.
+   * Patrón de float_detector.c (payload×SCALE_0 con fallback a SCALE_0).
+   * +1 evita cero en SEVERITY_LOW; pid%60 dispersa en el hexágono. */
+  event->cortex.entropy_signal = ((__u64)(severity + 1) * S60_SCALE_0) + (event->cortex.pid % 60);
   event->cortex.severity = severity;
   event->cortex.reserved[0] = 0;
   event->cortex.reserved[1] = 0;
