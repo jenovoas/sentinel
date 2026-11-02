@@ -102,8 +102,21 @@ fn publish_seed_to_ring(lane: &me60os_core::resonant_matrix::ResonantMatrix) {
         let slot = (head as usize) % SLOTS;
         let off = HEADER + slot * SLOT;
         let token = (head as u32).wrapping_add(center as u32);
-        let q = (center as i32) % 37;
-        let r = ((center as i32) / 37) % 37;
+        // Mapeo al hexágono receptor radio 3 (idéntico a CrystalRuntime::mycnet_hex_coordinate).
+        // Sin esto, q/r caen fuera del LiquidLattice de mycnetd y la semilla se descarta.
+        let mut offset = center % 37;
+        let (q, r) = {
+            let mut found = (0, 0);
+            'outer: for qq in -3i32..=3 {
+                let r_min = (-3i32).max(-qq - 3);
+                let r_max = 3i32.min(-qq + 3);
+                for rr in r_min..=r_max {
+                    if offset == 0 { found = (qq, rr); break 'outer; }
+                    offset -= 1;
+                }
+            }
+            found
+        };
         // Slot 32 B = HolographicSeedBinary (ver s60.rs: token, q, r, s,
         // amplitude, phase_sector, yhwh_pulse, flags, crc).
         let mut bytes = [0u8; 32];
