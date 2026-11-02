@@ -155,6 +155,10 @@ services:
         published: "${SENTINEL_CORTEX_PORT:-8001}"
         host_ip: ${FENIX_WIREGUARD_IP:?Configura la IP WireGuard de Fenix en .env}
         protocol: tcp
+      - target: 8000
+        published: "${SENTINEL_CORTEX_PORT:-8001}"
+        host_ip: 10.10.0.1
+        protocol: tcp
     volumes:
       - /sys/fs/bpf:/sys/fs/bpf:rw
       - /dev/shm:/dev/shm:rw
