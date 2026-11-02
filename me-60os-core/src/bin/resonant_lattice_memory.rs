@@ -201,10 +201,11 @@ fn main() {
         data
     );
     for (i, ch) in data.chars().enumerate() {
-        let amp = SPA::from_int(ch as i64);
-        lane_a.inject_pai(i, ch as i64, 1);
-        lane_b.inject_pai(i, ch as i64, 1);
-        let _ = amp;
+        // EXP-012 dual-channel: amplitud (byte→PAI) + fase (posición→grados).
+        // Densidad 2×: cada nodo porta energía Y fase desde el primer despliegue.
+        let phase_deg = ((i as i64) * 360) / (data.len().max(1) as i64);
+        lane_a.inject_dual(i, ch as i64, 1, phase_deg);
+        lane_b.inject_dual(i, ch as i64, 1, phase_deg);
     }
 
     // LEER POR FIDELIDAD COLECTIVA DUAL (portal de memoria).

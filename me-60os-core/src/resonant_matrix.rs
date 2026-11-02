@@ -208,6 +208,19 @@ impl ResonantMatrix {
             self.crystals[index].amplitude = self.crystals[index].amplitude + amp;
         }
     }
+    /// Inyección dual-channel EXP-012: amplitud (PAI) + fase (grados 0-359).
+    /// Canal A: `inject_pai` existente. Canal B: shift de fase proporcional.
+    /// Reutiliza la maquinaria, no duplica: la fase entra por `apply_phase_shift`
+    /// localizada al nodo (no global como el QHC).
+    pub fn inject_dual(&mut self, index: usize, value: i64, denominator: u32, phase_deg: i64) {
+        if index >= self.crystals.len() {
+            return;
+        }
+        self.inject_pai(index, value, denominator);
+        let shift = crate::spa::SPA::new(0, (phase_deg.rem_euclid(360)) as i64, 0, 0, 0);
+        self.crystals[index].phase = self.crystals[index].phase + shift;
+    }
+
 
     /// Returns the amplitudes of all nodes.
     pub fn get_amplitudes(&self) -> Vec<SPA> {
