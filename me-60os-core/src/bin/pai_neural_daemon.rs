@@ -19,18 +19,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut memory = NeuralMemory::new();
 
     // 2. Open eBPF Ring Buffer
-    // QA 2026-08-06: el guardian LSM pinea en /sys/fs/bpf/sentinel/events (cargado manual,
-    // hook bprm_check_security vivo). El viejo /sys/fs/bpf/cortex_events ya no existe.
-    // Probamos el pin real primero para no caer en Permission denied del path muerto.
-    let ringbuf_path = if Path::new("/sys/fs/bpf/sentinel/events").exists() {
-        "/sys/fs/bpf/sentinel/events"
-    } else if Path::new("/sys/fs/bpf/cortex_events").exists() {
-        "/sys/fs/bpf/cortex_events"
-    } else {
-        "/sys/fs/bpf/sentinel/events"
-    };
+    // Path por env EBPF_RINGBUF_PATH (multi-nodo: marte usa /sys/fs/bpf/guardian_alpha/events).
+    // Fallback a detección local (fenix: /sys/fs/bpf/sentinel/events).
+    let ringbuf_path = std::env::var("EBPF_RINGBUF_PATH").unwrap_or_else(|_| {
+        for p in ["/sys/fs/bpf/sentinel/events", "/sys/fs/bpf/guardian_alpha/events", "/sys/fs/bpf/cortex_events"] {
+            if Path::new(p).exists() {
+                return p.to_string();
+            }
+        }
+        "/sys/fs/bpf/sentinel/events".to_string()
+    });
 
-    let map = MapHandle::from_pinned_path(ringbuf_path)
+    let map = MapHandle::from_pinned_path(&ringbuf_path)
         .map_err(|e| format!("Failed to open pinned map at {}: {}", ringbuf_path, e))?;
 
     println!("✅ Ring buffer map opened: {}", ringbuf_path);
