@@ -264,6 +264,11 @@ impl HarmonicProcessor {
             tick: 0,
         }
     }
+    /// Vuelve el contexto a la Verdad (3:2). Cada PULSE CHECK parte de la
+    /// referencia, no del veredicto anterior (EXP-002: simpatía, no acumulación).
+    pub fn reset_to_truth(&mut self) {
+        self.context = HarmonicState::logic_true();
+    }
 
     /// Process a new signal.
     /// Returns the LogicState (True/False/Ref) of the integration.

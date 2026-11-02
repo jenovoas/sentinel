@@ -61,6 +61,8 @@ pub struct CrystalRuntimeStatus {
     pub fractal_seeds_published: u64,
     pub dtc_oscillator_active: bool,
     pub dtc_ticks: u64,
+    pub lane_a_energy_raw: i64,
+    pub lane_b_energy_raw: i64,
     pub dtc_tick_interval_ns: u64,
 }
 
@@ -460,6 +462,8 @@ impl CrystalRuntime {
             fractal_seeds_published: self.fractal_seeds_published,
             dtc_oscillator_active: true,
             dtc_ticks: self.dtc_clock.ticks,
+            lane_a_energy_raw: self.lane_a.total_energy().to_raw(),
+            lane_b_energy_raw: self.lane_b.total_energy().to_raw(),
             dtc_tick_interval_ns: self.last_tick_interval_ns,
             dtc_frequency_millihz: 1_000_000_000_000_u64 / self.last_tick_interval_ns,
         }

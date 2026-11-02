@@ -432,6 +432,7 @@ async fn main() {
     let resonance_task = resonance.clone();
     let processor_task = processor.clone();
     let qhc_task = state.qhc.clone();
+    let crystal_status_task = state.crystal_runtime_status.clone();
     tokio::spawn(async move {
         tracing::info!("Resonance Engine active. Syncing to QHC pulse...");
         let start_time = std::time::Instant::now();
@@ -444,22 +445,45 @@ async fn main() {
             }
             last_second = elapsed_secs;
             let local_tick = elapsed_secs;
+            // El tick maestro es el DTC del CrystalRuntime (41 Hz real),
+            // no el socket IPC del qhc_agent (1 Hz). El QHC modula fase,
+            // no genera el reloj. (GAP documentado 2026-10-30.)
+            let dtc_tick_opt = crystal_status_task.lock().unwrap().runtime.clone().map(|rt| rt.dtc_ticks);
             let qhc_tick = qhc_client::live_tick(&qhc_task.lock());
-            let tick = qhc_tick.unwrap_or(local_tick);
+            let tick = dtc_tick_opt.or(qhc_tick).unwrap_or(local_tick);
 
             {
                 let mut res = resonance_task.lock().unwrap();
                 res.tick_entropy();
+                // Fuente real: energía medida del cristal DTC (lanes A+B).
+                // Sin Redis ni sintéticos: si el cristal tiene energía, carga;
+                // si está vacío, el decaimiento la lleva a cero honestamente.
+                if let Some(rt) = crystal_status_task.lock().unwrap().runtime.clone() {
+                    tracing::info!(
+                        energy_a = rt.lane_a_energy_raw,
+                        energy_b = rt.lane_b_energy_raw,
+                        nodes = rt.node_count_per_lane,
+                        dtc_ticks = rt.dtc_ticks,
+                        "CRYSTAL ENERGY SAMPLE",
+                    );
+                    res.charge_from_crystal_energy(
+                        rt.lane_a_energy_raw,
+                        rt.lane_b_energy_raw,
+                        rt.node_count_per_lane,
+                    );
+                }
             }
 
             if tick > 0 && tick.is_multiple_of(17) {
                 let mut res = resonance_task.lock().unwrap();
                 let (valid, coherence) = res.verify_pulse(tick);
+                let coherence_raw = res.get_coherence_raw();
                 tracing::info!(
-                    "PULSE CHECK (T={}): Valid={}, Coherence={:?}, QHC={}",
+                    "PULSE CHECK (T={}): Valid={}, Coherence={:?} raw={}, QHC={}",
                     tick,
                     valid,
                     coherence,
+                    coherence_raw,
                     qhc_tick.is_some()
                 );
 
