@@ -144,6 +144,41 @@ fn publish_seed_to_ring(lane: &me60os_core::resonant_matrix::ResonantMatrix) {
         libc::close(fd);
     }
 }
+/// Serializa amplitudes (raw S60) a gzip+JSON. Formato 180a2a24.
+fn build_snapshot(lane: &me60os_core::resonant_matrix::ResonantMatrix) -> Result<Vec<u8>, String> {
+    use flate2::write::GzEncoder;
+    use flate2::Compression;
+    use std::io::Write;
+    let amps: Vec<i64> = lane.get_amplitudes().iter().map(|a| a.to_raw()).collect();
+    let json = serde_json::json!({ "amplitudes": amps });
+    let mut enc = GzEncoder::new(Vec::new(), Compression::default());
+    enc.write_all(serde_json::to_string(&json).map_err(|e| e.to_string())?.as_bytes())
+        .map_err(|e| e.to_string())?;
+    enc.finish().map_err(|e| e.to_string())
+}
+
+/// Recupera amplitudes desde gzip y las reinyecta. Devuelve conteo.
+fn recover_snapshot(
+    data: &[u8],
+    lane_a: &mut me60os_core::resonant_matrix::ResonantMatrix,
+    lane_b: &mut me60os_core::resonant_matrix::ResonantMatrix,
+) -> Result<String, String> {
+    use flate2::read::GzDecoder;
+    use std::io::Read;
+    let mut dec = GzDecoder::new(data);
+    let mut buf = String::new();
+    dec.read_to_string(&mut buf).map_err(|e| e.to_string())?;
+    let val: serde_json::Value = serde_json::from_str(&buf).map_err(|e| e.to_string())?;
+    let amps: Vec<i64> = serde_json::from_value(val["amplitudes"].clone()).map_err(|e| e.to_string())?;
+    let mut n = 0;
+    for (i, raw) in amps.iter().enumerate() {
+        lane_a.inject_spa(i, me60os_core::spa::SPA::from_raw(*raw));
+        lane_b.inject_spa(i, me60os_core::spa::SPA::from_raw(*raw));
+        n += 1;
+    }
+    Ok(format!("{} amplitudes reinyectadas", n))
+}
+
 
 
 fn main() {
@@ -286,6 +321,23 @@ fn main() {
     if keep {
         publish_seed_to_ring(&lane_a);
     }
+    // SNAPSHOT RESISTENTE A REBOOT (restaurado de 180a2a24): gzip a disco + recovery.
+    // Solo en --keep: persiste amplitudes+contextos; al rearrancar, reinyecta.
+    const SNAP_PATH: &str = "/var/lib/sentinel-lattice/snapshot.crystal.gz";
+    if keep {
+        if let Ok(data) = std::fs::read(SNAP_PATH) {
+            if let Ok(s) = recover_snapshot(&data, &mut lane_a, &mut lane_b) {
+                println!("📂 Snapshot recuperado: {}", s);
+            }
+        }
+        if let Ok(bytes) = build_snapshot(&lane_a) {
+            let _ = std::fs::create_dir_all("/var/lib/sentinel-lattice");
+            if std::fs::write(SNAP_PATH, &bytes).is_ok() {
+                println!("💾 Snapshot guardado: {} ({} B gzip)", SNAP_PATH, bytes.len());
+            }
+        }
+    }
+
 
 
     println!("{:-<72}", "");
