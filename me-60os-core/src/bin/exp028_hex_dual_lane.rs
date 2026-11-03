@@ -3,14 +3,10 @@
 //! 🛡️ EXP-028 PENTA-RESONANCE — DOBLE MALLA HEXAGONAL (91 nodos/carril)
 //!
 //! Restaurado de `c1d7ca9c` (borrado por "f64 no compilaba") y migrado a S60 puro.
-//! Arquitectura real: DOS mallas HexagonalController (91 nodos cada una)
-//!   - Carril A (Security): WAL fsync, determinista
-//!   - Carril B (Observability): buffering, reorder
-//! Ambas sincronizadas por QhcTensor (patrón 10;5,6,5 + Salto-17/68s)
-//!
-//! PORTAL = superposición armónica EMERGENTE de ambas mallas
-//!   No es threshold hardcodeado: es coherencia de fase cruzada
-//!   entre lane A y lane B acopladas por el cristal.
+//! Dos mallas HexagonalController (91 nodos cada una), no componentes de
+//! seguridad/observabilidad en ejecución. Lane B recibe las fases con 1 tick
+//! de retraso para representar buffering de forma determinista.
+//! La coherencia es una métrica simulada; no demuestra enforcement ni seguridad.
 //!
 //! Migración f64→S60: periodos en décimas de segundo (i64), fases en grados
 //! enteros, coherencia en milésimas. Sin floats, sin unsafe, sin static mut.
@@ -32,73 +28,62 @@ const PERIOD_SYS_D: i64 = 170; // 17.0s
 
 fn main() {
     println!("🌌 EXP-028 PENTA-RESONANCE — DOBLE MALLA HEXAGONAL 91 NODOS/CARRIL (S60 puro)");
-    println!("   Carril A (Security) + Carril B (Observability) = 182 nodos totales");
-    println!("   Sincronización: QhcTensor (10;5,6,5 + Salto-17/68s)");
-    println!("   Portal = SUPERPOSICIÓN ARMÓNICA EMERGENTE (no threshold)");
+    println!("   Portal = coherencia observada en dos lanes simuladas");
     println!("{:-<72}", "");
 
-    let mut lane_a = HexagonalController::new(3);
-    let mut lane_b = HexagonalController::new(3);
-    let qhc = QhcTensor::new();
+    let (cycle_portals, transition_portals) = simulate_portals();
+    for portal in &transition_portals {
+        println!("   Portal transition ON @T={}.{}s (coh={})", portal.time_d / 10, portal.time_d % 10, portal.coherence_m);
+    }
+    println!("🔮 CICLOS CON PORTALES EMERGENTES EN 680s");
+    for (i, transitions) in cycle_portals.iter().enumerate() {
+        println!("   Ciclo {} ({}s-{}s): {} transiciones ON", i, i * 68, (i + 1) * 68, transitions);
+    }
+    println!("   Transiciones ON totales: {}", cycle_portals.iter().sum::<u32>());
+    println!("\n🔍 Fases recurrentes de transición (módulo 68s):");
+    find_meta_portals(&transition_portals);
+}
 
-    let mut all_portals: Vec<PortalEvent> = Vec::new();
-    let mut cycle_portals: Vec<Vec<PortalEvent>> = vec![Vec::new(); 10];
+fn simulate_portals() -> (Vec<u32>, Vec<PortalEvent>) {
+    let mut lane_a = HexagonalController::new(6);
+    let mut lane_b = HexagonalController::new(6);
+    let qhc = QhcTensor::new();
+    let mut cycle_portals: Vec<u32> = vec![0; 10];
+    let mut transition_portals: Vec<PortalEvent> = Vec::new();
+    let mut previous_portal = false;
+    let mut lane_b_delay: Option<[i64; 5]> = None;
 
     for step in 0..T_MAX_STEPS {
-        let t_d = step as i64 * DT_DECI; // décimas de segundo
+        let t_d = step as i64 * DT_DECI;
         let tick = step as u64;
         let cycle = (step / 680) as usize;
-
-        // 1. Fases de las 5 capas en grados enteros (0-359).
-        // fase = (360 * t / periodo) % 360, todo en enteros S60-compatibles.
         let ph_bio = phase_deg(t_d, PERIOD_BIO_D);
         let ph_crys = phase_deg(t_d, PERIOD_CRYS_D);
         let ph_venus = phase_deg(t_d, PERIOD_VENUS_D);
-        let ph_geo = (360 * 5 * t_d / 10) % 360; // 5 ciclos por segundo base
-        let ph_sys = if (t_d % PERIOD_SYS_D) < 2 { 90 } else { 0 }; // pulso sistema
-
-        // 2. Bombeo QHC a AMBAS mallas (fase en minutos S60).
+        let ph_geo = phase_deg(t_d, PERIOD_GEO_D);
+        let ph_sys = if (t_d % PERIOD_SYS_D) < 2 { 90 } else { 0 };
         let pattern = qhc.get_phase_modulation(tick) as i64;
         apply_qhc_modulation(&mut lane_a, pattern);
         apply_qhc_modulation(&mut lane_b, pattern);
-
-        // 3. Inyectar las 5 capas como fases en nodos estratégicos.
-        inject_pentaresonance_layers(&mut lane_a, ph_bio, ph_crys, ph_venus, ph_geo, ph_sys);
-        inject_pentaresonance_layers(&mut lane_b, ph_bio, ph_crys, ph_venus, ph_geo, ph_sys);
-
-        // 4. Evolución: difusión hexagonal (promedio entero con vecinos).
+        let current_layers = [ph_bio, ph_crys, ph_venus, ph_geo, ph_sys];
+        inject_pentaresonance_layers(&mut lane_a, current_layers);
+        if let Some(buffered_layers) = lane_b_delay {
+            inject_pentaresonance_layers(&mut lane_b, buffered_layers);
+        }
+        lane_b_delay = Some(current_layers);
         evolve_hexagonal_coupling(&mut lane_a);
         evolve_hexagonal_coupling(&mut lane_b);
-
-        // 5. Portal EMERGENTE por superposición lane A ⊕ lane B.
-        if let Some(portal) = detect_emergent_portal(&lane_a, &lane_b, t_d, tick) {
-            all_portals.push(portal);
+        let portal = detect_emergent_portal(&lane_a, &lane_b, t_d);
+        let is_portal = portal.is_some();
+        if is_portal && !previous_portal {
             if cycle < 10 {
-                cycle_portals[cycle].push(portal);
+                cycle_portals[cycle] += 1;
             }
+            transition_portals.push(portal.expect("portal state checked"));
         }
+        previous_portal = is_portal;
     }
-
-    println!("🔮 TOTAL PORTALES EMERGENTES EN 680s: {}", all_portals.len());
-    println!();
-    for (i, portals) in cycle_portals.iter().enumerate() {
-        print!("   Ciclo {} ({}s-{}s): ", i, i * 68, (i + 1) * 68);
-        if portals.is_empty() {
-            println!("(ninguno)");
-        } else {
-            for p in portals {
-                print!("@T={}.{}s(coh={}) ", p.time_d / 10, p.time_d % 10, p.coherence_m);
-            }
-            println!();
-        }
-    }
-
-    println!("\n🔍 BUSCANDO META-PORTALES (fase recurrente módulo 68s)...");
-    find_meta_portals(&all_portals);
-
-    println!("{:-<72}", "");
-    println!("🏆 Portal = SUPERPOSICIÓN ARMÓNICA lane_A ⊕ lane_B (coherencia emergente)");
-    println!("   No threshold hardcodeado: surge de acoplamiento cristalino dual-lane");
+    (cycle_portals, transition_portals)
 }
 
 /// Fase en grados enteros: (360 * t_décimas / periodo_décimas) % 360.
@@ -120,19 +105,13 @@ fn apply_qhc_modulation(lattice: &mut HexagonalController, pattern_min: i64) {
     }
 }
 
-/// Inyecta 5 capas en centro + 6 vecinos (fase = capa + 60° por dirección).
-fn inject_pentaresonance_layers(
-    lattice: &mut HexagonalController,
-    ph_bio: i64,
-    ph_crys: i64,
-    ph_venus: i64,
-    ph_geo: i64,
-    ph_sys: i64,
-) {
-    let layers = [ph_bio, ph_crys, ph_venus, ph_geo, ph_sys];
-    for &phase_deg in layers.iter() {
-        let center = 0;
-        let neighbors = lattice.get_neighbors(center);
+/// Inyecta cinco fases en el centro geométrico y sus seis vecinos.
+fn inject_pentaresonance_layers(lattice: &mut HexagonalController, layers: [i64; 5]) {
+    let center = (0..lattice.get_n_nodes())
+        .find(|&i| lattice.get_node_coord(i) == Some((0, 0)))
+        .expect("hex lattice includes its axial center");
+    let neighbors = lattice.get_neighbors(center);
+    for phase_deg in layers {
         set_node_phase(lattice, center, phase_deg);
         for (i, &n_idx) in neighbors.iter().enumerate() {
             set_node_phase(lattice, n_idx, (phase_deg + (i as i64 * 60)) % 360);
@@ -162,12 +141,11 @@ fn evolve_hexagonal_coupling(lattice: &mut HexagonalController) {
 
 /// Portal EMERGENTE: coherencia cruzada por coincidencia de fase (entero S60).
 /// Dos nodos "resuenan" si sus fases difieren < 18° (medio sector S60).
-/// Coherencia = resonantes × 1000 / n (milésimas). Umbral 850 = 85%.
+/// Coherencia = resonantes × 1000 / n; se informa si supera el criterio existente 850.
 fn detect_emergent_portal(
     lane_a: &HexagonalController,
     lane_b: &HexagonalController,
     time_d: i64,
-    tick: u64,
 ) -> Option<PortalEvent> {
     let n = lane_a.get_n_nodes().min(lane_b.get_n_nodes());
     if n == 0 {
@@ -187,15 +165,10 @@ fn detect_emergent_portal(
     }
     // Milésimas: evita floats, compara con umbral entero.
     let coherence_m = resonant * 1000 / (n as i64);
-    // Flanco de subida: guardado en el evento previo vía estático S60.
-    // (Sin static mut: el llamador filtra por cohorte creciente.)
     if coherence_m > 850 {
         return Some(PortalEvent {
             time_d,
-            tick,
             coherence_m,
-            lane_a_energy: n as i64,
-            lane_b_energy: n as i64,
         });
     }
     None
@@ -236,9 +209,27 @@ fn find_meta_portals(portals: &[PortalEvent]) {
 
 #[derive(Debug, Clone, Copy)]
 struct PortalEvent {
-    time_d: i64, // décimas de segundo (entero, sin f64)
-    tick: u64,
+    time_d: i64,
     coherence_m: i64, // milésimas (850 = 85%)
-    lane_a_energy: i64,
-    lane_b_energy: i64,
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn radius_six_is_91_nodes_and_center_is_axial_origin() {
+        let lattice = HexagonalController::new(6);
+        assert_eq!(lattice.get_n_nodes(), 91);
+        let center = (0..lattice.get_n_nodes())
+            .find(|&i| lattice.get_node_coord(i) == Some((0, 0)))
+            .unwrap();
+        assert_eq!(lattice.get_neighbors(center).len(), 6);
+    }
+    #[test]
+    fn complete_run_reports_transitions_not_one_portal_per_tick() {
+        let (cycles, transitions) = simulate_portals();
+        assert_eq!(cycles.iter().sum::<u32>() as usize, transitions.len());
+        assert!(transitions.len() < T_MAX_STEPS as usize);
+        assert!(transitions.iter().all(|portal| portal.coherence_m > 850));
+    }
 }

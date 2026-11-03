@@ -349,9 +349,9 @@ async fn forward_event(state: &GatewayState, event: CortexEvent) {
         }
         return;
     }
-    // SUSPECT → Jev decide (sin LFM local). severity HIGH/CRITICAL no bloqueado
-    // por shield = dudoso: consulta barata, ejecuta veredicto, audita en WAL.
-    // Env: JEV_ENDPOINT + JEV_API_KEY. Sin endpoint = pasa directo (compat).
+    // JEV is advisory here: the gateway consumes an already-emitted Guardian event.
+    // Its verdict is recorded and forwarded, never counted as kernel enforcement.
+    let mut jev_verdict = None;
     if event.severity >= 2 {
         if let (Ok(endpoint), Ok(api_key)) = (std::env::var("JEV_ENDPOINT"), std::env::var("JEV_API_KEY")) {
             use sentinel_cortex::security::jev_decide::{ask_jev, JevQuery, JevVerdict};
@@ -370,9 +370,9 @@ async fn forward_event(state: &GatewayState, event: CortexEvent) {
             let _ = state.wal.append(&event_id, "jev_decide",
                 &serde_json::json!({"verdict": format!("{:?}", ans.verdict), "confidence_mille": ans.confidence_mille}).to_string(),
                 DataLane::Security);
+            jev_verdict = Some(format!("{:?}", ans.verdict));
             if ans.verdict == JevVerdict::Deny {
-                state.blocked_total.fetch_add(1, Ordering::Relaxed);
-                return;
+                warn!("JEV advised deny for emitted Guardian event; forwarding for audit");
             }
         }
     }
@@ -393,10 +393,10 @@ async fn forward_event(state: &GatewayState, event: CortexEvent) {
             "pid": event.pid,
             "timestamp_ns": event.timestamp_ns,
             "severity": event.severity,
-            "entropy_s60_raw": event.entropy_s60_raw,
             "sanitized_event": sanitized,
         },
     });
+    let payload = add_jev_verdict(payload, jev_verdict.as_deref());
     let serialized = match serde_json::to_string(&payload) {
         Ok(value) => value,
         Err(error) => {
@@ -442,6 +442,28 @@ async fn forward_event(state: &GatewayState, event: CortexEvent) {
         }
         tokio::time::sleep(delay).await;
         delay = (delay * 2).min(Duration::from_secs(30));
+    }
+}
+fn add_jev_verdict(mut payload: Value, verdict: Option<&str>) -> Value {
+    if let Some(data) = payload.get_mut("data").and_then(Value::as_object_mut) {
+        data.insert("jev_verdict".to_string(), json!(verdict));
+    }
+    payload
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn jev_deny_payload_preserves_emitted_event_and_verdict() {
+        let emitted = json!({
+            "event_type": "syscall",
+            "data": { "guardian_event_type": "EXEC_ALLOWED" }
+        });
+        let forwarded = add_jev_verdict(emitted, Some("Deny"));
+        assert_eq!(forwarded["data"]["guardian_event_type"], "EXEC_ALLOWED");
+        assert_eq!(forwarded["data"]["jev_verdict"], "Deny");
     }
 }
 
