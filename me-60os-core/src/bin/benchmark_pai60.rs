@@ -30,10 +30,10 @@ fn main() {
         }
 
         let duration = start.elapsed();
-        let avg_ns = duration.as_nanos() as f64 / iterations as f64;
+        let avg_ns = duration.as_nanos() / iterations;
 
         println!(
-            "Denominator {:>2}: Total {:>8?} | Avg: {:>8.3} ns",
+            "Denominator {:>2}: Total {:>8?} | Avg: {:>8} ns",
             den, duration, avg_ns
         );
     }

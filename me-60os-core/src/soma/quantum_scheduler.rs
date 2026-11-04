@@ -56,9 +56,8 @@ impl QuantumSchedulerCore {
     }
 
     #[staticmethod]
-    pub fn is_portal_open(time_monotonic_s: f64) -> bool {
-        let t_raw = (time_monotonic_s * SPA::SCALE_0 as f64).round() as i64;
-        let t_norm = t_raw % T_CYCLE_RAW;
+    pub fn is_portal_open(time: SPA) -> bool {
+        let t_norm = time.to_raw().rem_euclid(T_CYCLE_RAW);
         let resonance = Self::phi(SPA::from_raw(t_norm));
         resonance.to_raw() > THETA_RAW
     }
@@ -136,13 +135,13 @@ impl QuantumBuffer {
     }
 
     #[getter]
-    pub fn efficiency(&self) -> f64 {
-        let total = self.stats_portal + self.stats_overflow;
-        if total > 0 {
-            self.stats_portal as f64 / total as f64
-        } else {
-            0.0
+    pub fn efficiency(&self) -> SPA {
+        let total = self.stats_portal.saturating_add(self.stats_overflow);
+        if total == 0 {
+            return SPA::zero();
         }
+        let raw = (self.stats_portal as u128) * SPA::SCALE_0 as u128 / total as u128;
+        SPA::from_raw(i64::try_from(raw).expect("eficiencia SPA fuera de rango"))
     }
 }
 
@@ -150,7 +149,7 @@ impl QuantumBuffer {
 pub struct QuantumSchedulerDaemon {
     buffer: Py<QuantumBuffer>,
     process_fn: Py<PyAny>,
-    dt: f64,
+    dt_ms: u64,
     name: String,
     running: Arc<Mutex<bool>>,
 }
@@ -159,12 +158,12 @@ pub struct QuantumSchedulerDaemon {
 #[pymethods]
 impl QuantumSchedulerDaemon {
     #[new]
-    #[pyo3(signature = (buffer, process_fn, dt=0.1, name="quantum-daemon".to_string()))]
-    pub fn new(buffer: Py<QuantumBuffer>, process_fn: Py<PyAny>, dt: f64, name: String) -> Self {
+    #[pyo3(signature = (buffer, process_fn, dt_ms=100, name="quantum-daemon".to_string()))]
+    pub fn new(buffer: Py<QuantumBuffer>, process_fn: Py<PyAny>, dt_ms: u64, name: String) -> Self {
         Self {
             buffer,
             process_fn,
-            dt,
+            dt_ms,
             name,
             running: Arc::new(Mutex::new(false)),
         }
@@ -177,7 +176,7 @@ impl QuantumSchedulerDaemon {
 
         let running_flag = Arc::clone(&self.running);
         let process_fn = self.process_fn.clone_ref(py);
-        let dt_duration = Duration::from_secs_f64(self.dt);
+        let dt_duration = Duration::from_millis(self.dt_ms);
         let start_time = Instant::now();
         let buffer_ref = self.buffer.clone_ref(py);
 
@@ -193,9 +192,10 @@ impl QuantumSchedulerDaemon {
                     break;
                 }
 
-                let elapsed_s = start_time.elapsed().as_secs_f64();
-                let t_raw = (elapsed_s * SPA::SCALE_0 as f64).round() as i64;
-                let t_norm = t_raw % T_CYCLE_RAW;
+                let elapsed_ns = start_time.elapsed().as_nanos();
+                let t_raw = i64::try_from(elapsed_ns * SPA::SCALE_0 as u128 / 1_000_000_000)
+                    .expect("tiempo monotónico SPA fuera de i64");
+                let t_norm = t_raw.rem_euclid(T_CYCLE_RAW);
                 let resonance = QuantumSchedulerCore::phi(SPA::from_raw(t_norm)).to_raw();
 
                 let portal_open = resonance > THETA_RAW;
@@ -205,7 +205,6 @@ impl QuantumSchedulerDaemon {
                     (buf.size(), buf.is_overflow())
                 });
 
-                // REVIEW: umbrales convertidos a constantes SPA (antes usaba float: 0.90 * SCALE_0 as f64)
                 const THETA_HIGH: i64 = (90 * SPA::SCALE_0) / 100; // 0.90
                 const THETA_MED: i64 = (85 * SPA::SCALE_0) / 100; // 0.85
                 const THETA_LOW: i64 = (80 * SPA::SCALE_0) / 100; // 0.80

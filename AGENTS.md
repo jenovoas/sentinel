@@ -84,6 +84,11 @@ Este proyecto cuenta con soporte de grafo de conocimiento local mediante **graph
 - Distingue preparación local de despliegue realizado; no registres hechos sin evidencia.
 - Antes de adjuntar Guardian/eBPF en Kingu, poblar y verificar la whitelist de ejecutables y rutas críticas. El bootstrap actual la valida y luego adjunta en modo auditoría; requiere recuperación fuera de banda verificada. Enforcement requiere autorización explícita separada.
 
+## 6. Prototipos Python → Rust y preservación del historial
+- Python se usa para prototipar interfaces, algoritmos y features con iteración rápida, bibliotecas disponibles, pruebas y mediciones. Sus archivos conservan la lógica matemática, conectiva y algorítmica, incluidos errores y pasos de diseño útiles para estudio.
+- No modificar, limpiar, reescribir ni actualizar prototipos, wrappers o pruebas Python como efecto colateral de una migración Rust. Consultarlos solo para recuperar la lógica que se va a portar; implementar y validar el runtime en Rust, con pruebas Rust. Modificar Python únicamente por petición explícita del usuario.
+- Estado de SOMA declarado por el usuario (2026-11-03): sigue incompleta y sin desplegar; la implementación final prevista en Rust aún no ha comenzado. No presentar WIP, bindings o pruebas existentes como funcionalidad terminada ni adelantarse a implementarla sin solicitud.
+
 ## Directiva operativa de rigor y evidencia
 
 - No especules ni afirmes datos sin contrastarlos con código fuente, documentación oficial o pruebas técnicas reales. Si no puedes verificarlos, dilo claramente.

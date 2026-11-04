@@ -188,7 +188,7 @@ impl ResonantMatrix {
             None => {
                 if denominator > 0 {
                     let raw = (value as i128 * SPA::SCALE_0 as i128) / (denominator as i128);
-                    SPA::from_raw(raw as i64)
+                    SPA::from_raw(i64::try_from(raw).expect("amplitud PAI fuera de rango"))
                 } else {
                     SPA::from_int(value)
                 }
@@ -217,10 +217,9 @@ impl ResonantMatrix {
             return;
         }
         self.inject_pai(index, value, denominator);
-        let shift = crate::spa::SPA::new(0, (phase_deg.rem_euclid(360)) as i64, 0, 0, 0);
+        let shift = crate::spa::SPA::new(0, phase_deg.rem_euclid(360), 0, 0, 0);
         self.crystals[index].phase = self.crystals[index].phase + shift;
     }
-
 
     /// Returns the amplitudes of all nodes.
     pub fn get_amplitudes(&self) -> Vec<SPA> {
@@ -318,7 +317,8 @@ impl ResonantMatrix {
                 }
 
                 // Signo floor coherente para diffs negativos (división entera).
-                let mean_diff_raw = (diff_sum as i128 / count as i128) as i64;
+                let mean_diff_raw = i64::try_from(i128::from(diff_sum) / i128::from(count))
+                    .expect("diferencia media de fase fuera de rango");
                 new_phases[i] = phases[i] + SPA::from_raw(mean_diff_raw);
             }
 
@@ -425,7 +425,9 @@ impl ResonantMatrix {
         for c in &self.crystals {
             total_phase_val += c.get_phase().to_raw() as i128;
         }
-        let mut mean_phase_val = (total_phase_val / n_nodes as i128) as i64;
+        let node_count = i128::try_from(n_nodes).expect("cantidad de nodos fuera de i128");
+        let mut mean_phase_val =
+            i64::try_from(total_phase_val / node_count).expect("fase media fuera de rango");
 
         // Media circular iterativa (solo enteros, sin float): partimos de la
         // media lineal y entramos el ángulo promediando desvíos envueltos hasta
@@ -435,7 +437,8 @@ impl ResonantMatrix {
             for c in &self.crystals {
                 dev_sum += wrap_signed(c.get_phase().to_raw() - mean_phase_val) as i128;
             }
-            let adjust = (dev_sum / n_nodes as i128) as i64;
+            let adjust =
+                i64::try_from(dev_sum / node_count).expect("ajuste medio de fase fuera de rango");
             if adjust == 0 {
                 break;
             }
@@ -449,13 +452,14 @@ impl ResonantMatrix {
             total_dev_val +=
                 wrap_signed(c.get_phase().to_raw() - mean_phase_val).unsigned_abs() as i128;
         }
-        let mut mean_dev_val = (total_dev_val / n_nodes as i128) as i64;
+        let mut mean_dev_val = i64::try_from(total_dev_val / node_count)
+            .expect("desviación media de fase fuera de rango");
         let max_dev: i64 = 180 * 12_960_000;
         if mean_dev_val > max_dev {
             mean_dev_val = max_dev;
         }
         let coh_val = ((max_dev - mean_dev_val) as i128 * 12_960_000) / max_dev as i128;
-        coh_val as i64
+        i64::try_from(coh_val).expect("coherencia fuera del rango SPA")
     }
 }
 

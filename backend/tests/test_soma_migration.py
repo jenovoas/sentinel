@@ -2,7 +2,6 @@
 # Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 # Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 import sys
-import time
 from pathlib import Path
 
 import pytest
@@ -23,34 +22,40 @@ def test_soma_migration():
     buf.push("event1")
     buf.push("event2")
     print("Buffer size:", buf.size)
-    print("Buffer efficiency:", buf.efficiency)
+    assert buf.efficiency.to_raw() == 0
+    buf.record_portal(3)
+    assert buf.efficiency.to_raw() == 12_960_000
+    buf.record_overflow()
+    assert buf.efficiency.to_raw() == 9_720_000
 
     print("\n=== Testing phi SOMA ===")
-    t_raw = int(round(17.0 * 12_960_000))
-    s60_t = me60os_core.SPA._from_raw(t_raw)
-    phi17 = me60os_core.QuantumSchedulerCore.static_phi(s60_t).to_raw() / 12_960_000.0
-    print("phi(17.0) =", phi17)
-
-    t_raw = int(round(8.5 * 12_960_000))
-    s60_t = me60os_core.SPA._from_raw(t_raw)
-    phi85 = me60os_core.QuantumSchedulerCore.static_phi(s60_t).to_raw() / 12_960_000.0
-    print("phi(8.5) =", phi85)
+    phi17 = me60os_core.QuantumSchedulerCore.static_phi(
+        me60os_core.SPA._from_raw(17 * 12_960_000)
+    ).to_raw()
+    phi85 = me60os_core.QuantumSchedulerCore.static_phi(
+        me60os_core.SPA._from_raw(8 * 12_960_000 + 6_480_000)
+    ).to_raw()
+    assert isinstance(phi17, int)
+    assert isinstance(phi85, int)
+    phase = me60os_core.SPA._from_raw(17 * 12_960_000)
+    assert isinstance(me60os_core.QuantumSchedulerCore.is_portal_open(phase), bool)
+    cycle_later = me60os_core.SPA._from_raw(phase.to_raw() + 68 * 12_960_000)
+    assert me60os_core.QuantumSchedulerCore.is_portal_open(phase) == me60os_core.QuantumSchedulerCore.is_portal_open(cycle_later)
 
     print("\n=== Testing AnomalyDetector SOMA ===")
-    detector = me60os_core.AnomalyDetectorCore(10, 3.0)
-
-    # Send some normal metrics
-    for i in range(10):
+    scale = 12_960_000
+    detector = me60os_core.AnomalyDetectorCore(20, 3 * scale)
+    for _ in range(20):
         detector.analyze_metrics(
-            50.0, 50.0, 1000.0, 30.0, 10, 0, 1000.0, 4000.0
+            (50 * scale, 50 * scale), (1000, 30 * scale), (10, 0), (1_000_000_000, 4_000_000_000)
         )
-    print("Detector finished learning?", not detector.is_learning)
-
-    # Send an anomaly
-    raw_anomalies = detector.analyze_metrics(
-        95.0, 95.0, 5000000.0, 99.0, 80, 10, 3800.0, 4000.0
+    assert not detector.is_learning
+    anomalies = detector.analyze_metrics(
+        (95 * scale, 95 * scale),
+        (5_000_000, 99 * scale),
+        (80, 10),
+        (3_800_000_000, 4_000_000_000),
     )
-
-    print(f"Detected {len(raw_anomalies)} anomalies!")
-    for a in raw_anomalies:
-        print(f"- {a['anomaly_type']} (Severity {a['severity']}): {a['title']}")
+    assert anomalies
+    assert all(isinstance(item["metric_value_raw"], int) for item in anomalies)
+    assert all(isinstance(item["threshold_value_raw"], int) for item in anomalies)

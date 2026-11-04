@@ -35,8 +35,8 @@ fn main() {
     println!("   Buscando alineación de múltiples portales (meta-portales)");
     println!("{:-<72}", "");
 
-    let mut all_portals: Vec<f64> = Vec::new();
-    let mut cycle_portals: Vec<Vec<f64>> = vec![Vec::new(); 10];
+    let mut all_portals: Vec<u32> = Vec::new();
+    let mut cycle_portals: Vec<Vec<u32>> = vec![Vec::new(); 10];
     let mut prev_aligned = false;
 
     for step in 0..t_max_steps {
@@ -69,10 +69,10 @@ fn main() {
         let aligned = ph_bio > threshold && ph_crys > threshold && ph_ven > threshold;
 
         if aligned && !prev_aligned {
-            let t_sec = step as f64 / 10.0;
-            all_portals.push(t_sec);
-            if cycle < 10 {
-                cycle_portals[cycle as usize].push(t_sec);
+            all_portals.push(step);
+            let cycle_index = usize::try_from(cycle).expect("índice de ciclo válido");
+            if cycle_index < cycle_portals.len() {
+                cycle_portals[cycle_index].push(step);
             }
         }
         prev_aligned = aligned;
@@ -88,7 +88,7 @@ fn main() {
             println!("(ninguno)");
         } else {
             for p in portals {
-                print!("T={:.1}s ", p);
+                print!("T={}.{}s ", p / 10, p % 10);
             }
             println!();
         }
@@ -100,7 +100,7 @@ fn main() {
     // Buscar meta-portales: portales que ocurren en tiempos similares módulo 68s
     let mut meta_counts: std::collections::HashMap<u32, u32> = std::collections::HashMap::new();
     for &t in &all_portals {
-        let phase = ((t % 68.0) * 10.0).round() as u32; // discretizar a 0.1s
+        let phase = t % 680;
         *meta_counts.entry(phase).or_insert(0) += 1;
     }
 
@@ -111,8 +111,9 @@ fn main() {
         if *count >= 3 {
             // aparece en 3+ ciclos
             println!(
-                "   ⭐ META-PORTAL @ fase {:.1}s (aparece en {} ciclos)",
-                *phase as f64 / 10.0,
+                "   ⭐ META-PORTAL @ fase {}.{}s (aparece en {} ciclos)",
+                *phase / 10,
+                *phase % 10,
                 count
             );
         }

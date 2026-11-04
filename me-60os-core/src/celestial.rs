@@ -101,17 +101,22 @@ impl SovereignOrbit {
                 eccentricity: SPA::ONE,
                 period: SPA::ZERO,
                 status: OrbitStatus::Escape,
-                epsilon: SPA::from_raw(epsilon_raw as i64),
+                epsilon: SPA::from_raw(
+                    i64::try_from(epsilon_raw).expect("energía orbital fuera de rango"),
+                ),
             };
         }
 
-        let epsilon = SPA::from_raw(epsilon_raw as i64);
+        let epsilon =
+            SPA::from_raw(i64::try_from(epsilon_raw).expect("energía orbital fuera de rango"));
 
         // 2. Semi-eje mayor: a = -mu / (2*epsilon)
         let neg_mu = -mu_raw;
         let two_eps = epsilon_raw * 2;
         let semi_major_axis_raw = neg_mu / two_eps;
-        let semi_major_axis = SPA::from_raw(semi_major_axis_raw as i64);
+        let semi_major_axis = SPA::from_raw(
+            i64::try_from(semi_major_axis_raw).expect("semieje orbital fuera de rango"),
+        );
 
         // 3. Momento angular específico: h = r * v
         let h_raw = r_raw * v_raw;
@@ -127,14 +132,18 @@ impl SovereignOrbit {
         if under_root_raw < 0 {
             under_root_raw = 0; // clamp por error numérico (frontera circular)
         }
-        let eccentricity = SPAMath::sqrt(SPA::from_raw(under_root_raw as i64));
+        let eccentricity = SPAMath::sqrt(SPA::from_raw(
+            i64::try_from(under_root_raw).expect("excentricidad orbital fuera de rango"),
+        ));
 
         // 5. Período: T = 2*pi*sqrt(a³/mu)
         let a_cubed_raw = semi_major_axis_raw * semi_major_axis_raw * semi_major_axis_raw;
         let under_root_t_raw = a_cubed_raw / mu_raw;
         let period = SPA::from_int(2)
             * SPAMath::TWO_PI
-            * SPAMath::sqrt(SPA::from_raw(under_root_t_raw as i64));
+            * SPAMath::sqrt(SPA::from_raw(
+                i64::try_from(under_root_t_raw).expect("período orbital fuera de rango"),
+            ));
 
         // Status
         let status = if eccentricity < SPA::new(0, 1, 0, 0, 0) {

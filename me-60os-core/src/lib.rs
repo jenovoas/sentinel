@@ -2,7 +2,6 @@
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 // 🛡️ ME-60OS CORE LIBRARY - RUST 🛡️
-#![allow(clippy::cast_possible_truncation, clippy::cast_precision_loss)]
 #![deny(clippy::float_cmp)]
 #[cfg(feature = "extension-module")]
 use pyo3::prelude::*;

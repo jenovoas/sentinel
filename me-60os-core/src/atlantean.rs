@@ -106,7 +106,11 @@ impl GpuController {
         let scale_x1000 = ((self.target_latency_msx1000 * 1000) / denom).clamp(500, 1500);
         // new_batch = batch * scale / 1000, entero
         let new_batch = (self.current_batch_size as i64 * scale_x1000) / 1000;
-        let new_batch = new_batch.clamp(self.min_batch as i64, self.max_batch as i64) as usize;
+        let new_batch = usize::try_from(new_batch.clamp(
+            i64::try_from(self.min_batch).expect("min_batch excede i64"),
+            i64::try_from(self.max_batch).expect("max_batch excede i64"),
+        ))
+        .expect("tamaño de lote negativo o fuera de rango");
 
         self.current_batch_size = new_batch;
         self.current_batch_size

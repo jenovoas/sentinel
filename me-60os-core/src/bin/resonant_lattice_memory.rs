@@ -93,10 +93,17 @@ fn publish_seed_to_ring(lane: &me60os_core::resonant_matrix::ResonantMatrix) {
         let head = std::ptr::read_unaligned(base.add(8) as *const u64);
         // Semilla del cristal central: amplitud real del lattice local.
         let center = lane.size() / 2;
-        let amp = lane.get_amplitudes().get(center).map(|a| a.to_raw()).unwrap_or(0);
-        let slot = (head as usize) % SLOTS;
+        let amp = lane
+            .get_amplitudes()
+            .get(center)
+            .map(|a| a.to_raw())
+            .unwrap_or(0);
+        let slots_u64 = u64::try_from(SLOTS).expect("cantidad de slots fuera de u64");
+        let slot = usize::try_from(head % slots_u64).expect("índice de slot fuera de usize");
         let off = HEADER + slot * SLOT;
-        let token = (head as u32).wrapping_add(center as u32);
+        let token = u32::try_from(head & u64::from(u32::MAX))
+            .expect("token fuera de u32")
+            .wrapping_add(u32::try_from(center).expect("centro fuera de u32"));
         // Mapeo al hexágono receptor radio 3 (idéntico a CrystalRuntime::mycnet_hex_coordinate).
         // Sin esto, q/r caen fuera del LiquidLattice de mycnetd y la semilla se descarta.
         let mut offset = center % 37;
@@ -106,7 +113,10 @@ fn publish_seed_to_ring(lane: &me60os_core::resonant_matrix::ResonantMatrix) {
                 let r_min = (-3i32).max(-qq - 3);
                 let r_max = 3i32.min(-qq + 3);
                 for rr in r_min..=r_max {
-                    if offset == 0 { found = (qq, rr); break 'outer; }
+                    if offset == 0 {
+                        found = (qq, rr);
+                        break 'outer;
+                    }
                     offset -= 1;
                 }
             }
@@ -123,12 +133,16 @@ fn publish_seed_to_ring(lane: &me60os_core::resonant_matrix::ResonantMatrix) {
         bytes[24] = (amp % 60) as u8; // phase_sector
         bytes[25] = 10; // yhwh_pulse = QHC YHWH[0]
         bytes[26..28].copy_from_slice(&1u16.to_le_bytes()); // flags
-        // CRC16-CCITT idéntico a CrystalRuntime::crc16_ccitt y s60::compute_crc16.
+                                                            // CRC16-CCITT idéntico a CrystalRuntime::crc16_ccitt y s60::compute_crc16.
         let mut crc = 0xffffu16;
         for &b in &bytes[..28] {
             crc ^= (b as u16) << 8;
             for _ in 0..8 {
-                crc = if crc & 0x8000 != 0 { (crc << 1) ^ 0x1021 } else { crc << 1 };
+                crc = if crc & 0x8000 != 0 {
+                    (crc << 1) ^ 0x1021
+                } else {
+                    crc << 1
+                };
             }
         }
         bytes[28..30].copy_from_slice(&crc.to_le_bytes());
@@ -151,15 +165,22 @@ fn build_snapshot(
         return Err("lane sizes differ".to_string());
     }
     let amplitudes = |lane: &me60os_core::resonant_matrix::ResonantMatrix| {
-        lane.get_amplitudes().iter().map(|a| a.to_raw()).collect::<Vec<_>>()
+        lane.get_amplitudes()
+            .iter()
+            .map(|a| a.to_raw())
+            .collect::<Vec<_>>()
     };
     let json = serde_json::json!({
         "lane_a_amplitudes": amplitudes(lane_a),
         "lane_b_amplitudes": amplitudes(lane_b),
     });
     let mut enc = GzEncoder::new(Vec::new(), Compression::default());
-    enc.write_all(serde_json::to_string(&json).map_err(|e| e.to_string())?.as_bytes())
-        .map_err(|e| e.to_string())?;
+    enc.write_all(
+        serde_json::to_string(&json)
+            .map_err(|e| e.to_string())?
+            .as_bytes(),
+    )
+    .map_err(|e| e.to_string())?;
     enc.finish().map_err(|e| e.to_string())
 }
 /// Atomically replaces the gzip snapshot only after its contents reach disk.
@@ -173,7 +194,10 @@ fn save_snapshot_atomic(path: &std::path::Path, bytes: &[u8]) -> Result<(), Stri
         .filter(|parent| !parent.as_os_str().is_empty())
         .unwrap_or_else(|| std::path::Path::new("."));
     fs::create_dir_all(parent).map_err(|e| e.to_string())?;
-    let file_name = path.file_name().ok_or("snapshot path has no file name")?.to_string_lossy();
+    let file_name = path
+        .file_name()
+        .ok_or("snapshot path has no file name")?
+        .to_string_lossy();
     let nonce = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_err(|e| e.to_string())?
@@ -211,23 +235,20 @@ fn recover_snapshot(
     let mut buf = String::new();
     dec.read_to_string(&mut buf).map_err(|e| e.to_string())?;
     let val: serde_json::Value = serde_json::from_str(&buf).map_err(|e| e.to_string())?;
-    let (amps_a, amps_b): (Vec<i64>, Vec<i64>) =
-        if let (Some(amps_a), Some(amps_b)) =
-            (val.get("lane_a_amplitudes"), val.get("lane_b_amplitudes"))
-        {
-            (
-                serde_json::from_value(amps_a.clone()).map_err(|e| e.to_string())?,
-                serde_json::from_value(amps_b.clone()).map_err(|e| e.to_string())?,
-            )
-        } else if val.get("lane_a_amplitudes").is_none()
-            && val.get("lane_b_amplitudes").is_none()
-        {
-            let legacy: Vec<i64> =
-                serde_json::from_value(val["amplitudes"].clone()).map_err(|e| e.to_string())?;
-            (legacy.clone(), legacy)
-        } else {
-            return Err("snapshot must contain both lane amplitudes".to_string());
-        };
+    let (amps_a, amps_b): (Vec<i64>, Vec<i64>) = if let (Some(amps_a), Some(amps_b)) =
+        (val.get("lane_a_amplitudes"), val.get("lane_b_amplitudes"))
+    {
+        (
+            serde_json::from_value(amps_a.clone()).map_err(|e| e.to_string())?,
+            serde_json::from_value(amps_b.clone()).map_err(|e| e.to_string())?,
+        )
+    } else if val.get("lane_a_amplitudes").is_none() && val.get("lane_b_amplitudes").is_none() {
+        let legacy: Vec<i64> =
+            serde_json::from_value(val["amplitudes"].clone()).map_err(|e| e.to_string())?;
+        (legacy.clone(), legacy)
+    } else {
+        return Err("snapshot must contain both lane amplitudes".to_string());
+    };
     if amps_a.len() != lane_a.size() || amps_b.len() != lane_b.size() {
         return Err("snapshot node count does not match lattice".to_string());
     }
@@ -242,8 +263,6 @@ fn recover_snapshot(
     }
     Ok(format!("{} amplitudes por lane restauradas", amps_a.len()))
 }
-
-
 
 fn main() {
     let keep = std::env::args().any(|arg| arg == "--keep");
@@ -304,7 +323,9 @@ fn main() {
             let phase_shift = qhc.apply_modulation(SPA::zero(), step);
             lane_a.apply_phase_shift(phase_shift);
             lane_b.apply_phase_shift(phase_shift);
-            let pump_node = (step as usize) % lane_a.size();
+            let pump_node =
+                usize::try_from(step % u64::try_from(lane_a.size()).expect("tamaño fuera de u64"))
+                    .expect("índice del nodo fuera de usize");
             lane_a.inject_spa(pump_node, phase_shift);
             lane_b.inject_spa(pump_node, phase_shift);
             lane_a.step();
@@ -319,7 +340,10 @@ fn main() {
     let base_amps_b = lane_b.get_amplitudes();
 
     if !snapshot_restored {
-        println!("📝 Inyectando semilla '{}' (compresión fractal: pocos nodos, malla propaga)", data);
+        println!(
+            "📝 Inyectando semilla '{}' (compresión fractal: pocos nodos, malla propaga)",
+            data
+        );
         for (i, ch) in data.chars().enumerate() {
             let phase_deg = ((i as i64) * 360) / (data.len().max(1) as i64);
             lane_a.inject_dual(i, ch as i64, 1, phase_deg);
@@ -387,15 +411,17 @@ fn main() {
     }
     // Snapshot guards both lanes' raw S60 amplitudes, replacing atomically.
     if keep {
-        match build_snapshot(&lane_a, &lane_b)
-            .and_then(|bytes| save_snapshot_atomic(std::path::Path::new(SNAP_PATH), &bytes).map(|()| bytes))
-        {
-            Ok(bytes) => println!("💾 Snapshot guardado: {} ({} B gzip)", SNAP_PATH, bytes.len()),
+        match build_snapshot(&lane_a, &lane_b).and_then(|bytes| {
+            save_snapshot_atomic(std::path::Path::new(SNAP_PATH), &bytes).map(|()| bytes)
+        }) {
+            Ok(bytes) => println!(
+                "💾 Snapshot guardado: {} ({} B gzip)",
+                SNAP_PATH,
+                bytes.len()
+            ),
             Err(error) => eprintln!("⚠️ Snapshot no guardado: {error}"),
         }
     }
-
-
 
     println!("{:-<72}", "");
     println!("🏁 Two-lane amplitude memory; SHM is volatile and snapshots omit oscillator state.");
@@ -449,9 +475,7 @@ mod tests {
         use std::io::Write;
 
         let mut encoder = GzEncoder::new(Vec::new(), flate2::Compression::default());
-        encoder
-            .write_all(br#"{"amplitudes":[123,456]}"#)
-            .unwrap();
+        encoder.write_all(br#"{"amplitudes":[123,456]}"#).unwrap();
         let legacy = encoder.finish().unwrap();
         let mut lane_a = ResonantMatrix::new(2);
         let mut lane_b = ResonantMatrix::new(2);

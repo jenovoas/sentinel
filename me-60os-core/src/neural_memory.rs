@@ -124,7 +124,13 @@ impl NeuralMemory {
         file.write_all(b"CRYSTAL_SNN_V1\0\0")?;
         file.write_all(&(self.processed as u64).to_le_bytes())?;
         file.write_all(&self.total_spikes.to_le_bytes())?;
-        file.write_all(&(self.neurons.len() as u32).to_le_bytes())?;
+        let neuron_count = u32::try_from(self.neurons.len()).map_err(|_| {
+            std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "demasiadas neuronas para el formato",
+            )
+        })?;
+        file.write_all(&neuron_count.to_le_bytes())?;
 
         for n in &self.neurons {
             file.write_all(&n.v_membrane.to_raw().to_le_bytes())?;
@@ -151,13 +157,23 @@ impl NeuralMemory {
         let mut u32_buf = [0u8; 4];
 
         file.read_exact(&mut u64_buf)?;
-        let processed = u64::from_le_bytes(u64_buf) as usize;
+        let processed = usize::try_from(u64::from_le_bytes(u64_buf)).map_err(|_| {
+            std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                "contador procesado fuera de rango",
+            )
+        })?;
 
         file.read_exact(&mut u64_buf)?;
         let total_spikes = u64::from_le_bytes(u64_buf);
 
         file.read_exact(&mut u32_buf)?;
-        let count = u32::from_le_bytes(u32_buf) as usize;
+        let count = usize::try_from(u32::from_le_bytes(u32_buf)).map_err(|_| {
+            std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                "conteo neuronal fuera de rango",
+            )
+        })?;
 
         let mut neurons = Vec::with_capacity(count);
         for _ in 0..count {

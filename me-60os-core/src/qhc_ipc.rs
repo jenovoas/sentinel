@@ -50,7 +50,8 @@ fn now_unix_ms() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_or(0, |duration| {
-            duration.as_millis().min(u128::from(u64::MAX)) as u64
+            u64::try_from(duration.as_millis().min(u128::from(u64::MAX)))
+                .expect("duración limitada a u64")
         })
 }
 

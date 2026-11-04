@@ -18,6 +18,7 @@
 
 import os
 import sys
+from decimal import Decimal, ROUND_HALF_UP
 
 # Asegurar que el módulo nativo compilado (me60os_core.so) sea encontrado
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -33,14 +34,18 @@ try:
     S60.SCALE_3 = 60        # 60^1
     S60.SCALE_4 = 1         # 60^0
 
-    # Alias para compatibilidad legacy si fuera necesario
-    if not hasattr(S60, "from_decimal_degrees"):
-        if hasattr(S60, "from_decimal_degrees_FOR_IMPORT_ONLY"):
-            S60.from_decimal_degrees = S60.from_decimal_degrees_FOR_IMPORT_ONLY
-        elif hasattr(S60, "from_decimal_for_import_only"):
-            S60.from_decimal_degrees = S60.from_decimal_for_import_only
-        else:
-            S60.from_decimal_degrees = staticmethod(lambda deg: S60._from_raw(int(round(float(deg) * 12960000))))
+    def from_decimal_degrees_for_import_only(value):
+        raw = int(
+            (Decimal(str(value)) * Decimal(S60.SCALE_0)).to_integral_value(
+                rounding=ROUND_HALF_UP
+            )
+        )
+        return S60._from_raw(raw)
+
+    S60.from_decimal_degrees = staticmethod(from_decimal_degrees_for_import_only)
+    S60.from_decimal_degrees_FOR_IMPORT_ONLY = staticmethod(
+        from_decimal_degrees_for_import_only
+    )
 except ImportError as e:
     raise ImportError(f"No se pudo importar la librería nativa Rust me60os_core.so: {e}") from e
 

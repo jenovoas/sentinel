@@ -19,26 +19,27 @@ fn main() {
             // Endpoint parametrizable: CORTEX_METRICS_URL (multi-nodo) o localhost (servidor único).
             let metrics_url = std::env::var("CORTEX_METRICS_URL")
                 .unwrap_or_else(|_| "http://127.0.0.1:8000/metrics".to_string());
-            let crystal_energy_raw: i64 =
-                match reqwest::blocking::get(&metrics_url) {
-                    Ok(resp) => resp
-                        .text()
-                        .ok()
-                        .and_then(|body| {
-                            body.lines()
-                                .find(|l| l.starts_with("sentinel_lattice_total_energy"))
-                                .and_then(|l| {
-                                    l.split_whitespace()
-                                        .nth(1)
-                                        .and_then(|v| v.parse::<i64>().ok())
-                                })
-                        })
-                        .unwrap_or(0),
-                    Err(_) => 0,
-                };
+            let crystal_energy_raw: i64 = match reqwest::blocking::get(&metrics_url) {
+                Ok(resp) => resp
+                    .text()
+                    .ok()
+                    .and_then(|body| {
+                        body.lines()
+                            .find(|l| l.starts_with("sentinel_lattice_total_energy"))
+                            .and_then(|l| {
+                                l.split_whitespace()
+                                    .nth(1)
+                                    .and_then(|v| v.parse::<i64>().ok())
+                            })
+                    })
+                    .unwrap_or(0),
+                Err(_) => 0,
+            };
 
             // Apply Salto 17 stabilization & Time-Crystal Coupled Dynamic Encryption Key Rotation
-            let rift_center = (tick as usize * 17) % controller.n_nodes;
+            let node_count = u128::try_from(controller.n_nodes).expect("nodos fuera de u128");
+            let rift_center = usize::try_from((u128::from(tick) * 17) % node_count)
+                .expect("índice de rift fuera de usize");
             let dynamic_key = controller.compute_crystal_coupled_key(crystal_energy_raw, tick);
             let (_status_code, _coherence, affected) = controller
                 .control_rift_propagation(rift_center)

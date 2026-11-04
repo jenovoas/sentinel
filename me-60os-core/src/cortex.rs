@@ -32,7 +32,9 @@ impl CortexEngine {
 
     pub fn process_thought(&mut self, input_val: i64, _dt_seconds: i64) -> i64 {
         // Inyectar presión en el lattice fonónico principal y avanzar un paso
-        let target_node = (input_val.unsigned_abs() as usize) % self.neurons;
+        let neuron_count = u64::try_from(self.neurons).expect("cantidad de neuronas excede u64");
+        let target_node = usize::try_from(input_val.unsigned_abs() % neuron_count)
+            .expect("índice neuronal fuera del rango de usize");
         self.lattice.inject(target_node, input_val);
         self.lattice.step();
         self.total_energy = self.lattice.total_energy();
@@ -47,7 +49,10 @@ impl CortexEngine {
         let mut processed = 0i64;
         while let Some(event) = self.buffer.pop() {
             let raw_val = event.entropy_signal as i64;
-            let target_node = (raw_val.unsigned_abs() as usize) % self.neurons;
+            let neuron_count =
+                u64::try_from(self.neurons).expect("cantidad de neuronas excede u64");
+            let target_node = usize::try_from(raw_val.unsigned_abs() % neuron_count)
+                .expect("índice neuronal fuera del rango de usize");
             // FIX (auditoría 2026-08-23, P0.4-A2): raw_val es SPA raw del evento
             // eBPF ("SPA raw value", ebpf_cortex_bridge.rs:68); inject() lo
             // interpretaria como unidades y lo re-escalaria por SCALE_0.

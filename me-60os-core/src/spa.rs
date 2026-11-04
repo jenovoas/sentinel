@@ -25,12 +25,14 @@ use pyo3::prelude::*;
 )]
 pub enum SPAError {
     DivisionByZero,
+    Overflow,
 }
 
 impl std::fmt::Display for SPAError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             SPAError::DivisionByZero => write!(f, "SPA Division by zero"),
+            SPAError::Overflow => write!(f, "SPA arithmetic overflow"),
         }
     }
 }
@@ -125,10 +127,6 @@ impl SPA {
     pub fn to_legacy_tertia(&self) -> i64 {
         self.to_raw() / 60
     }
-    pub fn from_decimal_for_import_only(decimal: f64) -> Self {
-        let raw = (decimal * Self::SCALE_0 as f64).round() as i64;
-        Self::from_raw(raw)
-    }
 }
 
 // --- ARITHMETIC ---
@@ -172,7 +170,8 @@ impl Mul for SPA {
     fn mul(self, other: Self) -> Self {
         let v1 = self.to_raw() as i128;
         let v2 = other.to_raw() as i128;
-        Self::from_raw(((v1 * v2) / Self::SCALE_0 as i128) as i64)
+        let raw = (v1 * v2) / i128::from(Self::SCALE_0);
+        Self::from_raw(i64::try_from(raw).unwrap_or(if raw < 0 { i64::MIN } else { i64::MAX }))
     }
 }
 
@@ -194,7 +193,8 @@ impl Div for SPA {
             panic!("SPA Division by zero");
         }
         let v1 = self.to_raw() as i128;
-        Self::from_raw(((v1 * Self::SCALE_0 as i128) / v2 as i128) as i64)
+        let raw = (v1 * i128::from(Self::SCALE_0)) / i128::from(v2);
+        Self::from_raw(i64::try_from(raw).unwrap_or(if raw < 0 { i64::MIN } else { i64::MAX }))
     }
 }
 
@@ -205,9 +205,9 @@ impl SPA {
             return Err(SPAError::DivisionByZero);
         }
         let v1 = self.to_raw() as i128;
-        Ok(Self::from_raw(
-            ((v1 * Self::SCALE_0 as i128) / v2 as i128) as i64,
-        ))
+        let raw = i64::try_from((v1 * Self::SCALE_0 as i128) / v2 as i128)
+            .map_err(|_| SPAError::Overflow)?;
+        Ok(Self::from_raw(raw))
     }
 }
 
@@ -274,27 +274,25 @@ impl SPA {
     pub fn __richcmp__(&self, other: &SPA, op: pyo3::class::basic::CompareOp) -> bool {
         use std::cmp::Ordering;
 
-        match (self.to_raw().cmp(&other.to_raw()), op) {
+        matches!(
+            (self.to_raw().cmp(&other.to_raw()), op),
             (
                 Ordering::Less,
                 pyo3::class::basic::CompareOp::Lt
-                | pyo3::class::basic::CompareOp::Le
-                | pyo3::class::basic::CompareOp::Ne,
-            ) => true,
-            (
+                    | pyo3::class::basic::CompareOp::Le
+                    | pyo3::class::basic::CompareOp::Ne
+            ) | (
                 Ordering::Equal,
                 pyo3::class::basic::CompareOp::Eq
-                | pyo3::class::basic::CompareOp::Le
-                | pyo3::class::basic::CompareOp::Ge,
-            ) => true,
-            (
+                    | pyo3::class::basic::CompareOp::Le
+                    | pyo3::class::basic::CompareOp::Ge
+            ) | (
                 Ordering::Greater,
                 pyo3::class::basic::CompareOp::Gt
-                | pyo3::class::basic::CompareOp::Ge
-                | pyo3::class::basic::CompareOp::Ne,
-            ) => true,
-            _ => false,
-        }
+                    | pyo3::class::basic::CompareOp::Ge
+                    | pyo3::class::basic::CompareOp::Ne
+            )
+        )
     }
 
     #[getter(_value)]
@@ -340,9 +338,11 @@ impl SPA {
 
         // Compute directly to avoid trait Result vs SPA confusion here
         let v1 = self.to_raw() as i128;
-        Ok(Self::from_raw(
-            ((v1 * Self::SCALE_0 as i128) / divisor_raw as i128) as i64,
-        ))
+        let raw =
+            i64::try_from((v1 * Self::SCALE_0 as i128) / divisor_raw as i128).map_err(|_| {
+                pyo3::exceptions::PyOverflowError::new_err("resultado SPA fuera de rango")
+            })?;
+        Ok(Self::from_raw(raw))
     }
 
     pub fn __neg__(&self) -> Self {
@@ -355,17 +355,5 @@ impl SPA {
     #[pyo3(name = "to_raw")]
     pub fn py_to_raw(&self) -> i64 {
         self.to_raw()
-    }
-
-    #[staticmethod]
-    #[pyo3(name = "from_decimal_for_import_only")]
-    pub fn py_from_decimal_for_import_only(decimal: f64) -> Self {
-        Self::from_decimal_for_import_only(decimal)
-    }
-
-    #[staticmethod]
-    #[pyo3(name = "from_decimal_degrees_FOR_IMPORT_ONLY")]
-    pub fn py_from_decimal_degrees_for_import_only(degrees: f64) -> Self {
-        Self::from_decimal_for_import_only(degrees)
     }
 }

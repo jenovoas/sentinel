@@ -100,9 +100,10 @@ fn main() {
     eprintln!("Target sigma (raw): {}", target_raw);
     eprintln!("Final flux (raw): {}", stabilizer.current_flux.to_raw());
     eprintln!(
-        "Drift final (raw): {} (|{:.2}%|)",
+        "Drift final (raw): {} (|{}.{:02}%|)",
         final_drift,
-        (final_drift as f64 / target_raw as f64) * 100.0
+        (i128::from(final_drift) * 10_000 / i128::from(target_raw)) / 100,
+        (i128::from(final_drift) * 10_000 / i128::from(target_raw)) % 100
     );
     eprintln!("Drift máximo (raw): {}", max_drift);
     eprintln!("Drift promedio (raw): {}", avg_drift);

@@ -13,12 +13,11 @@ use me60os_core::spa::SPA;
 use std::thread;
 use std::time::{Duration, Instant};
 
-fn cpu_temp() -> f64 {
+fn cpu_temp_millicelsius() -> i64 {
     std::fs::read_to_string("/sys/class/thermal/thermal_zone0/temp")
         .ok()
-        .and_then(|s| s.trim().parse::<f64>().ok())
-        .map(|c| c / 1000.0)
-        .unwrap_or(-1.0)
+        .and_then(|value| value.trim().parse::<i64>().ok())
+        .unwrap_or(-1000)
 }
 
 fn cpu_busy_total() -> (u64, u64) {
@@ -47,7 +46,8 @@ fn crystal_latency(
     lattice: &mut Option<ResonantMatrix>,
 ) {
     let mut clock = IsochronousClock::new_internal();
-    let mut intervals: Vec<u64> = Vec::with_capacity(ticks as usize);
+    let mut intervals: Vec<u64> =
+        Vec::with_capacity(usize::try_from(ticks).expect("ticks fuera de usize"));
     let mut last = Instant::now();
 
     for _ in 0..ticks {
@@ -56,20 +56,23 @@ fn crystal_latency(
         // Si hay PID + lattice, inyectar corrección no-Markoviana
         if let (Some(p), Some(l)) = (pid.as_mut(), lattice.as_mut()) {
             let lattice_errors: Vec<i64> = l.get_phases().iter().map(|ph| ph.to_raw()).collect();
-            let measured_raw = clock.ticks as i64;
+            let measured_raw = i64::try_from(clock.ticks).expect("tick fuera de i64");
             let dt_raw = 1; // 1 tick
             let _ = p.update_with_history_internal(measured_raw, dt_raw, lattice_errors);
         }
 
         let now = Instant::now();
-        intervals.push(now.duration_since(last).as_nanos() as u64);
+        intervals.push(
+            u64::try_from(now.duration_since(last).as_nanos()).expect("intervalo fuera de u64"),
+        );
         last = now;
     }
 
     intervals.sort_unstable();
     let min = intervals.first().copied().unwrap_or(0);
     let max = intervals.last().copied().unwrap_or(0);
-    let avg = intervals.iter().sum::<u64>() / intervals.len() as u64;
+    let avg =
+        intervals.iter().sum::<u64>() / u64::try_from(intervals.len()).expect("muestra vacía");
     let p99 = intervals[(intervals.len() * 99 / 100).min(intervals.len() - 1)];
 
     println!(
@@ -92,19 +95,19 @@ fn crystal_drift(
 
         if let (Some(p), Some(l)) = (pid.as_mut(), lattice.as_mut()) {
             let lattice_errors: Vec<i64> = l.get_phases().iter().map(|ph| ph.to_raw()).collect();
-            let measured_raw = clock.ticks as i64;
+            let measured_raw = i64::try_from(clock.ticks).expect("tick fuera de i64");
             let dt_raw = 1;
             let _ = p.update_with_history_internal(measured_raw, dt_raw, lattice_errors);
         }
     }
 
-    let elapsed = start.elapsed().as_nanos() as i128;
-    let expected = ticks as i128 * clock.tick_interval_ns as i128;
-    let drift = (elapsed - expected).abs();
-    let ppm = (drift as f64 / expected as f64) * 1_000_000.0;
+    let elapsed = start.elapsed().as_nanos();
+    let expected = u128::from(ticks) * u128::from(clock.tick_interval_ns);
+    let drift = elapsed.abs_diff(expected);
+    let ppm = drift * 1_000_000 / expected.max(1);
 
     println!(
-        "[{}] crystal drift {} ticks: elapsed={}ns expected={}ns drift={}ns ({:.2} ppm)",
+        "[{}] crystal drift {} ticks: elapsed={}ns expected={}ns drift={}ns ({} ppm)",
         phase, ticks, elapsed, expected, drift, ppm
     );
 }
@@ -114,25 +117,36 @@ fn lattice_io(phase: &str, ops: u64) {
     let mut lattice = ResonantMatrix::new(n);
     let start = Instant::now();
     for i in 0..ops {
-        lattice.inject((i as usize) % n, ((i % 1000) as i64) - 500);
+        let node = usize::try_from(i % u64::try_from(n).expect("nodos fuera de u64"))
+            .expect("índice fuera de usize");
+        lattice.inject(
+            node,
+            i64::try_from(i % 1000).expect("valor fuera de i64") - 500,
+        );
         let _e: SPA = lattice.total_energy();
     }
     let elapsed = start.elapsed().as_nanos();
     let per_op = elapsed / (ops as u128).max(1);
     println!(
-        "[{}] lattice I/O: {} ops en {}ns => {} ns/op (~{:.1} ops/ms)",
+        "[{}] lattice I/O: {} ops en {}ns => {} ns/op (~{} ops/ms)",
         phase,
         ops,
         elapsed,
         per_op,
-        (ops as f64) / elapsed as f64 * 1e6
+        u128::from(ops) * 1_000_000 / elapsed.max(1)
     );
 }
 
 fn run_phase(phase: &str, use_kernel: bool, ticks: u64) {
     println!("\n=== FASE: {} (kernel={}) ===", phase, use_kernel);
     let (b0, t0) = cpu_busy_total();
-    println!("[{}] temp_inicial={:.2}C", phase, cpu_temp());
+    let initial_temp = cpu_temp_millicelsius();
+    println!(
+        "[{}] temp_inicial={}.{:03}C",
+        phase,
+        initial_temp / 1000,
+        initial_temp.abs() % 1000
+    );
 
     let mut pid = None;
     let mut lattice = None;
@@ -151,14 +165,17 @@ fn run_phase(phase: &str, use_kernel: bool, ticks: u64) {
     lattice_io(phase, 50_000);
 
     let (b1, t1) = cpu_busy_total();
-    let busy = (b1 as i128 - b0 as i128).max(0) as u64;
-    let tot = (t1 as i128 - t0 as i128).max(1) as u64;
-    let cpu_pct = (busy as f64 / tot as f64) * 100.0;
+    let busy = b1.saturating_sub(b0);
+    let total = t1.saturating_sub(t0).max(1);
+    let cpu_tenths_pct = u128::from(busy) * 1000 / u128::from(total);
+    let final_temp = cpu_temp_millicelsius();
     println!(
-        "[{}] cpu_sistema_durante_bench={:.1}% temp_final={:.2}C",
+        "[{}] cpu_sistema_durante_bench={}.{}% temp_final={}.{:03}C",
         phase,
-        cpu_pct,
-        cpu_temp()
+        cpu_tenths_pct / 10,
+        cpu_tenths_pct % 10,
+        final_temp / 1000,
+        final_temp.abs() % 1000
     );
 }
 

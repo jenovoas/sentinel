@@ -127,7 +127,7 @@ impl BCISystem {
             // Normal load modulation
             // Map SPA range [0, 0.5] to [0, 255] byte
             let scalar = state_raw / (SPA::SCALE_0 / 512);
-            let val = (scalar.min(255)) as u8;
+            let val = u8::try_from(scalar.clamp(0, 255)).expect("valor BCI acotado a byte");
             self.send_command(0x03, val);
         }
     }

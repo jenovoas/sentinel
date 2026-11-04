@@ -26,13 +26,13 @@ fn main() {
     );
     println!("{:-<72}", "");
 
-    // ---------- CAMINO A: FLOAT (CPU binaria, acumulación en FPU) ----------
+    // ---------- CAMINO A: acumulación racional entera en escala SPA ----------
     let t0 = Instant::now();
-    let mut float_sum: f64 = 0.0;
+    let mut direct_sum_raw = 0i128;
     for i in 0..N_SAMPLES {
-        let numer = ((i % 12) + 1) as f64;
-        let denom = DENOMS[i % DENOMS.len()] as f64;
-        float_sum += numer / denom;
+        let numer = i128::try_from((i % 12) + 1).expect("numerador fuera de i128");
+        let denom = i128::from(DENOMS[i % DENOMS.len()]);
+        direct_sum_raw += numer * i128::from(SPA::SCALE_0) / denom;
     }
     let dt_a = t0.elapsed();
 
@@ -44,7 +44,7 @@ fn main() {
     let mut ticks_count = 0u64;
 
     for i in 0..N_SAMPLES {
-        let numer = ((i % 12) + 1) as i64;
+        let numer = i64::try_from((i % 12) + 1).expect("numerador fuera de i64");
         let denom = DENOMS[i % DENOMS.len()];
 
         if let Some(amp) = pai60_divide(SPA::from_int(numer), denom) {
@@ -64,49 +64,44 @@ fn main() {
     let lattice_total_energy = lattice.total_energy();
 
     // ---------- MEDICIÓN DINÁMICA Y RESPIRACIÓN DE CRISTAL ----------
-    let pai_as_f64 = pai_sum_exact.to_raw() as f64 / SPA::SCALE_0 as f64;
-    let lattice_as_f64 = lattice_total_energy.to_raw() as f64 / SPA::SCALE_0 as f64;
-
-    // Deriva entre el acumulado float y el valor S60 exacto antes de disipación
-    let raw_diff = (float_sum - pai_as_f64).abs();
-    let raw_diff_ppm = if pai_as_f64 != 0.0 {
-        (raw_diff / pai_as_f64) * 1_000_000.0
+    let pai_raw = i128::from(pai_sum_exact.to_raw());
+    let lattice_raw = i128::from(lattice_total_energy.to_raw());
+    let difference_raw = (direct_sum_raw - pai_raw).abs();
+    let drift_ppm = if pai_raw == 0 {
+        0
     } else {
-        0.0
+        difference_raw * 1_000_000 / pai_raw.abs()
     };
-
-    // Tasa de transferencia y respiración en el lattice tras ticks
-    let retention_ratio = if pai_as_f64 > 0.0 {
-        (lattice_as_f64 / pai_as_f64) * 100.0
+    let retention_percent_x100 = if pai_raw <= 0 {
+        0
     } else {
-        0.0
+        lattice_raw.max(0) * 10_000 / pai_raw
     };
 
     println!(
-        "CAMINO A (FPU Float):       {:>8.3?} | suma={:.6}",
-        dt_a, float_sum
+        "CAMINO A (acumulación entera): {:?} | suma raw={direct_sum_raw}",
+        dt_a
     );
     println!(
-        "CAMINO B (PAI Exacto S60):  {:>8.3?} | suma={:.6} (raw {})",
+        "CAMINO B (PAI Exacto S60):  {:?} | suma raw={}",
         dt_b,
-        pai_as_f64,
         pai_sum_exact.to_raw()
     );
     println!(
-        "LATTICE ENERGÍA (dinámica): {:>8.3?} | energía={:.6} (raw {})",
+        "LATTICE ENERGÍA (dinámica): {:?} | energía raw={}",
         dt_b,
-        lattice_as_f64,
         lattice_total_energy.to_raw()
     );
     println!("{:-<72}", "");
-    println!("📉 Deriva FPU acumulación:   {:.6} ppm", raw_diff_ppm);
+    println!("📉 Diferencia entera:        {drift_ppm} ppm");
     println!(
         "💎 Ticks de respiración:     {} ticks ejecutados en la mallas",
         ticks_count
     );
     println!(
-        "🌀 Retención de la Lattice:  {:.2}% de energía retenida en oscilación",
-        retention_ratio
+        "🌀 Retención de la Lattice:  {}.{:02}% de energía retenida en oscilación",
+        retention_percent_x100 / 100,
+        retention_percent_x100 % 100
     );
     println!("{:-<72}", "");
     println!("✅ El cálculo ha sido transferido a la mallas de osciladores en RAM.");

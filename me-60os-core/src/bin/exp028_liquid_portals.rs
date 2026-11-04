@@ -194,7 +194,8 @@ fn main() {
         let mad = devs[devs.len() / 2].max(1);
         // Umbral: mediana - 0.5*MAD (convergencia = diff BAJO, no alto)
         let threshold = (median - mad / 2).max(0);
-        let portal_count = diffs.iter().filter(|&&d| d <= threshold).count() as u32;
+        let portal_count = u32::try_from(diffs.iter().filter(|&&d| d <= threshold).count())
+            .expect("cantidad de portales fuera de u32");
         cycle_portals[i] = portal_count;
         portal_events.push(portal_count as f64);
         println!(

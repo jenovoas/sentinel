@@ -104,7 +104,13 @@ impl BufferCascade {
             } else {
                 coherence / self.limit
             };
-            acc = acc + (kernel * weight * SPA::new(0, 30, 0, 0, 0));
+            let contribution = (kernel * weight * SPA::new(0, 30, 0, 0, 0)).max(SPA::zero());
+            let remaining = SPA::ONE - acc;
+            acc = if contribution >= remaining {
+                SPA::ONE
+            } else {
+                acc + contribution
+            };
         }
         acc
     }
@@ -124,11 +130,11 @@ impl BufferCascade {
         // Coherencia actual = min(base + memory*22, limit)
         let base = SPA::new(42, 30, 0, 0, 0); // 42;30
         let boost = SPA::new(22, 0, 0, 0, 0);
-        let boosted = base + (memory * boost);
-        let current = if boosted < self.limit {
-            boosted
-        } else {
+        let boost_effect = memory * boost;
+        let current = if base >= self.limit || boost_effect >= self.limit - base {
             self.limit
+        } else {
+            base + boost_effect
         };
 
         // Objetivo futuro = min(base + memory*20, 60)

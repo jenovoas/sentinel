@@ -75,8 +75,10 @@ impl VidAgent {
             let state = BufferState {
                 size: current_size,
                 utilization: sim_util,
-                _timestamp_raw: (self.start_time.elapsed().as_secs_f64() * SPA::SCALE_0 as f64)
-                    as i64,
+                _timestamp_raw: i64::try_from(
+                    self.start_time.elapsed().as_nanos() * SPA::SCALE_0 as u128 / 1_000_000_000,
+                )
+                .expect("marca temporal fuera de i64"),
             };
 
             // 2. Predict & Act

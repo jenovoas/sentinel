@@ -23,36 +23,36 @@ fn render_ascii_histogram(title: &str, data: &[u64], unit: &str) {
         return;
     }
 
-    let num_bins = 8;
-    let range = (max - min) as f64;
-    let bin_size = (range / num_bins as f64).max(1.0);
-
+    let num_bins = 8usize;
+    let range = u128::from(max - min);
     let mut counts = vec![0usize; num_bins];
-    for &val in data {
-        let bin = (((val - min) as f64 / bin_size) as usize).min(num_bins - 1);
+    for &value in data {
+        let offset = u128::from(value - min);
+        let bin = usize::try_from((offset * num_bins as u128) / range)
+            .expect("índice del histograma fuera de usize")
+            .min(num_bins - 1);
         counts[bin] += 1;
     }
 
     let max_count = *counts.iter().max().unwrap_or(&1).max(&1);
     let bar_width = 32;
 
-    for (i, &count) in counts.iter().enumerate() {
-        let b_start = min as f64 + i as f64 * bin_size;
-        let b_end = b_start + bin_size;
-        let filled = (count * bar_width) / max_count;
-        let bar: String = "█".repeat(filled);
-        eprintln!(
-            "[{:6.1} - {:6.1} {}] ({:5}) |{:<32}|",
-            b_start, b_end, unit, count, bar
-        );
+    for (index, &count) in counts.iter().enumerate() {
+        let start = u64::try_from(u128::from(min) + range * index as u128 / num_bins as u128)
+            .expect("inicio de intervalo fuera de u64");
+        let end = u64::try_from(u128::from(min) + range * (index + 1) as u128 / num_bins as u128)
+            .expect("fin de intervalo fuera de u64");
+        let filled = count * bar_width / max_count;
+        let bar = "█".repeat(filled);
+        eprintln!("[{start:6} - {end:6} {unit}] ({count:5}) |{bar:<32}|");
     }
 }
 
-fn percentile(sorted: &[u64], pct: f64) -> u64 {
+fn percentile(sorted: &[u64], pct: usize) -> u64 {
     if sorted.is_empty() {
         return 0;
     }
-    let idx = ((sorted.len() as f64 * pct / 100.0).round() as usize).min(sorted.len() - 1);
+    let idx = ((sorted.len() * pct + 50) / 100).min(sorted.len() - 1);
     sorted[idx]
 }
 
@@ -86,7 +86,7 @@ fn main() {
 
         let start = Instant::now();
         let ev = router.classify_event(src, data, None);
-        let elapsed_ns = start.elapsed().as_nanos() as u64;
+        let elapsed_ns = u64::try_from(start.elapsed().as_nanos()).expect("latencia fuera de u64");
         latencies_ns.push(elapsed_ns);
 
         assert!(router.should_bypass_buffer(&ev) || ev.lane == DataLane::Observability);
@@ -96,13 +96,16 @@ fn main() {
     let mut sorted_latencies = latencies_ns.clone();
     sorted_latencies.sort_unstable();
 
-    let p50 = percentile(&sorted_latencies, 50.0);
-    let p90 = percentile(&sorted_latencies, 90.0);
-    let p95 = percentile(&sorted_latencies, 95.0);
-    let p99 = percentile(&sorted_latencies, 99.0);
+    let p50 = percentile(&sorted_latencies, 50);
+    let p90 = percentile(&sorted_latencies, 90);
+    let p95 = percentile(&sorted_latencies, 95);
+    let p99 = percentile(&sorted_latencies, 99);
     let max = *sorted_latencies.last().unwrap_or(&0);
-    let avg = sorted_latencies.iter().sum::<u64>() / sorted_latencies.len().max(1) as u64;
-    let throughput = (iterations as f64 / total_routing_duration.as_secs_f64()) as u64;
+    let avg = sorted_latencies.iter().sum::<u64>()
+        / u64::try_from(sorted_latencies.len().max(1)).expect("muestra demasiado grande");
+    let elapsed_ns = total_routing_duration.as_nanos();
+    let throughput = u64::try_from((iterations as u128 * 1_000_000_000) / elapsed_ns)
+        .expect("throughput fuera de u64");
 
     let (s, o, _m) = router.stats();
     eprintln!("\n📊 1. CLASIFICACIÓN DE EVENTOS (ROUTER):");
@@ -143,7 +146,8 @@ fn main() {
         let ev = router.classify_event("auditd", &format!("{{\"sec_event_index\":{}}}", i), None);
         let w0 = Instant::now();
         let ok = sec_col.emit_immediate(&ev);
-        let w_elapsed_us = w0.elapsed().as_micros() as u64;
+        let w_elapsed_us =
+            u64::try_from(w0.elapsed().as_micros()).expect("latencia WAL fuera de u64");
         wal_latencies_us.push(w_elapsed_us);
         assert!(ok, "WAL security emit falló");
     }
@@ -152,22 +156,23 @@ fn main() {
     let sec_contents = std::fs::read_to_string(&sec_wal).unwrap();
     let sec_lines = sec_contents.lines().count();
     assert_eq!(sec_lines, wal_iterations);
-    assert!(sec_col.loss_rate() < 1e-9);
+    assert_eq!(sec_col.loss_rate_ppm(), 0);
 
     let mut sorted_wal = wal_latencies_us.clone();
     sorted_wal.sort_unstable();
 
-    let wal_p50 = percentile(&sorted_wal, 50.0);
-    let wal_p90 = percentile(&sorted_wal, 90.0);
-    let wal_p99 = percentile(&sorted_wal, 99.0);
-    let wal_avg = sorted_wal.iter().sum::<u64>() / sorted_wal.len().max(1) as u64;
+    let wal_p50 = percentile(&sorted_wal, 50);
+    let wal_p90 = percentile(&sorted_wal, 90);
+    let wal_p99 = percentile(&sorted_wal, 99);
+    let wal_avg = sorted_wal.iter().sum::<u64>()
+        / u64::try_from(sorted_wal.len().max(1)).expect("muestra demasiado grande");
 
     eprintln!("\n🔒 2. SECURITY LANE WAL (FSYNC REAL SIN BUFFER):");
     eprintln!("   Registros escritos      : {} líneas", sec_lines);
     eprintln!("   Tiempo total fsync      : {:.2?}", total_wal_duration);
     eprintln!(
-        "   Tasa de pérdida         : {:.4} (0.0% estricto)",
-        sec_col.loss_rate()
+        "   Tasa de pérdida         : {} ppm (0 ppm estricto)",
+        sec_col.loss_rate_ppm()
     );
     eprintln!("   Latencia media          : {} µs", wal_avg);
     eprintln!("   Percentil p50           : {} µs", wal_p50);

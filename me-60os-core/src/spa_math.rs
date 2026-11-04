@@ -86,7 +86,7 @@ impl SPAMath {
             }
             res += term;
         }
-        SPA::from_raw((res as i64) * s_sin)
+        SPA::from_raw(i64::try_from(res).expect("seno SPA fuera de rango") * s_sin)
     }
 
     pub fn cos(angle: SPA) -> SPA {
@@ -106,7 +106,7 @@ impl SPAMath {
             }
             res += term;
         }
-        SPA::from_raw((res as i64) * s_cos)
+        SPA::from_raw(i64::try_from(res).expect("coseno SPA fuera de rango") * s_cos)
     }
 
     pub fn sqrt(n: SPA) -> SPA {
@@ -128,7 +128,9 @@ impl SPAMath {
         };
         for _ in 0..15 {
             let num = (n_raw as i128) * (SPA::SCALE_0 as i128);
-            let next = (x + (num / (x as i128)) as i64) / 2;
+            let quotient = i64::try_from(num / i128::from(x))
+                .expect("iteración de raíz cuadrada SPA fuera de rango");
+            let next = (x + quotient) / 2;
             if (next - x).abs() < 1 {
                 break;
             }
@@ -159,7 +161,7 @@ impl SPAMath {
             res += term;
         }
 
-        SPA::from_raw(res as i64)
+        SPA::from_raw(i64::try_from(res).unwrap_or(if res < 0 { i64::MIN } else { i64::MAX }))
     }
 
     /// Natural Logarithm ln(x).
@@ -239,7 +241,7 @@ impl SPAMath {
         let k_factor = k as i128 * Self::LN_2 as i128;
         res += k_factor;
 
-        SPA::from_raw(res as i64)
+        SPA::from_raw(i64::try_from(res).expect("logaritmo SPA fuera de rango"))
     }
 
     /// log2(x) = ln(x) / ln(2). Base para distancia en octavas
@@ -256,7 +258,10 @@ impl SPAMath {
     pub fn from_radians(rad_raw: i64) -> SPA {
         // rad_raw is scaled by SCALE_0. Convert to Degrees: (rad * 180 / PI)
         let deg_raw = (rad_raw as i128 * 180) / Self::PI.to_raw() as i128;
-        SPA::from_raw((deg_raw as i64) * SPA::SCALE_0)
+        SPA::from_raw(
+            i64::try_from(deg_raw * i128::from(SPA::SCALE_0))
+                .expect("conversión de radianes a grados SPA fuera de rango"),
+        )
     }
 }
 

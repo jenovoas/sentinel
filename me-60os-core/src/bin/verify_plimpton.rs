@@ -60,6 +60,21 @@ fn to_sexagesimal_digits(v: SPA) -> [i64; 5] {
     digits
 }
 
+fn decimal_display(value: SPA, precision: u32) -> String {
+    let decimal_scale = 10_i128.pow(precision);
+    let raw = i128::from(value.to_raw());
+    let scaled =
+        (raw.abs() * decimal_scale + i128::from(SPA::SCALE_0) / 2) / i128::from(SPA::SCALE_0);
+    let sign = if raw < 0 { "-" } else { "" };
+    let width = usize::try_from(precision).expect("precisión fuera de usize");
+    format!(
+        "{sign}{}.{:0width$}",
+        scaled / decimal_scale,
+        scaled % decimal_scale,
+        width = width
+    )
+}
+
 fn main() {
     println!("--- Plimpton 322 Analysis (S60 puro, SPAMath::sqrt) ---");
 
@@ -73,19 +88,21 @@ fn main() {
         let a_sq_spa = SPA::from_int(a_sq);
         let ratio_sq = c_sq_spa / a_sq_spa;
 
-        let d = to_sexagesimal_digits(ratio_sq);
-        let a_disp = a.to_raw() as f64 / SPA::SCALE_0 as f64;
-        let ratio_disp = ratio_sq.to_raw() as f64 / SPA::SCALE_0 as f64;
+        let a_digits = to_sexagesimal_digits(a);
+        let ratio_digits = to_sexagesimal_digits(ratio_sq);
         println!(
-            "Row {:2}: a={:9.4}  (c/a)^2 = {:9.6}  ->  Base60: [{}; {}, {}, {}, {}]",
+            "Row {:2}: a=[{}; {}, {}, {}, {}]  (c/a)^2=[{}; {}, {}, {}, {}]",
             i + 1,
-            a_disp,
-            ratio_disp,
-            d[0],
-            d[1],
-            d[2],
-            d[3],
-            d[4]
+            a_digits[0],
+            a_digits[1],
+            a_digits[2],
+            a_digits[3],
+            a_digits[4],
+            ratio_digits[0],
+            ratio_digits[1],
+            ratio_digits[2],
+            ratio_digits[3],
+            ratio_digits[4]
         );
     }
 
@@ -106,8 +123,7 @@ fn main() {
 
     // Ratio del usuario [9; 13, 22]
     let u = SPA::new(9, 13, 22, 0, 0);
-    let u_disp = u.to_raw() as f64 / SPA::SCALE_0 as f64;
-    println!("User ratio [9; 13, 22] = {:.6}", u_disp);
+    println!("User ratio [9; 13, 22] = {}", decimal_display(u, 6));
 
     // Nota metodológica: el Py terminaba en comentarios sobre la fila 12.
     // La fila 12 corregida (167, 197) da (c/a)^2 ≈ 1.3871...; la tablilla

@@ -47,7 +47,7 @@ impl HexagonalController {
         rift_center_idx: usize,
     ) -> pyo3::PyResult<(i64, SPA, usize)> {
         self.control_rift_propagation(rift_center_idx)
-            .map_err(|e| pyo3::exceptions::PyIndexError::new_err(e))
+            .map_err(pyo3::exceptions::PyIndexError::new_err)
     }
 }
 

@@ -23,12 +23,10 @@ import time
 
 logger = logging.getLogger("quantum_scheduler")
 
-# ── Constantes S60 (sin floats arbitrarios — valores físicos exactos) ─────────
-T_BIO = 17.0  # pulso humano (segundos)
-T_CRYS = 4.25  # ciclo YHWH = T_BIO / 4
-T_VENUS = 16.18  # ratio φ 13:8 (Fibonacci)
-T_CYCLE = 68.0  # ciclo completo = 4 × T_BIO
-THETA = 0.75  # umbral de portal (75% del pico armónico)
+# ── Constantes SPA raw (60^4) ────────────────────────────────────────────────
+SCALE_0 = 12_960_000
+T_CYCLE_RAW = 68 * SCALE_0
+THETA_RAW = 9_720_000
 
 
 import sys
@@ -52,44 +50,43 @@ except ImportError:
 # ── Resonance Engine (Delegado a SOMA/Rust) ───────────────────────────────────
 
 
-def phi(t: float) -> float:
-    """Implementación Rust Base-60 de phi(t)."""
-    t_raw = int(round(t * 12_960_000))
-    s60_t = me60os_core.SPA._from_raw(t_raw)
-    return me60os_core.QuantumSchedulerCore.static_phi(s60_t).to_raw() / 12_960_000.0
+def phi(t_raw: int) -> int:
+    """Calcula phi para un tiempo expresado en unidades raw SPA."""
+    value = me60os_core.SPA._from_raw(t_raw)
+    return me60os_core.QuantumSchedulerCore.static_phi(value).to_raw()
 
 
-def phi_now() -> float:
-    t_norm = time.monotonic() % T_CYCLE
-    return phi(t_norm)
+def phi_now() -> int:
+    t_raw = time.monotonic_ns() * SCALE_0 // 1_000_000_000
+    return phi(t_raw % T_CYCLE_RAW)
 
 
 def is_portal_open() -> bool:
-    return me60os_core.QuantumSchedulerCore.is_portal_open(time.monotonic())
+    t_raw = time.monotonic_ns() * SCALE_0 // 1_000_000_000
+    return me60os_core.QuantumSchedulerCore.is_portal_open(
+        me60os_core.SPA._from_raw(t_raw)
+    )
 
 
-def adaptive_batch_size(resonance: float) -> int:
-    if resonance > 0.90:
+def adaptive_batch_size(resonance_raw: int) -> int:
+    if resonance_raw > 90 * SCALE_0 // 100:
         return 5
-    if resonance > 0.85:
+    if resonance_raw > 85 * SCALE_0 // 100:
         return 4
-    if resonance > 0.80:
+    if resonance_raw > 80 * SCALE_0 // 100:
         return 3
     return 2
 
 
-def seconds_to_next_portal(resolution: float = 0.05) -> float:
-    """
-    Estima cuántos segundos faltan para el próximo portal.
-    Útil para sleep inteligente en vez de busy-wait.
-    Max espera: T_CYCLE completo.
-    """
-    t0 = time.monotonic() % T_CYCLE
-    for i in range(int(T_CYCLE / resolution)):
-        t = (t0 + i * resolution) % T_CYCLE
-        if phi(t) > THETA:
-            return i * resolution
-    return T_CYCLE
+def milliseconds_to_next_portal(resolution_ms: int = 50) -> int:
+    t0_raw = time.monotonic_ns() * SCALE_0 // 1_000_000_000 % T_CYCLE_RAW
+    cycle_ms = 68_000
+    steps = cycle_ms // resolution_ms
+    for i in range(steps):
+        t_raw = (t0_raw + i * resolution_ms * SCALE_0 // 1_000) % T_CYCLE_RAW
+        if phi(t_raw) > THETA_RAW:
+            return i * resolution_ms
+    return cycle_ms
 
 
 # ── Quantum Buffer y Daemon (EXP-014 + EXP-029-V2 delegado a SOMA) ────────────
@@ -97,8 +94,6 @@ def seconds_to_next_portal(resolution: float = 0.05) -> float:
 QuantumBuffer = me60os_core.QuantumBuffer
 
 
-def QuantumSchedulerDaemon(buffer, process_fn, dt=0.1, name="quantum-daemon"):
-    """
-    Factory para el loop daemon SOMA Rust que procesa un QuantumBuffer.
-    """
-    return me60os_core.QuantumSchedulerDaemon(buffer, process_fn, dt, name)
+def QuantumSchedulerDaemon(buffer, process_fn, dt_ms=100, name="quantum-daemon"):
+    """Construye el daemon SOMA con intervalo entero en milisegundos."""
+    return me60os_core.QuantumSchedulerDaemon(buffer, process_fn, dt_ms, name)

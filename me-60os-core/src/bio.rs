@@ -106,7 +106,7 @@ impl SoulVerifier {
             // Map to integer index: val.to_raw()
             let idx = val.to_raw() / SPA::SCALE_0;
             if (0..256).contains(&idx) {
-                counts[idx as usize] += 1;
+                counts[usize::try_from(idx).expect("índice validado no negativo")] += 1;
                 total += 1;
             }
         }

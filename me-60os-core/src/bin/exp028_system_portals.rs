@@ -28,6 +28,11 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
 
+fn format_spa_milli(value: SPA) -> String {
+    let scaled = i128::from(value.to_raw()) * 1000 / i128::from(SPA::SCALE_0);
+    format!("{}.{:03}", scaled / 1000, scaled.abs() % 1000)
+}
+
 fn main() {
     println!("EXP-028 PENTA-RESONANCE -- SISTEMA REAL (Componentes vivos)");
     println!("   PortalDetector + QuantumScheduler + 2x HexagonalController(91 nodos)");
@@ -60,14 +65,12 @@ fn main() {
     const TOTAL_TICKS: u64 = 680; // 680s = 10 ciclos x 68s
 
     let mut portals_detected = 0u32;
-    let mut cycle_portals: Vec<Vec<f64>> = vec![Vec::new(); 10];
-    let mut portal_intensities: Vec<f64> = Vec::new();
-    let mut prev_intensity = 0.0f64; // flanco de subida (estado local, no static mut)
+    let mut cycle_portals: Vec<Vec<u64>> = vec![Vec::new(); 10];
+    let mut prev_intensity = SPA::zero();
 
     for tick in 0..TOTAL_TICKS {
-        let t_sec = tick as f64;
-        let t_s60 = SPA::from_int(tick as i64); // S60 exacto: tick entero, sin f64
-        let cycle = (tick / 68) as usize;
+        let t_s60 = SPA::from_int(i64::try_from(tick).expect("tick fuera de i64"));
+        let cycle = usize::try_from(tick / 68).expect("índice de ciclo fuera de usize");
 
         // 1. QHC bombea AMBAS mallas (patron 10;5,6,5 + Salto-17)
         let modulation = qhc.get_phase_modulation(tick);
@@ -79,7 +82,9 @@ fn main() {
 
         // 2. Salto-17: estabilizar rifts en ambas mallas cada 68 ticks
         if correction > 0 {
-            let rift_center = ((tick * 17) % lane_a.n_nodes as u64) as usize;
+            let node_count = u64::try_from(lane_a.n_nodes).expect("cantidad de nodos fuera de u64");
+            let rift_center = usize::try_from((u128::from(tick) * 17) % u128::from(node_count))
+                .expect("índice del rift fuera de usize");
             let _ = lane_a.control_rift_propagation(rift_center);
             let _ = lane_b.control_rift_propagation(rift_center);
         }
@@ -104,37 +109,49 @@ fn main() {
         }
 
         // 7. ResonantPhysics: reduccion de carga efectiva (Merkabah)
-        let static_load = SPA::from_raw((t_sec * 1000.0) as i64);
+        let static_load =
+            SPA::from_raw(i64::try_from(tick * 1000).expect("carga estática fuera de i64"));
         let priority = SPA::one();
-        // Usar intensidad del portal como estabilidad (coherencia)
-        let stability = SPA::from_raw((intensity * SPA::SCALE_0 as f64) as i64);
+        let stability = intensity;
         let effective_load =
             ResonantPhysics::calculate_effective_load(static_load, priority, stability);
-        let reduction_pct =
-            100.0 - (effective_load.to_raw() as f64 / static_load.to_raw() as f64 * 100.0);
+        let reduction_pct = if static_load == SPA::zero() {
+            SPA::zero()
+        } else {
+            SPA::from_int(100) - (effective_load / static_load) * SPA::from_int(100)
+        };
 
         // 8. DETECCION DE PORTALES EMERGENTES (flanco de subida en intensidad)
         let prev = prev_intensity;
         prev_intensity = intensity;
 
         // Portal emergente: intensidad cruza umbral hacia arriba
-        if intensity > 0.75 && prev <= 0.75 {
+        let portal_threshold = SPA::new(0, 45, 0, 0, 0);
+        if intensity > portal_threshold && prev <= portal_threshold {
             portals_detected += 1;
-            if cycle < 10 {
-                cycle_portals[cycle].push(t_sec);
+            if cycle < cycle_portals.len() {
+                cycle_portals[cycle].push(tick);
             }
-            portal_intensities.push(intensity);
-            println!("PORTAL #{} @ T={:.1}s | intensity={:.3} | reduction={:.1}% | QHC_mod={} | Salto-17={}ns",
-                portals_detected, t_sec, intensity, reduction_pct, modulation, correction);
+            println!(
+                "PORTAL #{} @ T={}s | intensity={} | reduction={}% | QHC_mod={} | Salto-17={}ns",
+                portals_detected,
+                tick,
+                format_spa_milli(intensity),
+                format_spa_milli(reduction_pct),
+                modulation,
+                correction
+            );
         }
 
-        // Log periodico cada 10s
         if tick % 10 == 0 && tick > 0 {
-            let bio_coh =
-                bio_resonator.lock().unwrap().get_coherence_raw() as f64 / SPA::SCALE_0 as f64;
+            let bio_coh = SPA::from_raw(bio_resonator.lock().unwrap().get_coherence_raw());
             println!(
-                "T={}s | bio_coh={:.3} | portal_open={} | intensity={:.3} | reduction={:.1}%",
-                tick, bio_coh, is_portal, intensity, reduction_pct
+                "T={}s | bio_coh={} | portal_open={} | intensity={} | reduction={}%",
+                tick,
+                format_spa_milli(bio_coh),
+                is_portal,
+                format_spa_milli(intensity),
+                format_spa_milli(reduction_pct)
             );
         }
 
@@ -155,7 +172,7 @@ fn main() {
             println!("(ninguno)");
         } else {
             for p in portals {
-                print!("@T={:.1}s ", p);
+                print!("@T={}s ", p);
             }
             println!();
         }
@@ -257,11 +274,12 @@ impl PortalDetector {
         ph_bio > self.threshold && ph_crys > self.threshold && ph_ven > self.threshold
     }
 
-    fn get_portal_intensity(&self, t: SPA) -> f64 {
+    fn get_portal_intensity(&self, t: SPA) -> SPA {
         let (ph_bio, ph_crys, ph_ven) = self.calculate_phases(t);
-        // Intensidad = promedio de las 3 fases (en 0..1)
-        let sum = ph_bio.to_raw() as f64 + ph_crys.to_raw() as f64 + ph_ven.to_raw() as f64;
-        (sum / 3.0) / SPA::SCALE_0 as f64
+        let sum = i128::from(ph_bio.to_raw())
+            + i128::from(ph_crys.to_raw())
+            + i128::from(ph_ven.to_raw());
+        SPA::from_raw(i64::try_from(sum / 3).expect("intensidad fuera de i64"))
     }
 }
 
@@ -316,7 +334,7 @@ impl BioResonator {
         self.coherence.to_raw()
     }
     fn time_since_pulse_ms(&self) -> u64 {
-        self.last_pulse.elapsed().as_millis() as u64
+        u64::try_from(self.last_pulse.elapsed().as_millis()).expect("duración fuera de u64")
     }
     fn reset(&mut self) {
         self.coherence = SPA::zero();
@@ -350,26 +368,24 @@ impl QuantumScheduler {
     }
 }
 
-fn find_meta_portals(cycle_portals: &[Vec<f64>]) {
+fn find_meta_portals(cycle_portals: &[Vec<u64>]) {
     use std::collections::HashMap;
-    let mut phase_counts: HashMap<u32, u32> = HashMap::new();
+    let mut phase_counts: HashMap<u64, u32> = HashMap::new();
 
     for portals in cycle_portals {
-        for &t in portals {
-            let phase_mod = ((t % 68.0) * 10.0).round() as u32;
-            *phase_counts.entry(phase_mod).or_insert(0) += 1;
+        for &time in portals {
+            *phase_counts.entry(time % 68).or_insert(0) += 1;
         }
     }
 
     let mut sorted: Vec<_> = phase_counts.iter().collect();
-    sorted.sort_by_key(|(k, _)| *k);
+    sorted.sort_by_key(|(phase, _)| *phase);
 
     for (phase, count) in sorted {
         if *count >= 3 {
             println!(
-                "   META-PORTAL @ fase {:.1}s (aparece en {} ciclos)",
-                *phase as f64 / 10.0,
-                count
+                "   META-PORTAL @ fase {}s (aparece en {} ciclos)",
+                phase, count
             );
         }
     }

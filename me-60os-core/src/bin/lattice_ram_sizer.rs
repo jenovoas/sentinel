@@ -32,9 +32,10 @@ fn main() {
 
     println!("🔷 Anillo hexagonal recomendado: n={}", ring);
     println!(
-        "🔷 Nodos en malla: {} (~{:.1}k)",
+        "🔷 Nodos en malla: {} (~{}.{:03}k)",
         nodes,
-        nodes as f64 / 1000.0
+        nodes / 1000,
+        nodes % 1000
     );
 
     // Materializar para medir memoria REAL usada (no estimada).

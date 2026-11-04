@@ -77,7 +77,8 @@ impl S60DSP {
         if res_raw > i64::MAX as i128 || res_raw < i64::MIN as i128 {
             return Err(DspConstraintError::RegisterOverflow(res_raw));
         }
-        let res_64 = res_raw as i64;
+        let res_64 =
+            i64::try_from(res_raw).map_err(|_| DspConstraintError::RegisterOverflow(res_raw))?;
 
         Ok(SPA::from_raw(res_64))
     }
@@ -100,7 +101,8 @@ impl S60DSP {
         } else if res_raw < i64::MIN as i128 {
             i64::MIN
         } else {
-            res_raw as i64
+            i64::try_from(res_raw.clamp(i64::MIN as i128, i64::MAX as i128))
+                .expect("resultado saturado al rango i64")
         };
         Ok(SPA::from_raw(res_64))
     }

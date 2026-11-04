@@ -111,7 +111,10 @@ impl App {
         for q in -5i64..=5 {
             for r in -5i64..=5 {
                 if (q + r).abs() <= 5 {
-                    net.add_node(q as i32, r as i32);
+                    net.add_node(
+                        i32::try_from(q).expect("coordenada q fuera de i32"),
+                        i32::try_from(r).expect("coordenada r fuera de i32"),
+                    );
                 }
             }
         }
@@ -606,8 +609,12 @@ fn draw_observatory_view(f: &mut Frame, area: Rect, app: &mut App) {
             } else {
                 Color::DarkGray
             };
-            f.buffer_mut()
-                .set_string(sx as u16, sy as u16, "⬢", Style::default().fg(color));
+            f.buffer_mut().set_string(
+                u16::try_from(sx).expect("coordenada x fuera de u16"),
+                u16::try_from(sy).expect("coordenada y fuera de u16"),
+                "⬢",
+                Style::default().fg(color),
+            );
         }
     }
 }

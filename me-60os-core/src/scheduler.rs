@@ -94,7 +94,7 @@ impl QuantumScheduler {
         let new_batch_spa = current_spa * clamped_scale;
 
         // Convert back to usize
-        let new_batch = new_batch_spa.to_degrees() as usize;
+        let new_batch = usize::try_from(new_batch_spa.to_degrees()).unwrap_or(usize::MAX);
 
         self.current_batch_size = cmp::max(self.min_batch, cmp::min(self.max_batch, new_batch));
 

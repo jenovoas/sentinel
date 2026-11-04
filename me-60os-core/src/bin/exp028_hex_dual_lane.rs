@@ -15,7 +15,6 @@ use me60os_core::hexagonal_control::HexagonalController;
 use me60os_core::qhc::QhcTensor;
 use me60os_core::spa::SPA;
 
-
 const DT_DECI: i64 = 1; // 0.1s por step, en décimas
 const T_MAX_STEPS: u32 = 6800; // 680s = 10 ciclos × 68s
 
@@ -33,13 +32,27 @@ fn main() {
 
     let (cycle_portals, transition_portals) = simulate_portals();
     for portal in &transition_portals {
-        println!("   Portal transition ON @T={}.{}s (coh={})", portal.time_d / 10, portal.time_d % 10, portal.coherence_m);
+        println!(
+            "   Portal transition ON @T={}.{}s (coh={})",
+            portal.time_d / 10,
+            portal.time_d % 10,
+            portal.coherence_m
+        );
     }
     println!("🔮 CICLOS CON PORTALES EMERGENTES EN 680s");
     for (i, transitions) in cycle_portals.iter().enumerate() {
-        println!("   Ciclo {} ({}s-{}s): {} transiciones ON", i, i * 68, (i + 1) * 68, transitions);
+        println!(
+            "   Ciclo {} ({}s-{}s): {} transiciones ON",
+            i,
+            i * 68,
+            (i + 1) * 68,
+            transitions
+        );
     }
-    println!("   Transiciones ON totales: {}", cycle_portals.iter().sum::<u32>());
+    println!(
+        "   Transiciones ON totales: {}",
+        cycle_portals.iter().sum::<u32>()
+    );
     println!("\n🔍 Fases recurrentes de transición (módulo 68s):");
     find_meta_portals(&transition_portals);
 }
@@ -123,8 +136,11 @@ fn inject_pentaresonance_layers(lattice: &mut HexagonalController, layers: [i64;
 fn evolve_hexagonal_coupling(lattice: &mut HexagonalController) {
     let n = lattice.get_n_nodes();
     let mut new_phases = vec![SPA::zero(); n];
-    for i in 0..n {
-        let mut sum = lattice.get_node_phase(i).map(|p| p.to_degrees()).unwrap_or(0);
+    for (i, new_phase) in new_phases.iter_mut().enumerate() {
+        let mut sum = lattice
+            .get_node_phase(i)
+            .map(|p| p.to_degrees())
+            .unwrap_or(0);
         let mut count: i64 = 1;
         for n_idx in lattice.get_neighbors(i) {
             if let Some(phase) = lattice.get_node_phase(n_idx) {
@@ -132,10 +148,10 @@ fn evolve_hexagonal_coupling(lattice: &mut HexagonalController) {
                 count += 1;
             }
         }
-        new_phases[i] = SPA::new(sum / count, 0, 0, 0, 0);
+        *new_phase = SPA::new(sum / count, 0, 0, 0, 0);
     }
-    for i in 0..n {
-        set_node_phase(lattice, i, new_phases[i].to_degrees());
+    for (i, new_phase) in new_phases.iter().enumerate() {
+        set_node_phase(lattice, i, new_phase.to_degrees());
     }
 }
 
@@ -153,8 +169,14 @@ fn detect_emergent_portal(
     }
     let mut resonant: i64 = 0;
     for i in 0..n {
-        let pa = lane_a.get_node_phase(i).map(|p| p.to_degrees()).unwrap_or(0);
-        let pb = lane_b.get_node_phase(i).map(|p| p.to_degrees()).unwrap_or(0);
+        let pa = lane_a
+            .get_node_phase(i)
+            .map(|p| p.to_degrees())
+            .unwrap_or(0);
+        let pb = lane_b
+            .get_node_phase(i)
+            .map(|p| p.to_degrees())
+            .unwrap_or(0);
         let mut diff = (pa - pb).abs() % 360;
         if diff > 180 {
             diff = 360 - diff;

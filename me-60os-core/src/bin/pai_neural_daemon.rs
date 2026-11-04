@@ -22,7 +22,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Path por env EBPF_RINGBUF_PATH (multi-nodo: marte usa /sys/fs/bpf/guardian_alpha/events).
     // Fallback a detección local (fenix: /sys/fs/bpf/sentinel/events).
     let ringbuf_path = std::env::var("EBPF_RINGBUF_PATH").unwrap_or_else(|_| {
-        for p in ["/sys/fs/bpf/sentinel/events", "/sys/fs/bpf/guardian_alpha/events", "/sys/fs/bpf/cortex_events"] {
+        for p in [
+            "/sys/fs/bpf/sentinel/events",
+            "/sys/fs/bpf/guardian_alpha/events",
+            "/sys/fs/bpf/cortex_events",
+        ] {
             if Path::new(p).exists() {
                 return p.to_string();
             }

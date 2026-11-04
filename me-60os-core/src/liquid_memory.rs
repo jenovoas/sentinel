@@ -242,18 +242,24 @@ impl LiquidMemory {
     /// Empaqueta una clave local en semilla replicable (fase 1 KV distribuida).
     /// Reutiliza metadata + energía medida del lattice. Sin duplicar `store`.
     pub fn replicate(&self, key: &str) -> Result<ReplicableSeed, String> {
-        let entry = self.file_table.get(key)
+        let entry = self
+            .file_table
+            .get(key)
             .ok_or_else(|| format!("clave '{key}' no existe local"))?;
         // Energía = suma de amplitudes del lattice (estado real medido).
-        let energy: i64 = self.lattice.buffer.lattice.iter()
-            .map(|n| n.amplitude.to_raw()).sum();
+        let energy: i64 = self
+            .lattice
+            .buffer
+            .lattice
+            .iter()
+            .map(|n| n.amplitude.to_raw())
+            .sum();
         Ok(ReplicableSeed {
             key: key.as_bytes().to_vec(),
             amplitude_raw: energy,
             hash: entry.hash,
         })
     }
-
 
     /// Recupera por clave. Lee del SHM (rápido) y verifica integridad
     /// blake3 contra la metadata. Devuelve None si la clave no existe;
@@ -328,7 +334,9 @@ mod tests {
     #[test]
     fn test_large_payload() {
         let mut mem = LiquidMemory::new(8192);
-        let payload: Vec<u8> = (0..4096u32).map(|i| (i % 256) as u8).collect();
+        let payload: Vec<u8> = (0..4096u32)
+            .map(|i| u8::try_from(i % 256).expect("módulo acotado a byte"))
+            .collect();
         mem.store("big", &payload).unwrap();
         let got = mem.retrieve("big").unwrap().unwrap();
         assert_eq!(got, payload);

@@ -70,7 +70,7 @@ fn salto_17_projection() -> (SPA, SPA) {
     let projected_hz = F_SENTINEL_HZ as i128 * 216_000 * 4 / 17;
     // Bajar a MHz y escalar a raw SPA
     let projected_raw = (projected_hz / 1_000_000) * SPA::SCALE_0 as i128;
-    let projected = SPA::from_raw(projected_raw as i64);
+    let projected = SPA::from_raw(i64::try_from(projected_raw).expect("proyección fuera de i64"));
 
     let microtubule = SPA::from_int(F_MICROTUBULE_MHZ);
     let ratio = projected / microtubule;

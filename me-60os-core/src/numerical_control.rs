@@ -49,7 +49,11 @@ impl SovereignDDA {
         let delta = end.sub(start); // end - start (dirección correcta)
         let step = delta.div_int(duration_ticks);
 
-        let mut trajectory: Vec<SVector3> = Vec::with_capacity(duration_ticks as usize + 1);
+        let capacity = usize::try_from(duration_ticks)
+            .expect("duración positiva fuera del rango de usize")
+            .checked_add(1)
+            .expect("capacidad de trayectoria fuera de rango");
+        let mut trajectory: Vec<SVector3> = Vec::with_capacity(capacity);
         for t in 0..duration_ticks {
             let current = start.add(&step.scale(t));
             trajectory.push(current);

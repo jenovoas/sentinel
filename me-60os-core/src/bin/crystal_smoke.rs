@@ -15,7 +15,7 @@ fn main() {
     for _ in 0..n {
         clock.tick_internal();
     }
-    let elapsed = t0.elapsed().as_nanos() as u64;
+    let elapsed = u64::try_from(t0.elapsed().as_nanos()).expect("duración fuera de u64");
     let ideal = n * clock.tick_interval_ns;
     let diff = (elapsed as i128 - ideal as i128).unsigned_abs();
 

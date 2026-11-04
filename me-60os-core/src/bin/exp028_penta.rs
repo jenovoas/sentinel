@@ -49,7 +49,7 @@ fn main() {
     println!("{:-<72}", "");
 
     let mut portales = 0u32;
-    let mut muestras: Vec<f64> = Vec::new();
+    let mut muestras: Vec<u32> = Vec::new();
     let mut prev_aligned = false;
 
     for step in 0..t_max_steps {
@@ -89,7 +89,7 @@ fn main() {
         if aligned && !prev_aligned {
             portales += 1;
             if portales <= 12 {
-                muestras.push(step as f64 / 10.0);
+                muestras.push(step);
             }
         }
         prev_aligned = aligned;
@@ -100,7 +100,7 @@ fn main() {
         portales
     );
     for m in &muestras {
-        println!("   ⏳ Portal abierto @ T={:.1}s", m);
+        println!("   ⏳ Portal abierto @ T={}.{}s", m / 10, m % 10);
     }
     if portales == 0 {
         println!("   (ninguno — revisar bombeo QHC / sincronía de carriles)");

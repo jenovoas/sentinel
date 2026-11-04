@@ -258,12 +258,14 @@ impl IsochronousClock {
 
         if target_ns > elapsed_ns {
             let sleep_ns = target_ns - elapsed_ns;
-            thread::sleep(Duration::from_nanos(sleep_ns as u64));
+            thread::sleep(Duration::from_nanos(
+                u64::try_from(sleep_ns).unwrap_or(u64::MAX),
+            ));
         }
     }
 
     pub fn get_nanos_internal(&self) -> u64 {
-        self.start_time.elapsed().as_nanos() as u64
+        u64::try_from(self.start_time.elapsed().as_nanos()).unwrap_or(u64::MAX)
     }
 }
 

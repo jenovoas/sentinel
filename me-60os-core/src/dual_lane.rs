@@ -120,7 +120,7 @@ fn escape(s: &str) -> String {
 fn now_micros() -> i64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .map(|d| d.as_micros() as i64)
+        .map(|d| i64::try_from(d.as_micros()).unwrap_or(i64::MAX))
         .unwrap_or(0)
 }
 
@@ -279,12 +279,13 @@ impl SecurityLaneCollector {
         }
     }
 
-    pub fn loss_rate(&self) -> f64 {
+    pub fn loss_rate_ppm(&self) -> u64 {
         let total = self.events_collected + self.events_lost;
         if total == 0 {
-            0.0
+            0
         } else {
-            self.events_lost as f64 / total as f64
+            u64::try_from(u128::from(self.events_lost) * 1_000_000 / u128::from(total))
+                .expect("la tasa en ppm no puede exceder un millón")
         }
     }
 
@@ -436,11 +437,14 @@ impl ObservabilityLaneCollector {
         None
     }
 
-    pub fn drop_rate(&self) -> f64 {
+    pub fn drop_rate_ppm(&self) -> u64 {
         if self.events_collected == 0 {
-            0.0
+            0
         } else {
-            self.events_dropped as f64 / self.events_collected as f64
+            u64::try_from(
+                u128::from(self.events_dropped) * 1_000_000 / u128::from(self.events_collected),
+            )
+            .expect("la tasa en ppm no puede exceder un millón")
         }
     }
 }

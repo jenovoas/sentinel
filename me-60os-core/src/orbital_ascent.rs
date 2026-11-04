@@ -128,7 +128,9 @@ impl OrbitalAscent {
         // alt y H ambos raw S60 -> división cancela SCALE -> alt_m/H_m (entero)
         let h_scale = 110_160_000_000i128; // 8500 m * SCALE
         let exp_arg = -(alt_r as i128) / h_scale; // valor entero (~ -alt/H)
-        let exp_val = SPAMath::exp(SPA::from_int(exp_arg as i64));
+        let exp_val = SPAMath::exp(SPA::from_int(
+            i64::try_from(exp_arg).expect("exponente de densidad fuera de rango"),
+        ));
         SPA::new(1, 13, 30, 0, 0) * exp_val / SPA::from_int(1)
     }
 
@@ -229,7 +231,10 @@ impl OrbitalAscent {
         //    El dato "levita" en la red de cristales, no en sustrato sólido.
         // FIX (audit-360): inject_pai espera integer; pasar to_raw() + denom=1000
         // no-regular causaba triple-escala. Usar denom=60 (5-smooth, en tabla pai60).
-        let idx = (self.clock.ticks as usize) % self.lattice.crystals.len();
+        let node_count =
+            u64::try_from(self.lattice.crystals.len()).expect("cantidad de nodos excede u64");
+        let idx = usize::try_from(self.clock.ticks % node_count)
+            .expect("índice orbital fuera del rango de usize");
         self.lattice
             .inject_pai(idx, coherence.to_raw() / crate::spa::SPA::SCALE_0, 60);
 
@@ -265,7 +270,7 @@ mod tests {
         let rho_low = a.air_density(SPA::ZERO);
         let rho_high = a.air_density(SPA::from_int(8_500));
         assert!(rho_high.to_raw() < rho_low.to_raw());
-        let expected = (rho_low.to_raw() as f64 * std::f64::consts::E.recip()) as i64;
+        let expected = (rho_low * SPAMath::exp(SPA::from_int(-1))).to_raw();
         let err = (rho_high.to_raw() - expected).abs();
         assert!(err < rho_low.to_raw() / 5);
     }
