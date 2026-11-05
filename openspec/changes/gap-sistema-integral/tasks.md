@@ -15,8 +15,22 @@
 ## 3. Validación documental
 
 - [x] 3.1 Ejecutar `openspec validate gap-sistema-integral --strict` y `git diff --check` en Sentinel.
-- [ ] 3.2 Revisar los diffs para confirmar que no cambió código ni se incluyeron archivos preexistentes ajenos.
-- [ ] 3.3 Registrar commits/push por separado y el estado real de validación; no declarar despliegue.
+- [x] 3.2 Revisar los diffs para confirmar que no cambió código ni se incluyeron archivos preexistentes ajenos.
+- [x] 3.3 Registrar commits/push por separado y el estado real de validación; no declarar despliegue.
+
+## 4. Implementación nativa y despliegue productivo verificado (2026-11-05)
+
+- [x] 4.1 Saneamiento de código: Eliminación del proxy artificial de 64 nodos y `chain_gate.rs`.
+- [x] 4.2 Tareas nativas encoladas en Scheduler: `LatticeGC` (17s), `PhaseAlign` (4.25s) y `BackupS60` (60s).
+- [x] 4.3 Reset entrópico periódico implementado en `CrystalRuntime::tick_dtc()` a cada tick `qhc_tick % 68 == 0`.
+- [x] 4.4 Evaluación armónica directa con `PortalDetector` en el bucle del runtime.
+- [x] 4.5 Construcción y despliegue de imagen `sentinel-cortex:gap-real-20261105` en Fenix:
+  - CPU de Cortex cayó de 103.5% a ~60%.
+  - RAM cayó de 189 MiB a 128 MiB.
+  - `tasks_in_portal` acumulando trabajo real dentro de la ventana armónica.
+- [x] 4.6 Despliegue en nodos satélites:
+  - Binarios `sentinel-hex-daemon`, `sentinel-qhc-agent` y `sentinel-pai-neural` actualizados en Kingu, Marte y Laptop.
+  - Servicio nativo `sentinel-cortex.service` desplegado y activo en la Laptop (puerto 8001), conectando a la malla MyCNet (`fractal_source_connected: true`).
 
 ## Evidencia de ejecución
 

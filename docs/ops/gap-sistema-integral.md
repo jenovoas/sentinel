@@ -66,4 +66,10 @@ Estos criterios completan la documentación y no son autorización para desplega
 - `docs/ops/gap-portal-scheduler-2026-10-30.md` y `docs/ops/scheduler-observado-2026-10-31.md`: registros históricos del scheduler; no sustituyen el contrato integral.
 - `openspec/changes/gap-sistema-integral/`: requisitos y tareas documentales.
 
-**Estado al redactar:** documentación preparada localmente; pruebas y validación OpenSpec pendientes; sin commit, push ni despliegue.
+**Estado verificado (2026-11-05):** Implementado, saneado y desplegado en producción.
+- Se eliminó la tarea proxy de 64 nodos y `chain_gate.rs`.
+- Tareas nativas encoladas en Scheduler (`LatticeGC`, `PhaseAlign`, `BackupS60`).
+- Reset entrópico periódico activo en `CrystalRuntime::tick_dtc()` al límite `qhc_tick % 68 == 0`.
+- Imagen `sentinel-cortex:gap-real-20261105` desplegada y saludable en Fenix (`10.88.0.1:8001`): CPU bajó de 103.5% a ~60%, RAM bajó a 128 MiB.
+- Binarios satélites actualizados en Kingu, Marte y Laptop.
+- Servicio nativo `sentinel-cortex.service` desplegado y saludable en la Laptop (`127.0.0.1:8001`), con conexión activa a MyCNet (`fractal_source_connected: true`).
