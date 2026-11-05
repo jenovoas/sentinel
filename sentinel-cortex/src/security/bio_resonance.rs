@@ -59,7 +59,12 @@ impl ResonanceEngine {
     /// Escala: energía total / (nodos × SCALE_0) → fracción [0,1] clampada.
     /// La memoria no-Markoviana vive en el PID del runtime (historial 68 ticks);
     /// aquí solo se refleja su estado actual, no se duplica el kernel.
-    pub fn charge_from_crystal_energy(&mut self, energy_a_raw: i64, energy_b_raw: i64, node_count: usize) {
+    pub fn charge_from_crystal_energy(
+        &mut self,
+        energy_a_raw: i64,
+        energy_b_raw: i64,
+        node_count: usize,
+    ) {
         // Sin overflow: energía media por nodo, comparada directo con SCALE_0.
         // Un nodo a amplitud 1.0 aporta SCALE_0; la media por nodo ya es la fracción.
         // (EXP-003: el PID del runtime ya estabiliza; aquí solo se refleja.)
@@ -75,7 +80,6 @@ impl ResonanceEngine {
             self.current_coherence = next.min(target).min(S60::one());
         }
     }
-
 
     /// Decay coherence (Entropy)
     pub fn tick_entropy(&mut self) {

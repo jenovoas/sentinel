@@ -641,5 +641,6 @@
 | 636 | `docs/ops/CABLEADO_Y_TOPOLOGIA_CANONICA.md` | **Español** |
 | 637 | `docs/DEPLOYMENT_FENIX_KINGU.md` | **Español** |
 | 638 | `docs/ops/fase0-tareas.md` | **Español** |
+| 639 | `docs/ops/gap-sistema-integral.md` | **Español** |
 
-Total: 638 archivos
+Total: 639 archivos

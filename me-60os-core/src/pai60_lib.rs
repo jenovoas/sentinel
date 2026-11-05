@@ -100,4 +100,34 @@ mod tests {
         // 10 / 3 = 3.333... = 3° 20' = [3, 20, 0, 0, 0]
         assert_eq!(res.to_components(), [3, 20, 0, 0, 0]);
     }
+
+    /// Todo denominador de la tabla debe dar recíproco exacto: `1/d · d = 1`.
+    #[test]
+    fn tabla_cubre_reciprocos_exactos() {
+        for d in [
+            2u32, 3, 4, 5, 6, 8, 9, 10, 12, 15, 16, 18, 20, 24, 25, 27, 30, 32, 36, 40, 45, 48, 50,
+            54, 60,
+        ] {
+            let r = pai60_divide(SPA::one(), d).expect("denominador regular debe estar en tabla");
+            assert_eq!(r.to_raw(), SPA::SCALE_0 / i64::from(d), "d={d}");
+            assert_eq!(r.to_raw() * i64::from(d), SPA::SCALE_0, "d={d}");
+        }
+    }
+
+    #[test]
+    fn denominadores_no_regulares_no_tienen_reciproco() {
+        for d in [7u32, 11, 13, 49, 97] {
+            assert!(!is_regular(d), "d={d} no debería ser regular");
+            assert!(pai60_divide(SPA::one(), d).is_none(), "d={d}");
+        }
+    }
+
+    /// Brecha conocida: `is_regular` reconoce más denominadores de los que la
+    /// tabla cubre (p. ej. 72 = 2³·3²). Hoy la división devuelve `None` aunque
+    /// el recíproco sea finito en base-60.
+    #[test]
+    fn regulares_fuera_de_tabla_quedan_sin_soporte() {
+        assert!(is_regular(72));
+        assert!(pai60_divide(SPA::one(), 72).is_none());
+    }
 }

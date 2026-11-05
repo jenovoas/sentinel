@@ -44,4 +44,9 @@ Los archivos, inventario detallado, límites y comandos de aceptación sin secre
 | Alerta de prueba extremo a extremo hacia receptor aprobado | Bloqueada por runtime/workflow/destinatario; no enviada |
 | Password admin Grafana rotado y fuera de Env plano | Rotación previa conservada; FILE documentado, admin existente autenticó las consultas |
 
-La integración final se registra junto con los cambios de configuración, pruebas y nota de vault de la sesión.
+## 5. Recuperación tras reinicio del host — 2026-11-04
+
+- Tras un reinicio de Marte, `sentinel-marte-grafana` y `sentinel-marte-loki` quedaron `Exited (128)`: Docker no pudo enlazar `10.88.0.6:3000` y `10.88.0.6:3100` porque `wg0` aún no estaba listo en el intento inicial. Ambos conservaban `restart=unless-stopped`; la política por sí sola no recuperó este fallo de publicación.
+- Se añadió `systemd/sentinel-marte-observability.service`, con dependencia y orden posterior a `docker.service` y `wg-quick@wg0.service`, que inicia exclusivamente esos dos contenedores. Se instaló en `/etc/systemd/system/` de Marte y quedó `enabled` y `active (exited)`; `systemd-analyze verify` y `systemctl enable --now` finalizaron correctamente.
+- Verificación posterior: Grafana `/api/health` respondió HTTP 200 (`database: ok`), Loki `/ready` respondió HTTP 200 (`ready`), ambos contenedores estaban `Up` y `wg0` mantenía `10.88.0.6/24`.
+- Estado operativo: cambio aplicado en Marte. El reinicio del host no se repitió como prueba; la persistencia queda configurada, pero su confirmación en un siguiente reinicio está pendiente. El archivo de unidad local está preparado en el árbol del proyecto; no se hizo commit ni push.

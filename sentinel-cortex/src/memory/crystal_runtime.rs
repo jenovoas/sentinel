@@ -267,9 +267,20 @@ impl CrystalRuntime {
 
     /// Import remote drive without immediately echoing it into MyCNet's SHM ring.
     /// Periodic snapshots still export the resulting crystal state.
-    pub fn inject_remote_security_spa(&mut self, index: usize, amplitude: SPA) -> Result<i64, &'static str> {
-        let crystal = self.lane_a.crystals.get_mut(index).ok_or("crystal index out of range")?;
-        let raw = crystal.amplitude.to_raw().checked_add(amplitude.to_raw())
+    pub fn inject_remote_security_spa(
+        &mut self,
+        index: usize,
+        amplitude: SPA,
+    ) -> Result<i64, &'static str> {
+        let crystal = self
+            .lane_a
+            .crystals
+            .get_mut(index)
+            .ok_or("crystal index out of range")?;
+        let raw = crystal
+            .amplitude
+            .to_raw()
+            .checked_add(amplitude.to_raw())
             .ok_or("SPA amplitude overflow")?;
         crystal.amplitude = SPA::from_raw(raw);
         Ok(raw)
@@ -785,8 +796,12 @@ mod tests {
             static NEXT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
             let id = NEXT.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
             let name = format!("/sentinel-fractal-test-{}-{id}", std::process::id());
-            let buffer = PySharedBuffer::new(name.clone(),
-                FRACTAL_HEADER_BYTES + FRACTAL_SEEDS_CAPACITY * FRACTAL_SEED_BYTES, true).unwrap();
+            let buffer = PySharedBuffer::new(
+                name.clone(),
+                FRACTAL_HEADER_BYTES + FRACTAL_SEEDS_CAPACITY * FRACTAL_SEED_BYTES,
+                true,
+            )
+            .unwrap();
             Self { name, buffer }
         }
     }
@@ -809,8 +824,12 @@ mod tests {
         let ring = TestFractalRing::new();
         assert_eq!(initialize_fractal_ring(&ring.buffer), Ok(0));
         ring.buffer.store_u64_release(8, 123_456).unwrap();
-        let restarted = PySharedBuffer::new(ring.name.clone(),
-            FRACTAL_HEADER_BYTES + FRACTAL_SEEDS_CAPACITY * FRACTAL_SEED_BYTES, true).unwrap();
+        let restarted = PySharedBuffer::new(
+            ring.name.clone(),
+            FRACTAL_HEADER_BYTES + FRACTAL_SEEDS_CAPACITY * FRACTAL_SEED_BYTES,
+            true,
+        )
+        .unwrap();
         let head = initialize_fractal_ring(&restarted).unwrap();
         assert_eq!(head, 123_456);
         restarted.store_u64_release(8, head + 1).unwrap();
@@ -836,7 +855,10 @@ mod tests {
             Ok(before + 17)
         );
         assert_eq!(runtime.lane_b.crystals[1].amplitude.to_raw(), lane_b_before);
-        assert_eq!(runtime.inject_remote_security_spa(3, SPA::from_raw(17)), Err("crystal index out of range"));
+        assert_eq!(
+            runtime.inject_remote_security_spa(3, SPA::from_raw(17)),
+            Err("crystal index out of range")
+        );
         assert_eq!(
             runtime.inject_remote_security_spa(1, SPA::from_raw(0)),
             Ok(before + 17)

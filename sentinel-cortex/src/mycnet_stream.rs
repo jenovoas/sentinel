@@ -26,7 +26,11 @@ enum MeshEvent {
 }
 
 fn enqueue(text: &str, tx: &SyncSender<CrystalInput>) -> anyhow::Result<()> {
-    let MeshEvent::Seed { token_id, amplitude_s60 } = serde_json::from_str(text)? else {
+    let MeshEvent::Seed {
+        token_id,
+        amplitude_s60,
+    } = serde_json::from_str(text)?
+    else {
         return Ok(());
     };
     let index = (token_id % 64) as usize;
@@ -35,9 +39,17 @@ fn enqueue(text: &str, tx: &SyncSender<CrystalInput>) -> anyhow::Result<()> {
         amplitude: SPA::from_raw(amplitude_s60),
         mesh_token_id: Some(token_id),
     }) {
-        Ok(()) => tracing::debug!(token_id, index, amplitude_raw = amplitude_s60, "MyCNet seed queued"),
+        Ok(()) => tracing::debug!(
+            token_id,
+            index,
+            amplitude_raw = amplitude_s60,
+            "MyCNet seed queued"
+        ),
         Err(TrySendError::Full(_)) => {
-            tracing::warn!(token_id, "MyCNet seed rejected: CrystalRuntime channel full");
+            tracing::warn!(
+                token_id,
+                "MyCNet seed rejected: CrystalRuntime channel full"
+            );
         }
         Err(TrySendError::Disconnected(_)) => {
             anyhow::bail!("CrystalRuntime input channel disconnected");
@@ -47,8 +59,12 @@ fn enqueue(text: &str, tx: &SyncSender<CrystalInput>) -> anyhow::Result<()> {
 }
 
 async fn subscribe(url: &str, tx: &SyncSender<CrystalInput>) -> anyhow::Result<()> {
-    let (mut ws, response) = timeout(CONNECT_TIMEOUT, tokio_tungstenite::connect_async(url)).await??;
-    tracing::info!(status = response.status().as_u16(), "MyCNet mesh WebSocket connected");
+    let (mut ws, response) =
+        timeout(CONNECT_TIMEOUT, tokio_tungstenite::connect_async(url)).await??;
+    tracing::info!(
+        status = response.status().as_u16(),
+        "MyCNet mesh WebSocket connected"
+    );
     let mut first_text = true;
     loop {
         let Some(message) = timeout(READ_TIMEOUT, ws.next()).await? else {
@@ -94,8 +110,17 @@ mod tests {
     #[test]
     fn seed_reaches_security_channel_without_rescaling() {
         let (tx, rx) = sync_channel(1);
-        enqueue(r#"{"type":"fractal_seed_ingested","token_id":129,"amplitude_s60":-17}"#, &tx).unwrap();
-        let CrystalInput::Security { index, amplitude, mesh_token_id } = rx.try_recv().unwrap() else {
+        enqueue(
+            r#"{"type":"fractal_seed_ingested","token_id":129,"amplitude_s60":-17}"#,
+            &tx,
+        )
+        .unwrap();
+        let CrystalInput::Security {
+            index,
+            amplitude,
+            mesh_token_id,
+        } = rx.try_recv().unwrap()
+        else {
             panic!("seed must use the security lane");
         };
         assert_eq!(index, 1);
@@ -107,12 +132,26 @@ mod tests {
     fn seed_rejects_missing_boolean_float_and_out_of_range_fields() {
         let (tx, rx) = sync_channel(1);
         for token in ["true", "false", "-1", "4294967296", "1.0", "null", "\"1\""] {
-            let text = format!(r#"{{"type":"fractal_seed_ingested","token_id":{token},"amplitude_s60":0}}"#);
+            let text = format!(
+                r#"{{"type":"fractal_seed_ingested","token_id":{token},"amplitude_s60":0}}"#
+            );
             assert!(enqueue(&text, &tx).is_err(), "accepted token_id {token}");
         }
-        for amplitude in ["true", "false", "1.0", "null", "\"0\"", "9223372036854775808"] {
-            let text = format!(r#"{{"type":"fractal_seed_ingested","token_id":1,"amplitude_s60":{amplitude}}}"#);
-            assert!(enqueue(&text, &tx).is_err(), "accepted amplitude {amplitude}");
+        for amplitude in [
+            "true",
+            "false",
+            "1.0",
+            "null",
+            "\"0\"",
+            "9223372036854775808",
+        ] {
+            let text = format!(
+                r#"{{"type":"fractal_seed_ingested","token_id":1,"amplitude_s60":{amplitude}}}"#
+            );
+            assert!(
+                enqueue(&text, &tx).is_err(),
+                "accepted amplitude {amplitude}"
+            );
         }
         assert!(enqueue(r#"{"type":"fractal_seed_ingested","token_id":1}"#, &tx).is_err());
         assert!(enqueue(r#"{"type":"fractal_seed_ingested","amplitude_s60":0}"#, &tx).is_err());
@@ -124,7 +163,11 @@ mod tests {
         let (tx, rx) = sync_channel(1);
         enqueue(r#"{"type":"mesh_tick","tick":1}"#, &tx).unwrap();
         assert!(rx.try_recv().is_err());
-        enqueue(r#"{"type":"fractal_seed_ingested","token_id":0,"amplitude_s60":0}"#, &tx).unwrap();
+        enqueue(
+            r#"{"type":"fractal_seed_ingested","token_id":0,"amplitude_s60":0}"#,
+            &tx,
+        )
+        .unwrap();
         let CrystalInput::Security { amplitude, .. } = rx.try_recv().unwrap() else {
             panic!("seed must use the security lane");
         };
@@ -142,5 +185,4 @@ mod tests {
         drop(rx);
         assert!(enqueue(text, &tx).is_err());
     }
-
 }

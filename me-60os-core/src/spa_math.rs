@@ -109,6 +109,47 @@ impl SPAMath {
         SPA::from_raw(i64::try_from(res).expect("coseno SPA fuera de rango") * s_cos)
     }
 
+    /// Seno para un ángulo expresado en RADIANES (SPA con 1.0 = 1 rad).
+    ///
+    /// `sin()` interpreta su entrada como GRADOS; usarla con ángulos `2π·(t/T)`
+    /// producía senos de 6,28° en lugar de un ciclo completo (defecto detectado
+    /// el 2026-11-04: la amplitud de `phi` nunca superaba 0,6175 y el portal de
+    /// 0,75 no abría jamás). Esta variante conserva la aritmética entera S60.
+    pub fn sin_rad(angle: SPA) -> SPA {
+        let two_pi = SPA::TWO_PI.to_raw();
+        let pi = Self::PI.to_raw();
+        let half_pi = pi / 2;
+
+        let mut raw = angle.to_raw() % two_pi;
+        if raw < 0 {
+            raw += two_pi;
+        }
+
+        let (x, sign) = if raw <= half_pi {
+            (raw, 1_i64)
+        } else if raw <= pi {
+            (pi - raw, 1_i64)
+        } else if raw <= pi + half_pi {
+            (raw - pi, -1_i64)
+        } else {
+            (two_pi - raw, -1_i64)
+        };
+
+        let mut res = x as i128;
+        let mut term = x as i128;
+        let x_sq = (term * term) / SPA::SCALE_0 as i128;
+
+        for i in 1..12 {
+            let n = (2 * i) as i128;
+            term = -(term * x_sq) / ((n * (n + 1)) * SPA::SCALE_0 as i128);
+            if term.abs() < 1 {
+                break;
+            }
+            res += term;
+        }
+        SPA::from_raw(i64::try_from(res).expect("seno radianes fuera de rango") * sign)
+    }
+
     pub fn sqrt(n: SPA) -> SPA {
         if n.to_raw() < 0 {
             panic!("SPAMath::sqrt applied to negative value");
@@ -382,5 +423,40 @@ mod tests {
         // ln(1) = 0
         let one = SPA::new(1, 0, 0, 0, 0);
         assert_eq!(SPAMath::ln(one).to_raw(), 0);
+    }
+
+    #[test]
+    fn test_sin_rad_puntos_notables() {
+        // 0 → 0
+        assert_eq!(SPAMath::sin_rad(SPA::zero()).to_raw(), 0);
+        // π/2 → 1
+        let half_pi = SPA::from_raw(SPAMath::PI.to_raw() / 2);
+        assert!((SPAMath::sin_rad(half_pi).to_raw() - SPA::SCALE_0).abs() < 10);
+        // π → 0
+        assert!(SPAMath::sin_rad(SPAMath::PI).to_raw().abs() < 10);
+        // 3π/2 → −1
+        let three_half = SPA::from_raw(SPAMath::PI.to_raw() + SPAMath::PI.to_raw() / 2);
+        assert!((SPAMath::sin_rad(three_half).to_raw() + SPA::SCALE_0).abs() < 10);
+        // 2π → 0
+        assert!(SPAMath::sin_rad(SPA::TWO_PI).to_raw().abs() < 10);
+    }
+
+    #[test]
+    fn test_sin_rad_es_periodico_y_antisimetrico() {
+        let t = SPA::from_raw(SPA::SCALE_0); // 1 rad
+        let a = SPAMath::sin_rad(t).to_raw();
+        let b = SPAMath::sin_rad(t + SPA::TWO_PI).to_raw();
+        assert!((a - b).abs() < 10, "sin_rad no periódico: {a} vs {b}");
+        let neg = SPAMath::sin_rad(SPA::from_raw(-SPA::SCALE_0)).to_raw();
+        assert!((a + neg).abs() < 10, "sin_rad no impar: {a} vs {neg}");
+    }
+
+    /// El seno en grados sigue interpretando la entrada como grados: ésa es la
+    /// razón por la que `phi` debe usar `sin_rad`.
+    #[test]
+    fn test_sin_en_grados_no_equivale_a_sin_rad() {
+        let noventa = SPAMath::sin(SPA::from_raw(90 * SPA::SCALE_0)).to_raw();
+        assert!((noventa - SPA::SCALE_0).abs() < 10, "sin(90°) = {noventa}");
+        assert!(SPAMath::sin(SPA::TWO_PI).to_raw().abs() < SPA::SCALE_0 / 4);
     }
 }

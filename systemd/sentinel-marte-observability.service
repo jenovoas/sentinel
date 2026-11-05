@@ -1,0 +1,12 @@
+[Unit]
+Description=Start Sentinel observability containers after Docker and WireGuard are ready
+Requires=docker.service wg-quick@wg0.service
+After=docker.service wg-quick@wg0.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/docker start sentinel-marte-loki sentinel-marte-grafana
+
+[Install]
+WantedBy=multi-user.target

@@ -47,7 +47,6 @@ impl BioResonator {
         self.last_pulse = Instant::now();
     }
 
-
     pub fn tick_entropy(&mut self) {
         if self.coherence > S60::zero() {
             self.coherence = self.coherence - self.decay_factor;
@@ -97,5 +96,4 @@ mod tests {
         }
         assert!(bio.is_portal_open());
     }
-
 }

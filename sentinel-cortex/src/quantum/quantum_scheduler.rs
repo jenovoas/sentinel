@@ -292,9 +292,7 @@ impl<C> QuantumScheduler<C> {
     pub fn get_stats(&self) -> SchedulerStats {
         let total = self.successful_tasks();
         let efficiency = if total > 0 {
-            S60::from_raw(
-                (u128::from(self.tasks_in_portal) * S60::SCALE_0 as u128 / total) as i64,
-            )
+            S60::from_raw((u128::from(self.tasks_in_portal) * S60::SCALE_0 as u128 / total) as i64)
         } else {
             S60::zero()
         };
@@ -414,35 +412,23 @@ mod tests {
             enqueue(&mut scheduler, id, TaskType::ZPETune);
         }
 
-        scheduler.tick_with_source(
-            portal_time,
-            PortalSource::TemporalModel,
-            &mut |id| {
-                executed.push(id);
-                Ok(())
-            },
-        );
+        scheduler.tick_with_source(portal_time, PortalSource::TemporalModel, &mut |id| {
+            executed.push(id);
+            Ok(())
+        });
         assert!(executed.is_empty());
 
         scheduler.bio_resonator.lock().unwrap().coherence = S60::one();
-        scheduler.tick_with_source(
-            S60::zero(),
-            PortalSource::TemporalModel,
-            &mut |id| {
-                executed.push(id);
-                Ok(())
-            },
-        );
+        scheduler.tick_with_source(S60::zero(), PortalSource::TemporalModel, &mut |id| {
+            executed.push(id);
+            Ok(())
+        });
         assert!(executed.is_empty());
 
-        scheduler.tick_with_source(
-            portal_time,
-            PortalSource::TemporalModel,
-            &mut |id| {
-                executed.push(id);
-                Ok(())
-            },
-        );
+        scheduler.tick_with_source(portal_time, PortalSource::TemporalModel, &mut |id| {
+            executed.push(id);
+            Ok(())
+        });
         let completed = executed.len();
         assert!((2..=5).contains(&completed));
         assert_eq!(executed, (0..completed as u64).collect::<Vec<_>>());
@@ -497,10 +483,7 @@ mod tests {
         assert_eq!(stats.tasks_critical, 1);
         assert_eq!(stats.tasks_forced, 0);
         assert_eq!(stats.energy_saved, 100);
-        assert_eq!(
-            stats.efficiency,
-            S60::from_raw(5 * S60::SCALE_0 / 6)
-        );
+        assert_eq!(stats.efficiency, S60::from_raw(5 * S60::SCALE_0 / 6));
         assert_eq!(scheduler.efficiency_percent(), Some(83));
     }
 
@@ -508,7 +491,11 @@ mod tests {
     fn emergency_latch_retains_normals_and_flushes_backups_received_after_latch() {
         let mut scheduler = scheduler();
         let mut executed = Vec::new();
-        scheduler.bio_resonator.lock().unwrap().set_dead_man_threshold(0);
+        scheduler
+            .bio_resonator
+            .lock()
+            .unwrap()
+            .set_dead_man_threshold(0);
         enqueue(&mut scheduler, 0, TaskType::ZPETune);
         enqueue(&mut scheduler, 100, TaskType::BackupS60);
 
@@ -543,7 +530,11 @@ mod tests {
         assert_eq!(executed, [100, 101]);
         assert_eq!(scheduler.queue_len(), scheduler.overflow_limit + 1);
         assert_eq!(
-            scheduler.task_queue.iter().map(|task| task.callback).collect::<Vec<_>>(),
+            scheduler
+                .task_queue
+                .iter()
+                .map(|task| task.callback)
+                .collect::<Vec<_>>(),
             (0..=scheduler.overflow_limit as u64).collect::<Vec<_>>()
         );
         let stats = scheduler.get_stats();
@@ -574,7 +565,11 @@ mod tests {
 
         assert_eq!(attempted, [0, 1, 2, 3, 4, 100]);
         assert_eq!(
-            scheduler.task_queue.iter().map(|task| task.callback).collect::<Vec<_>>(),
+            scheduler
+                .task_queue
+                .iter()
+                .map(|task| task.callback)
+                .collect::<Vec<_>>(),
             [5, 6]
         );
         let stats = scheduler.get_stats();
@@ -598,7 +593,11 @@ mod tests {
     fn failed_critical_flush_does_not_block_other_backups_or_discard_normals() {
         let mut scheduler = scheduler();
         let mut attempted = Vec::new();
-        scheduler.bio_resonator.lock().unwrap().set_dead_man_threshold(0);
+        scheduler
+            .bio_resonator
+            .lock()
+            .unwrap()
+            .set_dead_man_threshold(0);
         enqueue(&mut scheduler, 0, TaskType::ZPETune);
         enqueue(&mut scheduler, 100, TaskType::BackupS60);
         enqueue(&mut scheduler, 1, TaskType::PhaseAlign);
@@ -615,7 +614,11 @@ mod tests {
 
         assert_eq!(attempted, [100, 101]);
         assert_eq!(
-            scheduler.task_queue.iter().map(|task| task.callback).collect::<Vec<_>>(),
+            scheduler
+                .task_queue
+                .iter()
+                .map(|task| task.callback)
+                .collect::<Vec<_>>(),
             [0, 1]
         );
         let stats = scheduler.get_stats();
@@ -651,7 +654,6 @@ mod tests {
         assert_eq!(stats.energy_saved, 0);
         assert_eq!(scheduler.efficiency_percent(), None);
     }
-
 
     #[test]
     fn backup_completed_in_a_portal_is_not_flushed_or_counted_twice() {

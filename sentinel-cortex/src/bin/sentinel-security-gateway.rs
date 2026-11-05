@@ -353,20 +353,28 @@ async fn forward_event(state: &GatewayState, event: CortexEvent) {
     // Its verdict is recorded and forwarded, never counted as kernel enforcement.
     let mut jev_verdict = None;
     if event.severity >= 2 {
-        if let (Ok(endpoint), Ok(api_key)) = (std::env::var("JEV_ENDPOINT"), std::env::var("JEV_API_KEY")) {
+        if let (Ok(endpoint), Ok(api_key)) =
+            (std::env::var("JEV_ENDPOINT"), std::env::var("JEV_API_KEY"))
+        {
             use sentinel_cortex::security::jev_decide::{ask_jev, JevQuery, JevVerdict};
             use std::collections::hash_map::DefaultHasher;
             use std::hash::{Hash, Hasher};
             let mut h = DefaultHasher::new();
             event.process_path.as_deref().unwrap_or("").hash(&mut h);
-            let ans = ask_jev(&state.client, &endpoint, &api_key, &JevQuery {
-                event_type: event.event_type.clone(),
-                process_path_hash: format!("{:016x}", h.finish()),
-                uid: event.uid.unwrap_or(0),
-                severity: event.severity,
-                entropy_s60_raw: event.entropy_s60_raw,
-                guardian_code: event.guardian_code,
-            }).await;
+            let ans = ask_jev(
+                &state.client,
+                &endpoint,
+                &api_key,
+                &JevQuery {
+                    event_type: event.event_type.clone(),
+                    process_path_hash: format!("{:016x}", h.finish()),
+                    uid: event.uid.unwrap_or(0),
+                    severity: event.severity,
+                    entropy_s60_raw: event.entropy_s60_raw,
+                    guardian_code: event.guardian_code,
+                },
+            )
+            .await;
             let _ = state.wal.append(&event_id, "jev_decide",
                 &serde_json::json!({"verdict": format!("{:?}", ans.verdict), "confidence_mille": ans.confidence_mille}).to_string(),
                 DataLane::Security);
@@ -376,7 +384,6 @@ async fn forward_event(state: &GatewayState, event: CortexEvent) {
             }
         }
     }
-
 
     let is_exec = matches!(
         event.event_type.as_str(),

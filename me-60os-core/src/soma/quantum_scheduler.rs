@@ -39,9 +39,9 @@ impl QuantumSchedulerCore {
         let t_venus = t / SPA::from_raw(T_VENUS_RAW);
         let angle3 = two_pi * t_venus;
 
-        let s1 = SPAMath::sin(angle1);
-        let s2 = SPAMath::sin(angle2);
-        let s3 = SPAMath::sin(angle3);
+        let s1 = SPAMath::sin_rad(angle1);
+        let s2 = SPAMath::sin_rad(angle2);
+        let s3 = SPAMath::sin_rad(angle3);
 
         (s1 + s2 + s3) / 3
     }
@@ -256,5 +256,95 @@ impl QuantumSchedulerDaemon {
         let mut running_guard = self.running.lock().unwrap();
         *running_guard = false;
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Muestreo del ciclo maestro a resolución de 0,1 s.
+    fn muestreo_ciclo() -> impl Iterator<Item = i64> {
+        let paso = SPA::SCALE_0 / 10;
+        (0..=(T_CYCLE_RAW / paso)).map(move |i| i * paso)
+    }
+
+    #[test]
+    fn phi_es_cero_en_el_origen_del_ciclo() {
+        assert_eq!(QuantumSchedulerCore::phi(SPA::zero()).to_raw(), 0);
+    }
+
+    /// `phi` es una media de tres senos: nunca puede salir del intervalo [-1, 1].
+    /// Si esto falla, hay una doble escala en `SPA / SPA` o en `SPA * SPA`.
+    #[test]
+    fn phi_permanece_dentro_de_la_amplitud_unitaria() {
+        for t in muestreo_ciclo() {
+            let raw = QuantumSchedulerCore::phi(SPA::from_raw(t)).to_raw();
+            assert!(
+                raw.abs() <= SPA::SCALE_0,
+                "phi fuera de rango en t_raw={t}: {raw}"
+            );
+        }
+    }
+
+    /// Determinismo exigido por el contrato S60: misma entrada, mismo entero.
+    #[test]
+    fn phi_es_determinista_bit_a_bit() {
+        for t in [0i64, 1, 216_000, 4_320_000, 33_000_000, 68_000_000] {
+            let a = QuantumSchedulerCore::phi(SPA::from_raw(t));
+            let b = QuantumSchedulerCore::phi(SPA::from_raw(t));
+            assert_eq!(a.to_raw(), b.to_raw(), "phi no determinista en t={t}");
+        }
+    }
+
+    /// `is_portal_open` debe ser exactamente el umbral aplicado sobre `phi`
+    /// del tiempo normalizado al ciclo maestro.
+    #[test]
+    fn is_portal_open_es_el_umbral_sobre_phi_normalizado() {
+        for t in muestreo_ciclo().step_by(37) {
+            let normalizado = t.rem_euclid(T_CYCLE_RAW);
+            let esperado =
+                QuantumSchedulerCore::phi(SPA::from_raw(normalizado)).to_raw() > THETA_RAW;
+            assert_eq!(
+                QuantumSchedulerCore::is_portal_open(SPA::from_raw(t)),
+                esperado,
+                "discrepancia de portal en t_raw={t}"
+            );
+        }
+    }
+
+    /// El portal debe abrir dentro del ciclo maestro con senos en radianes.
+    /// (Antes del 2026-11-04 `phi` usaba `sin` en grados y la amplitud máxima
+    /// era 0,6175: el portal de 0,75 no abría nunca.)
+    #[test]
+    fn el_portal_abre_al_menos_una_vez_en_el_ciclo_maestro() {
+        let abiertos = muestreo_ciclo()
+            .filter(|t| QuantumSchedulerCore::is_portal_open(SPA::from_raw(*t)))
+            .count();
+        assert!(
+            abiertos > 0,
+            "ningún portal abierto en 68 s: revisar unidades de phi"
+        );
+    }
+
+    /// Relaciones enteras del ciclo maestro: 68 s = 4·T_BIO = 16·T_CRYS.
+    #[test]
+    fn el_ciclo_maestro_es_multiplo_entero_de_bio_y_cristal() {
+        assert_eq!(T_CYCLE_RAW, 4 * T_BIO_RAW);
+        assert_eq!(T_CYCLE_RAW, 16 * T_CRYS_RAW);
+        assert_eq!(T_CRYS_RAW, 4 * SPA::SCALE_0 + 15 * SPA::SCALE_1);
+    }
+
+    /// (Caracterización.) T_VENUS = 16,18 s no divide 68 s (68/16,18 = 4,2027…),
+    /// por lo que el ciclo no es período común de las tres componentes: `phi` no
+    /// vuelve al valor inicial al cerrar el ciclo. Esto invalida hablar de un
+    /// "ciclo completo" cerrado mientras no se ajuste T_VENUS o T_CYCLE.
+    #[test]
+    fn el_ciclo_maestro_no_es_periodo_comun_por_la_componente_venus() {
+        assert_ne!(T_CYCLE_RAW % T_VENUS_RAW, 0);
+        assert_ne!(
+            QuantumSchedulerCore::phi(SPA::from_raw(T_CYCLE_RAW)),
+            QuantumSchedulerCore::phi(SPA::zero())
+        );
     }
 }

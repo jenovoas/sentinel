@@ -74,6 +74,17 @@ impl ResonantLatticeBridge {
         self.lattice.total_energy().to_raw()
     }
 
+    /// Coherencia medida del retículo: 0 = fases opuestas, `SCALE_0` = fases alineadas.
+    /// Es la señal real que la cadena DTC → lattice entrega al portal del scheduler.
+    pub fn measure_coherence_raw(&mut self) -> i64 {
+        self.lattice.measure_coherence_py()
+    }
+
+    /// Número de nodos del retículo.
+    pub fn node_count(&self) -> usize {
+        self.lattice.crystals.len()
+    }
+
     /// Get amplitudes as ME-60OS raw S60 values.
     pub fn amplitudes_raw(&self) -> Vec<i64> {
         self.lattice

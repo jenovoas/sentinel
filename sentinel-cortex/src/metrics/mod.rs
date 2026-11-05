@@ -26,4 +26,10 @@ pub struct MetricsSnapshot {
     pub dtc_ticks: u64,
     pub bio_coherence_raw: i64,
     pub bio_portal_open: bool,
+    // Cadena DTC → lattice → portal (medida, no temporizador).
+    pub lattice_energy_raw: i64,
+    pub lattice_coherence_raw: i64,
+    pub lattice_coherence_percent: u64,
+    pub lattice_portal_open: bool,
+    pub chain_ticks: u64,
 }
