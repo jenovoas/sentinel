@@ -154,3 +154,7 @@ Este proyecto cuenta con soporte de grafo de conocimiento local mediante **graph
 - Contrasta referencias al kernel, llamadas al sistema y macros con `include/linux/`, `kernel/` o `man 2`/`man 7`. Basa parámetros y tipos de Rust en `rustc`, Rust Reference o Nomicon, especialmente para layouts.
 - Sustenta pruebas y mediciones exclusivamente con herramientas deterministas del sistema operativo, como `perf`, `bpftool`, `sysctl`, `ip` y `wg`.
 - Prioriza comandos exactos, opciones, rutas de código y salidas esperadas. Evita explicaciones genéricas que no ayuden a ejecutar o verificar.
+
+## Skills del sistema Sentinel / S60
+
+Al trabajar en Sentinel, MyCNet o ME-60OS, consulta y aplica las skills disponibles `sentinel-knowledge-layer`, `sentinel-comprehension` y `sentinel-s60-stack` en `.agents/skills/` antes de tareas de investigación, arquitectura, matemáticas, integración o código. Para tareas específicas, carga la capa pertinente; en cambios que crucen capas, carga las tres. Las skills también están enlazadas en `.claude/skills/`, `.gemini/skills/` y `.opencode/skills/`. En Hermes están instaladas en `~/.hermes/skills/`. Si una skill difiere de estas instrucciones vigentes, del código fuente o de la evidencia verificable, prevalecen estos últimos; conserva los detalles obsoletos como contexto histórico y no los afirmes como estado actual.
