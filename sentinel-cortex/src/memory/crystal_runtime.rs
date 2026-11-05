@@ -257,6 +257,11 @@ impl CrystalRuntime {
             self.sync_shm()?;
         }
 
+        if self.qhc_tick > 0 && self.qhc_tick % 68 == 0 {
+            self.entropy_reset();
+            tracing::info!(tick = self.qhc_tick, "DTC 68-tick entropy reset executed");
+        }
+
         Ok(self.last_tick_interval_ns)
     }
 
@@ -502,6 +507,47 @@ impl CrystalRuntime {
             .iter()
             .map(|v| v.to_raw())
             .collect()
+    }
+
+    /// Lattice garbage collection: disipa amplitudes por debajo del umbral de ruido S60.
+    pub fn lattice_gc(&mut self) -> Result<usize, String> {
+        let mut cleaned = 0;
+        const NOISE_FLOOR: i64 = 1_000;
+        for crystal in self.lane_a.crystals.iter_mut() {
+            let raw = crystal.amplitude.to_raw();
+            if raw.abs() < NOISE_FLOOR && raw != 0 {
+                crystal.amplitude = me60os_core::spa::SPA::zero();
+                cleaned += 1;
+            }
+        }
+        for crystal in self.lane_b.crystals.iter_mut() {
+            let raw = crystal.amplitude.to_raw();
+            if raw.abs() < NOISE_FLOOR && raw != 0 {
+                crystal.amplitude = me60os_core::spa::SPA::zero();
+                cleaned += 1;
+            }
+        }
+        Ok(cleaned)
+    }
+
+    /// Re-alineacion de fases de las mallas con la modulacion del QHC.
+    pub fn phase_align(&mut self) -> Result<(), String> {
+        let qhc = &self.qhc;
+        let tick = self.qhc_tick;
+        for crystal in self.lane_a.crystals.iter_mut() {
+            crystal.phase = qhc.apply_modulation(crystal.phase, tick);
+        }
+        for crystal in self.lane_b.crystals.iter_mut() {
+            crystal.phase = qhc.apply_modulation(crystal.phase, tick);
+        }
+        Ok(())
+    }
+
+    /// Reset entropico del ciclo de 68 ticks: limpia acumuladores integrales PID y purga ruido.
+    pub fn entropy_reset(&mut self) {
+        self.pid_a.reset_internal();
+        self.pid_b.reset_internal();
+        let _ = self.lattice_gc();
     }
 
     pub fn reset(&mut self) {

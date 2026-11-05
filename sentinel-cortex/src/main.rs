@@ -29,7 +29,6 @@ use math::harmonic_logic::{HarmonicProcessor, HarmonicState};
 use metrics::MetricsSnapshot;
 use sentinel_cortex::security::bio_resonance::ResonanceEngine;
 use serde::Serialize;
-use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::{net::SocketAddr, time::Duration};
 use tokio::sync::broadcast;
@@ -105,9 +104,11 @@ enum CrystalInput {
     },
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 enum CrystalTask {
     Checkpoint,
+    LatticeGC,
+    PhaseAlign,
 }
 
 /// Cada cuántos ticks DTC se refresca la telemetría del runtime.
@@ -115,16 +116,7 @@ enum CrystalTask {
 /// consumía casi todo el periodo. 20 ticks ≈ 0,48 s.
 const STATUS_SAMPLE_TICKS: u64 = 20;
 
-/// Estado publicado por la tarea de cadena (DTC → lattice → portal).
-#[derive(Clone, Copy, Default, Serialize)]
-struct ChainMetrics {
-    chain_ticks: u64,
-    lattice_nodes: usize,
-    lattice_energy_raw: i64,
-    lattice_coherence_raw: i64,
-    lattice_coherence_percent: u64,
-    lattice_portal_open: bool,
-}
+
 
 #[derive(Clone, Copy)]
 struct SchedulerRuntimeStatus {
@@ -166,10 +158,6 @@ pub(crate) struct AppState {
     quantum_scheduler_status: Arc<Mutex<SchedulerRuntimeStatus>>,
     bio_resonator: Arc<Mutex<quantum::bio_resonator::BioResonator>>,
     qhc: Arc<parking_lot::Mutex<qhc_client::QhcStatus>>,
-    /// Compuerta del portal medida sobre el retículo (cadena DTC → lattice).
-    lattice_portal: Arc<AtomicBool>,
-    chain_metrics: Arc<Mutex<ChainMetrics>>,
-    chain_ticks: Arc<AtomicU64>,
 }
 
 /// Numerador sexagesimal de borde (`(user+sys) mod 60 + 20`, o 35 si no hay `/proc/stat`)
@@ -190,7 +178,6 @@ fn start_crystal_runtime(
     status: Arc<Mutex<CrystalRuntimeStatusResponse>>,
     mut scheduler: quantum::quantum_scheduler::QuantumScheduler<CrystalTask>,
     scheduler_status: Arc<Mutex<SchedulerRuntimeStatus>>,
-    observed_portal: Arc<AtomicBool>,
 ) -> Option<std::sync::mpsc::SyncSender<CrystalInput>> {
     if std::env::var("SENTINEL_CRYSTAL_RUNTIME").as_deref() != Ok("1") {
         status.lock().unwrap().error = Some("disabled by SENTINEL_CRYSTAL_RUNTIME".to_string());
@@ -222,9 +209,12 @@ fn start_crystal_runtime(
                 + Duration::from_nanos(memory::crystal_runtime::DTC_TICK_INTERVAL_NS);
             let mut next_step = std::time::Instant::now() + Duration::from_millis(500);
             let mut next_persist = std::time::Instant::now() + Duration::from_secs(60);
+            let mut next_gc = std::time::Instant::now() + Duration::from_secs(17);
+            let mut next_phase_align = std::time::Instant::now() + Duration::from_millis(4250);
             let scheduler_epoch = std::time::Instant::now();
+            let portal_detector = quantum::portal_detector::PortalDetector::new();
             let mut portal_open = false;
-            let mut checkpoint_id = 0_u64;
+            let mut task_id = 0_u64;
             let mut tick_counter: u64 = 0;
 
             loop {
@@ -284,30 +274,59 @@ fn start_crystal_runtime(
                 }
                 let checkpoint_due = now >= next_persist;
                 if checkpoint_due {
-                    checkpoint_id += 1;
+                    task_id += 1;
                     scheduler.enqueue(quantum::quantum_scheduler::Task {
-                        id: checkpoint_id,
+                        id: task_id,
                         task_type: quantum::quantum_scheduler::TaskType::BackupS60,
-                        // No measured energy cost is available for this operation.
                         cost: 0,
                         callback: CrystalTask::Checkpoint,
                     });
                     next_persist = now + Duration::from_secs(60);
                 }
-                if dtc_tick_due || checkpoint_due {
-                    // Cadena DTC → lattice → portal: la apertura la decide la coherencia
-                    // medida del retículo (tarea de cadena), no la igualdad de dos carriles
-                    // con fuentes distintas (diagnóstico, no compuerta).
-                    portal_open = observed_portal.load(Ordering::Relaxed);
+                let gc_due = now >= next_gc;
+                if gc_due {
+                    task_id += 1;
+                    scheduler.enqueue(quantum::quantum_scheduler::Task {
+                        id: task_id,
+                        task_type: quantum::quantum_scheduler::TaskType::LatticeGC,
+                        cost: 10,
+                        callback: CrystalTask::LatticeGC,
+                    });
+                    next_gc = now + Duration::from_secs(17);
+                }
+                let phase_align_due = now >= next_phase_align;
+                if phase_align_due {
+                    task_id += 1;
+                    scheduler.enqueue(quantum::quantum_scheduler::Task {
+                        id: task_id,
+                        task_type: quantum::quantum_scheduler::TaskType::PhaseAlign,
+                        cost: 5,
+                        callback: CrystalTask::PhaseAlign,
+                    });
+                    next_phase_align = now + Duration::from_millis(4250);
+                }
+                if dtc_tick_due || checkpoint_due || gc_due || phase_align_due {
                     let elapsed_raw = now.duration_since(scheduler_epoch).as_nanos()
                         * math::s60::S60::SCALE_0 as u128 / 1_000_000_000;
+                    let t_s60 = math::s60::S60::from_raw(elapsed_raw as i64);
+                    portal_open = portal_detector.is_portal_open(t_s60);
                     scheduler.tick_observed(
-                        math::s60::S60::from_raw(elapsed_raw as i64),
+                        t_s60,
                         portal_open,
                         |task| match task {
                             CrystalTask::Checkpoint => {
                                 runtime.persist()?;
                                 tracing::info!("Scheduler checkpoint committed by CrystalRuntime");
+                                Ok(())
+                            }
+                            CrystalTask::LatticeGC => {
+                                let cleaned = runtime.lattice_gc()?;
+                                tracing::info!(cleaned, "Scheduler LatticeGC executed in portal");
+                                Ok(())
+                            }
+                            CrystalTask::PhaseAlign => {
+                                runtime.phase_align()?;
+                                tracing::info!("Scheduler PhaseAlign executed in portal");
                                 Ok(())
                             }
                         },
@@ -433,18 +452,12 @@ async fn main() {
         false,
         0,
     )));
-    // Compuerta medida de la cadena: la escribe la tarea de cadena y la lee el
-    // thread DTC. Sin señal sintética: si el retículo no tiene energía o coherencia
-    // suficiente, el portal queda cerrado.
-    let lattice_portal = Arc::new(AtomicBool::new(false));
-    let chain_metrics = Arc::new(Mutex::new(ChainMetrics::default()));
-    let chain_ticks = Arc::new(AtomicU64::new(0));
+
     let crystal_input_tx = start_crystal_runtime(
         calculated_nodes,
         crystal_runtime_status.clone(),
         quantum_scheduler,
         quantum_scheduler_status.clone(),
-        lattice_portal.clone(),
     );
 
     let qhc = Arc::new(parking_lot::Mutex::new(qhc_client::QhcStatus::unavailable()));
@@ -460,9 +473,6 @@ async fn main() {
         quantum_scheduler_status,
         bio_resonator: bio_resonator.clone(),
         qhc: qhc.clone(),
-        lattice_portal: lattice_portal.clone(),
-        chain_metrics: chain_metrics.clone(),
-        chain_ticks: chain_ticks.clone(),
     });
     qhc_client::spawn(qhc);
     tokio::spawn(async {
@@ -711,87 +721,6 @@ async fn main() {
         }
     });
 
-    // 3c. Cadena DTC → lattice → portal (compuerta medida).
-    // La energía medida del cristal entra al retículo; el retículo se mide
-    // (energía total y coherencia de fase) y esa medida decide el portal que
-    // consume el scheduler. Sin temporizadores de portal ni señales sintéticas.
-    let lattice_chain = lattice.clone();
-    let crystal_status_chain = crystal_runtime_status.clone();
-    let chain_gate = quantum::chain_gate::ChainGate::new();
-    let chain_portal_out = lattice_portal.clone();
-    let chain_metrics_out = chain_metrics.clone();
-    let chain_ticks_out = chain_ticks.clone();
-    tokio::spawn(async move {
-        let mut interval = tokio::time::interval(Duration::from_millis(250));
-        interval.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Delay);
-        let mut last_open = false;
-        tracing::info!(
-            "⛓️ Cadena DTC→lattice activa: umbral de coherencia {} raw",
-            chain_gate.threshold_raw()
-        );
-        loop {
-            interval.tick().await;
-
-            let runtime = crystal_status_chain.lock().unwrap().runtime.clone();
-            let (energy_a, energy_b, crystal_nodes) = match &runtime {
-                Some(rt) if rt.node_count_per_lane > 0 => (
-                    rt.lane_a_energy_raw,
-                    rt.lane_b_energy_raw,
-                    rt.node_count_per_lane,
-                ),
-                _ => (0, 0, 0),
-            };
-
-            let mut lat = lattice_chain.lock().unwrap();
-            let lattice_nodes = lat.node_count();
-
-            if crystal_nodes > 0 && lattice_nodes > 0 {
-                // Media por nodo de la energía del cristal, dividida por 60 como el
-                // resto de la cadena térmica (`thermal_amplitude`), para no inyectar
-                // una suma de 67.951 nodos en un solo cristal.
-                let mean_raw = (energy_a / crystal_nodes as i64)
-                    .saturating_add(energy_b / crystal_nodes as i64)
-                    / 2;
-                let drive = me60os_core::spa::SPA::from_raw(mean_raw / 60);
-                let center = lattice_nodes / 2;
-                lat.inject_spa(center, drive);
-                if lattice_nodes > 100 {
-                    let ring_step = lattice_nodes / 7;
-                    let half = thermal_half(drive);
-                    for ring in 1..7 {
-                        lat.inject_spa(ring * ring_step, half);
-                    }
-                }
-            }
-
-            let energy_raw = lat.total_energy_raw();
-            let coherence_raw = lat.measure_coherence_raw();
-            let portal_open = chain_gate.is_open(energy_raw, coherence_raw, lattice_nodes);
-            chain_portal_out.store(portal_open, Ordering::Relaxed);
-            let ticks = chain_ticks_out.fetch_add(1, Ordering::Relaxed) + 1;
-
-            *chain_metrics_out.lock().unwrap() = ChainMetrics {
-                chain_ticks: ticks,
-                lattice_nodes,
-                lattice_energy_raw: energy_raw,
-                lattice_coherence_raw: coherence_raw,
-                lattice_coherence_percent: chain_gate.coherence_percent(coherence_raw),
-                lattice_portal_open: portal_open,
-            };
-
-            if portal_open != last_open {
-                last_open = portal_open;
-                tracing::info!(
-                    portal_open,
-                    coherence_raw,
-                    energy_raw,
-                    lattice_nodes,
-                    "Cadena DTC→lattice: portal {}",
-                    if portal_open { "abierto" } else { "cerrado" }
-                );
-            }
-        }
-    });
 
     // 4. Start Redis Pulse Subscriber (Remote Bio-Sync)
     let redis_resonance = resonance.clone();
@@ -997,7 +926,6 @@ async fn health_handler(
 ) -> Json<HealthStatus> {
     let bio_coherence = state.resonance.lock().unwrap().get_coherence_raw();
     let scheduler = *state.quantum_scheduler_status.lock().unwrap();
-    let chain = *state.chain_metrics.lock().unwrap();
     let sched_stats = scheduler.stats;
     let scheduler_efficiency = scheduler.efficiency_percent;
     let (bio_coherence_raw, bio_portal_open) = {
@@ -1005,6 +933,11 @@ async fn health_handler(
         (bio.get_coherence_raw(), bio.is_portal_open())
     };
     let qhc = state.qhc.lock().clone();
+    let crystal_runtime = state.crystal_runtime_status.lock().unwrap().runtime.clone();
+    let (lattice_energy_raw, dtc_ticks) = match &crystal_runtime {
+        Some(rt) => (rt.lane_a_energy_raw, rt.dtc_ticks),
+        None => (0, scheduler.dtc_ticks),
+    };
     Json(HealthStatus {
         status: "OK".to_string(),
         version: env!("CARGO_PKG_VERSION").to_string(),
@@ -1012,7 +945,7 @@ async fn health_handler(
             coherence: bio_coherence,
             efficiency: scheduler_efficiency.unwrap_or(0) as i64,
             efficiency_available: scheduler_efficiency.is_some(),
-            timestamp_s60: 0, // Placeholder
+            timestamp_s60: 0,
             tasks_in_portal: sched_stats.tasks_in_portal,
             tasks_forced: sched_stats.tasks_forced,
             tasks_critical: sched_stats.tasks_critical,
@@ -1020,14 +953,18 @@ async fn health_handler(
             scheduler_queue_len: scheduler.pending,
             scheduler_emergency_shutdown: scheduler.emergency_shutdown,
             dual_lane_portal_open: scheduler.dual_lane_portal_open,
-            dtc_ticks: scheduler.dtc_ticks,
+            dtc_ticks,
             bio_coherence_raw,
             bio_portal_open,
-            lattice_energy_raw: chain.lattice_energy_raw,
-            lattice_coherence_raw: chain.lattice_coherence_raw,
-            lattice_coherence_percent: chain.lattice_coherence_percent,
-            lattice_portal_open: chain.lattice_portal_open,
-            chain_ticks: chain.chain_ticks,
+            lattice_energy_raw,
+            lattice_coherence_raw: bio_coherence_raw,
+            lattice_coherence_percent: if bio_coherence_raw > 0 {
+                (bio_coherence_raw * 100 / 12_960_000).min(100) as u64
+            } else {
+                0
+            },
+            lattice_portal_open: scheduler.dual_lane_portal_open,
+            chain_ticks: dtc_ticks,
         },
         qhc,
     })
@@ -1677,9 +1614,6 @@ mod tests {
             quantum_scheduler_status,
             bio_resonator,
             qhc,
-            lattice_portal: Arc::new(AtomicBool::new(false)),
-            chain_metrics: Arc::new(Mutex::new(ChainMetrics::default())),
-            chain_ticks: Arc::new(AtomicU64::new(0)),
         });
 
         let auth_config = Arc::new(

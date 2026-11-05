@@ -7,7 +7,6 @@
 //! Implements the core quantum-bio alignment logic in S60.
 
 pub mod bio_resonator;
-pub mod chain_gate;
 pub mod portal_detector;
 pub mod quantum_scheduler;
 pub mod semantic_router;
