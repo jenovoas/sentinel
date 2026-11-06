@@ -120,7 +120,8 @@
 
 - Alcance solicitado por el operador: `fenix`, `kingu`, `marte`, `hercules`, `ocean` e `ifenix`; máximo físico agregado 1 GiB por host y exportación a Loki solo de seguridad/errores.
 - En `hercules`/`ocean` solo se permite gestionar logs del sistema operativo; no tocar DNS, AD, firewall ni desplegar/modificar Sentinel.
-- Cambio OpenSpec: `openspec/changes/limite-agregado-logs/`. No habilitar cuotas ni cambiar mounts del filesystem hasta demostrar el mecanismo en entorno descartable y obtener autorización explícita para cualquier mantenimiento offline.
+- Cambio OpenSpec: `openspec/changes/limite-agregado-logs/`. El piloto de Fénix quedó parcialmente desplegado el 2026-11-06: `/var/log` está montado sobre ext4 loop de 1 GiB, Docker enruta los 20 contenedores activos a journald no bloqueante y los servicios verificados están sanos. La cuota agregada no está completa: firewalld conserva abierto un descriptor al `/var/log` original y falta su reinicio controlado; no limpiar el árbol original hasta reabrir ese escritor. Los otros cinco nodos no cambiaron.
+- No modificar firewalld en `hercules`/`ocean`; no avanzar a otro host antes de completar y verificar el piloto, el orden de arranque y el rollback.
 - Preservar historial existente; el CSV de Kingu no se trunca ni rota hasta identificar el escritor, verificar respaldo restaurable y aprobar retención.
 - Evidencia, límites por host y estado real (preparación frente a despliegue): registrar en el repo y en el vault.
 
