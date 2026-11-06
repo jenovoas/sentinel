@@ -1,0 +1,14 @@
+[Unit]
+Description=Montaje del filesystem limitado sobre /var/log
+Requires=var-lib-sentinel\x2dlogquota-fs.mount
+After=var-lib-sentinel\x2dlogquota-fs.mount
+Before=systemd-journald.service docker.service samba-ad-dc.service
+
+[Mount]
+What=/var/lib/sentinel-logquota/fs/var-log
+Where=/var/log
+Type=none
+Options=bind
+
+[Install]
+WantedBy=local-fs.target

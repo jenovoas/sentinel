@@ -1,0 +1,12 @@
+[Unit]
+Description=Filesystem ext4 con capacidad limitada para logs Sentinel
+Before=var-log.mount
+
+[Mount]
+What=/var/lib/sentinel-logquota/logs.img
+Where=/var/lib/sentinel-logquota/fs
+Type=ext4
+Options=loop,nodev,nosuid,noatime
+
+[Install]
+WantedBy=local-fs.target

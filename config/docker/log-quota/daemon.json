@@ -1,0 +1,8 @@
+{
+  "live-restore": true,
+  "log-driver": "journald",
+  "log-opts": {
+    "mode": "non-blocking",
+    "max-buffer-size": "4m"
+  }
+}
