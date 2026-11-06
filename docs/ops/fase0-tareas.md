@@ -118,7 +118,7 @@
 
 ## T10. Límites agregados de logs por host — `agente:infra-logs`
 
-- Alcance solicitado por el operador: `fenix`, `kingu`, `marte`, `hercules`, `ocean` e `ifenix`; máximo físico agregado 5 GiB por host y exportación a Loki solo de seguridad/errores.
+- Alcance solicitado por el operador: `fenix`, `kingu`, `marte`, `hercules`, `ocean` e `ifenix`; máximo físico agregado 1 GiB por host y exportación a Loki solo de seguridad/errores.
 - En `hercules`/`ocean` solo se permite gestionar logs del sistema operativo; no tocar DNS, AD, firewall ni desplegar/modificar Sentinel.
 - Cambio OpenSpec: `openspec/changes/limite-agregado-logs/`. No habilitar cuotas ni cambiar mounts del filesystem hasta demostrar el mecanismo en entorno descartable y obtener autorización explícita para cualquier mantenimiento offline.
 - Preservar historial existente; el CSV de Kingu no se trunca ni rota hasta identificar el escritor, verificar respaldo restaurable y aprobar retención.

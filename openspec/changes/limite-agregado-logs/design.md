@@ -7,7 +7,7 @@ Ver `proposal.md` para la motivación y `specs/log-retention/spec.md` para los c
 ## Goals / Non-Goals
 
 **Goals:**
-- Aplicar un límite agregado duro común a las rutas de logs identificadas en cada host.
+- Aplicar un límite agregado duro común de 1 GiB a las rutas de logs identificadas en cada host.
 - Reducir la exportación de Fénix/Marte a eventos con clasificación verificable de seguridad o error.
 - Evitar pérdida de historial durante migración o rotación no respaldada.
 
@@ -18,7 +18,7 @@ Ver `proposal.md` para la motivación y `specs/log-retention/spec.md` para los c
 
 ## Decisions
 
-- **Cuota ext4 de proyecto agregada por host.** Asignar un mismo project ID y límite duro a todas las raíces de logs incluidas en el mismo filesystem, con herencia para archivos y directorios nuevos. Se prefiere a límites aislados por servicio porque estos no limitan el agregado, y a reubicar todas las fuentes a un filesystem nuevo porque las rutas de Docker, journal y Loki requieren migraciones coordinadas. El valor se establecerá en 5 GiB por host, con `project` y cuotas de filesystem habilitados únicamente después de probar la operación en una imagen/VM descartable. La prueba local mostró que un escritor con `CAP_SYS_RESOURCE` puede superar la cuota; por tanto, no se desplegará este mecanismo hasta verificar que todos los escritores cubiertos carecen de esa capacidad o que otro control impide el bypass.
+- **Cuota física agregada por host.** El presupuesto máximo es 1 GiB para todas las rutas de logs, incluido Docker y Loki donde aplique. Las cuotas por servicio son presupuestos internos y no sustituyen el tope agregado. La prueba local de ext4 mostró que un escritor con `CAP_SYS_RESOURCE` puede superar una cuota de proyecto; por tanto, no se declarará una garantía mientras algún escritor cubierto pueda eludirla.
 - **Gate de filesystem.** No asumir que la función puede activarse en línea. Documentar el procedimiento compatible con cada versión de ext4, probar remonte, reinicio, escritura excedente denegada y recuperación en entorno descartable. Si requiere desmontaje, `e2fsck`, reinicio o recuperación fuera de banda, no ejecutar hasta aprobación explícita de ventana, consola de recuperación y respaldo verificado por host. Si no puede garantizarse la cobertura agregada sin operación offline, mantener el despliegue bloqueado en vez de aplicar cuotas parciales.
 - **Inventario antes de asignar cuota.** Revalidar paths y filesystems en vivo. Incluir `/var/log` (journal, syslog, audit y Sentinel), logs Docker `json-file`, volumen Loki y cualquier log identificado fuera de esos árboles. Evitar imponer el project ID a capas o datos Docker ajenos al alcance; si un montaje compartido impide aislar Loki, rediseñar la ruta de persistencia primero. La cuota representa bloques asignados por el filesystem, no un recuento idéntico al tamaño lógico de archivos.
 - **Controles por fuente.** Añadir límites/rotación en journald, rsyslog/logrotate y Docker como defensa adicional y para mantener historial útil, no como prueba del techo total. Mantener retención temporal de Loki junto a la cuota física.
@@ -38,7 +38,7 @@ Ver `proposal.md` para la motivación y `specs/log-retention/spec.md` para los c
 
 1. Completar OpenSpec y agregar tarea operativa explícita que permita únicamente límites de logs en los seis hosts, preservando las exclusiones de AD/DNS/firewall/Sentinel en la DMZ.
 2. Preflight de solo lectura en cada host: branch/estado, conectividad, servicios, uso y filesystem, rutas abiertas, espacio disponible y política de recuperación. Cuantificar transferencia a Loki; anotar que la facturación no se verificó.
-3. Preparar y probar en VM descartable la asignación de cuotas a un ID común, herencia, reinicio, fallo al superar 5 GiB y restauración. Validar cobertura del árbol de logs frente a rutas reales.
+3. Preparar y probar en VM descartable la asignación de cuota agregada de 1 GiB, herencia, reinicio, rechazo de escrituras excedentes y restauración. Validar cobertura de las rutas reales de journald, syslog, Docker, Loki y Sentinel.
 4. Si el gate de filesystem requiere cambio offline, detener el flujo de despliegue y solicitar autorización específica para ventana y recuperación. Sin ese permiso, no presentar el límite duro como desplegado.
 5. Con gates aprobados, desplegar un host piloto, validar sistema y servicios, observar cuota y egreso; después avanzar nodo por nodo con respaldo y rollback configurado antes de cada cambio.
 6. Rollback: restaurar configuraciones previas y rutas desde respaldos; no desactivar/retirar cuota si eso permite crecimiento sin límite; no borrar datos de logs o CSV como parte de la reversión.

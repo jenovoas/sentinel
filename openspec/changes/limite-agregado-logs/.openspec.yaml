@@ -1,4 +1,4 @@
 schema: spec-driven
 created: 2026-11-06
-goal: Garantizar que el uso agregado de logs no supere 5 GiB por host,
+goal: Garantizar que el uso agregado de logs no supere 1 GiB por host,
   conservando en Loki solo seguridad y errores
