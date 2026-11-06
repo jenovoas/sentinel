@@ -19,10 +19,15 @@ El sistema SHALL limitar a 1 GiB el almacenamiento físico agregado de todas las
 - **THEN** la retención configurada libera espacio elegible o las escrituras adicionales se rechazan
 - **AND** otros datos del host no se quedan sin espacio por crecimiento de logs
 
-#### Scenario: Escritor con capacidad de eludir cuotas
-- **WHEN** un proceso que escribe en una ruta incluida posee `CAP_SYS_RESOURCE` y puede superar el hard limit del proyecto
-- **THEN** el límite agregado no se considera garantizado
-- **AND** no se despliega la cuota hasta retirar esa capacidad del escritor o implantar un mecanismo que impida el bypass
+#### Scenario: Escritor con capacidades elevadas
+- **WHEN** un proceso con `CAP_SYS_RESOURCE` escribe en una ruta incluida
+- **THEN** el filesystem de tamaño fijo rechaza escrituras cuando se agota su capacidad
+- **AND** el límite no depende de cuotas de proyecto que el proceso pueda eludir
+
+#### Scenario: Agotamiento de logs de contenedores
+- **WHEN** Docker no puede persistir más mensajes porque el filesystem de logs alcanzó su límite
+- **THEN** la entrega no bloqueante permite continuar a la aplicación del contenedor
+- **AND** Docker descarta los mensajes nuevos si también se llena el búfer finito
 
 ### Requirement: Exportación limitada a seguridad y errores
 El forwarder SHALL enviar a Loki únicamente eventos clasificados como seguridad o error y SHALL excluir eventos informativos y de depuración.
