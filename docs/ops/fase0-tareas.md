@@ -116,6 +116,13 @@
 - Pendiente fuera de esta corrección: definir/conectar presencia de operador
   autorizada; no asumir que QHC, Redis sin validar o el singleton FFI la proveen.
 
+## T10. Límites agregados de logs por host — `agente:infra-logs`
+
+- Alcance solicitado por el operador: `fenix`, `kingu`, `marte`, `hercules`, `ocean` e `ifenix`; máximo físico agregado 5 GiB por host y exportación a Loki solo de seguridad/errores.
+- En `hercules`/`ocean` solo se permite gestionar logs del sistema operativo; no tocar DNS, AD, firewall ni desplegar/modificar Sentinel.
+- Cambio OpenSpec: `openspec/changes/limite-agregado-logs/`. No habilitar cuotas ni cambiar mounts del filesystem hasta demostrar el mecanismo en entorno descartable y obtener autorización explícita para cualquier mantenimiento offline.
+- Preservar historial existente; el CSV de Kingu no se trunca ni rota hasta identificar el escritor, verificar respaldo restaurable y aprobar retención.
+- Evidencia, límites por host y estado real (preparación frente a despliegue): registrar en el repo y en el vault.
 
 ---
 
@@ -123,4 +130,4 @@
 
 Pegable en cada prompt (del procedimiento estándar §7):
 
-> Despliegue Sentinel: `sudo -n` siempre en remoto; cero passwords/tokens en CLI; prohibido `curl -k`; prohibido `sed -i` en `/etc` (plantilla + backup + validate); imágenes pineadas; `graphify update` una vez; Soma e inferencia GPU fuera de alcance; hercules/ocean no se tocan salvo T0; marte por 4222; un cambio = un commit + push + entrada en vault. Leer `docs/ops/procedimiento-despliegue-estandar.md` antes de empezar.
+> Despliegue Sentinel: `sudo -n` siempre en remoto; cero passwords/tokens en CLI; prohibido `curl -k`; prohibido `sed -i` en `/etc` (plantilla + backup + validate); imágenes pineadas; `graphify update` una vez; Soma e inferencia GPU fuera de alcance; hercules/ocean no se tocan salvo T0 y T10 solo para logs del sistema operativo; marte por 4222; un cambio = un commit + push + entrada en vault. Leer `docs/ops/procedimiento-despliegue-estandar.md` antes de empezar.
