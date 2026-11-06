@@ -22,6 +22,15 @@ loki.relabel "journal_service" {
     regex         = "(.+)"
     target_label  = "service"
   }
+  rule {
+    action        = "keep"
+    source_labels = ["__journal_priority"]
+    regex         = "^(0|1|2|3)$"
+  }
+  rule {
+    source_labels = ["__journal_priority_keyword"]
+    target_label  = "priority"
+  }
 }
 
 loki.source.journal "fenix_systemd" {
@@ -32,23 +41,8 @@ loki.source.journal "fenix_systemd" {
     node    = "fenix",
     job     = "systemd-journal",
     tenant  = "platform",
+    classification = "error",
   }
-  forward_to = [loki.write.marte.receiver]
-}
-
-local.file_match "fenix_docker" {
-  path_targets = [{
-    __path__ = "/var/lib/docker/containers/*/*-json.log",
-    cluster  = "securepenguin",
-    node     = "fenix",
-    job      = "docker-container",
-    service  = "docker",
-    tenant   = "platform",
-  }]
-}
-
-loki.source.file "fenix_docker" {
-  targets    = local.file_match.fenix_docker.targets
   forward_to = [loki.write.marte.receiver]
 }
 
@@ -60,6 +54,7 @@ local.file_match "fenix_audit" {
     job      = "auditd",
     service  = "auditd",
     tenant   = "platform",
+    classification = "security",
   }]
 }
 
