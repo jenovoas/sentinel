@@ -28,6 +28,11 @@ loki.relabel "journal_service" {
     regex         = "^(0|1|2|3)$"
   }
   rule {
+    action        = "drop"
+    source_labels = ["__journal_container_name"]
+    regex         = ".+"
+  }
+  rule {
     source_labels = ["__journal_priority_keyword"]
     target_label  = "priority"
   }
@@ -41,7 +46,7 @@ loki.source.journal "fenix_systemd" {
     node    = "fenix",
     job     = "systemd-journal",
     tenant  = "platform",
-    classification = "error",
+    classification = "journal_priority_0_3",
   }
   forward_to = [loki.write.marte.receiver]
 }
