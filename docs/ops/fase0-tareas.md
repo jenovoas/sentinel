@@ -165,6 +165,12 @@
 
 - A las 20:25:28 UTC, 15 min 9 s después de la muestra de las 20:10:19, Alloy seguía en 6 entradas/355 bytes enviados; los contadores de descarte seguían en cero. Loki devolvió vector vacío para `classification=journal_priority_0_3` en 5 min. No hubo evento natural nuevo en la ventana y no se generó ninguno.
 
+### Revalidación final de Fénix — 2026-11-07 21:05 UTC
+
+- Estado observado sin cambios de servicio: `/` ext4 con 145.274.437.632 bytes usados y 162.984.857.600 disponibles (48%); `/var/log` en `/dev/loop0` ext4, 137.601.024 usados y 812.638.208 disponibles (15%). Journald informa 15,1 MB. Docker está activo con controlador `journald`; 21 contenedores, 20 activos, 30 imágenes, 17 volúmenes y caché de compilación 482 entradas/25,24 GB. Alloy seguía activo (7 h); Alloy y Loki `/ready` respondieron `ready`.
+- La última lectura de métricas sigue siendo la de 20:25:28 UTC: 6 entradas/355 bytes enviados, cero descartes, sin avance desde 20:10:19; Loki contó cero `journal_priority_0_3` en 5 min. `auditd` sigue inactivo y falta el archivo de auditoría.
+- El barrido de metadatos (sin leer contenido) sí terminó: fuera del journal solo encontró dos archivos de más de 14 días, 1.061 bytes agregados, sin extensión de rotación y sin descriptores abiertos. Se conservaron porque no se identifican con evidencia como logs rotados descartables; no se ejecutó otra limpieza de logs.
+
 ## Reglas para todos los agentes
 
 Pegable en cada prompt (del procedimiento estándar §7):
