@@ -145,6 +145,14 @@
 - Firewalld mantiene runtime/permanente idénticos (12 reglas rich, hash `4c71d02e630df3fa0e78a0838f256ca721660fb3597483fd71f32fd93e39b422`), pero el registro previo de este cambio indicaba 13 reglas. No hay captura previa para cotejar; no se modificó el firewall. Por estos dos hallazgos se detuvo la secuencia y Kingu no se reinició.
 - Alloy Fénix: a las 14:31:58 UTC había 6 entradas/355 bytes enviados desde el inicio del proceso a las 13:45:28 UTC, configuración cargada y cero descartes; la captura de las 14:39:52 mantuvo esos valores, con Loki 200 y cero eventos clasificados en 5 min. Loki contó 11 eventos clasificados en 12 h. No hubo contenido de logs leído. `auditd` sigue inactivo y `/var/log/audit/audit.log` no existe.
 
+## Revalidación final T10 — Kingu — 2026-11-07
+
+- Reinicio autorizado completado: el host volvió por SSH como `kingu` y arrancó a las 16:26:26 UTC (boot ID `b305ece9-da60-4a42-b117-f8db7b0d2b2f`). La imagen de cuota persistió con 1.073.741.824 bytes; `/var/log` quedó en ext4 sobre `/dev/loop0`, con 255.197.184 bytes usados, y el critical-chain confirma el mount antes de journald. Journald conserva `SystemMaxUse=384M` y `SystemKeepFree=128M`.
+- NSS/LDAP resolvió `jnovoas` antes y después del reinicio (código 0); `nslcd` está activo y su socket presente. Tras el boot, el journal confirma que `nslcd-kinit.service` terminó a las 16:26:40.710 UTC antes de que `nslcd` aceptara conexiones a las 16:26:40.793 UTC. El caché Kerberos es válido para el principal de máquina de Kingu y vence el 2026-11-08 02:27:26 UTC. Destino LDAP documentado solo como `ldap://[host oculto]:389`; TCP respondió antes del reinicio. El journal no registró mensajes nuevos de `nslcd` después de la consulta.
+- Samba AD DC y SSH activos; `samba-tool drs showrepl --summary` devolvió `[ALL GOOD]`, SRV LDAP local presente, firewalld activo y `--check-config` correcto. Docker activo sin contenedores; raíz al 19%, sin tareas systemd pendientes.
+- `systemd` sigue `degraded` únicamente por `prometheus-node-exporter.service`, fallido al enlazar una IP no asignada en el puerto 9100. Es un fallo aislado de métricas; no se modificó su configuración ni afecta la verificación de AD/DNS/cuota.
+- El montaje y el reinicio T10 quedan verificados en los seis hosts. Fénix está listo para la cuota. Permanecen abiertas las pruebas de Alloy que dependen de eventos clasificables reales, la muestra de `auditd` (inactivo) y la comparación de bytes antes/después del filtro; el rollback integral sigue pospuesto.
+
 ## Reglas para todos los agentes
 
 Pegable en cada prompt (del procedimiento estándar §7):
