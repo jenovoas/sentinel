@@ -27,3 +27,8 @@
 ## Workflow follow-up
 
 - Archivar este cambio cuando las tareas operativas y validaciones requeridas hayan concluido; no archivar mientras el límite agregado siga pendiente en producción.
+
+## Seguimiento de Alloy en Fénix — 2026-11-07
+
+- 2026-11-07 02:30 UTC: en Fénix, checkout `main` limpio antes de documentar, `HEAD=2de1a510a761d8296061b0ef195f209d195fc7d5`. La huella del archivo versionado y la del montaje `/etc/alloy/config.alloy` coincidieron (`9877c7f8ec684360d5acafc5898fc99f2b854f65c635e28c5666aac44baee327`), resolviendo la discrepancia observada desde el checkout de Marte. El contenedor `sentinel-fenix-alloy` seguía en ejecución (`grafana/alloy:v1.21.3`, cero reinicios); salud/listo de Alloy y listo de Loki respondieron HTTP 200; `alloy_config_last_load_successful=1`, fallos de carga=0.
+- Dos lecturas de métricas separadas por 20 s conservaron los mismos totales: 22.739 entradas de journal, 22.739 entradas enviadas y 2.307.570 bytes enviados; las cinco razones de descarte permanecieron en cero. La consulta LogQL de `classification=journal_priority_0_3` en 5 min devolvió vector vacío. Agregado de metadatos del journal de los últimos 5 min: 314 entradas, todas con prioridad 5 o 6; ninguna con prioridad 0–3. No hubo muestras clasificables recientes, por lo que no se demuestra continuidad del flujo filtrado ni se completa la validación de muestras reales requerida por 3.2/4.1. No se recargó ni reinició el servicio. Se mantiene el alcance sin cambios en otros nodos.
