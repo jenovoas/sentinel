@@ -173,8 +173,8 @@
 
 ### Segunda limpieza verificada de caché de compilación en Fénix — 2026-11-07
 
-- Con cero builds activos, `docker builder prune --all --force` dejó Build Cache en 0/0 y 0 B reclamables. Según `df -h /`, el uso pasó de 145 GB (48%) a 108 GB (38%), con 180 GB disponibles.
-- Se verificaron 20/20 contenedores en ejecución; Alloy siguió `Up` y sus readiness, y Loki `ready`. No hubo reinicios. No se tocaron imágenes ni volúmenes.
+- Con cero builds activos, `docker builder prune --all --force` dejó Build Cache en 0 entradas/0 B y 0 B reclamables. `df -B1 /`: total 322.039.906.304 B, usados 115.825.967.104 B, disponibles 192.433.328.128 B (38%). La lectura previa fue 145.274.437.632 B usados/162.984.857.600 B disponibles: reducción de 29.448.470.528 B usados.
+- Docker informó 30 imágenes, 21 contenedores (20 activos), 17 volúmenes y Build Cache 0/0/0 B. Se verificaron los 20/20 contenedores activos; Alloy siguió `Up` con readiness correcta y Loki `ready`. No hubo reinicios. No se tocaron imágenes ni volúmenes.
 - Efecto operativo esperado: la caché de compilación se regenera, por lo que las próximas compilaciones pueden tardar más hasta que vuelva a poblarse.
 
 ## Reglas para todos los agentes

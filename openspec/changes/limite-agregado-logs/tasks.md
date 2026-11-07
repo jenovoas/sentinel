@@ -35,8 +35,8 @@
 
 ## Segunda limpieza de caché BuildKit en Fénix — 2026-11-07
 
-- Limpieza verificada con cero builds activos: `docker builder prune --all --force` dejó Build Cache 0/0, con 0 B reclamables. `df -h /` cambió de 145 GB usados (48%) a 108 GB (38%) y 180 GB disponibles.
-- Estado conservado: 20/20 contenedores en ejecución; Alloy siguió `Up` y sus readiness, y Loki `ready`. No hubo reinicios ni cambios de configuración. Imágenes y volúmenes no se tocaron.
+- Limpieza verificada con cero builds activos: `docker builder prune --all --force` dejó Build Cache 0 entradas/0 B, con 0 B reclamables. `df -B1 /`: total 322.039.906.304 B, usados 115.825.967.104 B, disponibles 192.433.328.128 B (38%). La lectura previa fue 145.274.437.632 B usados/162.984.857.600 B disponibles; la reducción de uso fue 29.448.470.528 B.
+- Estado conservado: 30 imágenes, 21 contenedores (20 activos), 17 volúmenes; los 20/20 contenedores activos siguieron en ejecución. Alloy siguió `Up` con readiness correcta y Loki `ready`. No hubo reinicios ni cambios de configuración. Imágenes y volúmenes no se tocaron.
 - La caché de compilación se reconstruirá conforme se ejecuten nuevos builds; estos pueden tardar más mientras se repuebla. No se requieren más limpiezas.
 
 ## Preparación de cuotas en Hércules y Ocean — 2026-11-07
