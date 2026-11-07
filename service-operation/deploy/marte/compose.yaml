@@ -1,5 +1,11 @@
 name: sentinel-marte
 
+x-logging-policy: &logging-policy
+  driver: journald
+  options:
+    mode: "non-blocking"
+    max-buffer-size: "4m"
+
 services:
   prometheus:
     image: prom/prometheus:v3.15.1
@@ -21,6 +27,7 @@ services:
     restart: unless-stopped
     mem_limit: 1g
     cpus: 1.0
+    logging: *logging-policy
 
   mimir:
     image: grafana/mimir:3.2.3
@@ -34,6 +41,7 @@ services:
     restart: unless-stopped
     mem_limit: 3g
     cpus: 2.0
+    logging: *logging-policy
 
   loki:
     image: grafana/loki:3.7.0
@@ -49,6 +57,7 @@ services:
     restart: unless-stopped
     mem_limit: 1536m
     cpus: 1.5
+    logging: *logging-policy
 
   grafana:
     image: grafana/grafana:13.2.1
@@ -81,6 +90,7 @@ services:
     restart: unless-stopped
     mem_limit: 1g
     cpus: 1.0
+    logging: *logging-policy
 
   node-exporter:
     image: quay.io/prometheus/node-exporter:v1.12.1
@@ -96,6 +106,7 @@ services:
     restart: unless-stopped
     mem_limit: 128m
     cpus: 0.5
+    logging: *logging-policy
 
   blackbox-exporter:
     image: prom/blackbox-exporter:v0.27.0
@@ -112,6 +123,7 @@ services:
     restart: unless-stopped
     mem_limit: 128m
     cpus: 0.5
+    logging: *logging-policy
 
   alertmanager:
     image: prom/alertmanager:v0.27.0
@@ -129,6 +141,7 @@ services:
     restart: unless-stopped
     mem_limit: 128m
     cpus: 0.25
+    logging: *logging-policy
 
   alloy:
     image: grafana/alloy:v1.21.3
@@ -155,6 +168,7 @@ services:
     restart: unless-stopped
     mem_limit: 256m
     cpus: 0.5
+    logging: *logging-policy
 
 networks:
   sentinel_observability:
