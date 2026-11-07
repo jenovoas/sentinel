@@ -33,6 +33,12 @@
 - El escaneo de metadatos encontró dos archivos fuera de journal con más de 14 días (1.061 bytes), sin extensión de rotación y sin descriptores abiertos; se conservaron por no poder identificarlos con seguridad como logs rotados. No se leyó contenido ni se hizo otra limpieza de logs.
 - Permanecen abiertas 3.2/4.1 por la muestra real de audit y la comparación directa de bytes antes/después del filtro. No se generaron eventos de prueba ni se cambió configuración. La cuota y limpieza de Fénix están completas.
 
+## Segunda limpieza de caché BuildKit en Fénix — 2026-11-07
+
+- Limpieza verificada con cero builds activos: `docker builder prune --all --force` dejó Build Cache 0/0, con 0 B reclamables. `df -h /` cambió de 145 GB usados (48%) a 108 GB (38%) y 180 GB disponibles.
+- Estado conservado: 20/20 contenedores en ejecución; Alloy siguió `Up` y sus readiness, y Loki `ready`. No hubo reinicios ni cambios de configuración. Imágenes y volúmenes no se tocaron.
+- La caché de compilación se reconstruirá conforme se ejecuten nuevos builds; estos pueden tardar más mientras se repuebla. No se requieren más limpiezas.
+
 ## Preparación de cuotas en Hércules y Ocean — 2026-11-07
 
 - Limpieza realizada: `journalctl --rotate --vacuum-size=64M` dejó unos 62 MiB de registros de systemd en cada servidor y liberó 53,4 MiB en Hércules y 64,3 MiB en Ocean. Se borraron registros rotados y se truncaron los de texto; se conservaron archivos de contabilidad de acceso (`wtmp`, `btmp`, `lastlog`, `faillog`, `tallylog`) y datos de `sysstat`. Uso total de `/var/log`: 63 MiB en Hércules y 70 MiB en Ocean. En `/tmp`, el registro activo de Glances quedó en cero bytes; se dejaron intactos sockets y directorios privados de servicios.

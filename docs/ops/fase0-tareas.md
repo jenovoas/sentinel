@@ -171,6 +171,12 @@
 - La última lectura de métricas sigue siendo la de 20:25:28 UTC: 6 entradas/355 bytes enviados, cero descartes, sin avance desde 20:10:19; Loki contó cero `journal_priority_0_3` en 5 min. `auditd` sigue inactivo y falta el archivo de auditoría.
 - El barrido de metadatos (sin leer contenido) sí terminó: fuera del journal solo encontró dos archivos de más de 14 días, 1.061 bytes agregados, sin extensión de rotación y sin descriptores abiertos. Se conservaron porque no se identifican con evidencia como logs rotados descartables; no se ejecutó otra limpieza de logs.
 
+### Segunda limpieza verificada de caché de compilación en Fénix — 2026-11-07
+
+- Con cero builds activos, `docker builder prune --all --force` dejó Build Cache en 0/0 y 0 B reclamables. Según `df -h /`, el uso pasó de 145 GB (48%) a 108 GB (38%), con 180 GB disponibles.
+- Se verificaron 20/20 contenedores en ejecución; Alloy siguió `Up` y sus readiness, y Loki `ready`. No hubo reinicios. No se tocaron imágenes ni volúmenes.
+- Efecto operativo esperado: la caché de compilación se regenera, por lo que las próximas compilaciones pueden tardar más hasta que vuelva a poblarse.
+
 ## Reglas para todos los agentes
 
 Pegable en cada prompt (del procedimiento estándar §7):
