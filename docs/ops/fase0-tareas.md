@@ -161,6 +161,10 @@
 - Alloy/Loki: endpoints correctos `127.0.0.1:12345` y `10.88.0.6:3100`, tenant `fake`; readiness HTTP 200. A las 20:10:19 UTC, Alloy acumulaba 6 entradas/355 bytes enviados y cero descartes; dos muestras separadas por 20 s no avanzaron. Consultas LogQL de solo conteo encontraron 0 eventos `systemd-journal`, `journal_priority_0_3` y `security` en 5 min. Una muestra natural anterior de journal (`chsh`, prioridad 3) llegó a Loki; en esta ventana no hubo muestra fresca. `auditd` está inactivo y falta `/var/log/audit/audit.log`.
 - Estado: T10 de cuotas y limpieza de Fénix terminado. Siguen abiertas las tareas 3.2/4.1 solo para la muestra real de audit y la comparación de bytes antes/después del filtro; no se generan eventos de prueba ni se cambia configuración para forzarlos. El rollback integral/HA permanece pospuesto por separado.
 
+### Muestra natural adicional de Alloy — 2026-11-07 20:25 UTC
+
+- A las 20:25:28 UTC, 15 min 9 s después de la muestra de las 20:10:19, Alloy seguía en 6 entradas/355 bytes enviados; los contadores de descarte seguían en cero. Loki devolvió vector vacío para `classification=journal_priority_0_3` en 5 min. No hubo evento natural nuevo en la ventana y no se generó ninguno.
+
 ## Reglas para todos los agentes
 
 Pegable en cada prompt (del procedimiento estándar §7):
