@@ -6,6 +6,7 @@ logging {
 loki.write "marte" {
   endpoint {
     url = "http://loki:3100/loki/api/v1/push"
+    headers = { "X-Scope-OrgID" = "fake" }
   }
 }
 
@@ -21,6 +22,20 @@ loki.relabel "journal_service" {
     regex         = "(.+)"
     target_label  = "service"
   }
+  rule {
+    action        = "keep"
+    source_labels = ["__journal_priority"]
+    regex         = "^(0|1|2|3)$"
+  }
+  rule {
+    action        = "drop"
+    source_labels = ["__journal_container_name"]
+    regex         = ".+"
+  }
+  rule {
+    source_labels = ["__journal_priority_keyword"]
+    target_label  = "priority"
+  }
 }
 
 loki.source.journal "marte_systemd" {
@@ -31,6 +46,7 @@ loki.source.journal "marte_systemd" {
     node    = "marte",
     job     = "systemd-journal",
     tenant  = "platform",
+    classification = "journal_priority_0_3",
   }
   forward_to = [loki.write.marte.receiver]
 }
@@ -43,6 +59,7 @@ local.file_match "marte_audit" {
     job      = "auditd",
     service  = "auditd",
     tenant   = "platform",
+    classification = "security",
   }]
 }
 
