@@ -7,15 +7,15 @@ Define límites agregados verificables para el almacenamiento local de logs por 
 ## ADDED Requirements
 
 ### Requirement: Límite físico agregado por host
-El sistema SHALL limitar a 1 GiB el almacenamiento físico agregado de todas las rutas locales de logs incluidas en cada host, independientemente del servicio productor.
+El sistema SHALL limitar el almacenamiento físico agregado de todas las rutas locales de logs incluidas a 1 GiB en Fénix, Kingu, Hércules, Ocean e ifenix, y a 2 GiB solo en Marte, independientemente del servicio productor.
 
 #### Scenario: Fuentes distribuidas alcanzan el límite
 - **WHEN** journald, syslog/audit, Docker, Loki y logs Sentinel ocupan rutas distintas en un host
-- **THEN** la suma de bloques asignados para las rutas incluidas no puede exceder 1 GiB
+- **THEN** la suma de bloques asignados para las rutas incluidas no puede exceder el presupuesto del host: 2 GiB en Marte y 1 GiB en los otros cinco hosts
 - **AND** el crecimiento de logs no puede consumir espacio fuera del límite para eludirlo
 
 #### Scenario: Presupuesto agotado
-- **WHEN** la asignación agregada llega al límite de 1 GiB
+- **WHEN** la asignación agregada llega al límite de 2 GiB en Marte o 1 GiB en otro host
 - **THEN** la retención configurada libera espacio elegible o las escrituras adicionales se rechazan
 - **AND** otros datos del host no se quedan sin espacio por crecimiento de logs
 

@@ -2,11 +2,11 @@
 
 ## Why
 
-La auditoría observó acumulación distribuida entre journald, syslog, Docker, Loki y archivos Sentinel, sin un techo agregado que evite superar 1 GiB por nodo o llenar los discos. El envío actual a Loki incluye fuentes más amplias que seguridad/errores, por lo que limitarlo puede reducir egreso y cargos; el alcance de costos reales requiere medición de bytes y consulta de facturación.
+La auditoría observó acumulación distribuida entre journald, syslog, Docker, Loki y archivos Sentinel, sin un techo agregado que evite superar el presupuesto acordado por nodo o llenar los discos. El objetivo es 1 GiB en cada host, salvo Marte, que recibe 2 GiB por su función de seguridad y análisis. El envío actual a Loki incluye fuentes más amplias que seguridad/errores, por lo que limitarlo puede reducir egreso y cargos; el alcance de costos reales requiere medición de bytes y consulta de facturación.
 
 ## What Changes
 
-- Definir un máximo físico agregado de 1 GiB por host para las rutas de logs acordadas, incluyendo el volumen local de Loki donde aplique.
+- Definir un máximo físico agregado de 1 GiB en Fénix, Kingu, Hércules, Ocean e ifenix, y de 2 GiB solo en Marte; incluir el volumen local de Loki donde aplique.
 - Añadir límites de retención/rotación por fuente como controles complementarios, sin presentarlos como garantía agregada.
 - Reducir la exportación a Loki a eventos de seguridad y errores, manteniendo el registro local conforme a la política acordada.
 - Determinar y probar el mecanismo de cuota que cubra todas las rutas antes de desplegar; no habilitar cuotas ni cambiar montajes de filesystem sin mantenimiento, respaldo y recuperación autorizados.

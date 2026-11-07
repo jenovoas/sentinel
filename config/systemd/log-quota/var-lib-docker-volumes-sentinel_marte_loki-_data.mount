@@ -1,0 +1,12 @@
+[Unit]
+Description=Filesystem ext4 limitado para los datos de Loki en Marte
+Before=docker.service
+
+[Mount]
+What=/var/lib/sentinel-logquota/marte-loki.img
+Where=/var/lib/docker/volumes/sentinel_marte_loki/_data
+Type=ext4
+Options=loop,nodev,nosuid,noatime
+
+[Install]
+WantedBy=local-fs.target
