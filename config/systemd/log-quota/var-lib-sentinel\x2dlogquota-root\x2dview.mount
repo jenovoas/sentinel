@@ -1,0 +1,12 @@
+[Unit]
+Description=Vista privada del root original para conservar datos bajo /var/log
+Before=var-lib-sentinel\x2dlogquota-phonon_data.csv.mount var-log.mount
+
+[Mount]
+What=/
+Where=/var/lib/sentinel-logquota/root-view
+Type=none
+Options=bind,private
+
+[Install]
+WantedBy=local-fs.target

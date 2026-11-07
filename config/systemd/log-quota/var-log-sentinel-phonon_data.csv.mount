@@ -1,0 +1,14 @@
+[Unit]
+Description=Presenta en Kingu el CSV científico original fuera de la cuota
+Requires=var-log.mount var-lib-sentinel\x2dlogquota-phonon_data.csv.mount
+After=var-log.mount var-lib-sentinel\x2dlogquota-phonon_data.csv.mount
+Before=systemd-journald.service docker.service samba-ad-dc.service nginx.service sentinel-frontend.service firewalld.service unattended-upgrades.service rsyslog.service
+
+[Mount]
+What=/var/lib/sentinel-logquota/phonon_data.csv
+Where=/var/log/sentinel/phonon_data.csv
+Type=none
+Options=bind
+
+[Install]
+WantedBy=local-fs.target

@@ -1,0 +1,14 @@
+[Unit]
+Description=Enlace persistente del CSV científico original de Kingu, fuera de la cuota
+Requires=var-lib-sentinel\x2dlogquota-root\x2dview.mount
+After=var-lib-sentinel\x2dlogquota-root\x2dview.mount
+Before=var-log.mount
+
+[Mount]
+What=/var/lib/sentinel-logquota/root-view/var/log/sentinel/phonon_data.csv
+Where=/var/lib/sentinel-logquota/phonon_data.csv
+Type=none
+Options=bind
+
+[Install]
+WantedBy=local-fs.target
