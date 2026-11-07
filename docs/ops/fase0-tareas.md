@@ -153,6 +153,14 @@
 - `systemd` sigue `degraded` únicamente por `prometheus-node-exporter.service`, fallido al enlazar una IP no asignada en el puerto 9100. Es un fallo aislado de métricas; no se modificó su configuración ni afecta la verificación de AD/DNS/cuota.
 - El montaje y el reinicio T10 quedan verificados en los seis hosts. Fénix está listo para la cuota. Permanecen abiertas las pruebas de Alloy que dependen de eventos clasificables reales, la muestra de `auditd` (inactivo) y la comparación de bytes antes/después del filtro; el rollback integral sigue pospuesto.
 
+## Fénix — limpieza y seguimiento final de Alloy — 2026-11-07
+
+- Host confirmado por SSH: `hostname -s=fenix`; `sudo -n` operativo. Se completó limpieza recuperable sin reiniciar servicios/equipo ni cambiar configuración. `apt-get clean` redujo los archivos `.deb` de 926.881.698 a 81.920 bytes. `docker builder prune --filter until=168h` redujo la caché de compilación de 583 entradas/37,58 GB a 482/25,24 GB. El root pasó de 160.113.799.168 a 145.274.380.288 bytes usados: 14.839.418.880 bytes liberados (~13,8 GiB).
+- Protección verificada: no se podaron imágenes, contenedores ni volúmenes; permanecen 30 imágenes, 21 contenedores (20 activos) y 17 volúmenes. Docker usa `journald` para 20 contenedores; el único contenedor configurado `json-file` tenía cero bytes de log. `/var/log` continúa en ext4 `/dev/loop0`, con límite de imagen de 1 GiB, 137.162.752 bytes usados y 813.076.480 disponibles; journal 91,5 MiB. No se leyeron contenidos de logs.
+- El escaneo de metadatos halló dos archivos fuera de journal de más de 14 días (1.061 bytes, sin extensión de rotación y sin descriptores abiertos); se conservaron. `/tmp` conserva archivos recientes y abiertos; `/var/tmp` conserva paquetes locales de kernel útiles para recuperación; también se preservaron cachés de herramientas del usuario. No se truncaron logs activos ni se eliminó historial útil.
+- Alloy/Loki: endpoints correctos `127.0.0.1:12345` y `10.88.0.6:3100`, tenant `fake`; readiness HTTP 200. A las 20:10:19 UTC, Alloy acumulaba 6 entradas/355 bytes enviados y cero descartes; dos muestras separadas por 20 s no avanzaron. Consultas LogQL de solo conteo encontraron 0 eventos `systemd-journal`, `journal_priority_0_3` y `security` en 5 min. Una muestra natural anterior de journal (`chsh`, prioridad 3) llegó a Loki; en esta ventana no hubo muestra fresca. `auditd` está inactivo y falta `/var/log/audit/audit.log`.
+- Estado: T10 de cuotas y limpieza de Fénix terminado. Siguen abiertas las tareas 3.2/4.1 solo para la muestra real de audit y la comparación de bytes antes/después del filtro; no se generan eventos de prueba ni se cambia configuración para forzarlos. El rollback integral/HA permanece pospuesto por separado.
+
 ## Reglas para todos los agentes
 
 Pegable en cada prompt (del procedimiento estándar §7):
