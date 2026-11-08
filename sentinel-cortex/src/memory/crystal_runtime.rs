@@ -23,9 +23,16 @@ const PID_HISTORY_TICKS: usize = 68;
 const LANE_A_SHM: &str = "/me60os_lattice";
 const LANE_B_SHM: &str = "/me60os_lattice_b";
 const FRACTAL_SEEDS_SHM: &str = "/me60os_fractal_seeds";
+// Reservadas para el futuro contrato SHM del reloj DTC. Hoy no hay lector ni
+// escritor de `me60os_dtc_clock` (ver docs/AUDITORIA_DESPLIEGUE_MULTINODO_2026-10-30.md);
+// no constituyen un contrato IPC activo.
+#[allow(dead_code)]
 const DTC_CLOCK_SHM: &str = "/me60os_dtc_clock";
+#[allow(dead_code)]
 const DTC_CLOCK_SHM_BYTES: usize = 24;
+#[allow(dead_code)]
 const DTC_CLOCK_MAGIC: u32 = 0x4D45_3643;
+#[allow(dead_code)]
 const DTC_CLOCK_VERSION: u32 = 1;
 const FRACTAL_SEEDS_CAPACITY: usize = 1024;
 const FRACTAL_HEADER_BYTES: usize = 64;
@@ -257,7 +264,7 @@ impl CrystalRuntime {
             self.sync_shm()?;
         }
 
-        if self.qhc_tick > 0 && self.qhc_tick % 68 == 0 {
+        if self.qhc_tick > 0 && self.qhc_tick.is_multiple_of(68) {
             self.entropy_reset();
             tracing::info!(tick = self.qhc_tick, "DTC 68-tick entropy reset executed");
         }
@@ -326,7 +333,10 @@ impl CrystalRuntime {
         let Some(crystal) = lane.crystals.get(index) else {
             return;
         };
-        let token_id = (self.fractal_seed_head as u32).wrapping_add(index as u32);
+        // Truncamiento intencional (wrapping) a 32 bits, hecho explícito con máscara.
+        let head_lo = u32::try_from(self.fractal_seed_head & u64::from(u32::MAX)).unwrap_or(0);
+        let index_lo = u32::try_from(index & 0xFFFF_FFFF).unwrap_or(0);
+        let token_id = head_lo.wrapping_add(index_lo);
         // MycNet runs a three-ring, 37-node hex lattice. Map every Sentinel
         // crystal deterministically into that receiver's valid coordinate set.
         let (q, r) = mycnet_hex_coordinate(index);
@@ -337,12 +347,13 @@ impl CrystalRuntime {
         bytes[8..12].copy_from_slice(&r.to_le_bytes());
         bytes[12..16].copy_from_slice(&s.to_le_bytes());
         bytes[16..24].copy_from_slice(&crystal.amplitude.to_raw().to_le_bytes());
-        bytes[24] = crystal.phase.components[1].rem_euclid(60) as u8;
+        bytes[24] = u8::try_from(crystal.phase.components[1].rem_euclid(60)).unwrap_or(0);
         bytes[25] = self.last_phase_modulation;
         bytes[26..28].copy_from_slice(&1_u16.to_le_bytes());
         let crc = crc16_ccitt(&bytes[..28]);
         bytes[28..30].copy_from_slice(&crc.to_le_bytes());
-        let slot = (self.fractal_seed_head as usize) % FRACTAL_SEEDS_CAPACITY;
+        let slot =
+            usize::try_from(self.fractal_seed_head % (FRACTAL_SEEDS_CAPACITY as u64)).unwrap_or(0);
         let offset = FRACTAL_HEADER_BYTES + slot * FRACTAL_SEED_BYTES;
         if let Err(error) = buffer.write_native(offset, &bytes) {
             tracing::error!(%error, "Failed to publish MycNet fractal seed");
@@ -388,8 +399,8 @@ impl CrystalRuntime {
             .pid_b
             .update_with_history_internal(energy_b, dt_raw, errors_b);
         let divisor = (self.node_count() as i128 * 60).max(1);
-        let correction_a = (control_a as i128 / divisor) as i64;
-        let correction_b = (control_b as i128 / divisor) as i64;
+        let correction_a = crate::math::s60::saturating_i64(control_a as i128 / divisor);
+        let correction_b = crate::math::s60::saturating_i64(control_b as i128 / divisor);
         let center = self.node_count() / 2;
         self.lane_a.inject_spa(center, SPA::from_raw(correction_a));
         self.lane_b.inject_spa(center, SPA::from_raw(correction_b));
@@ -724,7 +735,7 @@ fn initialize_fractal_ring(seeds: &PySharedBuffer) -> Result<u64, String> {
 fn now_unix_ms() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .map(|duration| duration.as_millis().min(u128::from(u64::MAX)) as u64)
+        .map(|duration| u64::try_from(duration.as_millis()).unwrap_or(u64::MAX))
         .unwrap_or(0)
 }
 
@@ -735,7 +746,7 @@ fn acquire_shm_writer_lock() -> Result<File, String> {
         .write(true)
         .create(true)
         .truncate(false)
-        .open(&lock_path)
+        .open(lock_path)
         .map_err(|error| {
             format!(
                 "open crystal SHM writer lock {}: {error}",

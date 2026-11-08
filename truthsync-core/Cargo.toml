@@ -21,11 +21,6 @@ lru = "0.19"
 [dev-dependencies]
 criterion = "0.8"
 
-[[bench]]
-name = "truthsync_bench"
-path = "src/bin/truthsync_1m_bench.rs"
-harness = false
-
 [[bin]]
 name = "truthsync_1m_bench"
 path = "src/bin/truthsync_1m_bench.rs"

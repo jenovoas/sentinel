@@ -71,7 +71,7 @@ impl BioResonator {
         self.coherence.to_base_units()
     }
     pub fn time_since_pulse_ms(&self) -> u64 {
-        self.last_pulse.elapsed().as_millis() as u64
+        u64::try_from(self.last_pulse.elapsed().as_millis()).unwrap_or(u64::MAX)
     }
     pub fn reset(&mut self) {
         self.coherence = S60::zero();

@@ -16,6 +16,8 @@ mod metrics;
 mod models;
 mod mycnet_stream;
 mod qhc_client;
+// Módulos compartidos con la librería: el binario usa solo una parte de su API.
+#[allow(dead_code)]
 mod quantum;
 
 use axum::extract::ws::{Message, WebSocket, WebSocketUpgrade};
@@ -115,8 +117,6 @@ enum CrystalTask {
 /// `runtime.status()` recorre ambos carriles (2 × 67.951 nodos): a 41,77 Hz eso
 /// consumía casi todo el periodo. 20 ticks ≈ 0,48 s.
 const STATUS_SAMPLE_TICKS: u64 = 20;
-
-
 
 #[derive(Clone, Copy)]
 struct SchedulerRuntimeStatus {
@@ -308,7 +308,7 @@ fn start_crystal_runtime(
                 if dtc_tick_due || checkpoint_due || gc_due || phase_align_due {
                     let elapsed_raw = now.duration_since(scheduler_epoch).as_nanos()
                         * math::s60::S60::SCALE_0 as u128 / 1_000_000_000;
-                    let t_s60 = math::s60::S60::from_raw(elapsed_raw as i64);
+                    let t_s60 = math::s60::S60::from_raw(i64::try_from(elapsed_raw).unwrap_or(i64::MAX));
                     portal_open = portal_detector.is_portal_open(t_s60);
                     scheduler.tick_observed(
                         t_s60,
@@ -337,7 +337,7 @@ fn start_crystal_runtime(
                 // cada STATUS_SAMPLE_TICKS en lugar de en cada tick para no consumir el
                 // presupuesto entero del periodo DTC en telemetría.
                 tick_counter = tick_counter.wrapping_add(1);
-                if tick_counter % STATUS_SAMPLE_TICKS == 0 {
+                if tick_counter.is_multiple_of(STATUS_SAMPLE_TICKS) {
                     let runtime_status = runtime.status();
                     *scheduler_status.lock().unwrap() = SchedulerRuntimeStatus::capture(
                         &scheduler, portal_open, runtime_status.dtc_ticks,
@@ -668,7 +668,8 @@ async fn main() {
             current_speed = regulated_speed;
 
             // Latencia en milésimas de ms (entero de borde, no entra al retículo)
-            let elapsed_msx1000 = latency_start.elapsed().as_micros() as i64 / 1_000;
+            let elapsed_msx1000 =
+                i64::try_from(latency_start.elapsed().as_micros()).unwrap_or(i64::MAX) / 1_000;
             let batch_size = gpu_ctrl.adjust_batch_size(elapsed_msx1000);
             tracing::trace!(
                 "⚖️ MAAT: status={}, speed={:?}, gpu_batch={}",
@@ -720,7 +721,6 @@ async fn main() {
             }
         }
     });
-
 
     // 4. Start Redis Pulse Subscriber (Remote Bio-Sync)
     let redis_resonance = resonance.clone();
@@ -1029,8 +1029,11 @@ async fn lattice_hologram_handler(
     for i in 0..node_count {
         let a = amps[i];
         let p = phases[i];
-        let a_u16 = (u128::from(a.unsigned_abs()) * 65535 / SCALE_0 as u128).min(65535) as u16;
-        let p_u16 = ((p.rem_euclid(SCALE_0) as u128 * 65535) / SCALE_0 as u128) as u16;
+        let a_u16 =
+            u16::try_from((u128::from(a.unsigned_abs()) * 65535 / SCALE_0 as u128).min(65535))
+                .unwrap_or(u16::MAX);
+        let p_u16 = u16::try_from((p.rem_euclid(SCALE_0) as u128 * 65535) / SCALE_0 as u128)
+            .unwrap_or(u16::MAX);
 
         nodes.push(HologramNodeSnapshot {
             index: i,
@@ -1123,6 +1126,20 @@ fn setup_prometheus_registry() {
     // No-op: registry initialized at startup
 }
 
+/// Formatea un entero escalado como decimal fijo (p. ej. `4250`, 2 → `42.50`)
+/// sin recurrir a punto flotante.
+fn fmt_fixed(scaled: i64, decimals: u32) -> String {
+    let scale = 10_u64.pow(decimals);
+    let sign = if scaled < 0 { "-" } else { "" };
+    let abs = scaled.unsigned_abs();
+    format!(
+        "{sign}{}.{:0width$}",
+        abs / scale,
+        abs % scale,
+        width = decimals as usize
+    )
+}
+
 async fn metrics_prometheus_handler(
     axum::extract::State(state): axum::extract::State<Arc<AppState>>,
 ) -> String {
@@ -1131,9 +1148,11 @@ async fn metrics_prometheus_handler(
     let amps = lat.amplitudes_raw();
     let _phases = lat.phases_raw();
 
-    let cpu_temp_celsius: f64 = std::fs::read_to_string("/sys/class/thermal/thermal_zone0/temp")
+    // Temperatura en centésimas de °C (entero puro, sin f64 — candado YATRA).
+    // El sensor entrega milésimas de °C; se redondea a la centésima más cercana.
+    let cpu_temp_centi: i64 = std::fs::read_to_string("/sys/class/thermal/thermal_zone0/temp")
         .ok()
-        .and_then(|s| s.trim().parse::<f64>().ok().map(|m| m / 1000.0))
+        .and_then(|s| s.trim().parse::<i64>().ok().map(|m| (m + 5).div_euclid(10)))
         .unwrap_or_else(|| {
             std::fs::read_to_string("/proc/stat")
                 .ok()
@@ -1141,18 +1160,19 @@ async fn metrics_prometheus_handler(
                     s.lines().next().and_then(|line| {
                         let parts: Vec<&str> = line.split_whitespace().collect();
                         if parts.len() > 4 {
-                            let user: f64 = parts[1].parse().ok()?;
-                            let sys: f64 = parts[3].parse().ok()?;
-                            Some(35.0 + ((user + sys) % 30.0))
+                            let user: u64 = parts[1].parse().ok()?;
+                            let sys: u64 = parts[3].parse().ok()?;
+                            let jitter = i64::try_from((user.wrapping_add(sys)) % 30).ok()?;
+                            Some((35 + jitter) * 100)
                         } else {
                             None
                         }
                     })
                 })
-                .unwrap_or(42.5)
+                .unwrap_or(4250)
         });
 
-    let ll_retention = state.liquid_lattice.lock().unwrap().retention_score();
+    let ll_retention = state.liquid_lattice.lock().unwrap().retention_score_x10k();
 
     // AUDIT-360: use single String buffer with write! macros instead of fragmented format!
     use std::fmt::Write as _;
@@ -1164,16 +1184,16 @@ async fn metrics_prometheus_handler(
     let _ = writeln!(out, "# TYPE sentinel_cpu_temperature_celsius gauge");
     let _ = writeln!(
         out,
-        "sentinel_cpu_temperature_celsius {:.2}",
-        cpu_temp_celsius
+        "sentinel_cpu_temperature_celsius {}",
+        fmt_fixed(cpu_temp_centi, 2)
     );
 
     let _ = writeln!(out, "# HELP sentinel_liquid_lattice_retention_score EXP-009 Liquid Lattice Memory Retention Score");
     let _ = writeln!(out, "# TYPE sentinel_liquid_lattice_retention_score gauge");
     let _ = writeln!(
         out,
-        "sentinel_liquid_lattice_retention_score {:.4}",
-        ll_retention
+        "sentinel_liquid_lattice_retention_score {}",
+        fmt_fixed(ll_retention, 4)
     );
 
     let _ = writeln!(

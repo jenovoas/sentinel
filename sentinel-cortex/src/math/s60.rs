@@ -123,17 +123,17 @@ impl S60 {
         let sign = if self._value < 0 { -1 } else { 1 };
         let abs_val = self._value.abs();
 
-        let d = (abs_val / S60::SCALE_0) as i32 * sign;
+        let d = i32::try_from(abs_val / S60::SCALE_0).unwrap_or(i32::MAX) * sign;
         let rem_d = abs_val % S60::SCALE_0;
 
-        let m = (rem_d / S60::SCALE_1) as u8;
+        let m = u8::try_from(rem_d / S60::SCALE_1).unwrap_or(u8::MAX);
         let rem_m = rem_d % S60::SCALE_1;
 
-        let s = (rem_m / S60::SCALE_2) as u8;
+        let s = u8::try_from(rem_m / S60::SCALE_2).unwrap_or(u8::MAX);
         let rem_s = rem_m % S60::SCALE_2;
 
-        let t = (rem_s / S60::SCALE_3) as u8;
-        let q = (rem_s % S60::SCALE_3) as u8;
+        let t = u8::try_from(rem_s / S60::SCALE_3).unwrap_or(u8::MAX);
+        let q = u8::try_from(rem_s % S60::SCALE_3).unwrap_or(u8::MAX);
 
         (d, m, s, t, q)
     }
@@ -148,14 +148,14 @@ impl fmt::Debug for S60 {
         let d = abs_val / S60::SCALE_0;
         let rem_d = abs_val % S60::SCALE_0;
 
-        let m = (rem_d / S60::SCALE_1) as u8;
+        let m = u8::try_from(rem_d / S60::SCALE_1).unwrap_or(u8::MAX);
         let rem_m = rem_d % S60::SCALE_1;
 
-        let s = (rem_m / S60::SCALE_2) as u8;
+        let s = u8::try_from(rem_m / S60::SCALE_2).unwrap_or(u8::MAX);
         let rem_s = rem_m % S60::SCALE_2;
 
-        let t = (rem_s / S60::SCALE_3) as u8;
-        let q = (rem_s % S60::SCALE_3) as u8;
+        let t = u8::try_from(rem_s / S60::SCALE_3).unwrap_or(u8::MAX);
+        let q = u8::try_from(rem_s % S60::SCALE_3).unwrap_or(u8::MAX);
 
         write!(
             f,
@@ -191,6 +191,11 @@ impl Sub for S60 {
     }
 }
 
+/// Convierte i128 a i64 saturando en los extremos (sin truncar bits).
+pub fn saturating_i64(v: i128) -> i64 {
+    i64::try_from(v).unwrap_or(if v < 0 { i64::MIN } else { i64::MAX })
+}
+
 impl Mul for S60 {
     type Output = S60;
     fn mul(self, other: S60) -> S60 {
@@ -199,7 +204,7 @@ impl Mul for S60 {
         // Use i128 to prevent overflow during intermediate calc
         let product = (self._value as i128 * other._value as i128) / S60::SCALE_0 as i128;
         S60 {
-            _value: product as i64,
+            _value: saturating_i64(product),
         }
     }
 }
@@ -215,7 +220,7 @@ impl Div for S60 {
         let scaled_numerator = self._value as i128 * S60::SCALE_0 as i128;
         let quotient = scaled_numerator / other._value as i128;
         Ok(S60 {
-            _value: quotient as i64,
+            _value: saturating_i64(quotient),
         })
     }
 }

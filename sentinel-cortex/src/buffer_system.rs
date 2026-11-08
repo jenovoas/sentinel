@@ -95,7 +95,7 @@ impl ResonantBuffer {
 
         // Convert count to percentage S60 (0-60 degrees roughly)
         let degrees = (count as i64 * 60) / BUFFER_SIZE_S60 as i64;
-        S60::from_int(degrees as i32)
+        S60::from_int(i32::try_from(degrees).unwrap_or(i32::MAX))
     }
 }
 

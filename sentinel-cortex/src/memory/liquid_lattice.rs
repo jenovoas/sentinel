@@ -85,14 +85,11 @@ impl LiquidLattice {
         }
     }
 
-    pub fn retention_score(&self) -> f64 {
-        let mut total_amp = S60::zero();
-        for r in 0..3 {
-            for c in 0..3 {
-                total_amp = total_amp + self.grid[r][c].amplitude;
-            }
-        }
-        (total_amp.to_base_units() as f64 / 1_000_000.0).min(1.0)
+    /// Retención en entero escalado: 10_000 equivale a 1.0000 (tope de la métrica).
+    /// Aritmética entera pura (candado YATRA): redondea al más cercano.
+    pub fn retention_score_x10k(&self) -> i64 {
+        let units = self.total_amplitude().to_base_units();
+        ((units + 50) / 100).min(10_000)
     }
 
     /// Retención total en S60 puro (suma de amplitudes). Para asserts sin float.

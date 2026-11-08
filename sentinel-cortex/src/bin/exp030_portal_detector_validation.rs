@@ -182,7 +182,7 @@ fn main() {
 
     println!();
     println!("[RENDIMIENTO]");
-    let elapsed_micros = elapsed.as_micros() as i64;
+    let elapsed_micros = i64::try_from(elapsed.as_micros()).unwrap_or(i64::MAX);
     let elapsed_per_tick_ns = (elapsed_micros * 1000) / TOTAL_TICKS as i64;
     let throughput_per_sec = TOTAL_TICKS as i64 * 1_000_000 / elapsed_micros.max(1);
     println!(

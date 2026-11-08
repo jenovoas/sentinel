@@ -100,7 +100,7 @@ fn snapshot_age_ms(updated_unix_ms: u64) -> u64 {
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_or(0, |duration| {
-            duration.as_millis().min(u128::from(u64::MAX)) as u64
+            u64::try_from(duration.as_millis()).unwrap_or(u64::MAX)
         });
     now.saturating_sub(updated_unix_ms)
 }

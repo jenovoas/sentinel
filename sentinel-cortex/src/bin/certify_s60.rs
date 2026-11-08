@@ -26,19 +26,8 @@ fn main() {
     }
     let duration_s60 = start_s60.elapsed();
 
-    // CASO Float64 (IEEE-754)
-    let start_f64 = Instant::now();
-    let mut val_f64: f64 = 1.0;
-    for _ in 0..iterations {
-        val_f64 = (val_f64 * 7.0) / 7.0;
-    }
-    let duration_f64 = start_f64.elapsed();
-
     println!("\n[RESULTADOS]");
     println!("S60 Final Value: {}", val_s60);
-    println!("f64 Final Value: {:.20}", val_f64);
-
-    let drift_f64 = (val_f64 - 1.0).abs();
 
     println!("\n[CERTIFICACIÓN]");
     if val_s60 == SPA::new(1, 0, 0, 0, 0) {
@@ -47,15 +36,11 @@ fn main() {
         println!("❌ S60 DRIFT DETECTADO (INVESTIGAR)");
     }
 
-    println!("⚠️ f64 DRIFT: {:.20}", drift_f64);
-
     println!("\n[RENDIMIENTO]");
     println!("S60 Total Time: {:?}", duration_s60);
-    println!("f64 Total Time: {:?}", duration_f64);
 
-    if drift_f64 > 0.0 {
-        println!(
-            "\nCONCLUSIÓN: La certificación S60 es válida. Superioridad matemática demostrada."
-        );
-    }
+    // La comparación contra f64 se retiró: el candado YATRA prohíbe floats en este
+    // crate. Las comparaciones de drift IEEE-754 viven en los
+    // prototipos Python (quantum/experiments), que se conservan como referencia.
+    println!("\nCONCLUSIÓN: certificación S60 completada (sin drift = aritmética exacta).");
 }

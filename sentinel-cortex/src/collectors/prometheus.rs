@@ -119,7 +119,7 @@ fn parse_prometheus_value_to_s60(s: &str) -> Result<S60, Box<dyn std::error::Err
 
     let frac_len = if parts.len() > 1 {
         digits.push_str(parts[1]);
-        parts[1].len() as i32
+        i32::try_from(parts[1].len()).unwrap_or(i32::MAX)
     } else {
         0
     };
@@ -146,5 +146,5 @@ fn parse_prometheus_value_to_s60(s: &str) -> Result<S60, Box<dyn std::error::Err
         tertia = -tertia;
     }
 
-    Ok(S60::from_raw(tertia as i64))
+    Ok(S60::from_raw(crate::math::s60::saturating_i64(tertia)))
 }

@@ -112,8 +112,8 @@ impl PeriodicDetector {
                 peak_idx = i;
             }
         }
-        let n_s60 = S60::from_int(n as i32);
-        let idx_s60 = S60::from_int(peak_idx as i32);
+        let n_s60 = S60::from_int(i32::try_from(n).unwrap_or(i32::MAX));
+        let idx_s60 = S60::from_int(i32::try_from(peak_idx).unwrap_or(i32::MAX));
         match idx_s60 / n_s60 {
             Ok(ratio) => ratio * sample_rate,
             Err(_) => S60::ZERO,

@@ -50,6 +50,12 @@ pub struct EbpfBridge {
     buffer: Option<Arc<ResonantBuffer>>,
 }
 
+impl Default for EbpfBridge {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[allow(dead_code)]
 impl EbpfBridge {
     pub fn new() -> Self {

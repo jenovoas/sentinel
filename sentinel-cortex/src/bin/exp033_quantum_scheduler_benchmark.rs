@@ -66,7 +66,7 @@ fn main() {
     }
     let elapsed = start.elapsed();
 
-    let elapsed_ns = elapsed.as_nanos() as i64;
+    let elapsed_ns = i64::try_from(elapsed.as_nanos()).unwrap_or(i64::MAX);
     let ns_per_tick = elapsed_ns / ITERS as i64;
     let ticks_per_sec = (ITERS as i64 * 1_000_000_000) / elapsed_ns.max(1);
 

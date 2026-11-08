@@ -77,7 +77,7 @@ async fn subscribe(url: &str, tx: &SyncSender<CrystalInput>) -> anyhow::Result<(
                     first_text = false;
                 }
                 if let Err(error) = enqueue(&text, tx) {
-                    if matches!(error.downcast_ref::<serde_json::Error>(), Some(_)) {
+                    if error.downcast_ref::<serde_json::Error>().is_some() {
                         tracing::warn!(%error, "MyCNet stream frame rejected: invalid JSON or seed fields");
                     } else {
                         return Err(error);

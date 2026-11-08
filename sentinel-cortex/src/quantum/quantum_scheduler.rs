@@ -291,11 +291,11 @@ impl<C> QuantumScheduler<C> {
 
     pub fn get_stats(&self) -> SchedulerStats {
         let total = self.successful_tasks();
-        let efficiency = if total > 0 {
-            S60::from_raw((u128::from(self.tasks_in_portal) * S60::SCALE_0 as u128 / total) as i64)
-        } else {
-            S60::zero()
-        };
+        let efficiency =
+            match (u128::from(self.tasks_in_portal) * S60::SCALE_0 as u128).checked_div(total) {
+                Some(ratio) => S60::from_raw(i64::try_from(ratio).unwrap_or(i64::MAX)),
+                None => S60::zero(),
+            };
 
         SchedulerStats {
             tasks_in_portal: self.tasks_in_portal,
@@ -312,7 +312,7 @@ impl<C> QuantumScheduler<C> {
         if total == 0 {
             return None;
         }
-        Some((u128::from(self.tasks_in_portal) * 100 / total) as u64)
+        Some(u64::try_from(u128::from(self.tasks_in_portal) * 100 / total).unwrap_or(u64::MAX))
     }
 
     pub fn queue_len(&self) -> usize {

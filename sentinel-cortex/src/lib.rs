@@ -2,11 +2,6 @@
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 // src/lib.rs
-#![allow(
-    clippy::cast_possible_truncation,
-    clippy::cast_precision_loss,
-    clippy::float_arithmetic
-)]
 #![deny(clippy::float_cmp)]
 //! SENTINEL CORTEX - FFI Library Interface
 //!

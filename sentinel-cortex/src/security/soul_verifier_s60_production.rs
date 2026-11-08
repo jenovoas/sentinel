@@ -84,7 +84,8 @@ impl BiometricVerifier {
         let ts = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
-            .as_nanos() as u64;
+            .as_nanos();
+        let ts = u64::try_from(ts).unwrap_or(u64::MAX);
         ts ^ (std::process::id() as u64)
     }
 

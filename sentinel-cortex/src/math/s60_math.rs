@@ -459,7 +459,9 @@ pub fn cross_correlation_s60(signal_a: &[S60], signal_b: &[S60]) -> Result<S60, 
         ));
     }
 
-    let n = signal_a.len() as i32;
+    let n = i32::try_from(signal_a.len()).map_err(|_| {
+        S60Error::ComponentOutOfRange("Signal length exceeds i32 range".to_string())
+    })?;
     let n_s60 = S60::new(n, 0, 0, 0, 0)?;
 
     // Calculate means
