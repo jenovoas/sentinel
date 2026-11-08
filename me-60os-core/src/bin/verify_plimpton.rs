@@ -4,7 +4,7 @@
 //! 🏛️ VERIFY PLIMPTON 322 — EXACTITUD SEXAGESIMAL (S60 PURO)
 //!
 //! Port de `quantum/verify_plimpton.py` con la corrección fundamental:
-//! el original usa `np.sqrt` y floats (viola su propio Yatra-lock).
+//! El original usa `np.sqrt` y floats (viola su propio Yatra-lock).
 //! Aquí TODO es SPA entero (base-60⁴): sqrt por SPAMath::sqrt, ratio (c/a)²
 //! en división exacta de enteros escalados.
 //!

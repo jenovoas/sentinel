@@ -1,26 +1,26 @@
 <!-- codebase-memory-mcp:start -->
-# Codebase Knowledge Graph (codebase-memory-mcp)
+# Grafo de conocimiento del código (codebase-memory-mcp)
 
-This project uses codebase-memory-mcp to maintain a knowledge graph of the codebase.
-ALWAYS prefer MCP graph tools over grep/glob/file-search for code discovery.
+Este proyecto usa codebase-memory-mcp para mantener un grafo de conocimiento del código.
+SIEMPRE prefiere las herramientas MCP del grafo en lugar de grep/glob/búsqueda de archivos para explorar el código.
 
-## Priority Order
-1. `search_graph` — find functions, classes, routes, variables by pattern
-2. `trace_path` — trace who calls a function or what it calls
-3. `get_code_snippet` — read specific function/class source code
-4. `query_graph` — run Cypher queries for complex patterns
-5. `get_architecture` — high-level project summary
-6. `detect_changes` — inspect changed files and blast radius
+## Orden de prioridad
+1. `search_graph` — buscar funciones, clases, rutas y variables por patrón
+2. `trace_path` — rastrear quién llama a una función o qué funciones llama
+3. `get_code_snippet` — leer el código fuente de una función o clase específica
+4. `query_graph` — ejecutar consultas Cypher para patrones complejos
+5. `get_architecture` — obtener un resumen general del proyecto
+6. `detect_changes` — inspeccionar archivos modificados y su radio de impacto
 
-## When to fall back to grep/glob
-- Searching for string literals, error messages, config values
-- Searching non-code files (Dockerfiles, shell scripts, configs)
-- When MCP tools return insufficient results
+## Cuándo recurrir a grep/glob
+- Al buscar cadenas literales, mensajes de error o valores de configuración
+- Al buscar en archivos que no son de código (Dockerfiles, scripts de shell, archivos de configuración)
+- Cuando las herramientas MCP no entreguen resultados suficientes
 
-## Examples
-- Find a handler: `search_graph(project="sentinel", name_pattern=".*OrderHandler.*")`
-- Who calls it: `trace_path(project="sentinel", function_name="OrderHandler", direction="inbound")`
-- Read source: `get_code_snippet(project="sentinel", qualified_name="pkg/orders.OrderHandler")`
+## Ejemplos
+- Buscar un controlador: `search_graph(project="sentinel", name_pattern=".*OrderHandler.*")`
+- Saber quién lo llama: `trace_path(project="sentinel", function_name="OrderHandler", direction="inbound")`
+- Leer el código fuente: `get_code_snippet(project="sentinel", qualified_name="pkg/orders.OrderHandler")`
 <!-- codebase-memory-mcp:end -->
 ---
 
@@ -34,64 +34,64 @@ ALWAYS prefer MCP graph tools over grep/glob/file-search for code discovery.
 
 ---
 
-# OBSIDIAN VAULT INTEGRATION
-- **Obsidian Vault**: `/home/jnovoas/Proyectos/personalvault`
+# INTEGRACIÓN CON LA BÓVEDA DE OBSIDIAN
+- **Bóveda de Obsidian**: `/home/jnovoas/Proyectos/personalvault`
 
 ## graphify
 
-This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+Este proyecto tiene un grafo de conocimiento en graphify-out/, con nodos principales, estructura de comunidades y relaciones entre archivos.
 
-Rules:
-- When graphify-out/graph.json exists, run `graphify query "<question>"` before your first grep, search or source-file read for a codebase question, and put this rule in every subagent prompt that explores code. Read raw files only for lines the graph or an earlier read already located. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
-- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
-- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
-- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
-- A committed graphify-out/graph.json is rewritten whole on every build, so a large diff to it in a pull request is expected. Do not flag it as churn or suggest skipping the graph rebuild or its hooks.
+Reglas:
+- Si existe graphify-out/graph.json, ejecuta `graphify query "<question>"` antes de usar grep, buscar o leer por primera vez un archivo fuente para responder una pregunta sobre el código. Incluye esta regla en cada instrucción para subagentes que exploren código. Lee archivos directamente solo en las líneas que el grafo o una lectura anterior ya haya ubicado. Usa `graphify path "<A>" "<B>"` para consultar relaciones y `graphify explain "<concept>"` para conceptos específicos. Estas herramientas devuelven un subgrafo acotado, normalmente mucho más pequeño que GRAPH_REPORT.md o la salida de grep sin filtrar.
+- Si existe graphify-out/wiki/index.md, úsalo para la navegación general en lugar de explorar directamente el código fuente.
+- Lee graphify-out/GRAPH_REPORT.md solo para una revisión general de la arquitectura o cuando query/path/explain no aporten suficiente contexto.
+- Después de modificar código, ejecuta `graphify update .` para mantener actualizado el grafo (solo AST, sin coste de API).
+- En cada compilación se reescribe por completo graphify-out/graph.json si está versionado; por eso es esperable que aparezca un diff grande en una solicitud de cambios. No lo señales como ruido ni sugieras omitir la actualización del grafo o sus hooks.
 
 <!-- code-review-graph MCP tools -->
-## MCP Tools: code-review-graph
+## Herramientas MCP: code-review-graph
 
-**This project has a knowledge graph. Start with the code-review-graph
-MCP tools to narrow scope, then read the source.** The graph is cheaper than scanning files and
-gives you structural context (callers, dependents, test coverage) that file search cannot.
+**Este proyecto tiene un grafo de conocimiento. Empieza con las herramientas MCP
+code-review-graph para acotar el alcance y luego lee el código fuente.** Consultar el grafo cuesta menos que recorrer archivos y
+aporta contexto estructural (quién llama a qué, dependencias y cobertura de pruebas) que la búsqueda de archivos no ofrece.
 
-### When to use graph tools FIRST
+### Cuándo usar PRIMERO las herramientas del grafo
 
-- **Exploring code**: `semantic_search_nodes_tool` or `query_graph_tool` instead of Grep
-- **Understanding impact**: `get_impact_radius_tool` instead of manually tracing imports
-- **Code review**: `detect_changes_tool` + `get_review_context_tool` instead of reading entire files
-- **Finding relationships**: `query_graph_tool` with callers_of/callees_of/imports_of/tests_for
-- **Architecture questions**: `get_architecture_overview_tool` + `list_communities_tool`
+- **Explorar código**: usa `semantic_search_nodes_tool` o `query_graph_tool` en lugar de Grep
+- **Entender el impacto**: usa `get_impact_radius_tool` en lugar de rastrear importaciones manualmente
+- **Revisar código**: usa `detect_changes_tool` + `get_review_context_tool` en lugar de leer archivos completos
+- **Encontrar relaciones**: usa `query_graph_tool` con callers_of/callees_of/imports_of/tests_for
+- **Consultar la arquitectura**: usa `get_architecture_overview_tool` + `list_communities_tool`
 
-### Verify in the source
+### Verificar en el código fuente
 
-- Narrow scope with the graph, then read the source. Do not change code from graph output alone.
-- For any non-trivial change, read the implementation and the relevant tests before concluding.
-- Verify the exact source when touching behavior, database logic, migrations, retries, fallbacks,
-  recovery, or compatibility code.
-- When the graph and the source disagree, the source wins. The graph may be stale or may not
-  model that relationship.
-- An empty graph result can mean "not indexed" or "not statically visible", not "does not exist".
+- Acota el alcance con el grafo y luego lee el código fuente. No modifiques código basándote únicamente en los resultados del grafo.
+- Para cualquier cambio no trivial, lee la implementación y las pruebas pertinentes antes de llegar a una conclusión.
+- Verifica el código fuente exacto cuando modifiques comportamiento, lógica de base de datos, migraciones, reintentos, mecanismos alternativos,
+  recuperación o compatibilidad.
+- Si el grafo y el código fuente discrepan, prevalece el código fuente. El grafo podría estar desactualizado o no
+  representar esa relación.
+- Un resultado vacío del grafo puede significar «no está indexado» o «no es visible estáticamente», no «no existe».
 
-### Key Tools
+### Herramientas principales
 
-| Tool | Use when |
+| Herramienta | Cuándo usarla |
 | ------ | ---------- |
-| `detect_changes_tool` | Reviewing code changes — gives risk-scored analysis |
-| `get_review_context_tool` | Need source snippets for review — token-efficient |
-| `get_impact_radius_tool` | Understanding blast radius of a change |
-| `get_affected_flows_tool` | Finding which execution paths are impacted |
-| `query_graph_tool` | Tracing callers, callees, imports, tests, dependencies |
-| `semantic_search_nodes_tool` | Finding functions/classes by name or keyword |
-| `get_architecture_overview_tool` | Understanding high-level codebase structure |
-| `refactor_tool` | Planning renames, finding dead code |
+| `detect_changes_tool` | Revisar cambios de código: proporciona un análisis con puntuación de riesgo |
+| `get_review_context_tool` | Obtener fragmentos del código fuente para una revisión de forma eficiente en tokens |
+| `get_impact_radius_tool` | Entender el alcance de impacto de un cambio |
+| `get_affected_flows_tool` | Encontrar las rutas de ejecución afectadas |
+| `query_graph_tool` | Rastrear quién llama, llamadas realizadas, importaciones, pruebas y dependencias |
+| `semantic_search_nodes_tool` | Encontrar funciones o clases por nombre o palabra clave |
+| `get_architecture_overview_tool` | Entender la estructura general del código |
+| `refactor_tool` | Planificar renombrados y encontrar código sin uso |
 
-### Workflow
+### Flujo de trabajo
 
-1. The graph auto-updates on file changes (via hooks).
-2. Use `detect_changes_tool` for code review.
-3. Use `get_affected_flows_tool` to understand impact.
-4. Use `query_graph_tool` pattern="tests_for" to check coverage.
+1. El grafo se actualiza automáticamente cuando cambian los archivos (mediante hooks).
+2. Usa `detect_changes_tool` para revisar cambios de código.
+3. Usa `get_affected_flows_tool` para entender el impacto.
+4. Usa `query_graph_tool` con pattern="tests_for" para comprobar la cobertura.
 <!-- /code-review-graph MCP tools -->
 
 ## Skills del sistema Sentinel / S60
