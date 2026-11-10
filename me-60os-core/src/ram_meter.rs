@@ -11,7 +11,7 @@ use sysinfo::System;
 /// RAM disponible en GB (S60). Semántica idéntica a `quantum_lite`:
 /// `psutil.virtual_memory().available // (1024**3)`.
 pub fn available_memory_gb_s60() -> SPA {
-    let mut sys = System::new_all();
+    let mut sys = System::new_all().expect("No se pudo inicializar sysinfo");
     sys.refresh_memory();
     let gb = sys.available_memory() / (1024u64 * 1024 * 1024);
     SPA::from_int(gb as i64)
@@ -19,7 +19,7 @@ pub fn available_memory_gb_s60() -> SPA {
 
 /// RAM disponible en bytes.
 pub fn available_memory_bytes() -> u64 {
-    let mut sys = System::new_all();
+    let mut sys = System::new_all().expect("No se pudo inicializar sysinfo");
     sys.refresh_memory();
     sys.available_memory()
 }
