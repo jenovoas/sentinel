@@ -1,5 +1,5 @@
 # SOMA v2.0: Estado de Orquestación Multi-Agente
-# NOTA: ME-60OS ES el propio sistema Sentinel (no separado)
+# ME-60OS es un proyecto independiente; Sentinel importa solo componentes seleccionados.
 
 metadata:
   version: "2.0.0"
@@ -12,9 +12,9 @@ project:
   name: "Sentinel"
   repo: "/home/jnovoas/Dev/sentinel"
   node: "sentinel (10.10.10.2)"
-  me60os_status: "ACTIVE"  # Sistema nervioso ME-60OS = Sentinel
+  me60os_status: "ACTIVE"  # Estado registrado del proyecto ME-60OS integrado
 
-# Infraestructura ME-60OS (Sistema Nervioso Sentinel)
+# Componentes seleccionados de ME-60OS usados por Sentinel
 me60os_system:
   qhc_agent:
     service: "qhc-agent.service"

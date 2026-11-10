@@ -6,7 +6,7 @@ use me60os_core::spa::SPA;
 use std::time::Instant;
 
 fn main() {
-    println!("🧪 ME-60OS: PAI-60 Micro-Benchmark (Rust Core)");
+    println!("🧪 SENTINEL: PAI-60 Micro-Benchmark (Rust Core)");
     println!("============================================");
 
     let num = SPA::new(100, 0, 0, 0, 0); // 100 degrees

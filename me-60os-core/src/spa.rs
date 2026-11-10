@@ -3,7 +3,7 @@
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 //! # 🛡️ BASE-60 FIXED-POINT: RUST CORE 🛡️
 //!
-//! Pure sexagesimal arithmetic for ME-60OS.
+//! Pure sexagesimal arithmetic for Sentinel.
 //! Implementation: Zero-allocation, fixed-point (60^4 scaling).
 //! Compliant with AI Prime Directives: ZERO DECIMAL CONTAMINATION.
 //!

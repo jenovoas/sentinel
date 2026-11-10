@@ -1,5 +1,7 @@
 # SOMA - ME-60OS Agent Orchestrator Integration Plan
 
+> **Alcance vigente:** Sentinel y ME-60OS son proyectos independientes. Este archivo conserva una propuesta de integración; no representa el estado operativo actual ni autoriza importar/desplegar ME-60OS completo. Sentinel solo incorpora componentes seleccionados, previa validación.
+
 ## Descubrimiento
 
 El proyecto **ME-60OS** tiene un sistema de orquestación de agentes completo:
@@ -249,12 +251,12 @@ class HandoffManager:
 
 ## Beneficios de la Integración
 
-1. **Aprovechar código existente** - ME-60OS orquestator ya está probado
+1. **Aprovechar código existente** - evaluar componentes seleccionados de ME-60OS antes de integrarlos
 2. **S60 nativo** - Todos los cálculos en Base-60
 3. **Resonancia armónica** - Agents siguen ciclo QHC automáticamente
 4. **Mesh awareness** - NetworkResonanceAgent maneja MycNet
 5. **Orquestación externa** - SOMA coordina handoffs entre agentes IA
-6. **Zero duplicación** - Reusar ME-60OS infraestructura
+6. **Sin duplicación** - reutilizar solo componentes compatibles y seleccionados de ME-60OS
 
 ## Archivos a Crear/Deployar
 
@@ -278,7 +280,7 @@ class HandoffManager:
 
 ## Próximos Pasos
 
-1. **Deploy ME-60OS agents** a `~/Dev/sentinel/.soma/`
+1. **Evaluar componentes candidatos de ME-60OS**; importar solo los seleccionados tras validarlos
 2. **Crear soma_me60os_bridge.py** para integración
 3. **Configurar agents_config.json** para uso SOMA
 4. **Crear soma-orchestrator.service** en sentinel
@@ -287,9 +289,9 @@ class HandoffManager:
 
 ## Conclusión
 
-**SOMA v3.0 = SOMA Orchestration + ME-60OS Agent System**
+**Propuesta SOMA v3.0 = orquestación SOMA + integración selectiva de componentes de ME-60OS**
 
-No reescribimos nada de ME-60OS. SOMA se integra como capa superior que:
+ME-60OS permanece como proyecto independiente. Sentinel no importa el sistema completo; la propuesta integra únicamente componentes seleccionados y validados. SOMA se concibe como capa de orquestación que podría:
 
 - Coordina handoffs entre agentes IA externos
 - Usa ME-60OS agents para monitoreo del sistema
@@ -297,4 +299,4 @@ No reescribimos nada de ME-60OS. SOMA se integra como capa superior que:
 - Balancea carga vía NetworkResonanceAgent
 - Almacena estado vía HolographicStorageAgent
 
-Esta es la arquitectura correcta: **SOMA como cerebro orquestador, ME-60OS como sistema nervioso**.
+La propuesta mantiene **SOMA como capa de orquestación en Sentinel** y trata los componentes importados de ME-60OS como dependencias independientes, no como la identidad o el sistema completo de Sentinel.

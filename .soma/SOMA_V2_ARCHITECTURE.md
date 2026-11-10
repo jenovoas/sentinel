@@ -2,9 +2,9 @@
 
 ## Premisa Correcta
 
-**SOMA NO es un motor Base-60** — eso es sentinel.
+**SOMA no es un motor Base-60** — es una capa de orquestación. Sentinel consume implementaciones concretas; algunas proceden del proyecto independiente ME-60OS.
 
-**SOMA es el ORQUESTADOR** que usa sentinel como infraestructura subyacente.
+**SOMA es el orquestador de Sentinel**; no convierte a ME-60OS en el mismo proyecto ni requiere importar su sistema completo.
 
 ## Stack Integrado (No Duplicado)
 
@@ -18,7 +18,7 @@
 └───────────────┬─────────────────────────────────────────────┘
                 │ usa
 ┌───────────────▼─────────────────────────────────────────────┐
-│              ME-60OS (Infraestructura Base-60)             │
+│     Componentes Base-60 seleccionados de ME-60OS           │
 │  • qhc-agent: Driver YHWH 10-5-6-5 (1Hz) ✅            │
 │  • adm-agent: Métricas mesh TQ→SPA (0.858) ✅            │
 │  • vid-agent: Quantum cooling (10Hz) ✅                    │
@@ -35,7 +35,7 @@
 
 ## Arquitectura SOMA v2.0
 
-### Componentes SOMA (SIN duplicar ME-60OS)
+### Componentes SOMA (sin duplicar los componentes importados de ME-60OS)
 
 1. **Contract Engine**
    - Define contratos entre fases
@@ -219,18 +219,18 @@ message CoherenceResponse {
 
 ## Notas Críticas
 
-1. **NO reimplementar S60** — usar ME-60OS
-2. **NO reimplementar QHC** — usar qhc-agent
+1. **No duplicar componentes S60 ya integrados** — verificar su origen y usar solo los componentes seleccionados de ME-60OS.
+2. **No duplicar QHC ya integrado** — usar `qhc-agent` solo si forma parte de la integración vigente.
 3. **NO reimplementar MycNet** — usar scripts existentes
 4. SOMA es SOLO orquestación, no infraestructura
-5. Toda lógica Base-60 está en ME-60OS
+5. La lógica Base-60 pertenece al módulo que la implementa; algunos componentes usados por Sentinel proceden de ME-60OS.
 6. SOMA agrega: contratos, handoffs, coordinación
 
 ## Diferencia SOMA v1 vs v2
 
 | Aspecto | SOMA v1 (MALO) | SOMA v2 (CORRECTO) |
 |---------|-----------------|-------------------|
-| S60 | Implementado en soma_core | Usado desde ME-60OS |
+| S60 | Implementado en soma_core | Componentes seleccionados importados de ME-60OS |
 | QHC | Implementado en qhc.rs | Usado desde qhc-agent |
 | MycNet | Implementado en mycnet.rs | Usado desde scripts existentes |
 | Responsabilidad | Todo en SOMA | Orquestación solo |
@@ -238,4 +238,4 @@ message CoherenceResponse {
 
 ---
 
-**Conclusión**: SOMA v2.0 es la capa de orquestación que usa ME-60OS como motor Base-60.
+**Conclusión**: esta propuesta describe SOMA como capa de orquestación de Sentinel, que integra componentes seleccionados del proyecto independiente ME-60OS; no representa la importación del sistema completo ni evidencia de despliegue.

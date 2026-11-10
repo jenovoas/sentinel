@@ -1,7 +1,7 @@
 // Autor: Jaime Novoa Sepúlveda — Todos los derechos reservados.
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
-// 🛡️ ME-60OS: CORTEX ENGINE 🛡️
+// 🛡️ SENTINEL: CORTEX ENGINE 🛡️
 // Conexión del Cortex Engine con el Lattice Fonónico Principal (ResonantMatrix)
 
 use crate::buffer_system::ResonantBuffer;

@@ -1,7 +1,7 @@
 // Autor: Jaime Novoa Sepulveda — Todos los derechos reservados.
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
-// 🛡️ ME-60OS CORE LIBRARY - RUST 🛡️
+// 🛡️ SENTINEL CORE LIBRARY - RUST 🛡️
 #![deny(clippy::float_cmp)]
 #[cfg(feature = "extension-module")]
 use pyo3::prelude::*;

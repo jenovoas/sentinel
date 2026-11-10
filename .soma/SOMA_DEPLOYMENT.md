@@ -1,8 +1,8 @@
-# SOMA Deployment - Arquitectura Final
+# SOMA Deployment - Propuesta de Arquitectura
 
 ## Premisa Crítica
 
-**SOMA corre en sentinel y usa sentinel (ME-60OS) como infraestructura.**
+**La propuesta sitúa SOMA en Sentinel e integra componentes seleccionados del proyecto independiente ME-60OS.**
 
 ## Arquitectura de Despliegue
 
@@ -17,7 +17,7 @@
     │   ├── guardian_alpha_lsm.c (id=92) ✅
     │   └── xdp_firewall.o (pendiente)
     │
-    ├── ME-60OS (Sistema Nervioso) ✅
+    ├── Componentes seleccionados de ME-60OS ✅
     │   ├── qhc-agent.service (1Hz, YHWH 10-5-6-5)
     │   ├── adm-agent.service (TQ→SPA, coherencia 0.858)
     │   ├── vid-agent.service (quantum cooling, 10Hz)
@@ -176,13 +176,13 @@ while True:
 │   └── scripts/
 │       ├── deploy.sh              # Deploy script
 │       └── start.sh              # Iniciar SOMA
-├── me-60os/                     # ME-60OS (instalado)
+├── me-60os/                     # Solo los componentes seleccionados importados de ME-60OS
 ├── mycnet/                      # MycNet scripts
 └── quantum/                     # Experimentos
 ```
 
 ## Conclusión
 
-**SOMA es el cerebro orquestador que corre sobre el sistema nervioso ME-60OS en sentinel.**
+**La propuesta concibe SOMA como la capa de orquestación de Sentinel, conectada a componentes seleccionados de ME-60OS.**
 
-No hay separación entre "Sentinel" y "ME-60OS" — son lo mismo. SOMA es la capa de inteligencia que coordina las capacidades del sistema.
+Sentinel y ME-60OS son proyectos distintos; Sentinel importa componentes concretos de ME-60OS, no el proyecto completo. SOMA se plantea como la capa de orquestación de Sentinel. Esta arquitectura es una propuesta, no evidencia de despliegue.

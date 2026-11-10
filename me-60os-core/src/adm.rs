@@ -2,7 +2,7 @@
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 // src/adm.rs
-//! 🍄 ME-60OS: MYCNET RESONANT LATTICE (RUST)  mushroom
+//! 🍄 sentinel: MYCNET RESONANT LATTICE (RUST)  mushroom
 //! ---------------------------------------------------------------------------
 //! Implementación de la red micelial hexagonal bio-inspirada.
 

@@ -31,6 +31,7 @@ impl SemanticFirewall {
     pub fn new() -> Self {
         // Default rules (Example - to be expanded)
         let allowed = RegexSet::new([
+            r"Sentinel",
             r"ME-60OS",
             r"Resonance",
             r"Truth",
@@ -201,5 +202,20 @@ impl ScvEngine {
 impl Default for ScvEngine {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::SemanticFirewall;
+
+    #[test]
+    fn recognizes_sentinel_as_an_allowed_keyword() {
+        assert!(SemanticFirewall::new().has_keywords("Sentinel"));
+    }
+
+    #[test]
+    fn keeps_the_imported_me60os_name_as_an_allowed_keyword() {
+        assert!(SemanticFirewall::new().has_keywords("ME-60OS"));
     }
 }

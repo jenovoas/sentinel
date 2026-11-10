@@ -140,9 +140,11 @@ DNS A Records creados para `pinguinoseguro.cl`:
 
 ---
 
-## 🎯 6. MISIÓN ACTUAL (2026-03-18) — LEER ANTES DE ACTUAR
+## 🎯 6. MISIÓN REGISTRADA (2026-03-18; HISTÓRICA)
 
 **OBJETIVO**: Unificar Sentinel + ME-60OS en un producto único y desplegarlo en **fenix** como servidor de infraestructura crítica único.
+
+**Corrección vigente:** Sentinel y ME-60OS son proyectos distintos. Sentinel importa solo componentes seleccionados de ME-60OS; el objetivo histórico de unificarlos en un único producto ya no es una instrucción vigente.
 
 ### Contexto crítico que NO debes olvidar:
 - **ifenix** = laptop local del usuario (tiene GPU, es ambiente de desarrollo)

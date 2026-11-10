@@ -3,7 +3,7 @@
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 //! # 🛡️ BASE-60 MATHEMATICAL FUNCTIONS - RUST CORE 🛡️
 //!
-//! Power series implementation for ME-60OS.
+//! Power series implementation for Sentinel.
 //! Guaranteed zero-decimal contamination.
 //!
 //! REVIEW: TWO_PI ahora referencia SPA::TWO_PI (single source of truth).

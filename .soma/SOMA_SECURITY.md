@@ -30,7 +30,7 @@ SOMA debe integrarse con esta capa de seguridad.
 └───────────────┬─────────────────────────────────────────────┘
                 │
 ┌───────────────▼─────────────────────────────────────────────┐
-│              ME-60OS (Sistema Nervioso)                     │
+│       Componentes seleccionados de ME-60OS importados       │
 │  - qhc-agent, adm-agent, vid-agent                         │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -285,4 +285,4 @@ WantedBy=multi-user.target
 3. **Integración QHC** - Restricciones contextuales según fase respiratoria
 4. **Audit Completo** - Todo se registra con contexto S60
 
-Esta capa asegura que los agentes SOMA operen de forma segura mientras coordinan las capacidades de ME-60OS en sentinel.
+Esta capa asegura que los agentes SOMA operen de forma segura mientras coordinan componentes seleccionados que Sentinel importa del proyecto independiente ME-60OS.

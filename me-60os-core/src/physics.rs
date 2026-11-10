@@ -6,7 +6,7 @@
 //! Implementation of Advanced Resource Physics.
 //! Provides SPA-based logic for "Load Reduction" (Inertial Damping) and "Priority Feedback".
 //!
-//! **Application in ME-60OS:**
+//! **Aplicación en Sentinel:**
 //! - **Static Load**: Base computational cost.
 //! - **Stability (Coherence)**: System health/scvfulness.
 //! - **Priority (Power)**: Allocated CPU cycles.
@@ -69,7 +69,7 @@ impl ResonantPhysics {
 
     /// Priority Feedback Check
     /// Returns "Priority Gain" based on demand.
-    /// In ME-60OS: Returns "Dynamic Boost".
+    /// En Sentinel: devuelve "Dynamic Boost".
     pub fn priority_feedback(demand: SPA) -> SPA {
         // dynamic_recharge = base + (demand * 5/6)
         // Using 5/6 (0;50) instead of 0.8 for harmonic resonance with 24ms cycles

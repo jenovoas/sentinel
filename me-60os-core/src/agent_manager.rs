@@ -2,14 +2,14 @@
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 // src/agent_manager.rs
-//! 🛡️ ME-60OS: NATIVE AGENT ORCHESTRATOR (RUST) 🛡️
+//! 🛡️ SENTINEL: NATIVE AGENT ORCHESTRATOR (RUST) 🛡️
 //! ---------------------------------------------------------------------------
 //! Maneja el registro y ejecución de agentes SPA con precisión de nanosegundos.
 
 use crate::cortex::CortexEngine;
 use crate::spa::SPA;
 
-/// Trait fundamental para agentes en ME-60OS.
+/// Trait fundamental para agentes de Sentinel.
 pub trait AgentSPA: Send + Sync {
     fn name(&self) -> &str;
 

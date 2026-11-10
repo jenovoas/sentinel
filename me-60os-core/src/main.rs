@@ -6,7 +6,7 @@
 #![forbid(clippy::cast_precision_loss)]
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 // src/main.rs
-//! 🛡️ ME-60OS: NATIVE RESONANT CORE DAEMON 🛡️
+//! 🛡️ SENTINEL: NATIVE RESONANT CORE DAEMON 🛡️
 //! ---------------------------------------------------------------------------
 //! Binario nativo para ejecución de alta frecuencia (41Hz).
 

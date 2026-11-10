@@ -26,7 +26,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-// ME-60OS Core Imports
+// Sentinel Core Imports
 use me60os_core::adm::ADM;
 use me60os_core::spa::SPA;
 

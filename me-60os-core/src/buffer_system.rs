@@ -1,7 +1,7 @@
 // Autor: Jaime Novoa Sepulveda — Todos los derechos reservados.
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
-//! # 🛡️ ZERO-LATENCY BUFFER SYSTEM - ME-60OS 🛡️
+//! # 🛡️ ZERO-LATENCY BUFFER SYSTEM - SENTINEL 🛡️
 //!
 //! High-performance ring buffer for Quantum/Hardware bridge.
 //! Implements lock-free access for SPA data streams.

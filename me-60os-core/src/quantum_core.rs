@@ -1,7 +1,7 @@
 // Autor: Jaime Novoa Sepulveda — Todos los derechos reservados.
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
-//! # 💎 CORE CUÁNTICO ME-60OS 💎
+//! # 💎 CORE CUÁNTICO SENTINEL 💎
 //! Logic Pura Rust con soporte condicional para PyO3
 
 use crate::isochronous_oscillator::IsochronousOscillator;

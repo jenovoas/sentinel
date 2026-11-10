@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0
-//! ME-60OS Decision Tree (P2 eBPF embedded classifier)
+//! Sentinel Decision Tree (P2 eBPF embedded classifier)
 //!
 //! Provides data structures and evaluation matching `ebpf/decision_tree.h`.
 //! Allows offline training/validation and synchronization with the `dt_model`

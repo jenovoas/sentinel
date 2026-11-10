@@ -1,6 +1,6 @@
 # 🧠 AGENTE QUANTUM: MATEMÁTICAS S60 Y FÍSICA TEMPORAL
 
-> **CONTEXTO:** Este directorio (`/quantum`) es el CORAZÓN MATEMÁTICO del sistema. Aquí residen las leyes de la física del sistema Sentinel/ME-60OS.
+> **CONTEXTO:** Este directorio (`/quantum`) es el CORAZÓN MATEMÁTICO de Sentinel. Algunas herramientas y componentes relacionados proceden del proyecto independiente ME-60OS y se integran selectivamente.
 
 ## 1. 🛡️ DIRECTIVAS CRÍTICAS (NO NEGOCIABLES)
 
