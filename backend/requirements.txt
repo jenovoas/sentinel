@@ -88,5 +88,5 @@ pytest-cov==7.1.0
 # 3. All async operations use asyncio internally
 # 4. Compatible with Python 3.10+
 # ============================================================================
-python-dateutil==4.0.0
+python-dateutil==2.9.0.post0
 docker==7.2.0
