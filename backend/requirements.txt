@@ -5,31 +5,31 @@
 
 # Web Framework
 fastapi==0.162.0
-uvicorn[standard]==0.24.0
+uvicorn[standard]==0.54.0
 prometheus-fastapi-instrumentator==8.1.0
-watchdog==4.0.0
+watchdog==7.1.0
 starlette==1.10.0
-anyio==4.14.2
-requests==2.33.0
+anyio==4.16.0
+requests==2.34.2
 
 # ============================================================================
 # DATABASE (SQLAlchemy 2.0 with Async Support)
 # ============================================================================
 # SQLAlchemy 2.0 - Modern ORM with async/await
-sqlalchemy==2.0.23
+sqlalchemy==2.1.8
 # Async extensions for SQLAlchemy
-sqlalchemy[asyncio]==2.0.23
+sqlalchemy[asyncio]==2.1.8
 # PostgreSQL drivers: async application queries and synchronous Alembic migrations
-asyncpg==0.29.0
-psycopg[binary]==3.2.3
+asyncpg==0.32.0
+psycopg[binary]==3.3.8
 # Database migrations
-alembic==1.13.0
+alembic==1.20.1
 
 # ============================================================================
 # DATA VALIDATION
 # ============================================================================
 # Pydantic 2.0 - Data validation with Python type hints
-pydantic==2.14.1
+pydantic==2.14.3
 # Settings management from environment variables
 pydantic-settings==2.16.2
 
@@ -37,17 +37,17 @@ pydantic-settings==2.16.2
 # ASYNC TASK QUEUE
 # ============================================================================
 # Celery - Distributed task queue
-celery==5.3.4
+celery==5.7.0
 # Redis client for Celery broker and caching
-redis==4.6.0
+redis==8.1.0
 
 # ============================================================================
 # AUTHENTICATION & SECURITY
 # ============================================================================
 # JWT token generation and validation
-PyJWT==2.15.0
+PyJWT==2.15.1
 # Password hashing with bcrypt
-bcrypt==4.1.1
+bcrypt==5.0.0
 # Password utilities
 passlib[bcrypt]==1.7.4
 # Central human identity source: Samba AD over certificate-validated LDAPS.
@@ -57,18 +57,18 @@ ldap3==2.9.1
 # ENVIRONMENT & UTILITIES
 # ============================================================================
 # Load environment variables from .env files
-python-dotenv==1.2.2
+python-dotenv==1.2.4
 # HTTP client for API requests
 # Async HTTP client for AI integration
-httpx==0.27.0
+httpx==0.28.1
 # Form data parsing for FastAPI
-python-multipart==0.0.31
+python-multipart==0.0.33
 # Email validation
-email-validator==2.1.0
+email-validator==2.3.0
 # Scientific computing for anomaly detection
-numpy==1.26.3
+numpy==2.4.6
 # System metrics
-psutil==5.9.8
+psutil==7.2.2
 # GPU monitoring
 GPUtil==1.4.0
 nvidia-ml-py3==7.352.0
@@ -76,9 +76,9 @@ nvidia-ml-py3==7.352.0
 # ============================================================================
 # TESTING
 # ============================================================================
-pytest==9.0.3
-pytest-asyncio==1.4.1
-pytest-cov==4.1.0
+pytest==9.2.0
+pytest-asyncio==1.4.1.post1
+pytest-cov==7.1.0
 
 # ============================================================================
 # NOTES FOR TEAM
@@ -88,5 +88,5 @@ pytest-cov==4.1.0
 # 3. All async operations use asyncio internally
 # 4. Compatible with Python 3.10+
 # ============================================================================
-python-dateutil==2.8.2
-docker==7.0.0
+python-dateutil==2.9.0.post0
+docker==7.2.0
