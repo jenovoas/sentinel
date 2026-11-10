@@ -1,0 +1,25 @@
+name: Backend dependency check
+
+on:
+  pull_request:
+    paths:
+      - "backend/requirements.txt"
+      - ".github/workflows/backend-dependencies.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  backend-dependencies:
+    name: Install backend requirements (Python 3.11)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install backend requirements
+        run: python -m pip install --no-cache-dir -r backend/requirements.txt
