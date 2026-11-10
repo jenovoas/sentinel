@@ -1,25 +1,66 @@
-name: Backend dependency check
+name: Backend Python verification
 
 on:
   pull_request:
     paths:
       - "backend/requirements.txt"
+      - "backend/app/**"
+      - "backend/tests/**"
+      - "backend/pytest.ini"
+      - "quantum/**"
+      - "me-60os-core/**"
+      - ".cargo/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "rust-toolchain.toml"
+      - "scripts/build-sentinel-backend-image.sh"
       - ".github/workflows/backend-dependencies.yml"
 
 permissions:
   contents: read
 
 jobs:
-  backend-dependencies:
-    name: Install backend requirements (Python 3.11)
+  backend-python:
+    name: Build and verify backend (Python 3.11)
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7.0.1
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v6
+        id: setup-python
         with:
           python-version: "3.11"
 
+      - name: Set up Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v2
+
+      - name: Install native build dependencies
+        run: sudo apt-get update && sudo apt-get install -y clang libbpf-dev libelf-dev libzstd-dev zlib1g-dev libssl-dev pkg-config
+
       - name: Install backend requirements
         run: python -m pip install --no-cache-dir -r backend/requirements.txt
+
+      - name: Build Python extension for the test interpreter
+        run: cargo build --locked --release --package me60os --features extension-module --lib
+        env:
+          PYO3_PYTHON: ${{ steps.setup-python.outputs.python-path }}
+
+      - name: Install extension into the Python import location
+        run: install -m 0644 target/release/libme60os_core.so quantum/me60os_core.so
+
+      - name: Verify native bridge
+        run: python -c "import quantum.yatra_core; import me60os_core; print(me60os_core.__file__)"
+        env:
+          PYTHONPATH: .:backend
+
+      - name: Run native bridge tests
+        run: python -m pytest quantum/test_bridge_integrity.py -q
+        env:
+          PYTHONPATH: .:backend
+
+      - name: Verify backend test collection
+        run: python -m pytest backend/tests --collect-only -q
+        env:
+          PYTHONPATH: .:backend
