@@ -69,16 +69,16 @@ impl SPA {
 
     pub fn from_raw(raw: i64) -> Self {
         let sign = if raw < 0 { -1 } else { 1 };
-        let mut val = raw.abs();
-        let q = val % 60;
+        let mut val = raw.unsigned_abs();
+        let q = i64::try_from(val % 60).expect("SPA quartae out of range");
         val /= 60;
-        let t = val % 60;
+        let t = i64::try_from(val % 60).expect("SPA tertiae out of range");
         val /= 60;
-        let s = val % 60;
+        let s = i64::try_from(val % 60).expect("SPA seconds out of range");
         val /= 60;
-        let m = val % 60;
+        let m = i64::try_from(val % 60).expect("SPA minutes out of range");
         val /= 60;
-        let d = val;
+        let d = i64::try_from(val).expect("SPA degrees out of range");
         Self {
             components: [d * sign, m * sign, s * sign, t * sign, q * sign],
         }
@@ -171,7 +171,7 @@ impl Mul for SPA {
         let v1 = self.to_raw() as i128;
         let v2 = other.to_raw() as i128;
         let raw = (v1 * v2) / i128::from(Self::SCALE_0);
-        Self::from_raw(i64::try_from(raw).unwrap_or(if raw < 0 { i64::MIN } else { i64::MAX }))
+        Self::from_raw(saturating_i128_to_i64(raw))
     }
 }
 
@@ -194,8 +194,12 @@ impl Div for SPA {
         }
         let v1 = self.to_raw() as i128;
         let raw = (v1 * i128::from(Self::SCALE_0)) / i128::from(v2);
-        Self::from_raw(i64::try_from(raw).unwrap_or(if raw < 0 { i64::MIN } else { i64::MAX }))
+        Self::from_raw(saturating_i128_to_i64(raw))
     }
+}
+
+fn saturating_i128_to_i64(raw: i128) -> i64 {
+    i64::try_from(raw).unwrap_or(if raw < 0 { i64::MIN } else { i64::MAX })
 }
 
 impl SPA {
@@ -368,6 +372,8 @@ mod tests {
     fn from_raw_to_raw_es_biyeccion_exacta() {
         for raw in [
             0i64,
+            i64::MIN,
+            i64::MAX,
             1,
             59,
             60,
@@ -427,11 +433,20 @@ mod tests {
         assert_eq!(a + SPA::zero(), a);
     }
 
-    /// Las operaciones son checked: un desbordamiento real no se satura en silencio.
+    /// La suma falla ante overflow; `Mul` y `Div` saturan al límite representable.
     #[test]
     #[should_panic(expected = "SPA overflow en add")]
     fn suma_desbordada_falla_explicitamente() {
         let _ = SPA::from_raw(i64::MAX) + SPA::one();
+    }
+    #[test]
+    fn multiplicacion_y_division_spa_saturan_en_limites_raw() {
+        let max = SPA::from_raw(i64::MAX);
+        let min = SPA::from_raw(i64::MIN);
+        assert_eq!((max * SPA::from_int(2)).to_raw(), i64::MAX);
+        assert_eq!((min * SPA::from_int(2)).to_raw(), i64::MIN);
+        assert_eq!((max / SPA::from_raw(1)).to_raw(), i64::MAX);
+        assert_eq!((min / SPA::from_raw(1)).to_raw(), i64::MIN);
     }
 
     #[test]
@@ -472,6 +487,20 @@ mod tests {
             SPA::one().div_safe(SPA::from_int(4)),
             Ok(SPA::from_raw(SPA::SCALE_0 / 4))
         );
+    }
+
+    #[test]
+    fn div_safe_reporta_overflow_sin_panico() {
+        assert_eq!(
+            SPA::from_raw(i64::MAX).div_safe(SPA::from_raw(1)),
+            Err(SPAError::Overflow)
+        );
+    }
+
+    #[test]
+    #[should_panic(expected = "SPA to_raw overflow")]
+    fn to_raw_falla_si_componentes_exceden_i64() {
+        let _ = SPA::new(i64::MAX, 0, 0, 0, 0).to_raw();
     }
 
     #[test]

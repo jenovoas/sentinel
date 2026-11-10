@@ -480,7 +480,7 @@ impl ResonantMatrix {
             if i >= self.crystals.len() {
                 break;
             }
-            self.crystals[i].transduce_pulse(byte as i64);
+            self.crystals[i].transduce_pulse(i64::from(byte));
         }
     }
 

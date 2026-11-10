@@ -255,8 +255,10 @@ impl OrbitalAscent {
     fn clock_phase(&self) -> SPA {
         //phi = 2*pi * (ticks mod period) / period ; period ~ 68 ticks (Salto-17)
         let period = 68u64;
-        let phase_step = SPAMath::TWO_PI / SPA::from_int(period as i64);
-        phase_step * SPA::from_int((self.clock.ticks % period) as i64)
+        let period_i64 = i64::try_from(period).expect("periodo orbital excede i64");
+        let phase_step = SPAMath::TWO_PI / SPA::from_int(period_i64);
+        phase_step
+            * SPA::from_int(i64::try_from(self.clock.ticks % period).expect("fase excede i64"))
     }
 }
 

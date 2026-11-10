@@ -90,7 +90,8 @@ impl QuantumScheduler {
 
         // New batch
         // current * scale
-        let current_spa = SPA::from_raw(self.current_batch_size as i64 * SPA::SCALE_0);
+        let batch_size = i64::try_from(self.current_batch_size).expect("batch size excede i64");
+        let current_spa = SPA::from_raw(batch_size * SPA::SCALE_0);
         let new_batch_spa = current_spa * clamped_scale;
 
         // Convert back to usize

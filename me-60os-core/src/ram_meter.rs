@@ -14,7 +14,7 @@ pub fn available_memory_gb_s60() -> SPA {
     let mut sys = System::new_all().expect("No se pudo inicializar sysinfo");
     sys.refresh_memory();
     let gb = sys.available_memory() / (1024u64 * 1024 * 1024);
-    SPA::from_int(gb as i64)
+    SPA::from_int(i64::try_from(gb).expect("RAM disponible excede el rango SPA i64"))
 }
 
 /// RAM disponible en bytes.
@@ -36,13 +36,14 @@ pub fn recommend_lattice_ring(avail_bytes: u64, bytes_per_node: usize, max_ring:
     if bytes_per_node == 0 {
         return 0;
     }
+    let bytes_per_node = u64::try_from(bytes_per_node).expect("bytes por nodo exceden u64");
     let mut lo = 0usize;
     let mut hi = max_ring;
     let mut best = 0usize;
     while lo <= hi {
         let mid = lo + (hi - lo) / 2;
-        let nodes = hexagonal_ring_nodes(mid) as u64;
-        let needed = nodes * bytes_per_node as u64;
+        let nodes = u64::try_from(hexagonal_ring_nodes(mid)).expect("nodos exceden u64");
+        let needed = nodes * bytes_per_node;
         if needed <= avail_bytes {
             best = mid;
             lo = mid + 1;

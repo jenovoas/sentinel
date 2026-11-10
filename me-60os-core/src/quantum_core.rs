@@ -432,7 +432,8 @@ impl LiquidLattice {
                 self.buffer.pids[i].setpoint = self.buffer.lattice[i].amplitude;
             }
             if i < chunks_b.len() {
-                self.buffer.lattice[i].phase = sector_width * SPA::from_int(chunks_b[i][0] as i64);
+                self.buffer.lattice[i].phase =
+                    sector_width * SPA::from_int(i64::from(chunks_b[i][0]));
             }
         }
     }
@@ -454,8 +455,7 @@ impl LiquidLattice {
         for i in 0..self.buffer.size {
             if rec_a.len() < count_a {
                 let amp = self.buffer.lattice[i].amplitude;
-                let raw_amp = amp.to_raw() as u64;
-                let bytes = raw_amp.to_be_bytes();
+                let bytes = amp.to_raw().to_be_bytes();
                 let remaining = count_a - rec_a.len();
                 if remaining >= 8 {
                     rec_a.extend_from_slice(&bytes);
@@ -466,7 +466,8 @@ impl LiquidLattice {
             if rec_b.len() < count_b {
                 let phase = self.buffer.lattice[i].phase;
                 let sector_idx = ((phase + half_width) / sector_width).to_raw() / SPA::SCALE_0;
-                let byte_val = sector_idx.clamp(0, 255) as u8;
+                let byte_val =
+                    u8::try_from(sector_idx.clamp(0, 255)).expect("sector limitado a u8");
                 rec_b.push(byte_val);
             }
         }
@@ -479,4 +480,19 @@ fn pad_to_8(data: &[u8]) -> [u8; 8] {
     let len = data.len().min(8);
     padded[8 - len..].copy_from_slice(&data[..len]);
     padded
+}
+
+#[cfg(test)]
+mod retrieve_dual_channel_tests {
+    use super::*;
+
+    #[test]
+    fn phase_sector_encoding_clamps_to_u8_bounds() {
+        let mut lattice = LiquidLattice::new(2);
+        lattice.buffer.lattice[0].phase = SPA::from_int(-360);
+        lattice.buffer.lattice[1].phase = SPA::from_int(360);
+
+        let (_, encoded_phase) = lattice.retrieve_dual_channel(0, 2);
+        assert_eq!(encoded_phase, [0, u8::MAX]);
+    }
 }

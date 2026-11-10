@@ -209,7 +209,7 @@ mod tests {
         let mut bc = BufferCascade::new(hex, SPA::new(1, 0, 0, 0, 0), SPA::new(58, 0, 0, 0, 0));
         // Inyectar mucha historia para saturar la memoria.
         for i in 0..50 {
-            let t = ts(300 + i as i64, 0);
+            let t = ts(300 + i64::from(i), 0);
             bc.record(t, SPA::new(60, 0, 0, 0, 0));
         }
         let (cur, _f, _) = bc.cascade(ts(400, 0), 50);
