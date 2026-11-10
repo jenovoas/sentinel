@@ -110,3 +110,7 @@
 
 - 2026-11-10 05:55:29 UTC, lectura remota de solo lectura: el contenedor Alloy inició `2026-11-08T16:31:13.306243315Z` y monta `service-operation/deploy/marte/alloy-fenix.alloy`. La huella SHA-256 del archivo activo coincide con la del checkout (`9877c7f8ec684360d5acafc5898fc99f2b854f65c635e28c5666aac44baee327`); la configuración conserva journal de prioridad 0–3 y excluye entradas Docker del journal.
 - En esa muestra, `loki_write_sent_bytes_total=9949` y `loki_write_sent_entries_total=102`; las cinco razones de `loki_write_dropped_{bytes,entries}_total` estaban en cero. A las 05:56:33 UTC los contadores enviados seguían en 9.949 bytes/102 entradas y `loki_source_journal_target_lines_total=102`. Son contadores posteriores al filtro, acumulados desde el inicio del proceso; la evidencia disponible no contiene una línea base pre-filtro comparable. No cerrar la comparación directa de 1.3/4.1. Esta lectura no accedió al CSV.
+
+## Muestra natural de Alloy en Fénix — 2026-11-10
+
+- 2026-11-10 06:15:45.713 UTC: consulta LogQL agregada de las últimas 24 h por `classification` y `priority` devolvió una sola serie: 70 entradas `classification=journal_priority_0_3`, prioridad `error`. No se consultó contenido de mensajes. `auditd` sigue `inactive` y `/var/log/audit/audit.log` está ausente; no se generaron eventos. La muestra confirma journal clasificado, no cubre auditd ni una comparación pre/post filtro; 3.2/4.1 siguen abiertas.
