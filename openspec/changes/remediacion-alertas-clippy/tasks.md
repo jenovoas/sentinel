@@ -38,3 +38,9 @@
 ## Workflow follow-up
 
 - Archivar el cambio OpenSpec cuando la implementación y sus verificaciones estén completas.
+
+## Revalidación remota — 2026-11-10
+
+- Consultas GET autenticadas a `jenovoas/sentinel`: alertas abiertas de Dependabot, code scanning y secret scanning: 0 en cada endpoint. `GET /repos/jenovoas/sentinel/vulnerability-alerts` respondió HTTP 204 (alertas de vulnerabilidades habilitadas).
+- `GET /repos/jenovoas/sentinel/subscription`: `subscribed=true`, `ignored=false`. `GET /repos/jenovoas/sentinel/notifications?all=true&per_page=100`: 50 notificaciones (43 `ci_activity`, 7 `subscribed`), 7 sin leer.
+- Las notificaciones de GitHub no acreditan entrega al correo. No se accedió al buzón ni se verificó recepción; esa parte sigue pendiente. No se silenció ni resolvió ninguna alerta.
