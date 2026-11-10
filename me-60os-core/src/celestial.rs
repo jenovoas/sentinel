@@ -1,4 +1,4 @@
-// Autor: Jaime Novoa Sepulveda — Todos los derechos reservados.
+// Autor: Jaime Novoa  — Todos los derechos reservados.
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 //! # 🛡️ CELESTIAL NAVIGATION (BASE-60 PURO) — RUST PURO 🛡️
@@ -77,7 +77,7 @@ impl SovereignOrbit {
     ///   4. Excentricidad: e = √(1 + (2εh²)/μ²)
     ///   5. Período: T = 2π·√(a³/μ)
     ///
-    /// `mu` es el parámetro gravitacional estándar (GM). Para Tierra: 3.986e14.
+    /// `mu` es el parámetro gravitational estándar (GM). Para Tierra: 3.986e14.
     ///
     /// NOTA DE IMPLEMENTACIÓN: el `.py` legacy almacenaba S60 como raw (sin SCALE en
     /// operaciones entre S60), así que replicamos la función operando en raw S60
