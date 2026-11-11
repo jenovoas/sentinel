@@ -104,9 +104,12 @@ MYCNET_KV_ADDR=127.0.0.1:4242 MYCNET_KV_TIMEOUT_MS=5000 \
 El CLI imprime Committed, token, timestamp, amplitud y hash **solo tras confirmar**.
 Invocarlo otra vez ejecuta un nuevo store y crea otra versión, no reanuda la
 anterior. Esta vía replica metadatos; **no transfiere ni recupera payload remoto**.
-Pruebas de whitelist, identidad, pérdidas/retry, origen, timeout y timestamps
-están escritas en `liquid_memory.rs`; esta preparación no constituye evidencia
-de ejecución de pruebas, build ni despliegue.
+Verificación local 2026-11-11: `cargo test --locked -p me60os --lib liquid_memory::tests`
+aprobó 12/12; build de `kv_publish` y Clippy estricto de biblioteca/binario aprobados.
+Smoke cruzado con tres procesos MyCNet aislados: réplica y ACK perdidos recuperados,
+LWW reordenado/duplicado convergente, origen no autorizado rechazado y peer ausente
+sin falso Committed; metadatos iniciales confirmados en 163 ms. No es latencia de
+la malla real ni evidencia de despliegue o recuperación de payload remoto.
 
 
 ## 💎 Retículo del Cristal Fonónico y Osciladores Isocrónicos
