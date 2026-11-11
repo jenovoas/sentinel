@@ -1,0 +1,719 @@
+{
+  "source_commit": "f6a6b939d27c31f5f6e7100056be4d20496b75cd",
+  "host": "fenix",
+  "kernel_release": "7.2.12+deb13-amd64",
+  "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "profile": "dev (unoptimized + debuginfo)",
+  "cpu_affinity": [
+    5
+  ],
+  "nodes_per_lane": 2000,
+  "ticks_per_scenario": 680,
+  "probe_source_sha256": "3f1e68eeef85d85853e0e374ffc3105149e718179b130652ee03ec48e003a264",
+  "probe_source": "use me60os_core::{pai60_lib::pai60_divide, spa::SPA};\nuse sentinel_cortex::memory::crystal_runtime::{CrystalRuntime, DTC_TICK_INTERVAL_NS};\nuse std::{error::Error, time::{Duration, Instant}};\n\nfn host_drive() -> Result<SPA, Box<dyn Error>> {\n    let stat = std::fs::read_to_string(\"/proc/stat\")?;\n    let mut fields = stat.lines().next().ok_or(\"missing cpu row\")?.split_whitespace();\n    fields.next();\n    let user: i64 = fields.next().ok_or(\"missing user counter\")?.parse()?;\n    fields.next();\n    let system: i64 = fields.next().ok_or(\"missing system counter\")?.parse()?;\n    let sample = (user + system).rem_euclid(60) + 20;\n    Ok(pai60_divide(SPA::from_int(sample), 60).ok_or(\"PAI conversion failed\")?)\n}\n\nfn stats(values: &mut [u128]) -> serde_json::Value {\n    values.sort_unstable();\n    if values.is_empty() { return serde_json::Value::Null; }\n    serde_json::json!({\n        \"count\": values.len(), \"min_ns\": values[0],\n        \"mean_ns\": values.iter().sum::<u128>() / values.len() as u128,\n        \"p99_ns\": values[(values.len() * 99 / 100).min(values.len() - 1)],\n        \"max_ns\": values[values.len() - 1]\n    })\n}\n\nfn main() -> Result<(), Box<dyn Error>> {\n    let state_dir = std::env::var_os(\"SENTINEL_CRYSTAL_STATE_DIR\").ok_or(\"isolated state directory required\")?;\n    if std::fs::read_dir(&state_dir)?.next().is_some() { return Err(\"state directory must be empty\".into()); }\n    const TICKS: u64 = 680;\n    const NODES: usize = 2000;\n    let mut runtime = CrystalRuntime::in_memory(NODES);\n    let initial = runtime.status();\n    if initial.shm_active || initial.fractal_seed_shm_active || initial.qhc_tick != 0 {\n        return Err(\"runtime is not isolated and fresh\".into());\n    }\n    let start = Instant::now();\n    let mut next_tick = start + Duration::from_nanos(DTC_TICK_INTERVAL_NS);\n    let mut next_step = start + Duration::from_millis(500);\n    let mut expected_ns = u128::from(DTC_TICK_INTERVAL_NS);\n    let mut lateness = Vec::with_capacity(TICKS as usize);\n    let mut tick_cost = Vec::with_capacity(TICKS as usize);\n    let mut step_cost = Vec::with_capacity(40);\n    let mut corrections = Vec::with_capacity(10);\n    let mut energy_samples = Vec::with_capacity(40);\n    let mut final_tick_elapsed_ns = 0;\n    let mut tick_count = 0_u64;\n    while tick_count < TICKS {\n        let now = Instant::now();\n        let tick_due = now >= next_tick;\n        if tick_due {\n            lateness.push(now.duration_since(next_tick).as_nanos());\n            let begin = Instant::now();\n            let interval = runtime.tick_dtc()?;\n            tick_cost.push(begin.elapsed().as_nanos());\n            tick_count += 1;\n            if tick_count.is_multiple_of(68) {\n                let status = runtime.status();\n                corrections.push(serde_json::json!({\"tick\":status.qhc_tick,\"qhc_correction_ns\":status.qhc_last_drift_correction_ns}));\n            }\n            if tick_count == TICKS {\n                final_tick_elapsed_ns = now.duration_since(start).as_nanos();\n            } else {\n                expected_ns += u128::from(interval);\n            }\n            next_tick += Duration::from_nanos(interval);\n        }\n        if now >= next_step {\n            let drive = host_drive()?;\n            runtime.inject_observability_spa(0, drive);\n            let begin = Instant::now();\n            runtime.step()?;\n            step_cost.push(begin.elapsed().as_nanos());\n            let status = runtime.status();\n            energy_samples.push(serde_json::json!({\n                \"tick\":status.qhc_tick,\"drive_raw\":drive.to_raw(),\n                \"lane_a_energy_raw\":status.lane_a_energy_raw,\"lane_b_energy_raw\":status.lane_b_energy_raw,\n                \"dual_lane_portal_open\":runtime.dual_lane_portal_open()\n            }));\n            next_step = now + Duration::from_millis(500);\n        }\n        let deadline = next_tick.min(next_step);\n        std::thread::sleep(deadline.saturating_duration_since(Instant::now()));\n    }\n    let final_status = runtime.status();\n    if final_status.shm_active || final_status.fractal_seed_shm_active || final_status.shm_sync_count != 0\n        || final_status.liquid_memory_sync_count != 0 || std::fs::read_dir(&state_dir)?.next().is_some() {\n        return Err(\"unexpected shared memory or persistence\".into());\n    }\n    println!(\"{}\", serde_json::json!({\n        \"scenario\":std::env::args().nth(1),\"nodes_per_lane\":NODES,\"ticks\":TICKS,\n        \"expected_final_tick_ns\":expected_ns,\"observed_final_tick_ns\":final_tick_elapsed_ns,\n        \"final_tick_lateness_ns\":final_tick_elapsed_ns.saturating_sub(expected_ns),\n        \"deadline_lateness\":stats(&mut lateness),\"tick_call_cost\":stats(&mut tick_cost),\n        \"step_call_cost\":stats(&mut step_cost),\"correction_boundaries\":corrections,\n        \"energy_samples\":energy_samples,\"final_status\":final_status,\n        \"excluded\":[\"production service\",\"SHM transport\",\"checkpoint writes\",\"kernel events\",\"scheduler tasks\",\"RT isolation\",\"history-off comparison\"]\n    }));\n    Ok(())\n}\n",
+  "build_command": "cargo build --locked -p sentinel-cortex --example p12_runtime_probe",
+  "run_command": "SENTINEL_CRYSTAL_STATE_DIR=<fresh-empty-temporary-directory> taskset -c 5 target/debug/examples/p12_runtime_probe <scenario>",
+  "load_command": "taskset -c 5 openssl speed -seconds 90 -bytes 16384 sha256",
+  "load_lifetime": "terminated and waited in finally immediately after the loaded scenario",
+  "method": "Existing CrystalRuntime::in_memory with tick_dtc deadlines and step each 500ms; drive from host /proc/stat converted by existing PAI-60; no modified core logic. Independent probe, not the production service.",
+  "measurements": [
+    {
+      "label": "runtime-baseline",
+      "loaded": false,
+      "exit_code": 0,
+      "elapsed_ns": 16324454907,
+      "load_cpu_ticks": null,
+      "clock_ticks_per_second": 100,
+      "stdout": "{\"correction_boundaries\":[{\"qhc_correction_ns\":700000,\"tick\":68},{\"qhc_correction_ns\":700000,\"tick\":136},{\"qhc_correction_ns\":700000,\"tick\":204},{\"qhc_correction_ns\":700000,\"tick\":272},{\"qhc_correction_ns\":700000,\"tick\":340},{\"qhc_correction_ns\":700000,\"tick\":408},{\"qhc_correction_ns\":700000,\"tick\":476},{\"qhc_correction_ns\":700000,\"tick\":544},{\"qhc_correction_ns\":700000,\"tick\":612},{\"qhc_correction_ns\":700000,\"tick\":680}],\"deadline_lateness\":{\"count\":680,\"max_ns\":21665527,\"mean_ns\":556342,\"min_ns\":611,\"p99_ns\":15256196},\"energy_samples\":[{\"drive_raw\":7560000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":57,\"lane_b_energy_raw\":7559984,\"tick\":20},{\"drive_raw\":14904000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":228,\"lane_b_energy_raw\":22463934,\"tick\":41},{\"drive_raw\":6912000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":467,\"lane_b_energy_raw\":29375868,\"tick\":62},{\"drive_raw\":13608000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":323,\"lane_b_energy_raw\":42982475,\"tick\":83},{\"drive_raw\":7560000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":721,\"lane_b_energy_raw\":50542360,\"tick\":104},{\"drive_raw\":4536000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":1225,\"lane_b_energy_raw\":55078236,\"tick\":125},{\"drive_raw\":14904000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":520,\"lane_b_energy_raw\":69980634,\"tick\":146},{\"drive_raw\":12096000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":1161,\"lane_b_energy_raw\":82076448,\"tick\":166},{\"drive_raw\":9720000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":1993,\"lane_b_energy_raw\":91796239,\"tick\":187},{\"drive_raw\":14472000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":2236,\"lane_b_energy_raw\":106267460,\"tick\":208},{\"drive_raw\":9504000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":3138,\"lane_b_energy_raw\":115771196,\"tick\":229},{\"drive_raw\":12744000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":4314,\"lane_b_energy_raw\":128514903,\"tick\":250},{\"drive_raw\":16416000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":5788,\"lane_b_energy_raw\":144930573,\"tick\":271},{\"drive_raw\":12096000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":4856,\"lane_b_energy_raw\":157025167,\"tick\":292},{\"drive_raw\":11016000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":6157,\"lane_b_energy_raw\":168040783,\"tick\":313},{\"drive_raw\":4968000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":7763,\"lane_b_energy_raw\":173008388,\"tick\":334},{\"drive_raw\":8640000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":6438,\"lane_b_energy_raw\":181646034,\"tick\":354},{\"drive_raw\":6048000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":7882,\"lane_b_energy_raw\":187693606,\"tick\":375},{\"drive_raw\":7992000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":9694,\"lane_b_energy_raw\":195685159,\"tick\":396},{\"drive_raw\":14472000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":7831,\"lane_b_energy_raw\":210154879,\"tick\":417},{\"drive_raw\":10584000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":9519,\"lane_b_energy_raw\":220738375,\"tick\":438},{\"drive_raw\":15336000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":11681,\"lane_b_energy_raw\":236073837,\"tick\":459},{\"drive_raw\":12096000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":9380,\"lane_b_energy_raw\":248167183,\"tick\":480},{\"drive_raw\":8424000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":11338,\"lane_b_energy_raw\":256590597,\"tick\":501},{\"drive_raw\":15984000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":13839,\"lane_b_energy_raw\":272573977,\"tick\":522},{\"drive_raw\":12528000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":16835,\"lane_b_energy_raw\":285101327,\"tick\":543},{\"drive_raw\":6048000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":18183,\"lane_b_energy_raw\":291145704,\"tick\":563},{\"drive_raw\":13608000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":20494,\"lane_b_energy_raw\":304753006,\"tick\":584},{\"drive_raw\":4536000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":23345,\"lane_b_energy_raw\":309288301,\"tick\":605},{\"drive_raw\":5832000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":23814,\"lane_b_energy_raw\":315116874,\"tick\":626},{\"drive_raw\":9720000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":26265,\"lane_b_energy_raw\":324836131,\"tick\":647},{\"drive_raw\":8424000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":29327,\"lane_b_energy_raw\":333259371,\"tick\":668}],\"excluded\":[\"production service\",\"SHM transport\",\"checkpoint writes\",\"kernel events\",\"scheduler tasks\",\"RT isolation\",\"history-off comparison\"],\"expected_final_tick_ns\":16290263804,\"final_status\":{\"active\":true,\"checkpoint_active\":true,\"dtc_frequency_millihz\":43520,\"dtc_oscillator_active\":true,\"dtc_tick_interval_ns\":22977941,\"dtc_ticks\":680,\"fractal_seed_capacity\":1024,\"fractal_seed_shm_active\":false,\"fractal_seeds_published\":0,\"lane_a\":\"security\",\"lane_a_energy_raw\":26663,\"lane_a_shm\":\"/me60os_lattice\",\"lane_b\":\"observability\",\"lane_b_energy_raw\":333256269,\"lane_b_shm\":\"/me60os_lattice_b\",\"last_shm_sync_unix_ms\":0,\"liquid_memory_active\":true,\"liquid_memory_checkpoint_bytes\":0,\"liquid_memory_shm_key\":\"crystal-runtime-checkpoint\",\"liquid_memory_sync_count\":0,\"node_count_per_lane\":2000,\"non_markovian_history_capacity_ticks\":68,\"non_markovian_kernel_active\":true,\"qhc_last_drift_correction_ns\":700000,\"qhc_phase_modulation\":10,\"qhc_tick\":680,\"shm_active\":false,\"shm_bytes_per_lane\":384000,\"shm_sync_count\":0,\"yhwh_qhc_active\":true},\"final_tick_lateness_ns\":1180191,\"nodes_per_lane\":2000,\"observed_final_tick_ns\":16291443995,\"scenario\":\"runtime-baseline\",\"step_call_cost\":{\"count\":32,\"max_ns\":23377676,\"mean_ns\":16873377,\"min_ns\":13522205,\"p99_ns\":23377676},\"tick_call_cost\":{\"count\":680,\"max_ns\":3335266,\"mean_ns\":1192031,\"min_ns\":690019,\"p99_ns\":1591407},\"ticks\":680}\n",
+      "stderr": "",
+      "state_directory_empty_after_run": true,
+      "result": {
+        "correction_boundaries": [
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 68
+          },
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 136
+          },
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 204
+          },
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 272
+          },
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 340
+          },
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 408
+          },
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 476
+          },
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 544
+          },
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 612
+          },
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 680
+          }
+        ],
+        "deadline_lateness": {
+          "count": 680,
+          "max_ns": 21665527,
+          "mean_ns": 556342,
+          "min_ns": 611,
+          "p99_ns": 15256196
+        },
+        "energy_samples": [
+          {
+            "drive_raw": 7560000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 57,
+            "lane_b_energy_raw": 7559984,
+            "tick": 20
+          },
+          {
+            "drive_raw": 14904000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 228,
+            "lane_b_energy_raw": 22463934,
+            "tick": 41
+          },
+          {
+            "drive_raw": 6912000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 467,
+            "lane_b_energy_raw": 29375868,
+            "tick": 62
+          },
+          {
+            "drive_raw": 13608000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 323,
+            "lane_b_energy_raw": 42982475,
+            "tick": 83
+          },
+          {
+            "drive_raw": 7560000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 721,
+            "lane_b_energy_raw": 50542360,
+            "tick": 104
+          },
+          {
+            "drive_raw": 4536000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 1225,
+            "lane_b_energy_raw": 55078236,
+            "tick": 125
+          },
+          {
+            "drive_raw": 14904000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 520,
+            "lane_b_energy_raw": 69980634,
+            "tick": 146
+          },
+          {
+            "drive_raw": 12096000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 1161,
+            "lane_b_energy_raw": 82076448,
+            "tick": 166
+          },
+          {
+            "drive_raw": 9720000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 1993,
+            "lane_b_energy_raw": 91796239,
+            "tick": 187
+          },
+          {
+            "drive_raw": 14472000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 2236,
+            "lane_b_energy_raw": 106267460,
+            "tick": 208
+          },
+          {
+            "drive_raw": 9504000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 3138,
+            "lane_b_energy_raw": 115771196,
+            "tick": 229
+          },
+          {
+            "drive_raw": 12744000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 4314,
+            "lane_b_energy_raw": 128514903,
+            "tick": 250
+          },
+          {
+            "drive_raw": 16416000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 5788,
+            "lane_b_energy_raw": 144930573,
+            "tick": 271
+          },
+          {
+            "drive_raw": 12096000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 4856,
+            "lane_b_energy_raw": 157025167,
+            "tick": 292
+          },
+          {
+            "drive_raw": 11016000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 6157,
+            "lane_b_energy_raw": 168040783,
+            "tick": 313
+          },
+          {
+            "drive_raw": 4968000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 7763,
+            "lane_b_energy_raw": 173008388,
+            "tick": 334
+          },
+          {
+            "drive_raw": 8640000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 6438,
+            "lane_b_energy_raw": 181646034,
+            "tick": 354
+          },
+          {
+            "drive_raw": 6048000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 7882,
+            "lane_b_energy_raw": 187693606,
+            "tick": 375
+          },
+          {
+            "drive_raw": 7992000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 9694,
+            "lane_b_energy_raw": 195685159,
+            "tick": 396
+          },
+          {
+            "drive_raw": 14472000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 7831,
+            "lane_b_energy_raw": 210154879,
+            "tick": 417
+          },
+          {
+            "drive_raw": 10584000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 9519,
+            "lane_b_energy_raw": 220738375,
+            "tick": 438
+          },
+          {
+            "drive_raw": 15336000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 11681,
+            "lane_b_energy_raw": 236073837,
+            "tick": 459
+          },
+          {
+            "drive_raw": 12096000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 9380,
+            "lane_b_energy_raw": 248167183,
+            "tick": 480
+          },
+          {
+            "drive_raw": 8424000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 11338,
+            "lane_b_energy_raw": 256590597,
+            "tick": 501
+          },
+          {
+            "drive_raw": 15984000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 13839,
+            "lane_b_energy_raw": 272573977,
+            "tick": 522
+          },
+          {
+            "drive_raw": 12528000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 16835,
+            "lane_b_energy_raw": 285101327,
+            "tick": 543
+          },
+          {
+            "drive_raw": 6048000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 18183,
+            "lane_b_energy_raw": 291145704,
+            "tick": 563
+          },
+          {
+            "drive_raw": 13608000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 20494,
+            "lane_b_energy_raw": 304753006,
+            "tick": 584
+          },
+          {
+            "drive_raw": 4536000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 23345,
+            "lane_b_energy_raw": 309288301,
+            "tick": 605
+          },
+          {
+            "drive_raw": 5832000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 23814,
+            "lane_b_energy_raw": 315116874,
+            "tick": 626
+          },
+          {
+            "drive_raw": 9720000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 26265,
+            "lane_b_energy_raw": 324836131,
+            "tick": 647
+          },
+          {
+            "drive_raw": 8424000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 29327,
+            "lane_b_energy_raw": 333259371,
+            "tick": 668
+          }
+        ],
+        "excluded": [
+          "production service",
+          "SHM transport",
+          "checkpoint writes",
+          "kernel events",
+          "scheduler tasks",
+          "RT isolation",
+          "history-off comparison"
+        ],
+        "expected_final_tick_ns": 16290263804,
+        "final_status": {
+          "active": true,
+          "checkpoint_active": true,
+          "dtc_frequency_millihz": 43520,
+          "dtc_oscillator_active": true,
+          "dtc_tick_interval_ns": 22977941,
+          "dtc_ticks": 680,
+          "fractal_seed_capacity": 1024,
+          "fractal_seed_shm_active": false,
+          "fractal_seeds_published": 0,
+          "lane_a": "security",
+          "lane_a_energy_raw": 26663,
+          "lane_a_shm": "/me60os_lattice",
+          "lane_b": "observability",
+          "lane_b_energy_raw": 333256269,
+          "lane_b_shm": "/me60os_lattice_b",
+          "last_shm_sync_unix_ms": 0,
+          "liquid_memory_active": true,
+          "liquid_memory_checkpoint_bytes": 0,
+          "liquid_memory_shm_key": "crystal-runtime-checkpoint",
+          "liquid_memory_sync_count": 0,
+          "node_count_per_lane": 2000,
+          "non_markovian_history_capacity_ticks": 68,
+          "non_markovian_kernel_active": true,
+          "qhc_last_drift_correction_ns": 700000,
+          "qhc_phase_modulation": 10,
+          "qhc_tick": 680,
+          "shm_active": false,
+          "shm_bytes_per_lane": 384000,
+          "shm_sync_count": 0,
+          "yhwh_qhc_active": true
+        },
+        "final_tick_lateness_ns": 1180191,
+        "nodes_per_lane": 2000,
+        "observed_final_tick_ns": 16291443995,
+        "scenario": "runtime-baseline",
+        "step_call_cost": {
+          "count": 32,
+          "max_ns": 23377676,
+          "mean_ns": 16873377,
+          "min_ns": 13522205,
+          "p99_ns": 23377676
+        },
+        "tick_call_cost": {
+          "count": 680,
+          "max_ns": 3335266,
+          "mean_ns": 1192031,
+          "min_ns": 690019,
+          "p99_ns": 1591407
+        },
+        "ticks": 680
+      }
+    },
+    {
+      "label": "runtime-carga",
+      "loaded": true,
+      "exit_code": 0,
+      "elapsed_ns": 16332902902,
+      "load_cpu_ticks": 1511,
+      "clock_ticks_per_second": 100,
+      "stdout": "{\"correction_boundaries\":[{\"qhc_correction_ns\":700000,\"tick\":68},{\"qhc_correction_ns\":700000,\"tick\":136},{\"qhc_correction_ns\":700000,\"tick\":204},{\"qhc_correction_ns\":700000,\"tick\":272},{\"qhc_correction_ns\":700000,\"tick\":340},{\"qhc_correction_ns\":700000,\"tick\":408},{\"qhc_correction_ns\":700000,\"tick\":476},{\"qhc_correction_ns\":700000,\"tick\":544},{\"qhc_correction_ns\":700000,\"tick\":612},{\"qhc_correction_ns\":700000,\"tick\":680}],\"deadline_lateness\":{\"count\":680,\"max_ns\":46960262,\"mean_ns\":1350163,\"min_ns\":23894,\"p99_ns\":24812583},\"energy_samples\":[{\"drive_raw\":12960000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":99,\"lane_b_energy_raw\":12959972,\"tick\":20},{\"drive_raw\":4968000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":239,\"lane_b_energy_raw\":17927933,\"tick\":41},{\"drive_raw\":15768000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":516,\"lane_b_energy_raw\":33695857,\"tick\":62},{\"drive_raw\":8856000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":320,\"lane_b_energy_raw\":42549544,\"tick\":83},{\"drive_raw\":8856000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":723,\"lane_b_energy_raw\":51405428,\"tick\":104},{\"drive_raw\":11232000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":1281,\"lane_b_energy_raw\":62637285,\"tick\":125},{\"drive_raw\":14040000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":570,\"lane_b_energy_raw\":76675494,\"tick\":146},{\"drive_raw\":15768000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":1291,\"lane_b_energy_raw\":92443282,\"tick\":167},{\"drive_raw\":14472000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":2251,\"lane_b_energy_raw\":106915039,\"tick\":187},{\"drive_raw\":5184000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":2475,\"lane_b_energy_raw\":112098208,\"tick\":208},{\"drive_raw\":5832000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":3395,\"lane_b_energy_raw\":117929940,\"tick\":229},{\"drive_raw\":7128000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":4556,\"lane_b_energy_raw\":125057655,\"tick\":250},{\"drive_raw\":6480000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":5946,\"lane_b_energy_raw\":131537357,\"tick\":271},{\"drive_raw\":12096000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":4809,\"lane_b_energy_raw\":143631910,\"tick\":292},{\"drive_raw\":10152000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":5995,\"lane_b_energy_raw\":153783560,\"tick\":313},{\"drive_raw\":11880000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":7514,\"lane_b_energy_raw\":165663184,\"tick\":334},{\"drive_raw\":8640000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":6200,\"lane_b_energy_raw\":174300716,\"tick\":355},{\"drive_raw\":14040000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":7645,\"lane_b_energy_raw\":188340286,\"tick\":375},{\"drive_raw\":12528000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":9483,\"lane_b_energy_raw\":200867827,\"tick\":396},{\"drive_raw\":4320000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":7679,\"lane_b_energy_raw\":205185417,\"tick\":417},{\"drive_raw\":16632000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":9373,\"lane_b_energy_raw\":221816911,\"tick\":438},{\"drive_raw\":10584000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":11501,\"lane_b_energy_raw\":232400381,\"tick\":459},{\"drive_raw\":14688000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":9259,\"lane_b_energy_raw\":247085582,\"tick\":480},{\"drive_raw\":16416000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":11268,\"lane_b_energy_raw\":263500982,\"tick\":501},{\"drive_raw\":9936000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":13779,\"lane_b_energy_raw\":273436359,\"tick\":522},{\"drive_raw\":13608000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":16800,\"lane_b_energy_raw\":287043700,\"tick\":543},{\"drive_raw\":11880000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":12232,\"lane_b_energy_raw\":298919873,\"tick\":564},{\"drive_raw\":10368000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":14582,\"lane_b_energy_raw\":309287164,\"tick\":585},{\"drive_raw\":7128000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":17502,\"lane_b_energy_raw\":316414444,\"tick\":605},{\"drive_raw\":12528000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":13617,\"lane_b_energy_raw\":328938845,\"tick\":626},{\"drive_raw\":10368000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":16183,\"lane_b_energy_raw\":339306070,\"tick\":647},{\"drive_raw\":8208000,\"dual_lane_portal_open\":false,\"lane_a_energy_raw\":19381,\"lane_b_energy_raw\":347513275,\"tick\":668}],\"excluded\":[\"production service\",\"SHM transport\",\"checkpoint writes\",\"kernel events\",\"scheduler tasks\",\"RT isolation\",\"history-off comparison\"],\"expected_final_tick_ns\":16290263804,\"final_status\":{\"active\":true,\"checkpoint_active\":true,\"dtc_frequency_millihz\":43520,\"dtc_oscillator_active\":true,\"dtc_tick_interval_ns\":22977941,\"dtc_ticks\":680,\"fractal_seed_capacity\":1024,\"fractal_seed_shm_active\":false,\"fractal_seeds_published\":0,\"lane_a\":\"security\",\"lane_a_energy_raw\":18859,\"lane_a_shm\":\"/me60os_lattice\",\"lane_b\":\"observability\",\"lane_b_energy_raw\":347510023,\"lane_b_shm\":\"/me60os_lattice_b\",\"last_shm_sync_unix_ms\":0,\"liquid_memory_active\":true,\"liquid_memory_checkpoint_bytes\":0,\"liquid_memory_shm_key\":\"crystal-runtime-checkpoint\",\"liquid_memory_sync_count\":0,\"node_count_per_lane\":2000,\"non_markovian_history_capacity_ticks\":68,\"non_markovian_kernel_active\":true,\"qhc_last_drift_correction_ns\":700000,\"qhc_phase_modulation\":10,\"qhc_tick\":680,\"shm_active\":false,\"shm_bytes_per_lane\":384000,\"shm_sync_count\":0,\"yhwh_qhc_active\":true},\"final_tick_lateness_ns\":73403,\"nodes_per_lane\":2000,\"observed_final_tick_ns\":16290337207,\"scenario\":\"runtime-carga\",\"step_call_cost\":{\"count\":32,\"max_ns\":46298691,\"mean_ns\":28071759,\"min_ns\":25869731,\"p99_ns\":46298691},\"tick_call_cost\":{\"count\":680,\"max_ns\":5144986,\"mean_ns\":996921,\"min_ns\":573654,\"p99_ns\":3111739},\"ticks\":680}\n",
+      "stderr": "",
+      "state_directory_empty_after_run": true,
+      "result": {
+        "correction_boundaries": [
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 68
+          },
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 136
+          },
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 204
+          },
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 272
+          },
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 340
+          },
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 408
+          },
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 476
+          },
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 544
+          },
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 612
+          },
+          {
+            "qhc_correction_ns": 700000,
+            "tick": 680
+          }
+        ],
+        "deadline_lateness": {
+          "count": 680,
+          "max_ns": 46960262,
+          "mean_ns": 1350163,
+          "min_ns": 23894,
+          "p99_ns": 24812583
+        },
+        "energy_samples": [
+          {
+            "drive_raw": 12960000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 99,
+            "lane_b_energy_raw": 12959972,
+            "tick": 20
+          },
+          {
+            "drive_raw": 4968000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 239,
+            "lane_b_energy_raw": 17927933,
+            "tick": 41
+          },
+          {
+            "drive_raw": 15768000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 516,
+            "lane_b_energy_raw": 33695857,
+            "tick": 62
+          },
+          {
+            "drive_raw": 8856000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 320,
+            "lane_b_energy_raw": 42549544,
+            "tick": 83
+          },
+          {
+            "drive_raw": 8856000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 723,
+            "lane_b_energy_raw": 51405428,
+            "tick": 104
+          },
+          {
+            "drive_raw": 11232000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 1281,
+            "lane_b_energy_raw": 62637285,
+            "tick": 125
+          },
+          {
+            "drive_raw": 14040000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 570,
+            "lane_b_energy_raw": 76675494,
+            "tick": 146
+          },
+          {
+            "drive_raw": 15768000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 1291,
+            "lane_b_energy_raw": 92443282,
+            "tick": 167
+          },
+          {
+            "drive_raw": 14472000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 2251,
+            "lane_b_energy_raw": 106915039,
+            "tick": 187
+          },
+          {
+            "drive_raw": 5184000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 2475,
+            "lane_b_energy_raw": 112098208,
+            "tick": 208
+          },
+          {
+            "drive_raw": 5832000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 3395,
+            "lane_b_energy_raw": 117929940,
+            "tick": 229
+          },
+          {
+            "drive_raw": 7128000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 4556,
+            "lane_b_energy_raw": 125057655,
+            "tick": 250
+          },
+          {
+            "drive_raw": 6480000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 5946,
+            "lane_b_energy_raw": 131537357,
+            "tick": 271
+          },
+          {
+            "drive_raw": 12096000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 4809,
+            "lane_b_energy_raw": 143631910,
+            "tick": 292
+          },
+          {
+            "drive_raw": 10152000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 5995,
+            "lane_b_energy_raw": 153783560,
+            "tick": 313
+          },
+          {
+            "drive_raw": 11880000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 7514,
+            "lane_b_energy_raw": 165663184,
+            "tick": 334
+          },
+          {
+            "drive_raw": 8640000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 6200,
+            "lane_b_energy_raw": 174300716,
+            "tick": 355
+          },
+          {
+            "drive_raw": 14040000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 7645,
+            "lane_b_energy_raw": 188340286,
+            "tick": 375
+          },
+          {
+            "drive_raw": 12528000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 9483,
+            "lane_b_energy_raw": 200867827,
+            "tick": 396
+          },
+          {
+            "drive_raw": 4320000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 7679,
+            "lane_b_energy_raw": 205185417,
+            "tick": 417
+          },
+          {
+            "drive_raw": 16632000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 9373,
+            "lane_b_energy_raw": 221816911,
+            "tick": 438
+          },
+          {
+            "drive_raw": 10584000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 11501,
+            "lane_b_energy_raw": 232400381,
+            "tick": 459
+          },
+          {
+            "drive_raw": 14688000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 9259,
+            "lane_b_energy_raw": 247085582,
+            "tick": 480
+          },
+          {
+            "drive_raw": 16416000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 11268,
+            "lane_b_energy_raw": 263500982,
+            "tick": 501
+          },
+          {
+            "drive_raw": 9936000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 13779,
+            "lane_b_energy_raw": 273436359,
+            "tick": 522
+          },
+          {
+            "drive_raw": 13608000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 16800,
+            "lane_b_energy_raw": 287043700,
+            "tick": 543
+          },
+          {
+            "drive_raw": 11880000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 12232,
+            "lane_b_energy_raw": 298919873,
+            "tick": 564
+          },
+          {
+            "drive_raw": 10368000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 14582,
+            "lane_b_energy_raw": 309287164,
+            "tick": 585
+          },
+          {
+            "drive_raw": 7128000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 17502,
+            "lane_b_energy_raw": 316414444,
+            "tick": 605
+          },
+          {
+            "drive_raw": 12528000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 13617,
+            "lane_b_energy_raw": 328938845,
+            "tick": 626
+          },
+          {
+            "drive_raw": 10368000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 16183,
+            "lane_b_energy_raw": 339306070,
+            "tick": 647
+          },
+          {
+            "drive_raw": 8208000,
+            "dual_lane_portal_open": false,
+            "lane_a_energy_raw": 19381,
+            "lane_b_energy_raw": 347513275,
+            "tick": 668
+          }
+        ],
+        "excluded": [
+          "production service",
+          "SHM transport",
+          "checkpoint writes",
+          "kernel events",
+          "scheduler tasks",
+          "RT isolation",
+          "history-off comparison"
+        ],
+        "expected_final_tick_ns": 16290263804,
+        "final_status": {
+          "active": true,
+          "checkpoint_active": true,
+          "dtc_frequency_millihz": 43520,
+          "dtc_oscillator_active": true,
+          "dtc_tick_interval_ns": 22977941,
+          "dtc_ticks": 680,
+          "fractal_seed_capacity": 1024,
+          "fractal_seed_shm_active": false,
+          "fractal_seeds_published": 0,
+          "lane_a": "security",
+          "lane_a_energy_raw": 18859,
+          "lane_a_shm": "/me60os_lattice",
+          "lane_b": "observability",
+          "lane_b_energy_raw": 347510023,
+          "lane_b_shm": "/me60os_lattice_b",
+          "last_shm_sync_unix_ms": 0,
+          "liquid_memory_active": true,
+          "liquid_memory_checkpoint_bytes": 0,
+          "liquid_memory_shm_key": "crystal-runtime-checkpoint",
+          "liquid_memory_sync_count": 0,
+          "node_count_per_lane": 2000,
+          "non_markovian_history_capacity_ticks": 68,
+          "non_markovian_kernel_active": true,
+          "qhc_last_drift_correction_ns": 700000,
+          "qhc_phase_modulation": 10,
+          "qhc_tick": 680,
+          "shm_active": false,
+          "shm_bytes_per_lane": 384000,
+          "shm_sync_count": 0,
+          "yhwh_qhc_active": true
+        },
+        "final_tick_lateness_ns": 73403,
+        "nodes_per_lane": 2000,
+        "observed_final_tick_ns": 16290337207,
+        "scenario": "runtime-carga",
+        "step_call_cost": {
+          "count": 32,
+          "max_ns": 46298691,
+          "mean_ns": 28071759,
+          "min_ns": 25869731,
+          "p99_ns": 46298691
+        },
+        "tick_call_cost": {
+          "count": 680,
+          "max_ns": 5144986,
+          "mean_ns": 996921,
+          "min_ns": 573654,
+          "p99_ns": 3111739
+        },
+        "ticks": 680
+      }
+    }
+  ]
+}

@@ -145,3 +145,31 @@ Salida original y parámetros: [salto17_2026-11-11_fenix.json](salto17_2026-11-1
 - `-1.000C` es el fallback del lector térmico: temperatura no disponible, no una lectura física de −1 °C. Los porcentajes CPU son agregados del host, no del hilo del cristal. Los ppm están truncados a enteros y la deriva impresa es absoluta, sin signo.
 - **Resultado delimitado:** el benchmark y el cálculo con historial se ejecutaron bajo contención real de CPU. Sus números no prueban mejora predictiva: el retorno PID no gobierna el reloj en este bin (§6), no se ejecutó el loop vivo y una sola muestra por escenario no establece causalidad ni significancia.
 - **P1.2 continúa abierto:** aislamiento RT y efecto de corrección aplicada al loop vivo no verificados. No se cambiaron `isolcpus`, LSM, QHC, parámetros del controlador ni servicios. No repetir estas cuatro corridas por falta de registro: conservar el JSON y usar un protocolo ligado al loop real para la siguiente validación pertinente.
+
+## 8. P1.2: ejecución aislada de CrystalRuntime — 2026-11-11
+
+Fuente `f6a6b939` (lógica Rust sin cambios respecto de `859c6dd2`), Fénix, kernel `7.2.12+deb13-amd64`, rustc 1.99.1. Se compiló una sonda temporal contra la biblioteca existente mediante `cargo build --locked -p sentinel-cortex --example p12_runtime_probe`, perfil **dev sin optimización**. La fuente exacta, su SHA-256, comandos, muestras y salida original quedan archivados en [p12_runtime_2026-11-11_fenix.json](p12_runtime_2026-11-11_fenix.json); el archivo temporal de ejemplo se retiró después de medir, sin cambiar la lógica del core.
+
+**Protocolo:** `CrystalRuntime::in_memory(2000)`, 680 ticks por escenario, primer deadline `23_939_835 ns`, siguientes intervalos devueltos por `tick_dtc()`. `step()` cada 500 ms aplica las salidas de ambos S60PID a las mallas; no se sustituyó por el benchmark que descarta su retorno. Drive en lane B calculado desde `/proc/stat` con la misma transformación de borde y `pai60_divide` del runtime. No se inyectaron eventos de seguridad ni se forzó igualdad entre lanes o apertura de portal.
+
+Cada proceso usó un directorio temporal nuevo y vacío mediante `SENTINEL_CRYSTAL_STATE_DIR`. La sonda comprobó contador inicial cero, SHM/ring desactivados y cero sincronizaciones/escrituras; el directorio seguía vacío al finalizar. Aunque `status().checkpoint_active` declara capacidad, no indica escritura: `liquid_memory_sync_count=0`, bytes de checkpoint=0 y no se llamó a `persist()`.
+
+| Métrica | Sin carga añadida | Con carga añadida |
+| --- | ---: | ---: |
+| Ticks DTC/QHC completados | 680 | 680 |
+| Pasos de malla/control completados | 32 | 32 |
+| Fronteras QHC observadas (68…680) | 10 | 10 |
+| Retraso medio frente a deadline (ns) | 556342 | 1350163 |
+| Retraso p99 frente a deadline (ns) | 15256196 | 24812583 |
+| Retraso máximo frente a deadline (ns) | 21665527 | 46960262 |
+| Duración media de `step()` (ns) | 16873377 | 28071759 |
+| Duración máxima de `step()` (ns) | 23377676 | 46298691 |
+| Energía final lane A (raw SPA) | 26663 | 18859 |
+| Energía final lane B (raw SPA) | 333256269 | 347510023 |
+
+- Benchmark y carga compartieron CPU 5. Carga: un proceso OpenSSL SHA-256, 1511 ticks CPU consumidos (`CLK_TCK=100`) durante aproximadamente 16,3 s; fue terminado y esperado al acabar. Los dos procesos de medición devolvieron 0.
+- Las diez fronteras de 68 ticks informaron `qhc_last_drift_correction_ns=700000`. Ese campo es el marcador del QHC; **no se interpreta como 700000 ns restados al deadline**. La implementación de `tick_dtc()` ejecuta su reset de PID/ruido en esas fronteras.
+- La lane A partió sin amplitud y no recibió drive externo: el primer paso registró raw 57/99 en baseline/carga respectivamente. El camino ejecutado de `CrystalRuntime::step` inyecta las correcciones cruzadas del PID y evoluciona las mallas. Esto acredita uso de la salida del controlador en esa instancia, no solo cálculo descartado.
+- Tiempo esperado del tick 680: `16290263804 ns`. El retraso de ese último tick fue `1180191 ns` sin carga y `73403 ns` con carga; un último tick menor no borra el aumento de p99/máximo durante la ventana ni demuestra mejora causal del controlador.
+- **Alcance:** biblioteca Rust real en instancia aislada, con instrumentación propia y 2000 nodos por lane. No ejecuta el servicio productivo completo, su scheduler, SHM/MyCNet, eBPF, checkpoints, el dimensionamiento productivo ni una comparación history ON/OFF. Las muestras del drive del host difieren entre corridas. Una observación por escenario y perfil dev: no atribuir significancia estadística ni comparar sus tiempos directamente con el bin release de §7.
+- **Estado P1.2:** queda realizada la medición aislada del control aplicado bajo carga; siguen pendientes aislamiento RT y medición del loop desplegado con su configuración efectiva. No se modificaron constantes físicas, QHC, PID, kernel ni servicios. No repetir estas corridas por falta de contexto; consultar el JSON y ejecutar únicamente el siguiente protocolo pertinente.
