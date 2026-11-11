@@ -20,6 +20,7 @@ Preparación local en Rust. P0.1 continúa abierto: estas pruebas no demuestran 
 - `restored_non_markovian_history_preserves_subsequent_collective_evolution`: tras ocho pasos e historial no vacío, serializar/restaurar las mallas y ambos PID reproduce exactamente ocho pasos adicionales. El control elimina solo `history`, preservando integral y error previo; cambia la evolución, por lo que la diferencia no se atribuye al reinicio completo del PID.
 - `checkpoint_restores_evolution_rule_and_quiet_superconducting_nodes`: siete pasos previos al checkpoint, historial no vacío, acoplamiento y `dt` personalizados, frecuencia propia y damping cero. Conserva un nodo sin amplitud/fase con parámetros no predeterminados. Tras restaurar compara ambas mallas y ambos PID durante dieciséis pasos, desde el tick 60 al 76, cruzando el reinicio de historial/GC del tick 68.
 - `sparse_v2_checkpoint_without_evolution_parameters_remains_readable`: conserva amplitud/fase de un checkpoint v2 y usa parámetros predeterminados que esa versión no registraba. No es posible recuperar de ese formato los parámetros omitidos.
+- `exported_node_seed_does_not_capture_non_markovian_evolution_state`: dos estados tienen las mismas mallas, integral y error previo; difieren únicamente en el historial de ambos PID. El productor real `publish_fractal_seed()` escribe registros de 32 bytes idénticos en dos anillos SHM aislados, pero el siguiente `step()` produce estados distintos. El registro de nodo aislado no determina la continuación no markoviana; esto no descarta una reconstrucción que utilice contexto adicional u otra cadena integrada.
 
 ## Corrección del checkpoint
 
@@ -35,6 +36,8 @@ git diff --check
 ```
 
 Última biblioteca ejecutada: 70 pruebas aprobadas, ninguna fallida. Subconjunto del runtime reejecutado en el binario después de ampliar la prueba del tick 68: 16 pruebas aprobadas. Formato y `git diff --check` aprobados. `cargo build --release -p sentinel-cortex --bin sentinel-cortex` completó correctamente en 1 min 23 s; el artefacto compilado no fue desplegado.
+
+Ampliación posterior: la prueba del registro exportado aprobó individualmente y en las suites completas reejecutadas: biblioteca 71/71 y subconjunto en binario 17/17; formato y `git diff --check` aprobados. La ampliación solo añade una prueba y documentación; no cambia la lógica compilada del runtime.
 
 ## Trabajo que permanece abierto
 

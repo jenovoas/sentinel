@@ -1217,6 +1217,73 @@ mod tests {
     }
 
     #[test]
+    fn exported_node_seed_does_not_capture_non_markovian_evolution_state() {
+        let mut with_history = CrystalRuntime::in_memory(19);
+        with_history.reset();
+        with_history.inject_security_spa(0, SPA::from_int(65));
+        with_history.inject_observability_spa(1, SPA::from_int(66));
+        for _ in 0..8 {
+            with_history.step().unwrap();
+        }
+        let mut without_history = CrystalRuntime::in_memory(19);
+        without_history.lane_a =
+            restore_sparse_lane(19, sparse_lane_state(&with_history.lane_a)).unwrap();
+        without_history.lane_b =
+            restore_sparse_lane(19, sparse_lane_state(&with_history.lane_b)).unwrap();
+        without_history.pid_a = with_history.pid_a.clone();
+        without_history.pid_b = with_history.pid_b.clone();
+        without_history
+            .pid_a
+            .set_history_capacity(PID_HISTORY_TICKS);
+        without_history
+            .pid_b
+            .set_history_capacity(PID_HISTORY_TICKS);
+        assert_ne!(
+            serde_json::to_value(&with_history.pid_a).unwrap(),
+            serde_json::to_value(&without_history.pid_a).unwrap()
+        );
+
+        let ring_with = TestFractalRing::new();
+        let ring_without = TestFractalRing::new();
+        for (runtime, ring) in [
+            (&mut with_history, &ring_with),
+            (&mut without_history, &ring_without),
+        ] {
+            runtime.fractal_seeds_shm = Some(
+                PySharedBuffer::new(
+                    ring.name.clone(),
+                    FRACTAL_HEADER_BYTES + FRACTAL_SEEDS_CAPACITY * FRACTAL_SEED_BYTES,
+                    true,
+                )
+                .unwrap(),
+            );
+            runtime.fractal_seed_head = 0;
+            runtime.publish_fractal_seed(true, 0);
+            assert_eq!(ring.buffer.load_u64_acquire(8).unwrap(), 1);
+        }
+        for offset in (0..FRACTAL_SEED_BYTES).step_by(8) {
+            assert_eq!(
+                ring_with
+                    .buffer
+                    .load_u64_acquire(FRACTAL_HEADER_BYTES + offset)
+                    .unwrap(),
+                ring_without
+                    .buffer
+                    .load_u64_acquire(FRACTAL_HEADER_BYTES + offset)
+                    .unwrap(),
+                "el productor actual exporta el mismo registro pese a distinto historial"
+            );
+        }
+        with_history.step().unwrap();
+        without_history.step().unwrap();
+        assert_ne!(
+            raw_lane_state(&with_history.lane_a),
+            raw_lane_state(&without_history.lane_a),
+            "el mismo registro exportado no basta para determinar el paso posterior"
+        );
+    }
+
+    #[test]
     fn checkpoint_restores_evolution_rule_and_quiet_superconducting_nodes() {
         let mut runtime = CrystalRuntime::in_memory(19);
         runtime.reset();
