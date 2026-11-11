@@ -246,14 +246,14 @@ impl LiquidMemory {
             .file_table
             .get(key)
             .ok_or_else(|| format!("clave '{key}' no existe local"))?;
-        // Energía = suma de amplitudes del lattice (estado real medido).
+        // Energía = suma saturante de amplitudes del lattice (estado real medido).
         let energy: i64 = self
             .lattice
             .buffer
             .lattice
             .iter()
             .map(|n| n.amplitude.to_raw())
-            .sum();
+            .fold(0i64, i64::saturating_add);
         Ok(ReplicableSeed {
             key: key.as_bytes().to_vec(),
             amplitude_raw: energy,
@@ -314,6 +314,38 @@ mod tests {
 
         let got = mem.retrieve(key).expect("retrieve no debe fallar");
         assert_eq!(got.as_deref(), Some(&msg[..]), "roundtrip exacto");
+    }
+    #[test]
+    fn test_store_replicate_retrieve_roundtrip() {
+        let mut mem = LiquidMemory::new(1024);
+        let key = "kv-sync-piloto";
+        let msg = b"semilla-colectiva-fenix-01";
+        mem.store(key, msg).expect("store debe funcionar");
+
+        let seed = mem.replicate(key).expect("replicate debe empaquetar");
+        assert_eq!(
+            seed.key,
+            key.as_bytes().to_vec(),
+            "la semilla porta la clave"
+        );
+        assert!(!seed.hash.iter().all(|b| *b == 0), "hash blake3 no vacío");
+        let expected = blake3::hash(msg);
+        assert_eq!(
+            seed.hash,
+            *expected.as_bytes(),
+            "hash íntegro extremo a extremo"
+        );
+
+        let got = mem.retrieve(key).expect("retrieve no debe fallar");
+        assert_eq!(
+            got.as_deref(),
+            Some(&msg[..]),
+            "payload intacto tras replicate"
+        );
+        assert!(
+            mem.replicate("no_existe").is_err(),
+            "replicate de ausente falla"
+        );
     }
 
     #[test]
