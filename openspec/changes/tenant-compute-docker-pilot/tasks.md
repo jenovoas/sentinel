@@ -22,7 +22,7 @@
 ## 4. Verificación integrada
 
 - [x] 4.1 OpenSpec válido, `cargo test` 12/12, portal completo 344/344, Terraform `fmt -check`/`validate`, plan sin recursos y `diff --check` OK. Sin apply.
-- [ ] 4.2 Tras pruebas aisladas, hacer solo preflight de lectura en Kingu para montaje, capacidad y coincidencia con el daemon Docker; no instalar ni montar recursos durante el preflight. No declarar cuota operativa hasta probar llenado, reinicio y recuperación.
+- [x] 4.2 Preflight de solo lectura en Kingu ejecutado 2026-11-11 (autorización explícita del dueño): Docker 29.9.3 local (`unix:///var/run/docker.sock`, 0 contenedores/imágenes), root ext4 sin cuotas nativas (128 GB libres), sin `/srv/sentinel/tenants` (nada aprovisionado). El daemon Docker y el preflight correrían en el mismo host. Cuota operativa sigue sin declararse hasta llenado/reinicio/recuperación con plantilla aprobada.
 - [ ] 4.3 La plantilla está aplazada por decisión del dueño; no elegir ni desplegar WordPress, escritorio u otra carga por inferencia. Antes de habilitar una, revisar digest, `VOLUME`, rutas escribibles, red y aceptación explícita.
 
 ## Workflow follow-up
