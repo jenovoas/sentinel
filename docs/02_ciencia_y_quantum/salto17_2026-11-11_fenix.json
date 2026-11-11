@@ -1,0 +1,60 @@
+{
+  "source_commit": "859c6dd2598bc4d2a8be09dbba02ec5594d212c2",
+  "host": "fenix",
+  "cpu_affinity": [
+    5
+  ],
+  "online_cpus": 6,
+  "bench_source_sha256": "378f53d0f0f35b8935c2c089fb80339ff285e1c693678023257907dad3507681",
+  "benchmark_command": "taskset -c 5 target/release/sentinel_bench_salto17 <label> [kernel]",
+  "load_command": "taskset -c 5 openssl speed -seconds 120 -bytes 16384 sha256",
+  "load_lifetime": "terminated and waited after each loaded benchmark, in finally",
+  "openssl_version": "OpenSSL 3.5.7 9 Jun 2026",
+  "temperature": "unavailable: -1000 is the code fallback, not a temperature measurement",
+  "measurements": [
+    {
+      "label": "baseline-sin-history",
+      "kernel": false,
+      "load": false,
+      "exit_code": 0,
+      "elapsed_ns": 30009099102,
+      "load_cpu_ticks": null,
+      "clock_ticks_per_second": 100,
+      "stdout": "=== SENTINEL BENCH SALTO-17 [baseline-sin-history] kernel=false ===\n\n=== FASE: baseline-sin-history (kernel=false) ===\n[baseline-sin-history] temp_inicial=-1.000C\n[baseline-sin-history] crystal tick interval ns: min=21493507 avg=23939992 p99=25602437 max=26328106 (target=23939835)\n[baseline-sin-history] crystal drift 600 ticks: elapsed=14363997021ns expected=14363901000ns drift=96021ns (6 ppm)\n[baseline-sin-history] lattice I/O: 50000 ops en 1264563725ns => 25291 ns/op (~39 ops/ms)\n[baseline-sin-history] cpu_sistema_durante_bench=31.5% temp_final=-1.000C\n\n=== FIN baseline-sin-history ===\n",
+      "stderr": ""
+    },
+    {
+      "label": "baseline-con-history",
+      "kernel": true,
+      "load": false,
+      "exit_code": 0,
+      "elapsed_ns": 30024848334,
+      "load_cpu_ticks": null,
+      "clock_ticks_per_second": 100,
+      "stdout": "=== SENTINEL BENCH SALTO-17 [baseline-con-history] kernel=true ===\n\n=== FASE: baseline-con-history (kernel=true) ===\n[baseline-con-history] temp_inicial=-1.000C\n[baseline-con-history] crystal tick interval ns: min=21129075 avg=23942684 p99=26047760 max=26734422 (target=23939835)\n[baseline-con-history] crystal drift 600 ticks: elapsed=14363997881ns expected=14363901000ns drift=96881ns (6 ppm)\n[baseline-con-history] lattice I/O: 50000 ops en 1281299227ns => 25625 ns/op (~39 ops/ms)\n[baseline-con-history] cpu_sistema_durante_bench=31.0% temp_final=-1.000C\n\n=== FIN baseline-con-history ===\n",
+      "stderr": ""
+    },
+    {
+      "label": "carga-sin-history",
+      "kernel": false,
+      "load": true,
+      "exit_code": 0,
+      "elapsed_ns": 31329331872,
+      "load_cpu_ticks": 2993,
+      "clock_ticks_per_second": 100,
+      "stdout": "=== SENTINEL BENCH SALTO-17 [carga-sin-history] kernel=false ===\n\n=== FASE: carga-sin-history (kernel=false) ===\n[carga-sin-history] temp_inicial=-1.000C\n[carga-sin-history] crystal tick interval ns: min=22620840 avg=23939940 p99=24465233 max=25258729 (target=23939835)\n[carga-sin-history] crystal drift 600 ticks: elapsed=14363964554ns expected=14363901000ns drift=63554ns (4 ppm)\n[carga-sin-history] lattice I/O: 50000 ops en 2585353023ns => 51707 ns/op (~19 ops/ms)\n[carga-sin-history] cpu_sistema_durante_bench=47.8% temp_final=-1.000C\n\n=== FIN carga-sin-history ===\n",
+      "stderr": ""
+    },
+    {
+      "label": "carga-con-history",
+      "kernel": true,
+      "load": true,
+      "exit_code": 0,
+      "elapsed_ns": 31290279696,
+      "load_cpu_ticks": 2992,
+      "clock_ticks_per_second": 100,
+      "stdout": "=== SENTINEL BENCH SALTO-17 [carga-con-history] kernel=true ===\n\n=== FASE: carga-con-history (kernel=true) ===\n[carga-con-history] temp_inicial=-1.000C\n[carga-con-history] crystal tick interval ns: min=21885659 avg=23939962 p99=24735257 max=25974060 (target=23939835)\n[carga-con-history] crystal drift 600 ticks: elapsed=14363978418ns expected=14363901000ns drift=77418ns (5 ppm)\n[carga-con-history] lattice I/O: 50000 ops en 2542834261ns => 50856 ns/op (~19 ops/ms)\n[carga-con-history] cpu_sistema_durante_bench=47.5% temp_final=-1.000C\n\n=== FIN carga-con-history ===\n",
+      "stderr": ""
+    }
+  ]
+}

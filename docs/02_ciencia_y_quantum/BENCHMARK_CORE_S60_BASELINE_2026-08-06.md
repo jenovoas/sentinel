@@ -104,3 +104,44 @@ cargo test -p me60os --lib hexagonal_control
 **HONESTIDAD > RESULTADOS INFLADOS.** Este baseline es real, reproducible y
 versionado. La próxima sesión compara contra estos números, no contra el reporte
 histórico de Dic 2024 (que era de otro subsistema).
+
+## 6. Registro de verificaciones Rust — 2026-11-11
+
+Esta sección añade evidencia posterior; no reemplaza el baseline histórico.
+Fuente ejecutada: `859c6dd2598bc4d2a8be09dbba02ec5594d212c2`, host `fenix`.
+Python fue el prototipo y no se ejecutó ni modificó. No hubo despliegue ni cambios de servicios/kernel.
+
+| Comando ejecutado | Resultado observado | Alcance |
+| --- | --- | --- |
+| `cargo run --locked -p me60os --bin exp012_phase_compression` | Recuperación exacta de 193 bytes de amplitud y `PHASE_KEY` tras ruido de 0,5° y cinco ciclos de snapping; sección dual recupera `Yo Soy` | Experimento Rust local |
+| `cargo run --locked -p me60os --bin memory_phonon_smoke` | Salida satisfactoria; ocupación fonónica raw `50901825600000` → `26595203`; amplitud `72623859790382856`; PAI `30/60` raw `6480000` | Cálculo del modelo fonónico y codificación dual/PAI; no hardware fonónico |
+| `cargo test --locked -p me60os --lib resonant_matrix::tests` | 11 aprobadas | Propagación, conservación superconductora, disipación, fase circular, escala SPA/PAI y evolución sincronizada |
+| `cargo test --locked -p sentinel-cortex --lib quantum::quantum_scheduler::tests` | 9 aprobadas | Compuertas, retención, emergencia, backups críticos, errores y contabilidad |
+| `cargo test -p sentinel-cortex --lib memory::crystal_runtime::tests` | 10 aprobadas | Portal dual, entrada remota, ring y avance DTC/control con historial |
+| `cargo test -p sentinel-cortex --test test_p01_holographic_e2e` | 3 aprobadas | Escenario de integración definido en ese test; no sustituye prueba desplegada |
+
+La prueba `test_warm_up_uses_configured_damping_and_dual_lanes_converge` ejecuta calentamiento, inyección idéntica y diez pasos posteriores, comprobando igualdad de amplitudes de ambas mallas en cada paso.
+
+**Evitar repeticiones:** estas ejecuciones ya constan realizadas para esa revisión. No repetirlas para reconstruir contexto ni porque cambió solo documentación. Reejecutar únicamente las rutas afectadas por un cambio de código/dependencias/configuración relevante, una regresión reportada o una nueva medición solicitada. Una corrida posterior usa su propio commit/host; no trasladar estos resultados automáticamente.
+
+**Pendiente P1.2:** el benchmark `sentinel_bench_salto17` vigente llama a `update_with_history_internal()` en modo `kernel`, pero descarta su retorno. El reloj medido sigue `IsochronousClock::tick_internal`; el benchmark no aplica esa salida al deadline ni invoca `calculate_drift_correction()`. Además usa `clock.ticks` como raw medido y `dt_raw=1`, mientras el runtime usa energías SPA y un paso de control de medio segundo. Medir ese bin sirve para registrar su escenario concreto; no acredita por sí solo corrección predictiva del reloj ni aislamiento RT del loop vivo.
+
+## 7. P1.2: medición local de Salto-17 — 2026-11-11
+
+**Ejecutado, no extraído de resultados anteriores.** Fénix, seis CPU disponibles, código `859c6dd2`; build `cargo build --locked --release -p me60os --bin sentinel_bench_salto17` terminado correctamente. Benchmark y trabajador de carga fijados únicamente a CPU 5 mediante `taskset -c 5`; no se alteró afinidad de procesos ajenos ni configuración del kernel.
+
+Salida original y parámetros: [salto17_2026-11-11_fenix.json](salto17_2026-11-11_fenix.json). SHA-256 de la fuente del benchmark: `378f53d0f0f35b8935c2c089fb80339ff285e1c693678023257907dad3507681`.
+
+| Escenario, en orden de ejecución | Tick medio (ns) | Tick p99 (ns) | Deriva absoluta (ns / 600 ticks) | ppm impresos | I/O (ns/op) | CPU host |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Baseline sin history | 23939992 | 25602437 | 96021 | 6 | 25291 | 31,5% |
+| Baseline con history | 23942684 | 26047760 | 96881 | 6 | 25625 | 31,0% |
+| Carga sin history | 23939940 | 24465233 | 63554 | 4 | 51707 | 47,8% |
+| Carga con history | 23939962 | 24735257 | 77418 | 5 | 50856 | 47,5% |
+
+- Cada escenario ejecutó 600 ticks para intervalos y otros 600 para deriva; duración ideal de la segunda ventana `14363901000 ns`. I/O: 50.000 operaciones por escenario. Una corrida por escenario, todos terminaron con código 0. Baseline significa sin carga añadida por esta medición, no host inactivo.
+- Comando del bin: `taskset -c 5 target/release/sentinel_bench_salto17 <escenario> [kernel]`. `kernel` significa cálculo del historial S60PID del benchmark, no kernel Linux/eBPF.
+- Carga añadida: un proceso `taskset -c 5 openssl speed -seconds 120 -bytes 16384 sha256`, OpenSSL 3.5.7. El proceso se inició inmediatamente antes de cada escenario con carga y se terminó/esperó al concluir ese escenario. Consumió 2993 y 2992 ticks CPU respectivamente (`CLK_TCK=100`), durante ventanas de aproximadamente 31 segundos. No se instalaron herramientas ni se saturaron deliberadamente los seis CPU.
+- `-1.000C` es el fallback del lector térmico: temperatura no disponible, no una lectura física de −1 °C. Los porcentajes CPU son agregados del host, no del hilo del cristal. Los ppm están truncados a enteros y la deriva impresa es absoluta, sin signo.
+- **Resultado delimitado:** el benchmark y el cálculo con historial se ejecutaron bajo contención real de CPU. Sus números no prueban mejora predictiva: el retorno PID no gobierna el reloj en este bin (§6), no se ejecutó el loop vivo y una sola muestra por escenario no establece causalidad ni significancia.
+- **P1.2 continúa abierto:** aislamiento RT y efecto de corrección aplicada al loop vivo no verificados. No se cambiaron `isolcpus`, LSM, QHC, parámetros del controlador ni servicios. No repetir estas cuatro corridas por falta de registro: conservar el JSON y usar un protocolo ligado al loop real para la siguiente validación pertinente.
