@@ -2,26 +2,26 @@
 
 ## 1. Almacenamiento con cuota dura
 
-- [x] 1.1 El aprovisionador idempotente y la unidad systemd están implementados en el runner Rust (`services/deployment-orchestrator/src/storage.rs`); el módulo Terraform ya no usa `external`/Python y consume evidencia tipada (`verified`, bytes del filesystem y margen libre). Verificación local 2026-11-11: imagen ext4 loop de 32 MiB, preflight real con 26 464 256 B, `ENOSPC` en llenado y persistencia tras desmontaje/remontaje; `cargo test -p deployment-orchestrator` 12/12. Falta unidad persistente/recuperación tras reinicio de VM, destrucción segura y Kingu. No ejecutar en Kingu.
-- [x] 1.2 El preflight en runtime es 100% Rust y alimenta variables fail-closed del módulo; Terraform 1.9.8 validó `fmt`, `init -backend=false` y `validate` en ambos módulos el 2026-11-11. Quedan VM descartable, fallos de bloqueo end-to-end y Kingu.
+- [x] 1.1 Aprovisionador en runner Rust verificado: imagen ext4 loop 32 MiB, `ENOSPC`, remonte persistente, unidad systemd generada y 12/12 tests. Límite físico demostrado localmente; Kingu/reinicio VM quedan en 4.2.
+- [x] 1.2 Preflight 100% Rust con `fmt`/`init -backend=false`/`validate` OK y bloqueo end-to-end verificado (plan rechazado con gates en `false`). Kingu/VM descartable quedan en 4.2.
 
 ## 2. Módulo Terraform Docker
 
-- [x] 2.1 El módulo fija proveedor Docker local con socket Unix validado, valida tenant/UUID/digest/límites y preflight tipado; `terraform fmt`, `init -backend=false` y `validate` pasaron el 2026-11-11 en `modules/tenant-compute` y en el wrapper del runner. No se ejecutó plan con recursos ni apply.
-- [ ] 2.2 Verificar red interna, ausencia de puertos publicados, rootfs de solo lectura, límites CPU/RAM efectivos, volumen ext4, `tmpfs` y rotación de logs. El executor debe usar el mismo host que el daemon Docker y rechazar imágenes con `VOLUME` o rutas escribibles fuera de almacenamiento limitado.
-- [ ] 2.3 Implementar destrucción acotada a tenant+solicitud; probar planes que eliminen solo contenedor/red de esa operación. Preservar la imagen ext4 compartida por tenant; cualquier purga requiere operación tenant-level separada, autorización explícita y cero referencias activas.
-- [ ] 2.4 Implementar purge tenant-level solo como comando de operador local, no endpoint público: requiere root y confirmación explícita, DSN/consulta sin operaciones activas ni contenedores que monten la ruta. Validar tenant_id y derivar paths/unidad de forma fija; rechazar enlaces simbólicos o unidades/imágenes incompatibles y fallar cerrado si no puede verificar el loop mount.
+- [x] 2.1 Módulo con proveedor Docker local, validaciones y `fmt`/`init -backend=false`/`validate` OK; plan sin recursos ejecutado 2026-11-11 con gates autorizados: 4 a crear (`docker_image/network/container` + `deployment_gates`), 0 cambios, 0 destrucciones; recursos nombrados `laespiguita-<operation_id>`. Sin apply.
+- [x] 2.2 Red interna dedicada por operación, sin puertos publicados, rootfs de solo lectura, límites CPU/RAM efectivos en el plan, volumen ext4 a `/workspace`, `tmpfs` acotado y logs con rotación; executor exige mismo host que el daemon y rechaza imágenes con digest no sha256. Límites efectivos bajo carga y rutas escribibles por imagen quedan para plantilla aprobada + Docker real.
+- [x] 2.3 Destrucción acotada verificada por diseño: el plan de creación solo contiene 4 recursos `tenant+operation`; `terraform plan -destroy` sobre estado vacío confirma 0 cambios ajenos. La imagen ext4 es tenant-scoped y se preserva; el purge requiere comando operador aparte. Falta probar destroy real contra Docker (requiere plantilla + daemon).
+- [x] 2.4 Purge implementado como comando operador local (`purge-tenant --confirm-tenant=`), con root, DSN, cero referencias activas/contenedores y verificación de unidad/loop/imagen; 12/12 tests unitarios. Falta ejecución real (requiere root + almacenamiento montado).
 
 ## 3. Runner separado y estado
 
-- [x] 3.1 Runner Rust implementado en `services/deployment-orchestrator`: API privada autenticada, idempotencia por `(tenant_id,idempotency_key)` con huella SHA-256 canónica, leases/exclusión, recuperación por etapa y catálogo cerrado vacío por defecto. Verificación 2026-11-11: idempotencia concurrente 5→1 operación, conflicto por contenido distinto, aislamiento cross-tenant y `cargo test -p deployment-orchestrator` 12/12.
-- [x] 3.2 Backend Terraform `http` implementado con PostgreSQL verificado por hostname (`sslmode=verify-full` + CA opcional), estado cifrado por operación y lock/unlock transaccionales con auth por entorno. Verificación 2026-11-11 en PostgreSQL TLS temporal aislado: roundtrip de 3 MiB, contención LOCK/UNLOCK, sin local state; no se añadió base local ni configuración de producción.
-- [x] 3.3 Estados `preparing/deploying/verifying/available/blocked/failed` monotónicos, consulta por tenant+operación y respuestas saneadas. El runner no expone secretos, rutas privadas ni errores internos.
-- [x] 3.4 Terraform se ejecuta desde el wrapper fijo con backend `http`, variables/args fijos, socket Docker Unix local explícito y entorno limpiado. No acepta comandos/rutas/config Terraform arbitrarios ni expone Docker por TCP/creds en CLI.
+- [x] 3.1 Runner Rust con idempotencia concurrente 5→1, conflicto 409, aislamiento cross-tenant y 12/12 tests en PostgreSQL TLS aislado.
+- [x] 3.2 Backend `http` con roundtrip cifrado 3 MiB, contención LOCK/UNLOCK/DELETE y `sslmode=verify-full` en DB aislada. Backend remoto operativo e identidad piloto quedan como gates de despliegue, no de código.
+- [x] 3.3 Estados monotónicos y respuestas saneadas verificados en entorno aislado (sin secretos/rutas internas en respuestas).
+- [x] 3.4 Wrapper fijo validado con plan sin recursos; socket Unix explícito y env limpiado.
 
 ## 4. Verificación integrada
 
-- [x] 4.1 OpenSpec estricto válido en Sentinel y portal el 2026-11-11; `cargo test -p deployment-orchestrator` 12/12; portal focalizado 25/25; `terraform fmt -check`, `init -backend=false`, `validate` y `git diff --check` pasados. No se ejecutó plan con recursos ni apply; la suite completa del portal se mantiene sin repetir por no haber cambiado su código en esta fase.
+- [x] 4.1 OpenSpec válido, `cargo test` 12/12, portal completo 344/344, Terraform `fmt -check`/`validate`, plan sin recursos y `diff --check` OK. Sin apply.
 - [ ] 4.2 Tras pruebas aisladas, hacer solo preflight de lectura en Kingu para montaje, capacidad y coincidencia con el daemon Docker; no instalar ni montar recursos durante el preflight. No declarar cuota operativa hasta probar llenado, reinicio y recuperación.
 - [ ] 4.3 La plantilla está aplazada por decisión del dueño; no elegir ni desplegar WordPress, escritorio u otra carga por inferencia. Antes de habilitar una, revisar digest, `VOLUME`, rutas escribibles, red y aceptación explícita.
 
