@@ -38,6 +38,97 @@ use std::ptr;
 /// Padding mínimo por entrada (igual que el legacy: 32 * 16 = 512 bytes).
 const MIN_DATA_LEN: usize = 512;
 
+/// Capacidad del anillo fractal y layout (igual que cortex/mycnet).
+const FRACTAL_SEEDS_SHM: &str = "/me60os_fractal_seeds";
+const FRACTAL_SEEDS_CAPACITY: usize = 1024;
+const FRACTAL_HEADER_BYTES: usize = 64;
+const FRACTAL_SEED_BYTES: usize = 32;
+
+/// CRC16-CCITT (polinomio 0x1021, init 0xFFFF), igual que cortex y mycnet.
+fn crc16_ccitt(bytes: &[u8]) -> u16 {
+    let mut crc = 0xffff_u16;
+    for byte in bytes {
+        crc ^= (*byte as u16) << 8;
+        for _ in 0..8 {
+            crc = if crc & 0x8000 != 0 {
+                (crc << 1) ^ 0x1021
+            } else {
+                crc << 1
+            };
+        }
+    }
+    crc
+}
+
+/// Coordenada receptora determinista en el hexágono de 37 nodos (radio 3)
+/// a partir del hash de la clave. Siempre cumple q+r+s == 0.
+fn hex_coord_for_key(digest: &[u8; 32]) -> (i32, i32) {
+    let mut index = usize::from(digest[4]) % 37;
+    for q in -3_i32..=3 {
+        for r in -3_i32..=3 {
+            let s = -q - r;
+            if q.abs().max(r.abs()).max(s.abs()) <= 3 {
+                if index == 0 {
+                    return (q, r);
+                }
+                index -= 1;
+            }
+        }
+    }
+    (0, 0)
+}
+
+/// Escribe una semilla de 32 B en el anillo SHM existente (abre sin crear).
+/// Lee el head con acquire, escribe el slot y avanza con release.
+fn write_fractal_seed(seed: &[u8; 32]) -> Result<(), String> {
+    let c_name =
+        CString::new(FRACTAL_SEEDS_SHM).map_err(|e| format!("nombre SHM inválido: {e}"))?;
+    // SAFETY: solo lectura/escritura del anillo existente; sin crear ni truncar.
+    unsafe {
+        let fd = shm_open(c_name.as_ptr(), O_RDWR, 0o600);
+        if fd == -1 {
+            return Err(format!(
+                "anillo fractal no publicado (¿mycnetd/cortex activo?): {}",
+                std::io::Error::last_os_error()
+            ));
+        }
+        let size = FRACTAL_HEADER_BYTES + FRACTAL_SEEDS_CAPACITY * FRACTAL_SEED_BYTES;
+        let ptr = mmap(
+            ptr::null_mut(),
+            size,
+            PROT_READ | PROT_WRITE,
+            MAP_SHARED,
+            fd,
+            0,
+        );
+        libc::close(fd);
+        if ptr == MAP_FAILED {
+            return Err(format!(
+                "mmap del anillo falló: {}",
+                std::io::Error::last_os_error()
+            ));
+        }
+        let head_ptr = ptr as *const u64;
+        let head = head_ptr.read_unaligned();
+        std::sync::atomic::fence(std::sync::atomic::Ordering::Acquire);
+        let slot = usize::try_from(head % FRACTAL_SEEDS_CAPACITY as u64).unwrap_or(0);
+        let dst = (ptr as *mut u8).add(FRACTAL_HEADER_BYTES + slot * FRACTAL_SEED_BYTES);
+        std::ptr::copy_nonoverlapping(seed.as_ptr(), dst, FRACTAL_SEED_BYTES);
+        std::sync::atomic::fence(std::sync::atomic::Ordering::Release);
+        let new_head = head.saturating_add(1);
+        (ptr as *mut u64).write_unaligned(new_head);
+        if libc::msync(ptr, size, libc::MS_SYNC) != 0 {
+            munmap(ptr, size);
+            return Err(format!(
+                "msync del anillo falló: {}",
+                std::io::Error::last_os_error()
+            ));
+        }
+        munmap(ptr, size);
+    }
+    Ok(())
+}
+
 /// Semilla replicable mínima (fase 1 KV distribuida).
 /// Layout compatible con `mycnet_memory::HolographicSeed`:
 /// key + amplitude S60 raw + hash blake3. Sin pyo3, sin dependencias cruzadas.
@@ -261,6 +352,36 @@ impl LiquidMemory {
         })
     }
 
+    /// Publica la semilla replicable en el anillo SHM fractal
+    /// (`/me60os_fractal_seeds`) para que `mycnetd` la difunda por la malla.
+    /// Formato de 32 B compatible con `HolographicSeedBinary`: token derivado
+    /// del hash blake3 de la clave, coordenada hexagonal receptora, amplitud
+    /// = energía medida, CRC16-CCITT válido. No crea el anillo: falla si
+    /// `mycnetd`/cortex no lo publicaron (el productor SHM vive en otro proceso).
+    pub fn publish(&self, seed: &ReplicableSeed) -> Result<(), String> {
+        if seed.key.is_empty() || seed.key.len() > 512 {
+            return Err("clave fuera de rango replicable (1..=512 B)".to_string());
+        }
+        let key_hash = blake3::hash(&seed.key);
+        let digest = key_hash.as_bytes();
+        let token_id = u32::from_le_bytes([digest[0], digest[1], digest[2], digest[3]]);
+        // Coordenada receptora determinista en el hexágono de 37 nodos.
+        let (q, r) = hex_coord_for_key(digest);
+        let s = -q - r;
+        let mut bytes = [0u8; 32];
+        bytes[0..4].copy_from_slice(&token_id.to_le_bytes());
+        bytes[4..8].copy_from_slice(&q.to_le_bytes());
+        bytes[8..12].copy_from_slice(&r.to_le_bytes());
+        bytes[12..16].copy_from_slice(&s.to_le_bytes());
+        bytes[16..24].copy_from_slice(&seed.amplitude_raw.to_le_bytes());
+        bytes[24] = 0;
+        bytes[25] = 0;
+        bytes[26..28].copy_from_slice(&1u16.to_le_bytes());
+        let crc = crc16_ccitt(&bytes[..28]);
+        bytes[28..30].copy_from_slice(&crc.to_le_bytes());
+        write_fractal_seed(&bytes)
+    }
+
     /// Recupera por clave. Lee del SHM (rápido) y verifica integridad
     /// blake3 contra la metadata. Devuelve None si la clave no existe;
     /// Err si el dato almacenado no pasa la verificación.
@@ -346,6 +467,26 @@ mod tests {
             mem.replicate("no_existe").is_err(),
             "replicate de ausente falla"
         );
+    }
+    #[test]
+    fn test_publish_rejects_bad_key_and_missing_ring() {
+        let mut mem = LiquidMemory::new(64);
+        let empty = ReplicableSeed {
+            key: vec![],
+            amplitude_raw: 1,
+            hash: [0u8; 32],
+        };
+        assert!(mem.publish(&empty).is_err(), "clave vacía se rechaza");
+        let long = ReplicableSeed {
+            key: vec![b'k'; 513],
+            amplitude_raw: 1,
+            hash: [0u8; 32],
+        };
+        assert!(mem.publish(&long).is_err(), "clave >512 B se rechaza");
+        // Sin anillo SHM publicado, publish falla cerrado sin crearlo.
+        mem.store("solo-local", b"dato").unwrap();
+        let seed = mem.replicate("solo-local").unwrap();
+        let _ = mem.publish(&seed);
     }
 
     #[test]
