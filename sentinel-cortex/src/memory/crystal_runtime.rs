@@ -17,7 +17,8 @@ use std::os::fd::AsRawFd;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-const SNAPSHOT_VERSION: u32 = 2;
+const SNAPSHOT_VERSION: u32 = 3;
+const SPARSE_SNAPSHOT_VERSION: u32 = 2;
 const LEGACY_SNAPSHOT_VERSION: u32 = 1;
 const PID_HISTORY_TICKS: usize = 68;
 const LANE_A_SHM: &str = "/me60os_lattice";
@@ -80,6 +81,10 @@ struct CrystalSnapshot {
     qhc_tick: u64,
     lane_a: Vec<CrystalNodeState>,
     lane_b: Vec<CrystalNodeState>,
+    #[serde(default)]
+    lane_a_parameters: Option<CrystalLaneParameters>,
+    #[serde(default)]
+    lane_b_parameters: Option<CrystalLaneParameters>,
     pid_a: S60PID,
     pid_b: S60PID,
 }
@@ -89,6 +94,30 @@ struct CrystalNodeState {
     index: usize,
     amplitude_raw: i64,
     phase_raw: i64,
+    #[serde(default)]
+    natural_frequency_raw: Option<i64>,
+    #[serde(default)]
+    damping_factor_raw: Option<i64>,
+}
+
+#[derive(Serialize, Deserialize)]
+struct CrystalLaneParameters {
+    coupling_factor_raw: i64,
+    dt_raw: i64,
+}
+
+impl CrystalLaneParameters {
+    fn capture(lane: &ResonantMatrix) -> Self {
+        Self {
+            coupling_factor_raw: lane.coupling_factor.to_raw(),
+            dt_raw: lane.dt.to_raw(),
+        }
+    }
+
+    fn apply(self, lane: &mut ResonantMatrix) {
+        lane.coupling_factor = SPA::from_raw(self.coupling_factor_raw);
+        lane.dt = SPA::from_raw(self.dt_raw);
+    }
 }
 
 #[derive(Deserialize)]
@@ -431,6 +460,8 @@ impl CrystalRuntime {
             qhc_tick: self.qhc_tick,
             lane_a: sparse_lane_state(&self.lane_a),
             lane_b: sparse_lane_state(&self.lane_b),
+            lane_a_parameters: Some(CrystalLaneParameters::capture(&self.lane_a)),
+            lane_b_parameters: Some(CrystalLaneParameters::capture(&self.lane_b)),
             pid_a: self.pid_a.clone(),
             pid_b: self.pid_b.clone(),
         };
@@ -692,15 +723,23 @@ fn mycnet_hex_coordinate(index: usize) -> (i32, i32) {
 }
 
 fn sparse_lane_state(matrix: &ResonantMatrix) -> Vec<CrystalNodeState> {
+    let default = IsochronousOscillator::new("");
     matrix
         .crystals
         .iter()
         .enumerate()
-        .filter(|(_, crystal)| crystal.amplitude != SPA::zero() || crystal.phase != SPA::zero())
+        .filter(|(_, crystal)| {
+            crystal.amplitude != SPA::zero()
+                || crystal.phase != SPA::zero()
+                || crystal.natural_frequency != default.natural_frequency
+                || crystal.damping_factor != default.damping_factor
+        })
         .map(|(index, crystal)| CrystalNodeState {
             index,
             amplitude_raw: crystal.amplitude.to_raw(),
             phase_raw: crystal.phase.to_raw(),
+            natural_frequency_raw: Some(crystal.natural_frequency.to_raw()),
+            damping_factor_raw: Some(crystal.damping_factor.to_raw()),
         })
         .collect()
 }
@@ -711,6 +750,12 @@ fn restore_sparse_lane(nodes: usize, states: Vec<CrystalNodeState>) -> Option<Re
         let crystal = matrix.crystals.get_mut(state.index)?;
         crystal.amplitude = SPA::from_raw(state.amplitude_raw);
         crystal.phase = SPA::from_raw(state.phase_raw);
+        if let Some(raw) = state.natural_frequency_raw {
+            crystal.natural_frequency = SPA::from_raw(raw);
+        }
+        if let Some(raw) = state.damping_factor_raw {
+            crystal.damping_factor = SPA::from_raw(raw);
+        }
     }
     Some(matrix)
 }
@@ -756,10 +801,16 @@ fn load_snapshot(
         return None;
     }
     let restored = match header.version {
-        SNAPSHOT_VERSION => {
+        SNAPSHOT_VERSION | SPARSE_SNAPSHOT_VERSION => {
             let snapshot: CrystalSnapshot = serde_json::from_slice(&bytes).ok()?;
-            let lane_a = restore_sparse_lane(nodes, snapshot.lane_a)?;
-            let lane_b = restore_sparse_lane(nodes, snapshot.lane_b)?;
+            let mut lane_a = restore_sparse_lane(nodes, snapshot.lane_a)?;
+            let mut lane_b = restore_sparse_lane(nodes, snapshot.lane_b)?;
+            if let Some(parameters) = snapshot.lane_a_parameters {
+                parameters.apply(&mut lane_a);
+            }
+            if let Some(parameters) = snapshot.lane_b_parameters {
+                parameters.apply(&mut lane_b);
+            }
             (
                 lane_a,
                 lane_b,
@@ -1047,5 +1098,245 @@ mod tests {
         assert!(runtime.decode_collective_seed(1).is_err());
         assert!(runtime.decode_collective_seed(0).is_err());
         assert!(runtime.decode_collective_seed(4).is_err());
+    }
+
+    #[test]
+    fn regional_reader_does_not_reconstruct_adjacent_payload_symbols() {
+        let mut runtime = CrystalRuntime::in_memory(19);
+        runtime.reset();
+        runtime.lane_a.set_superconductor();
+        runtime.lane_b.set_superconductor();
+        let expected: Vec<i64> = b"AB"
+            .iter()
+            .map(|byte| i64::from(*byte) * SPA::SCALE_0)
+            .collect();
+        for (index, raw) in expected.iter().enumerate() {
+            runtime.inject_security_spa(index, SPA::from_raw(*raw));
+            runtime.inject_observability_spa(index, SPA::from_raw(*raw));
+        }
+
+        for _ in 0..8 {
+            runtime.step().unwrap();
+        }
+
+        assert!(runtime.dual_lane_portal_open());
+        let regional = runtime.decode_collective_seed(expected.len()).unwrap();
+        assert_ne!(
+            regional, expected,
+            "la convergencia dual no convierte las sumas regionales en símbolos"
+        );
+        eprintln!("Diagnóstico P0.1: símbolos={expected:?}; regiones={regional:?}");
+    }
+
+    #[test]
+    fn restored_non_markovian_history_preserves_subsequent_collective_evolution() {
+        let mut runtime = CrystalRuntime::in_memory(19);
+        runtime.reset();
+        runtime.inject_security_spa(0, SPA::from_int(65));
+        runtime.inject_observability_spa(1, SPA::from_int(66));
+        for _ in 0..8 {
+            runtime.tick_dtc().unwrap();
+            runtime.step().unwrap();
+        }
+
+        let pid_state = serde_json::to_value(&runtime.pid_a).unwrap();
+        let history = pid_state["history"].as_array().unwrap();
+        assert_eq!(history.len(), 8);
+        assert!(runtime.pid_a.integral != SPA::zero());
+
+        let snapshot = CrystalSnapshot {
+            version: SNAPSHOT_VERSION,
+            node_count: runtime.node_count(),
+            qhc_tick: runtime.qhc_tick,
+            lane_a: sparse_lane_state(&runtime.lane_a),
+            lane_b: sparse_lane_state(&runtime.lane_b),
+            lane_a_parameters: Some(CrystalLaneParameters::capture(&runtime.lane_a)),
+            lane_b_parameters: Some(CrystalLaneParameters::capture(&runtime.lane_b)),
+            pid_a: runtime.pid_a.clone(),
+            pid_b: runtime.pid_b.clone(),
+        };
+        let bytes = serde_json::to_vec(&snapshot).unwrap();
+        let snapshot: CrystalSnapshot = serde_json::from_slice(&bytes).unwrap();
+        let mut restored = CrystalRuntime::in_memory(snapshot.node_count);
+        restored.lane_a = restore_sparse_lane(snapshot.node_count, snapshot.lane_a).unwrap();
+        restored.lane_b = restore_sparse_lane(snapshot.node_count, snapshot.lane_b).unwrap();
+        snapshot
+            .lane_a_parameters
+            .unwrap()
+            .apply(&mut restored.lane_a);
+        snapshot
+            .lane_b_parameters
+            .unwrap()
+            .apply(&mut restored.lane_b);
+        restored.pid_a = snapshot.pid_a;
+        restored.pid_b = snapshot.pid_b;
+        restored.qhc_tick = snapshot.qhc_tick;
+
+        let mut without_history = CrystalRuntime::in_memory(runtime.node_count());
+        without_history.lane_a =
+            restore_sparse_lane(runtime.node_count(), sparse_lane_state(&runtime.lane_a)).unwrap();
+        without_history.lane_b =
+            restore_sparse_lane(runtime.node_count(), sparse_lane_state(&runtime.lane_b)).unwrap();
+        without_history.pid_a = runtime.pid_a.clone();
+        without_history.pid_b = runtime.pid_b.clone();
+        // Quitar solo el historial: conservar integral y error previo evita
+        // atribuir al kernel una diferencia causada por reiniciar todo el PID.
+        without_history
+            .pid_a
+            .set_history_capacity(PID_HISTORY_TICKS);
+        without_history
+            .pid_b
+            .set_history_capacity(PID_HISTORY_TICKS);
+
+        for _ in 0..8 {
+            runtime.step().unwrap();
+            restored.step().unwrap();
+            without_history.step().unwrap();
+            assert_eq!(
+                raw_lane_state(&runtime.lane_a),
+                raw_lane_state(&restored.lane_a)
+            );
+            assert_eq!(
+                raw_lane_state(&runtime.lane_b),
+                raw_lane_state(&restored.lane_b)
+            );
+            assert_eq!(
+                serde_json::to_value(&runtime.pid_a).unwrap(),
+                serde_json::to_value(&restored.pid_a).unwrap()
+            );
+            assert_eq!(
+                serde_json::to_value(&runtime.pid_b).unwrap(),
+                serde_json::to_value(&restored.pid_b).unwrap()
+            );
+        }
+        assert_ne!(
+            raw_lane_state(&runtime.lane_a),
+            raw_lane_state(&without_history.lane_a),
+            "conservar integral y error previo no sustituye el historial del kernel"
+        );
+    }
+
+    #[test]
+    fn checkpoint_restores_evolution_rule_and_quiet_superconducting_nodes() {
+        let mut runtime = CrystalRuntime::in_memory(19);
+        runtime.reset();
+        runtime.qhc_tick = 53;
+        for lane in [&mut runtime.lane_a, &mut runtime.lane_b] {
+            lane.set_superconductor();
+            lane.set_coupling(SPA::new(0, 5, 0, 0, 0));
+            lane.set_dt(SPA::new(0, 0, 2, 0, 0));
+            lane.crystals[18].natural_frequency = SPA::from_int(7);
+        }
+        runtime.inject_security_spa(0, SPA::from_int(65));
+        runtime.inject_observability_spa(1, SPA::from_int(66));
+        for _ in 0..7 {
+            runtime.tick_dtc().unwrap();
+            runtime.step().unwrap();
+        }
+        assert_eq!(runtime.qhc_tick, 60);
+        assert_eq!(
+            serde_json::to_value(&runtime.pid_a).unwrap()["history"]
+                .as_array()
+                .unwrap()
+                .len(),
+            7
+        );
+        // Nodo quieto con parámetros propios: no debe omitirse del checkpoint.
+        runtime.lane_a.crystals[18].amplitude = SPA::zero();
+        runtime.lane_a.crystals[18].phase = SPA::zero();
+        runtime.lane_b.crystals[18].amplitude = SPA::zero();
+        runtime.lane_b.crystals[18].phase = SPA::zero();
+        let snapshot = CrystalSnapshot {
+            version: SNAPSHOT_VERSION,
+            node_count: runtime.node_count(),
+            qhc_tick: runtime.qhc_tick,
+            lane_a: sparse_lane_state(&runtime.lane_a),
+            lane_b: sparse_lane_state(&runtime.lane_b),
+            lane_a_parameters: Some(CrystalLaneParameters::capture(&runtime.lane_a)),
+            lane_b_parameters: Some(CrystalLaneParameters::capture(&runtime.lane_b)),
+            pid_a: runtime.pid_a.clone(),
+            pid_b: runtime.pid_b.clone(),
+        };
+        // Incluso los nodos sin amplitud/fase deben conservar damping y frecuencia.
+        assert_eq!(snapshot.lane_a.len(), runtime.node_count());
+        let path = std::env::temp_dir().join(format!(
+            "sentinel-checkpoint-rule-{}.json",
+            std::process::id()
+        ));
+        fs::write(&path, serde_json::to_vec(&snapshot).unwrap()).unwrap();
+        let (lane_a, lane_b, pid_a, pid_b, qhc_tick) = load_snapshot(&path, 19).unwrap();
+        fs::remove_file(&path).unwrap();
+        let mut restored = CrystalRuntime::in_memory(19);
+        restored.lane_a = lane_a;
+        restored.lane_b = lane_b;
+        restored.pid_a = pid_a;
+        restored.pid_b = pid_b;
+        restored.qhc_tick = qhc_tick;
+        assert!(restored.lane_a.is_superconductor());
+        assert!(restored.lane_b.is_superconductor());
+        assert_eq!(
+            restored.lane_a.coupling_factor,
+            runtime.lane_a.coupling_factor
+        );
+        assert_eq!(restored.lane_a.dt, runtime.lane_a.dt);
+        assert_eq!(
+            restored.lane_a.crystals[18].natural_frequency,
+            SPA::from_int(7)
+        );
+        for state in [&mut runtime, &mut restored] {
+            state.inject_security_spa(0, SPA::from_int(65));
+            state.inject_observability_spa(1, SPA::from_int(66));
+        }
+        for _ in 0..16 {
+            runtime.tick_dtc().unwrap();
+            restored.tick_dtc().unwrap();
+            runtime.step().unwrap();
+            restored.step().unwrap();
+            assert_eq!(
+                raw_lane_state(&runtime.lane_a),
+                raw_lane_state(&restored.lane_a)
+            );
+            assert_eq!(
+                raw_lane_state(&runtime.lane_b),
+                raw_lane_state(&restored.lane_b)
+            );
+            assert_eq!(runtime.qhc_tick, restored.qhc_tick);
+            assert_eq!(
+                serde_json::to_value(&runtime.pid_a).unwrap(),
+                serde_json::to_value(&restored.pid_a).unwrap()
+            );
+            assert_eq!(
+                serde_json::to_value(&runtime.pid_b).unwrap(),
+                serde_json::to_value(&restored.pid_b).unwrap()
+            );
+        }
+        assert_eq!(runtime.qhc_tick, 76);
+    }
+
+    #[test]
+    fn sparse_v2_checkpoint_without_evolution_parameters_remains_readable() {
+        let legacy = serde_json::json!({
+            "version": SPARSE_SNAPSHOT_VERSION,
+            "node_count": 19,
+            "qhc_tick": 8,
+            "lane_a": [{"index": 0, "amplitude_raw": 17, "phase_raw": 3}],
+            "lane_b": [],
+            "pid_a": new_pid(),
+            "pid_b": new_pid()
+        });
+        let snapshot: CrystalSnapshot = serde_json::from_value(legacy).unwrap();
+        assert!(snapshot.lane_a_parameters.is_none());
+        let restored = restore_sparse_lane(19, snapshot.lane_a).unwrap();
+        let defaults = ResonantMatrix::new(19);
+        assert_eq!(restored.crystals[0].amplitude.to_raw(), 17);
+        assert_eq!(restored.crystals[0].phase.to_raw(), 3);
+        assert_eq!(
+            restored.crystals[0].damping_factor,
+            defaults.crystals[0].damping_factor
+        );
+        assert_eq!(
+            restored.crystals[0].natural_frequency,
+            defaults.crystals[0].natural_frequency
+        );
     }
 }
