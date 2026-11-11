@@ -23,6 +23,7 @@ module "tenant_compute" {
   storage_preflight_verified   = var.storage_preflight_verified
   storage_filesystem_bytes     = var.storage_filesystem_bytes
   storage_host_free_bytes      = var.storage_host_free_bytes
+  edge_network_name            = var.edge_network_name
 }
 
 output "container_id" {

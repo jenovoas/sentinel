@@ -976,6 +976,7 @@ struct ApprovedTemplate {
     memory_limit_mb: i64,
     tmpfs_limit_mb: i64,
     volume_paths: Vec<String>,
+    edge_network_name: String,
 }
 impl ApprovedTemplate {
     fn from_env(template: &str) -> Option<Self> {
@@ -1012,6 +1013,7 @@ impl ApprovedTemplate {
             memory_limit_mb: env::var("DEPLOYMENT_MEMORY_LIMIT_MB").ok()?.parse().ok()?,
             tmpfs_limit_mb: env::var("DEPLOYMENT_TMPFS_LIMIT_MB").ok()?.parse().ok()?,
             volume_paths,
+            edge_network_name: env::var("DEPLOYMENT_EDGE_NETWORK").unwrap_or_default(),
         };
         let digest = spec.image_digest.rsplit_once("@sha256:").map(|(_, v)| v)?;
         if digest.len() != 64
@@ -1140,7 +1142,10 @@ fn terraform_envs(
         ("TF_VAR_pilot_identity_authorized".into(), "true".into()),
         ("TF_VAR_guacamole_acl_verified".into(), "true".into()),
         ("TF_VAR_remote_backend_lock_verified".into(), "true".into()),
-        ("TF_VAR_capacity_approved".into(), "true".into()),
+        (
+            "TF_VAR_edge_network_name".into(),
+            spec.edge_network_name.clone(),
+        ),
     ])
 }
 fn storage_quota_valid(

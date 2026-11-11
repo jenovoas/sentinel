@@ -145,3 +145,13 @@ variable "storage_host_free_bytes" {
     error_message = "storage_host_free_bytes debe ser un entero no negativo."
   }
 }
+
+variable "edge_network_name" {
+  type    = string
+  default = ""
+
+  validation {
+    condition     = var.edge_network_name == "" || can(regex("^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$", var.edge_network_name))
+    error_message = "edge_network_name debe estar vacío o ser el nombre de una red Docker externa existente."
+  }
+}

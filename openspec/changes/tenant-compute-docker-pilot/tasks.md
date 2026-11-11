@@ -23,7 +23,7 @@
 
 - [x] 4.1 OpenSpec válido, `cargo test` 12/12, portal completo 344/344, Terraform `fmt -check`/`validate`, plan sin recursos y `diff --check` OK. Sin apply.
 - [x] 4.2 Preflight de solo lectura en Kingu ejecutado 2026-11-11 (autorización explícita del dueño): Docker 29.9.3 local (`unix:///var/run/docker.sock`, 0 contenedores/imágenes), root ext4 sin cuotas nativas (128 GB libres), sin `/srv/sentinel/tenants` (nada aprovisionado). El daemon Docker y el preflight correrían en el mismo host. Cuota operativa sigue sin declararse hasta llenado/reinicio/recuperación con plantilla aprobada.
-- [ ] 4.3 La plantilla está aplazada por decisión del dueño; no elegir ni desplegar WordPress, escritorio u otra carga por inferencia. Antes de habilitar una, revisar digest, `VOLUME`, rutas escribibles, red y aceptación explícita.
+- [x] 4.3 Plantilla aprobada por el dueño 2026-11-11: `n8n-automation` (`docker.io/n8nio/n8n@sha256:3a5dd07de8be0afcb4b23eeb6e2e7a724cda912e082aa286fdf7792ec3a9a4a8`, tag 1.55.0). Imagen sin `VOLUME` declarados, usuario `node` (no root), puerto único 5678/tcp, única ruta escribible `/home/node/.n8n` → `/workspace`. WordPress descartado por decisión explícita del dueño (superficie histórica de CVEs); wazuh-siem descartado por `network_mode: host` y bind-mounts del host. Red edge `traefik_public` parametrizada en el módulo (`edge_network_name`, vacío = solo interna). Variables del operador documentadas en design; `apply` solo con orden explícita.
 
 ## Workflow follow-up
 

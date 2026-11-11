@@ -99,6 +99,12 @@ resource "docker_container" "tenant" {
   networks_advanced {
     name = docker_network.tenant.name
   }
+  dynamic "networks_advanced" {
+    for_each = var.edge_network_name == "" ? [] : [var.edge_network_name]
+    content {
+      name = networks_advanced.value
+    }
+  }
 
   labels {
     label = "sentinel.tenant_id"

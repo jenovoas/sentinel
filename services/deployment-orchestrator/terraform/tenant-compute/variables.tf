@@ -16,3 +16,4 @@ variable "docker_socket_path" { type = string }
 variable "storage_preflight_verified" { type = bool }
 variable "storage_filesystem_bytes" { type = number }
 variable "storage_host_free_bytes" { type = number }
+variable "edge_network_name" { type = string }

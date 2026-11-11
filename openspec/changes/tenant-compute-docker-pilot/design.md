@@ -50,4 +50,11 @@ El contrato T4 plantea red, contenedor, almacenamiento persistente, métricas y 
 
 ## Operational Gates
 
-El código puede implementarse sin asumir estos valores, pero cualquier ejecución remota queda bloqueada hasta que se configuren y verifiquen: backend remoto con lock, digest y rutas escribibles de la imagen aprobada, identidad piloto y principal estable de Guacamole. La identidad piloto aún no existe; no se crearán cuentas ni permisos automáticamente.
+## Plantilla aprobada: n8n-automation (2026-11-11)
+
+- **Imagen:** `docker.io/n8nio/n8n@sha256:3a5dd07de8be0afcb4b23eeb6e2e7a724cda912e082aa286fdf7792ec3a9a4a8` (tag 1.55.0, digest verificado por `docker inspect` local). Sin `VOLUME` declarados; usuario `node` (no root); expone solo `5678/tcp`.
+- **Ruta escribible:** `/home/node/.n8n` → volumen ext4 del tenant montado en `/workspace` (misma ruta que usa el módulo para todos los tenants). Sin bind-mounts del host, sin `network_mode: host`.
+- **Red:** interna dedicada por operación + red edge externa parametrizada (`edge_network_name`, p. ej. `traefik_public` en Kingu). Vacío = solo interna.
+- **Descartadas:** `wordpress-pro` (decisión explícita del dueño: superficie histórica de CVEs), `wazuh-siem` (`network_mode: host` + monta `/var/log`, `/etc` del host: viola aislamiento). `guacamole-rdp` queda como segunda candidata (AD verificado) tras demostrar el ciclo con n8n.
+- **Variables del operador para habilitarla (fuera de git):** `DEPLOYMENT_EXECUTION_ENABLED=true`, `DEPLOYMENT_APPROVED_TEMPLATE=docker-pilot`, `DEPLOYMENT_IMAGE_METADATA_REVIEWED=true`, `DEPLOYMENT_IMAGE_DIGEST=<digest de arriba>`, `DEPLOYMENT_IMAGE_VOLUME_PATHS='["/workspace"]'`, `DEPLOYMENT_IMAGE_WRITABLE_PATHS='["/workspace"]'`, `DEPLOYMENT_EDGE_NETWORK=traefik_public` (o vacío), más límites `DEPLOYMENT_DISK_LIMIT_BYTES`, `DEPLOYMENT_MIN_HOST_FREE_BYTES`, `DEPLOYMENT_CPU_LIMIT`, `DEPLOYMENT_MEMORY_LIMIT_MB`, `DEPLOYMENT_TMPFS_LIMIT_MB` y gates `DEPLOYMENT_PILOT_IDENTITY_AUTHORIZED`, `DEPLOYMENT_GUACAMOLE_ACL_VERIFIED`, `DEPLOYMENT_CAPACITY_APPROVED`.
+- **Tenant piloto:** laespiguita (ya existe como tenant real). El `apply` requiere orden explícita del dueño; este documento no la sustituye.
