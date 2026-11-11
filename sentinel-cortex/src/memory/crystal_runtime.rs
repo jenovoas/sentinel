@@ -512,6 +512,73 @@ impl CrystalRuntime {
             .collect()
     }
 
+    /// Ejecuta un tick PID/evolución y lee regiones hexagonales colectivas
+    /// de ambas lanes. `seed_nodes` delimita los centros semilla; no consulta
+    /// una copia del payload original.
+    pub fn step_and_decode_collective_seed(
+        &mut self,
+        seed_nodes: usize,
+    ) -> Result<Vec<i64>, String> {
+        if seed_nodes == 0 || seed_nodes > self.node_count() {
+            return Err(format!(
+                "seed length {seed_nodes} outside lattice capacity {}",
+                self.node_count()
+            ));
+        }
+        self.step()?;
+        self.decode_collective_seed(seed_nodes)
+    }
+
+    /// Lee amplitudes regionales S60 del estado evolucionado, sin línea base.
+    /// Una suma regional no es directamente un byte: la reconstrucción completa
+    /// requiere aplicar la semilla y la regla fractal documentada.
+    pub fn decode_collective_seed(&self, seed_nodes: usize) -> Result<Vec<i64>, String> {
+        if seed_nodes == 0 || seed_nodes > self.node_count() {
+            return Err(format!(
+                "seed length {seed_nodes} outside lattice capacity {}",
+                self.node_count()
+            ));
+        }
+
+        let side = lattice_side(self.node_count());
+        let mut decoded = Vec::with_capacity(seed_nodes);
+        for index in 0..seed_nodes {
+            let raw_a = self.collective_region_raw(&self.lane_a, index, side);
+            let raw_b = self.collective_region_raw(&self.lane_b, index, side);
+            if raw_a.abs_diff(raw_b) > (SPA::SCALE_0 / 50) as u64 {
+                return Err(format!("dual-lane fidelity failed at symbol {index}"));
+            }
+            decoded.push(raw_a);
+        }
+        Ok(decoded)
+    }
+
+    fn collective_region_raw(&self, lane: &ResonantMatrix, index: usize, side: usize) -> i64 {
+        let size = lane.crystals.len();
+        let mut total = lane.crystals[index].amplitude.to_raw().max(0);
+        let mut neighbors = [None; 6];
+        neighbors[0] = index.checked_sub(side);
+        if index + side < size {
+            neighbors[1] = Some(index + side);
+        }
+        if index % side > 0 {
+            neighbors[2] = Some(index - 1);
+        }
+        if (index + 1) % side != 0 && index + 1 < size {
+            neighbors[3] = Some(index + 1);
+        }
+        if index >= side && (index + 1) % side != 0 {
+            neighbors[4] = Some(index - side + 1);
+        }
+        if index + side < size && index % side > 0 {
+            neighbors[5] = Some(index + side - 1);
+        }
+        for neighbor in neighbors.into_iter().flatten() {
+            total = total.saturating_add(lane.crystals[neighbor].amplitude.to_raw().max(0));
+        }
+        total
+    }
+
     pub fn phases_raw(&self) -> Vec<i64> {
         self.lane_a
             .get_phases()
@@ -578,6 +645,20 @@ fn new_pid() -> S60PID {
         SPA::new(0, 5, 0, 0, 0).to_raw(),
         0,
     )
+}
+
+fn lattice_side(size: usize) -> usize {
+    let mut lo = 1usize;
+    let mut hi = size.max(1);
+    while lo < hi {
+        let mid = lo + (hi - lo) / 2;
+        if mid >= size.div_ceil(mid) {
+            hi = mid;
+        } else {
+            lo = mid + 1;
+        }
+    }
+    lo
 }
 
 fn crc16_ccitt(bytes: &[u8]) -> u16 {
@@ -943,5 +1024,28 @@ mod tests {
             PID_HISTORY_TICKS
         );
         assert!(!status.shm_active);
+    }
+
+    #[test]
+    fn post_pid_decoder_reads_collective_regions_after_evolution() {
+        let mut runtime = CrystalRuntime::in_memory(19);
+        runtime.lane_a.set_superconductor();
+        runtime.lane_b.set_superconductor();
+        runtime.reset();
+        runtime.lane_a.inject_pai(0, i64::from(b'A'), 1);
+        runtime.lane_b.inject_pai(0, i64::from(b'A'), 1);
+
+        let decoded = runtime.step_and_decode_collective_seed(1).unwrap();
+        assert_eq!(decoded, vec![i64::from(b'A') * SPA::SCALE_0]);
+    }
+
+    #[test]
+    fn post_pid_decoder_rejects_lane_divergence_and_invalid_length() {
+        let mut runtime = CrystalRuntime::in_memory(3);
+        runtime.lane_a.inject_pai(1, i64::from(b'A'), 1);
+        runtime.lane_b.inject_pai(1, i64::from(b'B'), 1);
+        assert!(runtime.decode_collective_seed(1).is_err());
+        assert!(runtime.decode_collective_seed(0).is_err());
+        assert!(runtime.decode_collective_seed(4).is_err());
     }
 }
