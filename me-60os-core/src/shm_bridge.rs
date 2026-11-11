@@ -121,6 +121,22 @@ impl PySharedBuffer {
         Ok(data.len())
     }
 
+    /// Read bytes from native Rust code without requiring the Python feature.
+    pub fn read_native(&self, offset: usize, length: usize) -> Result<Vec<u8>, String> {
+        if self.ptr.is_null() {
+            return Err("SHM mapping is closed".into());
+        }
+        if offset.checked_add(length).is_none_or(|end| end > self.size) {
+            return Err("SHM read out of bounds".into());
+        }
+        let mut buf = vec![0u8; length];
+        // SAFETY: bounds are checked above and the destination buffer is freshly allocated.
+        unsafe {
+            ptr::copy_nonoverlapping(self.ptr.add(offset), buf.as_mut_ptr(), length);
+        }
+        Ok(buf)
+    }
+
     /// Read an aligned u64 published by a shared-memory producer.
     pub fn load_u64_acquire(&self, offset: usize) -> Result<u64, String> {
         if self.ptr.is_null() {
