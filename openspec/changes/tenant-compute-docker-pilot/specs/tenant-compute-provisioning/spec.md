@@ -57,12 +57,16 @@ Cada carga MUST aplicar límites de CPU y memoria no superiores a los valores au
 - **WHEN** la carga intenta consumir CPU o memoria por encima de los valores asignados
 - **THEN** el runtime aplica el límite y mantiene intactos los valores asignados a otras cargas
 
-### Requirement: La operación debe poder destruir solo sus propios recursos
-El ejecutor MUST conservar la relación entre la solicitud y sus recursos, y MUST eliminar únicamente los recursos propiedad de esa operación cuando se autoriza su destrucción.
+### Requirement: La destrucción debe quedar acotada y preservar datos compartidos
+El ejecutor MUST conservar la relación entre tenant, solicitud y recursos. Una destrucción de operación MUST eliminar solo su contenedor/red y MUST NOT eliminar almacenamiento ext4 compartido por tenant. El borrado del almacenamiento requiere una operación tenant-level separada, autorización explícita y prueba de que no existen operaciones activas ni contenedores Docker que monten la ruta; la unidad, loop mount e imagen deben coincidir exactamente con ese tenant.
 
-#### Scenario: Destrucción de una carga
+#### Scenario: Destrucción de una operación
 - **WHEN** se autoriza destruir una solicitud existente
-- **THEN** se eliminan su contenedor, red y almacenamiento asociado sin afectar recursos de otros tenants
+- **THEN** se eliminan su contenedor y red, se conserva el almacenamiento tenant-scoped y no se afectan recursos de otros tenants
+
+#### Scenario: Borrado explícito de datos de tenant
+- **WHEN** se solicita borrar el almacenamiento de un tenant con autorización explícita, sin operaciones activas ni contenedores Docker que monten su ruta, y el ejecutor puede verificar unidad/montaje/imagen
+- **THEN** se desmonta y elimina solo su imagen/unidad ext4; sin autorización, con referencias o si falla una verificación, los datos se conservan
 
 ### Requirement: El estado remoto debe persistir y bloquear operaciones concurrentes
 El ejecutor MUST usar un backend remoto con persistencia y lock funcional. MUST fallar cerrado si el backend no está configurado o el lock no puede adquirirse, y MUST NOT usar estado local como alternativa operativa.

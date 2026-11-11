@@ -20,12 +20,15 @@ El contrato T4 plantea red, contenedor, almacenamiento persistente, métricas y 
 
 ## Decisions
 
-- **Límite de disco mediante imagen ext4 de capacidad fija por tenant.** El candidato es un archivo completamente preasignado, formateado como ext4 y montado en el host como loop; Docker recibe solo la ruta montada. El tamaño del archivo es el techo físico del sistema de archivos. Se elige frente a `overlay2.size` porque el host no tiene XFS/`pquota`, y frente a cuotas del ext4 raíz porque estas no están habilitadas. La operación queda condicionada a probar persistencia tras reinicio, capacidad exacta, denegación de escrituras excedentes y destrucción segura; no se considera verificada todavía.
+- **Límite de disco mediante imagen ext4 de capacidad fija por tenant.** El archivo de 32 MiB creado por el aprovisionador y montado como loop expuso 26 464 256 B; la escritura hasta `ENOSPC` confirmó el límite y un marcador sobrevivió desmontaje/remontaje, con preflight real válido antes y después. Esto verifica capacidad física y remonte local, no recuperación de unidad tras reinicio de VM ni destrucción segura; Docker solo recibe la ruta montada.
+- **Destrucción sin pérdida de datos compartidos.** El aprovisionador actual identifica el almacenamiento por tenant, no por solicitud; destruir una operación elimina solo su contenedor y red. El volumen ext4 persiste hasta una operación tenant-level separada con autorización explícita y verificación de cero referencias activas.
+- **Purge tenant-level solo por operador local.** No se expone por HTTP: un subcomando local requiere root, tenant_id validado, confirmación explícita, PostgreSQL disponible sin operaciones activas ni contenedores que monten la ruta, y verificación exacta de unidad, loop e imagen. Toda comprobación fallida conserva los datos.
 - **Capa escribible del contenedor cerrada.** El módulo configura rootfs de solo lectura; datos persistentes van al volumen limitado, `/tmp` a `tmpfs` acotado y logs `json-file` con rotación. La garantía completa sigue condicionada a que el runner autorice solo imágenes aprobadas sin volúmenes anónimos no controlados y pruebe las rutas escribibles de cada imagen.
 - **Runner separado junto al daemon Docker de Kingu.** La comprobación del filesystem y la ruta bind deben ocurrir en el mismo host que consume el bind mount. No se aceptará un daemon Docker remoto con preflight ejecutado en otra máquina ni se expondrá el socket Docker por TCP. El acceso rootful a Docker equivale a privilegio de host; el servicio web no recibirá ese acceso.
 - **Runner autenticado y catálogo cerrado.** El runner autenticará al portal por canal privado, validará tenant/solicitud y una lista fija de imágenes/operaciones, y nunca aceptará rutas, comandos, módulos o argumentos Terraform arbitrarios. La lista de cargas permanece vacía hasta que el dueño elija una plantilla; digest, `VOLUME` declarados y rutas escribibles deberán quedar revisados antes de habilitarla.
 - **Los booleanos del módulo no son evidencia.** Los inputs `*_verified` son autodeclarados y no demuestran identidad, ACL, capacidad ni lock. Se mantienen en `false` como bloqueo del módulo mientras no exista runner; no se considerarán controles suficientes ni se quitarán antes de sustituirlos por comprobaciones efectivas dentro del executor.
-- **Terraform requiere backend remoto con bloqueo.** El runner no usará estado local ni ejecutará `apply` si no hay backend remoto configurado y una operación de bloqueo funcional. Este cambio no inventa ni provisiona un servicio de estado que no se ha verificado en el entorno.
+- **Backend remoto HTTP con estado PostgreSQL y lock durable.** El runner implementará los endpoints HTTP del backend Terraform y persistirá estado y leases de lock en PostgreSQL mediante su DSN operativo; Terraform nunca tendrá fallback local. El backend exige credenciales por entorno, transacciones para exclusión mutua y disponibilidad del PostgreSQL configurado. No se añade una base local/Compose ni se inventa configuración de producción; una DSN ausente o un lock fallido bloquea la operación.
+- **Preflight de almacenamiento en runtime 100% Rust.** El runner crea/verifica el ext4 loop y entrega al módulo evidencia tipada (verificado, bytes de filesystem y margen libre); Terraform no invoca `external` ni scripts Python. Los scripts Python existentes quedan como herramientas locales/offline y pruebas.
 - **Sin ampliación de infraestructura para el piloto.** Kingu se usa temporalmente con su capacidad actual. La ampliación vertical o un segundo host se evalúa con clientes reales y mediciones de consumo.
 
 ## Risks / Trade-offs
@@ -34,7 +37,7 @@ El contrato T4 plantea red, contenedor, almacenamiento persistente, métricas y 
 - [La preasignación puede agotar el disco del host] → reservar capacidad antes de crear la imagen, conservar un margen operativo y rechazar la solicitud si el espacio disponible no cubre el archivo completo más la reserva.
 - [Rootfs de solo lectura puede impedir iniciar el escritorio] → inventariar rutas escribibles de la imagen y asignarlas explícitamente al volumen o a `tmpfs`; no relajar a rootfs escribible sin demostrar una cuota para esa capa.
 - [El acceso al socket Docker equivale a privilegio de host] → runner no expuesto públicamente, autenticación fuerte, API cerrada, logs saneados y permisos del proceso minimizados; no montar el socket en un contenedor de cliente.
-- [Backend remoto no definido] → inventariar los backends existentes; si ninguno sirve, detener la configuración hasta acordar proveedor y política. Bloquear cualquier operación si no se demuestra persistencia y lock; nunca usar estado local como alternativa silenciosa.
+- [Backend PostgreSQL no disponible o local sin persistencia externa] → exigir DSN operativa configurada, proteger credenciales por entorno, probar persistencia y lock/unlock entre procesos; fallar cerrado ante pérdida del backend y nunca escribir estado Terraform local.
 - [Identidad piloto y ACL Guacamole pendientes] → no crear cuentas ni asignar permisos; mantener la solicitud en estado bloqueado.
 
 ## Migration Plan
@@ -43,7 +46,7 @@ El contrato T4 plantea red, contenedor, almacenamiento persistente, métricas y 
 2. Verificar el backend remoto y el mecanismo de almacenamiento en un entorno aislado antes de tocar Kingu.
 3. Ejecutar preflight de solo lectura en Kingu y confirmar cuota, capacidad, ACL, red e identidad autorizada.
 4. Aplicar un solo tenant tras resolver los gates y medir recursos con el host actual.
-5. En rollback, revocar el acceso, destruir solo la operación piloto y comprobar que el volumen loop, la red y el contenedor se eliminaron; conservar evidencia y backups acordados.
+5. En rollback, revocar el acceso y destruir solo la operación piloto; comprobar que se eliminaron su contenedor y red y que el volumen ext4 permanece. Un purge tenant-level requiere autorización explícita y cero referencias activas; conservar evidencia y backups acordados.
 
 ## Operational Gates
 

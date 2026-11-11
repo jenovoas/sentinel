@@ -16,8 +16,8 @@ output "network_id" {
 
 output "storage_preflight" {
   value = {
-    verified           = data.external.storage_preflight.result.verified
-    filesystem_bytes   = tonumber(data.external.storage_preflight.result.filesystem_bytes)
-    host_free_bytes    = tonumber(data.external.storage_preflight.result.host_free_bytes)
+    verified         = var.storage_preflight_verified
+    filesystem_bytes = var.storage_filesystem_bytes
+    host_free_bytes  = var.storage_host_free_bytes
   }
 }
