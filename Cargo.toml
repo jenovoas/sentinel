@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "services/neural-guard",
+    "services/deployment-orchestrator",
     "sentinel-cortex",
     "me-60os-core",
     "truthsync-core",

@@ -11,10 +11,19 @@ variable "request_id" {
   type = string
 
   validation {
-    condition     = can(regex("^[a-z0-9][a-z0-9-]{0,31}$", var.request_id))
-    error_message = "request_id debe ser un identificador en minúsculas de hasta 32 caracteres."
+    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,127}$", var.request_id))
+    error_message = "request_id debe ser un identificador válido de hasta 128 caracteres."
   }
 }
+variable "operation_id" {
+  type = string
+
+  validation {
+    condition     = can(regex("^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$", var.operation_id))
+    error_message = "operation_id debe ser un UUID v4 generado por el runner."
+  }
+}
+
 
 variable "image_digest" {
   type = string
@@ -25,14 +34,6 @@ variable "image_digest" {
   }
 }
 
-variable "tenant_cidr" {
-  type = string
-
-  validation {
-    condition     = can(cidrnetmask(var.tenant_cidr)) && try(cidrhost(var.tenant_cidr, 0) == split("/", var.tenant_cidr)[0], false)
-    error_message = "tenant_cidr debe ser una red IPv4 CIDR válida y canónica."
-  }
-}
 
 variable "storage_path" {
   type = string
@@ -108,4 +109,39 @@ variable "remote_backend_lock_verified" {
 variable "capacity_approved" {
   type    = bool
   default = false
+}
+
+variable "docker_socket_path" {
+  type    = string
+  default = "/var/run/docker.sock"
+
+  validation {
+    condition     = startswith(var.docker_socket_path, "/") && var.docker_socket_path != "/" && !endswith(var.docker_socket_path, "/") && !strcontains(var.docker_socket_path, "//") && !contains(split("/", var.docker_socket_path), ".") && !contains(split("/", var.docker_socket_path), "..")
+    error_message = "docker_socket_path debe ser una ruta Unix local absoluta, canónica y distinta de la raíz."
+  }
+}
+
+variable "storage_preflight_verified" {
+  type    = bool
+  default = false
+}
+
+variable "storage_filesystem_bytes" {
+  type    = number
+  default = 0
+
+  validation {
+    condition     = var.storage_filesystem_bytes >= 0 && floor(var.storage_filesystem_bytes) == var.storage_filesystem_bytes
+    error_message = "storage_filesystem_bytes debe ser un entero no negativo."
+  }
+}
+
+variable "storage_host_free_bytes" {
+  type    = number
+  default = 0
+
+  validation {
+    condition     = var.storage_host_free_bytes >= 0 && floor(var.storage_host_free_bytes) == var.storage_host_free_bytes
+    error_message = "storage_host_free_bytes debe ser un entero no negativo."
+  }
 }
