@@ -44,6 +44,66 @@ def fetch_liquid_lattice_metrics():
         return None, None
 
 
+def preflight(token=None):
+    """Evita enviar carga si falta auth o el Cortex activó su dead-man."""
+    bearer = (token or AUTH_TOKEN or "").strip()
+    if not bearer:
+        raise SystemExit(
+            "Falta Bearer: define CORTEX_AUTH_TOKEN o proporciona --token. "
+            "No se enviaron reclamaciones."
+        )
+
+    try:
+        req = urllib.request.Request(f"{TARGET_URL}/health")
+        with urllib.request.urlopen(req, timeout=3) as resp:
+            health = json.loads(resp.read().decode("utf-8"))
+    except Exception as e:
+        raise SystemExit(f"No se pudo leer /health; no se envió carga: {e}") from e
+
+    if str(health.get("status", "")).upper() != "OK":
+        raise SystemExit("Cortex no está saludable; no se envió carga.")
+    if "scheduler_emergency_shutdown" not in health:
+        raise SystemExit(
+            "/health no expone scheduler_emergency_shutdown; "
+            "no se puede autorizar la carga."
+        )
+    if health["scheduler_emergency_shutdown"]:
+        queue_len = health.get("scheduler_queue_len", "desconocida")
+        critical = health.get("tasks_critical", "desconocidas")
+        raise SystemExit(
+            "Dead-man activo "
+            f"(cola={queue_len}, tareas críticas={critical}); no se envió carga."
+        )
+
+    try:
+        req = urllib.request.Request(
+            f"{TARGET_URL}/api/v1/sentinel_status",
+            headers={"Authorization": f"Bearer {bearer}"},
+        )
+        with urllib.request.urlopen(req, timeout=3) as resp:
+            if resp.status != 200:
+                raise SystemExit(
+                    f"El Bearer no pasó el preflight autenticado (HTTP {resp.status}); "
+                    "no se envió carga."
+                )
+    except urllib.error.HTTPError as e:
+        raise SystemExit(
+            f"El Bearer no pasó el preflight autenticado (HTTP {e.code}); "
+            "no se envió carga."
+        ) from e
+    except Exception as e:
+        raise SystemExit(
+            f"Falló el preflight autenticado; no se envió carga: {e}"
+        ) from e
+
+    print(
+        "✅ Preflight OK: Cortex saludable, dead-man inactivo y Bearer válido; "
+        f"cola={health.get('scheduler_queue_len', 'desconocida')}, "
+        f"tareas críticas={health.get('tasks_critical', 'desconocidas')}"
+    )
+    return bearer
+
+
 def send_truth_claim_req(engine_id, payload, token=None):
     url = f"{TARGET_URL}/api/v1/truth_claim"
     body = json.dumps({
@@ -150,4 +210,5 @@ if __name__ == "__main__":
     parser.add_argument("-t", "--token", type=str, default=None, help="Token JWT Bearer si es requerido")
     args = parser.parse_args()
 
-    run_stress_suite(concurrency=args.concurrency, total_requests=args.requests, token=args.token)
+    token = preflight(args.token)
+    run_stress_suite(concurrency=args.concurrency, total_requests=args.requests, token=token)
