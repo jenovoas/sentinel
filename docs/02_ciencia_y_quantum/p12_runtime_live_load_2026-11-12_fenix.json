@@ -1,0 +1,327 @@
+{
+  "run_date_utc": "2026-11-11/12",
+  "host": "fenix",
+  "kind": "controlled host CPU load while observing the already-running Cortex; no service restart or affinity/kernel change",
+  "container": {
+    "name": "sentinel-cortex",
+    "compose_project": "sentinel",
+    "compose_service": "cortex",
+    "image": "sentinel-cortex:gap-real-20261105",
+    "image_id": "sha256:189b360d65d25298982b406839d69bb1bb189652f059e89a1b7573f3d323f9d7",
+    "state_after": "running healthy restarts=1",
+    "runtime_environment": "SENTINEL_CRYSTAL_RUNTIME=1",
+    "allowed_host_cpus": "0-5",
+    "worker_cpu": "5"
+  },
+  "worker": {
+    "command": "taskset -c 5 openssl speed -seconds 60 -bytes 16384 sha256",
+    "exit_code": 0,
+    "stdout_summary": "Doing sha256 ops for 60s on 16384 size blocks: 1611473 sha256 ops in 59.82s"
+  },
+  "observation": {
+    "endpoint": "GET http://10.88.0.1:8001/health",
+    "start": {
+      "wall_time_ns": 1794441564041867393,
+      "dtc_ticks": 760803,
+      "energy_raw": 627566273903,
+      "qhc": {
+        "connected": true,
+        "stale": false,
+        "socket_path": "/run/soma/qhc.sock",
+        "last_error": null,
+        "snapshot": {
+          "tick": 286059,
+          "phase": "HE",
+          "modulation": 5,
+          "correction_ns": 0,
+          "updated_unix_ms": 1794441562764
+        }
+      }
+    },
+    "samples": [
+      {
+        "wall_time_ns": 1794441569059155541,
+        "dtc_ticks": 761013,
+        "energy_raw": 627559873433,
+        "qhc": {
+          "connected": true,
+          "stale": false,
+          "socket_path": "/run/soma/qhc.sock",
+          "last_error": null,
+          "snapshot": {
+            "tick": 286064,
+            "phase": "YOD",
+            "modulation": 10,
+            "correction_ns": 0,
+            "updated_unix_ms": 1794441567765
+          }
+        },
+        "elapsed_ns": 5016980767,
+        "cgroup_cpu_usage_usec": 15034158655
+      },
+      {
+        "wall_time_ns": 1794441574054725962,
+        "dtc_ticks": 761223,
+        "energy_raw": 627553926153,
+        "qhc": {
+          "connected": true,
+          "stale": false,
+          "socket_path": "/run/soma/qhc.sock",
+          "last_error": null,
+          "snapshot": {
+            "tick": 286069,
+            "phase": "HE",
+            "modulation": 5,
+            "correction_ns": 0,
+            "updated_unix_ms": 1794441572765
+          }
+        },
+        "elapsed_ns": 10012551207,
+        "cgroup_cpu_usage_usec": 15038453504
+      },
+      {
+        "wall_time_ns": 1794441579053535092,
+        "dtc_ticks": 761433,
+        "energy_raw": 627547978966,
+        "qhc": {
+          "connected": true,
+          "stale": false,
+          "socket_path": "/run/soma/qhc.sock",
+          "last_error": null,
+          "snapshot": {
+            "tick": 286074,
+            "phase": "VAV",
+            "modulation": 6,
+            "correction_ns": 0,
+            "updated_unix_ms": 1794441577766
+          }
+        },
+        "elapsed_ns": 15011358856,
+        "cgroup_cpu_usage_usec": 15042608476
+      },
+      {
+        "wall_time_ns": 1794441584057810161,
+        "dtc_ticks": 761643,
+        "energy_raw": 627542031991,
+        "qhc": {
+          "connected": true,
+          "stale": false,
+          "socket_path": "/run/soma/qhc.sock",
+          "last_error": null,
+          "snapshot": {
+            "tick": 286079,
+            "phase": "HE",
+            "modulation": 5,
+            "correction_ns": 0,
+            "updated_unix_ms": 1794441582767
+          }
+        },
+        "elapsed_ns": 20015634568,
+        "cgroup_cpu_usage_usec": 15046649790
+      },
+      {
+        "wall_time_ns": 1794441589053044195,
+        "dtc_ticks": 761834,
+        "energy_raw": 627536376897,
+        "qhc": {
+          "connected": true,
+          "stale": false,
+          "socket_path": "/run/soma/qhc.sock",
+          "last_error": null,
+          "snapshot": {
+            "tick": 286084,
+            "phase": "YOD",
+            "modulation": 10,
+            "correction_ns": 0,
+            "updated_unix_ms": 1794441587767
+          }
+        },
+        "elapsed_ns": 25010866303,
+        "cgroup_cpu_usage_usec": 15050631869
+      },
+      {
+        "wall_time_ns": 1794441594055054904,
+        "dtc_ticks": 762044,
+        "energy_raw": 627530430293,
+        "qhc": {
+          "connected": true,
+          "stale": false,
+          "socket_path": "/run/soma/qhc.sock",
+          "last_error": null,
+          "snapshot": {
+            "tick": 286089,
+            "phase": "HE",
+            "modulation": 5,
+            "correction_ns": 0,
+            "updated_unix_ms": 1794441592769
+          }
+        },
+        "elapsed_ns": 30012879423,
+        "cgroup_cpu_usage_usec": 15054447655
+      },
+      {
+        "wall_time_ns": 1794441599055058515,
+        "dtc_ticks": 762255,
+        "energy_raw": 627524483811,
+        "qhc": {
+          "connected": true,
+          "stale": false,
+          "socket_path": "/run/soma/qhc.sock",
+          "last_error": null,
+          "snapshot": {
+            "tick": 286094,
+            "phase": "VAV",
+            "modulation": 6,
+            "correction_ns": 0,
+            "updated_unix_ms": 1794441597769
+          }
+        },
+        "elapsed_ns": 35012881189,
+        "cgroup_cpu_usage_usec": 15058356155
+      },
+      {
+        "wall_time_ns": 1794441604056340283,
+        "dtc_ticks": 762465,
+        "energy_raw": 627544078955,
+        "qhc": {
+          "connected": true,
+          "stale": false,
+          "socket_path": "/run/soma/qhc.sock",
+          "last_error": null,
+          "snapshot": {
+            "tick": 286099,
+            "phase": "HE",
+            "modulation": 5,
+            "correction_ns": 0,
+            "updated_unix_ms": 1794441602770
+          }
+        },
+        "elapsed_ns": 40014161450,
+        "cgroup_cpu_usage_usec": 15062648868
+      },
+      {
+        "wall_time_ns": 1794441609065348440,
+        "dtc_ticks": 762675,
+        "energy_raw": 627538132059,
+        "qhc": {
+          "connected": true,
+          "stale": false,
+          "socket_path": "/run/soma/qhc.sock",
+          "last_error": null,
+          "snapshot": {
+            "tick": 286104,
+            "phase": "YOD",
+            "modulation": 10,
+            "correction_ns": 0,
+            "updated_unix_ms": 1794441607771
+          }
+        },
+        "elapsed_ns": 45023170454,
+        "cgroup_cpu_usage_usec": 15066756204
+      },
+      {
+        "wall_time_ns": 1794441614053640411,
+        "dtc_ticks": 762885,
+        "energy_raw": 627532185297,
+        "qhc": {
+          "connected": true,
+          "stale": false,
+          "socket_path": "/run/soma/qhc.sock",
+          "last_error": null,
+          "snapshot": {
+            "tick": 286109,
+            "phase": "HE",
+            "modulation": 5,
+            "correction_ns": 0,
+            "updated_unix_ms": 1794441612771
+          }
+        },
+        "elapsed_ns": 50011466117,
+        "cgroup_cpu_usage_usec": 15070995472
+      },
+      {
+        "wall_time_ns": 1794441619059311668,
+        "dtc_ticks": 763095,
+        "energy_raw": 627526238691,
+        "qhc": {
+          "connected": true,
+          "stale": false,
+          "socket_path": "/run/soma/qhc.sock",
+          "last_error": null,
+          "snapshot": {
+            "tick": 286114,
+            "phase": "VAV",
+            "modulation": 6,
+            "correction_ns": 0,
+            "updated_unix_ms": 1794441617772
+          }
+        },
+        "elapsed_ns": 55017135977,
+        "cgroup_cpu_usage_usec": 15075227506
+      },
+      {
+        "wall_time_ns": 1794441624054566724,
+        "dtc_ticks": 763305,
+        "energy_raw": 627520113506,
+        "qhc": {
+          "connected": true,
+          "stale": false,
+          "socket_path": "/run/soma/qhc.sock",
+          "last_error": null,
+          "snapshot": {
+            "tick": 286119,
+            "phase": "HE",
+            "modulation": 5,
+            "correction_ns": 0,
+            "updated_unix_ms": 1794441622772
+          }
+        },
+        "elapsed_ns": 60012389642,
+        "cgroup_cpu_usage_usec": 15079383853
+      }
+    ],
+    "end": {
+      "wall_time_ns": 1794441624066783646,
+      "dtc_ticks": 763305,
+      "energy_raw": 627520113506,
+      "qhc": {
+        "connected": true,
+        "stale": false,
+        "socket_path": "/run/soma/qhc.sock",
+        "last_error": null,
+        "snapshot": {
+          "tick": 286119,
+          "phase": "HE",
+          "modulation": 5,
+          "correction_ns": 0,
+          "updated_unix_ms": 1794441622772
+        }
+      }
+    },
+    "wall_elapsed_ns": 60024835695,
+    "container_cgroup_cpu_usage_delta_usec": 49478029
+  },
+  "derived": {
+    "dtc_tick_delta": 2502,
+    "qhc_tick_delta": 60,
+    "dtc_counter_mean_per_second": 41.69139097652198,
+    "cgroup_cpu_mean_of_one_logical_cpu_percent": 82.42926186655345
+  },
+  "interpretation_limits": [
+    "health dtc_ticks are published at STATUS_SAMPLE_TICKS=20 granularity",
+    "does not capture per-deadline jitter or PID-history state",
+    "worker shares CPU 5 with the host; Cortex process was not pinned and remained eligible on CPUs 0-5",
+    "QHC tick is reported independently from Cortex DTC",
+    "authenticated /api/v1/crystal_runtime/status was not queried; deployment procedure requires it for full runtime status acceptance",
+    "image has no source-revision label; no git SHA is inferred"
+  ],
+  "no_changes": [
+    "container",
+    "service configuration",
+    "kernel boot parameters",
+    "CPU affinity",
+    "LSM"
+  ],
+  "start_utc": "2026-11-11T23:59:24.041867+00:00",
+  "end_sample_utc": "2026-11-12T00:00:24.066784+00:00"
+}

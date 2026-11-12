@@ -172,7 +172,7 @@ Cada proceso usó un directorio temporal nuevo y vacío mediante `SENTINEL_CRYST
 - La lane A partió sin amplitud y no recibió drive externo: el primer paso registró raw 57/99 en baseline/carga respectivamente. El camino ejecutado de `CrystalRuntime::step` inyecta las correcciones cruzadas del PID y evoluciona las mallas. Esto acredita uso de la salida del controlador en esa instancia, no solo cálculo descartado.
 - Tiempo esperado del tick 680: `16290263804 ns`. El retraso de ese último tick fue `1180191 ns` sin carga y `73403 ns` con carga; un último tick menor no borra el aumento de p99/máximo durante la ventana ni demuestra mejora causal del controlador.
 - **Alcance:** biblioteca Rust real en instancia aislada, con instrumentación propia y 2000 nodos por lane. No ejecuta el servicio productivo completo, su scheduler, SHM/MyCNet, eBPF, checkpoints, el dimensionamiento productivo ni una comparación history ON/OFF. Las muestras del drive del host difieren entre corridas. Una observación por escenario y perfil dev: no atribuir significancia estadística ni comparar sus tiempos directamente con el bin release de §7.
-- **Estado P1.2:** queda realizada la medición aislada del control aplicado bajo carga; siguen pendientes aislamiento RT y medición del loop desplegado con su configuración efectiva. No se modificaron constantes físicas, QHC, PID, kernel ni servicios. No repetir estas corridas por falta de contexto; consultar el JSON y ejecutar únicamente el siguiente protocolo pertinente.
+- **Estado P1.2:** ejecutadas la medición aislada §8 y una corrida de 60 s con carga acotada sobre el loop desplegado §10. La corrida live midió contadores públicos/QHC y uso CPU del cgroup, no jitter por deadline ni eficacia comparativa de history ON/OFF. Aislamiento RT y cotejo con `/api/v1/crystal_runtime/status` según el procedimiento de despliegue continúan sin medirse. No se modificaron constantes, QHC, PID, kernel ni servicios.
 
 ## 9. CrystalRuntime desplegado en Fénix — observación pasiva 2026-11-11
 
@@ -184,4 +184,22 @@ El GET público existente `http://10.88.0.1:8001/health` se leyó dos veces. Ent
 
 **Trazabilidad y límites:** el digest no trae labels OCI de revisión/origen y `RepoDigests` está vacío; por tanto no se atribuye el binario desplegado a `7251dc7f` ni a otro SHA fuente. La observación prueba que el contenedor inicia con `SENTINEL_CRYSTAL_RUNTIME=1` y que contadores/energía reportados avanzaron durante una ventana natural de uso; no prueba el valor privado del estado detallado, el comportamiento del PID en cada paso, jitter real del worker, carga sintética/controlada, protección LSM o aislamiento RT. P0.2/P0.3 siguen en pausa; no se inspeccionó ni alteró enforcement LSM. Ningún servicio, contenedor, configuración del kernel, afinidad o firewall fue modificado.
 
-- **Pendiente:** no habilitar `isolcpus`/RT ni inyectar estrés de CPU en Fénix sin el procedimiento y una ventana operativa autorizada. La captura pasiva no se repite para reconstruir contexto; el siguiente avance seguro es cotejar fuente exacta/digest desplegado y obtener una interfaz de estado protegida autorizada, o programar medición controlada con aceptación operativa. El subpaso aislado §8 y esta observación viva son evidencia distinta; ninguno por sí solo cierra P1.2.
+- La captura pasiva §9 se conserva como antecedente y no se repite. La carga real del loop desplegado quedó registrada en §10; sus límites —métrica pública muestreada, sin deadline jitter ni estado PID autenticado— permanecen explícitos. No se modificaron kernel, afinidades ni servicios. P1.2 sigue con la comparación no-Markoviana del protocolo experimental y aislamiento RT documentado.
+
+## 10. Loop desplegado bajo carga acotada — Fénix, 2026-11-11/12
+
+Seguí el procedimiento de despliegue multinodo §4: contenedor Cortex ya activo; no se reinició ni cambió el servicio. Entre `2026-11-11T23:59:24.041867Z` y `2026-11-12T00:00:24.066784Z` ejecuté un único trabajador `taskset -c 5 openssl speed -seconds 60 -bytes 16384 sha256`; terminó con código 0 e informó `1611473` operaciones SHA-256 en `59.82 s`. El Cortex conservó su afinidad original: CPUs permitidas `0-5`, sin pinning ni cambios de kernel.
+
+| Observación en el contenedor existente | Inicio | Fin | Diferencia |
+| --- | ---: | ---: | ---: |
+| `/health metrics.dtc_ticks` | 760803 | 763305 | +2502 en 60.012 s |
+| `/health metrics.lattice_energy_raw` | 627566273903 | 627520113506 | −46160397 raw |
+| QHC snapshot tick | 286059 | 286119 | +60 en 60.008 s |
+| CPU cgroup acumulada | — | — | +49478029 µs en 60.025 s |
+
+El promedio del contador DTC observado es `41.69 ticks/s`; la utilización acumulada del cgroup equivale a `82.43%` de un CPU lógico durante la ventana. QHC permaneció `connected=true`, `stale=false`; el contenedor terminó `running/healthy`, `RestartCount=1`.
+
+- La carga se fijó a CPU 5; el Cortex podía ejecutar en cualquiera de CPUs 0–5. No se midió colocalización efectiva del hilo con el trabajador. Por eso esto es **loop desplegado durante carga host acotada**, no contención controlada del mismo CPU.
+- `/health` publica estado con granularidad `STATUS_SAMPLE_TICKS=20`; los deltas no miden deadline jitter ni latencia por tick. No se infiere corrección de deriva del cambio de energía. El endpoint detallado `/api/v1/crystal_runtime/status` permanece autenticado y no se consultó.
+- Registro íntegro de las 12 muestras, CPU cgroup, timestamps y resultado del trabajador: [p12_runtime_live_load_2026-11-12_fenix.json](p12_runtime_live_load_2026-11-12_fenix.json). No se repite esta corrida.
+- El procedimiento de despliegue §4.5 exige para aceptación runtime autenticado: `active`, `runtime.active`, SHM activa, ticks/sincronizaciones crecientes y checkpoint duradero. Esta corrida acredita solo avance del contador público y estado QHC bajo carga; **no satisface toda esa aceptación ni cierra P1.2**. No se hizo comparación history ON/OFF, medición de deadline jitter, cambio RT/LSM ni despliegue.
