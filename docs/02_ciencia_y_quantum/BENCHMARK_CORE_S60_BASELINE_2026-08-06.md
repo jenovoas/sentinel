@@ -172,7 +172,7 @@ Cada proceso usó un directorio temporal nuevo y vacío mediante `SENTINEL_CRYST
 - La lane A partió sin amplitud y no recibió drive externo: el primer paso registró raw 57/99 en baseline/carga respectivamente. El camino ejecutado de `CrystalRuntime::step` inyecta las correcciones cruzadas del PID y evoluciona las mallas. Esto acredita uso de la salida del controlador en esa instancia, no solo cálculo descartado.
 - Tiempo esperado del tick 680: `16290263804 ns`. El retraso de ese último tick fue `1180191 ns` sin carga y `73403 ns` con carga; un último tick menor no borra el aumento de p99/máximo durante la ventana ni demuestra mejora causal del controlador.
 - **Alcance:** biblioteca Rust real en instancia aislada, con instrumentación propia y 2000 nodos por lane. No ejecuta el servicio productivo completo, su scheduler, SHM/MyCNet, eBPF, checkpoints, el dimensionamiento productivo ni una comparación history ON/OFF. Las muestras del drive del host difieren entre corridas. Una observación por escenario y perfil dev: no atribuir significancia estadística ni comparar sus tiempos directamente con el bin release de §7.
-- **Estado P1.2:** §12 muestra que history cambia salidas del `S60PID` en una traza acotada. No es todavía comparación del `CrystalRuntime` vivo ni prueba de mejora: se usó `dt_raw=1`, `measured_raw=tick` y `lattice_errors` vacío. La comparación causal del loop desplegado, estado autenticado/runtime-checkpoint y aislamiento RT siguen pendientes; las capturas existentes no se repiten.
+- **Estado P1.2:** §§12–13 prueban divergencia entre las salidas PID con/sin contribución histórica en una traza de componente y en dos instancias `CrystalRuntime::in_memory()` desde el mismo estado/impulso. §13 no es el Cortex desplegado, usa perfil debug y las entradas espaciales endógenas divergen cuando diverge el estado. Siguen pendientes el resultado causal en proceso desplegado, deadline jitter/aceptación autenticada y aislamiento RT; no se repiten estas comparaciones.
 
 ## 9. CrystalRuntime desplegado en Fénix — observación pasiva 2026-11-11
 
@@ -237,3 +237,23 @@ La sonda Rust temporal se compiló en release desde el código Sentinel `c731a1f
 - **Resultado delimitado:** ambas rutas producen valores distintos con esta traza, incluso con reset cada 68 ticks. No mide convergencia, calidad predictiva, deriva temporal ni mejora física.
 - **Límites:** mide `S60PID` en un proceso aparte, no el estado del Cortex ni la cadencia de `CrystalRuntime::step()` (500 ms). `lattice_errors` vacío excluye el término de errores espaciales que sí aporta el runtime; `measured_raw=tick` y `dt_raw=1` son el escenario del benchmark, no la energía SPA y paso temporal del runtime. Por tanto, no cierra la comparación causal history ON/OFF del loop vivo ni P1.2.
 - Datos completos y comandos: [p12_s60pid_history_compare_2026-11-12_fenix.json](p12_s60pid_history_compare_2026-11-12_fenix.json). No repetir esta comparación de componente.
+
+## 13. Comparación cerrada del CrystalRuntime in-memory — 2026-11-12
+
+En un worktree temporal sobre Sentinel `e902087160cce48453de55448913890cdb22f679` ejecuté una sonda de prueba en perfil `debug/test` (1/1 aprobada, 64 filtradas). El parche temporal, SHA-256 `e67a7b5749509b84b5fdc5bb2a67b159d269a1d2175aae80e86104e377e0cda7`, permitió seleccionar entre las dos llamadas PID sin alterar el `step()` normal del runtime; el worktree se retiró después. No se cambió ni reinició el Cortex desplegado.
+
+La sonda creó dos `CrystalRuntime::in_memory(2000)` sin SHM, ambos bajo `SENTINEL_CRYSTAL_STATE_DIR=/tmp/sentinel-p12-runtime-state`. Verificó amplitudes de lane A y energía de lane B iguales antes de la prueba. Inyectó en ambos el mismo impulso SPA en el nodo central: raw `60.000.000` en lane A y raw `17.000.000` en lane B. Cada pareja avanzó por `tick_dtc()` y el `step` correspondiente durante 680 ticks; ambos llegaron a QHC tick 680 y ejecutaron diez resets DTC de 68 ticks. Un worker OpenSSL SHA-256 estuvo en CPU 5 junto con la prueba, también fijada a CPU 5.
+
+| Métrica | Sin contribución histórica a la salida | Con kernel de historia |
+| --- | ---: | ---: |
+| Ticks con correcciones PID distintas | — | 677/680 |
+| Primera divergencia de corrección | — | tick 2 |
+| Diferencia absoluta máxima por corrección | — | 357 raw |
+| Suma absoluta de diferencias (dos lanes, 680 ticks) | — | 425.678 raw |
+| Energía final lane A | 58.386.191 raw | 58.173.736 raw |
+| Energía final lane B | 16.888.375 raw | 17.101.523 raw |
+| Suma de tiempo en llamadas `step` medidas | 13.998.499.674 ns | 14.038.732.916 ns |
+
+- La suma de tiempo observada equivale a medias de 20.586.029 ns y 20.645.195 ns por `step`; diferencia agregada 40.233.242 ns (0,2874% sobre baseline). Es un microbenchmark de perfil debug bajo worker compartido, **no** tiempo release ni deadline jitter.
+- **Alcance:** es una comparación cerrada de dos runtimes Rust aislados con estado inicial e impulso coincidentes; no reejecuta el `sentinel_bench_salto17`. Tras divergir las correcciones, cada instancia calcula sus propios `lattice_errors` a partir de su malla evolutiva. No se congelaron/reprodujeron vectores espaciales por tick; por eso el resultado no separa el efecto histórico del cambio de trayectoria posterior ni acredita mejora/control físico. No representa al Cortex desplegado ni a la sincronización armónica total.
+- Datos, comando, condiciones y límites: [p12_crystal_runtime_history_compare_2026-11-12_isolated.json](p12_crystal_runtime_history_compare_2026-11-12_isolated.json). El ensayo queda archivado y no se repite.

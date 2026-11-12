@@ -1,0 +1,65 @@
+{
+  "experiment": "p12_crystal_runtime_history_closed_loop_comparison",
+  "host": "development worktree; host identity not asserted",
+  "source_commit": "e902087160cce48453de55448913890cdb22f679",
+  "temporary_harness_patch_sha256": "e67a7b5749509b84b5fdc5bb2a67b159d269a1d2175aae80e86104e377e0cda7",
+  "cargo_command": "cargo test --locked -p sentinel-cortex --lib p12_runtime_history_comparison_isolated -- --nocapture",
+  "profile": "debug/test",
+  "state_dir": "/tmp/sentinel-p12-runtime-state",
+  "runtime_setup": {
+    "instances": 2,
+    "constructor": "CrystalRuntime::in_memory(2000)",
+    "shared_memory": false,
+    "initial_drive_each_instance": {
+      "lane_a_center_raw": 60000000,
+      "lane_b_center_raw": 17000000
+    },
+    "initial_state_check": "lane-A amplitudes and lane-B energy equal before run",
+    "ticks": 680,
+    "per_tick": "tick_dtc() then step_with_history(history=true/false)",
+    "entropy_reset_boundaries": 10,
+    "qhc_ticks_final": [
+      680,
+      680
+    ]
+  },
+  "closed_loop_note": "The matched initial state/impulse is followed by feedback. Each runtime derives spatial lane errors from its own evolving state; those per-step lattice-error vectors are not replayed/frozen after trajectories diverge.",
+  "outputs": {
+    "divergent_correction_ticks": 677,
+    "total_ticks": 680,
+    "first_divergence_tick": 2,
+    "max_abs_correction_delta_raw": 357,
+    "sum_abs_correction_delta_raw": 425678,
+    "final_history_lane_energy_raw": [
+      58173736,
+      17101523
+    ],
+    "final_baseline_lane_energy_raw": [
+      58386191,
+      16888375
+    ]
+  },
+  "timing": {
+    "history_step_calls_sum_ns": 14038732916,
+    "baseline_step_calls_sum_ns": 13998499674,
+    "history_mean_ns_per_step": 20645195.46470588,
+    "baseline_mean_ns_per_step": 20586028.93235294,
+    "difference_sum_ns": 40233242,
+    "relative_extra_percent": 0.28741110073908055,
+    "scope": "sum of step_with_history calls only; excludes tick_dtc and is not deadline jitter"
+  },
+  "worker": {
+    "command": "taskset -c 5 openssl speed -seconds 20 -bytes 16384 sha256",
+    "output": "268089 sha256 ops in 9.94s",
+    "test_and_worker_affinity": "CPU 5"
+  },
+  "verification": "cargo test test binary: 1 passed, 0 failed, 64 filtered out; command exit 0",
+  "limits": [
+    "Temporary test-only source modification in /tmp worktree; no deployed process or committed Rust source changed.",
+    "This is an isolated CrystalRuntime closed-loop pair, not the deployed Cortex.",
+    "Matched only initial lane state and SPA impulse; endogenous spatial errors evolve separately after feedback divergence.",
+    "Debug/test profile; elapsed step work cannot establish release latency, real-time deadline compliance, or production jitter.",
+    "The worker output and run do not establish causal benefit, prediction quality, or physical synchronization improvement.",
+    "No checkpoint persist or POSIX SHM path was enabled by in_memory()."
+  ]
+}
