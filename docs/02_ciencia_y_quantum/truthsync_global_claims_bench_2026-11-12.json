@@ -1,0 +1,27 @@
+{
+  "fecha_utc": "2026-11-12",
+  "dataset": {
+    "nombre": "Global Claims Dataset",
+    "doi": "10.5072/FK2/YU9QVI",
+    "url": "https://repositorio.cloud.acnca.pt/dataset.xhtml?persistentId=doi:10.5072/FK2/YU9QVI",
+    "licencia": "CC BY 4.0",
+    "archivo": "factcheck_claims.json",
+    "sha256": "a4bb4805645d7ccaae745127fe06d4d73f989096a844c3ece20b5fccb5339617",
+    "filas_jsonl": 72700,
+    "afirmaciones_unicas_normalizadas": 66416
+  },
+  "ejecucion": {
+    "programa": "truthsync_dataset_bench",
+    "perfil": "release",
+    "afirmaciones_procesadas": 66416,
+    "tiempo_total_ms": 613.056,
+    "throughput_por_segundo": 108336,
+    "latencia_muestreada_n": 6642,
+    "latencia_media_us": 9.58,
+    "latencia_p50_us": 3.65,
+    "latencia_p95_us": 44.47,
+    "latencia_p99_us": 77.43,
+    "patrones_criticos_detectados": 23
+  },
+  "limite": "Medición real por debajo del requisito de 1.000.000; no se duplicaron afirmaciones. No representa verificación independiente de exactitud ni rendimiento de producción."
+}
