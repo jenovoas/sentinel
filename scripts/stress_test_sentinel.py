@@ -23,7 +23,8 @@ import time
 import urllib.error
 import urllib.request
 
-TARGET_URL = os.environ.get("CORTEX_URL", "http://127.0.0.1:8000")
+# Cortex de Fénix publicado en la malla WireGuard; CORTEX_URL permite apuntar a otro runtime.
+TARGET_URL = os.environ.get("CORTEX_URL", "http://10.88.0.1:8001")
 AUTH_TOKEN = os.environ.get("CORTEX_AUTH_TOKEN", "")
 
 
