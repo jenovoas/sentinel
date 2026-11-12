@@ -4,7 +4,7 @@
 
 Definir el contrato observable del productor Rust de metadatos KV hacia MyCNet, conservando la identidad de escritura y distinguiendo confirmación distribuida de almacenamiento local y recuperación de payload.
 
-Fuente cross-repo: repositorio personalvault, `openspec/changes/memoria-kv-distribuida/design.md` y sus specs. [Guía operativa del productor](../../../docs/ops/memoria-kv-mykv-v1.md). Este contrato no acredita despliegue.
+Fuente cross-repo: repositorio personalvault, `openspec/changes/memoria-kv-distribuida/design.md` y sus specs. [Guía operativa del productor](../../../docs/ops/memoria-kv-mykv-v1.md). Validación en malla real (Fénix, Kingu y Marte; 161–162 ms) documentada el 2026-11-12.
 
 ## Requirements
 

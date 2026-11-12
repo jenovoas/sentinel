@@ -2,12 +2,12 @@
 
 ## Alcance y fuentes
 
-Contrato del productor Rust `LiquidMemory`, integrado y publicado en `main` de Sentinel (`1f1b6b56`) y MyCNet (`e8cb1ad`) el 2026-11-11. Publicación en Git **no significa despliegue** ni habilitación en la malla real.
+Contrato del productor Rust `LiquidMemory`, integrado en `main` de Sentinel (`1f1b6b56`) y MyCNet (`e8cb1ad`) el 2026-11-11, y validado en la malla física real (Fénix, Kingu y Marte) el 2026-11-12 mediante el binario `kv_publish` release y `mycnetd` release SHA-256 `1854634b...`.
 
 - [Especificación del productor](../../openspec/specs/kv-publisher/spec.md).
 - [Implementación](../../me-60os-core/src/liquid_memory.rs) y [CLI](../../me-60os-core/src/bin/kv_publish.rs).
-- Fuente cross-repo: repositorio **personalvault**, `openspec/changes/memoria-kv-distribuida/design.md` y sus specs; evidencia en `HANDOFF.md`, sección «Memoria KV distribuida — implementación, pruebas y merge — 2026-11-11». Resolver el checkout del vault localmente, sin asumir que es hermano de este repositorio.
-- Arquitectura y límites operativos: `docs/AGENT_BRAIN.md` del vault y [AGENTS.md](../../AGENTS.md). Runtime Rust; P0.2/P0.3 siguen pausados. Esta guía no autoriza despliegues ni cambios de servicios.
+- Fuente cross-repo: repositorio **personalvault**, `openspec/changes/memoria-kv-distribuida/design.md` y sus specs; evidencia en `HANDOFF.md`, secciones «Memoria KV distribuida — implementación, pruebas y merge — 2026-11-11» y «Memoria KV distribuida — validación en malla real — 2026-11-12». Resolver el checkout del vault localmente, sin asumir que es hermano de este repositorio.
+- Arquitectura y límites operativos: `docs/AGENT_BRAIN.md` del vault y [AGENTS.md](../../AGENTS.md). Runtime Rust; P0.2/P0.3 siguen pausados. La validación KV no tocó Cortex ni alteró sus estados.
 
 ## Store → replicate → publish
 
@@ -64,14 +64,28 @@ Errores de clave/configuración se devuelven antes de enviar. Store puede fallar
 
 Conservar la misma semilla para retry. No interpretar timeout como rollback ni lanzar un store nuevo para «completar» el anterior. El daemon admite como máximo 256 identidades pendientes globales (por tanto, como máximo 256 por peer); saturación no genera confirmación falsa. Estado, pendientes y ACK son volátiles: no se promete durabilidad ni recuperación automática de estos tras reinicio del daemon.
 
-## Evidencia histórica y pendientes reales
+## Evidencia histórica y validación en malla real
 
-Resultados registrados el **2026-11-11**, no mediciones nuevas de esta documentación:
+### Pruebas de integración previas (2026-11-11)
 
 - Sentinel `liquid_memory::tests`: 12/12; builds y Clippy estricto de los componentes afectados aprobados.
 - MyCNet: daemon 14/14, `storage::kv_tests` 5/5, `s60::tests` 6/6, lattice 7/7 y storage legacy 4/4 en la primera tanda.
-- Smoke con tres procesos reales aislados por UDP loopback: una réplica y un ACK descartados se recuperaron; `Committed` inicial en 163 ms. Empate temporal, reordenamiento y duplicados convergieron; origen no configurado fue rechazado.
-- Peer ausente produjo timeout sin falso éxito pese a aplicación parcial en otro peer; reiniciarlo permitió completar el pendiente.
-- El primer smoke detectó overflow de sumas i64. Las medias globales/regionales/vecinos pasaron a acumulación i128 antes de dividir y SPA con cociente/resto firmado admite `i64::MIN`; regresiones y smoke posterior aprobados.
+- Smoke con tres procesos locales y UDP loopback: Committed inicial en 163 ms en escenario con pérdida inducida.
 
-OpenSpec central permanece **9/12**: 3.2 (medición en malla real después de habilitar MYKV) sigue pendiente; 4.1 recall remoto y 4.3 CRDT están diferidos. No archivar el cambio como completo. Los 163 ms no son latencia productiva ni evidencia de despliegue. No se transfirió payload remoto ni se pausaron servicios en esta fase.
+### Validación en malla real (2026-11-12)
+
+La tarea 3.2 fue verificada en la malla física activa (Fénix `10.88.0.1`, Kingu `10.88.0.2` y Marte `10.88.0.6`) con `kv_publish` release en Sentinel y `mycnetd` release SHA-256 `1854634b...`:
+
+- **All-Peer ACK con nodo offline:** Como MYKV exige ACK de todos los peers configurados, y Hércules (`10.88.0.4`) se encuentra inaccesible a nivel de red (>3 días sin handshake WireGuard), los peers activos se acotaron a la terna viva Fénix-Kingu-Marte mediante drop-ins de systemd.
+- **Bind de transporte:** Fénix configurado con `MYCNET_UDP_BIND=0.0.0.0:4242` para aceptar simultáneamente el loopback de `kv_publish` y el tráfico WireGuard de réplica/ACK.
+- **Medición 1 (publicación inicial):** `crystal-mesh-latency-20261112` con valor `verificacion-malla-fenix-kingu-marte` confirmó `Committed` en **161 ms** (`timestamp_ns = 1794455381018816480`, `token_id = 2708293038`).
+- **Medición 2 (actualización LWW):** misma clave con valor `actualizacion-lww-verificada` confirmó `Committed` en **162 ms** (`timestamp_ns = 1794455428316426647`).
+- **Convergencia LWW:** Los tres nodos reportan metadatos idénticos (`timestamp_ns`, `payload_hash` y `seed_bytes`) vía `GET /api/v1/kv-metadata`.
+- **Física de red:** Los 161–162 ms corresponden directamente al RTT físico de WireGuard entre Fénix y Marte (~158 ms de ping RTT).
+- **Whitelist:** Claves fuera de lista fueron rechazadas en el productor antes de emitir, y devuelven HTTP 400 en los endpoints del daemon.
+
+## Estado actual: 10/12 tareas completadas
+
+El cambio OpenSpec central `memoria-kv-distribuida` se encuentra en **10/12**:
+- Tarea 3.2 completada y verificada en producción/malla real.
+- Tareas 4.1 (recall remoto de payload) y 4.3 (CRDT de resolución) permanecen **diferidas**. No archivar el cambio.
