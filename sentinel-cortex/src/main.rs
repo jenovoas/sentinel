@@ -1460,7 +1460,7 @@ pub(crate) async fn sentinel_status_handler(
 pub struct TruthClaimRequest {
     pub engine: String,
     pub claim_payload: String,
-    pub trust_threshold: f64,
+    pub trust_threshold_s60_raw: i64,
 }
 
 #[derive(Serialize)]
@@ -1468,7 +1468,7 @@ pub struct TruthClaimResponse {
     pub claim_valid: bool,
     pub verification_available: bool,
     pub verification_status: &'static str,
-    pub sentinel_score: Option<f64>,
+    pub sentinel_score_s60_raw: Option<i64>,
     pub truthsync_cache_hit: bool,
     pub security_blocked: bool,
     pub security_event_logged: bool,
@@ -1527,7 +1527,7 @@ pub(crate) async fn truth_claim_handler(
             } else {
                 "unavailable"
             },
-            sentinel_score: None,
+            sentinel_score_s60_raw: None,
             truthsync_cache_hit: false,
             security_blocked: blocked,
             security_event_logged,
@@ -1881,7 +1881,7 @@ mod tests {
         let request_body = serde_json::json!({
             "engine": "test-engine",
             "claim_payload": "normal operation",
-            "trust_threshold": 0.5
+            "trust_threshold_s60_raw": me60os_core::spa::SPA::SCALE_0 / 2
         });
         let response = app
             .oneshot(
@@ -1908,7 +1908,7 @@ mod tests {
         assert_eq!(json["claim_valid"], false);
         assert_eq!(json["verification_available"], false);
         assert_eq!(json["verification_status"], "unavailable");
-        assert!(json["sentinel_score"].is_null());
+        assert!(json["sentinel_score_s60_raw"].is_null());
         assert_eq!(json["security_blocked"], false);
         assert_eq!(json["security_event_logged"], false);
         assert!(json["verification_time_us"].is_null());
@@ -1921,7 +1921,7 @@ mod tests {
         let request_body = serde_json::json!({
             "engine": "attacker",
             "claim_payload": "rm -rf /",
-            "trust_threshold": 0.5
+            "trust_threshold_s60_raw": me60os_core::spa::SPA::SCALE_0 / 2
         });
         let response = app
             .oneshot(

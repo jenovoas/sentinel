@@ -16,3 +16,8 @@ me60os_core = { path = "../../me-60os-core", package = "me60os" }
 tracing = "0.1"
 tracing-subscriber = "0.3"
 dotenvy = "0.15"
+
+[build-dependencies]
+proc-macro2 = { version = "1", features = ["span-locations"] }
+syn = { version = "2", features = ["full", "visit"] }
+toml = "0.8"

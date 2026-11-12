@@ -1462,7 +1462,10 @@ mod tests {
             &serde_json::json!({"domain":"tenant.example","arbitrary":{"path":"/etc"}})
         ));
         assert!(!valid_normalized_config(
-            &serde_json::json!({"domain":"tenant.example","users":1.5})
+            &serde_json::from_str::<serde_json::Value>(
+                r#"{"domain":"tenant.example","users":1.5}"#
+            )
+            .unwrap()
         ));
     }
     #[test]

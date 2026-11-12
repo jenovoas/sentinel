@@ -69,6 +69,11 @@ truthsync_core = { path = "../truthsync-core", package = "truthsync-core" }
 [dev-dependencies]
 tokio-test = "0.4"
 
+[build-dependencies]
+proc-macro2 = { version = "1", features = ["span-locations"] }
+syn = { version = "2", features = ["full", "visit"] }
+toml = "0.8"
+
 [lints.clippy]
 float_arithmetic = "forbid"
 float_cmp = "forbid"

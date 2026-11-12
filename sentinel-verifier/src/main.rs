@@ -16,6 +16,7 @@
 //   sentinel-verifier --watch 30     # re-verifica cada 30s
 
 use anyhow::{Context, Result};
+use me60os_core::spa::SPA;
 use serde::Serialize;
 use std::process::Command;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
@@ -500,6 +501,36 @@ fn file_size(path: &str) -> Option<u64> {
     std::fs::metadata(path).ok()?.len().into()
 }
 
+fn parse_metric_s60(raw: &str) -> Option<SPA> {
+    let raw = raw.trim();
+    let (negative, unsigned) = match raw.strip_prefix('-') {
+        Some(unsigned) => (true, unsigned),
+        None => (false, raw.strip_prefix('+').unwrap_or(raw)),
+    };
+    let (whole, fraction) = unsigned.split_once('.').unwrap_or((unsigned, ""));
+    if whole.is_empty()
+        || !whole.bytes().all(|byte| byte.is_ascii_digit())
+        || !fraction.bytes().all(|byte| byte.is_ascii_digit())
+    {
+        return None;
+    }
+
+    let denominator = 10_i128.checked_pow(u32::try_from(fraction.len()).ok()?)?;
+    let whole = whole.parse::<i128>().ok()?;
+    let fraction = if fraction.is_empty() {
+        0
+    } else {
+        fraction.parse::<i128>().ok()?
+    };
+    let numerator = whole
+        .checked_mul(denominator)?
+        .checked_add(fraction)?
+        .checked_mul(i128::from(SPA::SCALE_0))?;
+    let scaled_raw = numerator.checked_add(denominator / 2)? / denominator;
+    let signed_raw = if negative { -scaled_raw } else { scaled_raw };
+    Some(SPA::from_raw(i64::try_from(signed_raw).ok()?))
+}
+
 // 10. retention_score sube o está en valor razonable
 fn check_lattice_metrics() -> CheckResult {
     let out = run("curl", &["-s", "-m", "5", "http://localhost:8000/metrics"]);
@@ -509,7 +540,7 @@ fn check_lattice_metrics() -> CheckResult {
                 .lines()
                 .find(|l| l.starts_with("sentinel_liquid_lattice_retention_score "))
                 .and_then(|l| l.split_whitespace().nth(1))
-                .and_then(|v| v.parse::<f64>().ok());
+                .and_then(parse_metric_s60);
             let energy = o
                 .lines()
                 .find(|l| l.starts_with("sentinel_lattice_total_energy "))
@@ -521,14 +552,17 @@ fn check_lattice_metrics() -> CheckResult {
                         CheckResult::fail(
                             "lattice_metrics",
                             "LiquidLattice métricas",
-                            format!("total_energy=0 (sin eventos aún), retention={}", r),
+                            format!(
+                                "total_energy=0 (sin eventos aún), retention_s60_raw={}",
+                                r.to_raw()
+                            ),
                             None,
                         )
                     } else {
                         CheckResult::ok(
                             "lattice_metrics",
                             "LiquidLattice métricas",
-                            format!("retention={:.4}, total_energy={}", r, e),
+                            format!("retention_s60_raw={}, total_energy={}", r.to_raw(), e),
                         )
                     }
                 }

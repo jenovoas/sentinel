@@ -162,7 +162,7 @@ mod tests {
         // No es CRNG, suficiente para producir variabilidad biometric-like.
         let nanos = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
-            .map(|d| d.as_nanos() as i64)
+            .map(|duration| i64::try_from(duration.as_nanos()).unwrap_or(i64::MAX))
             .unwrap_or(seed_offset.wrapping_mul(997));
         // Mapeo a rango fisiológico: BPM 60-100 → valor S60 60-100
 
@@ -188,7 +188,10 @@ mod tests {
                 // Añadir jitter no periódico (HRV)
                 let jitter = (entropy_signal(i * 7 + 3) % 5) - 2;
                 // from_int toma i32; nuestro rango fisiológico 60-100 + jitter (-2..2) cabe.
-                S60::from_int((base + jitter) as i32)
+                S60::from_int(
+                    i32::try_from(base + jitter)
+                        .expect("la señal fisiológica generada debe caber en i32"),
+                )
             })
             .collect();
         let result = verifier.verify_liveness(&signal, &challenge);

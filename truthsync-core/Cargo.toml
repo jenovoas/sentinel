@@ -18,6 +18,11 @@ sha3 = "0.12"
 me60os_core = { path = "../me-60os-core", package = "me60os" }
 lru = "0.19"
 
+[build-dependencies]
+proc-macro2 = { version = "1", features = ["span-locations"] }
+syn = { version = "2", features = ["full", "visit"] }
+toml = "0.8"
+
 [dev-dependencies]
 criterion = "0.8"
 

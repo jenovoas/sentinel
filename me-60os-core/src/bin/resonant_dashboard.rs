@@ -70,7 +70,7 @@ struct AIQueryRequest {
     prompt: String,
     mode: String,
     max_tokens: u32,
-    temperature: f32,
+    temperature: u8,
 }
 
 #[derive(Deserialize)]
@@ -351,7 +351,7 @@ fn call_sentinel_ai(prompt: &str, mode: &str) -> String {
             {"role": "user", "content": prompt}
         ],
         "max_tokens": 512,
-        "temperature": 0.3
+        "temperature": 0
     });
 
     if let Ok(resp) = client
@@ -392,7 +392,7 @@ fn call_sentinel_ai(prompt: &str, mode: &str) -> String {
         prompt: prompt.to_string(),
         mode: mode.to_lowercase(),
         max_tokens: 512,
-        temperature: 0.4,
+        temperature: 0,
     };
 
     match client

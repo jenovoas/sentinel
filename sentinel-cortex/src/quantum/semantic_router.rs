@@ -42,7 +42,7 @@ struct Part {
 
 #[derive(Serialize)]
 struct GenerationConfig {
-    temperature: f32,
+    temperature: u8,
 }
 
 #[derive(Deserialize)]
@@ -140,7 +140,7 @@ impl SemanticRouter {
                 "parts": [{ "text": format!("{}\n\n{}", system_prompt, prompt) }]
             }],
             "generationConfig": {
-                "temperature": 0.0
+                "temperature": 0
             }
         });
 

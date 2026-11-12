@@ -2,7 +2,12 @@
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 use crate::models::{CorrelatedIncident, Event, EventSource, Severity};
+use me60os_core::spa::SPA;
 use std::collections::{HashMap, VecDeque};
+
+fn confidence_s60(percent: i64) -> SPA {
+    SPA::from_raw((SPA::SCALE_0 / 100) * percent)
+}
 
 /// The context required for a pattern to make a decision.
 /// It provides read-only access to the event buffer and configuration thresholds.
@@ -43,7 +48,7 @@ impl Pattern for TrafficDropPattern {
                 {
                     return Some(CorrelatedIncident {
                         name: format!("Network Traffic Drop: {}", device),
-                        confidence: 0.90,
+                        confidence_s60: confidence_s60(90),
                         severity: Severity::High,
                         events: vec![previous_event.clone(), event.clone()],
                         recommended_action:
@@ -98,7 +103,7 @@ impl Pattern for DdosPattern {
 
             return Some(CorrelatedIncident {
                 name: "Potential DDoS Attack".to_string(),
-                confidence: 0.75,
+                confidence_s60: confidence_s60(75),
                 severity: Severity::Critical,
                 events: relevant_events,
                 recommended_action: "Activate network firewall rules and rate limiting."
@@ -136,7 +141,7 @@ impl Pattern for SshBruteForcePattern {
 
             return Some(CorrelatedIncident {
                 name: "SSH Brute-Force Attack Detected".to_string(),
-                confidence: 0.85,
+                confidence_s60: confidence_s60(85),
                 severity: Severity::Critical,
                 events: relevant_events,
                 recommended_action:
@@ -164,7 +169,7 @@ impl Pattern for NginxErrorSpikePattern {
                 if count > context.nginx_5xx_threshold {
                     return Some(CorrelatedIncident {
                         name: "Nginx 5xx Error Spike".to_string(),
-                        confidence: 0.90,
+                        confidence_s60: confidence_s60(90),
                         severity: Severity::High,
                         events: nginx_5xx_events.into_iter().cloned().collect(),
                         recommended_action: "Check backend service logs for application errors."
@@ -194,7 +199,7 @@ impl Pattern for RedisMemoryPattern {
                 if used_bytes > context.redis_memory_threshold_bytes {
                     return Some(CorrelatedIncident {
                         name: "Redis High Memory Usage".to_string(),
-                        confidence: 0.95,
+                        confidence_s60: confidence_s60(95),
                         severity: Severity::High,
                         events: redis_mem_events.into_iter().cloned().collect(),
                         recommended_action:
@@ -236,7 +241,7 @@ impl Pattern for ContainerCrashLoopPattern {
                     .collect();
                 return Some(CorrelatedIncident {
                     name: format!("Container Crash Loop: {}", service),
-                    confidence: 0.98,
+                    confidence_s60: confidence_s60(98),
                     severity: Severity::Critical,
                     events: relevant_events,
                     recommended_action: format!(
@@ -276,7 +281,7 @@ impl Pattern for NervioAIntrusionPattern {
         if has_sensitive || (failed_count > context.ssh_bruteforce_threshold && has_sudo) {
             Some(CorrelatedIncident {
                 name: "Intrusion Detected (Nervio A)".to_string(),
-                confidence: 0.88,
+                confidence_s60: confidence_s60(88),
                 severity: Severity::Critical,
                 events: nervio_a.into_iter().cloned().collect(),
                 recommended_action: "Audit active sessions. Review /var/log/auth.log and auditd."
@@ -308,7 +313,7 @@ impl Pattern for NervioBIntegrityPattern {
         if service_down || disk_critical {
             Some(CorrelatedIncident {
                 name: "Integrity Violation (Nervio B)".to_string(),
-                confidence: 0.92,
+                confidence_s60: confidence_s60(92),
                 severity: Severity::Critical,
                 events: nervio_b.into_iter().cloned().collect(),
                 recommended_action: "Check: podman ps, df -h, service logs.".to_string(),
@@ -350,7 +355,7 @@ impl Pattern for CrossNervioPattern {
 
             Some(CorrelatedIncident {
                 name: "Coordinated Attack — Cross-Nervio Correlation".to_string(),
-                confidence: 0.98,
+                confidence_s60: confidence_s60(98),
                 severity: Severity::Critical,
                 events,
                 recommended_action:

@@ -2,7 +2,8 @@
 // Licencia: Apache 2.0 + Cláusula No Comercial (ver LICENSE).
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 use chrono::{DateTime, Utc};
-use serde::{Deserialize, Serialize};
+use me60os_core::spa::SPA;
+use serde::{ser::SerializeStruct, Deserialize, Serialize, Serializer};
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -34,12 +35,28 @@ pub struct Event {
     pub metadata: serde_json::Value,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone)]
 pub struct CorrelatedIncident {
     pub name: String,
-    pub confidence: f32, // 0.0 - 1.0
+    pub confidence_s60: SPA,
     pub severity: Severity,
     pub events: Vec<Event>,
     pub recommended_action: String,
     pub n8n_playbook: String,
+}
+
+impl Serialize for CorrelatedIncident {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut incident = serializer.serialize_struct("CorrelatedIncident", 6)?;
+        incident.serialize_field("name", &self.name)?;
+        incident.serialize_field("confidence_s60_raw", &self.confidence_s60.to_raw())?;
+        incident.serialize_field("severity", &self.severity)?;
+        incident.serialize_field("events", &self.events)?;
+        incident.serialize_field("recommended_action", &self.recommended_action)?;
+        incident.serialize_field("n8n_playbook", &self.n8n_playbook)?;
+        incident.end()
+    }
 }

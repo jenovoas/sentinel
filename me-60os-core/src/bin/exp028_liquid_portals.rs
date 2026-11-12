@@ -129,7 +129,6 @@ fn main() {
     let half = SPA::from_raw(6480000); // 0.5
     let one = SPA::from_raw(12960000); // 1.0
 
-    let mut portal_events: Vec<f64> = Vec::new();
     let mut cycle_portals: Vec<u32> = vec![0; 10];
     let mut cycle_diffs: Vec<Vec<i64>> = vec![Vec::new(); 10];
 
@@ -197,7 +196,6 @@ fn main() {
         let portal_count = u32::try_from(diffs.iter().filter(|&&d| d <= threshold).count())
             .expect("cantidad de portales fuera de u32");
         cycle_portals[i] = portal_count;
-        portal_events.push(portal_count as f64);
         println!(
             "   Ciclo {} ({}s-{}s): median={} threshold={} portales={}",
             i,

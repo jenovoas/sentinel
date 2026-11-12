@@ -4,12 +4,30 @@
 use std::time::Instant;
 use truthsync_core::TruthSyncEngine;
 
-fn percentile(sorted: &[u64], pct: f64) -> u64 {
+fn percentile(sorted: &[u64], percentile_basis_points: u32) -> u64 {
     if sorted.is_empty() {
         return 0;
     }
-    let idx = ((sorted.len() as f64 * pct / 100.0).round() as usize).min(sorted.len() - 1);
+    let numerator = (sorted.len() as u128) * u128::from(percentile_basis_points);
+    let idx = usize::try_from((numerator + 5_000) / 10_000)
+        .unwrap_or(usize::MAX)
+        .min(sorted.len() - 1);
     sorted[idx]
+}
+
+fn claims_per_second(claims: usize, elapsed: std::time::Duration) -> u64 {
+    let nanos = elapsed.as_nanos().max(1);
+    u64::try_from((claims as u128 * 1_000_000_000) / nanos).unwrap_or(u64::MAX)
+}
+
+fn format_hundredths(numerator: u128, denominator: u128) -> String {
+    let scaled = (numerator * 100 + denominator / 2) / denominator;
+    format!("{}.{:02}", scaled / 100, scaled % 100)
+}
+
+fn format_percent_tenths(part: usize, total: usize) -> String {
+    let tenths = (part as u128 * 1_000 + total.max(1) as u128 / 2) / total.max(1) as u128;
+    format!("{}.{:01}%", tenths / 10, tenths % 10)
 }
 
 fn main() {
@@ -67,7 +85,7 @@ fn main() {
             }
         }
         let b_dur = b_start.elapsed();
-        let b_rps = (batch_size as f64 / b_dur.as_secs_f64()) as u64;
+        let b_rps = claims_per_second(batch_size, b_dur);
         eprintln!(
             "  ✓ Lote {:2}/{}: {} claims procesados en {:.2?} (~{} claims/s)",
             batch + 1,
@@ -79,13 +97,13 @@ fn main() {
     }
 
     let total_duration = t_start.elapsed();
-    let overall_rps = (total_claims as f64 / total_duration.as_secs_f64()) as u64;
+    let overall_rps = claims_per_second(total_claims, total_duration);
 
     sampled_latencies_ns.sort_unstable();
-    let p50_ns = percentile(&sampled_latencies_ns, 50.0);
-    let p90_ns = percentile(&sampled_latencies_ns, 90.0);
-    let p95_ns = percentile(&sampled_latencies_ns, 95.0);
-    let p99_ns = percentile(&sampled_latencies_ns, 99.0);
+    let p50_ns = percentile(&sampled_latencies_ns, 5_000);
+    let p90_ns = percentile(&sampled_latencies_ns, 9_000);
+    let p95_ns = percentile(&sampled_latencies_ns, 9_500);
+    let p99_ns = percentile(&sampled_latencies_ns, 9_900);
     let avg_ns =
         sampled_latencies_ns.iter().sum::<u64>() / sampled_latencies_ns.len().max(1) as u64;
 
@@ -96,35 +114,35 @@ fn main() {
     eprintln!("   Tiempo total                 : {:.3?}", total_duration);
     eprintln!("   Throughput general           : {} claims/s", overall_rps);
     eprintln!(
-        "   Latencia promedio por claim  : {:.2} µs ({} ns)",
-        avg_ns as f64 / 1000.0,
+        "   Latencia promedio por claim  : {} µs ({} ns)",
+        format_hundredths(u128::from(avg_ns), 1_000),
         avg_ns
     );
     eprintln!(
-        "   Latencia P50 (mediana)       : {:.2} µs ({} ns)",
-        p50_ns as f64 / 1000.0,
+        "   Latencia P50 (mediana)       : {} µs ({} ns)",
+        format_hundredths(u128::from(p50_ns), 1_000),
         p50_ns
     );
     eprintln!(
-        "   Latencia P90                 : {:.2} µs ({} ns)",
-        p90_ns as f64 / 1000.0,
+        "   Latencia P90                 : {} µs ({} ns)",
+        format_hundredths(u128::from(p90_ns), 1_000),
         p90_ns
     );
     eprintln!(
-        "   Latencia P95                 : {:.2} µs ({} ns)",
-        p95_ns as f64 / 1000.0,
+        "   Latencia P95                 : {} µs ({} ns)",
+        format_hundredths(u128::from(p95_ns), 1_000),
         p95_ns
     );
     eprintln!(
-        "   Latencia P99                 : {:.2} µs ({} ns)",
-        p99_ns as f64 / 1000.0,
+        "   Latencia P99                 : {} µs ({} ns)",
+        format_hundredths(u128::from(p99_ns), 1_000),
         p99_ns
     );
     eprintln!("───────────────────────────────────────────────────────────────");
     eprintln!(
-        "   Patrones críticos detectados       : {} ({:.1}%)",
+        "   Patrones críticos detectados       : {} ({})",
         critical_detected_count,
-        critical_detected_count as f64 / total_claims as f64 * 100.0
+        format_percent_tenths(critical_detected_count, total_claims)
     );
     eprintln!("===============================================================");
 

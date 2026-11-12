@@ -152,7 +152,7 @@ fn query_lfm_25(prompt: &str, persona: &str) -> String {
             {"role": "user", "content": prompt}
         ],
         "max_tokens": 768,
-        "temperature": 0.3
+        "temperature": 0
     });
 
     match client

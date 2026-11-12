@@ -192,3 +192,12 @@
 Pegable en cada prompt (del procedimiento estándar §7):
 
 > Despliegue Sentinel: `sudo -n` siempre en remoto; cero passwords/tokens en CLI; prohibido `curl -k`; prohibido `sed -i` en `/etc` (plantilla + backup + validate); imágenes pineadas; `graphify update` una vez; Soma e inferencia GPU fuera de alcance; hercules/ocean no se tocan salvo T0 y T10 solo para logs del sistema operativo; marte por 4222; un cambio = un commit + push + entrada en vault. Leer `docs/ops/procedimiento-despliegue-estandar.md` antes de empezar.
+
+## T11. Candado YATRA de compilación Rust en Sentinel y MyCNet — 2026-11-12
+
+- [x] Añadir guard de AST en los seis crates Sentinel y cuatro crates MyCNet; prohibir tipos `f32`/`f64` y literales de punto flotante, sin relajar reglas Clippy.
+- [x] Sustituir los usos de punto flotante detectados en Sentinel por SPA/S60 o enteros escalados.
+- [ ] Publicar commits en `main` y comprobar que `Rust CI` queda verde.
+- [ ] Desplegar la imagen Cortex desde el mismo SHA en Fénix, con respaldo/configuración validada y smoke checks.
+- MyCNet solo cambia reglas de compilación; no cambia lógica del binario `mycnetd`. No reinstalar ni reiniciar sus servicios por este cambio.
+- Evidencia local y límites: `docs/ops/2026-11-12-yatra-compilation-guard.md`; registro persistente en vault.

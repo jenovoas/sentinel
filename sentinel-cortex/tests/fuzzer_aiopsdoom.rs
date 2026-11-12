@@ -208,7 +208,11 @@ fn test_aiopsdoom_fuzzer_100_plus_payloads() {
         }
     }
 
-    let avg_latency_us = (total_latency_ns as f64) / (total as f64) / 1000.0;
+    let samples = u128::try_from(total)
+        .expect("cantidad de casos fuera de u128")
+        .max(1);
+    let avg_latency_ns = total_latency_ns / samples;
+    let avg_latency_us_hundredths = (total_latency_ns * 100 + samples * 500) / (samples * 1_000);
     println!("\n📊 RESULTADOS DE LA AUDITORÍA AIOPSDOOM:");
     println!("  Total casos evaluados: {}", total);
     println!(
@@ -228,8 +232,9 @@ fn test_aiopsdoom_fuzzer_100_plus_payloads() {
         false_negatives
     );
     println!(
-        "  Latencia media por payload: {:.2} µs (< 1000µs debug / < 100µs release)",
-        avg_latency_us
+        "  Latencia media por payload: {}.{:02} µs (< 1000µs debug / < 100µs release)",
+        avg_latency_us_hundredths / 100,
+        avg_latency_us_hundredths % 100
     );
 
     assert_eq!(
@@ -241,7 +246,7 @@ fn test_aiopsdoom_fuzzer_100_plus_payloads() {
         "AIOpsDoom exige CERO falsos positivos en telemetría"
     );
     assert!(
-        avg_latency_us < 1000.0,
+        avg_latency_ns < 1_000_000,
         "Latencia promedio en modo debug debe ser inferior a 1ms"
     );
 }

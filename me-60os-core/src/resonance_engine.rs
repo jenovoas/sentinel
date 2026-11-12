@@ -32,7 +32,9 @@ impl ResonanceEngine {
     pub fn charge_from_coherence_milli(&mut self, measured: u64) {
         let normalized = measured.min(COHERENCE_MILLI_SCALE) as i128;
         let target_raw = normalized * i128::from(SPA::SCALE_0) / i128::from(COHERENCE_MILLI_SCALE);
-        let target = SPA::from_raw(target_raw as i64);
+        let target_raw =
+            i64::try_from(target_raw).expect("la coherencia normalizada debe caber en raw SPA i64");
+        let target = SPA::from_raw(target_raw);
 
         if target > self.current_coherence {
             let step = SPA::from_raw(SPA::SCALE_0 / 10);

@@ -343,7 +343,7 @@ Responde con autoridad técnica, precisión matemática y en español.";
             {"role": "user", "content": user_content}
         ],
         "max_tokens": 1024,
-        "temperature": 0.3
+        "temperature": 0
     });
 
     let resp = client

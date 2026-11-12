@@ -458,22 +458,6 @@ fn add_jev_verdict(mut payload: Value, verdict: Option<&str>) -> Value {
     payload
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn jev_deny_payload_preserves_emitted_event_and_verdict() {
-        let emitted = json!({
-            "event_type": "syscall",
-            "data": { "guardian_event_type": "EXEC_ALLOWED" }
-        });
-        let forwarded = add_jev_verdict(emitted, Some("Deny"));
-        assert_eq!(forwarded["data"]["guardian_event_type"], "EXEC_ALLOWED");
-        assert_eq!(forwarded["data"]["jev_verdict"], "Deny");
-    }
-}
-
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
@@ -546,4 +530,20 @@ async fn main() -> anyhow::Result<()> {
     info!("Sentinel security gateway listening on configured private address");
     axum::serve(listener, app).await?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn jev_deny_payload_preserves_emitted_event_and_verdict() {
+        let emitted = json!({
+            "event_type": "syscall",
+            "data": { "guardian_event_type": "EXEC_ALLOWED" }
+        });
+        let forwarded = add_jev_verdict(emitted, Some("Deny"));
+        assert_eq!(forwarded["data"]["guardian_event_type"], "EXEC_ALLOWED");
+        assert_eq!(forwarded["data"]["jev_verdict"], "Deny");
+    }
 }
