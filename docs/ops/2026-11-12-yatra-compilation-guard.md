@@ -16,7 +16,8 @@ Los crates Rust del workspace Sentinel solo usan aritmética entera escalada SPA
 - `cargo check --workspace --all-targets` — aprobado.
 - `cargo clippy --workspace --all-targets -- -D warnings` — aprobado.
 - La primera compilación bajo la regla reportó valores de punto flotante existentes en varios módulos; tras migrarlos, la pasada completa terminó sin infracciones.
-- No se ejecutaron pruebas ni se hizo despliegue. Estado: preparación local sin commit ni push.
+- Commit publicado en `main`: `0b3c3339` (`fix(yatra): bloquear punto flotante en compilaciones`). `Rust CI` `43173162425` está en ejecución; eBPF Build CI y React Doctor aprobaron.
+- No se ha desplegado. El preflight requerido detectó `hercules` inaccesible por SSH en los puertos 4222 y 22; el procedimiento estándar §3 ordena detenerse si falla cualquier preflight. No se modificó ningún servicio.
 
 ## Historial YATRA revisado
 
