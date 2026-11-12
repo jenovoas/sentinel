@@ -1,0 +1,63 @@
+{
+  "experiment": "p12_runtime_schedwait_2026-11-12_fenix",
+  "host": "fenix",
+  "window_utc": {
+    "start": "2026-11-12T00:27:27.165279+00:00",
+    "end": "2026-11-12T00:28:27.174079+00:00",
+    "elapsed_ns": 60008766304
+  },
+  "runtime_thread": {
+    "container_pid": 3744477,
+    "tid": 3744526,
+    "comm": "sentinel-crysta"
+  },
+  "proc_schedstat_fields": [
+    "cpu_runtime_ns",
+    "runqueue_wait_ns",
+    "timeslices"
+  ],
+  "sched_schedstats_sysctl": 0,
+  "schedstat_start": [
+    13847554243310,
+    111317350486,
+    2414155
+  ],
+  "schedstat_end": [
+    13887786111245,
+    113252717674,
+    2427799
+  ],
+  "delta": {
+    "cpu_runtime_ns": 40231867935,
+    "runqueue_wait_ns": 1935367188,
+    "timeslices": 13644,
+    "average_runqueue_wait_ns_per_timeslice": 141847
+  },
+  "derived": {
+    "cpu_runtime_fraction_of_wall_percent": 67.0433,
+    "runqueue_wait_fraction_of_wall_percent": 3.2251
+  },
+  "worker": {
+    "argv": [
+      "taskset",
+      "-c",
+      "5",
+      "openssl",
+      "speed",
+      "-seconds",
+      "60",
+      "-bytes",
+      "16384",
+      "sha256"
+    ],
+    "exit_code": 0,
+    "output": "Doing sha256 ops for 60s on 16384 size blocks: 1574387 sha256 ops in 57.70s"
+  },
+  "container_after": "running 3744477 1",
+  "interpretation_limits": [
+    "Runqueue wait is kernel time ready-to-run but not scheduled, not deadline lateness or end-to-end tick jitter.",
+    "Worker was pinned to CPU 5; Cortex thread affinity was not measured and may run on CPUs 0-5.",
+    "The capture does not compare history ON/OFF or identify the image source commit.",
+    "sched_schedstats sysctl was 0; /proc/<tid>/schedstat counters were nonzero and sampled directly before/after."
+  ]
+}

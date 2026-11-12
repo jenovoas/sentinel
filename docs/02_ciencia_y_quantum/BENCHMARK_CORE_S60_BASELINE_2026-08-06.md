@@ -172,7 +172,7 @@ Cada proceso usó un directorio temporal nuevo y vacío mediante `SENTINEL_CRYST
 - La lane A partió sin amplitud y no recibió drive externo: el primer paso registró raw 57/99 en baseline/carga respectivamente. El camino ejecutado de `CrystalRuntime::step` inyecta las correcciones cruzadas del PID y evoluciona las mallas. Esto acredita uso de la salida del controlador en esa instancia, no solo cálculo descartado.
 - Tiempo esperado del tick 680: `16290263804 ns`. El retraso de ese último tick fue `1180191 ns` sin carga y `73403 ns` con carga; un último tick menor no borra el aumento de p99/máximo durante la ventana ni demuestra mejora causal del controlador.
 - **Alcance:** biblioteca Rust real en instancia aislada, con instrumentación propia y 2000 nodos por lane. No ejecuta el servicio productivo completo, su scheduler, SHM/MyCNet, eBPF, checkpoints, el dimensionamiento productivo ni una comparación history ON/OFF. Las muestras del drive del host difieren entre corridas. Una observación por escenario y perfil dev: no atribuir significancia estadística ni comparar sus tiempos directamente con el bin release de §7.
-- **Estado P1.2:** ejecutadas la medición aislada §8 y una corrida de 60 s con carga acotada sobre el loop desplegado §10. La corrida live midió contadores públicos/QHC y uso CPU del cgroup, no jitter por deadline ni eficacia comparativa de history ON/OFF. Aislamiento RT y cotejo con `/api/v1/crystal_runtime/status` según el procedimiento de despliegue continúan sin medirse. No se modificaron constantes, QHC, PID, kernel ni servicios.
+- **Estado P1.2:** la corrida live de §10 y la captura de espera de ejecución Linux del hilo del Cortex en §11 ya se realizaron. `/proc/<tid>/schedstat` permite cuantificar tiempo acumulado en cola de ejecución, no retraso del deadline. Siguen pendientes la comparación causal history ON/OFF en el loop, la aceptación autenticada de runtime/checkpoint y el aislamiento RT; no se repiten las capturas existentes.
 
 ## 9. CrystalRuntime desplegado en Fénix — observación pasiva 2026-11-11
 
@@ -203,3 +203,19 @@ El promedio del contador DTC observado es `41.69 ticks/s`; la utilización acumu
 - `/health` publica estado con granularidad `STATUS_SAMPLE_TICKS=20`; los deltas no miden deadline jitter ni latencia por tick. No se infiere corrección de deriva del cambio de energía. El endpoint detallado `/api/v1/crystal_runtime/status` permanece autenticado y no se consultó.
 - Registro íntegro de las 12 muestras, CPU cgroup, timestamps y resultado del trabajador: [p12_runtime_live_load_2026-11-12_fenix.json](p12_runtime_live_load_2026-11-12_fenix.json). No se repite esta corrida.
 - El procedimiento de despliegue §4.5 exige para aceptación runtime autenticado: `active`, `runtime.active`, SHM activa, ticks/sincronizaciones crecientes y checkpoint duradero. Esta corrida acredita solo avance del contador público y estado QHC bajo carga; **no satisface toda esa aceptación ni cierra P1.2**. No se hizo comparación history ON/OFF, medición de deadline jitter, cambio RT/LSM ni despliegue.
+
+## 11. Espera de ejecución Linux del hilo Cortex bajo carga — Fénix — 2026-11-12
+
+Durante la ventana `2026-11-12T00:27:27.165279Z`–`2026-11-12T00:28:27.174079Z`, leí `/proc/3744477/task/3744526/schedstat` antes y después de una carga OpenSSL de 60 s fijada a CPU 5. El TID pertenece al contenedor `sentinel-cortex`; su `comm` visible es `sentinel-crysta` (nombre truncado del hilo `sentinel-crystal-runtime` que crea `start_crystal_runtime`). No se cambió afinidad ni configuración del servicio.
+
+| Contador por hilo (`schedstat`) | Inicio | Fin | Diferencia |
+| --- | ---: | ---: | ---: |
+| Tiempo en CPU (ns) | 13.847.554.243.310 | 13.887.786.111.245 | +40.231.867.935 |
+| Espera en runqueue (ns) | 111.317.350.486 | 113.252.717.674 | +1.935.367.188 |
+| Timeslices | 2.414.155 | 2.427.799 | +13.644 |
+
+En 60,008766 s, el hilo acumuló 1,935367 s listo y esperando CPU (3,2251% de la ventana) y 40,231868 s ejecutándose (67,0433%). La espera media fue 141.847 ns por timeslice; es un promedio agregado, no p95/p99 ni máximo por wakeup. OpenSSL terminó con código 0: `1574387 sha256 ops in 57.70s`. El contenedor siguió `running`, PID 3744477, `RestartCount=1`.
+
+- Los campos `schedstat` significan runtime CPU, espera en runqueue y número de timeslices, según la [documentación del kernel Linux](https://docs.kernel.org/scheduler/sched-stats.html). `kernel.sched_schedstats=0`; los valores observados en `/proc/<tid>/schedstat` fueron no nulos y sus deltas se conservaron literalmente.
+- El registro de contadores, comando, salida y límites está en [p12_runtime_schedwait_2026-11-12_fenix.json](p12_runtime_schedwait_2026-11-12_fenix.json). `perf` no está instalado en Fénix; se usó el contador `/proc` existente, sin instalar paquetes.
+- **Límite:** runqueue wait no es retraso del deadline ni jitter extremo a extremo. El worker estuvo fijado a CPU 5; no se midió la CPU efectiva del hilo Cortex, por lo que no se afirma contención en el mismo CPU. La captura tampoco compara history ON/OFF ni vincula el contenedor a un SHA fuente. No se repite esta medición.
