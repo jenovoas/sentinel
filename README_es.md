@@ -65,51 +65,25 @@
 
 ---
 
-### Memoria KV distribuida: productor MYKV (fase 1, preparación local)
+### Memoria KV distribuida: productor MYKV (fase 1, publicado en main)
 
-`LiquidMemory::store` conserva el payload en SHM local y registra timestamp Unix
-en nanosegundos y energía medida. La versión es monótona **por instancia** aun
-si el reloj retrocede; `replicate` y los reintentos conservan timestamp, semilla
-y hash originales aunque evolucione la lattice. Las firmas `replicate`/`publish`
-se conservan; `ReplicableSeed` y `LiquidEntry` ahora incluyen `timestamp_ns`.
+El productor Rust `LiquidMemory` separa store local en SHM, creación de
+`ReplicableSeed` y publicación UDP loopback MYKV v1, sin escribir el ring ni
+alterar el ritmo de Cortex. Solo salen metadatos de claves `crystal-` y
+`portal-metrics-`: **no se transfiere ni recupera el payload remoto**.
 
-Solo las claves UTF-8 de 1–512 bytes con prefijos `crystal-` o `portal-metrics-`
-pueden replicarse/publicarse. Otras claves siguen disponibles en store/retrieve
-local. `publish` ya **no abre ni escribe `/me60os_fractal_seeds`**: usa UDP
-loopback independiente del productor Cortex, sin modificar su ritmo ni semilla.
+Contrato integrado y publicado el 2026-11-11 en Sentinel `1f1b6b56` y MyCNet
+`e8cb1ad`; esto no acredita despliegue. La evidencia histórica incluye 12/12
+pruebas del productor y smoke aislado con tres procesos; la medición en malla
+real, recall remoto y CRDT siguen pendientes o diferidos.
 
-MYKV v1 ocupa 80 bytes de cabecera más clave (máximo 592): magic `MYKV`, kind
-(`1` Publish, `2` Replicate, `3` Ack, `4` Committed), versión `1`, longitud de
-clave u16 LE, timestamp u64 LE, semilla binaria de 32 bytes con CRC16-CCITT,
-hash blake3 del payload de 32 bytes y clave UTF-8. La semilla conserva el layout
-existente y coordenadas deterministas de radio 3.
+- [Guía del productor MYKV v1](docs/ops/memoria-kv-mykv-v1.md): API,
+  configuración, wire, retries con la misma semilla, errores y evidencia.
+- [Especificación principal kv-publisher](openspec/specs/kv-publisher/spec.md).
 
-Configuración: `MYCNET_KV_ADDR=127.0.0.1:4242` por defecto (SocketAddr numérico,
-solo loopback), `MYCNET_KV_TIMEOUT_MS=5000` por defecto (entero positivo).
-Se retransmite el mismo datagrama cada 100 ms; solo `Committed` del SocketAddr
-configurado con identidad íntegra idéntica confirma éxito. El daemon debe
-confirmar ACK de **todos** los peers configurados; sin peers no hay Committed.
-Timeout significa **commit desconocido**, no pérdida demostrada: el llamador
-debe conservar la misma `ReplicableSeed` para reintentar, no repetir store.
-La confirmación remota puede corresponder a una versión supersedida por LWW;
-no garantiza que sea la versión actualmente ganadora.
-
-Smoke posterior, con daemon MYKV y peers ya disponibles en entorno aislado:
-
-```sh
-MYCNET_KV_ADDR=127.0.0.1:4242 MYCNET_KV_TIMEOUT_MS=5000 \
-  target/debug/kv_publish crystal-smoke valor-local
-```
-
-El CLI imprime Committed, token, timestamp, amplitud y hash **solo tras confirmar**.
-Invocarlo otra vez ejecuta un nuevo store y crea otra versión, no reanuda la
-anterior. Esta vía replica metadatos; **no transfiere ni recupera payload remoto**.
-Verificación local 2026-11-11: `cargo test --locked -p me60os --lib liquid_memory::tests`
-aprobó 12/12; build de `kv_publish` y Clippy estricto de biblioteca/binario aprobados.
-Smoke cruzado con tres procesos MyCNet aislados: réplica y ACK perdidos recuperados,
-LWW reordenado/duplicado convergente, origen no autorizado rechazado y peer ausente
-sin falso Committed; metadatos iniciales confirmados en 163 ms. No es latencia de
-la malla real ni evidencia de despliegue o recuperación de payload remoto.
+`Committed` requiere confirmación de todos los peers configurados; timeout
+significa resultado incierto. Reinvocar el CLI hace un store nuevo, no reanuda
+la publicación anterior. Consulte la guía antes de reintentar.
 
 
 ## 💎 Retículo del Cristal Fonónico y Osciladores Isocrónicos
