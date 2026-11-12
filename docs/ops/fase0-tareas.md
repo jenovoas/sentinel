@@ -198,7 +198,7 @@ Pegable en cada prompt (del procedimiento estándar §7):
 - [x] Añadir guard de AST en los seis crates Sentinel y cuatro crates MyCNet; prohibir tipos `f32`/`f64` y literales de punto flotante, sin relajar reglas Clippy.
 - [x] Sustituir los usos de punto flotante detectados en Sentinel por SPA/S60 o enteros escalados.
 - [x] Publicar commits en `main`: Sentinel `0b3c3339`, MyCNet `3053fb4`.
-- [ ] Comprobar CI verde. Para Sentinel, Rust CI `43173162425` está en ejecución; eBPF Build CI y React Doctor aprobaron.
+- [x] CI verde para el commit de código `0b3c3339`: Rust CI `43173162425`, CodeQL `43173162435`, eBPF Build CI y React Doctor aprobaron.
 - [ ] Desplegar la imagen Cortex desde el SHA de código `0b3c3339` en Fénix, con respaldo/configuración validada y smoke checks. Preflight bloqueado: `hercules` no responde por SSH en 4222 ni 22; el procedimiento estándar §3 ordena detener el despliegue ante fallo de preflight. No se modificó ningún servicio.
 - MyCNet solo cambia reglas de compilación; no cambia lógica del binario `mycnetd`. No reinstalar ni reiniciar sus servicios por este cambio.
 - Evidencia local y límites: `docs/ops/2026-11-12-yatra-compilation-guard.md`; registro persistente en vault.
