@@ -16,6 +16,8 @@
 
 ## Estado operativo
 
-- Preparación local: cambio compilado; despliegue pendiente.
-- Despliegue realizado: pendiente.
-- Aceptación pendiente: `CrystalRuntime` activo, `dtc_ticks` avanzando, energía de lanes observada y `PULSE CHECK Valid=true` en logs posteriores al reinicio.
+- Preparación local: validada con `cargo check -p sentinel-cortex --bin sentinel-cortex` y `git diff --check`.
+- Publicación: commit `7b107e72` en `main`, `origin/main`.
+- Despliegue realizado en Fénix: imagen `sentinel-cortex:7b107e72`, ID `sha256:131c965b18172fe6da9817c0ec73da0b36cc86ad84b268e7dfbc50900b49aadc`. Se respaldó `/etc/sentinel/backend.env` en `/etc/sentinel/backend.env.pre-cortex-uplink-20261112T094217Z`; Compose se validó y se recreó solo Cortex.
+- El journal confirmó la migración del encabezado con `head=13956761`, `tail=0`, luego `CrystalRuntime activo` con 67.951 nodos y MyCNet WebSocket 101.
+- Aceptación en vivo: tres pulsos sucesivos `Valid=true`, `Coherence=Unison raw=12960000` a las 09:42:57, 09:43:23 y 09:43:34 UTC; cada uno produjo `PROCESSOR RESULT: True`. `/health` devolvió HTTP 200, contenedor `running/healthy`, `restarts=0`, `dtc_ticks=2959`, energía `lattice_energy_raw=605207215710`, QHC `connected=true` y `stale=false`.
