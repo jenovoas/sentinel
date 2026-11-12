@@ -14,7 +14,8 @@ use tokio::process::Command;
 use tracing::{error, info, warn};
 
 // Importar desde el core de me60os
-use me60os_core::guardian_lsm::GuardianLsm;
+use me60os_core::guardian_lsm::{ActionVerification, GuardianLsm};
+use me60os_core::resonance_engine::ResonanceEngine;
 use me60os_core::soma_runtime::{memory_path, redis_url, snapshot_path, worker_binary};
 use me60os_core::time_crystal::LiquidLattice;
 use std::sync::Arc;
@@ -22,8 +23,6 @@ use tokio::sync::Mutex;
 
 // --- Configuración dinámica ---
 
-/// Umbral de coherencia para despachar tareas: 600/1000 = 0.60 (escala Base-60, sin floats)
-const UMBRAL_DISPATCH: u64 = 600;
 const BASE_TICK_MS: u64 = 500;
 const SNAPSHOT_INTERVAL_TICKS: u64 = 120; // ~1 min
 
@@ -31,6 +30,7 @@ struct Orchestrator {
     redis_client: redis::Client,
     lattice: Arc<Mutex<LiquidLattice>>,
     guardian: GuardianLsm,
+    resonance: ResonanceEngine,
     snapshot_path: String,
     memory_path: String,
 }
@@ -44,11 +44,13 @@ impl Orchestrator {
         // Inicializar lattice con 60 slots (PAI-60 standard)
         let lattice = Arc::new(Mutex::new(LiquidLattice::new(60)));
         let guardian = GuardianLsm::new(lattice.clone());
+        let resonance = ResonanceEngine::new();
 
         Ok(Self {
             redis_client: client,
             lattice,
             guardian,
+            resonance,
             snapshot_path,
             memory_path,
         })
@@ -214,11 +216,32 @@ impl Orchestrator {
 
         // --- GUARDIAN LSM CHECK ---
         let description = task_data.get("description").cloned().unwrap_or_default();
-        if !self
+        let verification = self
             .guardian
-            .verify_action("soma-rs", "dispatch_task", &description)
-            .await
-        {
+            .verify_action_outcome("soma-rs", "dispatch_task", &description)
+            .await;
+        if verification != ActionVerification::Allowed {
+            if verification == ActionVerification::RejectedBySemantics {
+                match parse_requester_pid(&task_data) {
+                    Some(requester_pid) => {
+                        if let Err(error) = self
+                            .guardian
+                            .isolate_pid(requester_pid, "rechazo semántico de tarea")
+                            .await
+                        {
+                            warn!(
+                                "🛡️ GUARDIAN: tarea {} bloqueada, pero no se pudo aislar requester_pid {}: {}",
+                                task_id, requester_pid, error
+                            );
+                        }
+                    }
+                    None => warn!(
+                        "🛡️ GUARDIAN: tarea {} bloqueada por semántica; falta requester_pid válido, no se aísla otro proceso",
+                        task_id
+                    ),
+                }
+            }
+
             warn!("🛑 GUARDIAN: Acción bloqueada para tarea {}", task_id);
             let _: () = conn
                 .hset(&task_key, "status", "blocked_by_guardian")
@@ -312,8 +335,10 @@ impl Orchestrator {
         let mut ticks = 0;
         loop {
             let (phase, coherence) = self.get_system_state(&mut conn).await?;
+            self.resonance.tick_entropy();
+            self.resonance.charge_from_coherence_milli(coherence);
 
-            if phase == "VAV" && coherence >= UMBRAL_DISPATCH {
+            if phase == "VAV" && self.resonance.is_coherent() {
                 let tasks: Vec<String> = conn.zrevrange("swarm:tasks:queue", 0, 0).await?;
                 if let Some(task_id) = tasks.first() {
                     let lock_key = format!("swarm:lock:{}", task_id);
@@ -349,9 +374,38 @@ impl Orchestrator {
     }
 }
 
+fn parse_requester_pid(task_data: &std::collections::HashMap<String, String>) -> Option<u32> {
+    task_data
+        .get("requester_pid")?
+        .parse::<u32>()
+        .ok()
+        .filter(|pid| *pid != 0)
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
     tracing_subscriber::fmt::init();
     let orch = Orchestrator::new().await?;
     orch.run().await
+}
+
+#[cfg(test)]
+mod tests {
+    use super::parse_requester_pid;
+    use std::collections::HashMap;
+
+    #[test]
+    fn requester_pid_opcional_acepta_solo_pid_no_cero() {
+        let mut task_data = HashMap::new();
+        assert_eq!(parse_requester_pid(&task_data), None);
+
+        task_data.insert("requester_pid".to_string(), "42".to_string());
+        assert_eq!(parse_requester_pid(&task_data), Some(42));
+
+        task_data.insert("requester_pid".to_string(), "0".to_string());
+        assert_eq!(parse_requester_pid(&task_data), None);
+
+        task_data.insert("requester_pid".to_string(), "invalid".to_string());
+        assert_eq!(parse_requester_pid(&task_data), None);
+    }
 }

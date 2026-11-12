@@ -28,6 +28,9 @@ use axum::{
 };
 use ebpf_cortex_bridge::{CortexEvent, EbpfBridge};
 use math::harmonic_logic::{HarmonicProcessor, HarmonicState};
+use me60os_core::guardian_lsm::{
+    GuardianLsm, EVENT_EXEC_BLOCKED, EVENT_FILE_BLOCKED, EVENT_FLOAT_CONTAMINATION,
+};
 use metrics::MetricsSnapshot;
 use sentinel_cortex::security::bio_resonance::ResonanceEngine;
 use serde::Serialize;
@@ -570,6 +573,22 @@ async fn main() {
         });
 
         while let Some(event) = rx_ring.recv().await {
+            let guardian_event_type = match event.event_type.as_str() {
+                "FILE_BLOCKED" => Some(EVENT_FILE_BLOCKED),
+                "EXEC_BLOCKED" => Some(EVENT_EXEC_BLOCKED),
+                "FLOAT_CONTAMINATION" => Some(EVENT_FLOAT_CONTAMINATION),
+                _ => None,
+            };
+            if let Some(event_type) = guardian_event_type {
+                if let Err(error) = GuardianLsm::process_cortex_event(event_type, event.pid).await {
+                    tracing::warn!(
+                        "No se pudo aplicar el aislamiento del evento {} para PID {}: {}",
+                        event.event_type,
+                        event.pid,
+                        error
+                    );
+                }
+            }
             let _ = tx_bpf_ebpf.send(event);
         }
     });

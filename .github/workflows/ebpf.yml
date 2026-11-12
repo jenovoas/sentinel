@@ -19,5 +19,8 @@ jobs:
       - name: Build eBPF programs
         run: make -C ebpf
 
+      - name: Build Guardian Alpha LSM
+        run: make -C ebpf guardian_alpha_lsm.o
+
       # Runtime LSM loading mutates privileged kernel state. Verify it on a
       # dedicated target host after loading, not on a generic CI runner.

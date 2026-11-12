@@ -50,6 +50,7 @@ pub mod orbital_ascent; // Orbital ascent dynamics: drag/gravedad/thrust S60 (f√
 pub mod physics;
 pub mod qhc;
 pub mod qhc_ipc;
+pub mod resonance_engine;
 pub mod resonant_loop;
 pub mod scheduler;
 pub mod scv;
