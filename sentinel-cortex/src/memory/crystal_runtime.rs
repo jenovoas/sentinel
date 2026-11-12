@@ -717,12 +717,31 @@ fn load_snapshot(
 /// The POSIX object survives process exit, so readers keep the same mapping.
 fn initialize_fractal_ring(seeds: &PySharedBuffer) -> Result<u64, String> {
     const SIGNATURE: u64 = (1_u64 << 32) | 0x5346_5231;
+    const LEGACY_SIGNATURE: u64 = (1_u64 << 32) | 0x5346_528c;
     let signature = seeds.load_u64_acquire(0)?;
     if signature == SIGNATURE {
         return seeds.load_u64_acquire(8);
     }
+    if signature == LEGACY_SIGNATURE {
+        let head = seeds.load_u64_acquire(8)?;
+        let tail = seeds.load_u64_acquire(16)?;
+        if tail > head {
+            return Err(format!(
+                "legacy fractal ring cursor invalid: tail {tail} exceeds head {head}"
+            ));
+        }
+        seeds.write_native(0, &0x5346_5231_u32.to_le_bytes())?;
+        tracing::warn!(
+            head,
+            tail,
+            "Se normalizó el encabezado legado SFR y se conservaron sus cursores"
+        );
+        return Ok(head);
+    }
     if signature != 0 {
-        return Err("unsupported fractal ring header; refusing to reset published head".into());
+        return Err(format!(
+            "unsupported fractal ring header {signature:#018x}; refusing to reset published head"
+        ));
     }
     seeds.write_native(0, &0x5346_5231_u32.to_le_bytes())?;
     seeds.write_native(4, &1_u32.to_le_bytes())?;

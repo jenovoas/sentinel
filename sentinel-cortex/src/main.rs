@@ -195,6 +195,7 @@ fn start_crystal_runtime(
             let mut runtime = match memory::crystal_runtime::CrystalRuntime::new(nodes) {
                 Ok(runtime) => runtime,
                 Err(error) => {
+                    tracing::error!(nodes, %error, "CrystalRuntime no pudo inicializarse");
                     let mut current = thread_status.lock().unwrap();
                     current.active = false;
                     current.error = Some(error);
@@ -207,6 +208,7 @@ fn start_crystal_runtime(
             current.error = None;
             current.runtime = Some(runtime.status());
             drop(current);
+            tracing::info!(nodes, "CrystalRuntime activo; ciclo DTC iniciado");
 
             let mut next_tick = std::time::Instant::now()
                 + Duration::from_nanos(memory::crystal_runtime::DTC_TICK_INTERVAL_NS);
@@ -247,7 +249,10 @@ fn start_crystal_runtime(
                             runtime.inject_observability_spa(0, amplitude);
                         }
                         Err(std::sync::mpsc::TryRecvError::Empty) => break,
-                        Err(std::sync::mpsc::TryRecvError::Disconnected) => return,
+                        Err(std::sync::mpsc::TryRecvError::Disconnected) => {
+                            tracing::warn!("Canal de entrada cerrado; termina CrystalRuntime");
+                            return;
+                        }
                     }
                 }
 
@@ -257,6 +262,7 @@ fn start_crystal_runtime(
                     match runtime.tick_dtc() {
                         Ok(interval_ns) => next_tick += Duration::from_nanos(interval_ns),
                         Err(error) => {
+                            tracing::error!(dtc_tick = runtime.status().dtc_ticks, %error, "Falló el tick DTC de CrystalRuntime");
                             let mut current = thread_status.lock().unwrap();
                             current.active = false;
                             current.error = Some(error);
@@ -267,6 +273,7 @@ fn start_crystal_runtime(
                 }
                 if now >= next_step {
                     if let Err(error) = runtime.step() {
+                        tracing::error!(dtc_tick = runtime.status().dtc_ticks, %error, "Falló el paso del cristal en CrystalRuntime");
                         let mut current = thread_status.lock().unwrap();
                         current.active = false;
                         current.error = Some(error);
