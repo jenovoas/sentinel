@@ -172,7 +172,7 @@ Cada proceso usó un directorio temporal nuevo y vacío mediante `SENTINEL_CRYST
 - La lane A partió sin amplitud y no recibió drive externo: el primer paso registró raw 57/99 en baseline/carga respectivamente. El camino ejecutado de `CrystalRuntime::step` inyecta las correcciones cruzadas del PID y evoluciona las mallas. Esto acredita uso de la salida del controlador en esa instancia, no solo cálculo descartado.
 - Tiempo esperado del tick 680: `16290263804 ns`. El retraso de ese último tick fue `1180191 ns` sin carga y `73403 ns` con carga; un último tick menor no borra el aumento de p99/máximo durante la ventana ni demuestra mejora causal del controlador.
 - **Alcance:** biblioteca Rust real en instancia aislada, con instrumentación propia y 2000 nodos por lane. No ejecuta el servicio productivo completo, su scheduler, SHM/MyCNet, eBPF, checkpoints, el dimensionamiento productivo ni una comparación history ON/OFF. Las muestras del drive del host difieren entre corridas. Una observación por escenario y perfil dev: no atribuir significancia estadística ni comparar sus tiempos directamente con el bin release de §7.
-- **Estado P1.2:** la corrida live de §10 y la captura de espera de ejecución Linux del hilo del Cortex en §11 ya se realizaron. `/proc/<tid>/schedstat` permite cuantificar tiempo acumulado en cola de ejecución, no retraso del deadline. Siguen pendientes la comparación causal history ON/OFF en el loop, la aceptación autenticada de runtime/checkpoint y el aislamiento RT; no se repiten las capturas existentes.
+- **Estado P1.2:** §12 muestra que history cambia salidas del `S60PID` en una traza acotada. No es todavía comparación del `CrystalRuntime` vivo ni prueba de mejora: se usó `dt_raw=1`, `measured_raw=tick` y `lattice_errors` vacío. La comparación causal del loop desplegado, estado autenticado/runtime-checkpoint y aislamiento RT siguen pendientes; las capturas existentes no se repiten.
 
 ## 9. CrystalRuntime desplegado en Fénix — observación pasiva 2026-11-11
 
@@ -219,3 +219,21 @@ En 60,008766 s, el hilo acumuló 1,935367 s listo y esperando CPU (3,2251% de la
 - Los campos `schedstat` significan runtime CPU, espera en runqueue y número de timeslices, según la [documentación del kernel Linux](https://docs.kernel.org/scheduler/sched-stats.html). `kernel.sched_schedstats=0`; los valores observados en `/proc/<tid>/schedstat` fueron no nulos y sus deltas se conservaron literalmente.
 - El registro de contadores, comando, salida y límites está en [p12_runtime_schedwait_2026-11-12_fenix.json](p12_runtime_schedwait_2026-11-12_fenix.json). `perf` no está instalado en Fénix; se usó el contador `/proc` existente, sin instalar paquetes.
 - **Límite:** runqueue wait no es retraso del deadline ni jitter extremo a extremo. El worker estuvo fijado a CPU 5; no se midió la CPU efectiva del hilo Cortex, por lo que no se afirma contención en el mismo CPU. La captura tampoco compara history ON/OFF ni vincula el contenedor a un SHA fuente. No se repite esta medición.
+
+## 12. Comparación de salida S60PID con/sin historial bajo carga — Fénix — 2026-11-12
+
+Comparé dos `S60PID` independientes con entradas idénticas, reutilizando la forma de entrada del benchmark Salto-17: `measured_raw=tick` (1–600), `dt_raw=1`, `setpoint_raw=0`, ganancias `kp=6.480.000`, `ki=2.160.000`, `kd=1.080.000`. Tras cada tick múltiplo de 68 llamé `reset_internal()` en ambos, ocho fronteras en total. La rama sin contribución histórica usó `update_internal()`; la rama con kernel, `update_with_history_internal()` con `lattice_errors` vacío para aislar la historia previa.
+
+La sonda Rust temporal se compiló en release desde el código Sentinel `c731a1f7`, SHA-256 `4e12ce43937134cd12959bb83874924916cc0e51b32f31bf3550941b283945af`; se retiró tras la medición. Sonda y carga OpenSSL SHA-256 estuvieron fijadas a CPU 5. El worker terminó con código 0 (`268166` operaciones en `9.93 s`). Ventana de ejecución de la sonda: `2026-11-12T00:39:44.786424Z`–`00:39:44.795684Z`; no se tocó el Cortex desplegado.
+
+| Métrica de salida del controlador | Sin contribución histórica | Con kernel de historia |
+| --- | ---: | ---: |
+| Suma de salidas raw (600 actualizaciones) | −2.605.050.000 | −2.605.210.754 |
+| Salidas distintas del otro camino | — | 588/600 |
+| Primera divergencia | — | tick 5: −2 vs −3 raw |
+| Máxima diferencia absoluta por tick | — | 590 raw |
+| Suma de diferencias absolutas | — | 160.754 raw |
+
+- **Resultado delimitado:** ambas rutas producen valores distintos con esta traza, incluso con reset cada 68 ticks. No mide convergencia, calidad predictiva, deriva temporal ni mejora física.
+- **Límites:** mide `S60PID` en un proceso aparte, no el estado del Cortex ni la cadencia de `CrystalRuntime::step()` (500 ms). `lattice_errors` vacío excluye el término de errores espaciales que sí aporta el runtime; `measured_raw=tick` y `dt_raw=1` son el escenario del benchmark, no la energía SPA y paso temporal del runtime. Por tanto, no cierra la comparación causal history ON/OFF del loop vivo ni P1.2.
+- Datos completos y comandos: [p12_s60pid_history_compare_2026-11-12_fenix.json](p12_s60pid_history_compare_2026-11-12_fenix.json). No repetir esta comparación de componente.

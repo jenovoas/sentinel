@@ -1,0 +1,66 @@
+{
+  "experiment": "p12_s60pid_history_output_comparison",
+  "host": "fenix",
+  "source_commit": "c731a1f76523c3334c7093a4c51f79f271ab75b1",
+  "temporary_probe_sha256": "4e12ce43937134cd12959bb83874924916cc0e51b32f31bf3550941b283945af",
+  "window_utc": {
+    "start": "2026-11-12T00:39:44.786424+00:00",
+    "end": "2026-11-12T00:39:44.795684+00:00",
+    "runner_elapsed_ns": 9219224
+  },
+  "probe_argv": [
+    "taskset",
+    "-c",
+    "5",
+    "/home/jnovoas/proyectos/sentinel/target/release/p12_history_output"
+  ],
+  "comparison": {
+    "ticks": 600,
+    "measured_raw": "tick 1..600",
+    "dt_raw": 1,
+    "setpoint_raw": 0,
+    "gains_raw": {
+      "kp": 6480000,
+      "ki": 2160000,
+      "kd": 1080000
+    },
+    "reset_boundaries": 8,
+    "without_history": "S60PID::update_internal",
+    "with_history": "S60PID::update_with_history_internal",
+    "lattice_errors": "empty in both paths",
+    "divergent_outputs": 588,
+    "first_divergence": {
+      "tick": 5,
+      "without_history_raw": -2,
+      "with_history_raw": -3
+    },
+    "max_abs_output_delta_raw": 590,
+    "sum_abs_output_delta_raw": 160754,
+    "sum_without_history_raw": -2605050000,
+    "sum_with_history_raw": -2605210754
+  },
+  "worker": {
+    "argv": [
+      "taskset",
+      "-c",
+      "5",
+      "openssl",
+      "speed",
+      "-seconds",
+      "10",
+      "-bytes",
+      "16384",
+      "sha256"
+    ],
+    "exit_code": 0,
+    "output": "Doing sha256 ops for 10s on 16384 size blocks: 268166 sha256 ops in 9.93s"
+  },
+  "limits": [
+    "S60PID component only; does not run CrystalRuntime or deployed process state.",
+    "Input follows sentinel_bench_salto17 tick input (measured_raw=tick, dt_raw=1); it is not physical clock drift.",
+    "Empty lattice_errors isolates stored PID history but omits CrystalRuntime spatial lane errors.",
+    "600 updates are not the live 500 ms step cadence; no deadline/jitter or efficacy conclusion.",
+    "Both probe and worker were taskset-pinned to CPU 5; Cortex configuration and process were untouched.",
+    "Temporary Rust probe source was removed after execution; its SHA-256 is preserved above."
+  ]
+}
