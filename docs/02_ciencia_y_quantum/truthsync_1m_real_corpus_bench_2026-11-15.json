@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-15",
+  "benchmark": "truthsync_dataset_bench",
+  "profile": "release",
+  "corpus": {
+    "total_rows_jsonl": 1039511,
+    "unique_normalized_claims": 1039511,
+    "sha256_jsonl": "faa94bca8bfd5abedc76fe5ce1e83e23059085c4cd4b9bb26902cf7959994412",
+    "sources": [
+      {
+        "name": "stanfordnlp/snli",
+        "splits": ["train", "validation", "test"],
+        "license": "CC BY-SA 4.0",
+        "unique_claims_contributed": 493298
+      },
+      {
+        "name": "nyu-mll/multi_nli",
+        "splits": ["train", "validation_matched", "validation_mismatched"],
+        "license": "CC BY-SA 4.0 / OANC",
+        "unique_claims_contributed": 410701
+      },
+      {
+        "name": "FEVER train",
+        "url": "https://fever.ai/download/fever/train.jsonl",
+        "license": "CC BY-SA 3.0",
+        "unique_claims_contributed": 135512
+      }
+    ]
+  },
+  "results": {
+    "claims_processed": 1039511,
+    "total_time_s": 2.257,
+    "throughput_claims_per_s": 460622,
+    "sampled_latency_n": 103952,
+    "latency_mean_us": 2.84,
+    "latency_p50_us": 1.76,
+    "latency_p95_us": 3.30,
+    "latency_p99_us": 4.72,
+    "critical_patterns_detected": 7
+  }
+}
