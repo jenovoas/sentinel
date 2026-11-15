@@ -12,6 +12,7 @@
 // -----------------------------------------------------------------------------
 
 use me60os_core::quantum_core::LiquidLattice;
+use me60os_core::resonant_matrix::ResonantMatrix;
 use me60os_core::spa::SPA;
 
 fn main() {
@@ -139,6 +140,67 @@ fn main() {
                 break;
             }
         }
+        ok = false;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 8) VERIFICACIÓN FIDELIDAD COLECTIVA (ResonantMatrix, doble malla)
+    // ─────────────────────────────────────────────────────────────
+    println!("\n{}", "=".repeat(60));
+    println!("🔮 FIDELIDAD COLECTIVA — DOBLE MALLA (ResonantMatrix)");
+    println!("{}", "=".repeat(60));
+
+    let mut lane_a = ResonantMatrix::new(16);
+    let mut lane_b = ResonantMatrix::new(16);
+
+    let seed = "Yo Soy";
+    println!("   Semilla: '{}'", seed);
+
+    // Damping = 0 para modo superconductor
+    for c in lane_a.crystals.iter_mut() {
+        c.damping_factor = SPA::zero();
+    }
+    for c in lane_b.crystals.iter_mut() {
+        c.damping_factor = SPA::zero();
+    }
+
+    // Paso 1: base resonante antes de inyectar
+    let base_a = lane_a.get_amplitudes();
+    let base_b = lane_b.get_amplitudes();
+
+    // Paso 2: inyectar semilla
+    for (i, ch) in seed.chars().enumerate() {
+        lane_a.inject_pai(i, ch as i64, 1);
+        lane_b.inject_pai(i, ch as i64, 1);
+    }
+
+    // Paso 3: leer amplitudes corregidas por base
+    let amps_a = lane_a.get_amplitudes();
+    let amps_b = lane_b.get_amplitudes();
+
+    let mut recovered = String::new();
+    let mut converge = true;
+    for i in 0..seed.len() {
+        let raw_a = (amps_a[i] - base_a[i]).to_raw();
+        let raw_b = (amps_b[i] - base_b[i]).to_raw();
+        if raw_a.abs_diff(raw_b) > (SPA::SCALE_0 / 50) as u64 {
+            converge = false;
+        }
+        let ch_val = raw_a / SPA::SCALE_0;
+        if let Ok(ch) = u8::try_from(ch_val) {
+            if ch.is_ascii() && ch != 0 {
+                recovered.push(char::from(ch));
+            }
+        }
+    }
+
+    if converge {
+        println!("   📖 Reconstruido: '{}' — FIDELIDAD 100% ✅", recovered);
+    } else {
+        println!(
+            "   📖 Reconstruido: '{}' — FIDELIDAD DEGRADADA ⚠️",
+            recovered
+        );
         ok = false;
     }
 
