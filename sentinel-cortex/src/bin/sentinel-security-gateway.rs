@@ -323,12 +323,6 @@ fn start_ring_reader(
 }
 
 async fn forward_event(state: &GatewayState, event: CortexEvent) {
-    if let Err(error) = GuardianLsm::process_cortex_event_name(&event.event_type, event.pid).await {
-        warn!(
-            "No se pudo aplicar aislamiento del evento {} para PID {}: {}",
-            event.event_type, event.pid, error
-        );
-    }
     let source = guardian_source(event.guardian_code);
     let event_id = format!(
         "{}-{}-{}-{}",
@@ -402,7 +396,7 @@ async fn forward_event(state: &GatewayState, event: CortexEvent) {
         "data": {
             "guardian_event_type": event.event_type,
             "syscall": if is_exec { Some("execve") } else { None },
-            "process_path": event.process_path,
+            "process_path": event.process_path.as_deref().unwrap_or(""),
             "uid": event.uid,
             "pid": event.pid,
             "timestamp_ns": event.timestamp_ns,
@@ -523,6 +517,14 @@ async fn main() -> anyhow::Result<()> {
     let forwarding_state = state.clone();
     tokio::spawn(async move {
         while let Some(event) = rx.recv().await {
+            if let Err(error) =
+                GuardianLsm::process_cortex_event_name(&event.event_type, event.pid).await
+            {
+                warn!(
+                    "No se pudo aplicar aislamiento del evento {} para PID {}: {}",
+                    event.event_type, event.pid, error
+                );
+            }
             forward_event(&forwarding_state, event).await;
         }
     });
