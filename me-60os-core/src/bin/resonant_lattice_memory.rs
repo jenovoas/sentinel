@@ -334,11 +334,6 @@ fn main() {
         println!("🔮 Resonando el lattice (bombeo QHC fase+amplitud + difusión fractal)...");
     }
 
-    // Capturar el estado resonante de cada lane antes de sumar la semilla.
-    // El decoder resta esta base y lee únicamente la amplitud inyectada.
-    let base_amps_a = lane_a.get_amplitudes();
-    let base_amps_b = lane_b.get_amplitudes();
-
     if !snapshot_restored {
         println!(
             "📝 Inyectando semilla '{}' (compresión fractal: pocos nodos, malla propaga)",
@@ -353,30 +348,6 @@ fn main() {
 
     if snapshot_restored {
         println!("📖 Snapshot de amplitudes restaurado para ambas lanes.");
-    } else {
-        // Lectura local de la semilla inyectada en una malla recién inicializada.
-        let amps_a = lane_a.get_amplitudes();
-        let amps_b = lane_b.get_amplitudes();
-        let mut recovered = String::new();
-        let mut convergen = true;
-        for i in 0..data.len() {
-            let raw_a = (amps_a[i] - base_amps_a[i]).to_raw();
-            let raw_b = (amps_b[i] - base_amps_b[i]).to_raw();
-            if raw_a.abs_diff(raw_b) > (SPA::SCALE_0 / 50) as u64 {
-                convergen = false;
-            }
-            let ch_val = raw_a / SPA::SCALE_0;
-            if let Ok(ch) = u8::try_from(ch_val) {
-                if ch.is_ascii() && ch != 0 {
-                    recovered.push(char::from(ch));
-                }
-            }
-        }
-        if convergen {
-            println!("📖 Lectura local de semilla: '{}'", recovered);
-        } else {
-            println!("📖 Lectura local parcial: '{}'", recovered);
-        }
     }
 
     // Copia los cristales actuales a la región SHM; esto no es persistencia durable.
