@@ -5,6 +5,7 @@ use axum::extract::{DefaultBodyLimit, State};
 use axum::http::{header, HeaderMap, StatusCode};
 use axum::routing::{get, post};
 use axum::{Json, Router};
+use me60os_core::guardian_lsm::GuardianLsm;
 use sentinel_cortex::ebpf_cortex_bridge::{CortexEvent, EbpfBridge};
 use sentinel_cortex::security::telemetry_sanitizer::TelemetrySanitizer;
 use sentinel_cortex::security::{AIOpsSemanticFirewall, DataLane, ForensicWal};
@@ -322,6 +323,12 @@ fn start_ring_reader(
 }
 
 async fn forward_event(state: &GatewayState, event: CortexEvent) {
+    if let Err(error) = GuardianLsm::process_cortex_event_name(&event.event_type, event.pid).await {
+        warn!(
+            "No se pudo aplicar aislamiento del evento {} para PID {}: {}",
+            event.event_type, event.pid, error
+        );
+    }
     let source = guardian_source(event.guardian_code);
     let event_id = format!(
         "{}-{}-{}-{}",

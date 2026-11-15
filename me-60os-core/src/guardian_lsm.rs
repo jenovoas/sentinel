@@ -31,6 +31,15 @@ pub const EVENT_FILE_BLOCKED: u32 = 1;
 pub const EVENT_EXEC_BLOCKED: u32 = 2;
 pub const EVENT_FLOAT_CONTAMINATION: u32 = 10;
 
+pub fn cortex_event_code(event_name: &str) -> Option<u32> {
+    match event_name {
+        "FILE_BLOCKED" => Some(EVENT_FILE_BLOCKED),
+        "EXEC_BLOCKED" => Some(EVENT_EXEC_BLOCKED),
+        "FLOAT_CONTAMINATION" => Some(EVENT_FLOAT_CONTAMINATION),
+        _ => None,
+    }
+}
+
 fn event_requires_pid_isolation(event_type: u32) -> bool {
     matches!(event_type, EVENT_FILE_BLOCKED | EVENT_EXEC_BLOCKED)
 }
@@ -125,6 +134,14 @@ impl GuardianLsm {
         Ok(false)
     }
 
+    /// Procesa un evento nombrado del ring buffer y aplica aislamiento si corresponde.
+    pub async fn process_cortex_event_name(event_name: &str, pid: u32) -> Result<bool> {
+        match cortex_event_code(event_name) {
+            Some(event_type) => Self::process_cortex_event(event_type, pid).await,
+            None => Ok(false),
+        }
+    }
+
     /// Limita futuras llamadas execve del PID en el mapa del Guardian LSM por cinco minutos.
     pub async fn isolate_pid(&self, pid: u32, reason: &str) -> Result<()> {
         error!(
@@ -212,8 +229,8 @@ async fn update_pid_isolation_map(pid: u32) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::{
-        coherence_milli_to_spa, event_requires_pid_isolation, pid_isolation_map_args,
-        EVENT_EXEC_BLOCKED, EVENT_FILE_BLOCKED, EVENT_FLOAT_CONTAMINATION,
+        coherence_milli_to_spa, cortex_event_code, event_requires_pid_isolation,
+        pid_isolation_map_args, EVENT_EXEC_BLOCKED, EVENT_FILE_BLOCKED, EVENT_FLOAT_CONTAMINATION,
     };
     use crate::spa::SPA;
 
@@ -225,6 +242,13 @@ mod tests {
 
     #[test]
     fn solo_los_eventos_1_y_2_aislan_el_pid() {
+        assert_eq!(cortex_event_code("FILE_BLOCKED"), Some(EVENT_FILE_BLOCKED));
+        assert_eq!(cortex_event_code("EXEC_BLOCKED"), Some(EVENT_EXEC_BLOCKED));
+        assert_eq!(
+            cortex_event_code("FLOAT_CONTAMINATION"),
+            Some(EVENT_FLOAT_CONTAMINATION)
+        );
+        assert_eq!(cortex_event_code("EXEC_ALLOWED"), None);
         assert!(event_requires_pid_isolation(EVENT_FILE_BLOCKED));
         assert!(event_requires_pid_isolation(EVENT_EXEC_BLOCKED));
         assert!(!event_requires_pid_isolation(EVENT_FLOAT_CONTAMINATION));
