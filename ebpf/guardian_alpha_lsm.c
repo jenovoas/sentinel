@@ -21,6 +21,22 @@ struct {
     __type(value, __u8);        // 1 = allowed, 0 = blocked
 } whitelist_map SEC(".maps");
 
+/* UID whitelist map: UID -> allowed (1) */
+struct {
+    __uint(type, BPF_MAP_TYPE_HASH);
+    __uint(max_entries, 256);
+    __type(key, __u32);
+    __type(value, __u8);
+} uid_whitelist_map SEC(".maps");
+
+/* Mode map: key 0 -> 0 = audit-only (default, fail-open), 1 = enforce (-EACCES) */
+struct {
+    __uint(type, BPF_MAP_TYPE_ARRAY);
+    __uint(max_entries, 1);
+    __type(key, __u32);
+    __type(value, __u8);
+} guardian_mode_map SEC(".maps");
+
 /* Bloqueo temporal de futuras llamadas execve por PID. */
 struct {
     __uint(type, BPF_MAP_TYPE_HASH);
@@ -55,6 +71,27 @@ static __always_inline int is_whitelisted(const char *path)
     }
     
     return *allowed;
+}
+
+/* Helper: Check if UID is explicitly whitelisted */
+static __always_inline int is_uid_whitelisted(__u32 uid)
+{
+    __u8 *allowed = bpf_map_lookup_elem(&uid_whitelist_map, &uid);
+    if (!allowed)
+        return 0;
+
+    return *allowed == 1;
+}
+
+/* Helper: Check enforcement mode (0 = audit-only default, 1 = enforce -EACCES) */
+static __always_inline int is_enforce_mode(void)
+{
+    __u32 key = 0;
+    __u8 *mode = bpf_map_lookup_elem(&guardian_mode_map, &key);
+    if (!mode)
+        return 0;
+
+    return *mode == 1;
 }
 
 /* Helper: Comprueba y elimina entradas caducadas de aislamiento. */
@@ -107,22 +144,30 @@ int BPF_PROG(guardian_execve, struct linux_binprm *bprm, int ret)
 
     if (is_pid_isolated(pid)) {
         log_event(pid, 0);
-        bpf_printk("Guardian-Alpha [ISOLATION]: blocked execve for PID %d", pid);
-        return -EACCES;
+        if (is_enforce_mode()) {
+            bpf_printk("Guardian-Alpha [ISOLATION]: blocked execve for PID %d", pid);
+            return -EACCES;
+        }
+        bpf_printk("Guardian-Alpha [AUDIT-ISOLATION]: would block execve for PID %d", pid);
+        return 0;
     }
-    
+
     bpf_printk("Guardian-Alpha DEBUG: Intercepting %s (pid=%d, uid=%d)", filename, pid, uid);
-    
-    // Check whitelist (FAIL-CLOSED)
-    if (!is_whitelisted(filename)) {
-        // Log blocked event
+
+    // Check UID whitelist first, then binary path whitelist
+    if (!is_uid_whitelisted(uid) && !is_whitelisted(filename)) {
+        // Log blocked/audit event
         log_event(pid, 0);
-        
-        // Critical block message in kernel log
-        bpf_printk("Guardian-Alpha [CRITICAL]: BLOCKED execution of unverified binary: %s (uid=%d)", 
+
+        if (is_enforce_mode()) {
+            bpf_printk("Guardian-Alpha [CRITICAL]: BLOCKED execution of unverified binary: %s (uid=%d)",
+                       filename, uid);
+            return -EACCES; // Permission denied
+        }
+
+        bpf_printk("Guardian-Alpha [AUDIT]: WOULD BLOCK unverified binary: %s (uid=%d)",
                    filename, uid);
-        
-        return -EACCES; // Permission denied
+        return 0;
     }
     
     // Log allowed event
