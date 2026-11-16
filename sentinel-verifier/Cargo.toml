@@ -15,8 +15,8 @@ me60os_core = { path = "../me-60os-core", package = "me60os" }
 
 [build-dependencies]
 proc-macro2 = { version = "1", features = ["span-locations"] }
-syn = { version = "2", features = ["full", "visit"] }
-toml = "0.8"
+syn = { version = "3", features = ["full", "visit"] }
+toml = "1.2"
 
 [[bin]]
 name = "sentinel-verifier"
