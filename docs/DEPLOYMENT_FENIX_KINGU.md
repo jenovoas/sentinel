@@ -80,7 +80,7 @@ El entrypoint aborta si `alembic upgrade head` falla. La adopción del esquema l
 
 ## Regla de producción
 
-La preparación y compilación se hacen en Fenix. Los únicos nodos de despliegue de esta guía son Fenix y Kingu. Todo cambio público en Kingu se aplica después de los chequeos privados y con rollback preparado.
+La compilación se hace en Fenix por capacidad de la máquina (la laptop del operador se recalienta); Fenix es backend primario, no un entorno de desarrollo. Los únicos nodos de despliegue de esta guía son Fenix y Kingu. Todo cambio público en Kingu se aplica después de los chequeos privados y con rollback preparado.
 
 ## Registro de preflight Kingu-only — 2026-10-29
 

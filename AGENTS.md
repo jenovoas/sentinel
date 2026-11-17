@@ -1,7 +1,9 @@
 # ARQUITECTURA Y DIRECTIVAS PARA AGENTES E IA (REGLAS DE ORO DEL PROYECTO SENTINEL)
 
-> **Infraestructura compartida — actualizado 2026-11-16:** `fenix` se usa para
-> desarrollo y compilación; `kingu` para producción contenerizada y Traefik.
+> **Infraestructura compartida — actualizado 2026-11-16:** `fenix` es el backend
+> primario (Debian/systemd, backend y datos) y `kingu` el frontal de producción
+> contenerizada (Traefik/nginx). Que el operador compile en Fenix porque la laptop
+> se recalienta no convierte a Fenix en entorno de desarrollo: su rol es backend.
 > El DNS público vive en la DMZ, no en Fenix ni Kingu: `ocean` es
 > `ns1.pinguinoseguro.cl` y es el único nombre DNS delegado en NIC para
 > `pinguinoseguro.cl` desde 2026-11-09; `ns2` no tiene máquina asignada.
