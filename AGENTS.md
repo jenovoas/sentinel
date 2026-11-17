@@ -1,10 +1,15 @@
 # ARQUITECTURA Y DIRECTIVAS PARA AGENTES E IA (REGLAS DE ORO DEL PROYECTO SENTINEL)
 
-> **Infraestructura compartida 2026-08-26:** `fenix` se usa para desarrollo y
-> compilación, además de `dns1.pinguinoseguro.cl`; `kingu` para producción
-> contenerizada, Traefik y `dns2.pinguinoseguro.cl`. Este aviso no sustituye la
+> **Infraestructura compartida — actualizado 2026-11-16:** `fenix` se usa para
+> desarrollo y compilación; `kingu` para producción contenerizada y Traefik.
+> El DNS público vive en la DMZ, no en Fenix ni Kingu: `ocean` es
+> `ns1.pinguinoseguro.cl` y es el único nombre DNS delegado en NIC para
+> `pinguinoseguro.cl` desde 2026-11-09; `ns2` no tiene máquina asignada.
+> `hercules` (`10.88.0.4`, IP pública `35.222.197.225`) también es DNS de DMZ y
+> quedó apagado el 2026-11-16 según el operador. Este aviso no sustituye la
 > verificación del nodo/runtimes activos. Referencia:
-> `/home/jnovoas/proyectos/sysdocs/02-topologia-y-metodologia-transicion-2026-08-26.md`.
+> `docs/PROCEDIMIENTO_DESPLIEGUE_MULTINODO.md` (§ DNS público en DMZ) y
+> `docs/ops/CABLEADO_Y_TOPOLOGIA_CANONICA.md`.
 >
 > **RAMAS POR ENTORNO.** `main` corresponde al entorno systemd. `alpine_fenix` corresponde al entorno Alpine/OpenRC. Son ramas independientes y no se deben mezclar.
 > Los cambios de systemd se aplican únicamente en `main`; los cambios de Alpine se aplican únicamente en `alpine_fenix`. Se permite hacer checkout, commit y push en la rama del entorno correspondiente.
