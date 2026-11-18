@@ -73,3 +73,24 @@ Estos criterios completan la documentación y no son autorización para desplega
 - Imagen `sentinel-cortex:gap-real-20261105` desplegada y saludable en Fenix (`10.88.0.1:8001`): CPU bajó de 103.5% a ~60%, RAM bajó a 128 MiB.
 - Binarios satélites actualizados en Kingu, Marte y Laptop.
 - Servicio nativo `sentinel-cortex.service` desplegado y saludable en la Laptop (`127.0.0.1:8001`), con conexión activa a MyCNet (`fractal_source_connected: true`).
+## Corrección del despacho dual — 2026-11-18
+
+Preparación local. Cortex entrega al planificador la observación
+`CrystalRuntime::dual_lane_portal_open()` y publica esa misma observación en los
+campos de apertura dual. Este criterio exige concordancia exacta de fase y
+amplitud con actividad. El umbral estadístico retrospectivo de EXP-028 Liquid
+es un criterio experimental distinto.
+
+Cortex conserva como máximo una solicitud periódica pendiente por tipo para
+limpieza de malla y alineación de fase. Mientras el portal está cerrado, estas
+solicitudes se acumulan sin duplicarse. El respaldo conserva su vía crítica.
+El avance de ambas mallas y el reset al tick 68 conservan su cadencia.
+
+El despacho autónomo de Cortex usa el cristal como referencia armónica. El
+corte por presencia del piloto se aplica en las rutas que dependen del
+biorresonador. Con el portal del cristal cerrado, las tareas ordinarias
+esperan incluso si la cola supera el umbral histórico de desborde.
+
+El planificador observa el estado resultante de ambas mallas tras los
+pasos del runtime. La apertura surge de su evolución bajo el acoplamiento
+y el bombeo QHC. El despacho carece de una ventana temporal adicional.

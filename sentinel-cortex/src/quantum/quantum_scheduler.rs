@@ -134,6 +134,19 @@ impl<C> QuantumScheduler<C> {
         );
     }
 
+    /// Despacha con la observación del cristal autónomo.
+    /// El trabajo ordinario espera la apertura y el respaldo conserva su vía crítica.
+    pub fn tick_crystal_portal(
+        &mut self,
+        portal_open: bool,
+        mut execute: impl FnMut(C) -> Result<(), String>,
+    ) {
+        if portal_open {
+            self.execute_batch(5, &mut execute);
+        }
+        self.flush_critical_tasks(&mut execute);
+    }
+
     fn tick_with_source(
         &mut self,
         current_time: S60,
@@ -192,6 +205,13 @@ impl<C> QuantumScheduler<C> {
             self.pending_critical += 1;
         }
         self.task_queue.push_back(task);
+    }
+
+    /// Coalesce periodic maintenance while an earlier request is still pending.
+    pub fn enqueue_periodic(&mut self, task: Task<C>) {
+        if !self.task_queue.iter().any(|pending| pending.task_type == task.task_type) {
+            self.enqueue(task);
+        }
     }
 
     /// Temporal-model batch sizing; observed portals have no invented score.
@@ -360,6 +380,31 @@ mod tests {
             cost: 10,
             callback: id,
         });
+    }
+
+    #[test]
+    fn autonomous_crystal_dispatch_waits_for_portal_without_pilot() {
+        let mut scheduler = QuantumScheduler::new(Arc::new(Mutex::new(BioResonator::new())));
+        for id in 0..21 {
+            enqueue(&mut scheduler, id, TaskType::LatticeGC);
+        }
+        enqueue(&mut scheduler, 21, TaskType::BackupS60);
+
+        let mut executed = Vec::new();
+        scheduler.tick_crystal_portal(false, |id| {
+            executed.push(id);
+            Ok(())
+        });
+        assert_eq!(executed, [21]);
+        assert_eq!(scheduler.queue_len(), 21);
+
+        scheduler.tick_crystal_portal(true, |id| {
+            executed.push(id);
+            Ok(())
+        });
+        assert_eq!(executed, [21, 0, 1, 2, 3, 4]);
+        assert_eq!(scheduler.get_stats().tasks_forced, 0);
+        assert!(!scheduler.is_emergency_shutdown());
     }
 
     #[test]

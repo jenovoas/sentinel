@@ -214,8 +214,6 @@ fn start_crystal_runtime(
             let mut next_persist = std::time::Instant::now() + Duration::from_secs(60);
             let mut next_gc = std::time::Instant::now() + Duration::from_secs(17);
             let mut next_phase_align = std::time::Instant::now() + Duration::from_millis(4250);
-            let scheduler_epoch = std::time::Instant::now();
-            let portal_detector = quantum::portal_detector::PortalDetector::new();
             let mut portal_open = false;
             let mut task_id = 0_u64;
             let mut tick_counter: u64 = 0;
@@ -269,7 +267,8 @@ fn start_crystal_runtime(
                         }
                     }
                 }
-                if now >= next_step {
+                let step_due = now >= next_step;
+                if step_due {
                     if let Err(error) = runtime.step() {
                         tracing::error!(dtc_tick = runtime.status().dtc_ticks, %error, "Falló el paso del cristal en CrystalRuntime");
                         let mut current = thread_status.lock().unwrap();
@@ -294,7 +293,7 @@ fn start_crystal_runtime(
                 let gc_due = now >= next_gc;
                 if gc_due {
                     task_id += 1;
-                    scheduler.enqueue(quantum::quantum_scheduler::Task {
+                    scheduler.enqueue_periodic(quantum::quantum_scheduler::Task {
                         id: task_id,
                         task_type: quantum::quantum_scheduler::TaskType::LatticeGC,
                         cost: 10,
@@ -305,7 +304,7 @@ fn start_crystal_runtime(
                 let phase_align_due = now >= next_phase_align;
                 if phase_align_due {
                     task_id += 1;
-                    scheduler.enqueue(quantum::quantum_scheduler::Task {
+                    scheduler.enqueue_periodic(quantum::quantum_scheduler::Task {
                         id: task_id,
                         task_type: quantum::quantum_scheduler::TaskType::PhaseAlign,
                         cost: 5,
@@ -313,13 +312,9 @@ fn start_crystal_runtime(
                     });
                     next_phase_align = now + Duration::from_millis(4250);
                 }
-                if dtc_tick_due || checkpoint_due || gc_due || phase_align_due {
-                    let elapsed_raw = now.duration_since(scheduler_epoch).as_nanos()
-                        * math::s60::S60::SCALE_0 as u128 / 1_000_000_000;
-                    let t_s60 = math::s60::S60::from_raw(i64::try_from(elapsed_raw).unwrap_or(i64::MAX));
-                    portal_open = portal_detector.is_portal_open(t_s60);
-                    scheduler.tick_observed(
-                        t_s60,
+                if dtc_tick_due || step_due || checkpoint_due || gc_due || phase_align_due {
+                    portal_open = runtime.dual_lane_portal_open();
+                    scheduler.tick_crystal_portal(
                         portal_open,
                         |task| match task {
                             CrystalTask::Checkpoint => {
