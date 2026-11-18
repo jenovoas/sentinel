@@ -128,7 +128,6 @@ services:
   cortex:
     image: ${SENTINEL_CORTEX_IMAGE:-sentinel-cortex:latest}
     container_name: sentinel-cortex
-    cpuset: "5"
     env_file:
       - /etc/sentinel/backend.env
     environment:
