@@ -128,6 +128,15 @@ services:
   cortex:
     image: ${SENTINEL_CORTEX_IMAGE:-sentinel-cortex:latest}
     container_name: sentinel-cortex
+    user: "0:0"
+    cap_drop:
+      - ALL
+    cap_add:
+      - BPF
+      - SETUID
+      - SETGID
+    security_opt:
+      - no-new-privileges:true
     env_file:
       - /etc/sentinel/backend.env
     environment:
@@ -136,6 +145,8 @@ services:
       RUST_LOG: info
       SENTINEL_PORT: "8000"
       SENTINEL_CRYSTAL_RUNTIME: "1"
+      SENTINEL_EBPF_PREOPEN: "1"
+      EBPF_MONITOR_PATH: /run/cortex-security-events
       SENTINEL_CRYSTAL_STATE_DIR: /var/lib/sentinel/crystal-state
       SECRET_KEY: ${SECRET_KEY}
       SENTINEL_JWT_SECRET: ${SECRET_KEY:?Configura SECRET_KEY en el .env de Fenix}
@@ -160,7 +171,12 @@ services:
         host_ip: 10.10.0.1
         protocol: tcp
     volumes:
-      - /sys/fs/bpf:/sys/fs/bpf:rw
+      - type: bind
+        source: /sys/fs/bpf/sentinel/events
+        target: /run/cortex-security-events
+        read_only: true
+        bind:
+          create_host_path: false
       - /dev/shm:/dev/shm:rw
       - /run/soma:/run/soma:ro
       - crystal_state:/var/lib/sentinel/crystal-state

@@ -3,8 +3,10 @@
 // Colaboración abierta con atribución. Uso comercial PROHIBIDO sin autorización.
 use crate::buffer_system::ResonantBuffer;
 use crate::math::s60::S60;
+use libbpf_rs::{MapCore, MapHandle, MapType};
 use serde::{Deserialize, Serialize};
 use std::path::Path;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::mpsc;
@@ -47,6 +49,7 @@ pub struct CortexEvent {
 pub struct EbpfBridge {
     // skel: Option<Skel>, // In a real impl, we'd hold the BPF skeleton here
     ringbuf_path: Option<String>,
+    preopened_map: Option<MapHandle>,
     buffer: Option<Arc<ResonantBuffer>>,
 }
 
@@ -61,6 +64,7 @@ impl EbpfBridge {
     pub fn new() -> Self {
         Self {
             ringbuf_path: None,
+            preopened_map: None,
             buffer: None,
         }
     }
@@ -75,6 +79,38 @@ impl EbpfBridge {
     pub fn with_ringbuf_path(mut self, ringbuf_path: impl Into<String>) -> Self {
         self.ringbuf_path = Some(ringbuf_path.into());
         self
+    }
+
+    /// Abre el anillo antes de iniciar Tokio y abandona la identidad de arranque.
+    pub fn preopen_and_drop_privileges(mut self) -> anyhow::Result<Self> {
+        use anyhow::Context;
+
+        let path = self
+            .ringbuf_path
+            .as_deref()
+            .context("Falta la ruta del mapa eBPF")?;
+        let map = MapHandle::from_pinned_path(path)
+            .with_context(|| format!("No se pudo abrir el anillo de seguridad {path}"))?;
+        anyhow::ensure!(
+            map.map_type() == MapType::RingBuf,
+            "El mapa {path} no es un anillo"
+        );
+
+        // SAFETY: main llama antes de crear hilos. Se limpian grupos
+        // suplementarios y se fijan las tres identidades, incluida la guardada.
+        unsafe {
+            if libc::setgroups(0, std::ptr::null()) != 0
+                || libc::setresgid(1000, 1000, 1000) != 0
+                || libc::setresuid(1000, 1000, 1000) != 0
+                || libc::prctl(libc::PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) != 0
+            {
+                return Err(std::io::Error::last_os_error())
+                    .context("No se pudo abandonar la identidad de arranque de Cortex");
+            }
+        }
+
+        self.preopened_map = Some(map);
+        Ok(self)
     }
 
     pub fn parse_event(data: &[u8]) -> Option<CortexEvent> {
@@ -151,18 +187,24 @@ impl EbpfBridge {
     /// This consumes the pinned ring buffer map and forwards events to:
     /// - the optional ResonantBuffer (S60 ingestion)
     /// - the provided Tokio channel (CortexEvent stream)
-    pub async fn run_monitor(&self, tx: mpsc::Sender<CortexEvent>) -> anyhow::Result<()> {
+    pub async fn run_monitor(
+        self,
+        tx: mpsc::Sender<CortexEvent>,
+        connected: Arc<AtomicBool>,
+    ) -> anyhow::Result<()> {
         let ringbuf_path = self
             .ringbuf_path
             .clone()
             .ok_or_else(|| anyhow::anyhow!("ringbuf_path is required for EbpfBridge"))?;
 
-        let buffer = self.buffer.clone();
+        let buffer = self.buffer;
+        let preopened_map = self.preopened_map;
 
         tracing::info!("Starting eBPF Cortex Bridge Monitor...");
 
-        tokio::task::spawn_blocking(move || -> anyhow::Result<()> {
-            use libbpf_rs::{MapHandle, RingBufferBuilder};
+        let monitor_connected = Arc::clone(&connected);
+        let result = tokio::task::spawn_blocking(move || {
+            use libbpf_rs::RingBufferBuilder;
 
             // Accept either pinned map file or directory containing cortex_events
             let map_path = if Path::new(&ringbuf_path).is_dir() {
@@ -171,25 +213,21 @@ impl EbpfBridge {
                 ringbuf_path
             };
 
-            loop {
-                // 1. Intentar abrir el mapa pineado
-                let map_res = std::panic::catch_unwind(|| MapHandle::from_pinned_path(&map_path));
-
-                let map = match map_res {
-                    Ok(Ok(map)) => map,
-                    Ok(Err(e)) => {
-                        tracing::debug!(
-                            "eBPF pinned map no disponible en {}: {}. Reintentando en 2s...",
-                            map_path,
-                            e
-                        );
-                        std::thread::sleep(Duration::from_secs(2));
-                        continue;
-                    }
-                    Err(_) => {
-                        tracing::debug!("Pánico prevenido en MapHandle. Reintentando en 2s...");
-                        std::thread::sleep(Duration::from_secs(2));
-                        continue;
+            while !tx.is_closed() {
+                let opened_map;
+                let map = if let Some(map) = preopened_map.as_ref() {
+                    map
+                } else {
+                    match MapHandle::from_pinned_path(&map_path) {
+                        Ok(map) => {
+                            opened_map = map;
+                            &opened_map
+                        }
+                        Err(error) => {
+                            tracing::debug!(%error, %map_path, "Anillo eBPF inaccesible; reintento en 2 s");
+                            std::thread::sleep(Duration::from_secs(2));
+                            continue;
+                        }
                     }
                 };
 
@@ -198,13 +236,18 @@ impl EbpfBridge {
                 let tx_clone = tx.clone();
                 let buffer_clone = buffer.clone();
 
-                if let Err(e) = builder.add(&map, move |data: &[u8]| -> i32 {
+                if let Err(e) = builder.add(map, move |data: &[u8]| -> i32 {
                     if let Some(event) = EbpfBridge::parse_event(data) {
                         if let Some(resonant) = &buffer_clone {
                             let entropy = S60::from_raw(event.entropy_s60_raw as i64);
                             resonant.push(entropy);
                         }
-                        let _ = tx_clone.blocking_send(event);
+                        if tx_clone.blocking_send(event).is_err() {
+                            tracing::warn!(
+                                "Evento eBPF leído y descartado por cierre del canal interno de Ring 0"
+                            );
+                            return -libc::ECANCELED;
+                        }
                     }
                     0
                 }) {
@@ -219,16 +262,22 @@ impl EbpfBridge {
                 // 3. Polling continuo con reconexión ante error
                 match builder.build() {
                     Ok(ringbuf) => {
+                        monitor_connected.store(true, Ordering::Relaxed);
                         tracing::info!(
                             "🔗 eBPF Cortex Bridge conectado con éxito al ringbuffer en {}",
                             map_path
                         );
-                        loop {
+                        while !tx.is_closed() {
                             if let Err(e) = ringbuf.poll(Duration::from_millis(100)) {
-                                tracing::warn!("RingBuf poll status: {:?}. Reconectando...", e);
-                                std::thread::sleep(Duration::from_millis(500));
+                                if !tx.is_closed() {
+                                    tracing::warn!("RingBuf poll status: {:?}. Reconectando...", e);
+                                }
                                 break;
                             }
+                        }
+                        monitor_connected.store(false, Ordering::Relaxed);
+                        if !tx.is_closed() {
+                            std::thread::sleep(Duration::from_millis(500));
                         }
                     }
                     Err(e) => {
@@ -238,8 +287,9 @@ impl EbpfBridge {
                 }
             }
         })
-        .await??;
-
+        .await;
+        connected.store(false, Ordering::Relaxed);
+        result?;
         Ok(())
     }
 }

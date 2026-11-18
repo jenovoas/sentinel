@@ -32,9 +32,10 @@ use me60os_core::guardian_lsm::GuardianLsm;
 use metrics::MetricsSnapshot;
 use sentinel_cortex::security::bio_resonance::ResonanceEngine;
 use serde::Serialize;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::{net::SocketAddr, time::Duration};
-use tokio::sync::broadcast;
+use tokio::sync::{broadcast, mpsc};
 use tokio::time::sleep;
 
 #[derive(Serialize)]
@@ -100,11 +101,56 @@ enum CrystalInput {
     Security {
         index: usize,
         amplitude: me60os_core::spa::SPA,
-        mesh_token_id: Option<u32>,
+        mesh_token_id: u32,
     },
     Observability {
         amplitude: me60os_core::spa::SPA,
     },
+}
+
+struct Ring0Input {
+    index: usize,
+    amplitude: me60os_core::spa::SPA,
+    pid: u32,
+    timestamp_ns: u64,
+}
+
+impl Ring0Input {
+    fn apply(self, runtime: &mut memory::crystal_runtime::CrystalRuntime) {
+        runtime.inject_security_spa(self.index, self.amplitude);
+        tracing::debug!(
+            target: "sentinel_cortex::ring0",
+            pid = self.pid,
+            timestamp_ns = self.timestamp_ns,
+            index = self.index,
+            amplitude_raw = self.amplitude.to_raw(),
+            dtc_tick = runtime.dtc_ticks(),
+            "Amplitud de Ring 0 aplicada a la malla de seguridad"
+        );
+    }
+}
+
+const RING0_QUEUE_CAPACITY: usize = 1024;
+
+fn drain_ring0_until(
+    receiver: &mut mpsc::Receiver<Ring0Input>,
+    runtime: &mut memory::crystal_runtime::CrystalRuntime,
+    deadline: std::time::Instant,
+) -> usize {
+    // Un ciclo atrasado todavía aplica una entrada; el resto espera al siguiente
+    // ciclo para que Ring 0 tampoco quede bloqueado por el trabajo periódico.
+    let mut applied = 0;
+    while applied < RING0_QUEUE_CAPACITY {
+        let Ok(input) = receiver.try_recv() else {
+            break;
+        };
+        input.apply(runtime);
+        applied += 1;
+        if std::time::Instant::now() >= deadline {
+            break;
+        }
+    }
+    applied
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -150,6 +196,7 @@ pub(crate) struct AppState {
     resonance: Arc<Mutex<ResonanceEngine>>,
     security_wal: SecurityWal,
     bpf_stream: broadcast::Sender<CortexEvent>,
+    ebpf_connected: Arc<AtomicBool>,
     lattice: Arc<Mutex<memory::resonant_lattice_bridge::ResonantLatticeBridge>>,
     liquid_lattice: Arc<Mutex<memory::liquid_lattice::LiquidLattice>>,
     #[allow(dead_code)]
@@ -174,9 +221,26 @@ fn thermal_half(amplitude: me60os_core::spa::SPA) -> me60os_core::spa::SPA {
         .unwrap_or_else(|| amplitude / me60os_core::spa::SPA::from_int(2))
 }
 
+fn drive_resonant_lattice(
+    lattice: &mut memory::resonant_lattice_bridge::ResonantLatticeBridge,
+    thermal: me60os_core::spa::SPA,
+) {
+    let node_count = lattice.node_count();
+    let half = thermal_half(thermal);
+    lattice.inject_spa(0, thermal);
+    if node_count > 100 {
+        let step_ring = node_count / 7;
+        for ring_idx in 1..7 {
+            lattice.inject_spa(ring_idx * step_ring, half);
+        }
+    }
+    lattice.step();
+}
+
 fn start_crystal_runtime(
     nodes: usize,
     status: Arc<Mutex<CrystalRuntimeStatusResponse>>,
+    mut ring0_rx: mpsc::Receiver<Ring0Input>,
     mut scheduler: quantum::quantum_scheduler::QuantumScheduler<CrystalTask>,
     scheduler_status: Arc<Mutex<SchedulerRuntimeStatus>>,
 ) -> Option<std::sync::mpsc::SyncSender<CrystalInput>> {
@@ -226,19 +290,20 @@ fn start_crystal_runtime(
                             amplitude,
                             mesh_token_id,
                         }) => {
-                            if let Some(token_id) = mesh_token_id {
-                                match runtime.inject_remote_security_spa(index, amplitude) {
-                                    Ok(crystal_amplitude_raw) => tracing::info!(
-                                        token_id,
-                                        index,
-                                        amplitude_raw = amplitude.to_raw(),
-                                        crystal_amplitude_raw,
-                                        "MyCNet seed accepted by CrystalRuntime security lane"
-                                    ),
-                                    Err(error) => tracing::warn!(token_id, index, %error, "MyCNet seed rejected by CrystalRuntime"),
-                                }
-                            } else {
-                                runtime.inject_security_spa(index, amplitude);
+                            match runtime.inject_remote_security_spa(index, amplitude) {
+                                Ok(crystal_amplitude_raw) => tracing::info!(
+                                    token_id = mesh_token_id,
+                                    index,
+                                    amplitude_raw = amplitude.to_raw(),
+                                    crystal_amplitude_raw,
+                                    "MyCNet seed accepted by CrystalRuntime security lane"
+                                ),
+                                Err(error) => tracing::warn!(
+                                    token_id = mesh_token_id,
+                                    index,
+                                    %error,
+                                    "MyCNet seed rejected by CrystalRuntime"
+                                ),
                             }
                         }
                         Ok(CrystalInput::Observability { amplitude }) => {
@@ -349,6 +414,20 @@ fn start_crystal_runtime(
                 }
 
                 let next_deadline = next_tick.min(next_step).min(next_persist);
+                // Los plazos anteriores ya se atendieron. Drena dentro del margen
+                // que queda hasta el siguiente vencimiento, antes de dormir.
+                let ring0_deadline = next_deadline.min(next_gc).min(next_phase_align);
+                let pending_before = ring0_rx.len();
+                let applied = drain_ring0_until(&mut ring0_rx, &mut runtime, ring0_deadline);
+                if tick_counter.is_multiple_of(STATUS_SAMPLE_TICKS) && applied != 0 {
+                    tracing::debug!(
+                        target: "sentinel_cortex::ring0",
+                        pending_before,
+                        applied,
+                        pending_after = ring0_rx.len(),
+                        "Ocupación de la cola de CrystalRuntime para Ring 0"
+                    );
+                }
                 std::thread::sleep(
                     next_deadline.saturating_duration_since(std::time::Instant::now()),
                 );
@@ -366,9 +445,96 @@ fn start_crystal_runtime(
     }
 }
 
-#[tokio::main]
-async fn main() {
+fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt::init();
+
+    let monitor_path = std::env::var("EBPF_MONITOR_PATH")
+        .unwrap_or_else(|_| "/sys/fs/bpf/sentinel/events".to_string());
+    let bridge = EbpfBridge::new().with_ringbuf_path(monitor_path);
+    let bridge = if std::env::var("SENTINEL_EBPF_PREOPEN").as_deref() == Ok("1") {
+        bridge.preopen_and_drop_privileges()?
+    } else {
+        bridge
+    };
+
+    tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()?
+        .block_on(run_cortex(bridge));
+    Ok(())
+}
+
+async fn process_ring0_events(
+    mut events: mpsc::Receiver<CortexEvent>,
+    observers: broadcast::Sender<CortexEvent>,
+    lattice: Arc<Mutex<memory::resonant_lattice_bridge::ResonantLatticeBridge>>,
+    liquid_lattice: Arc<Mutex<memory::liquid_lattice::LiquidLattice>>,
+    neural_memory: Arc<Mutex<me60os_core::neural_memory::NeuralMemory>>,
+    crystal: Option<mpsc::Sender<Ring0Input>>,
+) {
+    let mut crystal_input_losses = 0_u64;
+    while let Some(event) = events.recv().await {
+        if let Err(error) =
+            GuardianLsm::process_cortex_event_name(&event.event_type, event.pid).await
+        {
+            tracing::warn!(
+                pid = event.pid,
+                event_type = event.event_type,
+                %error,
+                "No se pudo aplicar el aislamiento del evento de Ring 0"
+            );
+        }
+
+        let pid = event.pid as usize;
+        let pressure = event.entropy_s60_raw as i64;
+        let index = pid % 64;
+        // La entropía del kernel ya está expresada en unidades crudas de SPA.
+        let amplitude = me60os_core::spa::SPA::from_raw(pressure);
+        // La malla de consulta recibe la amplitud aquí y evoluciona en el pulso de 500 ms.
+        lattice.lock().unwrap().inject_spa(index, amplitude);
+        {
+            let mut liquid_lattice = liquid_lattice.lock().unwrap();
+            liquid_lattice.inject_entropy(pid % 3, (pid / 3) % 3, pressure);
+            liquid_lattice.diffuse();
+        }
+        let event_type_code = event.event_type.parse().unwrap_or(1);
+        let neural_event = me60os_core::ebpf_cortex_bridge::CortexEvent::new(
+            event.timestamp_ns,
+            event_type_code,
+            event.pid,
+            event.entropy_s60_raw,
+            event.severity,
+        );
+        neural_memory
+            .lock()
+            .unwrap()
+            .ingest_event(neural_event, amplitude);
+
+        let input = Ring0Input {
+            index,
+            amplitude,
+            pid: event.pid,
+            timestamp_ns: event.timestamp_ns,
+        };
+        let _ = observers.send(event);
+
+        if let Some(crystal) = &crystal {
+            // Una cola llena espera espacio y propaga contrapresión al lector eBPF.
+            // El cierre del canal es un fallo interno distinto al anillo del kernel.
+            if crystal.send(input).await.is_err() {
+                crystal_input_losses = crystal_input_losses.saturating_add(1);
+                if crystal_input_losses.is_power_of_two() {
+                    tracing::warn!(
+                        losses = crystal_input_losses,
+                        "Entrada de Ring 0 descartada por cierre del canal de CrystalRuntime"
+                    );
+                }
+            }
+        }
+    }
+}
+
+async fn run_cortex(bridge: EbpfBridge) {
     tracing::info!("Sentinel Cortex (S60) initializing...");
 
     // Check for CLI arguments (Semantic Shell Mode)
@@ -410,7 +576,12 @@ async fn main() {
         rings += 1;
     }
     let calculated_nodes = std::cmp::max(128, 3 * rings * (rings + 1) + 1);
-    tracing::info!("💎 Dynamic RAM Lattice Allocator: Allocated {} nodes across {} rings (Available RAM: {} MB)", calculated_nodes, rings, available_ram_mb);
+    tracing::info!(
+        "💎 Dynamic RAM Lattice Allocator: Allocated {} nodes across {} rings (Available RAM: {} MB)",
+        calculated_nodes,
+        rings,
+        available_ram_mb
+    );
 
     let lattice = Arc::new(Mutex::new(
         memory::resonant_lattice_bridge::ResonantLatticeBridge::new(calculated_nodes),
@@ -456,9 +627,11 @@ async fn main() {
         0,
     )));
 
+    let (ring0_tx, ring0_rx) = mpsc::channel(RING0_QUEUE_CAPACITY);
     let crystal_input_tx = start_crystal_runtime(
         calculated_nodes,
         crystal_runtime_status.clone(),
+        ring0_rx,
         quantum_scheduler,
         quantum_scheduler_status.clone(),
     );
@@ -468,6 +641,7 @@ async fn main() {
         resonance: resonance.clone(),
         security_wal: SecurityWal::production(),
         bpf_stream: tx_bpf.clone(),
+        ebpf_connected: Arc::new(AtomicBool::new(false)),
         lattice: lattice.clone(),
         liquid_lattice: liquid_lattice.clone(),
         pattern_detector: pattern_detector.clone(),
@@ -552,94 +726,29 @@ async fn main() {
         }
     });
 
-    // 2. Start eBPF Ring Buffer Reader (Guardian events → WebSocket)
-    let tx_bpf_ebpf = tx_bpf.clone();
-    let _state_ebpf = state.clone();
+    // Un lector del anillo entrega al procesador de seguridad y su copia a WebSocket.
+    let ebpf_connected = Arc::clone(&state.ebpf_connected);
+    let (tx_ring, rx_ring) = mpsc::channel(RING0_QUEUE_CAPACITY);
     tokio::spawn(async move {
-        use tokio::sync::mpsc;
-        let (tx_ring, mut rx_ring) = mpsc::channel::<CortexEvent>(1024);
-
-        // QA 2026-08-06: ruta corregida al pin real del guardian LSM (cargado manual,
-        // hook bprm_check_security vivo). El ringbuf 'events' es el que llena guardian_execve.
-        // Sin LLM local (laptop no da): el cortex corre como motor determinista de eventos+lattice.
-        let monitor_path = std::env::var("EBPF_MONITOR_PATH")
-            .unwrap_or_else(|_| "/sys/fs/bpf/sentinel/events".to_string());
-        let bridge = EbpfBridge::new().with_ringbuf_path(monitor_path);
-
-        tokio::spawn(async move {
-            if let Err(e) = bridge.run_monitor(tx_ring).await {
-                tracing::error!("eBPF monitor error: {}", e);
-            }
-        });
-
-        while let Some(event) = rx_ring.recv().await {
-            if let Err(error) =
-                GuardianLsm::process_cortex_event_name(&event.event_type, event.pid).await
-            {
-                tracing::warn!(
-                    "No se pudo aplicar el aislamiento del evento {} para PID {}: {}",
-                    event.event_type,
-                    event.pid,
-                    error
-                );
-            }
-            let _ = tx_bpf_ebpf.send(event);
+        if let Err(error) = bridge.run_monitor(tx_ring, ebpf_connected).await {
+            tracing::error!(%error, "Falló el monitor eBPF");
         }
     });
+    tokio::spawn(process_ring0_events(
+        rx_ring,
+        tx_bpf,
+        lattice.clone(),
+        liquid_lattice.clone(),
+        neural_memory.clone(),
+        crystal_input_tx.as_ref().map(|_| ring0_tx),
+    ));
+
     // MyCNet emits fractal_seed_ingested only for remote UDP ingress, not local SHM.
     if let Some(tx) = crystal_input_tx.clone() {
         tokio::spawn(mycnet_stream::run(tx));
     } else {
         tracing::warn!("MyCNet mesh subscriber disabled: CrystalRuntime is unavailable");
     }
-
-    // 3. Start Lattice Processor (Deterministic Ring-0 eBPF Ingestion + Thermal CPU Noise + LiquidLattice 3x3)
-    let lattice_task = lattice.clone();
-    let liquid_lattice_task = liquid_lattice.clone();
-    let neural_memory_task = neural_memory.clone();
-    let crystal_input_ebpf = crystal_input_tx.clone();
-    let mut rx_lattice = tx_bpf.subscribe();
-    tokio::spawn(async move {
-        tracing::info!("💎 Lattice Processor active: Ring-0 Ingestion + LiquidLattice 3x3 Diffusivity (EXP-009)");
-        while let Ok(event) = rx_lattice.recv().await {
-            let mut lat = lattice_task.lock().unwrap();
-            let pressure = event.entropy_s60_raw as i64;
-            let node = (event.pid as usize) % 64;
-            // FIX (auditoría 2026-08-23, P0.4-A1): pressure es S60 RAW del
-            // kernel (cortex_events.h:117); inject() lo re-escalaria por
-            // SCALE_0 (doble escala). inject_spa preserva la escala SPA.
-            lat.inject_spa(node, me60os_core::spa::SPA::from_raw(pressure));
-            lat.step();
-
-            // Connect EXP-009 LiquidLattice 3x3 grid diffusion
-            let mut ll = liquid_lattice_task.lock().unwrap();
-            let row = (event.pid as usize) % 3;
-            let col = ((event.pid as usize) / 3) % 3;
-            ll.inject_entropy(row, col, pressure);
-            ll.diffuse();
-
-            // Ingest eBPF event into PAI-Neural LIF Spiking Neural Network
-            let mut nm = neural_memory_task.lock().unwrap();
-            let entropy_spa = me60os_core::spa::SPA::from_raw(pressure);
-            let event_type_code: u32 = event.event_type.parse().unwrap_or(1);
-            let me60os_ev = me60os_core::ebpf_cortex_bridge::CortexEvent::new(
-                event.timestamp_ns,
-                event_type_code,
-                event.pid,
-                event.entropy_s60_raw,
-                event.severity,
-            );
-            nm.ingest_event(me60os_ev, entropy_spa);
-
-            if let Some(runtime) = &crystal_input_ebpf {
-                let _ = runtime.try_send(CrystalInput::Security {
-                    index: node,
-                    amplitude: entropy_spa,
-                    mesh_token_id: None,
-                });
-            }
-        }
-    });
 
     // 3b. Real System Thermal Noise Injector (Optomechanical Coupling to CPU Temperature)
     let lattice_thermal = lattice.clone();
@@ -691,19 +800,7 @@ async fn main() {
                 batch_size
             );
 
-            {
-                let mut lat = lattice_thermal.lock().unwrap();
-                let node_count = lat.amplitudes_raw().len();
-                let half = thermal_half(thermal);
-                lat.inject_spa(0, thermal);
-                if node_count > 100 {
-                    let step_ring = node_count / 7;
-                    for ring_idx in 1..7 {
-                        lat.inject_spa(ring_idx * step_ring, half);
-                    }
-                }
-                lat.step();
-            }
+            drive_resonant_lattice(&mut lattice_thermal.lock().unwrap(), thermal);
 
             let priority = me60os_core::spa::SPA::one();
             let effective_load = me60os_core::physics::ResonantPhysics::calculate_effective_load(
@@ -1389,7 +1486,11 @@ async fn handle_socket(mut socket: WebSocket, state: Arc<AppState>, exp: u64) {
             }
             event = rx.recv() => match event {
                 Ok(event) => event,
-                Err(_) => break, // Broadcast channel cerraría si todo explota
+                Err(broadcast::error::RecvError::Lagged(skipped)) => {
+                    tracing::debug!(skipped, "El observador WebSocket de Ring 0 perdió eventos");
+                    break;
+                }
+                Err(broadcast::error::RecvError::Closed) => break,
             }
         };
 
@@ -1431,11 +1532,10 @@ pub struct SentinelStatusResponse {
 pub(crate) async fn sentinel_status_handler(
     axum::extract::State(state): axum::extract::State<Arc<AppState>>,
 ) -> Json<SentinelStatusResponse> {
-    let bpf_events_exists = std::path::Path::new("/sys/fs/bpf/sentinel/events").exists();
     let bpf_whitelist_exists = std::path::Path::new("/sys/fs/bpf/sentinel/whitelist_map").exists();
 
     Json(SentinelStatusResponse {
-        ring_status: if bpf_events_exists {
+        ring_status: if state.ebpf_connected.load(Ordering::Relaxed) {
             "RING0_PINNED_ACTIVE".into()
         } else {
             "OFFLINE".into()
@@ -1611,6 +1711,12 @@ mod tests {
     }
 
     fn make_test_app() -> (Router, std::path::PathBuf) {
+        make_test_app_with_ebpf_status(Arc::new(AtomicBool::new(false)))
+    }
+
+    fn make_test_app_with_ebpf_status(
+        ebpf_connected: Arc<AtomicBool>,
+    ) -> (Router, std::path::PathBuf) {
         let lattice = Arc::new(Mutex::new(
             memory::resonant_lattice_bridge::ResonantLatticeBridge::new(1),
         ));
@@ -1639,6 +1745,7 @@ mod tests {
             resonance,
             security_wal,
             bpf_stream: tx_bpf,
+            ebpf_connected,
             lattice,
             liquid_lattice,
             pattern_detector,
@@ -1815,32 +1922,218 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_sentinel_status_handler_smoke() {
-        let (app, _wal_dir) = make_test_app();
-        let response = app
-            .oneshot(
-                Request::builder()
-                    .uri("/api/v1/sentinel_status")
-                    .header(
-                        axum::http::header::AUTHORIZATION,
-                        format!("Bearer {}", member_token()),
-                    )
-                    .body(Body::empty())
-                    .unwrap(),
-            )
-            .await
-            .unwrap();
+    async fn ring0_rafaga_llega_al_cristal_aunque_observador_se_retrase() {
+        const EVENTS: u32 = 257;
+        let (reader_tx, reader_rx) = mpsc::channel(2);
+        let (observers, mut slow_observer) = broadcast::channel(2);
+        let (crystal_tx, mut crystal_rx) = mpsc::channel(2);
+        let processing = tokio::spawn(process_ring0_events(
+            reader_rx,
+            observers,
+            Arc::new(Mutex::new(
+                memory::resonant_lattice_bridge::ResonantLatticeBridge::new(64),
+            )),
+            Arc::new(Mutex::new(memory::liquid_lattice::LiquidLattice::new())),
+            Arc::new(Mutex::new(me60os_core::neural_memory::NeuralMemory::new())),
+            Some(crystal_tx),
+        ));
+        let producer = tokio::spawn(async move {
+            for pid in 1..=EVENTS {
+                reader_tx
+                    .send(CortexEvent {
+                        timestamp_ns: u64::from(pid) * 10,
+                        pid,
+                        event_type: "EXEC_ALLOWED".into(),
+                        entropy_s60_raw: 12_960_000 + u64::from(pid),
+                        severity: 0,
+                        enforcement_active: false,
+                        guardian_code: 0,
+                        process_path: None,
+                        uid: None,
+                    })
+                    .await
+                    .unwrap();
+            }
+        });
 
-        assert_eq!(response.status(), StatusCode::OK);
-        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
-            .await
-            .unwrap();
-        let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        tokio::time::timeout(Duration::from_secs(10), async {
+            // Espera la contrapresión de ambas colas antes de consumir el cristal.
+            while crystal_rx.len() < 2 {
+                assert!(!processing.is_finished());
+                tokio::task::yield_now().await;
+            }
+            assert!(!producer.is_finished());
+            let mut runtime = memory::crystal_runtime::CrystalRuntime::in_memory(64);
+            let before = runtime.status().lane_a_energy_raw;
+            let mut expected_energy_delta = 0;
+            for pid in 1..=EVENTS {
+                let input = crystal_rx.recv().await.unwrap();
+                assert_eq!(input.pid, pid);
+                assert_eq!(input.timestamp_ns, u64::from(pid) * 10);
+                assert_eq!(input.index, pid as usize % 64);
+                let raw = 12_960_000 + i64::from(pid);
+                assert_eq!(input.amplitude.to_raw(), raw);
+                expected_energy_delta += raw;
+                input.apply(&mut runtime);
+            }
+            assert_eq!(
+                runtime.status().lane_a_energy_raw - before,
+                expected_energy_delta
+            );
+            assert!(crystal_rx.recv().await.is_none());
+            processing.await.unwrap();
+            producer.await.unwrap();
+            assert_eq!(
+                slow_observer.recv().await.unwrap_err(),
+                broadcast::error::RecvError::Lagged(u64::from(EVENTS - 2))
+            );
+            assert_eq!(slow_observer.recv().await.unwrap().pid, EVENTS - 1);
+            assert_eq!(slow_observer.recv().await.unwrap().pid, EVENTS);
+        })
+        .await
+        .unwrap();
+    }
 
-        assert!(json.get("ring_status").is_some());
-        assert!(json.get("xdp_firewall").is_some());
-        assert!(json.get("lsm_cognitive").is_some());
-        assert!(json.get("s60_resonance").is_some());
+    #[test]
+    fn ring0_drena_varias_entradas_tras_atender_el_plazo_del_cristal() {
+        const EVENTS: u32 = 32;
+        let (tx, mut rx) = mpsc::channel(EVENTS as usize);
+        let mut runtime = memory::crystal_runtime::CrystalRuntime::in_memory(64);
+        let before = runtime.status().lane_a_energy_raw;
+        let amplitude = me60os_core::spa::SPA::from_raw(12_960_000);
+        for pid in 0..EVENTS {
+            assert!(tx.try_send(Ring0Input {
+                index: pid as usize,
+                amplitude,
+                pid,
+                timestamp_ns: u64::from(pid),
+            }).is_ok());
+        }
+
+        let due = std::time::Instant::now();
+        // Al llegar a un vencimiento, el drenado deja trabajo pendiente.
+        assert_eq!(drain_ring0_until(&mut rx, &mut runtime, due), 1);
+        assert_eq!(rx.len(), EVENTS as usize - 1);
+        assert_eq!(
+            runtime.status().lane_a_energy_raw,
+            before + amplitude.to_raw()
+        );
+
+        // Después del tick, el margen del siguiente plazo admite toda la cola.
+        let ticks_before = runtime.dtc_ticks();
+        runtime.tick_dtc().unwrap();
+        let after_tick = runtime.status().lane_a_energy_raw;
+        let next_deadline = std::time::Instant::now() + Duration::from_secs(1);
+        assert_eq!(
+            drain_ring0_until(&mut rx, &mut runtime, next_deadline),
+            EVENTS as usize - 1
+        );
+        assert!(rx.is_empty());
+        assert_eq!(runtime.dtc_ticks(), ticks_before + 1);
+        assert_eq!(
+            runtime.status().lane_a_energy_raw,
+            after_tick + i64::from(EVENTS - 1) * amplitude.to_raw()
+        );
+    }
+
+    #[tokio::test]
+    async fn ring0_inyecta_en_la_malla_de_consulta_hasta_el_siguiente_pulso() {
+        let lattice = Arc::new(Mutex::new(
+            memory::resonant_lattice_bridge::ResonantLatticeBridge::new(64),
+        ));
+        let phases_before = lattice.lock().unwrap().phases_raw();
+        let (reader_tx, reader_rx) = mpsc::channel(2);
+        let (observers, _) = broadcast::channel(1);
+        let (crystal_tx, mut crystal_rx) = mpsc::channel(2);
+        let amplitude = me60os_core::spa::SPA::from_raw(12_960_017);
+        for timestamp_ns in 1..=2 {
+            reader_tx
+                .send(CortexEvent {
+                    timestamp_ns,
+                    pid: 17,
+                    event_type: "EXEC_ALLOWED".into(),
+                    entropy_s60_raw: amplitude.to_raw() as u64,
+                    severity: 0,
+                    enforcement_active: false,
+                    guardian_code: 0,
+                    process_path: None,
+                    uid: None,
+                })
+                .await
+                .unwrap();
+        }
+        drop(reader_tx);
+
+        process_ring0_events(
+            reader_rx,
+            observers,
+            Arc::clone(&lattice),
+            Arc::new(Mutex::new(memory::liquid_lattice::LiquidLattice::new())),
+            Arc::new(Mutex::new(me60os_core::neural_memory::NeuralMemory::new())),
+            Some(crystal_tx),
+        )
+        .await;
+        for timestamp_ns in 1..=2 {
+            let input = crystal_rx.recv().await.unwrap();
+            assert_eq!(input.timestamp_ns, timestamp_ns);
+            assert_eq!(input.amplitude, amplitude);
+        }
+
+        let mut lattice = lattice.lock().unwrap();
+        assert_eq!(
+            lattice.amplitudes_raw()[17],
+            (amplitude + amplitude).to_raw()
+        );
+        assert_eq!(lattice.phases_raw(), phases_before);
+        let thermal = thermal_amplitude(35);
+        drive_resonant_lattice(&mut lattice, thermal);
+
+        let mut expected = memory::resonant_lattice_bridge::ResonantLatticeBridge::new(64);
+        expected.inject_spa(17, amplitude + amplitude);
+        expected.inject_spa(0, thermal);
+        expected.step();
+        assert_ne!(lattice.phases_raw(), phases_before);
+        assert_eq!(lattice.phases_raw(), expected.phases_raw());
+        assert_eq!(lattice.amplitudes_raw(), expected.amplitudes_raw());
+    }
+
+    #[tokio::test]
+    async fn test_sentinel_status_handler_reflects_monitor_connection() {
+        let ebpf_connected = Arc::new(AtomicBool::new(false));
+        let (app, _wal_dir) = make_test_app_with_ebpf_status(Arc::clone(&ebpf_connected));
+
+        for (connected, expected) in [
+            (false, "OFFLINE"),
+            (true, "RING0_PINNED_ACTIVE"),
+            (false, "OFFLINE"),
+        ] {
+            ebpf_connected.store(connected, Ordering::Relaxed);
+            let response = app
+                .clone()
+                .oneshot(
+                    Request::builder()
+                        .uri("/api/v1/sentinel_status")
+                        .header(
+                            axum::http::header::AUTHORIZATION,
+                            format!("Bearer {}", member_token()),
+                        )
+                        .body(Body::empty())
+                        .unwrap(),
+                )
+                .await
+                .unwrap();
+
+            assert_eq!(response.status(), StatusCode::OK);
+            let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+                .await
+                .unwrap();
+            let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
+
+            assert_eq!(json["ring_status"], expected);
+            assert!(json.get("xdp_firewall").is_some());
+            assert!(json.get("lsm_cognitive").is_some());
+            assert!(json.get("s60_resonance").is_some());
+        }
     }
     #[tokio::test]
     async fn test_qhc_status_handler_reports_unavailable_without_agent() {

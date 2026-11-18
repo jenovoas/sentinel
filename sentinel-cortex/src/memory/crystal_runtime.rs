@@ -212,6 +212,10 @@ impl CrystalRuntime {
         Ok(runtime)
     }
 
+    pub(crate) fn dtc_ticks(&self) -> u64 {
+        self.dtc_clock.ticks
+    }
+
     pub fn node_count(&self) -> usize {
         self.lane_a.count_nodes()
     }
@@ -488,7 +492,7 @@ impl CrystalRuntime {
             fractal_seed_capacity: FRACTAL_SEEDS_CAPACITY,
             fractal_seeds_published: self.fractal_seeds_published,
             dtc_oscillator_active: true,
-            dtc_ticks: self.dtc_clock.ticks,
+            dtc_ticks: self.dtc_ticks(),
             lane_a_energy_raw: self.lane_a.total_energy().to_raw(),
             lane_b_energy_raw: self.lane_b.total_energy().to_raw(),
             dtc_tick_interval_ns: self.last_tick_interval_ns,

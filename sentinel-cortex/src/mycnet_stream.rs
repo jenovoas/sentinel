@@ -37,7 +37,7 @@ fn enqueue(text: &str, tx: &SyncSender<CrystalInput>) -> anyhow::Result<()> {
     match tx.try_send(CrystalInput::Security {
         index,
         amplitude: SPA::from_raw(amplitude_s60),
-        mesh_token_id: Some(token_id),
+        mesh_token_id: token_id,
     }) {
         Ok(()) => tracing::debug!(
             token_id,
@@ -125,7 +125,7 @@ mod tests {
         };
         assert_eq!(index, 1);
         assert_eq!(amplitude.to_raw(), -17);
-        assert_eq!(mesh_token_id, Some(129));
+        assert_eq!(mesh_token_id, 129);
     }
 
     #[test]
