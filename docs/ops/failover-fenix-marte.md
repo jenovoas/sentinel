@@ -46,7 +46,7 @@ sudo -n docker run -d --name sentinel-backend-standby --network host \
 #      `proxy_pass http://10.88.0.1:8001` → `http://10.88.0.6:8000`
 #    (telemetría apunta a Cortex 8001 en Fenix; el backend promovido escucha en 8000).
 #    `sudo -n nginx -t && sudo -n systemctl reload nginx`.
-#    DNS no cambia: sentinel/dns1/dns2 apuntan a la IP pública de Kingu (64.176.8.191).
+#    DNS no cambia: `ns1.pinguinoseguro.cl` y `sentinel.pinguinoseguro.cl` ya apuntan a la IP pública de Kingu (64.176.8.191).
 ```
 
 ## Failback a Fenix (vuelta)
