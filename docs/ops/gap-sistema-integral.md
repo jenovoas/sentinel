@@ -94,3 +94,18 @@ esperan incluso si la cola supera el umbral histórico de desborde.
 El planificador observa el estado resultante de ambas mallas tras los
 pasos del runtime. La apertura surge de su evolución bajo el acoplamiento
 y el bombeo QHC. El despacho carece de una ventana temporal adicional.
+
+### Medición tras aplicar en Fénix
+
+El 2026-11-18 se recreó únicamente Cortex con `sentinel-cortex:d8c109b9`
+(`sha256:ad570b825736f20e2dc848e39c2c8bcd8e00d12dbec1d45b5396cfd0ecdc05fc`).
+Compose confirmó estado saludable y cero reinicios; `/health` respondió 200
+y el endpoint privado de estado respondió 401 sin credenciales.
+
+Antes del cambio, Docker mostró 81,26 % de un núcleo, 66.925 tareas
+pendientes y el corte por piloto activo. Después, el contador del cgroup
+mostró un promedio de 78,27 % de un núcleo durante 45 s. El DTC avanzó
+de 1.145 a 3.017 ticks, la cola se mantuvo en dos tareas y el corte por
+piloto estuvo inactivo. Hubo un respaldo crítico, cero despachos por
+portal y cero fallos. El objetivo operativo del 5–6 % de un núcleo sigue
+incumplido.
