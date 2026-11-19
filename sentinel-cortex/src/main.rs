@@ -307,7 +307,8 @@ fn start_crystal_runtime(
                             }
                         }
                         Ok(CrystalInput::Observability { amplitude }) => {
-                            runtime.inject_observability_spa(0, amplitude);
+                            // Solo lane_a recibe entradas; lane_b copia por simpatía.
+                            runtime.inject_security_spa(0, amplitude);
                         }
                         Err(std::sync::mpsc::TryRecvError::Empty) => break,
                         Err(std::sync::mpsc::TryRecvError::Disconnected) => {

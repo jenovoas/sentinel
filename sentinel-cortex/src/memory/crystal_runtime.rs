@@ -220,24 +220,34 @@ impl CrystalRuntime {
         self.lane_a.count_nodes()
     }
 
-    /// Observes exact raw phase/amplitude agreement without changing either lane.
-    /// Equal ground states are not an active dual-lane portal.
+    /// Observa la coherencia de fase entre ambas mallas (>85% de nodos dentro de 18°)
+    /// con al menos un nodo activo, sin mutar el estado de ninguna malla.
     pub fn dual_lane_portal_open(&self) -> bool {
-        if self.lane_a.crystals.is_empty()
-            || self.lane_a.crystals.len() != self.lane_b.crystals.len()
-        {
+        let n = self.lane_a.crystals.len();
+        if n == 0 || n != self.lane_b.crystals.len() {
             return false;
         }
 
+        let full_circle_raw = 360_i128 * SPA::SCALE_0 as i128;
+        let half_circle_raw = 180_i128 * SPA::SCALE_0 as i128;
+        let phase_tolerance_raw = 18_i128 * SPA::SCALE_0 as i128;
+
+        let mut resonant: i128 = 0;
         let mut active = false;
         for (a, b) in self.lane_a.crystals.iter().zip(&self.lane_b.crystals) {
-            let amplitude = a.amplitude.to_raw();
-            if amplitude != b.amplitude.to_raw() || a.phase.to_raw() != b.phase.to_raw() {
-                return false;
+            let pa = a.phase.to_raw() as i128;
+            let pb = b.phase.to_raw() as i128;
+            let mut diff = (pa - pb).abs().rem_euclid(full_circle_raw);
+            if diff > half_circle_raw {
+                diff = full_circle_raw - diff;
             }
-            active |= amplitude != 0;
+            if diff < phase_tolerance_raw {
+                resonant += 1;
+            }
+            active |= a.amplitude.to_raw() != 0 || b.amplitude.to_raw() != 0;
         }
-        active
+
+        active && (resonant * 1000 / n as i128) > 850
     }
 
     /// Advances the shared DTC/QHC pulse. The Tokio scheduler owns the pulse
@@ -249,14 +259,9 @@ impl CrystalRuntime {
         self.last_drift_correction_ns = self.qhc.calculate_drift_correction(self.qhc_tick);
         self.last_tick_interval_ns = self.qhc.get_tick_interval_ns(self.qhc_tick);
 
-        let qhc = &self.qhc;
-        let tick = self.qhc_tick;
-        for crystal in self.lane_a.crystals.iter_mut() {
-            crystal.phase = qhc.apply_modulation(crystal.phase, tick);
-        }
-        for crystal in self.lane_b.crystals.iter_mut() {
-            crystal.phase = qhc.apply_modulation(crystal.phase, tick);
-        }
+        let shift = self.qhc.apply_modulation(SPA::zero(), self.qhc_tick);
+        self.lane_a.apply_phase_shift(shift);
+        self.lane_b.apply_phase_shift(shift);
 
         // Publish each YHWH phase through MycNet's existing SHM ring. At the
         // 68-tick correction boundary, publish both lanes and their corrected
@@ -411,7 +416,35 @@ impl CrystalRuntime {
 
         self.lane_a.step();
         self.lane_b.step();
+        self.apply_sympathetic_coupling();
         self.sync_shm()
+    }
+
+    /// Transfiere estado de lane_a hacia lane_b por simpatía nodo a nodo (coupling 10/60).
+    fn apply_sympathetic_coupling(&mut self) {
+        let full_circle_raw = 360_i128 * SPA::SCALE_0 as i128;
+        let half_circle_raw = 180_i128 * SPA::SCALE_0 as i128;
+        for (a, b) in self
+            .lane_a
+            .crystals
+            .iter()
+            .zip(self.lane_b.crystals.iter_mut())
+        {
+            let diff_amp = a.amplitude.to_raw() as i128 - b.amplitude.to_raw() as i128;
+            let flow_amp = (diff_amp * 10) / 60;
+            let next_amp = crate::math::s60::saturating_i64(b.amplitude.to_raw() as i128 + flow_amp);
+            b.amplitude = SPA::from_raw(next_amp);
+
+            let pa = a.phase.to_raw() as i128;
+            let pb = b.phase.to_raw() as i128;
+            let mut diff_phase = (pa - pb).rem_euclid(full_circle_raw);
+            if diff_phase > half_circle_raw {
+                diff_phase -= full_circle_raw;
+            }
+            let flow_phase = (diff_phase * 10) / 60;
+            let next_phase = (pb + flow_phase).rem_euclid(full_circle_raw);
+            b.phase = SPA::from_raw(crate::math::s60::saturating_i64(next_phase));
+        }
     }
 
     fn sync_shm(&mut self) -> Result<(), String> {
@@ -819,9 +852,23 @@ mod tests {
     }
 
     #[test]
-    fn dual_lane_portal_rejects_amplitude_mismatch_with_equal_phases() {
+    fn dual_lane_portal_allows_amplitude_difference_with_coherent_phases() {
         let mut runtime = portal_runtime();
         runtime.lane_b.crystals[2].amplitude = SPA::from_raw(1);
+        let before_a = raw_lane_state(&runtime.lane_a);
+        let before_b = raw_lane_state(&runtime.lane_b);
+        assert!(runtime.dual_lane_portal_open());
+        assert_eq!(raw_lane_state(&runtime.lane_a), before_a);
+        assert_eq!(raw_lane_state(&runtime.lane_b), before_b);
+    }
+
+    #[test]
+    fn dual_lane_portal_rejects_phase_coherence_below_threshold() {
+        let mut runtime = portal_runtime();
+        let shift = SPA::new(45, 0, 0, 0, 0);
+        for crystal in &mut runtime.lane_b.crystals {
+            crystal.phase = shift;
+        }
         let before_a = raw_lane_state(&runtime.lane_a);
         let before_b = raw_lane_state(&runtime.lane_b);
         assert!(!runtime.dual_lane_portal_open());
@@ -830,14 +877,16 @@ mod tests {
     }
 
     #[test]
-    fn dual_lane_portal_rejects_phase_mismatch_with_equal_amplitudes() {
-        let mut runtime = portal_runtime();
-        runtime.lane_b.crystals[2].phase = SPA::from_raw(6);
-        let before_a = raw_lane_state(&runtime.lane_a);
-        let before_b = raw_lane_state(&runtime.lane_b);
-        assert!(!runtime.dual_lane_portal_open());
-        assert_eq!(raw_lane_state(&runtime.lane_a), before_a);
-        assert_eq!(raw_lane_state(&runtime.lane_b), before_b);
+    fn sympathetic_coupling_copies_lane_a_into_empty_lane_b_and_opens_portal() {
+        let mut runtime = CrystalRuntime::in_memory(9);
+        runtime.inject_security_spa(0, SPA::new(12, 0, 0, 0, 0));
+        assert_eq!(runtime.lane_b_energy_raw(), 0);
+
+        runtime.tick_dtc().unwrap();
+        runtime.step().unwrap();
+
+        assert!(runtime.lane_b_energy_raw() > 0);
+        assert!(runtime.dual_lane_portal_open());
     }
 
     #[test]
