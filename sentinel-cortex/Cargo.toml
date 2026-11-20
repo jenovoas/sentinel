@@ -20,7 +20,7 @@ redis = { version = "1.6", features = ["tokio-comp"] }
 
 # HTTP client
 reqwest = { version = "0.13", default-features = false, features = ["json", "native-tls", "http2", "charset", "system-proxy"] }
-tokio-tungstenite = { version = "0.29", features = ["connect"] }
+tokio-tungstenite = { version = "0.30", features = ["connect"] }
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
@@ -31,7 +31,7 @@ chrono = { version = "0.4.38", features = ["serde"] }
 
 # UUID
 uuid = { version = "1.6", features = ["v4", "serde"] }
-jsonwebtoken = { version = "11.1", features = ["aws_lc_rs"] }
+jsonwebtoken = { version = "12.0", features = ["aws_lc_rs"] }
 
 # Crypto
 hmac = "0.13"
@@ -71,8 +71,8 @@ tokio-test = "0.4"
 
 [build-dependencies]
 proc-macro2 = { version = "1", features = ["span-locations"] }
-syn = { version = "2", features = ["full", "visit"] }
-toml = "0.8"
+syn = { version = "3", features = ["full", "visit"] }
+toml = "1.2"
 
 [lints.clippy]
 float_arithmetic = "forbid"
