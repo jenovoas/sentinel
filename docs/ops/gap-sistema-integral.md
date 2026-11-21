@@ -189,3 +189,20 @@ checkpoint de producción. Sonda retirada, sin despliegue.
 ## Candidato de despacho por pulso DTC
 
 Cortex entrega al detector temporal existente el tiempo programado del pulso en segundos S60, con origen en el primer pulso de la instancia. El intervalo que devuelve `CrystalRuntime::tick_dtc` programa el pulso siguiente. El planificador usa la intensidad calculada para dimensionar el lote y conserva la vía crítica de respaldo. La intensidad es una salida del modelo temporal. La prueba en memoria verifica apertura, despacho y cierre con los intervalos generados por el runtime. Pasaron las 76 pruebas del binario Cortex.
+
+### Medición del despliegue en Fénix
+
+Se recreó solo `sentinel-cortex`. La imagen `sentinel-cortex:b4cb1ac5`, ID `sha256:cd347007292a7ce4e140fe6fd6c1f14090ec5fe0840854b418a8447bf055b3fd`, quedó saludable con cero reinicios y HTTP 200 en `/health`. Se conserva la imagen previa `sentinel-cortex:simpatia-20261119`.
+
+| Ventana de 46 s | Imagen previa | b4cb1ac5 |
+|---|---:|---:|
+| CPU de Cortex en porcentaje de un núcleo, por cgroup | 102,54 | 77,64 |
+| Ticks DTC avanzados | 1.917 | 1.929 |
+| Muestras del portal abierto, a 1 Hz | 46/46 | 4/46 |
+| Cambios de estado entre muestras | 0 | 8 |
+| Tareas en portal | 14 | 7 |
+| Respaldos críticos | 0 | 1 |
+| Fallos | 0 | 0 |
+| CPU de qhc_agent, PID 5974, por contador de proceso | 0,00 | 0,02 |
+
+La reducción observada de CPU fue de 24,89 puntos porcentuales de un núcleo. Las ventanas tienen igual duración pero distinta antigüedad del contenedor y diferente volumen de trabajo despachado. La muestra por segundo observa cambios del portal sin contar todas las aperturas. En esta imagen, los campos históricos `dual_lane_portal_open` y `lattice_portal_open` reportan la señal del detector temporal, no un cálculo de convergencia A/B. Se midió el único demonio de la lista presente en el host durante la captura. La comparación de los demás nodos requiere sus propios contadores.
