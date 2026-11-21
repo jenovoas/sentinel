@@ -134,17 +134,24 @@ impl<C> QuantumScheduler<C> {
         );
     }
 
-    /// Despacha con la observación del cristal autónomo.
-    /// El trabajo ordinario espera la apertura y el respaldo conserva su vía crítica.
+    /// Evalúa la ventana en el pulso programado del DTC.
+    /// Entre pulsos solo se atienden los respaldos críticos.
     pub fn tick_crystal_portal(
         &mut self,
-        portal_open: bool,
+        pulse_time: Option<S60>,
         mut execute: impl FnMut(C) -> Result<(), String>,
-    ) {
-        if portal_open {
-            self.execute_batch(5, &mut execute);
-        }
+    ) -> Option<bool> {
+        let open = pulse_time.map(|time| {
+            let intensity = self.portal_detector.get_portal_intensity(time);
+            if intensity > S60::zero() {
+                self.execute_batch(Self::adaptive_batch_size(intensity), &mut execute);
+                true
+            } else {
+                false
+            }
+        });
         self.flush_critical_tasks(&mut execute);
+        open
     }
 
     fn tick_with_source(
@@ -391,18 +398,45 @@ mod tests {
         enqueue(&mut scheduler, 21, TaskType::BackupS60);
 
         let mut executed = Vec::new();
-        scheduler.tick_crystal_portal(false, |id| {
+        let initial = scheduler.tick_crystal_portal(Some(S60::zero()), |id| {
             executed.push(id);
             Ok(())
         });
+        assert_eq!(initial, Some(false));
         assert_eq!(executed, [21]);
         assert_eq!(scheduler.queue_len(), 21);
 
-        scheduler.tick_crystal_portal(true, |id| {
-            executed.push(id);
-            Ok(())
-        });
-        assert_eq!(executed, [21, 0, 1, 2, 3, 4]);
+        let mut runtime = crate::memory::crystal_runtime::CrystalRuntime::in_memory(9);
+        let detector = PortalDetector::new();
+        let mut elapsed_ns = 0_u128;
+        let mut opened = false;
+        let mut closed = false;
+        for _ in 0..3_000 {
+            let pulse = S60::from_raw((elapsed_ns * S60::SCALE_0 as u128 / 1_000_000_000) as i64);
+            elapsed_ns += runtime.tick_dtc().unwrap() as u128;
+            let before = executed.len();
+            let result = scheduler.tick_crystal_portal(Some(pulse), |id| {
+                executed.push(id);
+                Ok(())
+            });
+            if result == Some(true) && !opened {
+                let expected = QuantumScheduler::<u64>::adaptive_batch_size(
+                    detector.get_portal_intensity(pulse),
+                );
+                assert_eq!(executed[1..], (0..expected as u64).collect::<Vec<_>>());
+                opened = true;
+                assert_eq!(
+                    scheduler.tick_crystal_portal(None, |_| panic!("despacho entre pulsos")),
+                    None
+                );
+            } else if opened && result == Some(false) {
+                assert_eq!(executed.len(), before);
+                closed = true;
+                break;
+            }
+        }
+        assert!(opened && closed, "se espera una ventana completa");
+
         assert_eq!(scheduler.get_stats().tasks_forced, 0);
         assert!(!scheduler.is_emergency_shutdown());
     }

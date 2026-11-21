@@ -185,3 +185,7 @@ y ambos conservaron cero aperturas. La geometría cambia la señal
 observada, pero no cierra el lazo fase-amplitud del runtime actual.
 La prueba no supone correspondencia topológica ni aplica la fase al
 checkpoint de producción. Sonda retirada, sin despliegue.
+
+## Candidato de despacho por pulso DTC
+
+Cortex entrega al detector temporal existente el tiempo programado del pulso en segundos S60, con origen en el primer pulso de la instancia. El intervalo que devuelve `CrystalRuntime::tick_dtc` programa el pulso siguiente. El planificador usa la intensidad calculada para dimensionar el lote y conserva la vía crítica de respaldo. La intensidad es una salida del modelo temporal. La prueba en memoria verifica apertura, despacho y cierre con los intervalos generados por el runtime. Pasaron las 76 pruebas del binario Cortex.

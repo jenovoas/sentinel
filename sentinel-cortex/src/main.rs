@@ -274,6 +274,7 @@ fn start_crystal_runtime(
 
             let mut next_tick = std::time::Instant::now()
                 + Duration::from_nanos(memory::crystal_runtime::DTC_TICK_INTERVAL_NS);
+            let first_pulse = next_tick;
             let mut next_step = std::time::Instant::now() + Duration::from_millis(500);
             let mut next_persist = std::time::Instant::now() + Duration::from_secs(60);
             let mut next_gc = std::time::Instant::now() + Duration::from_secs(17);
@@ -320,6 +321,11 @@ fn start_crystal_runtime(
 
                 let now = std::time::Instant::now();
                 let dtc_tick_due = now >= next_tick;
+                let pulse_time = dtc_tick_due.then(|| {
+                    let elapsed_ns = (next_tick - first_pulse).as_nanos();
+                    let raw = elapsed_ns * math::s60::S60::SCALE_0 as u128 / 1_000_000_000;
+                    math::s60::S60::from_raw(i64::try_from(raw).unwrap_or(i64::MAX))
+                });
                 if dtc_tick_due {
                     match runtime.tick_dtc() {
                         Ok(interval_ns) => next_tick += Duration::from_nanos(interval_ns),
@@ -379,9 +385,8 @@ fn start_crystal_runtime(
                     next_phase_align = now + Duration::from_millis(4250);
                 }
                 if dtc_tick_due || step_due || checkpoint_due || gc_due || phase_align_due {
-                    portal_open = runtime.dual_lane_portal_open();
-                    scheduler.tick_crystal_portal(
-                        portal_open,
+                    let observation = scheduler.tick_crystal_portal(
+                        pulse_time,
                         |task| match task {
                             CrystalTask::Checkpoint => {
                                 runtime.persist()?;
@@ -400,6 +405,9 @@ fn start_crystal_runtime(
                             }
                         },
                     );
+                    if let Some(open) = observation {
+                        portal_open = open;
+                    }
                 }
 
                 // El estado del runtime recorre 2 × 67.951 nodos por llamada. Se muestrea
