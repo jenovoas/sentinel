@@ -109,3 +109,79 @@ de 1.145 a 3.017 ticks, la cola se mantuvo en dos tareas y el corte por
 piloto estuvo inactivo. Hubo un respaldo crítico, cero despachos por
 portal y cero fallos. El objetivo operativo del 5–6 % de un núcleo sigue
 incumplido.
+
+### Coste de la modulación QHC de mantenimiento
+
+Preparación local. El tick calcula una vez su desplazamiento SPA y reutiliza
+la operación de fase de la malla en ambos carriles. Cada nodo mantiene la suma
+comprobada y la normalización SPA. La prueba verificó equivalencia exacta de
+componentes en los cuatro estados QHC con fases positivas, negativas y al
+cruzar 360°. La sonda optimizada alternó ambas rutas durante 136 ticks sobre
+67.951 nodos y comparó todas las fases al final: 4.665.993 ns por aplicación
+anterior y 3.962.003 ns por aplicación candidata. Son tiempos de pared
+aislados. El despacho GAP y la medición productiva de CPU siguen pendientes.
+
+### Gradientes fonónicos observados en Fénix
+
+Observación de solo lectura con Ring 0 restablecido. AGY analizó diez pares
+de capturas estables de SHM. Para las 202.810 aristas de la topología que
+recorre `ResonantMatrix::step`, la suma de las diferencias absolutas entre
+gradientes A y B osciló entre 324.142.866.342 y 329.787.579.768 unidades
+raw y cambió en las nueve transiciones. Las fases coincidieron en los
+67.951 pares durante toda la muestra. El gradiente conserva información
+espacial variable que no aparece en la igualdad de fase. La muestra carece
+de marca DTC por captura y prueba de despacho, por lo que no determina
+ventanas válidas ni autoriza una compuerta. Sonda SHA-256 `64c88903888701e3bb9498cc11b1c1e66db3b32b012fd21d4977b3f2f09a8a3a`.
+Capturas temporales eliminadas. Sin cambio operativo.
+
+### Contraste del bombeo P1.7 con la compuerta actual
+
+El commit `0151c53a` aplica el desplazamiento QHC como amplitud en un
+nodo rotativo durante el calentamiento del productor, antes de inyectar
+la semilla. AGY ejecutó una prueba aislada de 37 nodos por malla, 60 pasos
+por caso, comparando el operador rotativo con un control. Con entradas
+asimétricas, el desacuerdo espacial de amplitudes al final fue 87.915.397
+sin bombeo y 87.915.274 con bombeo, sin aperturas en ninguno. Con estado
+inicial simétrico vacío, el bombeo abrió al activar ambas mallas por igual.
+No se demuestra convergencia por el bombeo común. La sonda se retiró y no
+se aplicó a producción.
+
+### Respuesta cruzada en una perturbación unilateral
+
+Prueba aislada en Rust ejecutada por AGY con 37 nodos por carril,
+204 pulsos DTC y nueve pasos. Una excitación SPA 12 aplicada solo al
+centro A apareció en B al primer paso (tick 21: centro 44.153 raw,
+vecino 1.471 raw). Al fijar las ganancias de PID B en cero en el
+control, B quedó vacío. El comparador exacto estuvo cerrado los
+204 ticks en ambos casos. Con excitación simétrica directa se mantuvo
+abierto los 204 ticks. Esto acredita una respuesta cruzada y difusión
+con la implementación actual en el ensayo, pero la compuerta no las
+distingue de la excitación compartida. Sonda retirada, sin despliegue.
+
+### Prueba de despacho a partir de mínimos del gradiente relativo
+
+AGY ejecutó cuatro brazos aislados en el runtime Rust de 37 nodos por
+carril, 680 ticks y 32 pasos, con 12 tareas ordinarias iguales en cola.
+La señal experimental marcaba una apertura al confirmar un mínimo
+estricto de la discrepancia de gradientes. Vacío y excitación común
+retuvieron las 12 tareas. La excitación unilateral produjo cuatro
+flancos y despachó las 12 tareas, tanto con PID B activo como con su
+salida anulada. En ambos casos el primer despacho fue al tick 147.
+El disparador confundió cambios de la excitación unilateral con la
+respuesta de la otra malla. Se retiró la sonda. Sin despliegue.
+
+### Fase espacial frente a fase uniforme
+
+El checkpoint activo de Fénix en tick QHC 70.086.328 contenía una sola
+fase circular por malla en los 67.951 nodos. La inicialización espacial
+`(n*17) mod 60` existe en `HexagonalController::new`, documentada
+en `62b3e446`. AGY ejecutó dos runtimes Rust aislados de 37 nodos por
+carril con pulsos asimétricos idénticos, 2.040 ticks y 97 pasos. Al
+usar el patrón espacial como condición inicial, la superposición
+`A*sin(fase)` presentó cancelación en 26 pasos, frente a ninguno con
+fase uniforme. La alineación mínima raw pasó de 12.960.000 a 332.543.
+Todas las amplitudes evolucionaron de forma idéntica entre controles
+y ambos conservaron cero aperturas. La geometría cambia la señal
+observada, pero no cierra el lazo fase-amplitud del runtime actual.
+La prueba no supone correspondencia topológica ni aplica la fase al
+checkpoint de producción. Sonda retirada, sin despliegue.

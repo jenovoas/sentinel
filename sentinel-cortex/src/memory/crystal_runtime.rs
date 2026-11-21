@@ -220,8 +220,8 @@ impl CrystalRuntime {
         self.lane_a.count_nodes()
     }
 
-    /// Observa la coherencia de fase entre ambas mallas (>85% de nodos dentro de 18°)
-    /// con al menos un nodo activo, sin mutar el estado de ninguna malla.
+    /// Abre si más del 85 % de los pares activos difieren en menos de 18°.
+    /// Un par está activo si cualquiera de sus nodos tiene amplitud no nula.
     pub fn dual_lane_portal_open(&self) -> bool {
         let n = self.lane_a.crystals.len();
         if n == 0 || n != self.lane_b.crystals.len() {
@@ -233,8 +233,12 @@ impl CrystalRuntime {
         let phase_tolerance_raw = 18_i128 * SPA::SCALE_0 as i128;
 
         let mut resonant: i128 = 0;
-        let mut active = false;
+        let mut active: i128 = 0;
         for (a, b) in self.lane_a.crystals.iter().zip(&self.lane_b.crystals) {
+            if a.amplitude.to_raw() == 0 && b.amplitude.to_raw() == 0 {
+                continue;
+            }
+            active += 1;
             let pa = a.phase.to_raw() as i128;
             let pb = b.phase.to_raw() as i128;
             let mut diff = (pa - pb).abs().rem_euclid(full_circle_raw);
@@ -244,10 +248,9 @@ impl CrystalRuntime {
             if diff < phase_tolerance_raw {
                 resonant += 1;
             }
-            active |= a.amplitude.to_raw() != 0 || b.amplitude.to_raw() != 0;
         }
 
-        active && (resonant * 1000 / n as i128) > 850
+        resonant * 100 > active * 85
     }
 
     /// Advances the shared DTC/QHC pulse. The Tokio scheduler owns the pulse
@@ -580,14 +583,9 @@ impl CrystalRuntime {
 
     /// Re-alineacion de fases de las mallas con la modulacion del QHC.
     pub fn phase_align(&mut self) -> Result<(), String> {
-        let qhc = &self.qhc;
-        let tick = self.qhc_tick;
-        for crystal in self.lane_a.crystals.iter_mut() {
-            crystal.phase = qhc.apply_modulation(crystal.phase, tick);
-        }
-        for crystal in self.lane_b.crystals.iter_mut() {
-            crystal.phase = qhc.apply_modulation(crystal.phase, tick);
-        }
+        let shift = self.qhc.apply_modulation(SPA::zero(), self.qhc_tick);
+        self.lane_a.apply_phase_shift(shift);
+        self.lane_b.apply_phase_shift(shift);
         Ok(())
     }
 
@@ -860,6 +858,17 @@ mod tests {
         assert!(runtime.dual_lane_portal_open());
         assert_eq!(raw_lane_state(&runtime.lane_a), before_a);
         assert_eq!(raw_lane_state(&runtime.lane_b), before_b);
+    }
+
+    #[test]
+    fn dual_lane_portal_counts_only_active_pairs() {
+        let mut runtime = CrystalRuntime::in_memory(20);
+        runtime.lane_a.crystals[0].amplitude = SPA::from_raw(1);
+        runtime.lane_b.crystals[0].phase = SPA::from_int(45);
+        assert!(!runtime.dual_lane_portal_open());
+
+        runtime.lane_b.crystals[0].phase = runtime.lane_a.crystals[0].phase;
+        assert!(runtime.dual_lane_portal_open());
     }
 
     #[test]

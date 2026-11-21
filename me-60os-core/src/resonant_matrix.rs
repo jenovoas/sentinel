@@ -257,8 +257,17 @@ impl ResonantMatrix {
 
     /// Applies a shared QHC phase shift to every crystal in the lattice.
     pub fn apply_phase_shift(&mut self, shift: SPA) {
+        if self.crystals.is_empty() {
+            return;
+        }
+        let shift_raw = shift.to_raw();
         for crystal in &mut self.crystals {
-            crystal.phase = crystal.phase + shift;
+            let raw = crystal
+                .phase
+                .to_raw()
+                .checked_add(shift_raw)
+                .expect("SPA overflow en add");
+            crystal.phase = SPA::from_raw(raw);
         }
     }
 
@@ -609,6 +618,30 @@ impl ResonantMatrix {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn shared_phase_shift_matches_nodewise_qhc_modulation() {
+        let qhc = crate::qhc::QhcTensor::new();
+        let phases = [
+            -SPA::new(0, 55, 0, 0, 2),
+            SPA::zero(),
+            SPA::new(0, 55, 0, 0, 1),
+            SPA::new(359, 55, 0, 0, 0),
+        ];
+        let mut matrix = ResonantMatrix::new(phases.len());
+        for tick in 0..4 {
+            for (crystal, phase) in matrix.crystals.iter_mut().zip(phases) {
+                crystal.phase = phase;
+            }
+            matrix.apply_phase_shift(qhc.apply_modulation(SPA::zero(), tick));
+            for (crystal, phase) in matrix.crystals.iter().zip(phases) {
+                assert_eq!(
+                    crystal.phase.components,
+                    qhc.apply_modulation(phase, tick).components
+                );
+            }
+        }
+    }
 
     #[test]
     fn test_superconductor_sustains_amplitude_after_step() {
