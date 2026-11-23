@@ -20,8 +20,8 @@ lru = "0.19"
 
 [build-dependencies]
 proc-macro2 = { version = "1", features = ["span-locations"] }
-syn = { version = "2", features = ["full", "visit"] }
-toml = "0.8"
+syn = { version = "3", features = ["full", "visit"] }
+toml = "1.2"
 
 [dev-dependencies]
 criterion = "0.8"
