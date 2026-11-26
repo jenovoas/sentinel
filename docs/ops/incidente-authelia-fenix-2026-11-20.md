@@ -16,6 +16,6 @@ Se retiró en vivo la dirección duplicada `172.19.0.1/16` del puente caído. La
 3. `ip link del br-cbd16f207701` (interfaz huérfana).
 4. Segundo `systemctl restart docker`: el puente no reapareció; 24/24 contenedores; Authelia `healthy`; ruta por `br-1b8eeb2333da`; `10.88.0.1:636` abierto.
 
-**No verificado.** Un reinicio completo del servidor no se ha probado. Tras el próximo, comprobar que `br-cbd16f207701` no exista. Para volver atrás, restaurar el respaldo con Docker parado.
+**Verificación final.** El reinicio completo del 2026-11-26 22:59 UTC quedó verificado (el puente no reapareció, 24/24 contenedores, Authelia `healthy`). El respaldo `local-kv.db.bak-2026-11-26-cbd16f` se eliminó después, por lo que ya no hay vuelta atrás por esa vía.
 
 Nota del 2026-11-20 (histórica): corrección persistente pendiente. Una lectura de las páginas activas de la base local de redes de Docker confirmó la entrada del controlador `docker/network/v1.0/bridge/cbd16f207701a6124441680818c895f8d03dec469aed3e552b58c6f6d647b42b/`. Moby restaura estas entradas al iniciar. Para retomar, verificar la clave y la ruta, y coordinar la limpieza de los metadatos con Docker detenido durante una ventana autorizada. La base de Docker no fue modificada.
